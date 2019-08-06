@@ -12,7 +12,7 @@ You can configure the timeout between polls in the app's settings.
 
   
 ## Final note ##
-The repository is available at: https://github.com/XattSPT/homey-SomaSmartShades
+The repository is available at: https://github.com/XattSPT/com.melcloud
 
 
 ## Change Log:
