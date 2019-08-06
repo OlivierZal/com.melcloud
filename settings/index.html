@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+    <style>
+        #notice {
+            color: green;
+        }
+        .note {
+            margin: 0 0 1em 0;
+            display: inline-block;
+        }
+        .setting-row{
+            width: 100%;
+        }
+        #updateInterval{
+            width:55px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1 data-i18n="settings.title"></h1>
+
+<fieldset>
+    <legend>
+        <p data-i18n="settings.update"></p>
+    </legend>
+
+    <table class="setting-row">
+        <tbody>
+        <tr>
+            <td colspan="2">
+                <i data-i18n="settings.interval.info" class="note"></i>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="updateInterval">
+                    <p data-i18n="settings.interval.label"></p>
+                </label>
+            </td>
+            <td>
+                <input id="updateInterval" class="left" type="number" step=1 min=5 max=60/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</fieldset>
+
+<div class="field row">
+    <button id="save" class="right"><p data-i18n="settings.save.label"></p></button>
+</div>
+
+<script type="text/javascript">
+
+    function onHomeyReady(Homey) {
+        Homey.ready();
+        let updateIntervalElement = document.getElementById('updateInterval');
+        Homey.get('updateInterval', function (err, updateInterval) {
+            if (err) return Homey.alert(err);
+            updateIntervalElement.value = updateInterval;
+        });
+        
+        let saveElement = document.getElementById('save');
+        saveElement.addEventListener('click', function (e) {
+            Homey.set('updateInterval', updateIntervalElement.value, function (err) {
+                if (err) return Homey.alert(err);
+            });
+            
+            Homey.alert(__("settings.success"));
+        });
+    }
+</script>
+
+</body>
+</html>

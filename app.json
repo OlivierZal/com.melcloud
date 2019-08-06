@@ -1,0 +1,262 @@
+{
+    "id": "com.mecloud",
+    "sdk": 2,
+    "brandColor": "#ed0c13",
+    "name": {
+        "en": "MelCloud"
+    },
+    "description": {
+        "en": "Integrate MelCloud into Homey"
+     },
+    "category": [
+        "tools",
+        "appliances"
+    ],
+	"version": "1.0.0",
+    "compatibility": ">=2.1.2",
+    "tags": {
+        "en": [
+            "Aircon",
+            "MelCloud",
+            "Mitsubishi",
+            "Heatpump"
+        ]
+     },
+    "images": {
+        "small": "/assets/images/small.png",
+        "large": "/assets/images/large.png"
+    },
+    "author": {
+        "name": "Gerard Ricart",
+        "email": "gerard.ricart@gmail.com"
+    },
+    "contributing": {
+        "donate": {
+            "paypal": {
+                "username": "XattSPT"
+            }
+        }
+    },
+    "capabilities": {
+        "mode_capability": {
+            "type": "enum",
+            "title": {
+                "en": "Function Mode"
+            },
+            "getable": true,
+            "setable": true,
+            "uiComponent": "picker",
+            "uiQuickAction": true,
+            "values": [
+                {
+                  "id": "off",
+                  "title": {
+                    "en": "Off"
+                  }
+                },
+                {
+                  "id": "heat",
+                  "title": {
+                    "en": "Heat"
+                   }
+                },
+                {
+                  "id": "dry",
+                  "title": {
+                    "en": "Dry"
+                  }
+                },
+                {
+                    "id": "cool",
+                    "title": {
+                      "en": "Cool"
+                    }
+                },
+                {
+                    "id": "fan",
+                    "title": {
+                      "en": "Fan"
+                    }
+                },
+                {
+                  "id": "auto",
+                  "title": {
+                    "en": "Auto"
+                  }
+                }
+            ]
+        },
+        "vertical": {
+            "type": "enum",
+            "title": {
+                "en": "Vertical Position"
+            },
+            "getable": true,
+            "setable": true,
+            "uiComponent": "picker",
+            "uiQuickAction": true,
+            "values": [
+                {
+                  "id": "auto",
+                  "title": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "top",
+                  "title": {
+                    "en": "Top"
+                   }
+                },
+                {
+                  "id": "middletop",
+                  "title": {
+                    "en": "MiddleTop"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "title": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middlebottom",
+                    "title": {
+                      "en": "MiddleBotom"
+                    }
+                },
+                {
+                  "id": "bottom",
+                  "title": {
+                    "en": "Bottom"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "title": {
+                      "en": "Swing"
+                    }
+                }
+            ]
+        },
+        "horizontal": {
+            "type": "enum",
+            "title": {
+                "en": "Horizontal Position"
+            },
+            "getable": true,
+            "setable": true,
+            "uiComponent": "picker",
+            "uiQuickAction": true,
+            "values": [
+                {
+                  "id": "auto",
+                  "title": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "left",
+                  "title": {
+                    "en": "Left"
+                   }
+                },
+                {
+                  "id": "middleleft",
+                  "title": {
+                    "en": "MiddleLeft"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "title": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middleright",
+                    "title": {
+                      "en": "MiddleRight"
+                    }
+                },
+                {
+                  "id": "rigth",
+                  "title": {
+                    "en": "Right"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "title": {
+                      "en": "Swing"
+                    }
+                }
+            ]
+        },
+        "fan_power": {
+            "type": "number",
+            "title": {
+              "en": "Fan Power"
+            },
+            "uiComponent": "slider",
+            "getable": true,
+            "setable": true,
+            "units": {
+              "en": ""
+            },
+            "min": 0,
+            "max": 5,
+            "step": 1
+          }
+    },
+    "drivers": [
+        {
+            "id": "melcloud",
+            "name": {
+                "en": "MelCloud"
+            },
+            "images": {
+                "small": "drivers/melcloud/assets/images/small.png",
+                "large": "drivers/melcloud/assets/images/large.png"
+            },
+            "class": "thermostat",
+            "capabilities": [
+                "onoff",
+                "mode_capability",
+                "target_temperature",
+                "measure_temperature",
+                "fan_power",
+                "vertical",
+                "horizontal"  
+            ],
+            "pair": [
+                {
+                    "id": "start",
+                    "template": "login_credentials",
+                    "navigation": {
+                        "next": "list_my_devices"
+                    },
+                    "options":{
+                        "logo":"pair_logo.png",
+                        "usernameLabel":"MelCloud account",
+                        "usernamePlaceholder":"user@domain.com",
+                        "passwordLabel":"Password",
+                        "passwordPlaceholder":"P4ssw0rd"
+                      }
+                },
+                {
+                    "id": "list_my_devices",
+                    "template": "list_devices",
+                    "navigation": {
+                        "next": "add_my_devices"
+                    }
+                },
+                {
+                    "id": "add_my_devices",
+                    "template": "add_devices"
+                }
+            ]
+        }
+    ]
+}
