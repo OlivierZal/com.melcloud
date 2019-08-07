@@ -256,7 +256,27 @@
                     "id": "add_my_devices",
                     "template": "add_devices"
                 }
-            ]
+            ],
+            "settings": [
+              {
+                  "type": "group",
+                  "label": {
+                      "en": "Update device time"
+                  },
+                  "children": [
+                      {
+                          "id": "interval",
+                          "type": "number",
+                          "label": {
+                              "en": "minutes"
+                          },
+                          "value": 15,
+                          "min": 5,
+                          "max": 60
+                      }
+                  ]
+              }
+          ]
         }
     ]
 }
