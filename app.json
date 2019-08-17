@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	"version": "1.0.0",
+	"version": "1.1.0",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
@@ -41,7 +41,7 @@
         "mode_capability": {
             "type": "enum",
             "title": {
-                "en": "Function Mode"
+                "en": "Full Thermostat Mode"
             },
             "getable": true,
             "setable": true,
@@ -224,12 +224,20 @@
             "capabilities": [
                 "onoff",
                 "mode_capability",
+                "thermostat_mode",
                 "target_temperature",
                 "measure_temperature",
                 "fan_power",
                 "vertical",
-                "horizontal"  
+                "horizontal"
             ],
+            "capabilitiesOptions": {
+              "thermostat_mode": {
+                "title": {
+                  "en": "Homekit Thermostat"
+                }
+              }
+            },
             "pair": [
                 {
                     "id": "start",
