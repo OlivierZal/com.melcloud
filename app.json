@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	"version": "1.1.1",
+	  "version": "1.1.1",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
@@ -30,6 +30,10 @@
         "name": "Gerard Ricart",
         "email": "gerard.ricart@gmail.com"
     },
+    "bugs": {
+      "url": "https://github.com/XattSPT/com.melcloud/issues"
+    },
+    "source": "https://github.com/XattSPT/com.melcloud",
     "contributing": {
         "donate": {
             "paypal": {
