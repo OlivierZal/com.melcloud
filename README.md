@@ -19,6 +19,10 @@ The repository is available at: https://github.com/XattSPT/com.melcloud
 
 
 ## Change Log:
+
+### v 1.5.0
+- Included flowcards for Triggering, Conditions and Actions for non standard capabilities
+
 ### v 1.1.1
 - Now detect devices in any configuration (Floors, Areas, Buildings) on Melcloud
 - Minor bug fixes on Homekit Thermostat 

@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	  "version": "1.1.2",
+	  "version": "1.5.0",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
@@ -290,5 +290,709 @@
               }
           ]
         }
-    ]
+    ],
+    "flow": {
+      "triggers": [
+        {
+          "id": "Full_Thermostat_Trigger",
+          "title": {
+            "en": "Full thermostat mode has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "mode_capability_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "off",
+                  "label": {
+                    "en": "Off"
+                  }
+                },
+                {
+                  "id": "heat",
+                  "label": {
+                    "en": "Heat"
+                   }
+                },
+                {
+                  "id": "dry",
+                  "label": {
+                    "en": "Dry"
+                  }
+                },
+                {
+                    "id": "cool",
+                    "label": {
+                      "en": "Cool"
+                    }
+                },
+                {
+                    "id": "fan",
+                    "label": {
+                      "en": "Fan"
+                    }
+                },
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Fan_Speed_Trigger",
+          "title": {
+            "en": "The fan speed has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "fan_speed_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Very Slow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Slow"
+                  }
+                },
+                {
+                    "id": "3",
+                    "label": {
+                      "en": "Medium"
+                    }
+                },
+                {
+                    "id": "4",
+                    "label": {
+                      "en": "High"
+                    }
+                },
+                {
+                  "id": "5",
+                  "label": {
+                    "en": "Very High"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Vertical_Swing_Trigger",
+          "title": {
+            "en": "The vertical swing has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "vertical_swing_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "top",
+                  "label": {
+                    "en": "Top"
+                   }
+                },
+                {
+                  "id": "middletop",
+                  "label": {
+                    "en": "MiddleTop"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middlebottom",
+                    "label": {
+                      "en": "MiddleBotom"
+                    }
+                },
+                {
+                  "id": "bottom",
+                  "label": {
+                    "en": "Bottom"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Horizontal_Swing_Trigger",
+          "title": {
+            "en": "The horizontal swing has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "horizontal_swing_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "left",
+                  "label": {
+                    "en": "Left"
+                   }
+                },
+                {
+                  "id": "middleleft",
+                  "label": {
+                    "en": "MiddleLeft"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middleright",
+                    "label": {
+                      "en": "MiddleRight"
+                    }
+                },
+                {
+                  "id": "rigth",
+                  "label": {
+                    "en": "Right"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "id": "Full_Thermostat_Action",
+          "title": {
+            "en": "Set full mode"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "mode_capability_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "off",
+                  "label": {
+                    "en": "Off"
+                  }
+                },
+                {
+                  "id": "heat",
+                  "label": {
+                    "en": "Heat"
+                   }
+                },
+                {
+                  "id": "dry",
+                  "label": {
+                    "en": "Dry"
+                  }
+                },
+                {
+                    "id": "cool",
+                    "label": {
+                      "en": "Cool"
+                    }
+                },
+                {
+                    "id": "fan",
+                    "label": {
+                      "en": "Fan"
+                    }
+                },
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Fan_Speed_Action",
+          "title": {
+            "en": "Set fan speed"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "fan_speed_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Very Slow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Slow"
+                  }
+                },
+                {
+                    "id": "3",
+                    "label": {
+                      "en": "Medium"
+                    }
+                },
+                {
+                    "id": "4",
+                    "label": {
+                      "en": "High"
+                    }
+                },
+                {
+                  "id": "5",
+                  "label": {
+                    "en": "Very High"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Vertical_Swing_Action",
+          "title": {
+            "en": "Set vertical swing"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "vertical_swing_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "top",
+                  "label": {
+                    "en": "Top"
+                   }
+                },
+                {
+                  "id": "middletop",
+                  "label": {
+                    "en": "MiddleTop"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middlebottom",
+                    "label": {
+                      "en": "MiddleBotom"
+                    }
+                },
+                {
+                  "id": "bottom",
+                  "label": {
+                    "en": "Bottom"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Horizontal_Swing_Action",
+          "title": {
+            "en": "Set horizontal swing"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "horizontal_swing_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "left",
+                  "label": {
+                    "en": "Left"
+                   }
+                },
+                {
+                  "id": "middleleft",
+                  "label": {
+                    "en": "MiddleLeft"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middleright",
+                    "label": {
+                      "en": "MiddleRight"
+                    }
+                },
+                {
+                  "id": "rigth",
+                  "label": {
+                    "en": "Right"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "id": "Full_Thermostat_Condition",
+          "title": {
+            "en": "Full thermostastat mode is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "mode_capability_condition",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "off",
+                  "label": {
+                    "en": "Off"
+                  }
+                },
+                {
+                  "id": "heat",
+                  "label": {
+                    "en": "Heat"
+                   }
+                },
+                {
+                  "id": "dry",
+                  "label": {
+                    "en": "Dry"
+                  }
+                },
+                {
+                    "id": "cool",
+                    "label": {
+                      "en": "Cool"
+                    }
+                },
+                {
+                    "id": "fan",
+                    "label": {
+                      "en": "Fan"
+                    }
+                },
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Fan_Speed_Condition",
+          "title": {
+            "en": "Fan speed is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "fan_speed_conditioon",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Very Slow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Slow"
+                  }
+                },
+                {
+                    "id": "3",
+                    "label": {
+                      "en": "Medium"
+                    }
+                },
+                {
+                    "id": "4",
+                    "label": {
+                      "en": "High"
+                    }
+                },
+                {
+                  "id": "5",
+                  "label": {
+                    "en": "Very High"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Vertical_Swing_Condition",
+          "title": {
+            "en": "Vertical swing is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "vertical_swing_condition",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "top",
+                  "label": {
+                    "en": "Top"
+                   }
+                },
+                {
+                  "id": "middletop",
+                  "label": {
+                    "en": "MiddleTop"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middlebottom",
+                    "label": {
+                      "en": "MiddleBotom"
+                    }
+                },
+                {
+                  "id": "bottom",
+                  "label": {
+                    "en": "Bottom"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Horizontal_Swing_Condition",
+          "title": {
+            "en": "Horizontal swing is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloud"
+            },
+            {
+              "name": "horizontal_swing_condition",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "auto",
+                  "label": {
+                    "en": "Auto"
+                  }
+                },
+                {
+                  "id": "left",
+                  "label": {
+                    "en": "Left"
+                   }
+                },
+                {
+                  "id": "middleleft",
+                  "label": {
+                    "en": "MiddleLeft"
+                  }
+                },
+                {
+                    "id": "middle",
+                    "label": {
+                      "en": "Middle"
+                    }
+                },
+                {
+                    "id": "middleright",
+                    "label": {
+                      "en": "MiddleRight"
+                    }
+                },
+                {
+                  "id": "rigth",
+                  "label": {
+                    "en": "Right"
+                  }
+                },
+                {
+                    "id": "swing",
+                    "label": {
+                      "en": "Swing"
+                    }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
 }

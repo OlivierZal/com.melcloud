@@ -8,9 +8,6 @@ This app integrate `MelCloud` into Homey.
 
 You can configure the timeout between polls in the app's settings.
 
-*Not yet developed*
-Flowcards for non standard Capabilities (Homeykit Thermostat, Fan, Horitzontal Vane, Vertical Vane)
-  
 
 
 
