@@ -12,14 +12,15 @@
         "tools",
         "appliances"
     ],
-	  "version": "1.5.1",
+	  "version": "1.5.2",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
             "Aircon",
             "MelCloud",
             "Mitsubishi",
-            "Heatpump"
+            "Heatpump",
+            "Ecodan"
         ]
      },
     "images": {
@@ -248,7 +249,7 @@
         {
             "id": "melcloud",
             "name": {
-                "en": "MelCloud"
+                "en": "MelCloud AC Device"
             },
             "images": {
                 "small": "drivers/melcloud/assets/images/small.png",
