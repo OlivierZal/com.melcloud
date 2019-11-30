@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	  "version": "1.5.0",
+	  "version": "1.5.1",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
@@ -212,7 +212,37 @@
             "min": 0,
             "max": 5,
             "step": 1
-          }
+          },
+        "forcedhotwater": {
+            "type": "boolean",
+            "title": {
+              "en": "Forced Hot Water"
+            },
+            "uiComponent": "toggle",
+            "getable": true,
+            "setable": true,
+            "units": {
+              "en": ""
+            },
+            "uiQuickAction": false,
+            "icon": "/assets/forcedwater.svg"
+        },
+        "watertank_temperature": {
+          "type": "number",
+          "title": {
+            "en": "Water Tank Temperature"
+          },
+          "uiComponent": "sensor",
+          "getable": true,
+          "setable": false,
+          "units": {
+            "en": ""
+          },
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "icon": "/assets/tanktemp.svg"
+        }
     },
     "drivers": [
         {
@@ -289,7 +319,78 @@
                   ]
               }
           ]
-        }
+        },
+        {
+          "id": "melcloudHP",
+          "name": {
+              "en": "MelCloud Heat Pump"
+          },
+          "images": {
+              "small": "drivers/melcloudHP/assets/images/small.png",
+              "large": "drivers/melcloudHP/assets/images/large.png"
+          },
+          "class": "thermostat",
+          "capabilities": [
+              "forcedhotwater",
+              "onoff",
+              "target_temperature",
+              "measure_temperature",
+              "watertank_temperature"
+          ],
+          "capabilitiesOptions": {
+            "target_temperature": {
+              "min": 10,
+              "max": 30
+            }
+          },
+          "pair": [
+              {
+                  "id": "start",
+                  "template": "login_credentials",
+                  "navigation": {
+                      "next": "list_my_devices"
+                  },
+                  "options":{
+                      "logo":"pair_logo.png",
+                      "usernameLabel":"MelCloud account",
+                      "usernamePlaceholder":"user@domain.com",
+                      "passwordLabel":"Password",
+                      "passwordPlaceholder":"P4ssw0rd"
+                    }
+              },
+              {
+                  "id": "list_my_devices",
+                  "template": "list_devices",
+                  "navigation": {
+                      "next": "add_my_devices"
+                  }
+              },
+              {
+                  "id": "add_my_devices",
+                  "template": "add_devices"
+              }
+          ],
+          "settings": [
+            {
+                "type": "group",
+                "label": {
+                    "en": "Update device time"
+                },
+                "children": [
+                    {
+                        "id": "interval",
+                        "type": "number",
+                        "label": {
+                            "en": "minutes"
+                        },
+                        "value": 15,
+                        "min": 5,
+                        "max": 60
+                    }
+                ]
+            }
+        ]
+      }
     ],
     "flow": {
       "triggers": [
@@ -520,6 +621,37 @@
                     "label": {
                       "en": "Swing"
                     }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Forced_Water_Trigger",
+          "title": {
+            "en": "Forced Hot Water has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "forced_hot_water_trigger",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "true",
+                  "label": {
+                    "en": "On"
+                  }
+                },
+                {
+                  "id": "false",
+                  "label": {
+                    "en": "Auto"
+                   }
                 }
               ]
             }
@@ -758,6 +890,37 @@
               ]
             }
           ]
+        },
+        {
+          "id": "Forced_Hot_Water_Action",
+          "title": {
+            "en": "Set Forced Hot Water"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "forced_hot_water_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "true",
+                  "label": {
+                    "en": "On"
+                  }
+                },
+                {
+                  "id": "false",
+                  "label": {
+                    "en": "Auto"
+                   }
+                }
+              ]
+            }
+          ]
         }
       ],
       "conditions": [
@@ -988,6 +1151,37 @@
                     "label": {
                       "en": "Swing"
                     }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Forced_Hot_Water_Condition",
+          "title": {
+            "en": "Forced Hot Water is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "forced_hot_water_condition",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "true",
+                  "label": {
+                    "en": "On"
+                  }
+                },
+                {
+                  "id": "false",
+                  "label": {
+                    "en": "Auto"
+                   }
                 }
               ]
             }
