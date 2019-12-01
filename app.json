@@ -394,12 +394,6 @@
               "min": 10,
               "max": 30,
               "preventInsights": true
-            },
-            "forcedhotwater": {
-              "preventInsights": true
-            },
-            "outside_temperature": {
-              "preventInsights": true
             }
           },
           "pair": [
