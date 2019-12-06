@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	  "version": "1.5.4",
+	  "version": "1.5.5",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
