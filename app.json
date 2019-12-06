@@ -12,7 +12,7 @@
         "tools",
         "appliances"
     ],
-	  "version": "1.5.3",
+	  "version": "1.5.4",
     "compatibility": ">=2.1.2",
     "tags": {
         "en": [
@@ -30,6 +30,14 @@
     "author": {
         "name": "Gerard Ricart",
         "email": "gerard.ricart@gmail.com"
+    },
+    "contributors": {
+      "developers": [
+        {
+          "name": "Tester @gooooba",
+          "email": ""
+        }
+      ]
     },
     "bugs": {
       "url": "https://github.com/XattSPT/com.melcloud/issues"
@@ -51,7 +59,8 @@
             "getable": true,
             "setable": true,
             "uiComponent": "picker",
-            "uiQuickAction": true,
+            "uiQuickAction": false,
+            "insights": true,
             "values": [
                 {
                   "id": "off",
@@ -91,6 +100,37 @@
                 }
             ]
         },
+        "mode_heatpump1": {
+          "type": "enum",
+          "title": {
+              "en": "Heat Pump Mode Zone 1"
+          },
+          "getable": true,
+          "setable": true,
+          "uiComponent": "picker",
+          "uiQuickAction": false,
+          "insights": true,
+          "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Flow"
+                 }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              }
+          ]
+      },
         "vertical": {
             "type": "enum",
             "title": {
@@ -99,7 +139,7 @@
             "getable": true,
             "setable": true,
             "uiComponent": "picker",
-            "uiQuickAction": true,
+            "uiQuickAction": false,
             "values": [
                 {
                   "id": "auto",
@@ -153,7 +193,7 @@
             "getable": true,
             "setable": true,
             "uiComponent": "picker",
-            "uiQuickAction": true,
+            "uiQuickAction": false,
             "values": [
                 {
                   "id": "auto",
@@ -205,6 +245,7 @@
               "en": "Fan Power"
             },
             "uiComponent": "slider",
+            "insights": true,
             "getable": true,
             "setable": true,
             "units": {
@@ -220,6 +261,8 @@
               "en": "Forced Hot Water"
             },
             "uiComponent": "toggle",
+            "insights": true,
+            "insightsTitleTrue": { "en": "Forced Hot Water on" },
             "getable": true,
             "setable": true,
             "units": {
@@ -227,6 +270,71 @@
             },
             "uiQuickAction": false,
             "icon": "/assets/forcedwater.svg"
+        },
+        "alarm_BoosterHeater1": {
+          "type": "boolean",
+          "title": {
+            "en": "Booster Heater 1"
+          },
+          "uiComponent": "sensor",
+          "insights": true,
+          "insightsTitleTrue": { "en": "Booster Heater 1 on" },
+          "getable": true,
+          "setable": false,
+          "units": {
+            "en": ""
+          },
+          "uiQuickAction": false,
+          "icon": "/assets/BoosterHeater1.svg"
+        },
+        "alarm_BoosterHeater2": {
+          "type": "boolean",
+          "title": {
+            "en": "Booster Heater 2"
+          },
+          "uiComponent": "sensor",
+          "insights": true,
+          "insightsTitleTrue": { "en": "Booster Heater 2 on" },
+          "getable": true,
+          "setable": false,
+          "units": {
+            "en": ""
+          },
+          "uiQuickAction": false,
+          "icon": "/assets/BoosterHeater2.svg"
+        },
+        "alarm_BoosterHeater2Plus": {
+          "type": "boolean",
+          "title": {
+            "en": "Booster Heater 1"
+          },
+          "uiComponent": "sensor",
+          "insights": true,
+          "insightsTitleTrue": { "en": "Booster Heater 2 Plus on" },
+          "getable": true,
+          "setable": false,
+          "units": {
+            "en": ""
+          },
+          "uiQuickAction": false,
+          "icon": "/assets/BoosterHeater2Plus.svg"
+        },
+        "alarm_ImmersionHeater": {
+          "type": "boolean",
+          "title": {
+            "en": "Immersion Heater"
+          },
+          "uiComponent": "sensor",
+          "insights": true,
+          "insightsTitleTrue": { "en": "Immersion Heater On" },
+          "insightsTitleFalse": { "en": "Immersion Heater Off" },
+          "getable": true,
+          "setable": false,
+          "units": {
+            "en": ""
+          },
+          "uiQuickAction": false,
+          "icon": "/assets/ImmersionHeater.svg"
         },
         "watertank_temperature": {
           "type": "number",
@@ -236,6 +344,7 @@
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
+          "insights": true,
           "units": {
             "en": "ºC"
           },
@@ -252,6 +361,7 @@
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
+          "insights": true,
           "units": {
             "en": "ºC"
           },
@@ -263,11 +373,12 @@
         "cold_temperature": {
           "type": "number",
           "title": {
-            "en": "Cold Water Temp."
+            "en": "Cold Water Flow"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
+          "insights": true,
           "units": {
             "en": "ºC"
           },
@@ -279,11 +390,12 @@
         "hot_temperature": {
           "type": "number",
           "title": {
-            "en": "Hot Water Temp."
+            "en": "Hot Water Flow"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
+          "insights": true,
           "units": {
             "en": "ºC"
           },
@@ -362,7 +474,7 @@
                               "en": "minutes"
                           },
                           "value": 15,
-                          "min": 5,
+                          "min": 1,
                           "max": 60
                       }
                   ]
@@ -386,14 +498,30 @@
               "measure_temperature",
               "watertank_temperature",
               "outside_temperature",
+              "mode_heatpump1",
+              "hot_temperature",
               "cold_temperature",
-              "hot_temperature"
+              "alarm_BoosterHeater1",
+              "alarm_BoosterHeater2",
+              "alarm_BoosterHeater2Plus",
+              "alarm_ImmersionHeater"
           ],
           "capabilitiesOptions": {
             "target_temperature": {
               "min": 10,
               "max": 30,
-              "preventInsights": true
+              "insights": true,
+              "title": {
+                "en": "Target Temp."
+              }
+            },
+            "onoff": {
+              "uiQuickAction": false
+            },
+            "measure_temperature": {
+              "title": {
+                "en": "Inside Temp."
+              }
             }
           },
           "pair": [
@@ -439,6 +567,60 @@
                         "value": 5,
                         "min": 1,
                         "max": 60
+                    },
+                    {
+                      "id": "alwayson",
+                      "type": "checkbox",
+                      "value": false,
+                      "label": {
+                        "en": "Always On Device"
+                      }
+                    }
+                ]
+            },
+            {
+              "type": "group",
+              "label": {
+                "en": "Device Settings"
+              },
+              "children": [
+                    {
+                      "id": "tanktemperature",
+                      "type": "number",
+                      "label": {
+                          "en": "Set Water Tank Temperature (ºC)"
+                      },
+                      "value": 46,
+                      "min": 40,
+                      "max": 60
+                    },
+                    {
+                      "id": "heattemperature",
+                      "type": "number",
+                      "label": {
+                          "en": "Set Heat Water Zone1 (ºC)"
+                      },
+                      "value": 10,
+                      "min": 25,
+                      "max": 60
+                    },
+                    {
+                      "id": "cooltemperature",
+                      "type": "number",
+                      "label": {
+                          "en": "Set Cool Water Zone1 (ºC)"
+                      },
+                      "value": 18,
+                      "min": 10,
+                      "max": 30
+                    },
+                    {
+                      "id": "ecohotwater",
+                      "type": "checkbox",
+                      "value": false,
+                      "label": {
+                        "en": "Eco Hot Water (DHW)"
+                      }
                     }
                 ]
             }
@@ -496,6 +678,43 @@
                   "id": "auto",
                   "label": {
                     "en": "Auto"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Pump1_Thermostat_Trigger",
+          "title": {
+            "en": "Zone 1 Mode has changed to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "mode_hpz1_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Room"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Flow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Curve"
                   }
                 }
               ]
@@ -709,6 +928,110 @@
               ]
             }
           ]
+        },
+        {
+          "id": "alarm_BoosterHeater1_true",
+          "title": {
+            "en": "Booster Heater 1 On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater1_false",
+          "title": {
+            "en": "Booster Heater 1 Off"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2_true",
+          "title": {
+            "en": "Booster Heater 2 On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2_false",
+          "title": {
+            "en": "Booster Heater 2 Off"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2Plus_true",
+          "title": {
+            "en": "Booster Heater 2 Plus On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2Plus_false",
+          "title": {
+            "en": "Booster Heater 2 Plus Off"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_ImmersionHeater_true",
+          "title": {
+            "en": "Immersion Heater On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_ImmersionHeater_false",
+          "title": {
+            "en": "Immersion Heater Off"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
         }
       ],
       "actions": [
@@ -761,6 +1084,43 @@
                   "id": "auto",
                   "label": {
                     "en": "Auto"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Pump1_Thermostat_Action",
+          "title": {
+            "en": "Set Zone 1 Mode to"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "mode_hpz1_action",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Room"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Flow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Curve"
                   }
                 }
               ]
@@ -1033,6 +1393,43 @@
           ]
         },
         {
+          "id": "Pump1_Thermostat_Condition",
+          "title": {
+            "en": "Zone 1 Mode is !{{equals|does not equal}}"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            },
+            {
+              "name": "mode_hpz1_condition",
+              "type": "dropdown",
+              "values": [
+                {
+                  "id": "0",
+                  "label": {
+                    "en": "Room"
+                  }
+                },
+                {
+                  "id": "1",
+                  "label": {
+                    "en": "Flow"
+                   }
+                },
+                {
+                  "id": "2",
+                  "label": {
+                    "en": "Curve"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
           "id": "Fan_Speed_Condition",
           "title": {
             "en": "Fan speed is !{{equals|does not equal}}"
@@ -1237,6 +1634,58 @@
                    }
                 }
               ]
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater1_Condition",
+          "title": {
+            "en": "Booster Heater 1 !{{is|isn't}} On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2_Condition",
+          "title": {
+            "en": "Booster Heater 2 !{{is|isn't}} On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_BoosterHeater2Plus_Condition",
+          "title": {
+            "en": "Booster Heater 2 Plus !{{is|isn't}} On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
+            }
+          ]
+        },
+        {
+          "id": "alarm_ImmersionHeater_Condition",
+          "title": {
+            "en": "Immersion Heater !{{is|isn't}} On"
+          },
+          "args": [
+            {
+              "type": "device",
+              "name": "device",
+              "filter": "driver_id=melcloudHP"
             }
           ]
         }
