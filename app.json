@@ -262,7 +262,8 @@
             },
             "uiComponent": "toggle",
             "insights": true,
-            "insightsTitleTrue": { "en": "Forced Hot Water on" },
+            "insightsTitleTrue": { "en": "Forced Hot Water On" },
+            "insightsTitleFalse": { "en": "Forced Hot Water Off" },
             "getable": true,
             "setable": true,
             "units": {
@@ -308,7 +309,7 @@
         "alarm_BoosterHeater2Plus": {
           "type": "boolean",
           "title": {
-            "en": "Booster Heater 1"
+            "en": "Booster Heater 2+"
           },
           "uiComponent": "sensor",
           "insights": true,
