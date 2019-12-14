@@ -3,17 +3,19 @@
     "sdk": 2,
     "brandColor": "#ed0c13",
     "name": {
-        "en": "MelCloud"
+        "en": "MelCloud",
+        "es": "MelCloud"
     },
     "description": {
-        "en": "Integrate MelCloud into Homey"
+        "en": "Integrate MelCloud into Homey",
+        "es": "Integración de Melcloud en Homey"
      },
     "category": [
         "tools",
         "appliances"
     ],
-	  "version": "1.5.7",
-    "compatibility": ">=2.1.2",
+	  "version": "1.6.0",
+    "compatibility": ">=3.0.0",
     "tags": {
         "en": [
             "Aircon",
@@ -21,7 +23,14 @@
             "Mitsubishi",
             "Heatpump",
             "Ecodan"
-        ]
+        ],
+        "es": [
+          "Aire condicionado",
+          "MelCloud",
+          "Mitsubishi",
+          "Bomba de Calor",
+          "Ecodan"
+      ]
      },
     "images": {
         "small": "/assets/images/small.png",
@@ -54,7 +63,8 @@
         "mode_capability": {
             "type": "enum",
             "title": {
-                "en": "Full Thermostat Mode"
+                "en": "Full Thermostat Mode",
+                "es": "Termostato Completo"
             },
             "getable": true,
             "setable": true,
@@ -65,37 +75,43 @@
                 {
                   "id": "off",
                   "title": {
-                    "en": "Off"
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "heat",
                   "title": {
-                    "en": "Heat"
+                    "en": "Heat",
+                    "es": "Calefacción"
                    }
                 },
                 {
                   "id": "dry",
                   "title": {
-                    "en": "Dry"
+                    "en": "Dry",
+                    "es": "Secado"
                   }
                 },
                 {
                     "id": "cool",
                     "title": {
-                      "en": "Cool"
+                      "en": "Cool",
+                      "es": "Enfriar"
                     }
                 },
                 {
                     "id": "fan",
                     "title": {
-                      "en": "Fan"
+                      "en": "Fan",
+                      "es": "Ventilador"
                     }
                 },
                 {
                   "id": "auto",
                   "title": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 }
             ]
@@ -103,7 +119,8 @@
         "mode_heatpump1": {
           "type": "enum",
           "title": {
-              "en": "Heat Pump Mode Zone 1"
+              "en": "Heat Pump Mode Zone 1",
+              "es": "Modo Bomba de Calor Zona 1"
           },
           "getable": true,
           "setable": true,
@@ -114,19 +131,22 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Room"
+                  "en": "Room",
+                  "es": "Termostato"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Flow"
+                  "en": "Flow",
+                  "es": "Flow"
                  }
               },
               {
                 "id": "2",
                 "title": {
-                  "en": "Curve"
+                  "en": "Curve",
+                  "es": "Curva"
                 }
               }
           ]
@@ -134,7 +154,8 @@
         "vertical": {
             "type": "enum",
             "title": {
-                "en": "Vertical Position"
+                "en": "Vertical Position",
+                "es": "Posición Vertical"
             },
             "getable": true,
             "setable": true,
@@ -144,43 +165,50 @@
                 {
                   "id": "auto",
                   "title": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "top",
                   "title": {
-                    "en": "Top"
+                    "en": "Top",
+                    "es": "Arriba"
                    }
                 },
                 {
                   "id": "middletop",
                   "title": {
-                    "en": "MiddleTop"
+                    "en": "MiddleTop",
+                    "es": "Mitad Arriba"
                   }
                 },
                 {
                     "id": "middle",
                     "title": {
-                      "en": "Middle"
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middlebottom",
                     "title": {
-                      "en": "MiddleBotom"
+                      "en": "MiddleBotom",
+                      "es": "Mitad Abajo"
                     }
                 },
                 {
                   "id": "bottom",
                   "title": {
-                    "en": "Bottom"
+                    "en": "Bottom",
+                    "es": "Abajo"
                   }
                 },
                 {
                     "id": "swing",
                     "title": {
-                      "en": "Swing"
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
             ]
@@ -188,7 +216,8 @@
         "horizontal": {
             "type": "enum",
             "title": {
-                "en": "Horizontal Position"
+                "en": "Horizontal Position",
+                "es": "Posición Horizontal"
             },
             "getable": true,
             "setable": true,
@@ -198,43 +227,50 @@
                 {
                   "id": "auto",
                   "title": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "left",
                   "title": {
-                    "en": "Left"
+                    "en": "Left",
+                    "es": "Izquierda"
                    }
                 },
                 {
                   "id": "middleleft",
                   "title": {
-                    "en": "MiddleLeft"
+                    "en": "MiddleLeft",
+                    "es": "Mitad Izquierda"
                   }
                 },
                 {
                     "id": "middle",
                     "title": {
-                      "en": "Middle"
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middleright",
                     "title": {
-                      "en": "MiddleRight"
+                      "en": "MiddleRight",
+                      "es": "Mitad Derecha"
                     }
                 },
                 {
                   "id": "rigth",
                   "title": {
-                    "en": "Right"
+                    "en": "Right",
+                    "es": "Derecha"
                   }
                 },
                 {
                     "id": "swing",
                     "title": {
-                      "en": "Swing"
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
             ]
@@ -242,14 +278,16 @@
         "fan_power": {
             "type": "number",
             "title": {
-              "en": "Fan Power"
+              "en": "Fan Power",
+              "es": "Ventilador"
             },
             "uiComponent": "slider",
             "insights": true,
             "getable": true,
             "setable": true,
             "units": {
-              "en": ""
+              "en": "",
+              "es": ""
             },
             "min": 0,
             "max": 5,
@@ -258,16 +296,24 @@
         "forcedhotwater": {
             "type": "boolean",
             "title": {
-              "en": "Forced Hot Water"
+              "en": "Forced Hot Water",
+              "es": "Agua Caliente Forzada"
             },
             "uiComponent": "toggle",
             "insights": true,
-            "insightsTitleTrue": { "en": "Forced Hot Water On" },
-            "insightsTitleFalse": { "en": "Forced Hot Water Off" },
+            "insightsTitleTrue": { 
+              "en": "Forced Hot Water On",
+              "es": "Agua Caliente Forzada Encendido"
+            },
+            "insightsTitleFalse": { 
+              "en": "Forced Hot Water Off",
+              "es": "Agua Calinete Forzada Apagado"
+            },
             "getable": true,
             "setable": true,
             "units": {
-              "en": ""
+              "en": "",
+              "es": ""
             },
             "uiQuickAction": false,
             "icon": "/assets/forcedwater.svg"
@@ -275,16 +321,24 @@
         "alarm_BoosterHeater1": {
           "type": "boolean",
           "title": {
-            "en": "Booster Heater 1"
+            "en": "Booster Heater 1",
+            "es": "Calentador 1"
           },
           "uiComponent": "sensor",
           "insights": true,
-          "insightsTitleTrue": { "en": "Booster Heater 1 on" },
-          "insightsTitleFalse": { "en": "Booster Heater 1 Off" },
+          "insightsTitleTrue": { 
+            "en": "Booster Heater 1 on",
+            "es": "Calentador 1 Encendido"
+          },
+          "insightsTitleFalse": {
+            "en": "Booster Heater 1 Off",
+            "es": "Calentador 1 Apagado" 
+          },
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/BoosterHeater1.svg"
@@ -292,16 +346,24 @@
         "alarm_BoosterHeater2": {
           "type": "boolean",
           "title": {
-            "en": "Booster Heater 2"
+            "en": "Booster Heater 2",
+            "es": "Calentador 2"
           },
           "uiComponent": "sensor",
           "insights": true,
-          "insightsTitleTrue": { "en": "Booster Heater 2 on" },
-          "insightsTitleFalse": { "en": "Booster Heater 2 Off" },
+          "insightsTitleTrue": { 
+            "en": "Booster Heater 2 on",
+            "es": "Calentador 2 Encendido"
+          },
+          "insightsTitleFalse": { 
+            "en": "Booster Heater 2 Off",
+            "es": "Calentador 2 Apagado"
+          },
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/BoosterHeater2.svg"
@@ -309,16 +371,24 @@
         "alarm_BoosterHeater2Plus": {
           "type": "boolean",
           "title": {
-            "en": "Booster Heater 2+"
+            "en": "Booster Heater 2+",
+            "es": "Calentador 2+"
           },
           "uiComponent": "sensor",
           "insights": true,
-          "insightsTitleTrue": { "en": "Booster Heater 2 Plus on" },
-          "insightsTitleFalse": { "en": "Booster Heater 2 Plus Off" },
+          "insightsTitleTrue": { 
+            "en": "Booster Heater 2 Plus on",
+            "es": "Calentador 2 Plus Encendido" 
+          },
+          "insightsTitleFalse": { 
+            "en": "Booster Heater 2 Plus Off",
+            "es": "Calentador 2 Plus Apagado" 
+          },
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/BoosterHeater2Plus.svg"
@@ -326,16 +396,24 @@
         "alarm_ImmersionHeater": {
           "type": "boolean",
           "title": {
-            "en": "Immersion Heater"
+            "en": "Immersion Heater",
+            "es": "Calentador Inmersión"
           },
           "uiComponent": "sensor",
           "insights": true,
-          "insightsTitleTrue": { "en": "Immersion Heater On" },
-          "insightsTitleFalse": { "en": "Immersion Heater Off" },
+          "insightsTitleTrue": { 
+            "en": "Immersion Heater On",
+            "es": "Calentador Inmersion Encendido"
+          },
+          "insightsTitleFalse": { 
+            "en": "Immersion Heater Off",
+            "es": "Calentador Inmersión Apagado"
+          },
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/ImmersionHeater.svg"
@@ -343,16 +421,24 @@
         "alarm_DefrostMode": {
           "type": "boolean",
           "title": {
-            "en": "Defrost Mode"
+            "en": "Defrost Mode",
+            "es": "Modo Anticongelación"
           },
           "uiComponent": "sensor",
           "insights": true,
-          "insightsTitleTrue": { "en": "Defrost Mode On" },
-          "insightsTitleFalse": { "en": "Defrost Mode Off" },
+          "insightsTitleTrue": { 
+            "en": "Defrost Mode On",
+            "es": "Modo Anticongelación Encendido"
+          },
+          "insightsTitleFalse": { 
+            "en": "Defrost Mode Off",
+            "es": "Modo Anticongelación Apagado" 
+          },
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/Defrost.svg"
@@ -360,14 +446,16 @@
         "watertank_temperature": {
           "type": "number",
           "title": {
-            "en": "Water Tank Temperature"
+            "en": "Water Tank Temperature",
+            "es": "Temperatura Tanque de Agua"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
           "insights": true,
           "units": {
-            "en": "ºC"
+            "en": "ºC",
+            "es": "ºC"
           },
           "min": 0,
           "max": 100,
@@ -377,14 +465,16 @@
         "outside_temperature": {
           "type": "number",
           "title": {
-            "en": "Outside Temp."
+            "en": "Outside Temp.",
+            "es": "Temperatura Exterior"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
           "insights": true,
           "units": {
-            "en": "ºC"
+            "en": "ºC",
+            "es": "ºC"
           },
           "min": -50,
           "max": 80,
@@ -394,14 +484,16 @@
         "cold_temperature": {
           "type": "number",
           "title": {
-            "en": "Cold Water Flow"
+            "en": "Cold Water Flow",
+            "es": "Retorno Agua Fria"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
           "insights": true,
           "units": {
-            "en": "ºC"
+            "en": "ºC",
+            "es": "ºC"
           },
           "min": 0,
           "max": 100,
@@ -411,14 +503,16 @@
         "hot_temperature": {
           "type": "number",
           "title": {
-            "en": "Hot Water Flow"
+            "en": "Hot Water Flow",
+            "es": "Salida Agua Caliente"
           },
           "uiComponent": "sensor",
           "getable": true,
           "setable": false,
           "insights": true,
           "units": {
-            "en": "ºC"
+            "en": "ºC",
+            "es": "ºC"
           },
           "min": 0,
           "max": 100,
@@ -428,14 +522,16 @@
         "measure_OperationMode": {
           "type": "string",
           "title": {
-            "en": "Operation Mode"
+            "en": "Operation Mode",
+            "es": "Modo de Operación"
           },
           "uiComponent": "sensor",
           "insights": true,
           "getable": true,
           "setable": false,
           "units": {
-            "en": ""
+            "en": "",
+            "es": ""
           },
           "uiQuickAction": false,
           "icon": "/assets/mode.svg",
@@ -446,7 +542,8 @@
         {
             "id": "melcloud",
             "name": {
-                "en": "MelCloud AC Device"
+                "en": "MelCloud AC Device",
+                "es": "Equipo AC - Melcloud"
             },
             "images": {
                 "small": "drivers/melcloud/assets/images/small.png",
@@ -466,7 +563,8 @@
             "capabilitiesOptions": {
               "thermostat_mode": {
                 "title": {
-                  "en": "Homekit Thermostat"
+                  "en": "Homekit Thermostat",
+                  "es": "Termostato Homekit"
                 }
               }
             },
@@ -501,14 +599,16 @@
               {
                   "type": "group",
                   "label": {
-                      "en": "Update device time"
+                      "en": "Update device time",
+                      "es": "Intervalo de Actualización"
                   },
                   "children": [
                       {
                           "id": "interval",
                           "type": "number",
                           "label": {
-                              "en": "minutes"
+                              "en": "minutes",
+                              "es": "minutos"
                           },
                           "value": 15,
                           "min": 1,
@@ -521,7 +621,8 @@
         {
           "id": "melcloudHP",
           "name": {
-              "en": "MelCloud Heat Pump"
+              "en": "MelCloud Heat Pump",
+              "es": "Bomba de Calor - Melcloud"
           },
           "images": {
               "small": "drivers/melcloudHP/assets/images/small.png",
@@ -551,7 +652,8 @@
               "max": 30,
               "insights": true,
               "title": {
-                "en": "Target Temp."
+                "en": "Target Temp.",
+                "es": "Temperatura Deseada"
               }
             },
             "onoff": {
@@ -559,7 +661,8 @@
             },
             "measure_temperature": {
               "title": {
-                "en": "Inside Temp."
+                "en": "Inside Temp.",
+                "es": "Tempatura Interior"
               }
             }
           },
@@ -594,14 +697,16 @@
             {
                 "type": "group",
                 "label": {
-                    "en": "Update device time"
+                    "en": "Update device time",
+                    "es": "Intervalor de Actualización"
                 },
                 "children": [
                     {
                         "id": "interval",
                         "type": "number",
                         "label": {
-                            "en": "minutes"
+                            "en": "minutes",
+                            "es": "minutos"
                         },
                         "value": 5,
                         "min": 1,
@@ -612,7 +717,8 @@
                       "type": "checkbox",
                       "value": false,
                       "label": {
-                        "en": "Always On Device"
+                        "en": "Always On Device",
+                        "es": "Equipos siempre encendido"
                       }
                     },
                     {
@@ -620,49 +726,57 @@
                       "type": "dropdown",
                       "value":"Select Mode",
                       "label": {
-                        "en": "Operation Mode"
+                        "en": "Operation Mode",
+                        "es": "Modo de Operación"
                       },
                       "values": [
                         {
                           "id": "0",
                           "label": {
-                            "en": "Off"
+                            "en": "Off",
+                            "es": "Apagado"
                           }
                         },
                         {
                           "id": "1",
                           "label": {
-                            "en": "HDW-Heating"
+                            "en": "HDW-Heating",
+                            "es": "Agua Caliente"
                            }
                         },
                         {
                           "id": "2",
                           "label": {
-                            "en": "Heating"
+                            "en": "Heating",
+                            "es": "Calefacción"
                           }
                         },
                         {
                             "id": "3",
                             "label": {
-                              "en": "Cooling"
+                              "en": "Cooling",
+                              "es": "Enfriar"
                             }
                         },
                         {
                             "id": "4",
                             "label": {
-                              "en": "Defrost"
+                              "en": "Defrost",
+                              "es": "Anticongelación"
                             }
                         },
                         {
                           "id": "5",
                           "label": {
-                            "en": "Standby"
+                            "en": "Standby",
+                            "es": "en Espera"
                           }
                         },
                         {
                           "id": "6",
                           "label": {
-                            "en": "Legionella"
+                            "en": "Legionella",
+                            "es": "Legionela"
                           }
                         }
                     ]
@@ -672,14 +786,16 @@
             {
               "type": "group",
               "label": {
-                "en": "Device Settings"
+                "en": "Device Settings",
+                "es": "Configuración Equipo"
               },
               "children": [
                     {
                       "id": "tanktemperature",
                       "type": "number",
                       "label": {
-                          "en": "Set Water Tank Temperature (ºC)"
+                          "en": "Set Water Tank Temperature (ºC)",
+                          "es": "Temperatura del Tanque de Agua (ºC)"
                       },
                       "value": 46,
                       "min": 40,
@@ -689,7 +805,8 @@
                       "id": "heattemperature",
                       "type": "number",
                       "label": {
-                          "en": "Set Heat Water Zone1 (ºC)"
+                          "en": "Set Heat Water Zone1 (ºC)",
+                          "es": "Temperatura Agua Caliente Zona1 (ºC)"
                       },
                       "value": 10,
                       "min": 25,
@@ -699,7 +816,8 @@
                       "id": "cooltemperature",
                       "type": "number",
                       "label": {
-                          "en": "Set Cool Water Zone1 (ºC)"
+                          "en": "Set Cool Water Zone1 (ºC)",
+                          "es": "Temperatura Agua Fria Zona1 (ºC)"
                       },
                       "value": 18,
                       "min": 10,
@@ -710,7 +828,8 @@
                       "type": "checkbox",
                       "value": false,
                       "label": {
-                        "en": "Eco Hot Water (DHW)"
+                        "en": "Eco Hot Water (DHW)",
+                        "es": "Agua Caliente Eco (DHW)"
                       }
                     }
                 ]
@@ -723,7 +842,8 @@
         {
           "id": "Full_Thermostat_Trigger",
           "title": {
-            "en": "Full thermostat mode has changed to"
+            "en": "Full thermostat mode has changed to",
+            "es": "El Termostato Completo ha cambiado a"
           },
           "args": [
             {
@@ -737,48 +857,55 @@
               "values": [
                 {
                   "id": "off",
-                  "label": {
-                    "en": "Off"
+                  "title": {
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "heat",
-                  "label": {
-                    "en": "Heat"
+                  "title": {
+                    "en": "Heat",
+                    "es": "Calefacción"
                    }
                 },
                 {
                   "id": "dry",
-                  "label": {
-                    "en": "Dry"
+                  "title": {
+                    "en": "Dry",
+                    "es": "Secado"
                   }
                 },
                 {
                     "id": "cool",
-                    "label": {
-                      "en": "Cool"
+                    "title": {
+                      "en": "Cool",
+                      "es": "Enfriar"
                     }
                 },
                 {
                     "id": "fan",
-                    "label": {
-                      "en": "Fan"
+                    "title": {
+                      "en": "Fan",
+                      "es": "Ventilador"
                     }
                 },
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Pump1_Thermostat_Trigger",
           "title": {
-            "en": "Zone 1 Mode has changed to"
+            "en": "Zone 1 Mode has changed to",
+            "es": "El Modo de Zona1 ha cambiado a"
           },
           "args": [
             {
@@ -792,30 +919,34 @@
               "values": [
                 {
                   "id": "0",
-                  "label": {
-                    "en": "Room"
+                  "title": {
+                    "en": "Room",
+                    "es": "Termostato"
                   }
                 },
                 {
                   "id": "1",
-                  "label": {
-                    "en": "Flow"
+                  "title": {
+                    "en": "Flow",
+                    "es": "Flow"
                    }
                 },
                 {
                   "id": "2",
-                  "label": {
-                    "en": "Curve"
+                  "title": {
+                    "en": "Curve",
+                    "es": "Curva"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Operation_Mode_Trigger",
           "title": {
-            "en": "Operation Mode has changed to"
+            "en": "Operation Mode has changed to",
+            "es": "El Modo de Operación ha cambiado a"
           },
           "args": [
             {
@@ -830,53 +961,61 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Off"
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "HDW-Heating"
+                    "en": "HDW-Heating",
+                    "es": "Agua Caliente"
                    }
                 },
                 {
                   "id": "2",
                   "label": {
-                    "en": "Heating"
+                    "en": "Heating",
+                    "es": "Calefacción"
                   }
                 },
                 {
-                  "id": "3",
-                  "label": {
-                    "en": "Cooling"
-                  }
+                    "id": "3",
+                    "label": {
+                      "en": "Cooling",
+                      "es": "Enfriar"
+                    }
                 },
                 {
-                  "id": "4",
-                  "label": {
-                    "en": "Defrost"
-                  }
+                    "id": "4",
+                    "label": {
+                      "en": "Defrost",
+                      "es": "Anticongelación"
+                    }
                 },
                 {
                   "id": "5",
                   "label": {
-                    "en": "Standby"
+                    "en": "Standby",
+                    "es": "en Espera"
                   }
                 },
                 {
                   "id": "6",
                   "label": {
-                    "en": "Legionella"
+                    "en": "Legionella",
+                    "es": "Legionela"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Fan_Speed_Trigger",
           "title": {
-            "en": "The fan speed has changed to"
+            "en": "The fan speed has changed to",
+            "es": "La velocidad del ventilador ha cambiado a"
           },
           "args": [
             {
@@ -891,37 +1030,43 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "Very Slow"
+                    "en": "Very Slow",
+                    "es": "Muy Bajo"
                    }
                 },
                 {
                   "id": "2",
                   "label": {
-                    "en": "Slow"
+                    "en": "Slow",
+                    "es": "Bajo"
                   }
                 },
                 {
                     "id": "3",
                     "label": {
-                      "en": "Medium"
+                      "en": "Medium",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "4",
                     "label": {
-                      "en": "High"
+                      "en": "High",
+                      "es": "Alto"
                     }
                 },
                 {
                   "id": "5",
                   "label": {
-                    "en": "Very High"
+                    "en": "Very High",
+                    "es": "Muy Alto"
                   }
                 }
               ]
@@ -931,7 +1076,8 @@
         {
           "id": "Vertical_Swing_Trigger",
           "title": {
-            "en": "The vertical swing has changed to"
+            "en": "The vertical swing has changed to",
+            "es": "La posición Vertical ha cambiado a"
           },
           "args": [
             {
@@ -945,54 +1091,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "top",
-                  "label": {
-                    "en": "Top"
+                  "title": {
+                    "en": "Top",
+                    "es": "Arriba"
                    }
                 },
                 {
                   "id": "middletop",
-                  "label": {
-                    "en": "MiddleTop"
+                  "title": {
+                    "en": "MiddleTop",
+                    "es": "Mitad Arriba"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middlebottom",
-                    "label": {
-                      "en": "MiddleBotom"
+                    "title": {
+                      "en": "MiddleBotom",
+                      "es": "Mitad Abajo"
                     }
                 },
                 {
                   "id": "bottom",
-                  "label": {
-                    "en": "Bottom"
+                  "title": {
+                    "en": "Bottom",
+                    "es": "Abajo"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Horizontal_Swing_Trigger",
           "title": {
-            "en": "The horizontal swing has changed to"
+            "en": "The horizontal swing has changed to",
+            "es": "La posición Horizontal ha cambiado a"
           },
           "args": [
             {
@@ -1006,54 +1160,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "left",
-                  "label": {
-                    "en": "Left"
+                  "title": {
+                    "en": "Left",
+                    "es": "Izquierda"
                    }
                 },
                 {
                   "id": "middleleft",
-                  "label": {
-                    "en": "MiddleLeft"
+                  "title": {
+                    "en": "MiddleLeft",
+                    "es": "Mitad Izquierda"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middleright",
-                    "label": {
-                      "en": "MiddleRight"
+                    "title": {
+                      "en": "MiddleRight",
+                      "es": "Mitad Derecha"
                     }
                 },
                 {
                   "id": "rigth",
-                  "label": {
-                    "en": "Right"
+                  "title": {
+                    "en": "Right",
+                    "es": "Derecha"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Forced_Water_Trigger",
           "title": {
-            "en": "Forced Hot Water has changed to"
+            "en": "Forced Hot Water has changed to ",
+            "es": "Agua Caliente Forzada ha cambiado a "
           },
           "args": [
             {
@@ -1068,13 +1230,15 @@
                 {
                   "id": "true",
                   "label": {
-                    "en": "On"
+                    "en": "On",
+                    "es": "Encendido"
                   }
                 },
                 {
                   "id": "false",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                    }
                 }
               ]
@@ -1084,7 +1248,8 @@
         {
           "id": "alarm_BoosterHeater1_true",
           "title": {
-            "en": "Booster Heater 1 On"
+            "en": "Booster Heater 1 On",
+            "es": "Calentador 1 Encendido"
           },
           "args": [
             {
@@ -1097,7 +1262,8 @@
         {
           "id": "alarm_BoosterHeater1_false",
           "title": {
-            "en": "Booster Heater 1 Off"
+            "en": "Booster Heater 1 Off",
+            "es": "Calentador 1 Apagado"
           },
           "args": [
             {
@@ -1110,7 +1276,8 @@
         {
           "id": "alarm_BoosterHeater2_true",
           "title": {
-            "en": "Booster Heater 2 On"
+            "en": "Booster Heater 2 On",
+            "es": "Calentador 2 Encendido"
           },
           "args": [
             {
@@ -1123,7 +1290,8 @@
         {
           "id": "alarm_BoosterHeater2_false",
           "title": {
-            "en": "Booster Heater 2 Off"
+            "en": "Booster Heater 2 Off",
+            "es": "Calentador 2 Apagado"
           },
           "args": [
             {
@@ -1136,7 +1304,8 @@
         {
           "id": "alarm_BoosterHeater2Plus_true",
           "title": {
-            "en": "Booster Heater 2 Plus On"
+            "en": "Booster Heater 2 Plus On",
+            "es": "Calentador 2 Plus Encendido"
           },
           "args": [
             {
@@ -1149,7 +1318,8 @@
         {
           "id": "alarm_BoosterHeater2Plus_false",
           "title": {
-            "en": "Booster Heater 2 Plus Off"
+            "en": "Booster Heater 2 Plus Off",
+            "es": "Calentador 2 Plus Apagado"
           },
           "args": [
             {
@@ -1162,7 +1332,8 @@
         {
           "id": "alarm_ImmersionHeater_true",
           "title": {
-            "en": "Immersion Heater On"
+            "en": "Immersion Heater On",
+            "es": "Calentador Inmersion Encendido"
           },
           "args": [
             {
@@ -1175,7 +1346,8 @@
         {
           "id": "alarm_ImmersionHeater_false",
           "title": {
-            "en": "Immersion Heater Off"
+            "en": "Immersion Heater Off",
+            "es": "Calentador Inmersión Apagado"
           },
           "args": [
             {
@@ -1188,7 +1360,8 @@
         {
           "id": "alarm_DefrostMode_true",
           "title": {
-            "en": "Desfrost Mode On"
+            "en": "Desfrost Mode On",
+            "es": "Modo Anticongelación Encendido"
           },
           "args": [
             {
@@ -1201,7 +1374,8 @@
         {
           "id": "alarm_DefrostMode_false",
           "title": {
-            "en": "Desfrost Mode Off"
+            "en": "Desfrost Mode Off",
+            "es": "Modo Anticongelación Apagado"
           },
           "args": [
             {
@@ -1216,7 +1390,8 @@
         {
           "id": "Full_Thermostat_Action",
           "title": {
-            "en": "Set full mode"
+            "en": "Set full mode",
+            "es": "Establece el Modo a "
           },
           "args": [
             {
@@ -1230,48 +1405,55 @@
               "values": [
                 {
                   "id": "off",
-                  "label": {
-                    "en": "Off"
+                  "title": {
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "heat",
-                  "label": {
-                    "en": "Heat"
+                  "title": {
+                    "en": "Heat",
+                    "es": "Calefacción"
                    }
                 },
                 {
                   "id": "dry",
-                  "label": {
-                    "en": "Dry"
+                  "title": {
+                    "en": "Dry",
+                    "es": "Secado"
                   }
                 },
                 {
                     "id": "cool",
-                    "label": {
-                      "en": "Cool"
+                    "title": {
+                      "en": "Cool",
+                      "es": "Enfriar"
                     }
                 },
                 {
                     "id": "fan",
-                    "label": {
-                      "en": "Fan"
+                    "title": {
+                      "en": "Fan",
+                      "es": "Ventilador"
                     }
                 },
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Pump1_Thermostat_Action",
           "title": {
-            "en": "Set Zone 1 Mode to"
+            "en": "Set Zone 1 Mode to",
+            "es": "Establece el Modo en Zona1 a"
           },
           "args": [
             {
@@ -1285,30 +1467,34 @@
               "values": [
                 {
                   "id": "0",
-                  "label": {
-                    "en": "Room"
+                  "title": {
+                    "en": "Room",
+                    "es": "Termostato"
                   }
                 },
                 {
                   "id": "1",
-                  "label": {
-                    "en": "Flow"
+                  "title": {
+                    "en": "Flow",
+                    "es": "Flow"
                    }
                 },
                 {
                   "id": "2",
-                  "label": {
-                    "en": "Curve"
+                  "title": {
+                    "en": "Curve",
+                    "es": "Curva"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Fan_Speed_Action",
           "title": {
-            "en": "Set fan speed"
+            "en": "Set fan speed",
+            "es": "Establece la velocidad ventilador en "
           },
           "args": [
             {
@@ -1323,37 +1509,43 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "Very Slow"
+                    "en": "Very Slow",
+                    "es": "Muy Bajo"
                    }
                 },
                 {
                   "id": "2",
                   "label": {
-                    "en": "Slow"
+                    "en": "Slow",
+                    "es": "Bajo"
                   }
                 },
                 {
                     "id": "3",
                     "label": {
-                      "en": "Medium"
+                      "en": "Medium",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "4",
                     "label": {
-                      "en": "High"
+                      "en": "High",
+                      "es": "Alto"
                     }
                 },
                 {
                   "id": "5",
                   "label": {
-                    "en": "Very High"
+                    "en": "Very High",
+                    "es": "Muy Alto"
                   }
                 }
               ]
@@ -1363,7 +1555,8 @@
         {
           "id": "Vertical_Swing_Action",
           "title": {
-            "en": "Set vertical swing"
+            "en": "Set vertical swing",
+            "es": "Establece posición vertical en "
           },
           "args": [
             {
@@ -1377,54 +1570,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "top",
-                  "label": {
-                    "en": "Top"
+                  "title": {
+                    "en": "Top",
+                    "es": "Arriba"
                    }
                 },
                 {
                   "id": "middletop",
-                  "label": {
-                    "en": "MiddleTop"
+                  "title": {
+                    "en": "MiddleTop",
+                    "es": "Mitad Arriba"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middlebottom",
-                    "label": {
-                      "en": "MiddleBotom"
+                    "title": {
+                      "en": "MiddleBotom",
+                      "es": "Mitad Abajo"
                     }
                 },
                 {
                   "id": "bottom",
-                  "label": {
-                    "en": "Bottom"
+                  "title": {
+                    "en": "Bottom",
+                    "es": "Abajo"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Horizontal_Swing_Action",
           "title": {
-            "en": "Set horizontal swing"
+            "en": "Set horizontal swing",
+            "es": "Establece posición horizontal en "
           },
           "args": [
             {
@@ -1438,54 +1639,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "left",
-                  "label": {
-                    "en": "Left"
+                  "title": {
+                    "en": "Left",
+                    "es": "Izquierda"
                    }
                 },
                 {
                   "id": "middleleft",
-                  "label": {
-                    "en": "MiddleLeft"
+                  "title": {
+                    "en": "MiddleLeft",
+                    "es": "Mitad Izquierda"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middleright",
-                    "label": {
-                      "en": "MiddleRight"
+                    "title": {
+                      "en": "MiddleRight",
+                      "es": "Mitad Derecha"
                     }
                 },
                 {
                   "id": "rigth",
-                  "label": {
-                    "en": "Right"
+                  "title": {
+                    "en": "Right",
+                    "es": "Derecha"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Forced_Hot_Water_Action",
           "title": {
-            "en": "Set Forced Hot Water"
+            "en": "Set Forced Hot Water",
+            "es": "Establece Agua Caliente Forzada en "
           },
           "args": [
             {
@@ -1500,13 +1709,15 @@
                 {
                   "id": "true",
                   "label": {
-                    "en": "On"
+                    "en": "On",
+                    "es": "Encendido"
                   }
                 },
                 {
                   "id": "false",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                    }
                 }
               ]
@@ -1518,7 +1729,8 @@
         {
           "id": "Full_Thermostat_Condition",
           "title": {
-            "en": "Full thermostastat mode is !{{equals|does not equal}}"
+            "en": "Full thermostastat mode is !{{equals|does not equal}} ",
+            "es": "El Modo del Termostato !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1532,48 +1744,55 @@
               "values": [
                 {
                   "id": "off",
-                  "label": {
-                    "en": "Off"
+                  "title": {
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "heat",
-                  "label": {
-                    "en": "Heat"
+                  "title": {
+                    "en": "Heat",
+                    "es": "Calefacción"
                    }
                 },
                 {
                   "id": "dry",
-                  "label": {
-                    "en": "Dry"
+                  "title": {
+                    "en": "Dry",
+                    "es": "Secado"
                   }
                 },
                 {
                     "id": "cool",
-                    "label": {
-                      "en": "Cool"
+                    "title": {
+                      "en": "Cool",
+                      "es": "Enfriar"
                     }
                 },
                 {
                     "id": "fan",
-                    "label": {
-                      "en": "Fan"
+                    "title": {
+                      "en": "Fan",
+                      "es": "Ventilador"
                     }
                 },
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Pump1_Thermostat_Condition",
           "title": {
-            "en": "Zone 1 Mode is !{{equals|does not equal}}"
+            "en": "Zone 1 Mode is !{{equals|does not equal}}",
+            "es": "El Modo Zona1 !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1587,30 +1806,34 @@
               "values": [
                 {
                   "id": "0",
-                  "label": {
-                    "en": "Room"
+                  "title": {
+                    "en": "Room",
+                    "es": "Termostato"
                   }
                 },
                 {
                   "id": "1",
-                  "label": {
-                    "en": "Flow"
+                  "title": {
+                    "en": "Flow",
+                    "es": "Flow"
                    }
                 },
                 {
                   "id": "2",
-                  "label": {
-                    "en": "Curve"
+                  "title": {
+                    "en": "Curve",
+                    "es": "Curva"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Operation_Mode_Condition",
           "title": {
-            "en": "Operation Mode is !{{equals|does not equal}}"
+            "en": "Operation Mode is !{{equals|does not equal}}",
+            "es": "El modo de operación !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1625,53 +1848,61 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Off"
+                    "en": "Off",
+                    "es": "Apagado"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "HDW-Heating"
+                    "en": "HDW-Heating",
+                    "es": "Agua Caliente"
                    }
                 },
                 {
                   "id": "2",
                   "label": {
-                    "en": "Heating"
+                    "en": "Heating",
+                    "es": "Calefacción"
                   }
                 },
                 {
-                  "id": "3",
-                  "label": {
-                    "en": "Cooling"
-                  }
+                    "id": "3",
+                    "label": {
+                      "en": "Cooling",
+                      "es": "Enfriar"
+                    }
                 },
                 {
-                  "id": "4",
-                  "label": {
-                    "en": "Defrost"
-                  }
+                    "id": "4",
+                    "label": {
+                      "en": "Defrost",
+                      "es": "Anticongelación"
+                    }
                 },
                 {
                   "id": "5",
                   "label": {
-                    "en": "Standby"
+                    "en": "Standby",
+                    "es": "en Espera"
                   }
                 },
                 {
                   "id": "6",
                   "label": {
-                    "en": "Legionella"
+                    "en": "Legionella",
+                    "es": "Legionela"
                   }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Fan_Speed_Condition",
           "title": {
-            "en": "Fan speed is !{{equals|does not equal}}"
+            "en": "Fan speed is !{{equals|does not equal}}", 
+            "es": "La Velocidad del ventilador !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1686,37 +1917,43 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "Very Slow"
+                    "en": "Very Slow",
+                    "es": "Muy Bajo"
                    }
                 },
                 {
                   "id": "2",
                   "label": {
-                    "en": "Slow"
+                    "en": "Slow",
+                    "es": "Bajo"
                   }
                 },
                 {
                     "id": "3",
                     "label": {
-                      "en": "Medium"
+                      "en": "Medium",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "4",
                     "label": {
-                      "en": "High"
+                      "en": "High",
+                      "es": "Alto"
                     }
                 },
                 {
                   "id": "5",
                   "label": {
-                    "en": "Very High"
+                    "en": "Very High",
+                    "es": "Muy Alto"
                   }
                 }
               ]
@@ -1726,7 +1963,8 @@
         {
           "id": "Vertical_Swing_Condition",
           "title": {
-            "en": "Vertical swing is !{{equals|does not equal}}"
+            "en": "Vertical swing is !{{equals|does not equal}}",
+            "es": "La posición Vertical !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1740,54 +1978,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "top",
-                  "label": {
-                    "en": "Top"
+                  "title": {
+                    "en": "Top",
+                    "es": "Arriba"
                    }
                 },
                 {
                   "id": "middletop",
-                  "label": {
-                    "en": "MiddleTop"
+                  "title": {
+                    "en": "MiddleTop",
+                    "es": "Mitad Arriba"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middlebottom",
-                    "label": {
-                      "en": "MiddleBotom"
+                    "title": {
+                      "en": "MiddleBotom",
+                      "es": "Mitad Abajo"
                     }
                 },
                 {
                   "id": "bottom",
-                  "label": {
-                    "en": "Bottom"
+                  "title": {
+                    "en": "Bottom",
+                    "es": "Abajo"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Horizontal_Swing_Condition",
           "title": {
-            "en": "Horizontal swing is !{{equals|does not equal}}"
+            "en": "Horizontal swing is !{{equals|does not equal}}",
+            "es": "La posición Horizontal !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1801,54 +2047,62 @@
               "values": [
                 {
                   "id": "auto",
-                  "label": {
-                    "en": "Auto"
+                  "title": {
+                    "en": "Auto",
+                    "es": "Auto"
                   }
                 },
                 {
                   "id": "left",
-                  "label": {
-                    "en": "Left"
+                  "title": {
+                    "en": "Left",
+                    "es": "Izquierda"
                    }
                 },
                 {
                   "id": "middleleft",
-                  "label": {
-                    "en": "MiddleLeft"
+                  "title": {
+                    "en": "MiddleLeft",
+                    "es": "Mitad Izquierda"
                   }
                 },
                 {
                     "id": "middle",
-                    "label": {
-                      "en": "Middle"
+                    "title": {
+                      "en": "Middle",
+                      "es": "Medio"
                     }
                 },
                 {
                     "id": "middleright",
-                    "label": {
-                      "en": "MiddleRight"
+                    "title": {
+                      "en": "MiddleRight",
+                      "es": "Mitad Derecha"
                     }
                 },
                 {
                   "id": "rigth",
-                  "label": {
-                    "en": "Right"
+                  "title": {
+                    "en": "Right",
+                    "es": "Derecha"
                   }
                 },
                 {
                     "id": "swing",
-                    "label": {
-                      "en": "Swing"
+                    "title": {
+                      "en": "Swing",
+                      "es": "Movimiento"
                     }
                 }
-              ]
+            ]
             }
           ]
         },
         {
           "id": "Forced_Hot_Water_Condition",
           "title": {
-            "en": "Forced Hot Water is !{{equals|does not equal}}"
+            "en": "Forced Hot Water is !{{equals|does not equal}}",
+            "es": "Agua Caliente Forzada !{{es igual a|no es igual a}}"
           },
           "args": [
             {
@@ -1863,13 +2117,15 @@
                 {
                   "id": "true",
                   "label": {
-                    "en": "On"
+                    "en": "On",
+                    "es": "Encendido"
                   }
                 },
                 {
                   "id": "false",
                   "label": {
-                    "en": "Auto"
+                    "en": "Auto",
+                    "es": "Automático"
                    }
                 }
               ]
@@ -1879,7 +2135,8 @@
         {
           "id": "alarm_BoosterHeater1_Condition",
           "title": {
-            "en": "Booster Heater 1 !{{is|isn't}} On"
+            "en": "Booster Heater 1 !{{is|isn't}} On",
+            "es": "El Calentador 1 !{{está|no está}} encendido"
           },
           "args": [
             {
@@ -1892,7 +2149,8 @@
         {
           "id": "alarm_BoosterHeater2_Condition",
           "title": {
-            "en": "Booster Heater 2 !{{is|isn't}} On"
+            "en": "Booster Heater 2 !{{is|isn't}} On",
+            "es": "El Calentador 2 !{{está|no está}} encendido"
           },
           "args": [
             {
@@ -1905,7 +2163,8 @@
         {
           "id": "alarm_BoosterHeater2Plus_Condition",
           "title": {
-            "en": "Booster Heater 2 Plus !{{is|isn't}} On"
+            "en": "Booster Heater 2 Plus !{{is|isn't}} On",
+            "es": "El Calentador 2 Plus !{{está|no está}} encendido"
           },
           "args": [
             {
@@ -1918,7 +2177,8 @@
         {
           "id": "alarm_ImmersionHeater_Condition",
           "title": {
-            "en": "Immersion Heater !{{is|isn't}} On"
+            "en": "Immersion Heater !{{is|isn't}} On",
+            "es": "El Calentador de Inmesión !{{está|no está}} encendido"
           },
           "args": [
             {
@@ -1931,7 +2191,8 @@
         {
           "id": "alarm_DefrostMode_Condition",
           "title": {
-            "en": "Defrost Mode !{{is|isn't}} On"
+            "en": "Defrost Mode !{{is|isn't}} On",
+            "es": "El Modo de Anticongelación !{{está|no está}} encendido"
           },
           "args": [
             {

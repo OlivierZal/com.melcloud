@@ -9,9 +9,9 @@ This app integrate `MelCloud` into Homey.
 1. Install app
 2. Add device(s) to Homey.
 
-You can configure the timeout between polls in the app's settings.
+Note: Some parameters for Heat Pumps can be configured in the device's settings.
 
-
+Todo: HeatPumps with 2 Zones configured has not been tested. Please contact me throught Github issue's page if you are available for testing.   
 
 
 
