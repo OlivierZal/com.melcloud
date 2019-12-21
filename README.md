@@ -20,7 +20,7 @@ The repository is available at: https://github.com/XattSPT/com.melcloud
 
 ## Change Log:
 
-### v 1.5.5 to 1.5.2
+### v 1.5.5 to 2.0.0
 - Included compatibility with HeatPump
 - Minor bugfixes on FlowCards
 
