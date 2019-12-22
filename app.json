@@ -119,8 +119,8 @@
         "mode_heatpump1": {
           "type": "enum",
           "title": {
-              "en": "Heat Pump Mode Zone 1",
-              "es": "Modo Bomba de Calor Zona 1"
+              "en": "Heat Pump Mode Zone",
+              "es": "Modo Bomba de Calor Zona"
           },
           "getable": true,
           "setable": true,
@@ -805,8 +805,8 @@
                       "id": "heattemperature",
                       "type": "number",
                       "label": {
-                          "en": "Set Heat Water Zone1 (ºC)",
-                          "es": "Temperatura Agua Caliente Zona1 (ºC)"
+                          "en": "Set Heat Water Zone (ºC)",
+                          "es": "Temperatura Agua Caliente Zona (ºC)"
                       },
                       "value": 10,
                       "min": 25,
@@ -816,8 +816,8 @@
                       "id": "cooltemperature",
                       "type": "number",
                       "label": {
-                          "en": "Set Cool Water Zone1 (ºC)",
-                          "es": "Temperatura Agua Fria Zona1 (ºC)"
+                          "en": "Set Cool Water Zone (ºC)",
+                          "es": "Temperatura Agua Fria Zona (ºC)"
                       },
                       "value": 18,
                       "min": 10,
@@ -904,8 +904,8 @@
         {
           "id": "Pump1_Thermostat_Trigger",
           "title": {
-            "en": "Zone 1 Mode has changed to",
-            "es": "El Modo de Zona1 ha cambiado a"
+            "en": "Zone Mode has changed to",
+            "es": "El Modo de Zona ha cambiado a"
           },
           "args": [
             {
@@ -1452,8 +1452,8 @@
         {
           "id": "Pump1_Thermostat_Action",
           "title": {
-            "en": "Set Zone 1 Mode to",
-            "es": "Establece el Modo en Zona1 a"
+            "en": "Set Zone Mode to",
+            "es": "Establece el Modo en Zona a"
           },
           "args": [
             {
@@ -1791,8 +1791,8 @@
         {
           "id": "Pump1_Thermostat_Condition",
           "title": {
-            "en": "Zone 1 Mode is !{{equals|does not equal}}",
-            "es": "El Modo Zona1 !{{es igual a|no es igual a}}"
+            "en": "Zone Mode is !{{equals|does not equal}}",
+            "es": "El Modo Zona !{{es igual a|no es igual a}}"
           },
           "args": [
             {
