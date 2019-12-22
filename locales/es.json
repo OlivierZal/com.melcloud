@@ -1,0 +1,17 @@
+{
+    "settings" : {
+        "title" : "Configuración Melcloud",
+        "update" : "Actualizar Configuración",
+        "interval" : {
+            "label" : "Intervalo de actualización en minutos",
+            "info" : "Tiempo entre las peticiones de actualización a Melcould en minutos. El intervalo mínimo recomendado es de 5 minutos. Por defecto el intervalo es de 15 minutos."
+        },
+        "save" : {
+            "label" : "Grabar"
+        },
+        "success" : "La configuración ha sido grabada",
+        "error" : {
+            "threshold" : "El mínimo y/o el máximo para `__capability__` no es válido."
+        }
+    }
+}
