@@ -11,10 +11,9 @@
         "es": "Integración de Melcloud en Homey"
      },
     "category": [
-        "tools",
-        "appliances"
+        "climate"
     ],
-	  "version": "2.0.3",
+	  "version": "2.0.4",
     "compatibility": ">=3.0.0",
     "tags": {
         "en": [
@@ -124,7 +123,7 @@
           },
           "getable": true,
           "setable": true,
-          "uiComponent": "picker",
+          "uiComponent": null,
           "uiQuickAction": false,
           "insights": true,
           "values": [
@@ -150,7 +149,7 @@
                 }
               }
           ]
-      },
+        },
         "vertical": {
             "type": "enum",
             "title": {
@@ -820,6 +819,38 @@
                           }
                         }
                     ]
+                    },
+                    {
+                      "id": "operationmodezone",
+                      "type": "dropdown",
+                      "value":"Select Mode",
+                      "label": {
+                        "en": "Zone Operation Mode",
+                        "es": "Modo de Operación Zona"
+                      },
+                      "values": [
+                        {
+                          "id": "0",
+                          "label": {
+                            "en": "Room",
+                            "es": "Termostato"
+                          }
+                        },
+                        {
+                          "id": "1",
+                          "label": {
+                            "en": "Flow",
+                            "es": "Flow"
+                          }
+                        },
+                        {
+                          "id": "2",
+                          "label": {
+                            "en": "Curve",
+                            "es": "Curva"
+                          }
+                        }
+                      ]
                     }
                 ]
             },
@@ -995,7 +1026,7 @@
               "filter": "driver_id=melcloudHP"
             },
             {
-              "name": "operation_mode_action",
+              "name": "operation_mode_trigger",
               "type": "dropdown",
               "values": [
                 {
@@ -1969,14 +2000,14 @@
                   }
                 },
                 {
-                  "id": "2",
+                  "id": "1",
                   "label": {
                     "en": "DHW-Heating",
                     "es": "Agua Caliente"
                    }
                 },
                 {
-                  "id": "1",
+                  "id": "2",
                   "label": {
                     "en": "Heating",
                     "es": "Calefacción"
