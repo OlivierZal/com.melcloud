@@ -13,7 +13,7 @@
   "category": [
     "climate"
   ],
-  "version": "2.0.7",
+  "version": "2.0.8",
   "compatibility": ">=3.0.0",
   "tags": {
     "en": [
@@ -590,7 +590,7 @@
       },
       "uiQuickAction": false,
       "icon": "/assets/frequency.svg",
-      "value": "Mode" 
+      "value": "Mode"
     }
   },
   "drivers": [
@@ -730,7 +730,6 @@
           "navigation": {
             "next": "list_my_devices"
           },
-          
           "options": {
             "logo": "pair_logo.png",
             "usernameLabel": "MelCloud account",
