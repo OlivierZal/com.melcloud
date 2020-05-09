@@ -701,7 +701,8 @@
               "alarm_DefrostMode",
               "measure_OperationMode",
               "cool_temperature",
-              "heat_temperature"
+              "heat_temperature",
+              "meter_heatpumpfrequency"
           ],
           "capabilitiesOptions": {
             "target_temperature": {
