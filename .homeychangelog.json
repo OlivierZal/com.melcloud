@@ -52,5 +52,8 @@
   },
   "2.0.8": {
     "en": "improved login process"
+  },
+  "2.0.9": {
+    "en": "minor bugfixes. new flowcards on HP."
   }
 }
