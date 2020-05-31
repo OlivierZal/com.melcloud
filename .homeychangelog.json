@@ -55,5 +55,8 @@
   },
   "2.0.9": {
     "en": "minor bugfixes. new flowcards on HP."
+  },
+  "2.0.10": {
+    "en": "test for bugs"
   }
 }

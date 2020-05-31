@@ -1,5 +1,3 @@
-MelCloud for Homey
-
 This app integrate `MelCloud` into Homey.
 
 - Valid for AC Devices in MelCloud

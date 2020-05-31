@@ -7,13 +7,13 @@
     "es": "MelCloud"
   },
   "description": {
-    "en": "Integrate MelCloud into Homey",
-    "es": "Integración de Melcloud en Homey"
+    "en": "Take control of Melcloud devices",
+    "es": "Toma el control de tus equipos de Melcloud"
   },
   "category": [
     "climate"
   ],
-  "version": "2.0.9",
+  "version": "2.0.10",
   "compatibility": ">=3.0.0",
   "tags": {
     "en": [
