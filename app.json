@@ -13,7 +13,7 @@
   "category": [
     "climate"
   ],
-  "version": "2.0.10",
+  "version": "2.0.11",
   "compatibility": ">=3.0.0",
   "tags": {
     "en": [
@@ -685,8 +685,8 @@
       },
       "class": "thermostat",
       "capabilities": [
-        "forcedhotwater",
         "onoff",
+        "forcedhotwater",
         "target_temperature",
         "measure_temperature",
         "watertank_temperature",
