@@ -178,7 +178,7 @@
         {
           "id": "middletop",
           "title": {
-            "en": "MiddleTop",
+            "en": "Middle Top",
             "es": "Mitad Arriba"
           }
         },
@@ -192,7 +192,7 @@
         {
           "id": "middlebottom",
           "title": {
-            "en": "MiddleBotom",
+            "en": "Middle Bottom",
             "es": "Mitad Abajo"
           }
         },
@@ -240,7 +240,7 @@
         {
           "id": "middleleft",
           "title": {
-            "en": "MiddleLeft",
+            "en": "Middle Left",
             "es": "Mitad Izquierda"
           }
         },
@@ -254,15 +254,22 @@
         {
           "id": "middleright",
           "title": {
-            "en": "MiddleRight",
+            "en": "Middle Right",
             "es": "Mitad Derecha"
           }
         },
         {
-          "id": "rigth",
+          "id": "right",
           "title": {
             "en": "Right",
             "es": "Derecha"
+          }
+        },
+        {
+          "id": "split",
+          "title": {
+            "en": "Split",
+            "es": "Dividido"
           }
         },
         {
@@ -1195,7 +1202,7 @@
               {
                 "id": "middletop",
                 "title": {
-                  "en": "MiddleTop",
+                  "en": "Middle Top",
                   "es": "Mitad Arriba"
                 }
               },
@@ -1209,7 +1216,7 @@
               {
                 "id": "middlebottom",
                 "title": {
-                  "en": "MiddleBotom",
+                  "en": "Middle Bottom",
                   "es": "Mitad Abajo"
                 }
               },
@@ -1264,7 +1271,7 @@
               {
                 "id": "middleleft",
                 "title": {
-                  "en": "MiddleLeft",
+                  "en": "Middle Left",
                   "es": "Mitad Izquierda"
                 }
               },
@@ -1278,15 +1285,22 @@
               {
                 "id": "middleright",
                 "title": {
-                  "en": "MiddleRight",
+                  "en": "Middle Right",
                   "es": "Mitad Derecha"
                 }
               },
               {
-                "id": "rigth",
+                "id": "right",
                 "title": {
                   "en": "Right",
                   "es": "Derecha"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split",
+                  "es": "Dividido"
                 }
               },
               {
@@ -1771,7 +1785,7 @@
               {
                 "id": "middletop",
                 "title": {
-                  "en": "MiddleTop",
+                  "en": "Middle Top",
                   "es": "Mitad Arriba"
                 }
               },
@@ -1785,7 +1799,7 @@
               {
                 "id": "middlebottom",
                 "title": {
-                  "en": "MiddleBotom",
+                  "en": "Middle Bottom",
                   "es": "Mitad Abajo"
                 }
               },
@@ -1840,7 +1854,7 @@
               {
                 "id": "middleleft",
                 "title": {
-                  "en": "MiddleLeft",
+                  "en": "Middle Left",
                   "es": "Mitad Izquierda"
                 }
               },
@@ -1854,15 +1868,22 @@
               {
                 "id": "middleright",
                 "title": {
-                  "en": "MiddleRight",
+                  "en": "Middle Right",
                   "es": "Mitad Derecha"
                 }
               },
               {
-                "id": "rigth",
+                "id": "right",
                 "title": {
                   "en": "Right",
                   "es": "Derecha"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split",
+                  "es": "Dividido"
                 }
               },
               {
@@ -2285,7 +2306,7 @@
               {
                 "id": "middletop",
                 "title": {
-                  "en": "MiddleTop",
+                  "en": "Middle Top",
                   "es": "Mitad Arriba"
                 }
               },
@@ -2299,7 +2320,7 @@
               {
                 "id": "middlebottom",
                 "title": {
-                  "en": "MiddleBotom",
+                  "en": "Middle Bottom",
                   "es": "Mitad Abajo"
                 }
               },
@@ -2354,7 +2375,7 @@
               {
                 "id": "middleleft",
                 "title": {
-                  "en": "MiddleLeft",
+                  "en": "Middle Left",
                   "es": "Mitad Izquierda"
                 }
               },
@@ -2368,15 +2389,22 @@
               {
                 "id": "middleright",
                 "title": {
-                  "en": "MiddleRight",
+                  "en": "Middle Right",
                   "es": "Mitad Derecha"
                 }
               },
               {
-                "id": "rigth",
+                "id": "right",
                 "title": {
                   "en": "Right",
                   "es": "Derecha"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split",
+                  "es": "Dividido"
                 }
               },
               {
