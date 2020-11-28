@@ -61,5 +61,8 @@
   },
   "2.0.11": {
     "en": "Test bugs AC device"
+  },
+  "2.0.12": {
+    "en": "minor bugfixes"
   }
 }
