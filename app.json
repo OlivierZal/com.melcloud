@@ -464,7 +464,7 @@
         "es": "ºC"
       },
       "min": 40,
-      "max": 60,
+      "max": 80,
       "step": 0.5,
       "icon": "/assets/tanktemp.svg"
     },
