@@ -478,6 +478,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
+      "decimals": 1,
       "units": {
         "en": "ºC",
         "es": "ºC"
@@ -497,6 +498,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
+      "decimals": 1,
       "units": {
         "en": "ºC",
         "es": "ºC"
@@ -516,6 +518,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
+      "decimals": 1,
       "units": {
         "en": "ºC",
         "es": "ºC"
@@ -542,6 +545,7 @@
       "min": 0,
       "max": 100,
       "step": 0.5,
+      "decimals": 1,
       "icon": "/assets/hot.svg"
     },
     "heat_temperature": {
@@ -554,6 +558,7 @@
       "getable": true,
       "setable": false,
       "insights": true,
+      "decimals": 1,
       "units": {
         "en": "ºC",
         "es": "ºC"
