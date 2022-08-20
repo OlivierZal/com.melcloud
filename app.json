@@ -2229,7 +2229,7 @@
             "filter": "driver_id=melcloud"
           },
           {
-            "name": "fan_speed_conditioon",
+            "name": "fan_speed_condition",
             "type": "dropdown",
             "values": [
               {
