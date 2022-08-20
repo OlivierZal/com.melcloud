@@ -1,1 +1,5 @@
 .homeychangelog.json
+
+
+# Added by Homey CLI
+/.homeybuild/

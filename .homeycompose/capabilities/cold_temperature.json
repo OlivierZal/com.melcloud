@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Cold Water Flow"
+  },
+  "uiComponent": "sensor",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "decimals": 1,
+  "units": {
+    "en": "ºC"
+  },
+  "min": 0,
+  "max": 100,
+  "step": 0.5,
+  "icon": "/assets/cold.svg"
+}
