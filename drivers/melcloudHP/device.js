@@ -142,20 +142,14 @@ class MelCloudDevice extends Homey.Device {
         this.setCapabilityValue('measure_OperationMode', operationMode);
         this.setCapabilityValue('forcedhotwater', result.data.ForcedHotWaterMode);
         this.setCapabilityValue('watertank_temperature', result.data.TankWaterTemperature);
-      });
-
-      const deviceList = driver.getDevices();
-      deviceList.forEach((device) => {
-        if (device.getData().id === data.id) {
-          this.setCapabilityValue('alarm_DefrostMode', device.Device.DefrostMode === 2);
-          this.setCapabilityValue('alarm_BoosterHeater1', device.Device.BoosterHeater1Status);
-          this.setCapabilityValue('alarm_BoosterHeater2', device.Device.BoosterHeater2Status);
-          this.setCapabilityValue('alarm_BoosterHeater2Plus', device.Device.BoosterHeater2PlusStatus);
-          this.setCapabilityValue('alarm_ImmersionHeater', device.Device.ImmersionHeaterStatus);
-          this.setCapabilityValue('cold_temperature', device.Device.ReturnTemperature);
-          this.setCapabilityValue('hot_temperature', device.Device.FlowTemperature);
-          this.setCapabilityValue('meter_heatpumpfrequency', device.Device.HeatPumpFrequency);
-        }
+        this.setCapabilityValue('alarm_DefrostMode', result.data.DefrostMode === 2);
+        this.setCapabilityValue('alarm_BoosterHeater1', result.data.BoosterHeater1Status);
+        this.setCapabilityValue('alarm_BoosterHeater2', result.data.BoosterHeater2Status);
+        this.setCapabilityValue('alarm_BoosterHeater2Plus', result.data.BoosterHeater2PlusStatus);
+        this.setCapabilityValue('alarm_ImmersionHeater', result.data.ImmersionHeaterStatus);
+        this.setCapabilityValue('cold_temperature', result.data.ReturnTemperature);
+        this.setCapabilityValue('hot_temperature', result.data.FlowTemperature);
+        this.setCapabilityValue('meter_heatpumpfrequency', result.data.HeatPumpFrequency);
       });
 
       clearTimeout(this.syncTimeout);
