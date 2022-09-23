@@ -1,7 +1,7 @@
 const Homey = require('homey');
 const http = require('http.min');
 
-function getDevices(callback) {
+function getMelCloudDevices(callback) {
   const ContextKey = Homey.ManagerSettings.get('ContextKey');
   const request = {
     uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices',
@@ -98,7 +98,7 @@ class MelCloudDriverMixin extends Homey.Driver {
       }
     });
     socket.on('list_devices', (data, callback) => {
-      getDevices((devices) => {
+      getMelCloudDevices((devices) => {
         callback(null, devices);
       });
     });

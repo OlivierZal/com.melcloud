@@ -144,48 +144,18 @@ class MelCloudDevice extends Homey.Device {
         this.setCapabilityValue('watertank_temperature', result.data.TankWaterTemperature);
       });
 
-      const search = {
-        uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices',
-        json: true,
-        headers: { 'X-MitsContextKey': ContextKey },
-      };
-      http.get(search).then((result) => {
-        if (result.response.statusCode !== 200) {
-          throw new Error('No device');
+      const deviceList = driver.getDevices();
+      deviceList.forEach((device) => {
+        if (device.getData().id === data.id) {
+          this.setCapabilityValue('alarm_DefrostMode', device.Device.DefrostMode === 2);
+          this.setCapabilityValue('alarm_BoosterHeater1', device.Device.BoosterHeater1Status);
+          this.setCapabilityValue('alarm_BoosterHeater2', device.Device.BoosterHeater2Status);
+          this.setCapabilityValue('alarm_BoosterHeater2Plus', device.Device.BoosterHeater2PlusStatus);
+          this.setCapabilityValue('alarm_ImmersionHeater', device.Device.ImmersionHeaterStatus);
+          this.setCapabilityValue('cold_temperature', device.Device.ReturnTemperature);
+          this.setCapabilityValue('hot_temperature', device.Device.FlowTemperature);
+          this.setCapabilityValue('meter_heatpumpfrequency', device.Device.HeatPumpFrequency);
         }
-        const deviceList = [];
-        result.data.forEach((_data) => {
-          _data.Structure.Devices.forEach((device) => {
-            deviceList.push(device);
-          });
-          _data.Structure.Areas.forEach((area) => {
-            area.Devices.forEach((device) => {
-              deviceList.push(device);
-            });
-          });
-          _data.Structure.Floors.forEach((floor) => {
-            floor.Devices.forEach((device) => {
-              deviceList.push(device);
-            });
-            floor.Areas.forEach((area) => {
-              area.Devices.forEach((device) => {
-                deviceList.push(device);
-              });
-            });
-          });
-        });
-        deviceList.forEach((device) => {
-          if (device.DeviceID === data.id) {
-            this.setCapabilityValue('alarm_DefrostMode', device.Device.DefrostMode === 2);
-            this.setCapabilityValue('alarm_BoosterHeater1', device.Device.BoosterHeater1Status);
-            this.setCapabilityValue('alarm_BoosterHeater2', device.Device.BoosterHeater2Status);
-            this.setCapabilityValue('alarm_BoosterHeater2Plus', device.Device.BoosterHeater2PlusStatus);
-            this.setCapabilityValue('alarm_ImmersionHeater', device.Device.ImmersionHeaterStatus);
-            this.setCapabilityValue('cold_temperature', device.Device.ReturnTemperature);
-            this.setCapabilityValue('hot_temperature', device.Device.FlowTemperature);
-            this.setCapabilityValue('meter_heatpumpfrequency', device.Device.HeatPumpFrequency);
-          }
-        });
       });
 
       clearTimeout(this.syncTimeout);
