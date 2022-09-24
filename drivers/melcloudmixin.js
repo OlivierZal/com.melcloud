@@ -106,4 +106,4 @@ class MelCloudDriverMixin extends Homey.Driver {
   }
 }
 
-module.exports = { MelCloudDriverMixin };
+module.exports = MelCloudDriverMixin;

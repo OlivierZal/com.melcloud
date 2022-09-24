@@ -1,5 +1,5 @@
 const Homey = require('homey');
-const { MelCloudDriverMixin } = require('../melcloudmixin');
+const MelCloudDriverMixin = require('../melcloudmixin');
 
 class MelCloudDriverHP extends MelCloudDriverMixin {
   onInit() {
