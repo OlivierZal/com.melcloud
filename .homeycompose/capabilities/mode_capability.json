@@ -1,0 +1,49 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Full Thermostat Mode"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "uiQuickAction": false,
+  "insights": true,
+  "values": [
+    {
+      "id": "off",
+      "title": {
+        "en": "Off"
+      }
+    },
+    {
+      "id": "heat",
+      "title": {
+        "en": "Heat"
+      }
+    },
+    {
+      "id": "dry",
+      "title": {
+        "en": "Dry"
+      }
+    },
+    {
+      "id": "cool",
+      "title": {
+        "en": "Cool"
+      }
+    },
+    {
+      "id": "fan",
+      "title": {
+        "en": "Fan"
+      }
+    },
+    {
+      "id": "auto",
+      "title": {
+        "en": "Auto"
+      }
+    }
+  ]
+}

@@ -1,0 +1,661 @@
+{
+  "triggers": [
+    {
+      "id": "Pump1_Thermostat_Trigger",
+      "title": {
+        "en": "Zone mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone mode has changed to [[mode_hpz1_action]]"
+      },
+      "args": [
+        {
+          "name": "mode_hpz1_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Thermostat"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Thermostat"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Operation_Mode_Trigger",
+      "title": {
+        "en": "Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Operation Mode has changed to [[operation_mode_trigger]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_trigger",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "DHW-Heating"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Forced_Water_Trigger",
+      "title": {
+        "en": "Forced hot water has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Forced hot water has changed to [[forced_hot_water_trigger]]"
+      },
+      "args": [
+        {
+          "name": "forced_hot_water_trigger",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "true",
+              "label": {
+                "en": "On"
+              }
+            },
+            {
+              "id": "false",
+              "label": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Hot_Water_Trigger",
+      "title": {
+        "en": "Hot Water Zone has changed"
+      },
+      "args": []
+    },
+    {
+      "id": "Cold_Water_Trigger",
+      "title": {
+        "en": "Cold Water Zone has changed"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater1_true",
+      "title": {
+        "en": "Booster Heater 1 On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater1_false",
+      "title": {
+        "en": "Booster Heater 1 Off"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2_true",
+      "title": {
+        "en": "Booster Heater 2 On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2_false",
+      "title": {
+        "en": "Booster Heater 2 Off"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2Plus_true",
+      "title": {
+        "en": "Booster Heater 2 Plus On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2Plus_false",
+      "title": {
+        "en": "Booster Heater 2 Plus Off"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_ImmersionHeater_true",
+      "title": {
+        "en": "Immersion Heater On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_ImmersionHeater_false",
+      "title": {
+        "en": "Immersion Heater Off"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_DefrostMode_true",
+      "title": {
+        "en": "Desfrost Mode On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_DefrostMode_false",
+      "title": {
+        "en": "Desfrost Mode Off"
+      },
+      "args": []
+    }
+  ],
+  "conditions": [
+    {
+      "id": "Pump1_Thermostat_Condition",
+      "title": {
+        "en": "Zone mode is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Zone mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+      },
+      "args": [
+        {
+          "name": "mode_hpz1_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Thermostat"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Thermostat"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Operation_Mode_Condition",
+      "title": {
+        "en": "Operation mode is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "DHW-Heating"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Forced_Hot_Water_Condition",
+      "title": {
+        "en": "Forced hot water is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Forced hot water is !{{equals|does not equal}} to [[forced_hot_water_condition]]"
+      },
+      "args": [
+        {
+          "name": "forced_hot_water_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "true",
+              "label": {
+                "en": "On"
+              }
+            },
+            {
+              "id": "false",
+              "label": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alarm_BoosterHeater1_Condition",
+      "title": {
+        "en": "Booster Heater 1 !{{is|isn't}} On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2_Condition",
+      "title": {
+        "en": "Booster Heater 2 !{{is|isn't}} On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_BoosterHeater2Plus_Condition",
+      "title": {
+        "en": "Booster Heater 2 Plus !{{is|isn't}} On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_ImmersionHeater_Condition",
+      "title": {
+        "en": "Immersion Heater !{{is|isn't}} On"
+      },
+      "args": []
+    },
+    {
+      "id": "alarm_DefrostMode_Condition",
+      "title": {
+        "en": "Defrost Mode !{{is|isn't}} On"
+      },
+      "args": []
+    },
+    {
+      "id": "Hot_Water_Condition",
+      "title": {
+        "en": "Hot Water Zone !{{is|isn't}} greater or equal than..."
+      },
+      "titleFormatted": {
+        "en": "Hot Water Zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+      },
+      "args": [
+        {
+          "name": "hot_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Cold_Water_Condition",
+      "title": {
+        "en": "Cold water zone !{{is|isn't}} lower or equal than..."
+      },
+      "titleFormatted": {
+        "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
+      },
+      "args": [
+        {
+          "name": "cold_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "Operation_Mode_Action",
+      "title": {
+        "en": "Set operation mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set operation mode to [[operation_mode_action]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "DHW-Heating"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Pump1_Thermostat_Action",
+      "title": {
+        "en": "Set zone mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set zone mode to [[mode_hpom_action]]"
+      },
+      "args": [
+        {
+          "name": "mode_hpom_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Thermostat"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Thermostat"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Forced_Hot_Water_Action",
+      "title": {
+        "en": "Set forced hot water to..."
+      },
+      "titleFormatted": {
+        "en": "Set forced hot water to [[forced_hot_water_action]]"
+      },
+      "args": [
+        {
+          "name": "forced_hot_water_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "true",
+              "label": {
+                "en": "On"
+              }
+            },
+            {
+              "id": "false",
+              "label": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Eco_Hot_Water_Action",
+      "title": {
+        "en": "Set eco hot water to..."
+      },
+      "titleFormatted": {
+        "en": "Set eco hot water to [[eco_hot_water_action]]"
+      },
+      "args": [
+        {
+          "name": "eco_hot_water_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "true",
+              "label": {
+                "en": "On"
+              }
+            },
+            {
+              "id": "false",
+              "label": {
+                "en": "Off"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Heat_Water_Action",
+      "title": {
+        "en": "Set heat water flow to..."
+      },
+      "titleFormatted": {
+        "en": "Set heat water flow to [[heat_water_value]]"
+      },
+      "args": [
+        {
+          "name": "heat_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Cool_Water_Action",
+      "title": {
+        "en": "Set cool water flow to..."
+      },
+      "titleFormatted": {
+        "en": "Set cool water flow to [[cool_water_value]]"
+      },
+      "args": [
+        {
+          "name": "cool_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Water_Tank_Temp_Action",
+      "title": {
+        "en": "Set water tank temp to..."
+      },
+      "titleFormatted": {
+        "en": "Set water tank temp to [[tank_water_value]]"
+      },
+      "args": [
+        {
+          "name": "tank_water_value",
+          "type": "number",
+          "min": 40,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    }
+  ]
+}

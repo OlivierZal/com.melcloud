@@ -1,0 +1,21 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Immersion Heater"
+  },
+  "uiComponent": "sensor",
+  "insights": true,
+  "insightsTitleTrue": {
+    "en": "Immersion Heater On"
+  },
+  "insightsTitleFalse": {
+    "en": "Immersion Heater Off"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": ""
+  },
+  "uiQuickAction": false,
+  "icon": "/assets/ImmersionHeater.svg"
+}

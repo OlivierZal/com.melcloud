@@ -1,5 +1,5 @@
 const Homey = require('homey');
-const { MelCloudDriverMixin } = require('../../melcloudmixin');
+const { MelCloudDriverMixin } = require('../melcloudmixin');
 
 class MelCloudDriverHP extends MelCloudDriverMixin {
   onInit() {
@@ -70,22 +70,22 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
 
     this.alarm_BoosterHeater1Condition = new Homey.FlowCardCondition('alarm_BoosterHeater1_Condition').register();
     this.alarm_BoosterHeater1Condition.registerRunListener((args) => {
-      const conditionMet = args.device.getCapabilityValue('alarm_BoosterHeater1');
+      const conditionMet = args.device.getCapabilityValue('alarm_boosterheater1');
       return Promise.resolve(conditionMet);
     });
     this.alarm_BoosterHeater2Condition = new Homey.FlowCardCondition('alarm_BoosterHeater2_Condition').register();
     this.alarm_BoosterHeater2Condition.registerRunListener((args) => {
-      const conditionMet = args.device.getCapabilityValue('alarm_BoosterHeater2');
+      const conditionMet = args.device.getCapabilityValue('alarm_boosterheater2');
       return Promise.resolve(conditionMet);
     });
     this.alarm_BoosterHeater2PlusCondition = new Homey.FlowCardCondition('alarm_BoosterHeater2Plus_Condition').register();
     this.alarm_BoosterHeater2PlusCondition.registerRunListener((args) => {
-      const conditionMet = args.device.getCapabilityValue('alarm_BoosterHeater2Plus');
+      const conditionMet = args.device.getCapabilityValue('alarm_boosterheater2plus');
       return Promise.resolve(conditionMet);
     });
     this.alarm_ImmersionHeaterCondition = new Homey.FlowCardCondition('alarm_ImmersionHeater_Condition').register();
     this.alarm_ImmersionHeaterCondition.registerRunListener((args) => {
-      const conditionMet = args.device.getCapabilityValue('alarm_ImmersionHeater');
+      const conditionMet = args.device.getCapabilityValue('alarm_immersionheater');
       return Promise.resolve(conditionMet);
     });
     this.alarm_DefrostModeCondition = new Homey.FlowCardCondition('alarm_DefrostMode_Condition').register();

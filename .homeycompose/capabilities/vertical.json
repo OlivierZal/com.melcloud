@@ -1,0 +1,54 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Vertical Position"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "uiQuickAction": false,
+  "values": [
+    {
+      "id": "auto",
+      "title": {
+        "en": "Auto"
+      }
+    },
+    {
+      "id": "top",
+      "title": {
+        "en": "Top"
+      }
+    },
+    {
+      "id": "middletop",
+      "title": {
+        "en": "Middle Top"
+      }
+    },
+    {
+      "id": "middle",
+      "title": {
+        "en": "Middle"
+      }
+    },
+    {
+      "id": "middlebottom",
+      "title": {
+        "en": "Middle Bottom"
+      }
+    },
+    {
+      "id": "bottom",
+      "title": {
+        "en": "Bottom"
+      }
+    },
+    {
+      "id": "swing",
+      "title": {
+        "en": "Swing"
+      }
+    }
+  ]
+}

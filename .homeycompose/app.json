@@ -1,0 +1,52 @@
+{
+  "id": "com.mecloud",
+  "sdk": 2,
+  "brandColor": "#ed0c13",
+  "name": {
+    "en": "MelCloud"
+  },
+  "description": {
+    "en": "Take control of MelCloud devices"
+  },
+  "category": [
+    "climate"
+  ],
+  "version": "2.0.12",
+  "compatibility": ">=3.0.0",
+  "tags": {
+    "en": [
+      "Aircon",
+      "MelCloud",
+      "Mitsubishi",
+      "Heatpump",
+      "Ecodan"
+    ]
+  },
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png"
+  },
+  "author": {
+    "name": "Gerard Ricart",
+    "email": "gerard.ricart@gmail.com"
+  },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Olivier Zalmanski",
+        "email": "olivier.zalmanski@me.com"
+      }
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/OlivierZal/com.melcloud/issues"
+  },
+  "source": "https://github.com/OlivierZal/com.melcloud",
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "OlivierZalmanski"
+      }
+    }
+  }
+}

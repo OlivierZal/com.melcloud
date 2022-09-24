@@ -139,14 +139,14 @@ class MelCloudDevice extends Homey.Device {
           default:
             operationMode = 'Off';
         }
-        this.setCapabilityValue('measure_OperationMode', operationMode);
+        this.setCapabilityValue('measure_operationmode', operationMode);
         this.setCapabilityValue('forcedhotwater', result.data.ForcedHotWaterMode);
         this.setCapabilityValue('watertank_temperature', result.data.TankWaterTemperature);
-        this.setCapabilityValue('alarm_DefrostMode', result.data.DefrostMode === 2);
-        this.setCapabilityValue('alarm_BoosterHeater1', result.data.BoosterHeater1Status);
-        this.setCapabilityValue('alarm_BoosterHeater2', result.data.BoosterHeater2Status);
-        this.setCapabilityValue('alarm_BoosterHeater2Plus', result.data.BoosterHeater2PlusStatus);
-        this.setCapabilityValue('alarm_ImmersionHeater', result.data.ImmersionHeaterStatus);
+        this.setCapabilityValue('alarm_defrostmode', result.data.DefrostMode === 2);
+        this.setCapabilityValue('alarm_boosterheater1', result.data.BoosterHeater1Status);
+        this.setCapabilityValue('alarm_boosterheater2', result.data.BoosterHeater2Status);
+        this.setCapabilityValue('alarm_boosterheater2plus', result.data.BoosterHeater2PlusStatus);
+        this.setCapabilityValue('alarm_immersionheater', result.data.ImmersionHeaterStatus);
         this.setCapabilityValue('cold_temperature', result.data.ReturnTemperature);
         this.setCapabilityValue('hot_temperature', result.data.FlowTemperature);
         this.setCapabilityValue('meter_heatpumpfrequency', result.data.HeatPumpFrequency);
