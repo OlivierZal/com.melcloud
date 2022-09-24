@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Frequency"
+  },
+  "uiComponent": "sensor",
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "Hz"
+  },
+  "uiQuickAction": false,
+  "icon": "/assets/frequency.svg",
+  "value": "Mode"
+}

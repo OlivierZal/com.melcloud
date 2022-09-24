@@ -1,0 +1,21 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Booster Heater 2"
+  },
+  "uiComponent": "sensor",
+  "insights": true,
+  "insightsTitleTrue": {
+    "en": "Booster Heater 2 On"
+  },
+  "insightsTitleFalse": {
+    "en": "Booster Heater 2 Off"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": ""
+  },
+  "uiQuickAction": false,
+  "icon": "/assets/BoosterHeater2.svg"
+}

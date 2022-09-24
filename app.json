@@ -1,4 +1,5 @@
 {
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.mecloud",
   "sdk": 2,
   "brandColor": "#ed0c13",
@@ -49,498 +50,1596 @@
       }
     }
   },
-  "capabilities": {
-    "mode_capability": {
-      "type": "enum",
-      "title": {
-        "en": "Full Thermostat Mode"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "uiQuickAction": false,
-      "insights": true,
-      "values": [
-        {
-          "id": "off",
-          "title": {
-            "en": "Off"
-          }
+  "flow": {
+    "triggers": [
+      {
+        "id": "Full_Thermostat_Trigger",
+        "title": {
+          "en": "Full thermostat mode has changed to..."
         },
-        {
-          "id": "heat",
-          "title": {
-            "en": "Heat"
-          }
+        "titleFormatted": {
+          "en": "Full thermostat mode has changed to [[mode_capability_action]]"
         },
-        {
-          "id": "dry",
-          "title": {
-            "en": "Dry"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "mode_capability_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Fan_Speed_Trigger",
+        "title": {
+          "en": "The fan speed has changed to..."
         },
-        {
-          "id": "cool",
-          "title": {
-            "en": "Cool"
-          }
+        "titleFormatted": {
+          "en": "The fan speed has changed to [[fan_speed_action]]"
         },
-        {
-          "id": "fan",
-          "title": {
-            "en": "Fan"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "fan_speed_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Very Slow"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Slow"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Medium"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "High"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Very High"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Vertical_Swing_Trigger",
+        "title": {
+          "en": "The vertical swing has changed to..."
         },
-        {
-          "id": "auto",
-          "title": {
-            "en": "Auto"
-          }
-        }
-      ]
-    },
-    "mode_heatpump1": {
-      "type": "enum",
-      "title": {
-        "en": "Heat Pump Mode Zone"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": null,
-      "uiQuickAction": false,
-      "insights": true,
-      "values": [
-        {
-          "id": "0",
-          "title": {
-            "en": "Heat Thermostat"
-          }
+        "titleFormatted": {
+          "en": "The vertical swing has changed to [[vertical_swing_action]]"
         },
-        {
-          "id": "1",
-          "title": {
-            "en": "Heat Flow"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "vertical_swing_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Top"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Middle Top"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Middle Bottom"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Bottom"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Horizontal_Swing_Trigger",
+        "title": {
+          "en": "The horizontal swing has changed to..."
         },
-        {
-          "id": "2",
-          "title": {
-            "en": "Curve"
-          }
+        "titleFormatted": {
+          "en": "The horizontal swing has changed to [[horizontal_swing_action]]"
         },
-        {
-          "id": "3",
-          "title": {
-            "en": "Cool Thermostat"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "horizontal_swing_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "left",
+                "title": {
+                  "en": "Left"
+                }
+              },
+              {
+                "id": "middleleft",
+                "title": {
+                  "en": "Middle Left"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middleright",
+                "title": {
+                  "en": "Middle Right"
+                }
+              },
+              {
+                "id": "right",
+                "title": {
+                  "en": "Right"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Pump1_Thermostat_Trigger",
+        "title": {
+          "en": "Zone mode has changed to..."
         },
-        {
-          "id": "4",
-          "title": {
-            "en": "Cool Flow"
-          }
-        }
-      ]
-    },
-    "vertical": {
-      "type": "enum",
-      "title": {
-        "en": "Vertical Position"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "uiQuickAction": false,
-      "values": [
-        {
-          "id": "auto",
-          "title": {
-            "en": "Auto"
-          }
+        "titleFormatted": {
+          "en": "Zone mode has changed to [[mode_hpz1_action]]"
         },
-        {
-          "id": "top",
-          "title": {
-            "en": "Top"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "mode_hpz1_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Thermostat"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Thermostat"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Operation_Mode_Trigger",
+        "title": {
+          "en": "Operation Mode has changed to..."
         },
-        {
-          "id": "middletop",
-          "title": {
-            "en": "Middle Top"
-          }
+        "titleFormatted": {
+          "en": "Operation Mode has changed to [[operation_mode_trigger]]"
         },
-        {
-          "id": "middle",
-          "title": {
-            "en": "Middle"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "operation_mode_trigger",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "DHW-Heating"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heating"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Cooling"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Defrost"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Standby"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Legionella"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Forced_Water_Trigger",
+        "title": {
+          "en": "Forced hot water has changed to..."
         },
-        {
-          "id": "middlebottom",
-          "title": {
-            "en": "Middle Bottom"
-          }
+        "titleFormatted": {
+          "en": "Forced hot water has changed to [[forced_hot_water_trigger]]"
         },
-        {
-          "id": "bottom",
-          "title": {
-            "en": "Bottom"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "forced_hot_water_trigger",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Auto"
+                }
+              }
+            ]
           }
+        ]
+      },
+      {
+        "id": "Hot_Water_Trigger",
+        "title": {
+          "en": "Hot Water Zone has changed"
         },
-        {
-          "id": "swing",
-          "title": {
-            "en": "Swing"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
-        }
-      ]
-    },
-    "horizontal": {
-      "type": "enum",
-      "title": {
-        "en": "Horizontal Position"
+        ]
       },
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "uiQuickAction": false,
-      "values": [
-        {
-          "id": "auto",
-          "title": {
-            "en": "Auto"
-          }
+      {
+        "id": "Cold_Water_Trigger",
+        "title": {
+          "en": "Cold Water Zone has changed"
         },
-        {
-          "id": "left",
-          "title": {
-            "en": "Left"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater1_true",
+        "title": {
+          "en": "Booster Heater 1 On"
         },
-        {
-          "id": "middleleft",
-          "title": {
-            "en": "Middle Left"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater1_false",
+        "title": {
+          "en": "Booster Heater 1 Off"
         },
-        {
-          "id": "middle",
-          "title": {
-            "en": "Middle"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater2_true",
+        "title": {
+          "en": "Booster Heater 2 On"
         },
-        {
-          "id": "middleright",
-          "title": {
-            "en": "Middle Right"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater2_false",
+        "title": {
+          "en": "Booster Heater 2 Off"
         },
-        {
-          "id": "right",
-          "title": {
-            "en": "Right"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater2Plus_true",
+        "title": {
+          "en": "Booster Heater 2 Plus On"
         },
-        {
-          "id": "split",
-          "title": {
-            "en": "Split"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
+        ]
+      },
+      {
+        "id": "alarm_BoosterHeater2Plus_false",
+        "title": {
+          "en": "Booster Heater 2 Plus Off"
         },
-        {
-          "id": "swing",
-          "title": {
-            "en": "Swing"
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
           }
-        }
-      ]
-    },
-    "fan_power": {
-      "type": "number",
-      "title": {
-        "en": "Fan Power"
+        ]
       },
-      "uiComponent": "slider",
-      "insights": true,
-      "getable": true,
-      "setable": true,
-      "units": {
-        "en": ""
+      {
+        "id": "alarm_ImmersionHeater_true",
+        "title": {
+          "en": "Immersion Heater On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "min": 0,
-      "max": 5,
-      "step": 1
-    },
-    "forcedhotwater": {
-      "type": "boolean",
-      "title": {
-        "en": "Forced Hot Water"
+      {
+        "id": "alarm_ImmersionHeater_false",
+        "title": {
+          "en": "Immersion Heater Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "uiComponent": "toggle",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Forced Hot Water On"
+      {
+        "id": "alarm_DefrostMode_true",
+        "title": {
+          "en": "Desfrost Mode On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Forced Hot Water Off"
+      {
+        "id": "alarm_DefrostMode_false",
+        "title": {
+          "en": "Desfrost Mode Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "Full_Thermostat_Condition",
+        "title": {
+          "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "mode_capability_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "getable": true,
-      "setable": true,
-      "units": {
-        "en": ""
+      {
+        "id": "Fan_Speed_Condition",
+        "title": {
+          "en": "Fan speed is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "fan_speed_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Very Slow"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Slow"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Medium"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "High"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Very High"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/forcedwater.svg"
-    },
-    "alarm_BoosterHeater1": {
-      "type": "boolean",
-      "title": {
-        "en": "Booster Heater 1"
+      {
+        "id": "Vertical_Swing_Condition",
+        "title": {
+          "en": "Vertical swing is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Vertical swing is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "vertical_swing_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Top"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Middle Top"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Middle Bottom"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Bottom"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Booster Heater 1 On"
+      {
+        "id": "Horizontal_Swing_Condition",
+        "title": {
+          "en": "Horizontal swing is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Horizontal swing is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "horizontal_swing_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "left",
+                "title": {
+                  "en": "Left"
+                }
+              },
+              {
+                "id": "middleleft",
+                "title": {
+                  "en": "Middle Left"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middleright",
+                "title": {
+                  "en": "Middle Right"
+                }
+              },
+              {
+                "id": "right",
+                "title": {
+                  "en": "Right"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Booster Heater 1 Off"
+      {
+        "id": "Pump1_Thermostat_Condition",
+        "title": {
+          "en": "Zone mode is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Zone mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "mode_hpz1_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Thermostat"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Thermostat"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
+      {
+        "id": "Operation_Mode_Condition",
+        "title": {
+          "en": "Operation mode is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "operation_mode_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "DHW-Heating"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heating"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Cooling"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Defrost"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Standby"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Legionella"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater1.svg"
-    },
-    "alarm_BoosterHeater2": {
-      "type": "boolean",
-      "title": {
-        "en": "Booster Heater 2"
+      {
+        "id": "Forced_Hot_Water_Condition",
+        "title": {
+          "en": "Forced hot water is !{{equals|does not equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Forced hot water is !{{equals|does not equal}} to [[forced_hot_water_condition]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "forced_hot_water_condition",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Booster Heater 2 On"
+      {
+        "id": "alarm_BoosterHeater1_Condition",
+        "title": {
+          "en": "Booster Heater 1 !{{is|isn't}} On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Booster Heater 2 Off"
+      {
+        "id": "alarm_BoosterHeater2_Condition",
+        "title": {
+          "en": "Booster Heater 2 !{{is|isn't}} On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
+      {
+        "id": "alarm_BoosterHeater2Plus_Condition",
+        "title": {
+          "en": "Booster Heater 2 Plus !{{is|isn't}} On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater2.svg"
-    },
-    "alarm_BoosterHeater2Plus": {
-      "type": "boolean",
-      "title": {
-        "en": "Booster Heater 2+"
+      {
+        "id": "alarm_ImmersionHeater_Condition",
+        "title": {
+          "en": "Immersion Heater !{{is|isn't}} On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Booster Heater 2 Plus On"
+      {
+        "id": "alarm_DefrostMode_Condition",
+        "title": {
+          "en": "Defrost Mode !{{is|isn't}} On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Booster Heater 2 Plus Off"
+      {
+        "id": "Hot_Water_Condition",
+        "title": {
+          "en": "Hot Water Zone !{{is|isn't}} greater or equal than..."
+        },
+        "titleFormatted": {
+          "en": "Hot Water Zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "hot_water_value",
+            "type": "number",
+            "min": 10,
+            "max": 60,
+            "placeholder": {
+              "en": "value"
+            }
+          }
+        ]
       },
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
+      {
+        "id": "Cold_Water_Condition",
+        "title": {
+          "en": "Cold water zone !{{is|isn't}} lower or equal than..."
+        },
+        "titleFormatted": {
+          "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "cold_water_value",
+            "type": "number",
+            "min": 10,
+            "max": 60,
+            "placeholder": {
+              "en": "value"
+            }
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "Full_Thermostat_Action",
+        "title": {
+          "en": "Set full mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set full mode to [[mode_capability_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "mode_capability_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "off",
+                "title": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater2Plus.svg"
-    },
-    "alarm_ImmersionHeater": {
-      "type": "boolean",
-      "title": {
-        "en": "Immersion Heater"
+      {
+        "id": "Fan_Speed_Action",
+        "title": {
+          "en": "Set fan speed to..."
+        },
+        "titleFormatted": {
+          "en": "Set fan speed to [[fan_speed_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "fan_speed_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Very Slow"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Slow"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Medium"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "High"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Very High"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Immersion Heater On"
+      {
+        "id": "Vertical_Swing_Action",
+        "title": {
+          "en": "Set vertical swing to..."
+        },
+        "titleFormatted": {
+          "en": "Set vertical swing to [[vertical_swing_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "vertical_swing_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Top"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Middle Top"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Middle Bottom"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Bottom"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Immersion Heater Off"
+      {
+        "id": "Horizontal_Swing_Action",
+        "title": {
+          "en": "Set horizontal swing to..."
+        },
+        "titleFormatted": {
+          "en": "Set horizontal swing to [[horizontal_swing_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "horizontal_swing_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "left",
+                "title": {
+                  "en": "Left"
+                }
+              },
+              {
+                "id": "middleleft",
+                "title": {
+                  "en": "Middle Left"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middleright",
+                "title": {
+                  "en": "Middle Right"
+                }
+              },
+              {
+                "id": "right",
+                "title": {
+                  "en": "Right"
+                }
+              },
+              {
+                "id": "split",
+                "title": {
+                  "en": "Split"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
+      {
+        "id": "Operation_Mode_Action",
+        "title": {
+          "en": "Set operation mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set operation mode to [[operation_mode_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "operation_mode_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "DHW-Heating"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heating"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Cooling"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Defrost"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Standby"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Legionella"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/ImmersionHeater.svg"
-    },
-    "alarm_DefrostMode": {
-      "type": "boolean",
-      "title": {
-        "en": "Defrost Mode"
+      {
+        "id": "Pump1_Thermostat_Action",
+        "title": {
+          "en": "Set zone mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set zone mode to [[mode_hpom_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "mode_hpom_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Thermostat"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Thermostat"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Defrost Mode On"
+      {
+        "id": "Forced_Hot_Water_Action",
+        "title": {
+          "en": "Set forced hot water to..."
+        },
+        "titleFormatted": {
+          "en": "Set forced hot water to [[forced_hot_water_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "forced_hot_water_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "insightsTitleFalse": {
-        "en": "Defrost Mode Off"
+      {
+        "id": "Eco_Hot_Water_Action",
+        "title": {
+          "en": "Set eco hot water to..."
+        },
+        "titleFormatted": {
+          "en": "Set eco hot water to [[eco_hot_water_action]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "eco_hot_water_action",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
       },
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
+      {
+        "id": "Heat_Water_Action",
+        "title": {
+          "en": "Set heat water flow to..."
+        },
+        "titleFormatted": {
+          "en": "Set heat water flow to [[heat_water_value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "heat_water_value",
+            "type": "number",
+            "min": 10,
+            "max": 60,
+            "placeholder": {
+              "en": "value"
+            }
+          }
+        ]
       },
-      "uiQuickAction": false,
-      "icon": "/assets/Defrost.svg"
-    },
-    "watertank_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Water Tank Temperature"
+      {
+        "id": "Cool_Water_Action",
+        "title": {
+          "en": "Set cool water flow to..."
+        },
+        "titleFormatted": {
+          "en": "Set cool water flow to [[cool_water_value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "cool_water_value",
+            "type": "number",
+            "min": 10,
+            "max": 60,
+            "placeholder": {
+              "en": "value"
+            }
+          }
+        ]
       },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/tanktemp.svg"
-    },
-    "outside_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Outside Temp."
-      },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": -50,
-      "max": 80,
-      "step": 0.5,
-      "icon": "/assets/outside.svg"
-    },
-    "cold_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Cold Water Flow"
-      },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/cold.svg"
-    },
-    "cool_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Cool Water Flow Set"
-      },
-      "uiComponent": null,
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/cold.svg"
-    },
-    "hot_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Hot Water Flow"
-      },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "decimals": 1,
-      "icon": "/assets/hot.svg"
-    },
-    "heat_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Heat Water Flow Set"
-      },
-      "uiComponent": null,
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/hot.svg"
-    },
-    "measure_OperationMode": {
-      "type": "string",
-      "title": {
-        "en": "Operation Mode"
-      },
-      "uiComponent": "sensor",
-      "insights": true,
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": ""
-      },
-      "uiQuickAction": false,
-      "icon": "/assets/mode.svg",
-      "value": "Mode"
-    },
-    "meter_heatpumpfrequency": {
-      "type": "number",
-      "title": {
-        "en": "Frequency"
-      },
-      "uiComponent": "sensor",
-      "insights": true,
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": "Hz"
-      },
-      "uiQuickAction": false,
-      "icon": "/assets/frequency.svg",
-      "value": "Mode"
-    }
+      {
+        "id": "Water_Tank_Temp_Action",
+        "title": {
+          "en": "Set water tank temp to..."
+        },
+        "titleFormatted": {
+          "en": "Set water tank temp to [[tank_water_value]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloudHP"
+          },
+          {
+            "name": "tank_water_value",
+            "type": "number",
+            "min": 40,
+            "max": 60,
+            "placeholder": {
+              "en": "value"
+            }
+          }
+        ]
+      }
+    ]
   },
   "drivers": [
     {
-      "id": "melcloud",
       "name": {
         "en": "MelCloud AC Device"
       },
@@ -612,10 +1711,10 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "melcloud"
     },
     {
-      "id": "melcloudHP",
       "name": {
         "en": "MelCloud Heat Pump"
       },
@@ -634,12 +1733,12 @@
         "mode_heatpump1",
         "hot_temperature",
         "cold_temperature",
-        "alarm_BoosterHeater1",
-        "alarm_BoosterHeater2",
-        "alarm_BoosterHeater2Plus",
-        "alarm_ImmersionHeater",
-        "alarm_DefrostMode",
-        "measure_OperationMode",
+        "alarm_boosterheater1",
+        "alarm_boosterheater2",
+        "alarm_boosterheater2plus",
+        "alarm_immersionheater",
+        "alarm_defrostmode",
+        "measure_operationmode",
         "cool_temperature",
         "heat_temperature"
       ],
@@ -853,1595 +1952,497 @@
             }
           ]
         }
-      ]
+      ],
+      "id": "melcloudHP"
     }
   ],
-  "flow": {
-    "triggers": [
-      {
-        "id": "Full_Thermostat_Trigger",
-        "title": {
-          "en": "Full thermostat mode has changed to..."
-        },
-        "titleFormatted": {
-          "en": "Full thermostat mode has changed to [[mode_capability_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "mode_capability_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "off",
-                "title": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+  "capabilities": {
+    "alarm_boosterheater1": {
+      "type": "boolean",
+      "title": {
+        "en": "Booster Heater 1"
       },
-      {
-        "id": "Pump1_Thermostat_Trigger",
-        "title": {
-          "en": "Zone mode has changed to..."
-        },
-        "titleFormatted": {
-          "en": "Zone mode has changed to [[mode_hpz1_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "mode_hpz1_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Thermostat"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Booster Heater 1 On"
       },
-      {
-        "id": "Operation_Mode_Trigger",
-        "title": {
-          "en": "Operation Mode has changed to..."
-        },
-        "titleFormatted": {
-          "en": "Operation Mode has changed to [[operation_mode_trigger]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "operation_mode_trigger",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "DHW-Heating"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Heating"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Cooling"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "Defrost"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Standby"
-                }
-              },
-              {
-                "id": "6",
-                "label": {
-                  "en": "Legionella"
-                }
-              }
-            ]
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Booster Heater 1 Off"
       },
-      {
-        "id": "Fan_Speed_Trigger",
-        "title": {
-          "en": "The fan speed has changed to..."
-        },
-        "titleFormatted": {
-          "en": "The fan speed has changed to [[fan_speed_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "fan_speed_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "Very Slow"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Slow"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Medium"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "High"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Very High"
-                }
-              }
-            ]
-          }
-        ]
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "Vertical_Swing_Trigger",
-        "title": {
-          "en": "The vertical swing has changed to..."
-        },
-        "titleFormatted": {
-          "en": "The vertical swing has changed to [[vertical_swing_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/BoosterHeater1.svg"
+    },
+    "alarm_boosterheater2": {
+      "type": "boolean",
+      "title": {
+        "en": "Booster Heater 2"
       },
-      {
-        "id": "Horizontal_Swing_Trigger",
-        "title": {
-          "en": "The horizontal swing has changed to..."
-        },
-        "titleFormatted": {
-          "en": "The horizontal swing has changed to [[horizontal_swing_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "left",
-                "title": {
-                  "en": "Left"
-                }
-              },
-              {
-                "id": "middleleft",
-                "title": {
-                  "en": "Middle Left"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middleright",
-                "title": {
-                  "en": "Middle Right"
-                }
-              },
-              {
-                "id": "right",
-                "title": {
-                  "en": "Right"
-                }
-              },
-              {
-                "id": "split",
-                "title": {
-                  "en": "Split"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Booster Heater 2 On"
       },
-      {
-        "id": "Forced_Water_Trigger",
-        "title": {
-          "en": "Forced hot water has changed to..."
-        },
-        "titleFormatted": {
-          "en": "Forced hot water has changed to [[forced_hot_water_trigger]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "forced_hot_water_trigger",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "label": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Booster Heater 2 Off"
       },
-      {
-        "id": "Hot_Water_Trigger",
-        "title": {
-          "en": "Hot Water Zone has changed"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "Cold_Water_Trigger",
-        "title": {
-          "en": "Cold Water Zone has changed"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/BoosterHeater2.svg"
+    },
+    "alarm_boosterheater2plus": {
+      "type": "boolean",
+      "title": {
+        "en": "Booster Heater 2+"
       },
-      {
-        "id": "alarm_BoosterHeater1_true",
-        "title": {
-          "en": "Booster Heater 1 On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Booster Heater 2 Plus On"
       },
-      {
-        "id": "alarm_BoosterHeater1_false",
-        "title": {
-          "en": "Booster Heater 1 Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Booster Heater 2 Plus Off"
       },
-      {
-        "id": "alarm_BoosterHeater2_true",
-        "title": {
-          "en": "Booster Heater 2 On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "alarm_BoosterHeater2_false",
-        "title": {
-          "en": "Booster Heater 2 Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/BoosterHeater2Plus.svg"
+    },
+    "alarm_defrostmode": {
+      "type": "boolean",
+      "title": {
+        "en": "Defrost Mode"
       },
-      {
-        "id": "alarm_BoosterHeater2Plus_true",
-        "title": {
-          "en": "Booster Heater 2 Plus On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Defrost Mode On"
       },
-      {
-        "id": "alarm_BoosterHeater2Plus_false",
-        "title": {
-          "en": "Booster Heater 2 Plus Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Defrost Mode Off"
       },
-      {
-        "id": "alarm_ImmersionHeater_true",
-        "title": {
-          "en": "Immersion Heater On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "alarm_ImmersionHeater_false",
-        "title": {
-          "en": "Immersion Heater Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/Defrost.svg"
+    },
+    "alarm_immersionheater": {
+      "type": "boolean",
+      "title": {
+        "en": "Immersion Heater"
       },
-      {
-        "id": "alarm_DefrostMode_true",
-        "title": {
-          "en": "Desfrost Mode On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Immersion Heater On"
       },
-      {
-        "id": "alarm_DefrostMode_false",
-        "title": {
-          "en": "Desfrost Mode Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
-      }
-    ],
-    "actions": [
-      {
-        "id": "Full_Thermostat_Action",
-        "title": {
-          "en": "Set full mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set full mode to [[mode_capability_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "mode_capability_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "off",
-                "title": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Immersion Heater Off"
       },
-      {
-        "id": "Operation_Mode_Action",
-        "title": {
-          "en": "Set operation mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set operation mode to [[operation_mode_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "operation_mode_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "DHW-Heating"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Heating"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Cooling"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "Defrost"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Standby"
-                }
-              },
-              {
-                "id": "6",
-                "label": {
-                  "en": "Legionella"
-                }
-              }
-            ]
-          }
-        ]
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "Pump1_Thermostat_Action",
-        "title": {
-          "en": "Set zone mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set zone mode to [[mode_hpom_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "mode_hpom_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Thermostat"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/ImmersionHeater.svg"
+    },
+    "cold_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Cold Water Flow"
       },
-      {
-        "id": "Fan_Speed_Action",
-        "title": {
-          "en": "Set fan speed to..."
-        },
-        "titleFormatted": {
-          "en": "Set fan speed to [[fan_speed_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "fan_speed_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "Very Slow"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Slow"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Medium"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "High"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Very High"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "units": {
+        "en": "ºC"
       },
-      {
-        "id": "Vertical_Swing_Action",
-        "title": {
-          "en": "Set vertical swing to..."
-        },
-        "titleFormatted": {
-          "en": "Set vertical swing to [[vertical_swing_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "icon": "/assets/cold.svg"
+    },
+    "cool_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Cool Water Flow Set"
       },
-      {
-        "id": "Horizontal_Swing_Action",
-        "title": {
-          "en": "Set horizontal swing to..."
-        },
-        "titleFormatted": {
-          "en": "Set horizontal swing to [[horizontal_swing_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "left",
-                "title": {
-                  "en": "Left"
-                }
-              },
-              {
-                "id": "middleleft",
-                "title": {
-                  "en": "Middle Left"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middleright",
-                "title": {
-                  "en": "Middle Right"
-                }
-              },
-              {
-                "id": "right",
-                "title": {
-                  "en": "Right"
-                }
-              },
-              {
-                "id": "split",
-                "title": {
-                  "en": "Split"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "units": {
+        "en": "ºC"
       },
-      {
-        "id": "Forced_Hot_Water_Action",
-        "title": {
-          "en": "Set forced hot water to..."
-        },
-        "titleFormatted": {
-          "en": "Set forced hot water to [[forced_hot_water_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "forced_hot_water_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "label": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "icon": "/assets/cold.svg"
+    },
+    "fan_power": {
+      "type": "number",
+      "title": {
+        "en": "Fan Power"
       },
-      {
-        "id": "Eco_Hot_Water_Action",
-        "title": {
-          "en": "Set eco hot water to..."
-        },
-        "titleFormatted": {
-          "en": "Set eco hot water to [[eco_hot_water_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "eco_hot_water_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "label": {
-                  "en": "Off"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": "slider",
+      "insights": true,
+      "getable": true,
+      "setable": true,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "Heat_Water_Action",
-        "title": {
-          "en": "Set heat water flow to..."
-        },
-        "titleFormatted": {
-          "en": "Set heat water flow to [[heat_water_value]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "heat_water_value",
-            "type": "number",
-            "min": 10,
-            "max": 60,
-            "placeholder": {
-              "en": "value"
-            }
-          }
-        ]
+      "min": 0,
+      "max": 5,
+      "step": 1
+    },
+    "forcedhotwater": {
+      "type": "boolean",
+      "title": {
+        "en": "Forced Hot Water"
       },
-      {
-        "id": "Cool_Water_Action",
-        "title": {
-          "en": "Set cool water flow to..."
-        },
-        "titleFormatted": {
-          "en": "Set cool water flow to [[cool_water_value]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "cool_water_value",
-            "type": "number",
-            "min": 10,
-            "max": 60,
-            "placeholder": {
-              "en": "value"
-            }
-          }
-        ]
+      "uiComponent": "toggle",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Forced Hot Water On"
       },
-      {
-        "id": "Water_Tank_Temp_Action",
-        "title": {
-          "en": "Set water tank temp to..."
-        },
-        "titleFormatted": {
-          "en": "Set water tank temp to [[tank_water_value]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "tank_water_value",
-            "type": "number",
-            "min": 40,
-            "max": 60,
-            "placeholder": {
-              "en": "value"
-            }
-          }
-        ]
-      }
-    ],
-    "conditions": [
-      {
-        "id": "Full_Thermostat_Condition",
-        "title": {
-          "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "mode_capability_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "off",
-                "title": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+      "insightsTitleFalse": {
+        "en": "Forced Hot Water Off"
       },
-      {
-        "id": "Pump1_Thermostat_Condition",
-        "title": {
-          "en": "Zone mode is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Zone mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "mode_hpz1_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Thermostat"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
+      "getable": true,
+      "setable": true,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "Operation_Mode_Condition",
-        "title": {
-          "en": "Operation mode is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "operation_mode_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "DHW-Heating"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Heating"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Cooling"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "Defrost"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Standby"
-                }
-              },
-              {
-                "id": "6",
-                "label": {
-                  "en": "Legionella"
-                }
-              }
-            ]
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/forcedwater.svg"
+    },
+    "heat_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Heat Water Flow Set"
       },
-      {
-        "id": "Fan_Speed_Condition",
-        "title": {
-          "en": "Fan speed is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "fan_speed_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "Very Slow"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Slow"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Medium"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "High"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Very High"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "units": {
+        "en": "ºC"
       },
-      {
-        "id": "Vertical_Swing_Condition",
-        "title": {
-          "en": "Vertical swing is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Vertical swing is !{{equals|does not equal}} to [[vertical_swing_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical_swing_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "icon": "/assets/hot.svg"
+    },
+    "horizontal": {
+      "type": "enum",
+      "title": {
+        "en": "Horizontal Position"
       },
-      {
-        "id": "Horizontal_Swing_Condition",
-        "title": {
-          "en": "Horizontal swing is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Horizontal swing is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "left",
-                "title": {
-                  "en": "Left"
-                }
-              },
-              {
-                "id": "middleleft",
-                "title": {
-                  "en": "Middle Left"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middleright",
-                "title": {
-                  "en": "Middle Right"
-                }
-              },
-              {
-                "id": "right",
-                "title": {
-                  "en": "Right"
-                }
-              },
-              {
-                "id": "split",
-                "title": {
-                  "en": "Split"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "uiQuickAction": false,
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto"
           }
-        ]
+        },
+        {
+          "id": "left",
+          "title": {
+            "en": "Left"
+          }
+        },
+        {
+          "id": "middleleft",
+          "title": {
+            "en": "Middle Left"
+          }
+        },
+        {
+          "id": "middle",
+          "title": {
+            "en": "Middle"
+          }
+        },
+        {
+          "id": "middleright",
+          "title": {
+            "en": "Middle Right"
+          }
+        },
+        {
+          "id": "right",
+          "title": {
+            "en": "Right"
+          }
+        },
+        {
+          "id": "split",
+          "title": {
+            "en": "Split"
+          }
+        },
+        {
+          "id": "swing",
+          "title": {
+            "en": "Swing"
+          }
+        }
+      ]
+    },
+    "hot_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Hot Water Flow"
       },
-      {
-        "id": "Forced_Hot_Water_Condition",
-        "title": {
-          "en": "Forced hot water is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Forced hot water is !{{equals|does not equal}} to [[forced_hot_water_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "forced_hot_water_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "label": {
-                  "en": "Auto"
-                }
-              }
-            ]
-          }
-        ]
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "ºC"
       },
-      {
-        "id": "alarm_BoosterHeater1_Condition",
-        "title": {
-          "en": "Booster Heater 1 !{{is|isn't}} On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "decimals": 1,
+      "icon": "/assets/hot.svg"
+    },
+    "measure_operationmode": {
+      "type": "string",
+      "title": {
+        "en": "Operation Mode"
       },
-      {
-        "id": "alarm_BoosterHeater2_Condition",
-        "title": {
-          "en": "Booster Heater 2 !{{is|isn't}} On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": ""
       },
-      {
-        "id": "alarm_BoosterHeater2Plus_Condition",
-        "title": {
-          "en": "Booster Heater 2 Plus !{{is|isn't}} On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/mode.svg",
+      "value": "Mode"
+    },
+    "meter_heatpumpfrequency": {
+      "type": "number",
+      "title": {
+        "en": "Frequency"
       },
-      {
-        "id": "alarm_ImmersionHeater_Condition",
-        "title": {
-          "en": "Immersion Heater !{{is|isn't}} On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "Hz"
       },
-      {
-        "id": "alarm_DefrostMode_Condition",
-        "title": {
-          "en": "Defrost Mode !{{is|isn't}} On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          }
-        ]
+      "uiQuickAction": false,
+      "icon": "/assets/frequency.svg",
+      "value": "Mode"
+    },
+    "mode_capability": {
+      "type": "enum",
+      "title": {
+        "en": "Full Thermostat Mode"
       },
-      {
-        "id": "Hot_Water_Condition",
-        "title": {
-          "en": "Hot Water Zone !{{is|isn't}} greater or equal than..."
-        },
-        "titleFormatted": {
-          "en": "Hot Water Zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "hot_water_value",
-            "type": "number",
-            "min": 10,
-            "max": 60,
-            "placeholder": {
-              "en": "value"
-            }
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "uiQuickAction": false,
+      "insights": true,
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
           }
-        ]
+        },
+        {
+          "id": "heat",
+          "title": {
+            "en": "Heat"
+          }
+        },
+        {
+          "id": "dry",
+          "title": {
+            "en": "Dry"
+          }
+        },
+        {
+          "id": "cool",
+          "title": {
+            "en": "Cool"
+          }
+        },
+        {
+          "id": "fan",
+          "title": {
+            "en": "Fan"
+          }
+        },
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto"
+          }
+        }
+      ]
+    },
+    "mode_heatpump1": {
+      "type": "enum",
+      "title": {
+        "en": "Heat Pump Mode Zone"
       },
-      {
-        "id": "Cold_Water_Condition",
-        "title": {
-          "en": "Cold water zone !{{is|isn't}} lower or equal than..."
-        },
-        "titleFormatted": {
-          "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "cold_water_value",
-            "type": "number",
-            "min": 10,
-            "max": 60,
-            "placeholder": {
-              "en": "value"
-            }
+      "getable": true,
+      "setable": true,
+      "uiComponent": null,
+      "uiQuickAction": false,
+      "insights": true,
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Heat Thermostat"
           }
-        ]
-      }
-    ]
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Heat Flow"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Curve"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Cool Thermostat"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Cool Flow"
+          }
+        }
+      ]
+    },
+    "outside_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Outside Temp."
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "units": {
+        "en": "ºC"
+      },
+      "min": -50,
+      "max": 80,
+      "step": 0.5,
+      "icon": "/assets/outside.svg"
+    },
+    "vertical": {
+      "type": "enum",
+      "title": {
+        "en": "Vertical Position"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "uiQuickAction": false,
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Auto"
+          }
+        },
+        {
+          "id": "top",
+          "title": {
+            "en": "Top"
+          }
+        },
+        {
+          "id": "middletop",
+          "title": {
+            "en": "Middle Top"
+          }
+        },
+        {
+          "id": "middle",
+          "title": {
+            "en": "Middle"
+          }
+        },
+        {
+          "id": "middlebottom",
+          "title": {
+            "en": "Middle Bottom"
+          }
+        },
+        {
+          "id": "bottom",
+          "title": {
+            "en": "Bottom"
+          }
+        },
+        {
+          "id": "swing",
+          "title": {
+            "en": "Swing"
+          }
+        }
+      ]
+    },
+    "watertank_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Water Tank Temperature"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "ºC"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "icon": "/assets/tanktemp.svg"
+    }
   }
 }

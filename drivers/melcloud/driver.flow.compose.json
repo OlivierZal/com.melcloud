@@ -1,0 +1,698 @@
+{
+  "triggers": [
+    {
+      "id": "Full_Thermostat_Trigger",
+      "title": {
+        "en": "Full thermostat mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Full thermostat mode has changed to [[mode_capability_action]]"
+      },
+      "args": [
+        {
+          "name": "mode_capability_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan"
+              }
+            },
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Fan_Speed_Trigger",
+      "title": {
+        "en": "The fan speed has changed to..."
+      },
+      "titleFormatted": {
+        "en": "The fan speed has changed to [[fan_speed_action]]"
+      },
+      "args": [
+        {
+          "name": "fan_speed_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Very Slow"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Slow"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Medium"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "High"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Very High"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Vertical_Swing_Trigger",
+      "title": {
+        "en": "The vertical swing has changed to..."
+      },
+      "titleFormatted": {
+        "en": "The vertical swing has changed to [[vertical_swing_action]]"
+      },
+      "args": [
+        {
+          "name": "vertical_swing_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Top"
+              }
+            },
+            {
+              "id": "middletop",
+              "title": {
+                "en": "Middle Top"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middlebottom",
+              "title": {
+                "en": "Middle Bottom"
+              }
+            },
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Bottom"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Horizontal_Swing_Trigger",
+      "title": {
+        "en": "The horizontal swing has changed to..."
+      },
+      "titleFormatted": {
+        "en": "The horizontal swing has changed to [[horizontal_swing_action]]"
+      },
+      "args": [
+        {
+          "name": "horizontal_swing_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "left",
+              "title": {
+                "en": "Left"
+              }
+            },
+            {
+              "id": "middleleft",
+              "title": {
+                "en": "Middle Left"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middleright",
+              "title": {
+                "en": "Middle Right"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Right"
+              }
+            },
+            {
+              "id": "split",
+              "title": {
+                "en": "Split"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "Full_Thermostat_Condition",
+      "title": {
+        "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
+      },
+      "args": [
+        {
+          "name": "mode_capability_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan"
+              }
+            },
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Fan_Speed_Condition",
+      "title": {
+        "en": "Fan speed is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
+      },
+      "args": [
+        {
+          "name": "fan_speed_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Very Slow"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Slow"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Medium"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "High"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Very High"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Vertical_Swing_Condition",
+      "title": {
+        "en": "Vertical swing is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Vertical swing is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+      },
+      "args": [
+        {
+          "name": "vertical_swing_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Top"
+              }
+            },
+            {
+              "id": "middletop",
+              "title": {
+                "en": "Middle Top"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middlebottom",
+              "title": {
+                "en": "Middle Bottom"
+              }
+            },
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Bottom"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Horizontal_Swing_Condition",
+      "title": {
+        "en": "Horizontal swing is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Horizontal swing is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
+      },
+      "args": [
+        {
+          "name": "horizontal_swing_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "left",
+              "title": {
+                "en": "Left"
+              }
+            },
+            {
+              "id": "middleleft",
+              "title": {
+                "en": "Middle Left"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middleright",
+              "title": {
+                "en": "Middle Right"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Right"
+              }
+            },
+            {
+              "id": "split",
+              "title": {
+                "en": "Split"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "Full_Thermostat_Action",
+      "title": {
+        "en": "Set full mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set full mode to [[mode_capability_action]]"
+      },
+      "args": [
+        {
+          "name": "mode_capability_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "off",
+              "title": {
+                "en": "Off"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan"
+              }
+            },
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Fan_Speed_Action",
+      "title": {
+        "en": "Set fan speed to..."
+      },
+      "titleFormatted": {
+        "en": "Set fan speed to [[fan_speed_action]]"
+      },
+      "args": [
+        {
+          "name": "fan_speed_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Very Slow"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Slow"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Medium"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "High"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Very High"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Vertical_Swing_Action",
+      "title": {
+        "en": "Set vertical swing to..."
+      },
+      "titleFormatted": {
+        "en": "Set vertical swing to [[vertical_swing_action]]"
+      },
+      "args": [
+        {
+          "name": "vertical_swing_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Top"
+              }
+            },
+            {
+              "id": "middletop",
+              "title": {
+                "en": "Middle Top"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middlebottom",
+              "title": {
+                "en": "Middle Bottom"
+              }
+            },
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Bottom"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Horizontal_Swing_Action",
+      "title": {
+        "en": "Set horizontal swing to..."
+      },
+      "titleFormatted": {
+        "en": "Set horizontal swing to [[horizontal_swing_action]]"
+      },
+      "args": [
+        {
+          "name": "horizontal_swing_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "left",
+              "title": {
+                "en": "Left"
+              }
+            },
+            {
+              "id": "middleleft",
+              "title": {
+                "en": "Middle Left"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middleright",
+              "title": {
+                "en": "Middle Right"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Right"
+              }
+            },
+            {
+              "id": "split",
+              "title": {
+                "en": "Split"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
