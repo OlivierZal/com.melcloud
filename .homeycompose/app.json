@@ -1,6 +1,6 @@
 {
   "id": "com.mecloud",
-  "sdk": 2,
+  "sdk": 3,
   "brandColor": "#ed0c13",
   "name": {
     "en": "MelCloud"
@@ -11,8 +11,8 @@
   "category": [
     "climate"
   ],
-  "version": "2.0.12",
-  "compatibility": ">=3.0.0",
+  "version": "3.0.0",
+  "compatibility": ">=5.0.0",
   "tags": {
     "en": [
       "Aircon",

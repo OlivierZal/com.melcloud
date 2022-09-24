@@ -130,7 +130,7 @@ class MelCloudDevice extends Homey.Device {
     }
   }
 
-  onInit() {
+  async onInit() {
     this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
     this.registerCapabilityListener('target_temperature', this.onCapabilitySetTemperature.bind(this));
     this.registerCapabilityListener('mode_capability', this.onCapabilitySetMode.bind(this));
@@ -138,14 +138,13 @@ class MelCloudDevice extends Homey.Device {
     this.registerCapabilityListener('fan_power', this.onCapabilityFanSet.bind(this));
     this.registerCapabilityListener('vertical', this.onCapabilityVerticalSet.bind(this));
     this.registerCapabilityListener('horizontal', this.onCapabilityHorizontalSet.bind(this));
-    this.getDeviceData();
+    await this.getDeviceData();
   }
 
   async getDeviceData() {
     try {
-      const ContextKey = Homey.ManagerSettings.get('ContextKey');
+      const ContextKey = this.homey.settings.get('ContextKey');
       const data = this.getData();
-      const driver = this.getDriver();
       const request = {
         uri: `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
         json: true,
@@ -173,31 +172,30 @@ class MelCloudDevice extends Homey.Device {
 
       const mode = await Value2Mode(response.data.OperationMode);
       if (mode !== this.getCapabilityValue('mode_capability')) {
-        driver.triggerThermostatModeChange(this);
+        this.driver.triggerThermostatModeChange(this);
       }
 
       await this.setCapabilityValue('mode_capability', mode);
       await this.setTermostatModeValue(response.data.Power, mode);
 
       if (response.data.SetFanSpeed !== this.getCapabilityValue('fan_power')) {
-        driver.triggerFanSpeedChange(this);
+        this.driver.triggerFanSpeedChange(this);
       }
       this.setCapabilityValue('fan_power', response.data.SetFanSpeed);
       const vertical = await Value2Vertical(response.data.VaneVertical);
       if (vertical !== this.getCapabilityValue('vertical')) {
-        driver.triggerVerticalSwingChange(this);
+        this.driver.triggerVerticalSwingChange(this);
       }
       this.setCapabilityValue('vertical', vertical);
       const horizontal = await Value2Horizontal(response.data.VaneHorizontal);
       if (horizontal !== this.getCapabilityValue('horizontal')) {
-        driver.triggerHorizontalSwingChange(this);
+        this.driver.triggerHorizontalSwingChange(this);
       }
       this.setCapabilityValue('horizontal', horizontal);
 
       clearTimeout(this.syncTimeout);
       const updateInterval = this.getSettings().interval;
-      const interval = 1000 * 60 * updateInterval;
-      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), interval);
+      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), updateInterval * 60000);
     } catch (error) {
       throw new Error(error);
     }
@@ -205,7 +203,7 @@ class MelCloudDevice extends Homey.Device {
 
   async updateCapabilityValues() {
     try {
-      const ContextKey = Homey.ManagerSettings.get('ContextKey');
+      const ContextKey = this.homey.settings.get('ContextKey');
       const data = this.getData();
       const mode = await Mode2Value(this.getCapabilityValue('mode_capability'));
       const vertical = await Vertical2Value(this.getCapabilityValue('vertical'));
@@ -216,7 +214,7 @@ class MelCloudDevice extends Homey.Device {
         json: {
           DeviceID: data.id,
           EffectiveFlags: 0x11F,
-          HasPendingCommand: 'true',
+          HasPendingCommand: true,
           Power: this.getCapabilityValue('onoff'),
           SetTemperature: this.getCapabilityValue('target_temperature'),
           OperationMode: mode,
@@ -230,7 +228,7 @@ class MelCloudDevice extends Homey.Device {
           throw new Error('No device');
         }
       });
-      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), 2 * 60 * 1000);
+      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), 2 * 60000);
     } catch (error) {
       throw new Error(error);
     }
@@ -264,7 +262,7 @@ class MelCloudDevice extends Homey.Device {
     try {
       await this.setCapabilityValue('mode_capability', mode);
       const onoff = await this.getCapabilityValue('onoff');
-      this.getDriver().triggerThermostatModeChange(this);
+      this.driver.triggerThermostatModeChange(this);
       await this.setTermostatModeValue(onoff, mode);
       this.updateCapabilityValues();
     } catch (error) {
@@ -284,7 +282,7 @@ class MelCloudDevice extends Homey.Device {
   async onCapabilityVerticalSet(value) {
     try {
       await this.setCapabilityValue('vertical', value);
-      this.getDriver().triggerVerticalSwingChange(this);
+      this.driver.triggerVerticalSwingChange(this);
       this.updateCapabilityValues();
     } catch (error) {
       throw new Error(error);
@@ -294,7 +292,7 @@ class MelCloudDevice extends Homey.Device {
   async onCapabilityHorizontalSet(value) {
     try {
       await this.setCapabilityValue('horizontal', value);
-      this.getDriver().triggerHorizontalSwingChange(this);
+      this.driver.triggerHorizontalSwingChange(this);
       this.updateCapabilityValues();
     } catch (error) {
       throw new Error(error);
@@ -304,7 +302,7 @@ class MelCloudDevice extends Homey.Device {
   async onCapabilityFanSet(value) {
     try {
       await this.setCapabilityValue('fan_power', value);
-      this.getDriver().triggerFanSpeedChange(this);
+      this.driver.triggerFanSpeedChange(this);
       this.updateCapabilityValues();
     } catch (error) {
       throw new Error(error);

@@ -10,12 +10,12 @@ class MelCloudDevice extends Homey.Device {
     }
   }
 
-  onInit() {
+  async onInit() {
     this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
     this.registerCapabilityListener('target_temperature', this.onCapabilitySetTemperature.bind(this));
     this.registerCapabilityListener('forcedhotwater', this.onCapabilityForcedHotWater.bind(this));
     this.registerCapabilityListener('mode_heatpump1', this.onCapabilityMode.bind(this));
-    this.getDeviceData(this);
+    await this.getDeviceData();
 
     if (!this.hasCapability('heat_temperature')) {
       this.addCapability('heat_temperature');
@@ -30,7 +30,7 @@ class MelCloudDevice extends Homey.Device {
 
   getDeviceData() {
     try {
-      const ContextKey = Homey.ManagerSettings.get('ContextKey');
+      const ContextKey = this.homey.settings.get('ContextKey');
       const data = this.getData();
       let { zone } = data;
       if (!zone) {
@@ -41,7 +41,6 @@ class MelCloudDevice extends Homey.Device {
         json: true,
         headers: { 'X-MitsContextKey': ContextKey },
       };
-      const driver = this.getDriver();
       http.get(request).then((result) => {
         if (result.response.statusCode !== 200) {
           throw new Error('No device');
@@ -71,10 +70,10 @@ class MelCloudDevice extends Homey.Device {
           this.setCapabilityValue('heat_temperature', result.data.SetHeatFlowTemperatureZone1);
           this.setCapabilityValue('cool_temperature', result.data.SetCoolFlowTemperatureZone1);
           if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone1) {
-            driver.triggerHotWaterChange(this);
+            this.driver.triggerHotWaterChange(this);
           }
           if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone1) {
-            driver.triggerColdWaterChange(this);
+            this.driver.triggerColdWaterChange(this);
           }
         } else {
           this.setSettings({
@@ -97,10 +96,10 @@ class MelCloudDevice extends Homey.Device {
           this.setCapabilityValue('heat_temperature', result.data.SetHeatFlowTemperatureZone2);
           this.setCapabilityValue('cool_temperature', result.data.SetCoolFlowTemperatureZone2);
           if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone2) {
-            driver.triggerHotWaterChange(this);
+            this.driver.triggerHotWaterChange(this);
           }
           if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone2) {
-            driver.triggerColdWaterChange(this);
+            this.driver.triggerColdWaterChange(this);
           }
         }
 
@@ -110,11 +109,11 @@ class MelCloudDevice extends Homey.Device {
         }
         const currentForced = this.getCapabilityValue('forcedhotwater');
         if (currentForced !== result.data.ForcedHotWaterMode) {
-          driver.triggerForcedHotWaterChange(this);
+          this.driver.triggerForcedHotWaterChange(this);
         }
 
         if (currentMode !== result.data.OperationMode) {
-          driver.triggerOperationModeChange(this);
+          this.driver.triggerOperationModeChange(this);
         }
         let operationMode;
         switch (result.data.OperationMode) {
@@ -154,8 +153,7 @@ class MelCloudDevice extends Homey.Device {
 
       clearTimeout(this.syncTimeout);
       const updateInterval = this.getSettings().interval;
-      const interval = 1000 * 60 * updateInterval;
-      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), (interval));
+      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), updateInterval * 60000);
     } catch (error) {
       throw new Error(error);
     }
@@ -163,7 +161,7 @@ class MelCloudDevice extends Homey.Device {
 
   async updateCapabilityValues() {
     try {
-      const ContextKey = Homey.ManagerSettings.get('ContextKey');
+      const ContextKey = this.homey.settings.get('ContextKey');
       const data = this.getData();
       const { zone } = data;
       const settings = await this.getSettings();
@@ -185,7 +183,7 @@ class MelCloudDevice extends Homey.Device {
           json: {
             DeviceID: data.id,
             EffectiveFlags: 281483566710825,
-            HasPendingCommand: 'true',
+            HasPendingCommand: true,
             Power: power,
             SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
             ForcedHotWaterMode: this.getCapabilityValue('forcedhotwater'),
@@ -207,7 +205,7 @@ class MelCloudDevice extends Homey.Device {
           json: {
             DeviceID: data.id,
             EffectiveFlags: 281509336515113,
-            HasPendingCommand: 'true',
+            HasPendingCommand: true,
             Power: power,
             SetTemperatureZone2: this.getCapabilityValue('target_temperature'),
             ForcedHotWaterMode: this.getCapabilityValue('forcedhotwater'),
@@ -225,7 +223,7 @@ class MelCloudDevice extends Homey.Device {
           throw new Error('No device');
         }
       });
-      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), (1 * 60 * 1000));
+      this.syncTimeout = setTimeout(this.getDeviceData.bind(this), 60000);
     } catch (error) {
       throw new Error(error);
     }
@@ -238,7 +236,7 @@ class MelCloudDevice extends Homey.Device {
         await this.setCapabilityValue('mode_heatpump1', newSettingsObj.operationmodezone);
       }
       await setTimeout(() => this.alwaysOn(), 1000);
-      this.syncTimeout = setTimeout(this.updateCapabilityValues.bind(this), (2000));
+      this.syncTimeout = setTimeout(this.updateCapabilityValues.bind(this), 2000);
     } catch (error) {
       throw new Error(error);
     }
@@ -271,8 +269,7 @@ class MelCloudDevice extends Homey.Device {
   async onCapabilityMode(value) {
     try {
       await this.setCapabilityValue('mode_heatpump1', value);
-      const driver = this.getDriver();
-      driver.triggerModeChange(this);
+      this.driver.triggerModeChange(this);
       this.updateCapabilityValues();
     } catch (error) {
       throw new Error(error);
@@ -292,9 +289,12 @@ class MelCloudDevice extends Homey.Device {
 
   async onCapabilityForcedHotWater(value) {
     try {
-      await this.setCapabilityValue('forcedhotwater', value);
-      const driver = this.getDriver();
-      driver.triggerForcedHotWaterChange(this);
+      let forced = false;
+      if (value === true || value === 'true') {
+        forced = true;
+      }
+      await this.setCapabilityValue('forcedhotwater', forced);
+      this.driver.triggerForcedHotWaterChange(this);
       this.updateCapabilityValues();
     } catch (error) {
       throw new Error(error);

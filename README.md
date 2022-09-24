@@ -3,22 +3,20 @@
 ## Introduction
 This app integrate `MelCloud` into Homey.
 
-
-## Usage ##
+## Usage
 1. Install app
 2. Add device(s) to Homey.
 
 You can configure the timeout between polls in the app's settings.
 
-
-## Not yet developed ##
-- Flowcards for non standard Capabilities (Homeykit Thermostat, Fan, Horitzontal Vane, Vertical Vane)
-  
 ## Final note ##
 The repository is available at: https://github.com/XattSPT/com.melcloud
 
-
 ## Change Log:
+
+### v 3.0.0
+- Upgrade to Homey SDK 3
+- Code cleaning and fixing
 
 ### v 2.0.0 to 2.0.7
 - HeatPump improvements
@@ -32,7 +30,7 @@ The repository is available at: https://github.com/XattSPT/com.melcloud
 - Included flowcards for Triggering, Conditions and Actions for non standard capabilities
 
 ### v 1.1.1
-- Now detect devices in any configuration (Floors, Areas, Buildings) on Melcloud
+- Now detect devices in any configuration (Floors, Areas, Buildings) on MelCloud
 - Minor bug fixes on Homekit Thermostat 
 
 ### v 1.1.0
