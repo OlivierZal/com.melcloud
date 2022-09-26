@@ -1,15 +1,9 @@
-This app integrate `MelCloud` into Homey.
+This app integrates MELCloud into Homey to control:
+- air conditioners
+- heat pumps.
 
-- Valid for AC Devices in MelCloud
-- Valid for Heat Pumps in MelCloud
+Notes:
+- some heat pump parameters are available in device settings
+- heat pumps configured with 2 zones have not been tested: please contact me if you are available for testing.
 
-*Usage*
-1. Install app
-2. Add device(s) to Homey.
-
-Note: Some parameters for Heat Pumps can be configured in the device's settings.
-
-Todo: HeatPumps with 2 Zones configured has not been tested. Please contact me throught Github issue's page if you are available for testing.   
-
-
-
+This app is not endorsed, verified or approved by Mitsubishi Electric Corporation. Mitsubishi cannot be held liable for any and all claims in the event of any damages that may occur when using this app to control MELCloud applications or devices.
