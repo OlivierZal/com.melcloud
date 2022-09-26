@@ -64,5 +64,8 @@
   },
   "2.0.12": {
     "en": "minor bugfixes"
+  },
+  "3.0.0": {
+    "en": "Upgrade to Homey SDK 3, bug fixes and code cleaning"
   }
 }
