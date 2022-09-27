@@ -67,5 +67,8 @@
   },
   "3.0.0": {
     "en": "Upgrade to Homey SDK 3, bug fixes and code cleaning"
+  },
+  "3.0.1": {
+    "en": "Changed some labels"
   }
 }
