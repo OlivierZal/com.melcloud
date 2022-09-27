@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "MelCloud Heat Pump"
+    "en": "MELCloud Heat Pump"
   },
   "images": {
     "small": "drivers/melcloudHP/assets/images/small.png",
@@ -53,7 +53,7 @@
       },
       "options": {
         "logo": "pair_logo.png",
-        "usernameLabel": "MelCloud account",
+        "usernameLabel": "MELCloud account",
         "usernamePlaceholder": "user@domain.com",
         "passwordLabel": "Password",
         "passwordPlaceholder": "P4ssw0rd"

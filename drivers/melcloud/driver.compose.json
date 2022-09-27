@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "MelCloud Air Conditioner"
+    "en": "MELCloud Air Conditioner"
   },
   "images": {
     "small": "drivers/melcloud/assets/images/small.png",
@@ -33,7 +33,7 @@
       },
       "options": {
         "logo": "pair_logo.png",
-        "usernameLabel": "MelCloud account",
+        "usernameLabel": "MELCloud account",
         "usernamePlaceholder": "user@domain.com",
         "passwordLabel": "Password",
         "passwordPlaceholder": "P4ssw0rd"

@@ -3,10 +3,10 @@
   "sdk": 3,
   "brandColor": "#ed0c13",
   "name": {
-    "en": "MelCloud"
+    "en": "MELCloud"
   },
   "description": {
-    "en": "Take control of MelCloud devices"
+    "en": "Take control of MELCloud devices"
   },
   "category": [
     "climate"
