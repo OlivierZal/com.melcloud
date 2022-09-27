@@ -16,11 +16,11 @@
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
-      "Aircon",
-      "MelCloud",
-      "Mitsubishi",
-      "Heatpump",
-      "Ecodan"
+      "Air conditioner",
+      "Ecodan",
+      "Heat pump",
+      "MELCloud",
+      "Mitsubishi"
     ]
   },
   "images": {
@@ -1642,7 +1642,7 @@
   "drivers": [
     {
       "name": {
-        "en": "MelCloud AC Device"
+        "en": "MelCloud Air Conditioner"
       },
       "images": {
         "small": "drivers/melcloud/assets/images/small.png",
