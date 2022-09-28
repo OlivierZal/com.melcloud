@@ -12,8 +12,3 @@ This app integrates MELCloud into Homey to control:
 ## Notes
 - Timeout delay and some heat pump parameters are available in device settings.
 - Heat pumps configured with 2 zones have not been tested: please contact me if you are available for testing.
-
-## Changelog
-### v3.0.0
-- Upgrade to Homey SDK 3.
-- Bug fixes & code cleanig.

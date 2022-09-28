@@ -1,7 +1,7 @@
 {
   "type": "enum",
   "title": {
-    "en": "Vertical Position"
+    "en": "Vertical Vane Position"
   },
   "getable": true,
   "setable": true,

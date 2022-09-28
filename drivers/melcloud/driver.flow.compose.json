@@ -56,10 +56,10 @@
     {
       "id": "Fan_Speed_Trigger",
       "title": {
-        "en": "The fan speed has changed to..."
+        "en": "Fan speed has changed to..."
       },
       "titleFormatted": {
-        "en": "The fan speed has changed to [[fan_speed_action]]"
+        "en": "Fan speed has changed to [[fan_speed_action]]"
       },
       "args": [
         {
@@ -109,10 +109,10 @@
     {
       "id": "Vertical_Swing_Trigger",
       "title": {
-        "en": "The vertical swing has changed to..."
+        "en": "Vertical vane position has changed to..."
       },
       "titleFormatted": {
-        "en": "The vertical swing has changed to [[vertical_swing_action]]"
+        "en": "Vertical vane position has changed to [[vertical_swing_action]]"
       },
       "args": [
         {
@@ -168,10 +168,10 @@
     {
       "id": "Horizontal_Swing_Trigger",
       "title": {
-        "en": "The horizontal swing has changed to..."
+        "en": "Horizontal vane position has changed to..."
       },
       "titleFormatted": {
-        "en": "The horizontal swing has changed to [[horizontal_swing_action]]"
+        "en": "Horizontal vane position has changed to [[horizontal_swing_action]]"
       },
       "args": [
         {
@@ -341,10 +341,10 @@
     {
       "id": "Vertical_Swing_Condition",
       "title": {
-        "en": "Vertical swing is !{{equals|does not equal}} to..."
+        "en": "Vertical vane position is !{{equals|does not equal}} to..."
       },
       "titleFormatted": {
-        "en": "Vertical swing is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+        "en": "Vertical vane position is !{{equals|does not equal}} to [[vertical_swing_condition]]"
       },
       "args": [
         {
@@ -400,10 +400,10 @@
     {
       "id": "Horizontal_Swing_Condition",
       "title": {
-        "en": "Horizontal swing is !{{equals|does not equal}} to..."
+        "en": "Horizontal vane position is !{{equals|does not equal}} to..."
       },
       "titleFormatted": {
-        "en": "Horizontal swing is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
+        "en": "Horizontal vane position is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
       },
       "args": [
         {
@@ -573,10 +573,10 @@
     {
       "id": "Vertical_Swing_Action",
       "title": {
-        "en": "Set vertical swing to..."
+        "en": "Set vertical vane position to..."
       },
       "titleFormatted": {
-        "en": "Set vertical swing to [[vertical_swing_action]]"
+        "en": "Set vertical vane position to [[vertical_swing_action]]"
       },
       "args": [
         {
@@ -632,10 +632,10 @@
     {
       "id": "Horizontal_Swing_Action",
       "title": {
-        "en": "Set horizontal swing to..."
+        "en": "Set horizontal vane position to..."
       },
       "titleFormatted": {
-        "en": "Set horizontal swing to [[horizontal_swing_action]]"
+        "en": "Set horizontal vane position to [[horizontal_swing_action]]"
       },
       "args": [
         {
