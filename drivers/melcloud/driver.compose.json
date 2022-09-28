@@ -20,7 +20,7 @@
   "capabilitiesOptions": {
     "thermostat_mode": {
       "title": {
-        "en": "Homekit Thermostat"
+        "en": "HomeKit Thermostat Modes"
       }
     }
   },
@@ -33,7 +33,7 @@
       },
       "options": {
         "logo": "pair_logo.png",
-        "usernameLabel": "MELCloud account",
+        "usernameLabel": "MELCloud Username",
         "usernamePlaceholder": "user@domain.com",
         "passwordLabel": "Password",
         "passwordPlaceholder": "P4ssw0rd"
@@ -55,7 +55,7 @@
     {
       "type": "group",
       "label": {
-        "en": "Update device time"
+        "en": "Update Frequency"
       },
       "children": [
         {

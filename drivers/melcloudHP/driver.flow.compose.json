@@ -3,10 +3,10 @@
     {
       "id": "Pump1_Thermostat_Trigger",
       "title": {
-        "en": "Zone mode has changed to..."
+        "en": "Zone operation mode has changed to..."
       },
       "titleFormatted": {
-        "en": "Zone mode has changed to [[mode_hpz1_action]]"
+        "en": "Zone operation mode has changed to [[mode_hpz1_action]]"
       },
       "args": [
         {
@@ -50,10 +50,10 @@
     {
       "id": "Operation_Mode_Trigger",
       "title": {
-        "en": "Operation Mode has changed to..."
+        "en": "Operation mode has changed to..."
       },
       "titleFormatted": {
-        "en": "Operation Mode has changed to [[operation_mode_trigger]]"
+        "en": "Operation mode has changed to [[operation_mode_trigger]]"
       },
       "args": [
         {
@@ -224,10 +224,10 @@
     {
       "id": "Pump1_Thermostat_Condition",
       "title": {
-        "en": "Zone mode is !{{equals|does not equal}} to..."
+        "en": "Zone operation mode is !{{equals|does not equal}} to..."
       },
       "titleFormatted": {
-        "en": "Zone mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+        "en": "Zone operation mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
       },
       "args": [
         {
@@ -394,10 +394,10 @@
     {
       "id": "Hot_Water_Condition",
       "title": {
-        "en": "Hot Water Zone !{{is|isn't}} greater or equal than..."
+        "en": "Hot water zone !{{is|isn't}} greater or equal than..."
       },
       "titleFormatted": {
-        "en": "Hot Water Zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+        "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
       },
       "args": [
         {
@@ -640,10 +640,10 @@
     {
       "id": "Water_Tank_Temp_Action",
       "title": {
-        "en": "Set water tank temp to..."
+        "en": "Set water tank temperature to..."
       },
       "titleFormatted": {
-        "en": "Set water tank temp to [[tank_water_value]]"
+        "en": "Set water tank temperature to [[tank_water_value]]"
       },
       "args": [
         {

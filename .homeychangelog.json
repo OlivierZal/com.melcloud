@@ -1,77 +1,8 @@
 {
-  "1.1.1": {
-    "en": "Devices are detected in any Melcloud Building Structure"
-  },
-  "1.1.2": {
-    "en": "Devices are detected in any Melcloud Building Structure"
-  },
-  "1.5.0": {
-    "en": "Included flowcards for Triggering, Conditions and Actions for non standard capabilities"
-  },
-  "1.5.1": {
-    "en": "heatpump development test"
-  },
-  "1.5.2": {
-    "en": "heatpumt attempt 2"
-  },
-  "1.5.3": {
-    "en": "heat pump tests for testers"
-  },
-  "1.5.4": {
-    "en": "heat pump test 3 close to ready"
-  },
-  "1.5.5": {
-    "en": "heat pump 4"
-  },
-  "1.5.6": {
-    "en": "Heat Pump improvements"
-  },
-  "1.5.7": {
-    "en": "heat pump improvements"
-  },
-  "1.5.8": {
-    "en": "heat pump prerelease"
-  },
   "2.0.0": {
-    "en": "Heat Pump Release"
-  },
-  "2.0.1": {
-    "en": "HeatPump 2 Zones & Minor Bugfix"
-  },
-  "2.0.2": {
-    "en": "New Flowcards. Minor Bugfixes."
-  },
-  "2.0.3": {
-    "en": "Added Flowcards. Minor Bugfixes."
-  },
-  "2.0.4": {
-    "en": "Minor bugfixes. New FlowCards."
-  },
-  "2.0.7": {
-    "en": "New Flowcards on HP. Minor bugfixes on AC devices."
-  },
-  "2.0.8": {
-    "en": "improved login process"
-  },
-  "2.0.9": {
-    "en": "minor bugfixes. new flowcards on HP."
-  },
-  "2.0.10": {
-    "en": "test for bugs"
-  },
-  "2.0.11": {
-    "en": "Test bugs AC device"
-  },
-  "2.0.12": {
-    "en": "minor bugfixes"
+    "en": "Added heat pump support."
   },
   "3.0.0": {
-    "en": "Upgrade to Homey SDK 3, bug fixes and code cleaning"
-  },
-  "3.0.1": {
-    "en": "Changed some labels"
-  },
-  "3.0.2": {
-    "en": "Changed some labels"
+    "en": "Migrated to Homey SDK 3. Fixed multi-floor device search. Fixed AC fan & dry modes. Fixed AC horizontal vane control. Fixed various bugs."
   }
 }

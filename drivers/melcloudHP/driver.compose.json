@@ -32,7 +32,7 @@
       "max": 30,
       "insights": true,
       "title": {
-        "en": "Target Temp."
+        "en": "Target Temperature"
       }
     },
     "onoff": {
@@ -40,7 +40,7 @@
     },
     "measure_temperature": {
       "title": {
-        "en": "Inside Temp."
+        "en": "Room Temperature"
       }
     }
   },
@@ -53,7 +53,7 @@
       },
       "options": {
         "logo": "pair_logo.png",
-        "usernameLabel": "MELCloud account",
+        "usernameLabel": "MELCloud Username",
         "usernamePlaceholder": "user@domain.com",
         "passwordLabel": "Password",
         "passwordPlaceholder": "P4ssw0rd"
@@ -75,7 +75,7 @@
     {
       "type": "group",
       "label": {
-        "en": "Update device time"
+        "en": "Update Frequency"
       },
       "children": [
         {
@@ -87,13 +87,21 @@
           "value": 5,
           "min": 1,
           "max": 60
-        },
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "label": {
+        "en": "Operation Modes"
+      },
+      "children": [
         {
           "id": "alwayson",
           "type": "checkbox",
           "value": false,
           "label": {
-            "en": "Always On Device"
+            "en": "Always On"
           }
         },
         {
@@ -193,14 +201,14 @@
     {
       "type": "group",
       "label": {
-        "en": "Device Settings"
+        "en": "Temperature Settings"
       },
       "children": [
         {
           "id": "tanktemperature",
           "type": "number",
           "label": {
-            "en": "Set Water Tank Temperature (ºC)"
+            "en": "Water Tank Temperature (ºC)"
           },
           "value": 46,
           "min": 40,
@@ -210,7 +218,7 @@
           "id": "heattemperature",
           "type": "number",
           "label": {
-            "en": "Set Heat Water Zone (ºC)"
+            "en": "Heat Water Temperature (ºC)"
           },
           "value": 10,
           "min": 25,
@@ -220,7 +228,7 @@
           "id": "cooltemperature",
           "type": "number",
           "label": {
-            "en": "Set Cool Water Zone (ºC)"
+            "en": "Cool Water Temperature (ºC)"
           },
           "value": 18,
           "min": 10,

@@ -1,7 +1,7 @@
 {
   "type": "number",
   "title": {
-    "en": "Outside Temp."
+    "en": "Outside Temperature"
   },
   "uiComponent": "sensor",
   "getable": true,
