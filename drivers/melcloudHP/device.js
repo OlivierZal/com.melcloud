@@ -179,7 +179,7 @@ class MelCloudDevice extends Homey.Device {
         },
         json: {
           DeviceID: data.id,
-          EffectiveFlags: 281483566710825,
+          EffectiveFlags: 0x1000200010029,
           HasPendingCommand: true,
           Power: power,
           SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
@@ -201,7 +201,7 @@ class MelCloudDevice extends Homey.Device {
         },
         json: {
           DeviceID: data.id,
-          EffectiveFlags: 281509336515113,
+          EffectiveFlags: 0x1000800010229,
           HasPendingCommand: true,
           Power: power,
           SetTemperatureZone2: this.getCapabilityValue('target_temperature'),
