@@ -12,31 +12,19 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat Thermostat"
+        "en": "Room"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat Flow"
+        "en": "Flow"
       }
     },
     {
       "id": "2",
       "title": {
         "en": "Curve"
-      }
-    },
-    {
-      "id": "3",
-      "title": {
-        "en": "Cool Thermostat"
-      }
-    },
-    {
-      "id": "4",
-      "title": {
-        "en": "Cool Flow"
       }
     }
   ]
