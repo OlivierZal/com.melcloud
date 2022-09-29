@@ -167,31 +167,19 @@
             {
               "id": "0",
               "label": {
-                "en": "Heat Thermostat"
+                "en": "Room"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "Heat Flow"
+                "en": "Flow"
               }
             },
             {
               "id": "2",
               "label": {
                 "en": "Curve"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cool Thermostat"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Cool Flow"
               }
             }
           ]

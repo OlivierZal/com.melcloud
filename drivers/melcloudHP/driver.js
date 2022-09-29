@@ -85,7 +85,7 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
       .registerRunListener((args) => {
         const value = args.heat_water_value;
         args.device.setSettings({ heattemperature: value });
-        args.device.setCapabilityValue('heat_temperature', value);
+        args.device.setCapabilityValue('heat_temperature', value).catch(this.error);
         setTimeout(() => args.device.updateCapabilityValues(), 1000);
         return value;
       });
@@ -95,7 +95,7 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
       .registerRunListener((args) => {
         const value = args.cool_water_value;
         args.device.setSettings({ cooltemperature: value });
-        args.device.setCapabilityValue('cold_temperature', value);
+        args.device.setCapabilityValue('cold_temperature', value).catch(this.error);
         setTimeout(() => args.device.updateCapabilityValues(), 1000);
         return value;
       });
@@ -105,7 +105,7 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
       .registerRunListener((args) => {
         const value = args.tank_water_value;
         args.device.setSettings({ tanktemperature: value });
-        args.device.setCapabilityValue('watertank_temperature', value);
+        args.device.setCapabilityValue('watertank_temperature', value).catch(this.error);
         setTimeout(() => args.device.updateCapabilityValues(), 1000);
         return value;
       });

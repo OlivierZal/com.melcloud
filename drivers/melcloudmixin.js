@@ -43,7 +43,6 @@ class MelCloudDriverMixin extends Homey.Driver {
         throw new Error('No device');
       }
       const deviceList = [];
-      const devices = [];
       result.data.forEach((data) => {
         data.Structure.Devices.forEach((device) => {
           deviceList.push(device);
@@ -64,6 +63,15 @@ class MelCloudDriverMixin extends Homey.Driver {
           });
         });
       });
+      return deviceList;
+    });
+  }
+
+  onPair(session) {
+    session.setHandler('login', async (data) => this.logIn(data.username, data.password));
+    session.setHandler('list_devices', async () => {
+      const devices = [];
+      const deviceList = await this.discoverDevices();
       deviceList.forEach((device) => {
         devices.push({
           name: device.DeviceName,
@@ -89,11 +97,6 @@ class MelCloudDriverMixin extends Homey.Driver {
       });
       return devices;
     });
-  }
-
-  onPair(session) {
-    session.setHandler('login', async (data) => this.logIn(data.username, data.password));
-    session.setHandler('list_devices', async () => this.discoverDevices());
   }
 }
 

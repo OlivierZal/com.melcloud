@@ -114,10 +114,10 @@
       {
         "id": "Fan_Speed_Trigger",
         "title": {
-          "en": "The fan speed has changed to..."
+          "en": "Fan speed has changed to..."
         },
         "titleFormatted": {
-          "en": "The fan speed has changed to [[fan_speed_action]]"
+          "en": "Fan speed has changed to [[fan_speed_action]]"
         },
         "args": [
           {
@@ -172,10 +172,10 @@
       {
         "id": "Vertical_Swing_Trigger",
         "title": {
-          "en": "The vertical swing has changed to..."
+          "en": "Vertical vane position has changed to..."
         },
         "titleFormatted": {
-          "en": "The vertical swing has changed to [[vertical_swing_action]]"
+          "en": "Vertical vane position has changed to [[vertical_swing_action]]"
         },
         "args": [
           {
@@ -236,10 +236,10 @@
       {
         "id": "Horizontal_Swing_Trigger",
         "title": {
-          "en": "The horizontal swing has changed to..."
+          "en": "Horizontal vane position has changed to..."
         },
         "titleFormatted": {
-          "en": "The horizontal swing has changed to [[horizontal_swing_action]]"
+          "en": "Horizontal vane position has changed to [[horizontal_swing_action]]"
         },
         "args": [
           {
@@ -306,10 +306,10 @@
       {
         "id": "Pump1_Thermostat_Trigger",
         "title": {
-          "en": "Zone mode has changed to..."
+          "en": "Zone operation mode has changed to..."
         },
         "titleFormatted": {
-          "en": "Zone mode has changed to [[mode_hpz1_action]]"
+          "en": "Zone operation mode has changed to [[mode_hpz1_action]]"
         },
         "args": [
           {
@@ -324,31 +324,19 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Heat Thermostat"
+                  "en": "Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Heat Flow"
+                  "en": "Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
                 }
               }
             ]
@@ -358,10 +346,10 @@
       {
         "id": "Operation_Mode_Trigger",
         "title": {
-          "en": "Operation Mode has changed to..."
+          "en": "Operation mode has changed to..."
         },
         "titleFormatted": {
-          "en": "Operation Mode has changed to [[operation_mode_trigger]]"
+          "en": "Operation mode has changed to [[operation_mode_trigger]]"
         },
         "args": [
           {
@@ -730,10 +718,10 @@
       {
         "id": "Vertical_Swing_Condition",
         "title": {
-          "en": "Vertical swing is !{{equals|does not equal}} to..."
+          "en": "Vertical vane position is !{{equals|does not equal}} to..."
         },
         "titleFormatted": {
-          "en": "Vertical swing is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+          "en": "Vertical vane position is !{{equals|does not equal}} to [[vertical_swing_condition]]"
         },
         "args": [
           {
@@ -794,10 +782,10 @@
       {
         "id": "Horizontal_Swing_Condition",
         "title": {
-          "en": "Horizontal swing is !{{equals|does not equal}} to..."
+          "en": "Horizontal vane position is !{{equals|does not equal}} to..."
         },
         "titleFormatted": {
-          "en": "Horizontal swing is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
+          "en": "Horizontal vane position is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
         },
         "args": [
           {
@@ -864,10 +852,10 @@
       {
         "id": "Pump1_Thermostat_Condition",
         "title": {
-          "en": "Zone mode is !{{equals|does not equal}} to..."
+          "en": "Zone operation mode is !{{equals|does not equal}} to..."
         },
         "titleFormatted": {
-          "en": "Zone mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+          "en": "Zone operation mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
         },
         "args": [
           {
@@ -882,31 +870,19 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Heat Thermostat"
+                  "en": "Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Heat Flow"
+                  "en": "Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
                 }
               }
             ]
@@ -1079,10 +1055,10 @@
       {
         "id": "Hot_Water_Condition",
         "title": {
-          "en": "Hot Water Zone !{{is|isn't}} greater or equal than..."
+          "en": "Hot water zone !{{is|isn't}} greater or equal than..."
         },
         "titleFormatted": {
-          "en": "Hot Water Zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+          "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
         },
         "args": [
           {
@@ -1247,10 +1223,10 @@
       {
         "id": "Vertical_Swing_Action",
         "title": {
-          "en": "Set vertical swing to..."
+          "en": "Set vertical vane position to..."
         },
         "titleFormatted": {
-          "en": "Set vertical swing to [[vertical_swing_action]]"
+          "en": "Set vertical vane position to [[vertical_swing_action]]"
         },
         "args": [
           {
@@ -1311,10 +1287,10 @@
       {
         "id": "Horizontal_Swing_Action",
         "title": {
-          "en": "Set horizontal swing to..."
+          "en": "Set horizontal vane position to..."
         },
         "titleFormatted": {
-          "en": "Set horizontal swing to [[horizontal_swing_action]]"
+          "en": "Set horizontal vane position to [[horizontal_swing_action]]"
         },
         "args": [
           {
@@ -1463,31 +1439,19 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Heat Thermostat"
+                  "en": "Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Heat Flow"
+                  "en": "Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Thermostat"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
                 }
               }
             ]
@@ -1615,10 +1579,10 @@
       {
         "id": "Water_Tank_Temp_Action",
         "title": {
-          "en": "Set water tank temp to..."
+          "en": "Set water tank temperature to..."
         },
         "titleFormatted": {
-          "en": "Set water tank temp to [[tank_water_value]]"
+          "en": "Set water tank temperature to [[tank_water_value]]"
         },
         "args": [
           {
@@ -1662,7 +1626,7 @@
       "capabilitiesOptions": {
         "thermostat_mode": {
           "title": {
-            "en": "Homekit Thermostat"
+            "en": "HomeKit Thermostat Modes"
           }
         }
       },
@@ -1675,7 +1639,7 @@
           },
           "options": {
             "logo": "pair_logo.png",
-            "usernameLabel": "MELCloud account",
+            "usernameLabel": "MELCloud Username",
             "usernamePlaceholder": "user@domain.com",
             "passwordLabel": "Password",
             "passwordPlaceholder": "P4ssw0rd"
@@ -1697,7 +1661,7 @@
         {
           "type": "group",
           "label": {
-            "en": "Update device time"
+            "en": "Update Frequency"
           },
           "children": [
             {
@@ -1749,7 +1713,7 @@
           "max": 30,
           "insights": true,
           "title": {
-            "en": "Target Temp."
+            "en": "Target Temperature"
           }
         },
         "onoff": {
@@ -1757,7 +1721,7 @@
         },
         "measure_temperature": {
           "title": {
-            "en": "Inside Temp."
+            "en": "Room Temperature"
           }
         }
       },
@@ -1770,7 +1734,7 @@
           },
           "options": {
             "logo": "pair_logo.png",
-            "usernameLabel": "MELCloud account",
+            "usernameLabel": "MELCloud Username",
             "usernamePlaceholder": "user@domain.com",
             "passwordLabel": "Password",
             "passwordPlaceholder": "P4ssw0rd"
@@ -1792,7 +1756,7 @@
         {
           "type": "group",
           "label": {
-            "en": "Update device time"
+            "en": "Update Frequency"
           },
           "children": [
             {
@@ -1804,13 +1768,21 @@
               "value": 5,
               "min": 1,
               "max": 60
-            },
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Operation Modes"
+          },
+          "children": [
             {
               "id": "alwayson",
               "type": "checkbox",
               "value": false,
               "label": {
-                "en": "Always On Device"
+                "en": "Always On"
               }
             },
             {
@@ -1876,31 +1848,19 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Heat Thermostat"
+                    "en": "Room"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "Heat Flow"
+                    "en": "Flow"
                   }
                 },
                 {
                   "id": "2",
                   "label": {
                     "en": "Curve"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "Cool Thermostat"
-                  }
-                },
-                {
-                  "id": "4",
-                  "label": {
-                    "en": "Cool Flow"
                   }
                 }
               ]
@@ -1910,14 +1870,14 @@
         {
           "type": "group",
           "label": {
-            "en": "Device Settings"
+            "en": "Temperature Settings"
           },
           "children": [
             {
               "id": "tanktemperature",
               "type": "number",
               "label": {
-                "en": "Set Water Tank Temperature (ºC)"
+                "en": "Water Tank Temperature (ºC)"
               },
               "value": 46,
               "min": 40,
@@ -1927,7 +1887,7 @@
               "id": "heattemperature",
               "type": "number",
               "label": {
-                "en": "Set Heat Water Zone (ºC)"
+                "en": "Heat Water Temperature (ºC)"
               },
               "value": 10,
               "min": 25,
@@ -1937,7 +1897,7 @@
               "id": "cooltemperature",
               "type": "number",
               "label": {
-                "en": "Set Cool Water Zone (ºC)"
+                "en": "Cool Water Temperature (ºC)"
               },
               "value": 18,
               "min": 10,
@@ -2157,7 +2117,7 @@
     "horizontal": {
       "type": "enum",
       "title": {
-        "en": "Horizontal Position"
+        "en": "Horizontal Vane Position"
       },
       "getable": true,
       "setable": true,
@@ -2327,13 +2287,13 @@
         {
           "id": "0",
           "title": {
-            "en": "Heat Thermostat"
+            "en": "Room"
           }
         },
         {
           "id": "1",
           "title": {
-            "en": "Heat Flow"
+            "en": "Flow"
           }
         },
         {
@@ -2341,25 +2301,13 @@
           "title": {
             "en": "Curve"
           }
-        },
-        {
-          "id": "3",
-          "title": {
-            "en": "Cool Thermostat"
-          }
-        },
-        {
-          "id": "4",
-          "title": {
-            "en": "Cool Flow"
-          }
         }
       ]
     },
     "outside_temperature": {
       "type": "number",
       "title": {
-        "en": "Outside Temp."
+        "en": "Outside Temperature"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2377,7 +2325,7 @@
     "vertical": {
       "type": "enum",
       "title": {
-        "en": "Vertical Position"
+        "en": "Vertical Vane Position"
       },
       "getable": true,
       "setable": true,
