@@ -5,9 +5,6 @@
   "3.0.0": {
     "en": "Migrated to Homey SDK 3. Fixed multi-floor device search. Fixed AC fan & dry modes. Fixed AC horizontal vane control. Fixed various bugs."
   },
-  "3.0.3": {
-    "en": "Fixed heat pump control."
-  },
   "3.0.4": {
     "en": "Filter devices according type when adding ones."
   }
