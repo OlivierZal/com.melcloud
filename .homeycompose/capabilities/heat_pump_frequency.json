@@ -1,7 +1,7 @@
 {
   "type": "number",
   "title": {
-    "en": "Frequency"
+    "en": "Heat Pump Frequency"
   },
   "uiComponent": "sensor",
   "insights": true,
@@ -11,6 +11,6 @@
     "en": "Hz"
   },
   "uiQuickAction": false,
-  "icon": "/assets/frequency.svg",
+  "icon": "/assets/heat_pump_frequency.svg",
   "value": "Mode"
 }

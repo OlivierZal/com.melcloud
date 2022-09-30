@@ -1,85 +1,117 @@
-const MelCloudDriverMixin = require('../melcloudmixin');
+const MELCloudDriverMixin = require('../melclouddrivermixin');
 
-class MelCloudDriverAC extends MelCloudDriverMixin {
+class MELCloudDriverAta extends MELCloudDriverMixin {
   async onInit() {
-    this.DeviceType = 0;
+    this.deviceType = 0;
 
     // Device trigger flowcards
-    this.ThermostatModeTrigger = this.homey.flow
-      .getDeviceTriggerCard('Full_Thermostat_Trigger')
-      .registerRunListener((args) => args.mode_capability_action === args.device.getCapabilityValue('mode_capability'));
-
-    this.FanSpeedTrigger = this.homey.flow
+    this.fanSpeedTrigger = this.homey.flow
       .getDeviceTriggerCard('Fan_Speed_Trigger')
-      .registerRunListener((args) => args.fan_speed_action === args.device.getCapabilityValue('fan_power'));
+      .registerRunListener((args) => {
+        if (args.fan_speed_action === 'any') {
+          return true;
+        }
+        return Number(args.fan_speed_action) === args.device.getCapabilityValue('fan_power');
+      });
 
-    this.VerticalSwingTrigger = this.homey.flow
-      .getDeviceTriggerCard('Vertical_Swing_Trigger')
-      .registerRunListener((args) => args.vertical_swing_action === args.device.getCapabilityValue('vertical'));
-
-    this.HorizontalSwingTrigger = this.homey.flow
+    this.horizontalVaneDirectionTrigger = this.homey.flow
       .getDeviceTriggerCard('Horizontal_Swing_Trigger')
-      .registerRunListener((args) => args.horizontal_swing_action === args.device.getCapabilityValue('horizontal'));
+      .registerRunListener((args) => {
+        if (args.horizontal_swing_action === 'any') {
+          return true;
+        }
+        return args.horizontal_swing_action === args.device.getCapabilityValue('horizontal');
+      });
+
+    this.operationModeTrigger = this.homey.flow
+      .getDeviceTriggerCard('Full_Thermostat_Trigger')
+      .registerRunListener((args) => {
+        if (args.mode_capability_action === 'any') {
+          return true;
+        }
+        return args.mode_capability_action === args.device.getCapabilityValue('operation_mode');
+      });
+
+    this.verticalVaneDirectionTrigger = this.homey.flow
+      .getDeviceTriggerCard('Vertical_Swing_Trigger')
+      .registerRunListener((args) => {
+        if (args.vertical_swing_action === 'any') {
+          return true;
+        }
+        return args.vertical_swing_action === args.device.getCapabilityValue('vertical');
+      });
 
     // Condition flowcards
-    this.ThermostatModeCondition = this.homey.flow
-      .getConditionCard('Full_Thermostat_Condition')
-      .registerRunListener((args) => args.mode_capability_condition === args.device.getCapabilityValue('mode_capability'));
-
-    this.FanSpeedCondition = this.homey.flow
+    this.homey.flow
       .getConditionCard('Fan_Speed_Condition')
-      .registerRunListener((args) => args.fan_speed_condition === args.device.getCapabilityValue('fan_power'));
+      .registerRunListener((args) => Number(args.fan_speed_condition) === args.device.getCapabilityValue('fan_power'));
 
-    this.VerticalSwingCondition = this.homey.flow
-      .getConditionCard('Vertical_Swing_Condition')
-      .registerRunListener((args) => args.vertical_swing_condition === args.device.getCapabilityValue('vertical'));
-
-    this.HorizontalSwingCondition = this.homey.flow
+    this.homey.flow
       .getConditionCard('Horizontal_Swing_Condition')
       .registerRunListener((args) => args.hotizontal_swing_condition === args.device.getCapabilityValue('horizontal'));
 
+    this.homey.flow
+      .getConditionCard('Full_Thermostat_Condition')
+      .registerRunListener((args) => args.mode_capability_condition === args.device.getCapabilityValue('operation_mode'));
+
+    this.homey.flow
+      .getConditionCard('Vertical_Swing_Condition')
+      .registerRunListener((args) => args.vertical_swing_condition === args.device.getCapabilityValue('vertical'));
+
     // Action flowcards
-    this.ThermostatModeAction = this.homey.flow
-      .getActionCard('Full_Thermostat_Action')
-      .registerRunListener((args) => {
-        args.device.onCapabilitySetMode(args.mode_capability_action);
-      });
-    this.FanSpeedAction = this.homey.flow
+    this.homey.flow
       .getActionCard('Fan_Speed_Action')
-      .registerRunListener((args) => {
-        args.device.onCapabilityFanSet(Number(args.fan_speed_action));
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityFanSpeed(Number(args.fan_speed_action));
       });
-    this.VerticalAction = this.homey.flow
-      .getActionCard('Vertical_Swing_Action')
-      .registerRunListener((args) => {
-        args.device.onCapabilityVerticalSet(args.vertical_swing_action);
-      });
-    this.HorizontalAction = this.homey.flow
+
+    this.homey.flow
       .getActionCard('Horizontal_Swing_Action')
-      .registerRunListener((args) => {
-        args.device.onCapabilityHorizontalSet(args.horizontal_swing_action);
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityHorizontalVaneDirection(args.horizontal_swing_action);
+      });
+
+    this.homey.flow
+      .getActionCard('Full_Thermostat_Action')
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityOperationMode(args.mode_capability_action);
+      });
+
+    this.homey.flow
+      .getActionCard('Vertical_Swing_Action')
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityVerticalVaneDirection(args.vertical_swing_action);
       });
   }
 
-  triggerThermostatModeChange(device) {
-    this.ThermostatModeTrigger.trigger(device);
-    return this;
+  // Triggers
+  triggerFanSpeed(device) {
+    this.fanSpeedTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`fan_power\` has been triggered (${device.getCapabilityValue('fan_power')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`fan_power\` has not been triggered (${error})`));
   }
 
-  triggerVerticalSwingChange(device) {
-    this.VerticalSwingTrigger.trigger(device);
-    return this;
+  triggerHorizontalVaneDirection(device) {
+    this.horizontalVaneDirectionTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`horizontal\` has been triggered (${device.getCapabilityValue('horizontal')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`horizontal\` has not been triggered (${error})`));
   }
 
-  triggerHorizontalSwingChange(device) {
-    this.HorizontalSwingTrigger.trigger(device);
-    return this;
+  triggerOperationMode(device) {
+    this.operationModeTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode\` has been triggered (${device.getCapabilityValue('operation_mode')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode\` has not been triggered (${error})`));
   }
 
-  triggerFanSpeedChange(device) {
-    this.FanSpeedTrigger.trigger(device);
-    return this;
+  triggerVerticalVaneDirection(device) {
+    this.verticalVaneDirectionTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`vertical\` has been triggered (${device.getCapabilityValue('vertical')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`vertical\` has not been triggered (${error})`));
   }
 }
 
-module.exports = MelCloudDriverAC;
+module.exports = MELCloudDriverAta;

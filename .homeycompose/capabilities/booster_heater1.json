@@ -1,21 +1,21 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Forced Hot Water"
+    "en": "Booster Heater 1"
   },
-  "uiComponent": "toggle",
+  "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Forced Hot Water On"
+    "en": "Booster Heater 1 On"
   },
   "insightsTitleFalse": {
-    "en": "Forced Hot Water Off"
+    "en": "Booster Heater 1 Off"
   },
   "getable": true,
-  "setable": true,
+  "setable": false,
   "units": {
     "en": ""
   },
   "uiQuickAction": false,
-  "icon": "/assets/forcedwater.svg"
+  "icon": "/assets/booster_heater1.svg"
 }

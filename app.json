@@ -12,7 +12,7 @@
   "category": [
     "climate"
   ],
-  "version": "3.0.6",
+  "version": "3.1.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -74,6 +74,12 @@
             "type": "dropdown",
             "values": [
               {
+                "id": "any",
+                "title": {
+                  "en": "Any"
+                }
+              },
+              {
                 "id": "off",
                 "title": {
                   "en": "Off"
@@ -132,6 +138,12 @@
             "type": "dropdown",
             "values": [
               {
+                "id": "any",
+                "title": {
+                  "en": "Any"
+                }
+              },
+              {
                 "id": "0",
                 "label": {
                   "en": "Auto"
@@ -189,6 +201,12 @@
             "name": "vertical_swing_action",
             "type": "dropdown",
             "values": [
+              {
+                "id": "any",
+                "title": {
+                  "en": "Any"
+                }
+              },
               {
                 "id": "auto",
                 "title": {
@@ -253,6 +271,12 @@
             "name": "horizontal_swing_action",
             "type": "dropdown",
             "values": [
+              {
+                "id": "any",
+                "title": {
+                  "en": "Any"
+                }
+              },
               {
                 "id": "auto",
                 "title": {
@@ -378,13 +402,13 @@
               {
                 "id": "0",
                 "label": {
-                  "en": "Off"
+                  "en": "Idle"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "DHW-Heating"
+                  "en": "DHW"
                 }
               },
               {
@@ -440,15 +464,15 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
                 "id": "false",
                 "label": {
                   "en": "Auto"
+                }
+              },
+              {
+                "id": "true",
+                "label": {
+                  "en": "Heat Now"
                 }
               }
             ]
@@ -936,13 +960,13 @@
               {
                 "id": "0",
                 "label": {
-                  "en": "Off"
+                  "en": "Idle"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "DHW-Heating"
+                  "en": "DHW"
                 }
               },
               {
@@ -998,15 +1022,15 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
                 "id": "false",
                 "label": {
                   "en": "Auto"
+                }
+              },
+              {
+                "id": "true",
+                "label": {
+                  "en": "Heat Now"
                 }
               }
             ]
@@ -1381,70 +1405,6 @@
         ]
       },
       {
-        "id": "Operation_Mode_Action",
-        "title": {
-          "en": "Set operation mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set operation mode to [[operation_mode_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "operation_mode_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "label": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "DHW-Heating"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Heating"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Cooling"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "Defrost"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Standby"
-                }
-              },
-              {
-                "id": "6",
-                "label": {
-                  "en": "Legionella"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "Pump1_Thermostat_Action",
         "title": {
           "en": "Set zone operation mode to..."
@@ -1515,49 +1475,15 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
-                "label": {
-                  "en": "On"
-                }
-              },
-              {
                 "id": "false",
                 "label": {
                   "en": "Auto"
                 }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "Eco_Hot_Water_Action",
-        "title": {
-          "en": "Set eco hot water to..."
-        },
-        "titleFormatted": {
-          "en": "Set eco hot water to [[eco_hot_water_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloudHP"
-          },
-          {
-            "name": "eco_hot_water_action",
-            "type": "dropdown",
-            "values": [
+              },
               {
                 "id": "true",
                 "label": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "label": {
-                  "en": "Off"
+                  "en": "Heat Now"
                 }
               }
             ]
@@ -1652,19 +1578,24 @@
       },
       "class": "thermostat",
       "capabilities": [
-        "onoff",
-        "mode_capability",
-        "thermostat_mode",
-        "target_temperature",
-        "measure_temperature",
         "fan_power",
-        "vertical",
-        "horizontal"
+        "horizontal",
+        "measure_temperature",
+        "onoff",
+        "operation_mode",
+        "target_temperature",
+        "thermostat_mode",
+        "vertical"
       ],
       "capabilitiesOptions": {
+        "measure_temperature": {
+          "title": {
+            "en": "Room Temperature"
+          }
+        },
         "thermostat_mode": {
           "title": {
-            "en": "HomeKit Thermostat Modes"
+            "en": "HomeKit Thermostat Mode"
           }
         }
       },
@@ -1695,11 +1626,12 @@
           "template": "add_devices"
         }
       ],
+      "id": "melcloud",
       "settings": [
         {
           "type": "group",
           "label": {
-            "en": "Update Frequency"
+            "en": "Device Update Frequency"
           },
           "children": [
             {
@@ -1714,8 +1646,7 @@
             }
           ]
         }
-      ],
-      "id": "melcloud"
+      ]
     },
     {
       "name": {
@@ -1727,40 +1658,34 @@
       },
       "class": "thermostat",
       "capabilities": [
-        "onoff",
-        "forcedhotwater",
-        "target_temperature",
+        "booster_heater1",
+        "booster_heater2",
+        "booster_heater2_plus",
+        "eco_hot_water",
+        "defrost_mode",
+        "flow_temperature",
+        "forced_hot_water",
+        "heat_pump_frequency",
+        "immersion_heater",
         "measure_temperature",
-        "watertank_temperature",
-        "outside_temperature",
-        "mode_heatpump1",
-        "hot_temperature",
-        "cold_temperature",
-        "alarm_boosterheater1",
-        "alarm_boosterheater2",
-        "alarm_boosterheater2plus",
-        "alarm_immersionheater",
-        "alarm_defrostmode",
-        "measure_operationmode",
-        "cool_temperature",
-        "heat_temperature"
+        "onoff",
+        "outdoor_temperature",
+        "operation_mode_state",
+        "operation_mode_zone",
+        "return_temperature",
+        "target_temperature",
+        "watertank_temperature"
       ],
       "capabilitiesOptions": {
-        "target_temperature": {
-          "min": 10,
-          "max": 30,
-          "insights": true,
-          "title": {
-            "en": "Target Temperature"
-          }
-        },
-        "onoff": {
-          "uiQuickAction": false
-        },
         "measure_temperature": {
           "title": {
             "en": "Room Temperature"
           }
+        },
+        "target_temperature": {
+          "min": 10,
+          "max": 30,
+          "insights": true
         }
       },
       "pair": [
@@ -1790,11 +1715,12 @@
           "template": "add_devices"
         }
       ],
+      "id": "melcloudHP",
       "settings": [
         {
           "type": "group",
           "label": {
-            "en": "Update Frequency"
+            "en": "Device Update Frequency"
           },
           "children": [
             {
@@ -1812,163 +1738,46 @@
         {
           "type": "group",
           "label": {
-            "en": "Operation Modes"
-          },
-          "children": [
-            {
-              "id": "alwayson",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "en": "Always On"
-              }
-            },
-            {
-              "id": "operationmode",
-              "type": "dropdown",
-              "value": "Select Mode",
-              "label": {
-                "en": "Operation Mode"
-              },
-              "values": [
-                {
-                  "id": "0",
-                  "label": {
-                    "en": "Off"
-                  }
-                },
-                {
-                  "id": "1",
-                  "label": {
-                    "en": "DHW-Heating"
-                  }
-                },
-                {
-                  "id": "2",
-                  "label": {
-                    "en": "Heating"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "Cooling"
-                  }
-                },
-                {
-                  "id": "4",
-                  "label": {
-                    "en": "Defrost"
-                  }
-                },
-                {
-                  "id": "5",
-                  "label": {
-                    "en": "Standby"
-                  }
-                },
-                {
-                  "id": "6",
-                  "label": {
-                    "en": "Legionella"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "operationmodezone",
-              "type": "dropdown",
-              "value": "Select Mode",
-              "label": {
-                "en": "Zone Operation Mode"
-              },
-              "values": [
-                {
-                  "id": "0",
-                  "label": {
-                    "en": "Heat Room"
-                  }
-                },
-                {
-                  "id": "1",
-                  "label": {
-                    "en": "Heat Flow"
-                  }
-                },
-                {
-                  "id": "2",
-                  "label": {
-                    "en": "Curve"
-                  }
-                },
-                {
-                  "id": "3",
-                  "label": {
-                    "en": "Cool Room (if supported)"
-                  }
-                },
-                {
-                  "id": "4",
-                  "label": {
-                    "en": "Cool Flow (if supported)"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
             "en": "Temperature Settings"
           },
           "children": [
             {
-              "id": "tanktemperature",
+              "id": "set_watertank_temperature",
               "type": "number",
               "label": {
-                "en": "Water Tank Temperature (ºC)"
+                "en": "Water Tank (ºC)"
               },
               "value": 46,
               "min": 40,
               "max": 60
             },
             {
-              "id": "heattemperature",
+              "id": "heat_flow_temperature",
               "type": "number",
               "label": {
-                "en": "Heat Water Temperature (ºC)"
+                "en": "Heat Flow (ºC)"
               },
               "value": 10,
               "min": 25,
               "max": 60
             },
             {
-              "id": "cooltemperature",
+              "id": "cool_flow_temperature",
               "type": "number",
               "label": {
-                "en": "Cool Water Temperature (ºC)"
+                "en": "Cool Flow (ºC) (if supported)"
               },
               "value": 18,
               "min": 10,
               "max": 30
-            },
-            {
-              "id": "ecohotwater",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "en": "Eco Hot Water (DHW)"
-              }
             }
           ]
         }
-      ],
-      "id": "melcloudHP"
+      ]
     }
   ],
   "capabilities": {
-    "alarm_boosterheater1": {
+    "booster_heater1": {
       "type": "boolean",
       "title": {
         "en": "Booster Heater 1"
@@ -1987,9 +1796,9 @@
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater1.svg"
+      "icon": "/assets/booster_heater1.svg"
     },
-    "alarm_boosterheater2": {
+    "booster_heater2": {
       "type": "boolean",
       "title": {
         "en": "Booster Heater 2"
@@ -2008,9 +1817,9 @@
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater2.svg"
+      "icon": "/assets/booster_heater2.svg"
     },
-    "alarm_boosterheater2plus": {
+    "booster_heater2_plus": {
       "type": "boolean",
       "title": {
         "en": "Booster Heater 2+"
@@ -2029,9 +1838,9 @@
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/BoosterHeater2Plus.svg"
+      "icon": "/assets/booster_heater2_plus.svg"
     },
-    "alarm_defrostmode": {
+    "defrost_mode": {
       "type": "boolean",
       "title": {
         "en": "Defrost Mode"
@@ -2050,20 +1859,20 @@
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/Defrost.svg"
+      "icon": "/assets/defrost_mode.svg"
     },
-    "alarm_immersionheater": {
+    "eco_hot_water": {
       "type": "boolean",
       "title": {
-        "en": "Immersion Heater"
+        "en": "Eco Hot Water"
       },
       "uiComponent": "sensor",
       "insights": true,
       "insightsTitleTrue": {
-        "en": "Immersion Heater On"
+        "en": "Eco Hot Water On"
       },
       "insightsTitleFalse": {
-        "en": "Immersion Heater Off"
+        "en": "Eco Hot Water Off"
       },
       "getable": true,
       "setable": false,
@@ -2071,43 +1880,7 @@
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/ImmersionHeater.svg"
-    },
-    "cold_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Cold Water Flow"
-      },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/cold.svg"
-    },
-    "cool_temperature": {
-      "type": "number",
-      "title": {
-        "en": "Cool Water Flow Set"
-      },
-      "uiComponent": null,
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "decimals": 1,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "icon": "/assets/cold.svg"
+      "icon": "/assets/forced_hot_water.svg"
     },
     "fan_power": {
       "type": "number",
@@ -2125,49 +1898,71 @@
       "max": 5,
       "step": 1
     },
-    "forcedhotwater": {
-      "type": "boolean",
-      "title": {
-        "en": "Forced Hot Water"
-      },
-      "uiComponent": "toggle",
-      "insights": true,
-      "insightsTitleTrue": {
-        "en": "Forced Hot Water On"
-      },
-      "insightsTitleFalse": {
-        "en": "Forced Hot Water Off"
-      },
-      "getable": true,
-      "setable": true,
-      "units": {
-        "en": ""
-      },
-      "uiQuickAction": false,
-      "icon": "/assets/forcedwater.svg"
-    },
-    "heat_temperature": {
+    "flow_temperature": {
       "type": "number",
       "title": {
-        "en": "Heat Water Flow Set"
+        "en": "Flow Temperature"
       },
-      "uiComponent": null,
+      "uiComponent": "sensor",
       "getable": true,
       "setable": false,
       "insights": true,
-      "decimals": 1,
       "units": {
         "en": "ºC"
       },
       "min": 0,
       "max": 100,
       "step": 0.5,
-      "icon": "/assets/hot.svg"
+      "decimals": 1,
+      "icon": "/assets/flow_temperature.svg"
+    },
+    "forced_hot_water": {
+      "type": "enum",
+      "title": {
+        "en": "Forced Hot Water"
+      },
+      "uiComponent": "picker",
+      "uiQuickAction": false,
+      "insights": true,
+      "insightsTitleFalse": {
+        "en": "Forced Hot Water Auto"
+      },
+      "insightsTitleTrue": {
+        "en": "Forced Hot Water Heat Now"
+      },
+      "getable": true,
+      "setable": true,
+      "values": [
+        {
+          "id": "false",
+          "title": "Auto"
+        },
+        {
+          "id": "true",
+          "title": "Heat Now"
+        }
+      ]
+    },
+    "heat_pump_frequency": {
+      "type": "number",
+      "title": {
+        "en": "Heat Pump Frequency"
+      },
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "Hz"
+      },
+      "uiQuickAction": false,
+      "icon": "/assets/heat_pump_frequency.svg",
+      "value": "Mode"
     },
     "horizontal": {
       "type": "enum",
       "title": {
-        "en": "Horizontal Vane Position"
+        "en": "Horizontal Vane Direction"
       },
       "getable": true,
       "setable": true,
@@ -2224,57 +2019,28 @@
         }
       ]
     },
-    "hot_temperature": {
-      "type": "number",
+    "immersion_heater": {
+      "type": "boolean",
       "title": {
-        "en": "Hot Water Flow"
-      },
-      "uiComponent": "sensor",
-      "getable": true,
-      "setable": false,
-      "insights": true,
-      "units": {
-        "en": "ºC"
-      },
-      "min": 0,
-      "max": 100,
-      "step": 0.5,
-      "decimals": 1,
-      "icon": "/assets/hot.svg"
-    },
-    "measure_operationmode": {
-      "type": "string",
-      "title": {
-        "en": "Operation Mode"
+        "en": "Immersion Heater"
       },
       "uiComponent": "sensor",
       "insights": true,
+      "insightsTitleTrue": {
+        "en": "Immersion Heater On"
+      },
+      "insightsTitleFalse": {
+        "en": "Immersion Heater Off"
+      },
       "getable": true,
       "setable": false,
       "units": {
         "en": ""
       },
       "uiQuickAction": false,
-      "icon": "/assets/mode.svg",
-      "value": "Mode"
+      "icon": "/assets/immersion_heater.svg"
     },
-    "meter_heatpumpfrequency": {
-      "type": "number",
-      "title": {
-        "en": "Frequency"
-      },
-      "uiComponent": "sensor",
-      "insights": true,
-      "getable": true,
-      "setable": false,
-      "units": {
-        "en": "Hz"
-      },
-      "uiQuickAction": false,
-      "icon": "/assets/frequency.svg",
-      "value": "Mode"
-    },
-    "mode_capability": {
+    "operation_mode": {
       "type": "enum",
       "title": {
         "en": "Full Thermostat Mode"
@@ -2323,16 +2089,72 @@
         }
       ]
     },
-    "mode_heatpump1": {
+    "operation_mode_state": {
       "type": "enum",
       "title": {
-        "en": "Heat Pump Mode Zone"
+        "en": "Operation Mode"
       },
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiQuickAction": false,
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Idle"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "DHW"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Heating"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Cooling"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Defrost"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Standby"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Legionella"
+          }
+        }
+      ],
+      "icon": "/assets/operation_mode.svg"
+    },
+    "operation_mode_zone": {
+      "type": "enum",
+      "title": {
+        "en": "Zone Operation Mode"
+      },
+      "uiComponent": "picker",
+      "insights": true,
       "getable": true,
       "setable": true,
-      "uiComponent": null,
       "uiQuickAction": false,
-      "insights": true,
       "values": [
         {
           "id": "0",
@@ -2366,10 +2188,10 @@
         }
       ]
     },
-    "outside_temperature": {
+    "outdoor_temperature": {
       "type": "number",
       "title": {
-        "en": "Outside Temperature"
+        "en": "Outdoor Temperature"
       },
       "uiComponent": "sensor",
       "getable": true,
@@ -2382,12 +2204,30 @@
       "min": -50,
       "max": 80,
       "step": 0.5,
-      "icon": "/assets/outside.svg"
+      "icon": "/assets/outdoor_temperature.svg"
+    },
+    "return_temperature": {
+      "type": "number",
+      "title": {
+        "en": "Return Temperature"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "decimals": 1,
+      "units": {
+        "en": "ºC"
+      },
+      "min": 0,
+      "max": 100,
+      "step": 0.5,
+      "icon": "/assets/return_temperature.svg"
     },
     "vertical": {
       "type": "enum",
       "title": {
-        "en": "Vertical Vane Position"
+        "en": "Vertical Vane Direction"
       },
       "getable": true,
       "setable": true,
@@ -2453,7 +2293,7 @@
       "min": 0,
       "max": 100,
       "step": 0.5,
-      "icon": "/assets/tanktemp.svg"
+      "icon": "/assets/watertank_temperature.svg"
     }
   }
 }

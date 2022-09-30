@@ -1,0 +1,27 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Forced Hot Water"
+  },
+  "uiComponent": "picker",
+  "uiQuickAction": false,
+  "insights": true,
+  "insightsTitleFalse": {
+    "en": "Forced Hot Water Auto"
+  },
+  "insightsTitleTrue": {
+    "en": "Forced Hot Water Heat Now"
+  },
+  "getable": true,
+  "setable": true,
+  "values": [
+    {
+      "id": "false",
+      "title": "Auto"
+    },
+    {
+      "id": "true",
+      "title": "Heat Now"
+    }
+  ]
+}

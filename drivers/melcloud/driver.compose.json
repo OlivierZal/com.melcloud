@@ -8,19 +8,24 @@
   },
   "class": "thermostat",
   "capabilities": [
-    "onoff",
-    "mode_capability",
-    "thermostat_mode",
-    "target_temperature",
-    "measure_temperature",
     "fan_power",
-    "vertical",
-    "horizontal"
+    "horizontal",
+    "measure_temperature",
+    "onoff",
+    "operation_mode",
+    "target_temperature",
+    "thermostat_mode",
+    "vertical"
   ],
   "capabilitiesOptions": {
+    "measure_temperature": {
+      "title": {
+        "en": "Room Temperature"
+      }
+    },
     "thermostat_mode": {
       "title": {
-        "en": "HomeKit Thermostat Modes"
+        "en": "HomeKit Thermostat Mode"
       }
     }
   },
@@ -49,26 +54,6 @@
     {
       "id": "add_my_devices",
       "template": "add_devices"
-    }
-  ],
-  "settings": [
-    {
-      "type": "group",
-      "label": {
-        "en": "Update Frequency"
-      },
-      "children": [
-        {
-          "id": "interval",
-          "type": "number",
-          "label": {
-            "en": "minutes"
-          },
-          "value": 15,
-          "min": 1,
-          "max": 60
-        }
-      ]
     }
   ]
 }

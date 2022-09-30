@@ -1,13 +1,13 @@
 {
   "type": "enum",
   "title": {
-    "en": "Heat Pump Mode Zone"
+    "en": "Zone Operation Mode"
   },
+  "uiComponent": "picker",
+  "insights": true,
   "getable": true,
   "setable": true,
-  "uiComponent": null,
   "uiQuickAction": false,
-  "insights": true,
   "values": [
     {
       "id": "0",
