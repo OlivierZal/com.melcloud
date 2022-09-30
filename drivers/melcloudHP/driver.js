@@ -2,6 +2,8 @@ const MelCloudDriverMixin = require('../melcloudmixin');
 
 class MelCloudDriverHP extends MelCloudDriverMixin {
   async onInit() {
+    this.DeviceType = 1;
+
     // Device trigger flowcards
     this.ForcedWaterTrigger = this.homey.flow
       .getDeviceTriggerCard('Forced_Water_Trigger')

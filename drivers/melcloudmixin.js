@@ -45,20 +45,28 @@ class MelCloudDriverMixin extends Homey.Driver {
       const deviceList = [];
       result.data.forEach((data) => {
         data.Structure.Devices.forEach((device) => {
-          deviceList.push(device);
+          if (this.DeviceType === device.Device.DeviceType) {
+            deviceList.push(device);
+          }
         });
         data.Structure.Areas.forEach((area) => {
           area.Devices.forEach((device) => {
-            deviceList.push(device);
+            if (this.DeviceType === device.Device.DeviceType) {
+              deviceList.push(device);
+            }
           });
         });
         data.Structure.Floors.forEach((floor) => {
           floor.Devices.forEach((device) => {
-            deviceList.push(device);
+            if (this.DeviceType === device.Device.DeviceType) {
+              deviceList.push(device);
+            }
           });
           floor.Areas.forEach((area) => {
             area.Devices.forEach((device) => {
-              deviceList.push(device);
+              if (this.DeviceType === device.Device.DeviceType) {
+                deviceList.push(device);
+              }
             });
           });
         });
@@ -73,26 +81,41 @@ class MelCloudDriverMixin extends Homey.Driver {
       const devices = [];
       const deviceList = await this.discoverDevices();
       deviceList.forEach((device) => {
-        devices.push({
-          name: device.DeviceName,
-          data: {
-            id: device.DeviceID,
-            buildingid: device.BuildingID,
-            address: device.MacAddress,
-            name: device.DeviceName,
-          },
-        });
-        if (device.Device.HasZone2) {
+        // Air conditioner
+        if (device.Device.DeviceType === 0) {
           devices.push({
-            name: `${device.DeviceName} Zone 2`,
+            name: device.DeviceName,
             data: {
               id: device.DeviceID,
               buildingid: device.BuildingID,
               address: device.MacAddress,
-              name: `${device.DeviceName} Zone 2`,
-              zone: 2,
+              name: device.DeviceName,
             },
           });
+        // Heat pump
+        } else if (device.Device.DeviceType === 1) {
+          devices.push({
+            name: device.DeviceName,
+            data: {
+              id: device.DeviceID,
+              buildingid: device.BuildingID,
+              address: device.MacAddress,
+              name: device.DeviceName,
+              zone: 1,
+            },
+          });
+          if (device.Device.HasZone2) {
+            devices.push({
+              name: `${device.DeviceName} Zone 2`,
+              data: {
+                id: device.DeviceID,
+                buildingid: device.BuildingID,
+                address: device.MacAddress,
+                name: `${device.DeviceName} Zone 2`,
+                zone: 2,
+              },
+            });
+          }
         }
       });
       return devices;

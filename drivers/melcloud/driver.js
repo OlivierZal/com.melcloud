@@ -2,6 +2,8 @@ const MelCloudDriverMixin = require('../melcloudmixin');
 
 class MelCloudDriverAC extends MelCloudDriverMixin {
   async onInit() {
+    this.DeviceType = 0;
+
     // Device trigger flowcards
     this.ThermostatModeTrigger = this.homey.flow
       .getDeviceTriggerCard('Full_Thermostat_Trigger')
