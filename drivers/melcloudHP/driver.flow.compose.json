@@ -1,53 +1,6 @@
 {
   "triggers": [
     {
-      "id": "Pump1_Thermostat_Trigger",
-      "title": {
-        "en": "Zone operation mode has changed to..."
-      },
-      "titleFormatted": {
-        "en": "Zone operation mode has changed to [[mode_hpz1_action]]"
-      },
-      "args": [
-        {
-          "name": "mode_hpz1_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "0",
-              "title": {
-                "en": "Heat Room"
-              }
-            },
-            {
-              "id": "1",
-              "title": {
-                "en": "Heat Flow"
-              }
-            },
-            {
-              "id": "2",
-              "title": {
-                "en": "Curve"
-              }
-            },
-            {
-              "id": "3",
-              "title": {
-                "en": "Cool Room (if supported)"
-              }
-            },
-            {
-              "id": "4",
-              "title": {
-                "en": "Cool Flow (if supported)"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "Operation_Mode_Trigger",
       "title": {
         "en": "Operation mode has changed to..."
@@ -63,13 +16,13 @@
             {
               "id": "0",
               "label": {
-                "en": "Off"
+                "en": "Idle"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "DHW-Heating"
+                "en": "Domestic Hot Water"
               }
             },
             {
@@ -107,6 +60,53 @@
       ]
     },
     {
+      "id": "Pump1_Thermostat_Trigger",
+      "title": {
+        "en": "Zone operation mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone operation mode has changed to [[mode_hpz1_action]]"
+      },
+      "args": [
+        {
+          "name": "mode_hpz1_action",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room [if supported]"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow [if supported]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "Forced_Water_Trigger",
       "title": {
         "en": "Forced hot water has changed to..."
@@ -120,15 +120,15 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
+              }
+            },
+            {
+              "id": "true",
+              "label": {
+                "en": "Heat Now"
               }
             }
           ]
@@ -148,79 +148,68 @@
         "en": "Cold Water Zone has changed"
       },
       "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater1_true",
-      "title": {
-        "en": "Booster Heater 1 On"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater1_false",
-      "title": {
-        "en": "Booster Heater 1 Off"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater2_true",
-      "title": {
-        "en": "Booster Heater 2 On"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater2_false",
-      "title": {
-        "en": "Booster Heater 2 Off"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater2Plus_true",
-      "title": {
-        "en": "Booster Heater 2 Plus On"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_BoosterHeater2Plus_false",
-      "title": {
-        "en": "Booster Heater 2 Plus Off"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_ImmersionHeater_true",
-      "title": {
-        "en": "Immersion Heater On"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_ImmersionHeater_false",
-      "title": {
-        "en": "Immersion Heater Off"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_DefrostMode_true",
-      "title": {
-        "en": "Desfrost Mode On"
-      },
-      "args": []
-    },
-    {
-      "id": "alarm_DefrostMode_false",
-      "title": {
-        "en": "Desfrost Mode Off"
-      },
-      "args": []
     }
   ],
   "conditions": [
+    {
+      "id": "Operation_Mode_Condition",
+      "title": {
+        "en": "Operation mode is !{{equals|does not equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_condition",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Idle"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Domestic Hot Water"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "id": "Pump1_Thermostat_Condition",
       "title": {
@@ -255,72 +244,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room (if supported)"
+                "en": "Cool Room [if supported]"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow (if supported)"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Operation_Mode_Condition",
-      "title": {
-        "en": "Operation mode is !{{equals|does not equal}} to..."
-      },
-      "titleFormatted": {
-        "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
-      },
-      "args": [
-        {
-          "name": "operation_mode_condition",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "0",
-              "label": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "DHW-Heating"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Heating"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cooling"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Defrost"
-              }
-            },
-            {
-              "id": "5",
-              "label": {
-                "en": "Standby"
-              }
-            },
-            {
-              "id": "6",
-              "label": {
-                "en": "Legionella"
+                "en": "Cool Flow [if supported]"
               }
             }
           ]
@@ -341,20 +271,67 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
+              }
+            },
+            {
+              "id": "true",
+              "label": {
+                "en": "Heat Now"
               }
             }
           ]
         }
       ]
+    },
+    {
+      "id": "Cold_Water_Condition",
+      "title": {
+        "en": "Cold water zone !{{is|isn't}} lower or equal than..."
+      },
+      "titleFormatted": {
+        "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
+      },
+      "args": [
+        {
+          "name": "cold_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "Hot_Water_Condition",
+      "title": {
+        "en": "Hot water zone !{{is|isn't}} greater or equal than..."
+      },
+      "titleFormatted": {
+        "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+      },
+      "args": [
+        {
+          "name": "hot_water_value",
+          "type": "number",
+          "min": 10,
+          "max": 60,
+          "placeholder": {
+            "en": "value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "alarm_DefrostMode_Condition",
+      "title": {
+        "en": "Defrost Mode !{{is|isn't}} On"
+      },
+      "args": []
     },
     {
       "id": "alarm_BoosterHeater1_Condition",
@@ -383,115 +360,9 @@
         "en": "Immersion Heater !{{is|isn't}} On"
       },
       "args": []
-    },
-    {
-      "id": "alarm_DefrostMode_Condition",
-      "title": {
-        "en": "Defrost Mode !{{is|isn't}} On"
-      },
-      "args": []
-    },
-    {
-      "id": "Hot_Water_Condition",
-      "title": {
-        "en": "Hot water zone !{{is|isn't}} greater or equal than..."
-      },
-      "titleFormatted": {
-        "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
-      },
-      "args": [
-        {
-          "name": "hot_water_value",
-          "type": "number",
-          "min": 10,
-          "max": 60,
-          "placeholder": {
-            "en": "value"
-          }
-        }
-      ]
-    },
-    {
-      "id": "Cold_Water_Condition",
-      "title": {
-        "en": "Cold water zone !{{is|isn't}} lower or equal than..."
-      },
-      "titleFormatted": {
-        "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
-      },
-      "args": [
-        {
-          "name": "cold_water_value",
-          "type": "number",
-          "min": 10,
-          "max": 60,
-          "placeholder": {
-            "en": "value"
-          }
-        }
-      ]
     }
   ],
   "actions": [
-    {
-      "id": "Operation_Mode_Action",
-      "title": {
-        "en": "Set operation mode to..."
-      },
-      "titleFormatted": {
-        "en": "Set operation mode to [[operation_mode_action]]"
-      },
-      "args": [
-        {
-          "name": "operation_mode_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "0",
-              "label": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "DHW-Heating"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Heating"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cooling"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Defrost"
-              }
-            },
-            {
-              "id": "5",
-              "label": {
-                "en": "Standby"
-              }
-            },
-            {
-              "id": "6",
-              "label": {
-                "en": "Legionella"
-              }
-            }
-          ]
-        }
-      ]
-    },
     {
       "id": "Pump1_Thermostat_Action",
       "title": {
@@ -526,13 +397,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room (if supported)"
+                "en": "Cool Room [if supported]"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow (if supported)"
+                "en": "Cool Flow [if supported]"
               }
             }
           ]
@@ -553,44 +424,15 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Eco_Hot_Water_Action",
-      "title": {
-        "en": "Set eco hot water to..."
-      },
-      "titleFormatted": {
-        "en": "Set eco hot water to [[eco_hot_water_action]]"
-      },
-      "args": [
-        {
-          "name": "eco_hot_water_action",
-          "type": "dropdown",
-          "values": [
+            },
             {
               "id": "true",
               "label": {
-                "en": "On"
-              }
-            },
-            {
-              "id": "false",
-              "label": {
-                "en": "Off"
+                "en": "Heat Now"
               }
             }
           ]

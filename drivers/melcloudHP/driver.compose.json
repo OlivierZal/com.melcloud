@@ -8,40 +8,34 @@
   },
   "class": "thermostat",
   "capabilities": [
-    "onoff",
-    "forcedhotwater",
-    "target_temperature",
+    "booster_heater1",
+    "booster_heater2",
+    "booster_heater2_plus",
+    "eco_hot_water",
+    "defrost_mode",
+    "flow_temperature",
+    "forced_hot_water",
+    "heat_pump_frequency",
+    "immersion_heater",
     "measure_temperature",
-    "watertank_temperature",
-    "outside_temperature",
-    "mode_heatpump1",
-    "hot_temperature",
-    "cold_temperature",
-    "alarm_boosterheater1",
-    "alarm_boosterheater2",
-    "alarm_boosterheater2plus",
-    "alarm_immersionheater",
-    "alarm_defrostmode",
-    "measure_operationmode",
-    "cool_temperature",
-    "heat_temperature"
+    "onoff",
+    "outdoor_temperature",
+    "operation_mode_state",
+    "operation_mode_zone",
+    "return_temperature",
+    "target_temperature",
+    "watertank_temperature"
   ],
   "capabilitiesOptions": {
-    "target_temperature": {
-      "min": 10,
-      "max": 30,
-      "insights": true,
-      "title": {
-        "en": "Target Temperature"
-      }
-    },
-    "onoff": {
-      "uiQuickAction": false
-    },
     "measure_temperature": {
       "title": {
         "en": "Room Temperature"
       }
+    },
+    "target_temperature": {
+      "min": 10,
+      "max": 30,
+      "insights": true
     }
   },
   "pair": [
@@ -69,180 +63,6 @@
     {
       "id": "add_my_devices",
       "template": "add_devices"
-    }
-  ],
-  "settings": [
-    {
-      "type": "group",
-      "label": {
-        "en": "Update Frequency"
-      },
-      "children": [
-        {
-          "id": "interval",
-          "type": "number",
-          "label": {
-            "en": "minutes"
-          },
-          "value": 5,
-          "min": 1,
-          "max": 60
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "label": {
-        "en": "Operation Modes"
-      },
-      "children": [
-        {
-          "id": "alwayson",
-          "type": "checkbox",
-          "value": false,
-          "label": {
-            "en": "Always On"
-          }
-        },
-        {
-          "id": "operationmode",
-          "type": "dropdown",
-          "value": "Select Mode",
-          "label": {
-            "en": "Operation Mode"
-          },
-          "values": [
-            {
-              "id": "0",
-              "label": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "DHW-Heating"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Heating"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cooling"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Defrost"
-              }
-            },
-            {
-              "id": "5",
-              "label": {
-                "en": "Standby"
-              }
-            },
-            {
-              "id": "6",
-              "label": {
-                "en": "Legionella"
-              }
-            }
-          ]
-        },
-        {
-          "id": "operationmodezone",
-          "type": "dropdown",
-          "value": "Select Mode",
-          "label": {
-            "en": "Zone Operation Mode"
-          },
-          "values": [
-            {
-              "id": "0",
-              "label": {
-                "en": "Heat Room"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "Heat Flow"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Curve"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cool Room (if supported)"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Cool Flow (if supported)"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "group",
-      "label": {
-        "en": "Temperature Settings"
-      },
-      "children": [
-        {
-          "id": "tanktemperature",
-          "type": "number",
-          "label": {
-            "en": "Water Tank Temperature (ºC)"
-          },
-          "value": 46,
-          "min": 40,
-          "max": 60
-        },
-        {
-          "id": "heattemperature",
-          "type": "number",
-          "label": {
-            "en": "Heat Water Temperature (ºC)"
-          },
-          "value": 10,
-          "min": 25,
-          "max": 60
-        },
-        {
-          "id": "cooltemperature",
-          "type": "number",
-          "label": {
-            "en": "Cool Water Temperature (ºC)"
-          },
-          "value": 18,
-          "min": 10,
-          "max": 30
-        },
-        {
-          "id": "ecohotwater",
-          "type": "checkbox",
-          "value": false,
-          "label": {
-            "en": "Eco Hot Water (DHW)"
-          }
-        }
-      ]
     }
   ]
 }

@@ -1,0 +1,56 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Operation Mode"
+  },
+  "uiComponent": "sensor",
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiQuickAction": false,
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Idle"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Domestic House Water"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Heating"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Cooling"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Defrost"
+      }
+    },
+    {
+      "id": "5",
+      "title": {
+        "en": "Standby"
+      }
+    },
+    {
+      "id": "6",
+      "title": {
+        "en": "Legionella"
+      }
+    }
+  ],
+  "icon": "/assets/operation_mode_state.svg"
+}
