@@ -81,7 +81,7 @@ class MelCloudDriverMixin extends Homey.Driver {
       const devices = [];
       const deviceList = await this.discoverDevices();
       deviceList.forEach((device) => {
-        // Air conditioner
+        // Air-to-air heat pump
         if (device.Device.DeviceType === 0) {
           devices.push({
             name: device.DeviceName,
@@ -92,7 +92,7 @@ class MelCloudDriverMixin extends Homey.Driver {
               name: device.DeviceName,
             },
           });
-        // Heat pump
+        // Air-to-water heat pump
         } else if (device.Device.DeviceType === 1) {
           devices.push({
             name: device.DeviceName,
