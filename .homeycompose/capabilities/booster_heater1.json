@@ -1,15 +1,15 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Immersion Heater"
+    "en": "Booster Heater 1"
   },
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Immersion Heater On"
+    "en": "Booster Heater 1 On"
   },
   "insightsTitleFalse": {
-    "en": "Immersion Heater Off"
+    "en": "Booster Heater 1 Off"
   },
   "getable": true,
   "setable": false,
@@ -17,5 +17,5 @@
     "en": ""
   },
   "uiQuickAction": false,
-  "icon": "/assets/ImmersionHeater.svg"
+  "icon": "/assets/booster_heater1.svg"
 }

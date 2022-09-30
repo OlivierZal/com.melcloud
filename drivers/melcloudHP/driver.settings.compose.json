@@ -1,0 +1,114 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Update Frequency"
+    },
+    "children": [
+      {
+        "id": "interval",
+        "type": "number",
+        "label": {
+          "en": "minutes"
+        },
+        "value": 5,
+        "min": 1,
+        "max": 60
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Water Settings"
+    },
+    "children": [
+      {
+        "id": "forced_hot_water",
+        "type": "checkbox",
+        "value": false,
+        "label": {
+          "en": "Forced Hot Water"
+        }
+      },
+      {
+        "id": "set_watertank_temperature",
+        "type": "number",
+        "label": {
+          "en": "Water Tank Temperature (ºC)"
+        },
+        "value": 46,
+        "min": 40,
+        "max": 60
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Zone Settings"
+    },
+    "children": [
+      {
+        "id": "operation_mode_zone",
+        "type": "dropdown",
+        "value": "Select Mode",
+        "label": {
+          "en": "Zone Operation Mode"
+        },
+        "values": [
+          {
+            "id": "0",
+            "label": {
+              "en": "Heat Room"
+            }
+          },
+          {
+            "id": "1",
+            "label": {
+              "en": "Heat Flow"
+            }
+          },
+          {
+            "id": "2",
+            "label": {
+              "en": "Curve"
+            }
+          },
+          {
+            "id": "3",
+            "label": {
+              "en": "Cool Room (if supported)"
+            }
+          },
+          {
+            "id": "4",
+            "label": {
+              "en": "Cool Flow (if supported)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "heat_flow_temperature",
+        "type": "number",
+        "label": {
+          "en": "Heat Flow Temperature (ºC)"
+        },
+        "value": 10,
+        "min": 25,
+        "max": 60
+      },
+      {
+        "id": "cool_flow_temperature",
+        "type": "number",
+        "label": {
+          "en": "Cool Flow Temperature (ºC) (if supported)"
+        },
+        "value": 18,
+        "min": 10,
+        "max": 30
+      }
+    ]
+  }
+]

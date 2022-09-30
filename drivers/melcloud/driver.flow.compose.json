@@ -14,6 +14,12 @@
           "type": "dropdown",
           "values": [
             {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
               "id": "off",
               "title": {
                 "en": "Off"
@@ -67,6 +73,12 @@
           "type": "dropdown",
           "values": [
             {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
               "id": "0",
               "label": {
                 "en": "Auto"
@@ -119,6 +131,12 @@
           "name": "vertical_swing_action",
           "type": "dropdown",
           "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
             {
               "id": "auto",
               "title": {
@@ -178,6 +196,12 @@
           "name": "horizontal_swing_action",
           "type": "dropdown",
           "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
             {
               "id": "auto",
               "title": {

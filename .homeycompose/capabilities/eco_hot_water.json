@@ -1,21 +1,21 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Forced Hot Water"
+    "en": "Eco Hot Water"
   },
-  "uiComponent": "toggle",
+  "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Forced Hot Water On"
+    "en": "Eco Hot Water On"
   },
   "insightsTitleFalse": {
-    "en": "Forced Hot Water Off"
+    "en": "Eco Hot Water Off"
   },
   "getable": true,
-  "setable": true,
+  "setable": false,
   "units": {
     "en": ""
   },
   "uiQuickAction": false,
-  "icon": "/assets/forcedwater.svg"
+  "icon": "/assets/eco_hot_water.svg"
 }

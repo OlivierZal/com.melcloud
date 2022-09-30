@@ -1,15 +1,15 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Booster Heater 2"
+    "en": "Defrost Mode"
   },
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Booster Heater 2 On"
+    "en": "Defrost Mode On"
   },
   "insightsTitleFalse": {
-    "en": "Booster Heater 2 Off"
+    "en": "Defrost Mode Off"
   },
   "getable": true,
   "setable": false,
@@ -17,5 +17,5 @@
     "en": ""
   },
   "uiQuickAction": false,
-  "icon": "/assets/BoosterHeater2.svg"
+  "icon": "/assets/defrost_mode.svg"
 }

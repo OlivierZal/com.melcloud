@@ -1,13 +1,13 @@
-const Homey = require('homey');
+const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 const http = require('http.min');
 
-class MelCloudDriverMixin extends Homey.Driver {
+class MELCloudDriverMixin extends Homey.Driver {
   async logIn(username, password) {
     let response = false;
     if (username && password) {
       this.homey.settings.set('username', username);
       this.homey.settings.set('password', password);
-      const request = {
+      const options = {
         uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Login/ClientLogin',
         json: {
           AppVersion: '1.9.3.0',
@@ -19,60 +19,77 @@ class MelCloudDriverMixin extends Homey.Driver {
           Persist: true,
         },
       };
-      response = await http.post(request).then((result) => {
-        if (result.data.ErrorId) {
-          return false;
-        }
-        this.homey.settings.set('ContextKey', result.data.LoginData.ContextKey);
-        return true;
-      });
-      this.syncTimeout = setTimeout(this.logIn.bind(this), 24 * 3600 * 1000);
+      try {
+        this.log('Logging to MELCloud');
+        response = await http.post(options).then((result) => {
+          if (result.response.statusCode !== 200) {
+            throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+          }
+          this.log(result.data);
+          if (result.data.ErrorMessage) {
+            throw new Error(result.data.ErrorMessage);
+          }
+          this.homey.settings.set('ContextKey', result.data.LoginData.ContextKey);
+          return true;
+        });
+      } catch (error) {
+        this.error(`Logging to MELCloud: a problem occurred (${error})`);
+      }
     }
     return response;
   }
 
   async discoverDevices() {
-    const ContextKey = this.homey.settings.get('ContextKey');
-    const request = {
+    const options = {
       uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices',
-      headers: { 'X-MitsContextKey': ContextKey },
+      headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
       json: true,
     };
-    return http.get(request).then((result) => {
-      if (result.response.statusCode !== 200) {
-        throw new Error('No device');
-      }
-      const deviceList = [];
-      result.data.forEach((data) => {
-        data.Structure.Devices.forEach((device) => {
-          if (this.DeviceType === device.Device.DeviceType) {
-            deviceList.push(device);
-          }
-        });
-        data.Structure.Areas.forEach((area) => {
-          area.Devices.forEach((device) => {
-            if (this.DeviceType === device.Device.DeviceType) {
-              deviceList.push(device);
+    let deviceList = [];
+    try {
+      this.log('Searching for devices');
+      deviceList = await http.get(options).then((result) => {
+        if (result.response.statusCode !== 200) {
+          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+        }
+        if (result.data.ErrorMessage) {
+          throw new Error(result.data.ErrorMessage);
+        }
+        const devices = [];
+        result.data.forEach((data) => {
+          data.Structure.Devices.forEach((device) => {
+            if (this.deviceType === device.Device.DeviceType) {
+              devices.push(device);
             }
           });
-        });
-        data.Structure.Floors.forEach((floor) => {
-          floor.Devices.forEach((device) => {
-            if (this.DeviceType === device.Device.DeviceType) {
-              deviceList.push(device);
-            }
-          });
-          floor.Areas.forEach((area) => {
+          data.Structure.Areas.forEach((area) => {
             area.Devices.forEach((device) => {
-              if (this.DeviceType === device.Device.DeviceType) {
-                deviceList.push(device);
+              if (this.deviceType === device.Device.DeviceType) {
+                devices.push(device);
               }
             });
           });
+          data.Structure.Floors.forEach((floor) => {
+            floor.Devices.forEach((device) => {
+              if (this.deviceType === device.Device.DeviceType) {
+                devices.push(device);
+              }
+            });
+            floor.Areas.forEach((area) => {
+              area.Devices.forEach((device) => {
+                if (this.deviceType === device.Device.DeviceType) {
+                  devices.push(device);
+                }
+              });
+            });
+          });
         });
+        return devices;
       });
-      return deviceList;
-    });
+    } catch (error) {
+      this.error(`Searching for devices: a problem occurred (${error})`);
+    }
+    return deviceList;
   }
 
   onPair(session) {
@@ -123,4 +140,4 @@ class MelCloudDriverMixin extends Homey.Driver {
   }
 }
 
-module.exports = MelCloudDriverMixin;
+module.exports = MELCloudDriverMixin;
