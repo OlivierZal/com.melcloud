@@ -1,7 +1,7 @@
 const Homey = require('homey');
 const http = require('http.min');
 
-class MelCloudDevice extends Homey.Device {
+class MelCloudDeviceAtw extends Homey.Device {
   async onAdded() {
     await this.onInit();
   }
@@ -268,4 +268,4 @@ class MelCloudDevice extends Homey.Device {
   }
 }
 
-module.exports = MelCloudDevice;
+module.exports = MelCloudDeviceAtw;

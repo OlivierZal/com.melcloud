@@ -1,6 +1,6 @@
 const MelCloudDriverMixin = require('../melcloudmixin');
 
-class MelCloudDriverHP extends MelCloudDriverMixin {
+class MelCloudDriverAtw extends MelCloudDriverMixin {
   async onInit() {
     this.DeviceType = 1;
 
@@ -130,29 +130,24 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
   }
 
   triggerForcedHotWaterChange(device) {
-    this.ForcedWaterTrigger.trigger(device);
-    return this;
+    this.ForcedWaterTrigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerModeChange(device) {
-    this.ModeTrigger.trigger(device);
-    return this;
+    this.ModeTrigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerColdWaterChange(device) {
-    this.Cold_Water_Trigger.trigger(device);
-    return this;
+    this.Cold_Water_Trigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerHotWaterChange(device) {
-    this.Hot_Water_Trigger.trigger(device);
-    return this;
+    this.Hot_Water_Trigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerOperationModeChange(device) {
-    this.OperationModeTrigger.trigger(device);
-    return this;
+    this.OperationModeTrigger.trigger(device).then(this.log).catch(this.error);
   }
 }
 
-module.exports = MelCloudDriverHP;
+module.exports = MelCloudDriverAtw;

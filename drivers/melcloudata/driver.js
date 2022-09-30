@@ -1,6 +1,6 @@
 const MelCloudDriverMixin = require('../melcloudmixin');
 
-class MelCloudDriverAC extends MelCloudDriverMixin {
+class MelCloudDriverAta extends MelCloudDriverMixin {
   async onInit() {
     this.DeviceType = 0;
 
@@ -62,24 +62,20 @@ class MelCloudDriverAC extends MelCloudDriverMixin {
   }
 
   triggerThermostatModeChange(device) {
-    this.ThermostatModeTrigger.trigger(device);
-    return this;
+    this.ThermostatModeTrigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerVerticalSwingChange(device) {
-    this.VerticalSwingTrigger.trigger(device);
-    return this;
+    this.VerticalSwingTrigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerHorizontalSwingChange(device) {
-    this.HorizontalSwingTrigger.trigger(device);
-    return this;
+    this.HorizontalSwingTrigger.trigger(device).then(this.log).catch(this.error);
   }
 
   triggerFanSpeedChange(device) {
-    this.FanSpeedTrigger.trigger(device);
-    return this;
+    this.FanSpeedTrigger.trigger(device).then(this.log).catch(this.error);
   }
 }
 
-module.exports = MelCloudDriverAC;
+module.exports = MelCloudDriverAta;

@@ -121,7 +121,7 @@ function Value2Horizontal(horizontal) {
   return value;
 }
 
-class MelCloudDevice extends Homey.Device {
+class MelCloudDeviceAta extends Homey.Device {
   async onAdded() {
     await this.onInit();
   }
@@ -315,4 +315,4 @@ class MelCloudDevice extends Homey.Device {
   }
 }
 
-module.exports = MelCloudDevice;
+module.exports = MelCloudDeviceAta;
