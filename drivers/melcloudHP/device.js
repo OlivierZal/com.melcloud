@@ -170,7 +170,7 @@ class MelCloudDevice extends Homey.Device {
     }
 
     let request;
-    if (zone === '1') {
+    if (zone === 1) {
       request = {
         uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
         headers: {
@@ -179,7 +179,7 @@ class MelCloudDevice extends Homey.Device {
         },
         json: {
           DeviceID: data.id,
-          EffectiveFlags: 0x1000200010029,
+          EffectiveFlags: 0x1000800010229,
           HasPendingCommand: true,
           Power: power,
           SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
