@@ -12,7 +12,9 @@ class MelCloudDevice extends Homey.Device {
     this.registerCapabilityListener('forcedhotwater', this.onCapabilityForcedHotWater.bind(this));
     this.registerCapabilityListener('mode_heatpump1', this.onCapabilityMode.bind(this));
     await this.getDeviceData();
+  }
 
+  async getDeviceData() {
     if (!this.hasCapability('heat_temperature')) {
       this.addCapability('heat_temperature');
     }
@@ -22,9 +24,7 @@ class MelCloudDevice extends Homey.Device {
     if (!this.hasCapability('meter_heatpumpfrequency')) {
       this.addCapability('meter_heatpumpfrequency');
     }
-  }
 
-  async getDeviceData() {
     const ContextKey = this.homey.settings.get('ContextKey');
     const data = this.getData();
     const request = {
@@ -39,7 +39,7 @@ class MelCloudDevice extends Homey.Device {
       const settings = this.getSettings();
       const currentMode = settings.operationmode;
       const currentHeatTemperature = settings.heat_temperature;
-      const currentColdTemperature = settings.cold_temperature;
+      const currentCoolTemperature = settings.cool_temperature;
       if (data.zone === 2) {
         this.setSettings({
           heattemperature: result.data.SetHeatFlowTemperatureZone2,
@@ -63,7 +63,7 @@ class MelCloudDevice extends Homey.Device {
         if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone2) {
           this.driver.triggerHotWaterChange(this);
         }
-        if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone2) {
+        if (currentCoolTemperature !== result.data.SetCoolFlowTemperatureZone2) {
           this.driver.triggerColdWaterChange(this);
         }
       } else {
@@ -89,7 +89,7 @@ class MelCloudDevice extends Homey.Device {
         if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone1) {
           this.driver.triggerHotWaterChange(this);
         }
-        if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone1) {
+        if (currentCoolTemperature !== result.data.SetCoolFlowTemperatureZone1) {
           this.driver.triggerColdWaterChange(this);
         }
       }
