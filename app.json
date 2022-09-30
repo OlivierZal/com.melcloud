@@ -1421,10 +1421,10 @@
       {
         "id": "Pump1_Thermostat_Action",
         "title": {
-          "en": "Set zone mode to..."
+          "en": "Set zone operation mode to..."
         },
         "titleFormatted": {
-          "en": "Set zone mode to [[mode_hpom_action]]"
+          "en": "Set zone operation mode to [[mode_hpom_action]]"
         },
         "args": [
           {
