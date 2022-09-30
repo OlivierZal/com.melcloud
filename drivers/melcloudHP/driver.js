@@ -69,7 +69,7 @@ class MelCloudDriverHP extends MelCloudDriverMixin {
     this.ModeAction = this.homey.flow
       .getActionCard('Pump1_Thermostat_Action')
       .registerRunListener((args) => {
-        const value = args.mode_hpz1_action;
+        const value = args.mode_hpom_action;
         args.device.onCapabilityMode(value);
         return value;
       });
