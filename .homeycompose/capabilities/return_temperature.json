@@ -1,9 +1,9 @@
 {
   "type": "number",
   "title": {
-    "en": "Cool Water Flow Set"
+    "en": "Return Temperature"
   },
-  "uiComponent": null,
+  "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "insights": true,
@@ -14,5 +14,5 @@
   "min": 0,
   "max": 100,
   "step": 0.5,
-  "icon": "/assets/cold.svg"
+  "icon": "/assets/return_temperature.svg"
 }

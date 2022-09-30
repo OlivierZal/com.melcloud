@@ -34,13 +34,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room (if supported)"
+                "en": "Cool Room [if supported]"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow (if supported)"
+                "en": "Cool Flow [if supported]"
               }
             }
           ]
@@ -63,13 +63,13 @@
             {
               "id": "0",
               "label": {
-                "en": "Off"
+                "en": "Idle"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "DHW-Heating"
+                "en": "Domestic Hot Water"
               }
             },
             {
@@ -120,15 +120,15 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
+              }
+            },
+            {
+              "id": "true",
+              "label": {
+                "en": "Heat Now"
               }
             }
           ]
@@ -255,13 +255,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room (if supported)"
+                "en": "Cool Room [if supported]"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow (if supported)"
+                "en": "Cool Flow [if supported]"
               }
             }
           ]
@@ -284,13 +284,13 @@
             {
               "id": "0",
               "label": {
-                "en": "Off"
+                "en": "Idle"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "DHW-Heating"
+                "en": "Domestic Hot Water"
               }
             },
             {
@@ -341,15 +341,15 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
+              }
+            },
+            {
+              "id": "true",
+              "label": {
+                "en": "Heat Now"
               }
             }
           ]
@@ -434,65 +434,6 @@
   ],
   "actions": [
     {
-      "id": "Operation_Mode_Action",
-      "title": {
-        "en": "Set operation mode to..."
-      },
-      "titleFormatted": {
-        "en": "Set operation mode to [[operation_mode_action]]"
-      },
-      "args": [
-        {
-          "name": "operation_mode_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "0",
-              "label": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "DHW-Heating"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Heating"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Cooling"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "Defrost"
-              }
-            },
-            {
-              "id": "5",
-              "label": {
-                "en": "Standby"
-              }
-            },
-            {
-              "id": "6",
-              "label": {
-                "en": "Legionella"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "Pump1_Thermostat_Action",
       "title": {
         "en": "Set zone operation mode to..."
@@ -526,13 +467,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room (if supported)"
+                "en": "Cool Room [if supported]"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow (if supported)"
+                "en": "Cool Flow [if supported]"
               }
             }
           ]
@@ -553,44 +494,15 @@
           "type": "dropdown",
           "values": [
             {
-              "id": "true",
-              "label": {
-                "en": "On"
-              }
-            },
-            {
               "id": "false",
               "label": {
                 "en": "Auto"
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Eco_Hot_Water_Action",
-      "title": {
-        "en": "Set eco hot water to..."
-      },
-      "titleFormatted": {
-        "en": "Set eco hot water to [[eco_hot_water_action]]"
-      },
-      "args": [
-        {
-          "name": "eco_hot_water_action",
-          "type": "dropdown",
-          "values": [
+            },
             {
               "id": "true",
               "label": {
-                "en": "On"
-              }
-            },
-            {
-              "id": "false",
-              "label": {
-                "en": "Off"
+                "en": "Heat Now"
               }
             }
           ]

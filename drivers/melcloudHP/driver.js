@@ -1,158 +1,141 @@
-const MelCloudDriverMixin = require('../melcloudmixin');
+const MELCloudDriverMixin = require('../melclouddrivermixin');
 
-class MelCloudDriverHP extends MelCloudDriverMixin {
+class MELCloudDriverAtw extends MELCloudDriverMixin {
   async onInit() {
-    this.DeviceType = 1;
+    this.deviceType = 1;
 
     // Device trigger flowcards
-    this.ForcedWaterTrigger = this.homey.flow
-      .getDeviceTriggerCard('Forced_Water_Trigger')
-      .registerRunListener((args) => args.forced_hot_water_trigger === args.device.getCapabilityValue('forcedhotwater'));
-
-    this.ModeTrigger = this.homey.flow
-      .getDeviceTriggerCard('Pump1_Thermostat_Trigger')
-      .registerRunListener((args) => args.mode_hpz1_action === args.device.getCapabilityValue('mode_heatpump1'));
-
-    this.Hot_Water_Trigger = this.homey.flow
+    this.flowTemperatureTrigger = this.homey.flow
       .getDeviceTriggerCard('Hot_Water_Trigger')
       .registerRunListener(() => true);
 
-    this.Cold_Water_Trigger = this.homey.flow
+    this.forcedHotWaterTrigger = this.homey.flow
+      .getDeviceTriggerCard('Forced_Water_Trigger')
+      .registerRunListener((args) => args.forced_hot_water_trigger === args.device.getCapabilityValue('forced_hot_water'));
+
+    this.operationModeTrigger = this.homey.flow
+      .getDeviceTriggerCard('Operation_Mode_Trigger')
+      .registerRunListener((args) => args.operation_mode_trigger === args.device.getCapabilityValue('operation_mode_state'));
+
+    this.operationModeZoneTrigger = this.homey.flow
+      .getDeviceTriggerCard('Pump1_Thermostat_Trigger')
+      .registerRunListener((args) => args.mode_hpz1_action === args.device.getCapabilityValue('operation_mode_zone'));
+
+    this.returnTemperatureTrigger = this.homey.flow
       .getDeviceTriggerCard('Cold_Water_Trigger')
       .registerRunListener(() => true);
 
-    this.OperationModeTrigger = this.homey.flow
-      .getDeviceTriggerCard('Operation_Mode_Trigger')
-      .registerRunListener(() => true);
-
     // Condition flowcards
-    this.ForcedHotWaterCondition = this.homey.flow
-      .getConditionCard('Forced_Hot_Water_Condition')
-      .registerRunListener((args) => args.forced_hot_water_condition === args.device.getCapabilityValue('forcedhotwater'));
-
-    this.ModeCondition = this.homey.flow
-      .getConditionCard('Pump1_Thermostat_Condition')
-      .registerRunListener((args) => args.mode_hpz1_condition === args.device.getCapabilityValue('mode_heatpump1'));
-
-    this.Hot_Water_Condition = this.homey.flow
-      .getConditionCard('Hot_Water_Condition')
-      .registerRunListener((args) => args.hot_water_value <= args.device.getCapabilityValue('hot_temperature'));
-
-    this.Cold_Water_Condition = this.homey.flow
-      .getConditionCard('Cold_Water_Condition')
-      .registerRunListener((args) => args.cold_water_value >= args.device.getCapabilityValue('cold_temperature'));
-
-    this.OperationModeCondition = this.homey.flow
-      .getConditionCard('Operation_Mode_Condition')
-      .registerRunListener((args) => {
-        const settings = args.device.getSettings();
-        return args.operation_mode_condition === settings.operationmode;
-      });
-
-    this.alarm_BoosterHeater1Condition = this.homey.flow
+    this.homey.flow
       .getConditionCard('alarm_BoosterHeater1_Condition')
-      .registerRunListener((args) => args.device.getCapabilityValue('alarm_boosterheater1'));
-    this.alarm_BoosterHeater2Condition = this.homey.flow
+      .registerRunListener((args) => args.device.getCapabilityValue('booster_heater1'));
+
+    this.homey.flow
       .getConditionCard('alarm_BoosterHeater2_Condition')
-      .registerRunListener((args) => args.device.getCapabilityValue('alarm_boosterheater2'));
-    this.alarm_BoosterHeater2PlusCondition = this.homey.flow
+      .registerRunListener((args) => args.device.getCapabilityValue('booster_heater2'));
+
+    this.homey.flow
       .getConditionCard('alarm_BoosterHeater2Plus_Condition')
-      .registerRunListener((args) => args.device.getCapabilityValue('alarm_boosterheater2plus'));
-    this.alarm_ImmersionHeaterCondition = this.homey.flow
-      .getConditionCard('alarm_ImmersionHeater_Condition')
-      .registerRunListener((args) => args.device.getCapabilityValue('alarm_immersionheater'));
-    this.alarm_DefrostModeCondition = this.homey.flow
+      .registerRunListener((args) => args.device.getCapabilityValue('booster_heater2_plus'));
+
+    this.homey.flow
       .getConditionCard('alarm_DefrostMode_Condition')
-      .registerRunListener((args) => args.device.getCapabilityValue('alarm_DefrostMode_Condition'));
+      .registerRunListener((args) => args.device.getCapabilityValue('defrost_mode'));
+
+    this.homey.flow
+      .getConditionCard('Hot_Water_Condition')
+      .registerRunListener((args) => args.hot_water_value <= args.device.getCapabilityValue('flow_temperature'));
+
+    this.homey.flow
+      .getConditionCard('Forced_Hot_Water_Condition')
+      .registerRunListener((args) => args.forced_hot_water_condition === args.device.getCapabilityValue('forced_hot_water'));
+
+    this.homey.flow
+      .getConditionCard('alarm_ImmersionHeater_Condition')
+      .registerRunListener((args) => args.device.getCapabilityValue('immersion_heater'));
+
+    this.homey.flow
+      .getConditionCard('Cold_Water_Condition')
+      .registerRunListener((args) => args.cold_water_value >= args.device.getCapabilityValue('return_temperature'));
+
+    this.homey.flow
+      .getConditionCard('Operation_Mode_Condition')
+      .registerRunListener((args) => args.operation_mode_condition === args.device.getCapabilityValue('operation_mode_state'));
+
+    this.homey.flow
+      .getConditionCard('Pump1_Thermostat_Condition')
+      .registerRunListener((args) => args.mode_hpz1_condition === args.device.getCapabilityValue('operation_mode_zone'));
 
     // Action flowcards
-    this.ModeAction = this.homey.flow
-      .getActionCard('Pump1_Thermostat_Action')
-      .registerRunListener((args) => {
-        const value = args.mode_hpom_action;
-        args.device.onCapabilityMode(value);
-        return value;
-      });
-
-    this.OperationModeAction = this.homey.flow
-      .getActionCard('Operation_Mode_Action')
-      .registerRunListener((args) => {
-        const value = args.operation_mode_action;
-        args.device.onCapabilityOperationMode(value);
-        return value;
-      });
-
-    this.Heat_Water_Action = this.homey.flow
-      .getActionCard('Heat_Water_Action')
-      .registerRunListener((args) => {
-        const value = args.heat_water_value;
-        args.device.setSettings({ heattemperature: value });
-        args.device.setCapabilityValue('heat_temperature', value).catch(this.error);
-        setTimeout(() => args.device.updateCapabilityValues(), 1000);
-        return value;
-      });
-
-    this.Cool_Water_Action = this.homey.flow
+    this.homey.flow
       .getActionCard('Cool_Water_Action')
-      .registerRunListener((args) => {
-        const value = args.cool_water_value;
-        args.device.setSettings({ cooltemperature: value });
-        args.device.setCapabilityValue('cold_temperature', value).catch(this.error);
-        setTimeout(() => args.device.updateCapabilityValues(), 1000);
-        return value;
+      .registerRunListener(async (args) => {
+        await args.device.setSettings({ cool_flow_temperature: args.cool_water_value });
+        await args.device.syncDeviceFromData();
       });
 
-    this.Water_Tank_Temp_Action = this.homey.flow
-      .getActionCard('Water_Tank_Temp_Action')
-      .registerRunListener((args) => {
-        const value = args.tank_water_value;
-        args.device.setSettings({ tanktemperature: value });
-        args.device.setCapabilityValue('watertank_temperature', value).catch(this.error);
-        setTimeout(() => args.device.updateCapabilityValues(), 1000);
-        return value;
-      });
-
-    this.ForcedHotWaterAction = this.homey.flow
+    this.homey.flow
       .getActionCard('Forced_Hot_Water_Action')
-      .registerRunListener((args) => {
-        const value = args.forced_hot_water_action;
-        args.device.onCapabilityForcedHotWater(value);
-        return value;
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityForcedHotWater(args.forced_hot_water_action);
       });
 
-    this.EcoHotWaterAction = this.homey.flow
-      .getActionCard('Eco_Hot_Water_Action')
-      .registerRunListener((args) => {
-        const value = args.eco_hot_water_action;
-        args.device.onCapabilityEcoHotWater(value);
-        return value;
+    this.homey.flow
+      .getActionCard('Heat_Water_Action')
+      .registerRunListener(async (args) => {
+        await args.device.setSettings({ heat_flow_temperature: args.heat_water_value });
+        await args.device.syncDeviceFromData();
+      });
+
+    this.homey.flow
+      .getActionCard('Pump1_Thermostat_Action')
+      .registerRunListener(async (args) => {
+        await args.device.onCapabilityOperationModeZone(args.mode_hpom_action);
+      });
+
+    this.homey.flow
+      .getActionCard('Water_Tank_Temp_Action')
+      .registerRunListener(async (args) => {
+        await args.device.setSettings({ set_watertank_temperature: args.tank_water_value });
+        await args.device.syncDeviceFromData();
       });
   }
 
-  triggerForcedHotWaterChange(device) {
-    this.ForcedWaterTrigger.trigger(device);
-    return this;
+  // Triggers
+  triggerFlowTemperature(device) {
+    this.flowTemperatureTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`flow_temperature\` has been triggered (${device.getCapabilityValue('flow_temperature')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`flow_temperature\` has not been triggered (${error})`));
   }
 
-  triggerModeChange(device) {
-    this.ModeTrigger.trigger(device);
-    return this;
+  triggerForcedHotWater(device) {
+    this.forcedHotWaterTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`forced_hot_water\` has been triggered (${device.getCapabilityValue('forced_hot_water')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`forced_hot_water\` has not been triggered (${error})`));
   }
 
-  triggerColdWaterChange(device) {
-    this.Cold_Water_Trigger.trigger(device);
-    return this;
+  triggerOperationMode(device) {
+    this.operationModeTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode_state\` has been triggered (${device.getCapabilityValue('operation_mode_state')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode_state\` has not been triggered (${error})`));
   }
 
-  triggerHotWaterChange(device) {
-    this.Hot_Water_Trigger.trigger(device);
-    return this;
+  triggerOperationModeZone(device) {
+    this.operationModeZoneTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode_zone\` has been triggered (${device.getCapabilityValue('operation_mode_zone')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode_zone\` has not been triggered (${error})`));
   }
 
-  triggerOperationModeChange(device) {
-    this.OperationModeTrigger.trigger(device);
-    return this;
+  triggerReturnTemperature(device) {
+    this.returnTemperatureTrigger
+      .trigger(device)
+      .then(this.log(`\`${device.getName()}\`: \`return_temperature\` has been triggered (${device.getCapabilityValue('return_temperature')})`))
+      .catch((error) => this.error(`\`${device.getName()}\`: \`return_temperature\` has not been triggered (${error})`));
   }
 }
 
-module.exports = MelCloudDriverHP;
+module.exports = MELCloudDriverAtw;

@@ -1,0 +1,58 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Update Frequency"
+    },
+    "children": [
+      {
+        "id": "interval",
+        "type": "number",
+        "label": {
+          "en": "minutes"
+        },
+        "value": 5,
+        "min": 1,
+        "max": 60
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Temperature Settings"
+    },
+    "children": [
+      {
+        "id": "set_watertank_temperature",
+        "type": "number",
+        "label": {
+          "en": "Water Tank (ºC)"
+        },
+        "value": 46,
+        "min": 40,
+        "max": 60
+      },
+      {
+        "id": "heat_flow_temperature",
+        "type": "number",
+        "label": {
+          "en": "Heat Flow (ºC)"
+        },
+        "value": 10,
+        "min": 25,
+        "max": 60
+      },
+      {
+        "id": "cool_flow_temperature",
+        "type": "number",
+        "label": {
+          "en": "Cool Flow (ºC) [if supported]"
+        },
+        "value": 18,
+        "min": 10,
+        "max": 30
+      }
+    ]
+  }
+]
