@@ -142,8 +142,8 @@ class MelCloudDevice extends Homey.Device {
     const data = this.getData();
     const request = {
       uri: `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
-      json: true,
       headers: { 'X-MitsContextKey': ContextKey },
+      json: true,
     };
     const response = await http.get(request).then((result) => {
       if (result.response.statusCode !== 200) {

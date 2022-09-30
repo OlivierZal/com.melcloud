@@ -27,14 +27,10 @@ class MelCloudDevice extends Homey.Device {
   async getDeviceData() {
     const ContextKey = this.homey.settings.get('ContextKey');
     const data = this.getData();
-    let { zone } = data;
-    if (!zone) {
-      zone = 1;
-    }
     const request = {
       uri: `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
-      json: true,
       headers: { 'X-MitsContextKey': ContextKey },
+      json: true,
     };
     await http.get(request).then((result) => {
       if (result.response.statusCode !== 200) {
@@ -44,33 +40,7 @@ class MelCloudDevice extends Homey.Device {
       const currentMode = settings.operationmode;
       const currentHeatTemperature = settings.heat_temperature;
       const currentColdTemperature = settings.cold_temperature;
-      if (zone === 1) {
-        this.setSettings({
-          heattemperature: result.data.SetHeatFlowTemperatureZone1,
-          cooltemperature: result.data.SetCoolFlowTemperatureZone1,
-          tanktemperature: result.data.SetTankWaterTemperature,
-          ecohotwater: result.data.EcoHotWater === true,
-          operationmode: String(result.data.OperationMode),
-          operationmodezone: String(result.data.OperationModeZone1),
-        });
-        if (result.data.SetTemperatureZone1 < 10) {
-          this.setCapabilityValue('target_temperature', 10).catch(this.error);
-        } else if (result.data.SetTemperatureZone1 > 30) {
-          this.setCapabilityValue('target_temperature', 30).catch(this.error);
-        } else {
-          this.setCapabilityValue('target_temperature', result.data.SetTemperatureZone1).catch(this.error);
-        }
-        this.setCapabilityValue('mode_heatpump1', String(result.data.OperationModeZone1)).catch(this.error);
-        this.setCapabilityValue('measure_temperature', result.data.RoomTemperatureZone1).catch(this.error);
-        this.setCapabilityValue('heat_temperature', result.data.SetHeatFlowTemperatureZone1).catch(this.error);
-        this.setCapabilityValue('cool_temperature', result.data.SetCoolFlowTemperatureZone1).catch(this.error);
-        if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone1) {
-          this.driver.triggerHotWaterChange(this);
-        }
-        if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone1) {
-          this.driver.triggerColdWaterChange(this);
-        }
-      } else {
+      if (data.zone === 2) {
         this.setSettings({
           heattemperature: result.data.SetHeatFlowTemperatureZone2,
           cooltemperature: result.data.SetCoolFlowTemperatureZone2,
@@ -94,6 +64,32 @@ class MelCloudDevice extends Homey.Device {
           this.driver.triggerHotWaterChange(this);
         }
         if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone2) {
+          this.driver.triggerColdWaterChange(this);
+        }
+      } else {
+        this.setSettings({
+          heattemperature: result.data.SetHeatFlowTemperatureZone1,
+          cooltemperature: result.data.SetCoolFlowTemperatureZone1,
+          tanktemperature: result.data.SetTankWaterTemperature,
+          ecohotwater: result.data.EcoHotWater === true,
+          operationmode: String(result.data.OperationMode),
+          operationmodezone: String(result.data.OperationModeZone1),
+        });
+        if (result.data.SetTemperatureZone1 < 10) {
+          this.setCapabilityValue('target_temperature', 10).catch(this.error);
+        } else if (result.data.SetTemperatureZone1 > 30) {
+          this.setCapabilityValue('target_temperature', 30).catch(this.error);
+        } else {
+          this.setCapabilityValue('target_temperature', result.data.SetTemperatureZone1).catch(this.error);
+        }
+        this.setCapabilityValue('mode_heatpump1', String(result.data.OperationModeZone1)).catch(this.error);
+        this.setCapabilityValue('measure_temperature', result.data.RoomTemperatureZone1).catch(this.error);
+        this.setCapabilityValue('heat_temperature', result.data.SetHeatFlowTemperatureZone1).catch(this.error);
+        this.setCapabilityValue('cool_temperature', result.data.SetCoolFlowTemperatureZone1).catch(this.error);
+        if (currentHeatTemperature !== result.data.SetHeatFlowTemperatureZone1) {
+          this.driver.triggerHotWaterChange(this);
+        }
+        if (currentColdTemperature !== result.data.SetCoolFlowTemperatureZone1) {
           this.driver.triggerColdWaterChange(this);
         }
       }
@@ -160,7 +156,6 @@ class MelCloudDevice extends Homey.Device {
   async updateCapabilityValues() {
     const ContextKey = this.homey.settings.get('ContextKey');
     const data = this.getData();
-    const { zone } = data;
     const settings = this.getSettings();
     let power;
     if (this.hasCapability('onoff')) {
@@ -170,35 +165,10 @@ class MelCloudDevice extends Homey.Device {
     }
 
     let request;
-    if (zone === 1) {
+    if (data.zone === 2) {
       request = {
         uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
-        headers: {
-          'X-MitsContextKey': ContextKey,
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        json: {
-          DeviceID: data.id,
-          EffectiveFlags: 0x1000800010229,
-          HasPendingCommand: true,
-          Power: power,
-          SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
-          ForcedHotWaterMode: this.getCapabilityValue('forcedhotwater'),
-          SetHeatFlowTemperatureZone1: settings.heattemperature,
-          SetCoolFlowTemperatureZone1: settings.cooltemperature,
-          SetTankWaterTemperature: settings.tanktemperature,
-          EcoHotWater: settings.ecohotwater,
-          OperationModeZone1: this.getCapabilityValue('mode_heatpump1'),
-          OperationMode: settings.operationmode,
-        },
-      };
-    } else {
-      request = {
-        uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
-        headers: {
-          'X-MitsContextKey': ContextKey,
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        headers: { 'X-MitsContextKey': ContextKey },
         json: {
           DeviceID: data.id,
           EffectiveFlags: 0x1000800010229,
@@ -211,6 +181,25 @@ class MelCloudDevice extends Homey.Device {
           SetTankWaterTemperature: settings.tanktemperature,
           EcoHotWater: settings.ecohotwater,
           OperationModeZone2: this.getCapabilityValue('mode_heatpump1'),
+          OperationMode: settings.operationmode,
+        },
+      };
+    } else {
+      request = {
+        uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
+        headers: { 'X-MitsContextKey': ContextKey },
+        json: {
+          DeviceID: data.id,
+          EffectiveFlags: 0x1000200010029,
+          HasPendingCommand: true,
+          Power: power,
+          SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
+          ForcedHotWaterMode: this.getCapabilityValue('forcedhotwater'),
+          SetHeatFlowTemperatureZone1: settings.heattemperature,
+          SetCoolFlowTemperatureZone1: settings.cooltemperature,
+          SetTankWaterTemperature: settings.tanktemperature,
+          EcoHotWater: settings.ecohotwater,
+          OperationModeZone1: this.getCapabilityValue('mode_heatpump1'),
           OperationMode: settings.operationmode,
         },
       };

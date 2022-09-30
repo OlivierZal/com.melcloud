@@ -35,8 +35,8 @@ class MelCloudDriverMixin extends Homey.Driver {
     const ContextKey = this.homey.settings.get('ContextKey');
     const request = {
       uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/User/ListDevices',
-      json: true,
       headers: { 'X-MitsContextKey': ContextKey },
+      json: true,
     };
     return http.get(request).then((result) => {
       if (result.response.statusCode !== 200) {
