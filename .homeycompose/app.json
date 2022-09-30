@@ -15,11 +15,13 @@
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
-      "Air conditioner",
-      "Ecodan",
-      "Heat pump",
-      "MELCloud",
-      "Mitsubishi"
+      "air conditioner",
+      "air-to-air",
+      "air-to-water",
+      "ecodan",
+      "heat pump",
+      "melcloud",
+      "mitsubishi"
     ]
   },
   "images": {

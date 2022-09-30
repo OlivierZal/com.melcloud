@@ -16,19 +16,31 @@
             {
               "id": "0",
               "title": {
-                "en": "Room"
+                "en": "Heat Room"
               }
             },
             {
               "id": "1",
               "title": {
-                "en": "Flow"
+                "en": "Heat Flow"
               }
             },
             {
               "id": "2",
               "title": {
                 "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room (if supported)"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow (if supported)"
               }
             }
           ]
@@ -225,19 +237,31 @@
             {
               "id": "0",
               "title": {
-                "en": "Room"
+                "en": "Heat Room"
               }
             },
             {
               "id": "1",
               "title": {
-                "en": "Flow"
+                "en": "Heat Flow"
               }
             },
             {
               "id": "2",
               "title": {
                 "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room (if supported)"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow (if supported)"
               }
             }
           ]
@@ -484,19 +508,31 @@
             {
               "id": "0",
               "title": {
-                "en": "Room"
+                "en": "Heat Room"
               }
             },
             {
               "id": "1",
               "title": {
-                "en": "Flow"
+                "en": "Heat Flow"
               }
             },
             {
               "id": "2",
               "title": {
                 "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room (if supported)"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow (if supported)"
               }
             }
           ]

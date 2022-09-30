@@ -16,11 +16,13 @@
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
-      "Air conditioner",
-      "Ecodan",
-      "Heat pump",
-      "MELCloud",
-      "Mitsubishi"
+      "air conditioner",
+      "air-to-air",
+      "air-to-water",
+      "ecodan",
+      "heat pump",
+      "melcloud",
+      "mitsubishi"
     ]
   },
   "images": {
@@ -324,19 +326,31 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Room"
+                  "en": "Heat Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Flow"
+                  "en": "Heat Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room (if supported)"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow (if supported)"
                 }
               }
             ]
@@ -870,19 +884,31 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Room"
+                  "en": "Heat Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Flow"
+                  "en": "Heat Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room (if supported)"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow (if supported)"
                 }
               }
             ]
@@ -1439,19 +1465,31 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Room"
+                  "en": "Heat Room"
                 }
               },
               {
                 "id": "1",
                 "title": {
-                  "en": "Flow"
+                  "en": "Heat Flow"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room (if supported)"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow (if supported)"
                 }
               }
             ]
@@ -1606,7 +1644,7 @@
   "drivers": [
     {
       "name": {
-        "en": "MELCloud Air Conditioner"
+        "en": "Air-to-Air Heat Pump"
       },
       "images": {
         "small": "drivers/melcloud/assets/images/small.png",
@@ -1681,7 +1719,7 @@
     },
     {
       "name": {
-        "en": "MELCloud Heat Pump"
+        "en": "Air-to-Water Heat Pump"
       },
       "images": {
         "small": "drivers/melcloudHP/assets/images/small.png",
@@ -1848,19 +1886,31 @@
                 {
                   "id": "0",
                   "label": {
-                    "en": "Room"
+                    "en": "Heat Room"
                   }
                 },
                 {
                   "id": "1",
                   "label": {
-                    "en": "Flow"
+                    "en": "Heat Flow"
                   }
                 },
                 {
                   "id": "2",
                   "label": {
                     "en": "Curve"
+                  }
+                },
+                {
+                  "id": "3",
+                  "label": {
+                    "en": "Cool Room (if supported)"
+                  }
+                },
+                {
+                  "id": "4",
+                  "label": {
+                    "en": "Cool Flow (if supported)"
                   }
                 }
               ]
@@ -2287,19 +2337,31 @@
         {
           "id": "0",
           "title": {
-            "en": "Room"
+            "en": "Heat Room"
           }
         },
         {
           "id": "1",
           "title": {
-            "en": "Flow"
+            "en": "Heat Flow"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "Curve"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Cool Room (if supported)"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Cool Flow (if supported)"
           }
         }
       ]
@@ -2388,8 +2450,8 @@
       "units": {
         "en": "ºC"
       },
-      "min": 40,
-      "max": 80,
+      "min": 0,
+      "max": 100,
       "step": 0.5,
       "icon": "/assets/tanktemp.svg"
     }

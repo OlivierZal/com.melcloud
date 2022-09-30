@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "MELCloud Heat Pump"
+    "en": "Air-to-Water Heat Pump"
   },
   "images": {
     "small": "drivers/melcloudHP/assets/images/small.png",
@@ -167,19 +167,31 @@
             {
               "id": "0",
               "label": {
-                "en": "Room"
+                "en": "Heat Room"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "Flow"
+                "en": "Heat Flow"
               }
             },
             {
               "id": "2",
               "label": {
                 "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cool Room (if supported)"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Cool Flow (if supported)"
               }
             }
           ]
