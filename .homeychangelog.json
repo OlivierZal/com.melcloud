@@ -10,5 +10,8 @@
   },
   "3.0.6": {
     "en": "Fixed heat pump control: you may need to add your devices again and restart Homey."
+  },
+  "3.1.0": {
+    "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features."
   }
 }
