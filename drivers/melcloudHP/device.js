@@ -290,7 +290,7 @@ class MELCloudDeviceAtw extends Homey.Device {
       this.driver.triggerOperationModeZone(this);
     }
     if (changedKeys.length) {
-      await this.syncDeviceFromData();
+      this.homey.setTimeout(this.syncDeviceFromData.bind(this), 5 * 1000);
     }
   }
 }
