@@ -16,5 +16,8 @@
   },
   "3.1.1": {
     "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features."
+  },
+  "3.1.2": {
+    "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features."
   }
 }
