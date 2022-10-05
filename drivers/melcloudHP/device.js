@@ -15,6 +15,7 @@ class MELCloudDeviceAtw extends Homey.Device {
       'return_temperature',
       'operation_mode_state',
       'onoff',
+      'outdoor_temperature',
     ];
     const removedCapabilities = [
     ];
