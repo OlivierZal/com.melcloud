@@ -1,0 +1,451 @@
+{
+  "name": {
+    "en": "Air-to-Water Heat Pump"
+  },
+  "images": {
+    "small": "drivers/melcloudHP/assets/images/small.png",
+    "large": "drivers/melcloudHP/assets/images/large.png"
+  },
+  "class": "thermostat",
+  "capabilities": [
+    "alarm_generic.booster_heater1",
+    "alarm_generic.booster_heater2",
+    "alarm_generic.booster_heater2_plus",
+    "alarm_generic.defrost_mode",
+    "alarm_water.immersion_heater",
+    "eco_hot_water",
+    "measure_power.daily_consumed",
+    "measure_power.daily_consumed_cooling",
+    "measure_power.daily_consumed_heating",
+    "measure_power.daily_consumed_hotwater",
+    "measure_power.daily_cop",
+    "measure_power.daily_cop_cooling",
+    "measure_power.daily_cop_heating",
+    "measure_power.daily_cop_hotwater",
+    "measure_power.daily_produced",
+    "measure_power.daily_produced_cooling",
+    "measure_power.daily_produced_heating",
+    "measure_power.daily_produced_hotwater",
+    "measure_power.total_consumed",
+    "measure_power.total_consumed_cooling",
+    "measure_power.total_consumed_heating",
+    "measure_power.total_consumed_hotwater",
+    "measure_power.total_cop",
+    "measure_power.total_cop_cooling",
+    "measure_power.total_cop_heating",
+    "measure_power.total_cop_hotwater",
+    "measure_power.total_produced",
+    "measure_power.total_produced_cooling",
+    "measure_power.total_produced_heating",
+    "measure_power.total_produced_hotwater",
+    "measure_power.heat_pump_frequency",
+    "measure_temperature",
+    "measure_temperature.flow",
+    "measure_temperature.outdoor",
+    "measure_temperature.return",
+    "measure_temperature.tank_water",
+    "measure_temperature.zone2",
+    "onoff",
+    "onoff.forced_hot_water",
+    "operation_mode_state",
+    "operation_mode_zone.zone1",
+    "operation_mode_zone.zone2",
+    "operation_mode_zone_with_cool.zone1",
+    "operation_mode_zone_with_cool.zone2",
+    "target_temperature",
+    "target_temperature.tank_water",
+    "target_temperature.zone1_flow_cool",
+    "target_temperature.zone1_flow_heat",
+    "target_temperature.zone2",
+    "target_temperature.zone2_flow_cool",
+    "target_temperature.zone2_flow_heat"
+  ],
+  "capabilitiesOptions": {
+    "alarm_generic.booster_heater1": {
+      "title": {
+        "en": "Booster Heater 1"
+      }
+    },
+    "alarm_generic.booster_heater2": {
+      "title": {
+        "en": "Booster Heater 2"
+      }
+    },
+    "alarm_generic.booster_heater2_plus": {
+      "title": {
+        "en": "Booster Heater 2 Plus"
+      }
+    },
+    "alarm_generic.defrost_mode": {
+      "title": {
+        "en": "Defrost Mode"
+      }
+    },
+    "alarm_water.immersion_heater": {
+      "title": {
+        "en": "Immersion Heater"
+      }
+    },
+    "measure_power.daily_cop": {
+      "title": {
+        "en": "Last Daily CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_cop_cooling": {
+      "title": {
+        "en": "Last Daily Cooling CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_cop_heating": {
+      "title": {
+        "en": "Last Daily Heating CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_cop_hotwater": {
+      "title": {
+        "en": "Last Daily HotWater CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_consumed": {
+      "title": {
+        "en": "Last Daily Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_consumed_cooling": {
+      "title": {
+        "en": "Last Daily Cooling Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_consumed_heating": {
+      "title": {
+        "en": "Last Daily Heating Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_consumed_hotwater": {
+      "title": {
+        "en": "Last Daily Hot Water Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_produced": {
+      "title": {
+        "en": "Last Daily Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_produced_cooling": {
+      "title": {
+        "en": "Last Daily Cooling Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_produced_heating": {
+      "title": {
+        "en": "Last Daily Heating Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.daily_produced_hotwater": {
+      "title": {
+        "en": "Last Daily Hot Water Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 2
+    },
+    "measure_power.total_cop": {
+      "title": {
+        "en": "Total CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.total_cop_cooling": {
+      "title": {
+        "en": "Total Cooling CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.total_cop_heating": {
+      "title": {
+        "en": "Total Heating CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.total_cop_hotwater": {
+      "title": {
+        "en": "Total HotWater CoP"
+      },
+       "units": {
+         "en": ""
+      },
+      "decimals": 2
+    },
+    "measure_power.total_consumed": {
+      "title": {
+        "en": "Total Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_consumed_cooling": {
+      "title": {
+        "en": "Total Cooling Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_consumed_heating": {
+      "title": {
+        "en": "Total Heating Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_consumed_hotwater": {
+      "title": {
+        "en": "Total Hot Water Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_produced": {
+      "title": {
+        "en": "Total Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_produced_cooling": {
+      "title": {
+        "en": "Total Cooling Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_produced_heating": {
+      "title": {
+        "en": "Total Heating Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.total_produced_hotwater": {
+      "title": {
+        "en": "Total Hot Water Production"
+      },
+       "units": {
+         "en": "kWh"
+      },
+      "decimals": 0
+    },
+    "measure_power.heat_pump_frequency": {
+      "icon": "/assets/heat_pump_frequency.svg",
+      "title": {
+        "en": "Heat Pump Frequency"
+      },
+       "units": {
+         "en": "Hz"
+      }
+    },
+    "measure_temperature": {
+      "title": {
+        "en": "Room Temperature - Zone 1"
+      }
+    },
+    "measure_temperature.flow": {
+      "title": {
+        "en": "Flow Temperature"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor Temperature"
+      }
+    },
+    "measure_temperature.return": {
+      "title": {
+        "en": "Return Temperature"
+      }
+    },
+    "measure_temperature.tank_water": {
+      "title": {
+        "en": "Water Tank Temperature"
+      }
+    },
+    "measure_temperature.zone2": {
+      "title": {
+        "en": "Room Temperature - Zone 2"
+      }
+    },
+    "onoff.forced_hot_water": {
+      "title": {
+        "en": "Forced Hot Water"
+      }
+    },
+    "operation_mode_state": {
+      "title": {
+        "en": "Operation Mode"
+      }
+    },
+    "operation_mode_zone.zone1": {
+      "title": {
+        "en": "Operation Mode - Zone 1"
+      }
+    },
+    "operation_mode_zone.zone2": {
+      "title": {
+        "en": "Operation Mode - Zone 2"
+      }
+    },
+    "operation_mode_zone_with_cool.zone1": {
+      "title": {
+        "en": "Operation Mode - Zone 1"
+      }
+    },
+    "operation_mode_zone_with_cool.zone2": {
+      "title": {
+        "en": "Operation Mode - Zone 2"
+      }
+    },
+    "target_temperature": {
+      "title": {
+        "en": "Target Temperature - Zone 1"
+      },
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.tank_water": {
+      "title": {
+        "en": "Water Tank Target Temperature"
+      },
+      "min": 40,
+      "max": 60
+    },
+    "target_temperature.zone1_flow_cool": {
+      "title": {
+        "en": "Cool Flow Target Temperature - Zone 1"
+      },
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.zone1_flow_heat": {
+      "title": {
+        "en": "Heat Flow Target Temperature - Zone 1"
+      },
+      "min": 25,
+      "max": 60
+    },
+    "target_temperature.zone2": {
+      "title": {
+        "en": "Target Temperature - Zone 2"
+      },
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.zone2_flow_cool": {
+      "title": {
+        "en": "Cool Flow Target Temperature - Zone 2"
+      },
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.zone2_flow_heat": {
+      "title": {
+        "en": "Heat Flow Target Temperature - Zone 2"
+      },
+      "min": 25,
+      "max": 60
+    }
+  },
+  "pair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "navigation": {
+        "next": "list_devices"
+      },
+      "options": {
+        "logo": "pair_logo.png",
+        "usernameLabel": "MELCloud Username",
+        "usernamePlaceholder": "user@domain.com",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "P4ssw0rd"
+      }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

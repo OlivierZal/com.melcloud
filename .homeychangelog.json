@@ -1,17 +1,23 @@
 {
   "2.0.0": {
-    "en": "Added heat pump support."
+    "en": "Added air-to-water heat pump support."
   },
   "3.0.0": {
-    "en": "Migrated to Homey SDK 3. Fixed multi-floor device search. Fixed AC fan & dry modes. Fixed AC horizontal vane control. Fixed various bugs."
+    "en": "Migrated to Homey SDK 3. Fixed multi-floor device search. Fixed air-to-air fan & dry modes, horizontal vane control and various bugs."
   },
   "3.0.4": {
-    "en": "Filter devices according type when adding ones."
-  },
-  "3.1.5": {
-    "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features. Some value names have changed for more compliance with MELCloud, so you may need to update some of your flows if necessary. Fixed a sync issue when a second zone is configured."
+    "en": "Devices are now filtered according to their type (air-to-air vs air-to-water) when adding ones."
   },
   "3.1.6": {
-    "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features. Some value names have changed for more compliance with MELCloud, so you may need to update some of your flows if necessary. Fixed a sync issue when a second zone is configured."
+    "en": "Added logs. Fixed and improved flow cards. Some capabilities or settings have been moved to benefit from the best Homey features. Some value names have changed for more compliance with MELCloud, so you may need to update some of your flows if necessary. Fixed a air-to-water sync issue when a second zone is configured."
+  },
+  "4.0.0": {
+    "en": "Added power consumption reporting and reshaped air-to-water device display: 2-zone device are now handled with the same device, and measured temperature are shown with target temperature when possible."
+  },
+  "5.0.0": {
+    "en": "Syncing has been completely reshaped and app core has been redesigned."
+  },
+  "5.0.1": {
+    "en": "Added specific CoPs"
   }
 }
