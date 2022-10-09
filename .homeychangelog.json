@@ -8,7 +8,7 @@
   "3.0.4": {
     "en": "Filter devices according type when adding ones."
   },
-  "3.1.6": {
+  "3.1.5": {
     "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features. Some value names have changed for more compliance with MELCloud, so you may need to update some of your flows if necessary. Fixed a sync issue when a second zone is configured."
   }
 }
