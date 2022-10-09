@@ -5,16 +5,11 @@ class MELCloudDriverMixin extends Homey.Driver {
   async logIn(username, password) {
     let response = false;
     if (username && password) {
-      this.homey.settings.set('username', username);
-      this.homey.settings.set('password', password);
       const options = {
         uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Login/ClientLogin',
         json: {
           AppVersion: '1.9.3.0',
-          CaptchaChallenge: '',
-          CaptchaResponse: '',
           Email: username,
-          Language: '0',
           Password: password,
           Persist: true,
         },
@@ -34,11 +29,7 @@ class MELCloudDriverMixin extends Homey.Driver {
         });
         this.log('Login to MELCloud: authentication has been successfully completed');
       } catch (error) {
-        if (error instanceof SyntaxError) {
-          this.error(`\`${this.getName()}\`: device not found`);
-        } else {
-          this.error(`Login to MELCloud: a problem occurred (${error})`);
-        }
+        this.error(`Login to MELCloud: a problem occurred (${error})`);
       }
     }
     return response;
@@ -93,60 +84,111 @@ class MELCloudDriverMixin extends Homey.Driver {
       });
       this.log('Searching for devices: search has been successfully completed');
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        this.error(`\`${this.getName()}\`: device not found`);
-      } else {
-        this.error(`Searching for devices: a problem occurred (${error})`);
-      }
+      this.error(`Searching for devices: a problem occurred (${error})`);
     }
     return deviceList;
   }
 
-  onPair(session) {
-    session.setHandler('login', async (data) => this.logIn(data.username, data.password));
-    session.setHandler('list_devices', async () => {
-      const devices = [];
-      const deviceList = await this.discoverDevices();
-      deviceList.forEach((device) => {
-        // Air-to-air heat pump
-        if (device.Device.DeviceType === 0) {
-          devices.push({
-            name: device.DeviceName,
-            data: {
-              id: device.DeviceID,
-              buildingid: device.BuildingID,
-              address: device.MacAddress,
-              name: device.DeviceName,
-            },
+  async listDevices() {
+    const deviceList = await this.discoverDevices();
+    const devices = deviceList.map((device) => {
+      const deviceInfo = {
+        name: device.DeviceName,
+        data: {
+          id: device.DeviceID,
+          buildingid: device.BuildingID,
+        },
+        capabilities: [],
+      };
+      if (device.Device.DeviceType === 1) {
+        deviceInfo.data.canCool = device.Device.CanCool;
+        deviceInfo.data.hasZone2 = device.Device.HasZone2;
+        const atwCapabilities = [
+          'alarm_generic.booster_heater1',
+          'alarm_generic.booster_heater2',
+          'alarm_generic.booster_heater2_plus',
+          'alarm_generic.defrost_mode',
+          'alarm_water.immersion_heater',
+          'measure_power.daily_co_p',
+          'measure_power.daily_consumed',
+          'measure_power.daily_produced',
+          'measure_power.total_consumed',
+          'measure_power.total_produced',
+          'measure_power.heat_pump_frequency',
+          'measure_temperature.flow',
+          'measure_temperature.outdoor',
+          'measure_temperature.return',
+          'measure_temperature.tank_water',
+          'measure_temperature.zone1',
+          'onoff',
+          'onoff.eco_hot_water',
+          'onoff.forced_hot_water',
+          'operation_mode_state',
+          'operation_mode_zone.zone1',
+          'target_temperature.tank_water',
+          'target_temperature.zone1',
+          'target_temperature.zone1_flow_heat',
+        ];
+        atwCapabilities.forEach((capability) => {
+          deviceInfo.capabilities.push(capability);
+        });
+        if (device.Device.CanCool) {
+          const coolAtwCapabilities = [
+            'operation_mode_zone_with_cool.zone1',
+            'target_temperature.zone1_flow_cool',
+          ];
+          coolAtwCapabilities.forEach((capability) => {
+            deviceInfo.capabilities.push(capability);
           });
-        // Air-to-water heat pump
-        } else if (device.Device.DeviceType === 1) {
-          devices.push({
-            name: device.DeviceName,
-            data: {
-              id: device.DeviceID,
-              buildingid: device.BuildingID,
-              address: device.MacAddress,
-              name: device.DeviceName,
-              zone: 1,
-            },
+        } else {
+          deviceInfo.capabilities.push('operation_mode_zone.zone1');
+        }
+        if (device.Device.HasZone2) {
+          const zone2AtwCapabilities = [
+            'measure_temperature.zone2',
+            'target_temperature.zone2',
+            'target_temperature.zone2_flow_heat',
+          ];
+          zone2AtwCapabilities.forEach((capability) => {
+            deviceInfo.capabilities.push(capability);
           });
-          if (device.Device.HasZone2) {
-            devices.push({
-              name: `${device.DeviceName} Zone 2`,
-              data: {
-                id: device.DeviceID,
-                buildingid: device.BuildingID,
-                address: device.MacAddress,
-                name: `${device.DeviceName} Zone 2`,
-                zone: 2,
-              },
+          if (device.Device.CanCool) {
+            const coolZone2AtwCapabilities = [
+              'operation_mode_zone_with_cool.zone2',
+              'target_temperature.zone2_flow_cool',
+            ];
+            coolZone2AtwCapabilities.forEach((capability) => {
+              deviceInfo.capabilities.push(capability);
             });
+          } else {
+            deviceInfo.capabilities.push('operation_mode_zone.zone2');
           }
         }
-      });
-      return devices;
+      } else if (device.Device.DeviceType === 0) {
+        const ataCapabilities = [
+          'fan_power',
+          'measure_power.daily_consumed',
+          'measure_power.total_consumed',
+          'measure_temperature',
+          'onoff',
+          'operation_mode',
+          'target_temperature',
+          'vertical',
+          'horizontal',
+          'thermostat_mode',
+        ];
+        ataCapabilities.forEach((capability) => {
+          deviceInfo.capabilities.push(capability);
+        });
+      }
+      return deviceInfo;
     });
+    return devices;
+  }
+
+  onPair(session) {
+    session.setHandler('login', async (data) => this.logIn(data.username, data.password));
+    session.setHandler('list_devices', async () => this.listDevices());
   }
 }
 

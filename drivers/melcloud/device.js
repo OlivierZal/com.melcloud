@@ -1,163 +1,154 @@
-const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 const http = require('http.min');
+const MELCloudDeviceMixin = require('../melclouddevicemixin');
 
 // Operation mode
 function operationModeToValue(operationMode) {
-  let value;
-  if (operationMode === 'off') {
-    value = 0;
-  } else if (operationMode === 'heat') {
-    value = 1;
-  } else if (operationMode === 'dry') {
-    value = 2;
-  } else if (operationMode === 'cool') {
-    value = 3;
-  } else if (operationMode === 'fan') {
-    value = 7;
-  } else if (operationMode === 'auto') {
-    value = 8;
+  switch (operationMode) {
+    case 'off':
+      return 0;
+    case 'heat':
+      return 1;
+    case 'dry':
+      return 2;
+    case 'cool':
+      return 3;
+    case 'fan':
+      return 7;
+    case 'auto':
+      return 8;
+    default:
+      return null;
   }
-  return value;
 }
 
 function valueToOperationMode(value) {
-  let operationMode;
-  if (value === 0) {
-    operationMode = 'off';
-  } else if (value === 1) {
-    operationMode = 'heat';
-  } else if (value === 2) {
-    operationMode = 'dry';
-  } else if (value === 3) {
-    operationMode = 'cool';
-  } else if (value === 7) {
-    operationMode = 'fan';
-  } else if (value === 8) {
-    operationMode = 'auto';
+  switch (value) {
+    case 0:
+      return 'off';
+    case 1:
+      return 'heat';
+    case 2:
+      return 'dry';
+    case 3:
+      return 'cool';
+    case 7:
+      return 'fan';
+    case 8:
+      return 'auto';
+    default:
+      return null;
   }
-  return operationMode;
 }
 
 // Vertical vane direction
 function verticalToValue(vertical) {
-  let value;
-  if (vertical === 'auto') {
-    value = 0;
-  } else if (vertical === 'top') {
-    value = 1;
-  } else if (vertical === 'middletop') {
-    value = 2;
-  } else if (vertical === 'middle') {
-    value = 3;
-  } else if (vertical === 'middlebottom') {
-    value = 4;
-  } else if (vertical === 'bottom') {
-    value = 5;
-  } else if (vertical === 'swing') {
-    value = 7;
+  switch (vertical) {
+    case 'auto':
+      return 0;
+    case 'top':
+      return 1;
+    case 'middletop':
+      return 2;
+    case 'middle':
+      return 3;
+    case 'middlebottom':
+      return 4;
+    case 'bottom':
+      return 5;
+    case 'swing':
+      return 7;
+    default:
+      return null;
   }
-  return value;
 }
 
 function valueToVertical(value) {
-  let vertical;
-  if (value === 0) {
-    vertical = 'auto';
-  } else if (value === 1) {
-    vertical = 'top';
-  } else if (value === 2) {
-    vertical = 'middletop';
-  } else if (value === 3) {
-    vertical = 'middle';
-  } else if (value === 4) {
-    vertical = 'middlebottom';
-  } else if (value === 5) {
-    vertical = 'bottom';
-  } else if (value === 7) {
-    vertical = 'swing';
+  switch (value) {
+    case 0:
+      return 'auto';
+    case 1:
+      return 'top';
+    case 2:
+      return 'middletop';
+    case 3:
+      return 'middle';
+    case 4:
+      return 'middlebottom';
+    case 5:
+      return 'bottom';
+    case 7:
+      return 'swing';
+    default:
+      return null;
   }
-  return vertical;
 }
 
 // Horizontal vane direction
 function horizontalToValue(horizontal) {
-  let value;
-  if (horizontal === 'auto') {
-    value = 0;
-  } else if (horizontal === 'left') {
-    value = 1;
-  } else if (horizontal === 'middleleft') {
-    value = 2;
-  } else if (horizontal === 'middle') {
-    value = 3;
-  } else if (horizontal === 'middleright') {
-    value = 4;
-  } else if (horizontal === 'right') {
-    value = 5;
-  } else if (horizontal === 'split') {
-    value = 8;
-  } else if (horizontal === 'swing') {
-    value = 12;
+  switch (horizontal) {
+    case 'auto':
+      return 0;
+    case 'left':
+      return 1;
+    case 'middleleft':
+      return 2;
+    case 'middle':
+      return 3;
+    case 'middleright':
+      return 4;
+    case 'right':
+      return 5;
+    case 'split':
+      return 8;
+    case 'swing':
+      return 12;
+    default:
+      return null;
   }
-  return value;
 }
 
 function valueToHorizontal(value) {
-  let horizontal;
-  if (value === 0) {
-    horizontal = 'auto';
-  } else if (value === 1) {
-    horizontal = 'left';
-  } else if (value === 2) {
-    horizontal = 'middleleft';
-  } else if (value === 3) {
-    horizontal = 'middle';
-  } else if (value === 4) {
-    horizontal = 'middleright';
-  } else if (value === 5) {
-    horizontal = 'right';
-  } else if (value === 8) {
-    horizontal = 'split';
-  } else if (value === 12) {
-    horizontal = 'swing';
+  switch (value) {
+    case 0:
+      return 'auto';
+    case 1:
+      return 'left';
+    case 2:
+      return 'middleleft';
+    case 3:
+      return 'middle';
+    case 4:
+      return 'middleright';
+    case 5:
+      return 'right';
+    case 8:
+      return 'split';
+    case 12:
+      return 'swing';
+    default:
+      return null;
   }
-  return horizontal;
 }
 
-class MELCloudDeviceAta extends Homey.Device {
-  async migrateCapabilities() {
-    const addedCapabilities = [
+class MELCloudAtaDevice extends MELCloudDeviceMixin {
+  async onInit() {
+    const ataCapabilities = [
+      'fan_power',
+      'horizontal',
+      'measure_power.daily_consumed',
+      'measure_power.total_consumed',
+      'measure_temperature',
+      'onoff',
       'operation_mode',
+      'target_temperature',
+      'thermostat_mode',
+      'vertical',
     ];
-    const removedCapabilities = [
-      'mode_capability',
-    ];
-
-    addedCapabilities.forEach((capability) => {
+    ataCapabilities.forEach((capability) => {
       if (!this.hasCapability(capability)) {
         this.addCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been added`);
       }
     });
-    removedCapabilities.forEach((capability) => {
-      if (this.hasCapability(capability)) {
-        this.removeCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been removed`);
-      }
-    });
-  }
-
-  async onAdded() {
-    await this.onInit();
-  }
-
-  async onInit() {
-    try {
-      this.log(`\`${this.getName()}\`: migrating capabilities...`);
-      await this.migrateCapabilities();
-    } catch (error) {
-      this.error(`\`${this.getName()}\`: a problem occurred while migrating capabilities (${error})`);
-    }
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
     this.registerCapabilityListener('target_temperature', this.onCapabilityTargetTemperature.bind(this));
@@ -166,7 +157,28 @@ class MELCloudDeviceAta extends Homey.Device {
     this.registerCapabilityListener('fan_power', this.onCapabilityFanSpeed.bind(this));
     this.registerCapabilityListener('vertical', this.onCapabilityVerticalVaneDirection.bind(this));
     this.registerCapabilityListener('horizontal', this.onCapabilityHorizontalVaneDirection.bind(this));
+
     await this.syncDataFromDevice();
+    await this.fetchEnergyReport();
+  }
+
+  async parseEnergyReport(report) {
+    Object.entries(report).forEach(async (entry) => {
+      const [period, data] = entry;
+
+      const totalConsumed = data.TotalHeatingConsumed
+        + data.TotalCoolingConsumed
+        + data.TotalAutoConsumed
+        + data.TotalDryConsumed
+        + data.TotalFanConsumed
+        + data.TotalOtherConsumed;
+      const deviceCount = data.UsageDisclaimerPercentages
+        ? data.UsageDisclaimerPercentages.split(',').length : 1;
+      const consumed = Number((totalConsumed / deviceCount).toFixed(0));
+      await this.setCapabilityValue(`measure_power.${period}_consumed`, consumed)
+        .then(this.log(`\`${this.getName()}\`: capability \`measure_power.${period}_consumed\` equals to \`${consumed}\``))
+        .catch((error) => this.error(`\`${this.getName()}\`: capability \`measure_power.${period}_consumed\` has not been set (${error})`));
+    });
   }
 
   async syncDataFromDevice() {
@@ -189,7 +201,6 @@ class MELCloudDeviceAta extends Homey.Device {
           throw new Error(result.data.ErrorMessage);
         }
 
-        // On/Off && Operation mode
         const oldOperationMode = this.getCapabilityValue('operation_mode');
         const operationMode = valueToOperationMode(result.data.OperationMode);
         await this.setThermostatMode(operationMode, result.data.Power);
@@ -197,53 +208,36 @@ class MELCloudDeviceAta extends Homey.Device {
           this.driver.triggerOperationMode(this);
         }
 
-        // Room temperature
         await this.setCapabilityValue('measure_temperature', result.data.RoomTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`measure_temperature\` has been set (${result.data.RoomTemperature})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`measure_temperature\` equals to \`${result.data.RoomTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`measure_temperature\` has not been set (${error})`));
 
-        // Target temperature
-        const minSetTemperature = 4;
-        const maxSetTemperature = 35;
-        if (result.data.SetTemperature < 4) {
-          await this.setCapabilityValue('target_temperature', minSetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${minSetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        } else if (result.data.SetTemperature > 35) {
-          await this.setCapabilityValue('target_temperature', maxSetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${maxSetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        } else {
-          await this.setCapabilityValue('target_temperature', result.data.SetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${result.data.SetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        }
+        await this.setCapabilityValue('target_temperature', result.data.SetTemperature)
+          .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${result.data.SetTemperature}\``))
+          .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
 
-        // Fan speed
         const oldFanSpeed = this.getCapabilityValue('fan_power');
         const fanSpeed = result.data.SetFanSpeed;
         await this.setCapabilityValue('fan_power', fanSpeed)
-          .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` has been set (${fanSpeed})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` equals to \`${fanSpeed}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`fan_power\` has not been set (${error})`));
         if (fanSpeed !== oldFanSpeed) {
           this.driver.triggerFanSpeed(this);
         }
 
-        // Vertical vane direction
         const oldVertical = this.getCapabilityValue('vertical');
         const vertical = valueToVertical(result.data.VaneVertical);
         await this.setCapabilityValue('vertical', vertical)
-          .then(this.log(`\`${this.getName()}\`: capability \`vertical\` has been set (${vertical})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`vertical\` equals to \`${vertical}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`vertical\` has not been set (${error})`));
         if (vertical !== oldVertical) {
           this.driver.triggerVerticalVaneDirection(this);
         }
 
-        // Horizontal vane direction
         const oldHorizontal = this.getCapabilityValue('horizontal');
         const horizontal = valueToHorizontal(result.data.VaneHorizontal);
         await this.setCapabilityValue('horizontal', horizontal)
-          .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` has been set (${horizontal})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` equals to \`${horizontal}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`horizontal\` has not been set (${error})`));
         if (horizontal !== oldHorizontal) {
           this.driver.triggerHorizontalVaneDirection(this);
@@ -256,7 +250,7 @@ class MELCloudDeviceAta extends Homey.Device {
       this.log(`\`${this.getName()}\`: sync from device has been successfully completed, next one in ${interval} minutes`);
     } catch (error) {
       if (error instanceof SyntaxError) {
-        this.error(`\`${this.getName()}\`: device not found`);
+        this.error(`\`${this.getName()}\`: device not found while syncing from device`);
       } else {
         this.error(`\`${this.getName()}\`: a problem occurred while syncing from device (${error})`);
       }
@@ -298,21 +292,21 @@ class MELCloudDeviceAta extends Homey.Device {
       this.log(`\`${this.getName()}\`: sync with device has been successfully completed, sync from device in 1 minute`);
     } catch (error) {
       if (error instanceof SyntaxError) {
-        this.error(`\`${this.getName()}\`: device not found`);
+        this.error(`\`${this.getName()}\`: device not found while syncing with device`);
       } else {
         this.error(`\`${this.getName()}\`: a problem occurred while syncing with device (${error})`);
       }
     }
   }
 
-  async onCapabilityOnOff(onOff) {
-    await this.setThermostatMode(this.getCapabilityValue('operation_mode'), onOff);
+  async onCapabilityOnOff(isOn) {
+    await this.setThermostatMode(this.getCapabilityValue('operation_mode'), isOn);
     await this.syncDeviceFromData();
   }
 
   async onCapabilityTargetTemperature(targetTemperature) {
     await this.setCapabilityValue('target_temperature', targetTemperature)
-      .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${targetTemperature})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${targetTemperature}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
     await this.syncDeviceFromData();
   }
@@ -330,7 +324,7 @@ class MELCloudDeviceAta extends Homey.Device {
 
   async onCapabilityFanSpeed(fanSpeed) {
     await this.setCapabilityValue('fan_power', fanSpeed)
-      .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` has been set (${fanSpeed})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` equals to \`${fanSpeed}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`fan_power\` has not been set (${error})`));
     this.driver.triggerFanSpeed(this);
     await this.syncDeviceFromData();
@@ -338,7 +332,7 @@ class MELCloudDeviceAta extends Homey.Device {
 
   async onCapabilityVerticalVaneDirection(vertical) {
     await this.setCapabilityValue('vertical', vertical)
-      .then(this.log(`\`${this.getName()}\`: capability \`vertical\` has been set (${vertical})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`vertical\` equals to \`${vertical}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`vertical\` has not been set (${error})`));
     this.driver.triggerVerticalVaneDirection(this);
     await this.syncDeviceFromData();
@@ -346,43 +340,43 @@ class MELCloudDeviceAta extends Homey.Device {
 
   async onCapabilityHorizontalVaneDirection(horizontal) {
     await this.setCapabilityValue('horizontal', horizontal)
-      .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` has been set (${horizontal})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` equals to \`${horizontal}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`horizontal\` has not been set (${error})`));
     this.driver.triggerHorizontalVaneDirection(this);
     await this.syncDeviceFromData();
   }
 
-  async setThermostatMode(operationMode, onOff) {
-    await this.setCapabilityValue('onoff', operationMode !== 'off' && onOff)
-      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (false)`))
+  async setThermostatMode(operationMode, isOn) {
+    await this.setCapabilityValue('onoff', operationMode !== 'off' && isOn)
+      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`false\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
 
     await this.setCapabilityValue('operation_mode', operationMode)
-      .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` has been set (${operationMode})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` equals to \`${operationMode}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode\` has not been set (${error})`));
 
     if (operationMode !== 'dry' && operationMode !== 'fan') {
-      await this.setCapabilityValue('thermostat_mode', onOff ? operationMode : 'off')
-        .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` has been set (${onOff ? operationMode : 'off'})`))
+      await this.setCapabilityValue('thermostat_mode', isOn ? operationMode : 'off')
+        .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` equals to \`${isOn ? operationMode : 'off'}\``))
         .catch((error) => this.error(`\`${this.getName()}\`: capability \`thermostat_mode\` has not been set (${error})`));
     }
   }
 
   async setOperationMode(thermostatMode) {
     await this.setCapabilityValue('onoff', thermostatMode !== 'off')
-      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (${thermostatMode === 'off'})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`${thermostatMode === 'off'}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
 
     if (thermostatMode !== 'off') {
       await this.setCapabilityValue('operation_mode', thermostatMode)
-        .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` has been set (${thermostatMode})`))
+        .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` equals to \`${thermostatMode}\``))
         .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode\` has not been set (${error})`));
     }
 
     await this.setCapabilityValue('thermostat_mode', thermostatMode)
-      .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` has been set (${thermostatMode})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` equals to \`${thermostatMode}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`thermostat_mode\` has not been set (${error})`));
   }
 }
 
-module.exports = MELCloudDeviceAta;
+module.exports = MELCloudAtaDevice;

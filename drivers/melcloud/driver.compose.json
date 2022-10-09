@@ -10,6 +10,8 @@
   "capabilities": [
     "fan_power",
     "horizontal",
+    "measure_power.daily_consumed",
+    "measure_power.total_consumed",
     "measure_temperature",
     "onoff",
     "operation_mode",
@@ -18,6 +20,20 @@
     "vertical"
   ],
   "capabilitiesOptions": {
+    "measure_power.daily_consumed": {
+      "title": {
+        "en": "Last Daily Consumption"
+      },
+      "units": "kWh"
+    },
+    "measure_power.total_consumed": {
+      "title": {
+        "en": "Total Consumption"
+      },
+       "units": {
+         "en": "kWh"
+      }
+    },
     "measure_temperature": {
       "title": {
         "en": "Room Temperature"
@@ -27,15 +43,17 @@
       "insights": true,
       "title": {
         "en": "HomeKit Thermostat Mode"
-      }
+      },
+      "min": 4,
+      "max": 35
     }
   },
   "pair": [
     {
-      "id": "start",
+      "id": "login_credentials",
       "template": "login_credentials",
       "navigation": {
-        "next": "list_my_devices"
+        "next": "list_devices"
       },
       "options": {
         "logo": "pair_logo.png",
@@ -46,14 +64,14 @@
       }
     },
     {
-      "id": "list_my_devices",
+      "id": "list_devices",
       "template": "list_devices",
       "navigation": {
-        "next": "add_my_devices"
+        "next": "add_devices"
       }
     },
     {
-      "id": "add_my_devices",
+      "id": "add_devices",
       "template": "add_devices"
     }
   ]

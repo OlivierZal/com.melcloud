@@ -1,0 +1,660 @@
+{
+  "triggers": [
+    {
+      "id": "operation_mode_trigger",
+      "title": {
+        "en": "Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Operation Mode has changed to [[operation_mode]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "any",
+              "label": {
+                "en": "Any"
+              }
+            },
+            {
+              "id": "0",
+              "label": {
+                "en": "Idle"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Domestic Hot Water"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone1_trigger",
+      "$filter": "capabilities=operation_mode_zone.zone1",
+      "title": {
+        "en": "Zone 1 Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 1 Operation Mode has changed to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_trigger",
+      "$filter": "capabilities=operation_mode_zone.zone2",
+      "title": {
+        "en": "Zone 2 Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 2 Operation Mode has changed to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone1_with_cool_trigger",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone1",
+      "title": {
+        "en": "Zone 1 Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 1 Operation Mode has changed to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_with_cool_trigger",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
+      "title": {
+        "en": "Zone 2 Operation Mode has changed to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 2 Operation Mode has changed to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "any",
+              "title": {
+                "en": "Any"
+              }
+            },
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "operation_mode_condition",
+      "title": {
+        "en": "Operation Mode !{{equals|doesn't equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Operation Mode !{{equals|doesn't equal}} to [[operation_mode]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Idle"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Domestic Hot Water"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Heating"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Cooling"
+              }
+            },
+            {
+              "id": "4",
+              "label": {
+                "en": "Defrost"
+              }
+            },
+            {
+              "id": "5",
+              "label": {
+                "en": "Standby"
+              }
+            },
+            {
+              "id": "6",
+              "label": {
+                "en": "Legionella"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone1_condition",
+      "$filter": "capabilities=operation_mode_zone.zone1",
+      "title": {
+        "en": "Zone 1 Operation Mode !{{equals|doesn't equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 1 Operation Mode !{{equals|doesn't equal}} to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_condition",
+      "$filter": "capabilities=operation_mode_zone.zone2",
+      "title": {
+        "en": "Zone 2 Operation Mode !{{equals|doesn't equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 2 Operation Mode !{{equals|doesn't equal}} to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone1_with_cool_condition",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone1",
+      "title": {
+        "en": "Zone 1 Operation Mode !{{equals|doesn't equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 1 Operation Mode !{{equals|doesn't equal}} to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_with_cool_condition",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
+      "title": {
+        "en": "Zone 2 Operation Mode !{{equals|doesn't equal}} to..."
+      },
+      "titleFormatted": {
+        "en": "Zone 2 Operation Mode !{{equals|doesn't equal}} to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "operation_mode_zone1_action",
+      "$filter": "capabilities=operation_mode_zone.zone1",
+      "title": {
+        "en": "Set Zone 1 Operation Mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_action",
+      "$filter": "capabilities=operation_mode_zone.zone2",
+      "title": {
+        "en": "Set Zone 2 Operation Mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone1_with_cool_action",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone1",
+      "title": {
+        "en": "Set Zone 1 Operation Mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_zone2_with_cool_action",
+      "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
+      "title": {
+        "en": "Set Zone 2 Operation Mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode_zone",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Heat Room"
+              }
+            },
+            {
+              "id": "1",
+              "title": {
+                "en": "Heat Flow"
+              }
+            },
+            {
+              "id": "2",
+              "title": {
+                "en": "Curve"
+              }
+            },
+            {
+              "id": "3",
+              "title": {
+                "en": "Cool Room"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Cool Flow"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

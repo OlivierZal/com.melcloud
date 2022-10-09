@@ -3,10 +3,10 @@
     {
       "id": "Full_Thermostat_Trigger",
       "title": {
-        "en": "Full thermostat mode has changed to..."
+        "en": "Full Thermostat Mode has changed to..."
       },
       "titleFormatted": {
-        "en": "Full thermostat mode has changed to [[mode_capability_action]]"
+        "en": "Full Thermostat Mode has changed to [[mode_capability_action]]"
       },
       "args": [
         {
@@ -62,10 +62,10 @@
     {
       "id": "Fan_Speed_Trigger",
       "title": {
-        "en": "Fan speed has changed to..."
+        "en": "Fan Speed has changed to..."
       },
       "titleFormatted": {
-        "en": "Fan speed has changed to [[fan_speed_action]]"
+        "en": "Fan Speed has changed to [[fan_speed_action]]"
       },
       "args": [
         {
@@ -121,10 +121,10 @@
     {
       "id": "Vertical_Swing_Trigger",
       "title": {
-        "en": "Vertical vane position has changed to..."
+        "en": "Vertical Vane Direction has changed to..."
       },
       "titleFormatted": {
-        "en": "Vertical vane position has changed to [[vertical_swing_action]]"
+        "en": "Vertical Vane Direction has changed to [[vertical_swing_action]]"
       },
       "args": [
         {
@@ -186,10 +186,10 @@
     {
       "id": "Horizontal_Swing_Trigger",
       "title": {
-        "en": "Horizontal vane position has changed to..."
+        "en": "Horizontal Vane Direction has changed to..."
       },
       "titleFormatted": {
-        "en": "Horizontal vane position has changed to [[horizontal_swing_action]]"
+        "en": "Horizontal Vane Direction has changed to [[horizontal_swing_action]]"
       },
       "args": [
         {
@@ -259,10 +259,10 @@
     {
       "id": "Full_Thermostat_Condition",
       "title": {
-        "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
+        "en": "Full Thermostastat Mode !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
+        "en": "Full Thermostastat Mode !{{equals|doesn't equal}} to [[mode_capability_condition]]"
       },
       "args": [
         {
@@ -312,10 +312,10 @@
     {
       "id": "Fan_Speed_Condition",
       "title": {
-        "en": "Fan speed is !{{equals|does not equal}} to..."
+        "en": "Fan Speed !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
+        "en": "Fan Speed !{{equals|doesn't equal}} to [[fan_speed_condition]]"
       },
       "args": [
         {
@@ -365,10 +365,10 @@
     {
       "id": "Vertical_Swing_Condition",
       "title": {
-        "en": "Vertical vane position is !{{equals|does not equal}} to..."
+        "en": "Vertical Vane Direction !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Vertical vane position is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+        "en": "Vertical Vane Direction !{{equals|doesn't equal}} to [[vertical_swing_condition]]"
       },
       "args": [
         {
@@ -424,10 +424,10 @@
     {
       "id": "Horizontal_Swing_Condition",
       "title": {
-        "en": "Horizontal vane position is !{{equals|does not equal}} to..."
+        "en": "Horizontal Vane Direction !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Horizontal vane position is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
+        "en": "Horizontal Vane Direction !{{equals|doesn't equal}} to [[horizontal_swing_condition]]"
       },
       "args": [
         {
@@ -491,10 +491,10 @@
     {
       "id": "Full_Thermostat_Action",
       "title": {
-        "en": "Set full mode to..."
+        "en": "Set Thermostat Full Mode to..."
       },
       "titleFormatted": {
-        "en": "Set full mode to [[mode_capability_action]]"
+        "en": "Set Thermostat Full Mode to [[mode_capability_action]]"
       },
       "args": [
         {
@@ -544,10 +544,10 @@
     {
       "id": "Fan_Speed_Action",
       "title": {
-        "en": "Set fan speed to..."
+        "en": "Set Fan Speed to..."
       },
       "titleFormatted": {
-        "en": "Set fan speed to [[fan_speed_action]]"
+        "en": "Set Fan Speed to [[fan_speed_action]]"
       },
       "args": [
         {
@@ -597,10 +597,10 @@
     {
       "id": "Vertical_Swing_Action",
       "title": {
-        "en": "Set vertical vane position to..."
+        "en": "Set Vertical Vane Direction to..."
       },
       "titleFormatted": {
-        "en": "Set vertical vane position to [[vertical_swing_action]]"
+        "en": "Set Vertical Vane Direction to [[vertical_swing_action]]"
       },
       "args": [
         {
@@ -656,10 +656,10 @@
     {
       "id": "Horizontal_Swing_Action",
       "title": {
-        "en": "Set horizontal vane position to..."
+        "en": "Set Horizontal Vane Direction to..."
       },
       "titleFormatted": {
-        "en": "Set horizontal vane position to [[horizontal_swing_action]]"
+        "en": "Set Horizontal Vane Direction to [[horizontal_swing_action]]"
       },
       "args": [
         {

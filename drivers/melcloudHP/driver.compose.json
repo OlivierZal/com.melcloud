@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "Air-to-Water Heat Pump"
+    "en": "Air-to-Water Heat Pump (legacy)"
   },
   "images": {
     "small": "drivers/melcloudHP/assets/images/small.png",
@@ -34,8 +34,7 @@
     },
     "target_temperature": {
       "min": 10,
-      "max": 30,
-      "insights": true
+      "max": 30
     }
   },
   "pair": [

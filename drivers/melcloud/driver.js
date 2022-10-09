@@ -1,6 +1,6 @@
-const MELCloudDriverMixin = require('../melclouddrivermixin');
+const MELCloudAtaDriverMixin = require('../melclouddrivermixin');
 
-class MELCloudDriverAta extends MELCloudDriverMixin {
+class MELCloudAtaDriver extends MELCloudAtaDriverMixin {
   async onInit() {
     this.deviceType = 0;
 
@@ -88,30 +88,30 @@ class MELCloudDriverAta extends MELCloudDriverMixin {
   triggerOperationMode(device) {
     this.operationModeTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`operation_mode\` has been triggered (${device.getCapabilityValue('operation_mode')})`))
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode\` has changed to \`${device.getCapabilityValue('operation_mode')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode\` has not been triggered (${error})`));
   }
 
   triggerFanSpeed(device) {
     this.fanSpeedTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`fan_power\` has been triggered (${device.getCapabilityValue('fan_power')})`))
+      .then(this.log(`\`${device.getName()}\`: \`fan_power\` has changed to \`${device.getCapabilityValue('fan_power')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`fan_power\` has not been triggered (${error})`));
   }
 
   triggerVerticalVaneDirection(device) {
     this.verticalVaneDirectionTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`vertical\` has been triggered (${device.getCapabilityValue('vertical')})`))
+      .then(this.log(`\`${device.getName()}\`: \`vertical\` has changed to \`${device.getCapabilityValue('vertical')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`vertical\` has not been triggered (${error})`));
   }
 
   triggerHorizontalVaneDirection(device) {
     this.horizontalVaneDirectionTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`horizontal\` has been triggered (${device.getCapabilityValue('horizontal')})`))
+      .then(this.log(`\`${device.getName()}\`: \`horizontal\` has changed to \`${device.getCapabilityValue('horizontal')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`horizontal\` has not been triggered (${error})`));
   }
 }
 
-module.exports = MELCloudDriverAta;
+module.exports = MELCloudAtaDriver;

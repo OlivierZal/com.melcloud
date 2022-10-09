@@ -1,7 +1,7 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 const http = require('http.min');
 
-class MELCloudDeviceAtw extends Homey.Device {
+class MELCloudHPDevice extends Homey.Device {
   async getOtherZoneFlowTemperatureSettings() {
     const otherSettings = {
       cool_flow_temperature: 0,
@@ -33,54 +33,11 @@ class MELCloudDeviceAtw extends Homey.Device {
     return otherSettings;
   }
 
-  async migrateCapabilities() {
-    const addedCapabilities = [
-      'booster_heater1',
-      'booster_heater2',
-      'booster_heater2_plus',
-      'defrost_mode',
-      'eco_hot_water',
-      'flow_temperature',
-      'forced_hot_water',
-      'heat_pump_frequency',
-      'immersion_heater',
-      'return_temperature',
-      'operation_mode_state',
-      'operation_mode_zone',
-      'onoff',
-      'outdoor_temperature',
-    ];
-    const removedCapabilities = [
-      'forcedhotwater',
-      'outside_temperature',
-    ];
-
-    addedCapabilities.forEach((capability) => {
-      if (!this.hasCapability(capability)) {
-        this.addCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been added`);
-      }
-    });
-    removedCapabilities.forEach((capability) => {
-      if (this.hasCapability(capability)) {
-        this.removeCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been removed`);
-      }
-    });
-  }
-
   async onAdded() {
     await this.onInit();
   }
 
   async onInit() {
-    try {
-      this.log(`\`${this.getName()}\`: migrating capabilities...`);
-      await this.migrateCapabilities();
-    } catch (error) {
-      this.error(`\`${this.getName()}\`: a problem occurred while migrating capabilities (${error})`);
-    }
-
     this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
     this.registerCapabilityListener('target_temperature', this.onCapabilityTargetTemperature.bind(this));
     this.registerCapabilityListener('operation_mode_zone', this.onCapabilityOperationModeZone.bind(this));
@@ -130,41 +87,41 @@ class MELCloudDeviceAtw extends Homey.Device {
 
         // Update capabilities
         await this.setCapabilityValue('onoff', result.data.Power)
-          .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (${result.data.Power})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`${result.data.Power}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
 
         await this.setCapabilityValue('measure_temperature', measureTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`measure_temperature\` has been set (${measureTemperature})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`measure_temperature\` equals to \`${measureTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`measure_temperature\` has not been set (${error})`));
 
         const minTargetTemperature = 10;
         const maxTargetTemperature = 30;
         if (targetTemperature < minTargetTemperature) {
           await this.setCapabilityValue('target_temperature', minTargetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${minTargetTemperature})`))
+            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${minTargetTemperature}\``))
             .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
         } else if (targetTemperature > maxTargetTemperature) {
           await this.setCapabilityValue('target_temperature', maxTargetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${maxTargetTemperature})`))
+            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${maxTargetTemperature}\``))
             .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
         } else {
           await this.setCapabilityValue('target_temperature', targetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${targetTemperature})`))
+            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${targetTemperature}\``))
             .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
         }
 
         await this.setCapabilityValue('watertank_temperature', result.data.TankWaterTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`watertank_temperature\` has been set (${result.data.TankWaterTemperature})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`watertank_temperature\` equals to \`${result.data.TankWaterTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`watertank_temperature\` has not been set (${error})`));
 
         await this.setCapabilityValue('outdoor_temperature', result.data.OutdoorTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`outdoor_temperature\` has been set (${result.data.OutdoorTemperature})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`outdoor_temperature\` equals to \`${result.data.OutdoorTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`outdoor_temperature\` has not been set (${error})`));
 
         const oldOperationMode = this.getCapabilityValue('operation_mode_state');
         const operationMode = String(result.data.OperationMode);
         await this.setCapabilityValue('operation_mode_state', operationMode)
-          .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_state\` has been set (${operationMode})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_state\` equals to \`${operationMode}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode_state\` has not been set (${error})`));
         if (operationMode !== oldOperationMode) {
           this.driver.triggerOperationMode(this);
@@ -172,7 +129,7 @@ class MELCloudDeviceAtw extends Homey.Device {
 
         const oldOperationModeZone = this.getCapabilityValue('operation_mode_zone');
         await this.setCapabilityValue('operation_mode_zone', operationModeZone)
-          .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_zone\` has been set (${operationModeZone})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_zone\` equals to \`${operationModeZone}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode_zone\` has not been set (${error})`));
         if (operationModeZone !== oldOperationModeZone) {
           this.driver.triggerOperationModeZone(this);
@@ -181,14 +138,14 @@ class MELCloudDeviceAtw extends Homey.Device {
         const oldForcedHotWater = this.getCapabilityValue('forced_hot_water');
         const forcedHotWater = String(result.data.ForcedHotWaterMode);
         await this.setCapabilityValue('forced_hot_water', forcedHotWater)
-          .then(this.log(`\`${this.getName()}\`: capability \`forced_hot_water\` has been set (${forcedHotWater})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`forced_hot_water\` equals to \`${forcedHotWater}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`forced_hot_water\` has not been set (${error})`));
         if (forcedHotWater !== oldForcedHotWater) {
           this.driver.triggerForcedHotWater(this);
         }
 
         await this.setCapabilityValue('eco_hot_water', result.data.EcoHotWater)
-          .then(this.log(`\`${this.getName()}\`: capability \`eco_hot_water\` has been set (${result.data.EcoHotWater})`))
+          .then(this.log(`\`${this.getName()}\`: capability \`eco_hot_water\` equals to \`${result.data.EcoHotWater}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`eco_hot_water\` has not been set (${error})`));
 
         // Update capabilities from data only available via `ListDevice`
@@ -198,7 +155,7 @@ class MELCloudDeviceAtw extends Homey.Device {
             const flowTemperature = device.Device.FlowTemperature;
             const oldFlowTemperature = this.getCapabilityValue('flow_temperature');
             await this.setCapabilityValue('flow_temperature', flowTemperature)
-              .then(this.log(`\`${this.getName()}\`: capability \`flow_temperature\` has been set (${flowTemperature})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`flow_temperature\` equals to \`${flowTemperature}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`flow_temperature\` has not been set (${error})`));
             if (flowTemperature !== oldFlowTemperature) {
               this.driver.triggerFlowTemperature(this);
@@ -206,30 +163,30 @@ class MELCloudDeviceAtw extends Homey.Device {
             const returnTemperature = device.Device.ReturnTemperature;
             const oldReturnTemperature = this.getCapabilityValue('return_temperature');
             await this.setCapabilityValue('return_temperature', returnTemperature)
-              .then(this.log(`\`${this.getName()}\`: capability \`return_temperature\` has been set (${returnTemperature})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`return_temperature\` equals to \`${returnTemperature}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`return_temperature\` has not been set (${error})`));
             if (returnTemperature !== oldReturnTemperature) {
               this.driver.triggerReturnTemperature(this);
             }
             await this.setCapabilityValue('defrost_mode', Boolean(device.Device.DefrostMode))
-              .then(this.log(`\`${this.getName()}\`: capability \`defrost_mode\` has been set (${Boolean(device.Device.DefrostMode)})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`defrost_mode\` equals to \`${Boolean(device.Device.DefrostMode)}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`defrost_mode\` has not been set (${error})`));
 
             await this.setCapabilityValue('booster_heater1', device.Device.BoosterHeater1Status)
-              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater1\` has been set (${device.Device.BoosterHeater1Status})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater1\` equals to \`${device.Device.BoosterHeater1Status}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`booster_heater1\` has not been set (${error})`));
             await this.setCapabilityValue('booster_heater2', device.Device.BoosterHeater2Status)
-              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater2\` has been set (${device.Device.BoosterHeater2Status})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater2\` equals to \`${device.Device.BoosterHeater2Status}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`booster_heater2\` has not been set (${error})`));
             await this.setCapabilityValue('booster_heater2_plus', device.Device.BoosterHeater2PlusStatus)
-              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater2_plus\` has been set (${device.Device.BoosterHeater2PlusStatus})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`booster_heater2_plus\` equals to \`${device.Device.BoosterHeater2PlusStatus}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`booster_heater2_plus\` has not been set (${error})`));
             await this.setCapabilityValue('immersion_heater', device.Device.ImmersionHeaterStatus)
-              .then(this.log(`\`${this.getName()}\`: capability \`immersion_heater\` has been set (${device.Device.ImmersionHeaterStatus})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`immersion_heater\` equals to \`${device.Device.ImmersionHeaterStatus}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`immersion_heater\` has not been set (${error})`));
 
             await this.setCapabilityValue('heat_pump_frequency', device.Device.HeatPumpFrequency)
-              .then(this.log(`\`${this.getName()}\`: capability \`heat_pump_frequency\` has been set (${device.Device.HeatPumpFrequency})`))
+              .then(this.log(`\`${this.getName()}\`: capability \`heat_pump_frequency\` equals to \`${device.Device.HeatPumpFrequency}\``))
               .catch((error) => this.error(`\`${this.getName()}\`: capability \`heat_pump_frequency\` has not been set (${error})`));
           }
         });
@@ -326,23 +283,23 @@ class MELCloudDeviceAtw extends Homey.Device {
     }
   }
 
-  async onCapabilityOnOff(onOff) {
-    await this.setCapabilityValue('onoff', onOff)
-      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (${onOff})`))
+  async onCapabilityOnOff(isOn) {
+    await this.setCapabilityValue('onoff', isOn)
+      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`${isOn}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
     await this.syncDeviceFromData();
   }
 
   async onCapabilityTargetTemperature(targetTemperature) {
     await this.setCapabilityValue('target_temperature', targetTemperature)
-      .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${targetTemperature})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` equals to \`${targetTemperature}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
     await this.syncDeviceFromData();
   }
 
   async onCapabilityOperationModeZone(operationModeZone) {
     await this.setCapabilityValue('operation_mode_zone', operationModeZone)
-      .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_zone\` has been set (${operationModeZone})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_zone\` equals to \`${operationModeZone}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode_zone\` has not been set (${error})`));
     this.driver.triggerOperationModeZone(this);
     await this.syncDeviceFromData();
@@ -350,7 +307,7 @@ class MELCloudDeviceAtw extends Homey.Device {
 
   async onCapabilityForcedHotWater(forceHotWater) {
     await this.setCapabilityValue('forced_hot_water', forceHotWater)
-      .then(this.log(`\`${this.getName()}\`: capability \`forced_hot_water\` has been set (${forceHotWater})`))
+      .then(this.log(`\`${this.getName()}\`: capability \`forced_hot_water\` equals to \`${forceHotWater}\``))
       .catch((error) => this.error(`\`${this.getName()}\`: capability \`forced_hot_water\` has not been set (${error})`));
     this.driver.triggerForcedHotWater(this);
     await this.syncDeviceFromData();
@@ -367,4 +324,4 @@ class MELCloudDeviceAtw extends Homey.Device {
   }
 }
 
-module.exports = MELCloudDeviceAtw;
+module.exports = MELCloudHPDevice;
