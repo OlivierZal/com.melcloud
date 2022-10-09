@@ -1,388 +1,326 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
-const http = require('http.min');
 
-// Operation mode
-function operationModeToValue(operationMode) {
-  let value;
-  if (operationMode === 'off') {
-    value = 0;
-  } else if (operationMode === 'heat') {
-    value = 1;
-  } else if (operationMode === 'dry') {
-    value = 2;
-  } else if (operationMode === 'cool') {
-    value = 3;
-  } else if (operationMode === 'fan') {
-    value = 7;
-  } else if (operationMode === 'auto') {
-    value = 8;
+function operationModeToDevice(value) {
+  switch (value) {
+    case 'heat':
+      return 1;
+    case 'dry':
+      return 2;
+    case 'cool':
+      return 3;
+    case 'fan':
+      return 7;
+    case 'auto':
+      return 8;
+    default:
+      throw new Error(`Capability \`operation_mode\`: invalid value \`${value}\``);
   }
-  return value;
 }
 
-function valueToOperationMode(value) {
-  let operationMode;
-  if (value === 0) {
-    operationMode = 'off';
-  } else if (value === 1) {
-    operationMode = 'heat';
-  } else if (value === 2) {
-    operationMode = 'dry';
-  } else if (value === 3) {
-    operationMode = 'cool';
-  } else if (value === 7) {
-    operationMode = 'fan';
-  } else if (value === 8) {
-    operationMode = 'auto';
+function operationModeFromDevice(value) {
+  switch (value) {
+    case 1:
+      return 'heat';
+    case 2:
+      return 'dry';
+    case 3:
+      return 'cool';
+    case 7:
+      return 'fan';
+    case 8:
+      return 'auto';
+    default:
+      throw new Error(`MELCloud \`OperationMode\`: invalid value \`${value}\``);
   }
-  return operationMode;
 }
 
-// Vertical vane direction
-function verticalToValue(vertical) {
-  let value;
-  if (vertical === 'auto') {
-    value = 0;
-  } else if (vertical === 'top') {
-    value = 1;
-  } else if (vertical === 'middletop') {
-    value = 2;
-  } else if (vertical === 'middle') {
-    value = 3;
-  } else if (vertical === 'middlebottom') {
-    value = 4;
-  } else if (vertical === 'bottom') {
-    value = 5;
-  } else if (vertical === 'swing') {
-    value = 7;
+function verticalToDevice(value) {
+  switch (value) {
+    case 'auto':
+      return 0;
+    case 'top':
+      return 1;
+    case 'middletop':
+      return 2;
+    case 'middle':
+      return 3;
+    case 'middlebottom':
+      return 4;
+    case 'bottom':
+      return 5;
+    case 'swing':
+      return 7;
+    default:
+      throw new Error(`Capability \`vertical\`: invalid value \`${value}\``);
   }
-  return value;
 }
 
-function valueToVertical(value) {
-  let vertical;
-  if (value === 0) {
-    vertical = 'auto';
-  } else if (value === 1) {
-    vertical = 'top';
-  } else if (value === 2) {
-    vertical = 'middletop';
-  } else if (value === 3) {
-    vertical = 'middle';
-  } else if (value === 4) {
-    vertical = 'middlebottom';
-  } else if (value === 5) {
-    vertical = 'bottom';
-  } else if (value === 7) {
-    vertical = 'swing';
+function verticalFromDevice(value) {
+  switch (value) {
+    case 0:
+      return 'auto';
+    case 1:
+      return 'top';
+    case 2:
+      return 'middletop';
+    case 3:
+      return 'middle';
+    case 4:
+      return 'middlebottom';
+    case 5:
+      return 'bottom';
+    case 7:
+      return 'swing';
+    default:
+      throw new Error(`MELCLoud \`VaneVertical\`: invalid value \`${value}\``);
   }
-  return vertical;
 }
 
-// Horizontal vane direction
-function horizontalToValue(horizontal) {
-  let value;
-  if (horizontal === 'auto') {
-    value = 0;
-  } else if (horizontal === 'left') {
-    value = 1;
-  } else if (horizontal === 'middleleft') {
-    value = 2;
-  } else if (horizontal === 'middle') {
-    value = 3;
-  } else if (horizontal === 'middleright') {
-    value = 4;
-  } else if (horizontal === 'right') {
-    value = 5;
-  } else if (horizontal === 'split') {
-    value = 8;
-  } else if (horizontal === 'swing') {
-    value = 12;
+function horizontalToDevice(value) {
+  switch (value) {
+    case 'auto':
+      return 0;
+    case 'left':
+      return 1;
+    case 'middleleft':
+      return 2;
+    case 'middle':
+      return 3;
+    case 'middleright':
+      return 4;
+    case 'right':
+      return 5;
+    case 'split':
+      return 8;
+    case 'swing':
+      return 12;
+    default:
+      throw new Error(`Capability \`horizontal\`: invalid value \`${value}\``);
   }
-  return value;
 }
 
-function valueToHorizontal(value) {
-  let horizontal;
-  if (value === 0) {
-    horizontal = 'auto';
-  } else if (value === 1) {
-    horizontal = 'left';
-  } else if (value === 2) {
-    horizontal = 'middleleft';
-  } else if (value === 3) {
-    horizontal = 'middle';
-  } else if (value === 4) {
-    horizontal = 'middleright';
-  } else if (value === 5) {
-    horizontal = 'right';
-  } else if (value === 8) {
-    horizontal = 'split';
-  } else if (value === 12) {
-    horizontal = 'swing';
+function horizontalFromDevice(value) {
+  switch (value) {
+    case 0:
+      return 'auto';
+    case 1:
+      return 'left';
+    case 2:
+      return 'middleleft';
+    case 3:
+      return 'middle';
+    case 4:
+      return 'middleright';
+    case 5:
+      return 'right';
+    case 8:
+      return 'split';
+    case 12:
+      return 'swing';
+    default:
+      throw new Error(`MELCloud \`VaneHorizontal\`: invalid value \`${value}\``);
   }
-  return horizontal;
 }
 
-class MELCloudDeviceAta extends Homey.Device {
-  async migrateCapabilities() {
-    const addedCapabilities = [
-      'operation_mode',
-    ];
-    const removedCapabilities = [
-      'mode_capability',
-    ];
-
-    addedCapabilities.forEach((capability) => {
+class MELCloudAtaDevice extends Homey.Device {
+  cleanCapabilities() {
+    const currentCapabilities = this.getCapabilities();
+    const requiredCapabilities = this.driver.manifest.capabilities;
+    currentCapabilities.forEach((capability) => {
+      if (!requiredCapabilities.includes(capability)) {
+        this.removeCapability(capability);
+      }
+    });
+    requiredCapabilities.forEach((capability) => {
       if (!this.hasCapability(capability)) {
         this.addCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been added`);
       }
     });
-    removedCapabilities.forEach((capability) => {
-      if (this.hasCapability(capability)) {
-        this.removeCapability(capability);
-        this.log(`\`${this.getName()}\`: capability \`${capability}\` has been removed`);
-      }
-    });
-  }
-
-  async onAdded() {
-    await this.onInit();
   }
 
   async onInit() {
-    try {
-      this.log(`\`${this.getName()}\`: migrating capabilities...`);
-      await this.migrateCapabilities();
-    } catch (error) {
-      this.error(`\`${this.getName()}\`: a problem occurred while migrating capabilities (${error})`);
-    }
+    await this.setWarning(null);
+    this.cleanCapabilities();
 
-    this.registerCapabilityListener('onoff', this.onCapabilityOnOff.bind(this));
-    this.registerCapabilityListener('target_temperature', this.onCapabilityTargetTemperature.bind(this));
-    this.registerCapabilityListener('thermostat_mode', this.onCapabilityThermostatMode.bind(this));
-    this.registerCapabilityListener('operation_mode', this.onCapabilityOperationMode.bind(this));
-    this.registerCapabilityListener('fan_power', this.onCapabilityFanSpeed.bind(this));
-    this.registerCapabilityListener('vertical', this.onCapabilityVerticalVaneDirection.bind(this));
-    this.registerCapabilityListener('horizontal', this.onCapabilityHorizontalVaneDirection.bind(this));
+    this.registerCapabilityListener('onoff', await this.onCapabilityOnoff.bind(this));
+    this.registerCapabilityListener('target_temperature', await this.onCapabilityTargetTemperature.bind(this));
+    this.registerCapabilityListener('thermostat_mode', await this.onCapabilityThermostatMode.bind(this));
+    this.registerCapabilityListener('operation_mode', await this.onCapabilityOperationMode.bind(this));
+    this.registerCapabilityListener('fan_power', await this.onCapabilityFanSpeed.bind(this));
+    this.registerCapabilityListener('vertical', await this.onCapabilityVaneVertical.bind(this));
+    this.registerCapabilityListener('horizontal', await this.onCapabilityVaneHorizontal.bind(this));
+
     await this.syncDataFromDevice();
+    await this.parseEnergyReports();
+  }
+
+  async parseEnergyReports() {
+    this.homey.clearTimeout(this.reportTimeout);
+
+    const reportData = {};
+    reportData.daily = await this.homey.app.fetchEnergyReport(this, true);
+    reportData.total = await this.homey.app.fetchEnergyReport(this, false);
+    Object.entries(reportData).forEach((entry) => {
+      const [period, data] = entry;
+      const reportMapping = {};
+
+      const deviceCount = data.UsageDisclaimerPercentages
+        ? data.UsageDisclaimerPercentages.split(', ').length : 1;
+      reportMapping[`measure_power.${period}_consumed`] = 0;
+      ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode) => {
+        reportMapping[`measure_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] / deviceCount;
+        reportMapping[`measure_power.${period}_consumed`] += reportMapping[`measure_power.${period}_consumed_${mode.toLowerCase()}`];
+      });
+      Object.entries(reportMapping).forEach(async (total) => {
+        const [capability, value] = total;
+        await this.setOrNotCapabilityValue(capability, value);
+      });
+    });
+
+    this.reportTimeout = this.homey
+      .setTimeout(this.syncDataFromDevice.bind(this), 24 * 60 * 60 * 1000);
+    this.log(`\`${this.getName()}\`: energy reports have been processed`);
   }
 
   async syncDataFromDevice() {
     this.homey.clearTimeout(this.syncTimeout);
 
-    const data = this.getData();
-    const options = {
-      uri: `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
-      headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
-      json: true,
-    };
-    try {
-      this.log(`\`${this.getName()}\`: syncing from device...`);
-      await http.get(options).then(async (result) => {
-        if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
-        }
-        this.log(result.data);
-        if (result.data.ErrorMessage) {
-          throw new Error(result.data.ErrorMessage);
-        }
+    const resultData = await this.homey.app.getDevice(this);
 
-        // On/Off && Operation mode
-        const oldOperationMode = this.getCapabilityValue('operation_mode');
-        const operationMode = valueToOperationMode(result.data.OperationMode);
-        await this.setThermostatMode(operationMode, result.data.Power);
-        if (operationMode !== oldOperationMode) {
-          this.driver.triggerOperationMode(this);
-        }
-
-        // Room temperature
-        await this.setCapabilityValue('measure_temperature', result.data.RoomTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`measure_temperature\` has been set (${result.data.RoomTemperature})`))
-          .catch((error) => this.error(`\`${this.getName()}\`: capability \`measure_temperature\` has not been set (${error})`));
-
-        // Target temperature
-        const minSetTemperature = 4;
-        const maxSetTemperature = 35;
-        if (result.data.SetTemperature < 4) {
-          await this.setCapabilityValue('target_temperature', minSetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${minSetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        } else if (result.data.SetTemperature > 35) {
-          await this.setCapabilityValue('target_temperature', maxSetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${maxSetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        } else {
-          await this.setCapabilityValue('target_temperature', result.data.SetTemperature)
-            .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${result.data.SetTemperature})`))
-            .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-        }
-
-        // Fan speed
-        const oldFanSpeed = this.getCapabilityValue('fan_power');
-        const fanSpeed = result.data.SetFanSpeed;
-        await this.setCapabilityValue('fan_power', fanSpeed)
-          .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` has been set (${fanSpeed})`))
-          .catch((error) => this.error(`\`${this.getName()}\`: capability \`fan_power\` has not been set (${error})`));
-        if (fanSpeed !== oldFanSpeed) {
-          this.driver.triggerFanSpeed(this);
-        }
-
-        // Vertical vane direction
-        const oldVertical = this.getCapabilityValue('vertical');
-        const vertical = valueToVertical(result.data.VaneVertical);
-        await this.setCapabilityValue('vertical', vertical)
-          .then(this.log(`\`${this.getName()}\`: capability \`vertical\` has been set (${vertical})`))
-          .catch((error) => this.error(`\`${this.getName()}\`: capability \`vertical\` has not been set (${error})`));
-        if (vertical !== oldVertical) {
-          this.driver.triggerVerticalVaneDirection(this);
-        }
-
-        // Horizontal vane direction
-        const oldHorizontal = this.getCapabilityValue('horizontal');
-        const horizontal = valueToHorizontal(result.data.VaneHorizontal);
-        await this.setCapabilityValue('horizontal', horizontal)
-          .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` has been set (${horizontal})`))
-          .catch((error) => this.error(`\`${this.getName()}\`: capability \`horizontal\` has not been set (${error})`));
-        if (horizontal !== oldHorizontal) {
-          this.driver.triggerHorizontalVaneDirection(this);
-        }
-      });
-
-      const interval = this.getSetting('interval');
-      this.syncTimeout = this.homey
-        .setTimeout(this.syncDataFromDevice.bind(this), interval * 60 * 1000);
-      this.log(`\`${this.getName()}\`: sync from device has been successfully completed, next one in ${interval} minutes`);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        this.error(`\`${this.getName()}\`: device not found`);
-      } else {
-        this.error(`\`${this.getName()}\`: a problem occurred while syncing from device (${error})`);
-      }
-    }
+    this.updateCapabilities(resultData);
   }
 
-  async syncDeviceFromData() {
+  async syncDeviceFromData(updateJson) {
     this.homey.clearTimeout(this.syncTimeout);
 
     const data = this.getData();
-    const options = {
-      uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAta',
-      headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
-      json: {
-        DeviceID: data.id,
-        EffectiveFlags: 0x11f,
-        HasPendingCommand: true,
-        OperationMode: operationModeToValue(this.getCapabilityValue('operation_mode')),
-        Power: this.getCapabilityValue('onoff'),
-        SetFanSpeed: this.getCapabilityValue('fan_power'),
-        SetTemperature: this.getCapabilityValue('target_temperature'),
-        VaneHorizontal: horizontalToValue(this.getCapabilityValue('horizontal')),
-        VaneVertical: verticalToValue(this.getCapabilityValue('vertical')),
-      },
+    const json = {
+      DeviceID: data.id,
+      EffectiveFlags: 0,
+      HasPendingCommand: true,
+      Power: this.getCapabilityValue('onoff'),
+      SetTemperature: this.getCapabilityValue('target_temperature'),
+      OperationMode: operationModeToDevice(this.getCapabilityValue('operation_mode')),
+      SetFanSpeed: this.getCapabilityValue('fan_power'),
+      VaneVertical: verticalToDevice(this.getCapabilityValue('vertical')),
+      VaneHorizontal: horizontalToDevice(this.getCapabilityValue('horizontal')),
     };
-    try {
-      this.log(`\`${this.getName()}\`: syncing with device...`);
-      await http.post(options).then((result) => {
-        if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
-        }
-        this.log(result.data);
-        if (result.data.ErrorMessage) {
-          throw new Error(result.data.ErrorMessage);
-        }
-      });
+    Object.entries(updateJson).forEach((entry) => {
+      const [key, value] = entry;
+      json[key] = value;
+    });
+    const resultData = await this.homey.app.setDevice(this, json);
 
-      this.syncTimeout = this.homey.setTimeout(this.syncDataFromDevice.bind(this), 60 * 1000);
-      this.log(`\`${this.getName()}\`: sync with device has been successfully completed, sync from device in 1 minute`);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        this.error(`\`${this.getName()}\`: device not found`);
-      } else {
-        this.error(`\`${this.getName()}\`: a problem occurred while syncing with device (${error})`);
-      }
+    this.updateCapabilities(resultData);
+  }
+
+  async updateCapabilities(resultData) {
+    const isOn = resultData.Power;
+    const operationMode = operationModeFromDevice(resultData.OperationMode);
+
+    await this.setOrNotCapabilityValue('onoff', isOn);
+    await this.setOrNotCapabilityValue('measure_temperature', resultData.RoomTemperature);
+    await this.setOrNotCapabilityValue('target_temperature', resultData.SetTemperature);
+    await this.setOrNotCapabilityValue('operation_mode', operationMode);
+    await this.setOrNotCapabilityValue('fan_power', resultData.SetFanSpeed);
+    await this.setOrNotCapabilityValue('vertical', verticalFromDevice(resultData.VaneVertical));
+    await this.setOrNotCapabilityValue('horizontal', horizontalFromDevice(resultData.VaneHorizontal));
+    await this.updateThermostatMode(operationMode, isOn);
+
+    const interval = this.getSetting('interval');
+    this.syncTimeout = this.homey
+      .setTimeout(this.syncDataFromDevice.bind(this), interval * 60 * 1000);
+    this.log(`\`${this.getName()}\`: sync from device has been completed, sync from device in ${interval} minutes`);
+  }
+
+  async updateThermostatMode(operationMode, isOn) {
+    if (!['dry', 'fan'].includes(operationMode)) {
+      await this.setOrNotCapabilityValue('thermostat_mode', isOn ? operationMode : 'off');
+    } else {
+      await this.setOrNotCapabilityValue('thermostat_mode', 'off');
     }
   }
 
-  async onCapabilityOnOff(onOff) {
-    await this.setThermostatMode(this.getCapabilityValue('operation_mode'), onOff);
-    await this.syncDeviceFromData();
+  async onCapabilityOnoff(value) {
+    const updateJson = {
+      EffectiveFlags: 0x1,
+      Power: value,
+    };
+    await this.syncDeviceFromData(updateJson);
   }
 
-  async onCapabilityTargetTemperature(targetTemperature) {
-    await this.setCapabilityValue('target_temperature', targetTemperature)
-      .then(this.log(`\`${this.getName()}\`: capability \`target_temperature\` has been set (${targetTemperature})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
-    await this.syncDeviceFromData();
+  async onCapabilityTargetTemperature(value) {
+    let targetTemperature = value;
+    if (['auto', 'cool', 'dry'].includes(this.getCapabilityValue('operation_mode')) && value < 16) {
+      targetTemperature = 16;
+    }
+    const updateJson = {
+      EffectiveFlags: 0x4,
+      SetTemperature: targetTemperature,
+    };
+    await this.syncDeviceFromData(updateJson);
   }
 
-  async onCapabilityThermostatMode(thermostatMode) {
-    await this.setOperationMode(thermostatMode);
-    await this.syncDeviceFromData();
-  }
-
-  async onCapabilityOperationMode(operationMode) {
-    await this.setThermostatMode(operationMode, this.getCapabilityValue('onoff'));
-    this.driver.triggerOperationMode(this);
-    await this.syncDeviceFromData();
-  }
-
-  async onCapabilityFanSpeed(fanSpeed) {
-    await this.setCapabilityValue('fan_power', fanSpeed)
-      .then(this.log(`\`${this.getName()}\`: capability \`fan_power\` has been set (${fanSpeed})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`fan_power\` has not been set (${error})`));
-    this.driver.triggerFanSpeed(this);
-    await this.syncDeviceFromData();
-  }
-
-  async onCapabilityVerticalVaneDirection(vertical) {
-    await this.setCapabilityValue('vertical', vertical)
-      .then(this.log(`\`${this.getName()}\`: capability \`vertical\` has been set (${vertical})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`vertical\` has not been set (${error})`));
-    this.driver.triggerVerticalVaneDirection(this);
-    await this.syncDeviceFromData();
-  }
-
-  async onCapabilityHorizontalVaneDirection(horizontal) {
-    await this.setCapabilityValue('horizontal', horizontal)
-      .then(this.log(`\`${this.getName()}\`: capability \`horizontal\` has been set (${horizontal})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`horizontal\` has not been set (${error})`));
-    this.driver.triggerHorizontalVaneDirection(this);
-    await this.syncDeviceFromData();
-  }
-
-  async setThermostatMode(operationMode, onOff) {
-    await this.setCapabilityValue('onoff', operationMode !== 'off' && onOff)
-      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (false)`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
-
-    await this.setCapabilityValue('operation_mode', operationMode)
-      .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` has been set (${operationMode})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode\` has not been set (${error})`));
-
-    if (operationMode !== 'dry' && operationMode !== 'fan') {
-      await this.setCapabilityValue('thermostat_mode', onOff ? operationMode : 'off')
-        .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` has been set (${onOff ? operationMode : 'off'})`))
-        .catch((error) => this.error(`\`${this.getName()}\`: capability \`thermostat_mode\` has not been set (${error})`));
+  async onCapabilityThermostatMode(value) {
+    const updateJson = {
+      EffectiveFlags: 0,
+    };
+    if ((value !== 'off') !== this.getCapabilityValue('onoff')) {
+      updateJson.EffectiveFlags |= 0x1; // eslint-disable-line no-bitwise
+      updateJson.Power = value !== 'off';
+    }
+    if (value !== 'off') {
+      updateJson.EffectiveFlags |= 0x2; // eslint-disable-line no-bitwise
+      updateJson.OperationMode = operationModeToDevice(value);
+    }
+    if (updateJson.EffectiveFlags) {
+      await this.syncDeviceFromData(updateJson);
     }
   }
 
-  async setOperationMode(thermostatMode) {
-    await this.setCapabilityValue('onoff', thermostatMode !== 'off')
-      .then(this.log(`\`${this.getName()}\`: capability \`onoff\` has been set (${thermostatMode === 'off'})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
-
-    if (thermostatMode !== 'off') {
-      await this.setCapabilityValue('operation_mode', thermostatMode)
-        .then(this.log(`\`${this.getName()}\`: capability \`operation_mode\` has been set (${thermostatMode})`))
-        .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode\` has not been set (${error})`));
+  async onCapabilityOperationMode(value) {
+    await this.setWarning(null);
+    if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
+      await this.setWarning(`\`${value}\` has well been registered (even if \`heat\` is displayed)`);
     }
+    const updateJson = {
+      EffectiveFlags: 0x2,
+      OperationMode: operationModeToDevice(value),
+    };
+    await this.syncDeviceFromData(updateJson);
+  }
 
-    await this.setCapabilityValue('thermostat_mode', thermostatMode)
-      .then(this.log(`\`${this.getName()}\`: capability \`thermostat_mode\` has been set (${thermostatMode})`))
-      .catch((error) => this.error(`\`${this.getName()}\`: capability \`thermostat_mode\` has not been set (${error})`));
+  async onCapabilityFanSpeed(value) {
+    const updateJson = {
+      EffectiveFlags: 0x8,
+      SetFanSpeed: value,
+    };
+    await this.syncDeviceFromData(updateJson);
+  }
+
+  async onCapabilityVaneVertical(value) {
+    const updateJson = {
+      EffectiveFlags: 0x10,
+      VaneVertical: verticalToDevice(value),
+    };
+    await this.syncDeviceFromData(updateJson);
+  }
+
+  async onCapabilityVaneHorizontal(value) {
+    const updateJson = {
+      EffectiveFlags: 0x100,
+      VaneHorizontal: horizontalToDevice(value),
+    };
+    await this.syncDeviceFromData(updateJson);
+  }
+
+  async setOrNotCapabilityValue(capability, value) {
+    if (value !== this.getCapabilityValue(capability)) {
+      await this.setCapabilityValue(capability, value)
+        .then(this.log(`\`${this.getName()}\`: capability \`${capability}\` is \`${value}\``))
+        .catch((error) => this.error(`\`${this.getName()}\`: capability \`${capability}\` has not been set to \`${value}\` (${error})`));
+    }
   }
 }
 
-module.exports = MELCloudDeviceAta;
+module.exports = MELCloudAtaDevice;

@@ -12,7 +12,7 @@
   "category": [
     "climate"
   ],
-  "version": "3.1.6",
+  "version": "4.0.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -56,276 +56,100 @@
   "flow": {
     "triggers": [
       {
-        "id": "Full_Thermostat_Trigger",
+        "id": "fan_power_changed",
         "title": {
-          "en": "Full thermostat mode has changed to..."
+          "en": "Fan Speed changed"
         },
-        "titleFormatted": {
-          "en": "Full thermostat mode has changed to [[mode_capability_action]]"
-        },
+        "tokens": [
+          {
+            "name": "fan_power",
+            "type": "number",
+            "title": {
+              "en": "Fan Speed"
+            },
+            "example": 5
+          }
+        ],
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "mode_capability_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "any",
-                "title": {
-                  "en": "Any"
-                }
-              },
-              {
-                "id": "off",
-                "title": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              }
-            ]
           }
         ]
       },
       {
-        "id": "Fan_Speed_Trigger",
+        "id": "horizontal_changed",
         "title": {
-          "en": "Fan speed has changed to..."
+          "en": "Horizontal Vane Direction changed"
         },
-        "titleFormatted": {
-          "en": "Fan speed has changed to [[fan_speed_action]]"
-        },
+        "tokens": [
+          {
+            "name": "horizontal",
+            "type": "string",
+            "title": {
+              "en": "Horizontal Vane Direction"
+            },
+            "example": {
+              "en": "Swing"
+            }
+          }
+        ],
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "fan_speed_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "any",
-                "title": {
-                  "en": "Any"
-                }
-              },
-              {
-                "id": "0",
-                "label": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "1",
-                "label": {
-                  "en": "Very Slow"
-                }
-              },
-              {
-                "id": "2",
-                "label": {
-                  "en": "Slow"
-                }
-              },
-              {
-                "id": "3",
-                "label": {
-                  "en": "Medium"
-                }
-              },
-              {
-                "id": "4",
-                "label": {
-                  "en": "High"
-                }
-              },
-              {
-                "id": "5",
-                "label": {
-                  "en": "Very High"
-                }
-              }
-            ]
           }
         ]
       },
       {
-        "id": "Vertical_Swing_Trigger",
+        "id": "operation_mode_changed",
         "title": {
-          "en": "Vertical vane position has changed to..."
+          "en": "Full Thermostat Mode changed"
         },
-        "titleFormatted": {
-          "en": "Vertical vane position has changed to [[vertical_swing_action]]"
-        },
+        "tokens": [
+          {
+            "name": "operation_mode",
+            "type": "string",
+            "title": {
+              "en": "Full Thermostat Mode"
+            },
+            "example": {
+              "en": "Auto"
+            }
+          }
+        ],
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "any",
-                "title": {
-                  "en": "Any"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
           }
         ]
       },
       {
-        "id": "Horizontal_Swing_Trigger",
+        "id": "vertical_changed",
         "title": {
-          "en": "Horizontal vane position has changed to..."
+          "en": "Vertical Vane Direction changed"
         },
-        "titleFormatted": {
-          "en": "Horizontal vane position has changed to [[horizontal_swing_action]]"
-        },
+        "tokens": [
+          {
+            "name": "vertical",
+            "type": "string",
+            "title": {
+              "en": "Vertical Vane Direction"
+            },
+            "example": {
+              "en": "Auto"
+            }
+          }
+        ],
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "any",
-                "title": {
-                  "en": "Any"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "left",
-                "title": {
-                  "en": "Left"
-                }
-              },
-              {
-                "id": "middleleft",
-                "title": {
-                  "en": "Middle Left"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middleright",
-                "title": {
-                  "en": "Middle Right"
-                }
-              },
-              {
-                "id": "right",
-                "title": {
-                  "en": "Right"
-                }
-              },
-              {
-                "id": "split",
-                "title": {
-                  "en": "Split"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
           }
         ]
       },
@@ -432,13 +256,13 @@
               {
                 "id": "3",
                 "title": {
-                  "en": "Cool Room [if supported]"
+                  "en": "Cool Room"
                 }
               },
               {
                 "id": "4",
                 "title": {
-                  "en": "Cool Flow [if supported]"
+                  "en": "Cool Flow"
                 }
               }
             ]
@@ -482,7 +306,7 @@
       {
         "id": "Hot_Water_Trigger",
         "title": {
-          "en": "Hot Water Zone has changed"
+          "en": "Flow temperature has changed"
         },
         "args": [
           {
@@ -495,7 +319,7 @@
       {
         "id": "Cold_Water_Trigger",
         "title": {
-          "en": "Cold Water Zone has changed"
+          "en": "Return temperature has changed"
         },
         "args": [
           {
@@ -504,74 +328,167 @@
             "filter": "driver_id=melcloudHP"
           }
         ]
-      }
-    ],
-    "conditions": [
+      },
       {
-        "id": "Full_Thermostat_Condition",
+        "id": "eco_hot_water_false",
         "title": {
-          "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
+          "en": "Eco Hot Water turned Off"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "mode_capability_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "off",
-                "title": {
-                  "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              }
-            ]
+            "filter": "driver_id=melcloud_atw"
           }
         ]
       },
       {
-        "id": "Fan_Speed_Condition",
+        "id": "eco_hot_water_true",
         "title": {
-          "en": "Fan speed is !{{equals|does not equal}} to..."
+          "en": "Eco Hot Water turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_state_changed",
+        "title": {
+          "en": "Operation Mode changed"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_state",
+            "type": "string",
+            "title": {
+              "en": "Operation Mode"
+            },
+            "example": {
+              "en": "Heating"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone.zone1_changed",
+        "title": {
+          "en": "Zone 1 Operation Mode changed"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_zone.zone1",
+            "type": "string",
+            "title": {
+              "en": "Zone 1 Operation Mode"
+            },
+            "example": {
+              "en": "Heat Room"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone.zone2_changed",
+        "title": {
+          "en": "Zone 2 Operation Mode changed"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_zone.zone2",
+            "type": "string",
+            "title": {
+              "en": "Zone 2 Operation Mode"
+            },
+            "example": {
+              "en": "Heat Room"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone_with_cool.zone1_changed",
+        "title": {
+          "en": "Zone 1 Operation Mode changed"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_zone_with_cool.zone1",
+            "type": "string",
+            "title": {
+              "en": "Zone 1 Operation Mode"
+            },
+            "example": {
+              "en": "Heat Room"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone_with_cool.zone2_changed",
+        "title": {
+          "en": "Zone 2 Operation Mode changed"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_zone_with_cool.zone2",
+            "type": "string",
+            "title": {
+              "en": "Zone 2 Operation Mode"
+            },
+            "example": {
+              "en": "Heat Room"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "fan_power_condition",
+        "title": {
+          "en": "Fan Speed !{{is|isn't}}..."
         },
         "titleFormatted": {
-          "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
+          "en": "Fan Speed !{{is|isn't}} [[fan_power]]"
         },
         "args": [
           {
@@ -580,7 +497,7 @@
             "filter": "driver_id=melcloud"
           },
           {
-            "name": "fan_speed_condition",
+            "name": "fan_power",
             "type": "dropdown",
             "values": [
               {
@@ -624,12 +541,12 @@
         ]
       },
       {
-        "id": "Vertical_Swing_Condition",
+        "id": "horizontal_condition",
         "title": {
-          "en": "Vertical vane position is !{{equals|does not equal}} to..."
+          "en": "Horizontal Vane Direction !{{is|isn't}}..."
         },
         "titleFormatted": {
-          "en": "Vertical vane position is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+          "en": "Horizontal Vane Direction !{{is|isn't}} [[horizontal]]"
         },
         "args": [
           {
@@ -638,71 +555,7 @@
             "filter": "driver_id=melcloud"
           },
           {
-            "name": "vertical_swing_condition",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "Horizontal_Swing_Condition",
-        "title": {
-          "en": "Horizontal vane position is !{{equals|does not equal}} to..."
-        },
-        "titleFormatted": {
-          "en": "Horizontal vane position is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_condition",
+            "name": "horizontal",
             "type": "dropdown",
             "values": [
               {
@@ -758,12 +611,128 @@
         ]
       },
       {
-        "id": "Operation_Mode_Condition",
+        "id": "operation_mode_condition",
         "title": {
-          "en": "Operation mode is !{{equals|does not equal}} to..."
+          "en": "Full Thermostat Mode !{{is|isn't}}..."
         },
         "titleFormatted": {
-          "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
+          "en": "Full Thermostat Mode !{{is|isn't}} [[operation_mode]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "operation_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "vertical_condition",
+        "title": {
+          "en": "Vertical Vane Direction !{{is|isn't}}..."
+        },
+        "titleFormatted": {
+          "en": "Vertical Vane Direction !{{is|isn't}} [[vertical]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "vertical",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Top"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Middle Top"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Middle Bottom"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Bottom"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Operation_Mode_Condition",
+        "title": {
+          "en": "Operation mode !{{equals|doesn't equal}} to..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode !{{equals|doesn't equal}} to [[operation_mode_condition]]"
         },
         "args": [
           {
@@ -824,10 +793,10 @@
       {
         "id": "Pump1_Thermostat_Condition",
         "title": {
-          "en": "Zone operation mode is !{{equals|does not equal}} to..."
+          "en": "Zone operation mode !{{equals|doesn't equal}} to..."
         },
         "titleFormatted": {
-          "en": "Zone operation mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+          "en": "Zone operation mode !{{equals|doesn't equal}} to [[mode_hpz1_condition]]"
         },
         "args": [
           {
@@ -860,13 +829,13 @@
               {
                 "id": "3",
                 "title": {
-                  "en": "Cool Room [if supported]"
+                  "en": "Cool Room"
                 }
               },
               {
                 "id": "4",
                 "title": {
-                  "en": "Cool Flow [if supported]"
+                  "en": "Cool Flow"
                 }
               }
             ]
@@ -876,10 +845,10 @@
       {
         "id": "Forced_Hot_Water_Condition",
         "title": {
-          "en": "Forced hot water is !{{equals|does not equal}} to..."
+          "en": "Forced hot water !{{equals|doesn't equal}} to..."
         },
         "titleFormatted": {
-          "en": "Forced hot water is !{{equals|does not equal}} to [[forced_hot_water_condition]]"
+          "en": "Forced hot water !{{equals|doesn't equal}} to [[forced_hot_water_condition]]"
         },
         "args": [
           {
@@ -910,10 +879,10 @@
       {
         "id": "Cold_Water_Condition",
         "title": {
-          "en": "Cold water zone !{{is|isn't}} lower or equal than..."
+          "en": "Flow temperature !{{is|isn't}} lower than..."
         },
         "titleFormatted": {
-          "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
+          "en": "Flow temperature !{{is|isn't}} lower than [[cold_water_value]]"
         },
         "args": [
           {
@@ -935,10 +904,10 @@
       {
         "id": "Hot_Water_Condition",
         "title": {
-          "en": "Hot water zone !{{is|isn't}} greater or equal than..."
+          "en": "Return temperature !{{is|isn't}} greater than..."
         },
         "titleFormatted": {
-          "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+          "en": "Return temperature !{{is|isn't}} greater than [[hot_water_value]]"
         },
         "args": [
           {
@@ -1021,61 +990,35 @@
             "filter": "driver_id=melcloudHP"
           }
         ]
-      }
-    ],
-    "actions": [
+      },
       {
-        "id": "Full_Thermostat_Action",
+        "id": "eco_hot_water_condition",
         "title": {
-          "en": "Set full mode to..."
+          "en": "Eco Hot Water !{{is|isn't}}..."
         },
         "titleFormatted": {
-          "en": "Set full mode to [[mode_capability_action]]"
+          "en": "Eco Hot Water !{{is|isn't}} [[eco_hot_water]]"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud"
+            "filter": "driver_id=melcloud_atw"
           },
           {
-            "name": "mode_capability_action",
+            "name": "eco_hot_water",
             "type": "dropdown",
             "values": [
               {
-                "id": "off",
-                "title": {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
                   "en": "Off"
-                }
-              },
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heat"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cool"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
                 }
               }
             ]
@@ -1083,12 +1026,262 @@
         ]
       },
       {
-        "id": "Fan_Speed_Action",
+        "id": "operation_mode_state_condition",
         "title": {
-          "en": "Set fan speed to..."
+          "en": "Operation Mode !{{is|isn't}}..."
         },
         "titleFormatted": {
-          "en": "Set fan speed to [[fan_speed_action]]"
+          "en": "Operation Mode !{{is|isn't}} [[operation_mode_state]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          },
+          {
+            "name": "operation_mode_state",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Idle"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Domestic Hot Water"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heating"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Cooling"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Defrost"
+                }
+              },
+              {
+                "id": "5",
+                "label": {
+                  "en": "Standby"
+                }
+              },
+              {
+                "id": "6",
+                "label": {
+                  "en": "Legionella"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_condition",
+        "title": {
+          "en": "Zone 1 Operation Mode !{{is|isn't}}..."
+        },
+        "titleFormatted": {
+          "en": "Zone 1 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_condition",
+        "title": {
+          "en": "Zone 2 Operation Mode !{{is|isn't}}..."
+        },
+        "titleFormatted": {
+          "en": "Zone 2 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_with_cool_condition",
+        "title": {
+          "en": "Zone 1 Operation Mode !{{is|isn't}}..."
+        },
+        "titleFormatted": {
+          "en": "Zone 1 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_with_cool_condition",
+        "title": {
+          "en": "Zone 2 Operation Mode !{{is|isn't}}..."
+        },
+        "titleFormatted": {
+          "en": "Zone 2 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "fan_power_action",
+        "title": {
+          "en": "Set Fan Speed to..."
+        },
+        "titleFormatted": {
+          "en": "Set Fan Speed to [[fan_power]]"
         },
         "args": [
           {
@@ -1097,7 +1290,7 @@
             "filter": "driver_id=melcloud"
           },
           {
-            "name": "fan_speed_action",
+            "name": "fan_power",
             "type": "dropdown",
             "values": [
               {
@@ -1141,12 +1334,12 @@
         ]
       },
       {
-        "id": "Vertical_Swing_Action",
+        "id": "horizontal_action",
         "title": {
-          "en": "Set vertical vane position to..."
+          "en": "Set Horizontal Vane Direction to..."
         },
         "titleFormatted": {
-          "en": "Set vertical vane position to [[vertical_swing_action]]"
+          "en": "Set Horizontal Vane Direction to [[horizontal]]"
         },
         "args": [
           {
@@ -1155,71 +1348,7 @@
             "filter": "driver_id=melcloud"
           },
           {
-            "name": "vertical_swing_action",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Top"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Middle Top"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Middle Bottom"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Bottom"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "Horizontal_Swing_Action",
-        "title": {
-          "en": "Set horizontal vane position to..."
-        },
-        "titleFormatted": {
-          "en": "Set horizontal vane position to [[horizontal_swing_action]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "horizontal_swing_action",
+            "name": "horizontal",
             "type": "dropdown",
             "values": [
               {
@@ -1275,6 +1404,122 @@
         ]
       },
       {
+        "id": "operation_mode_action",
+        "title": {
+          "en": "Set Full Thermostat Mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set Full Thermostat Mode to [[operation_mode]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "operation_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heat"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cool"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "vertical_action",
+        "title": {
+          "en": "Set Vertical Vane Direction to..."
+        },
+        "titleFormatted": {
+          "en": "Set Vertical Vane Direction to [[vertical]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          },
+          {
+            "name": "vertical",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Top"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Middle Top"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Middle Bottom"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Bottom"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "Pump1_Thermostat_Action",
         "title": {
           "en": "Set zone operation mode to..."
@@ -1313,13 +1558,13 @@
               {
                 "id": "3",
                 "title": {
-                  "en": "Cool Room [if supported]"
+                  "en": "Cool Room"
                 }
               },
               {
                 "id": "4",
                 "title": {
-                  "en": "Cool Flow [if supported]"
+                  "en": "Cool Flow"
                 }
               }
             ]
@@ -1363,10 +1608,10 @@
       {
         "id": "Heat_Water_Action",
         "title": {
-          "en": "Set heat water flow to..."
+          "en": "Set heat flow temperature..."
         },
         "titleFormatted": {
-          "en": "Set heat water flow to [[heat_water_value]]"
+          "en": "Set heat flow temperature to [[heat_water_value]]"
         },
         "args": [
           {
@@ -1388,10 +1633,10 @@
       {
         "id": "Cool_Water_Action",
         "title": {
-          "en": "Set cool water flow to..."
+          "en": "Set cool flow temperature to..."
         },
         "titleFormatted": {
-          "en": "Set cool water flow to [[cool_water_value]]"
+          "en": "Set cool flow temperature to [[cool_water_value]]"
         },
         "args": [
           {
@@ -1434,6 +1679,190 @@
             }
           }
         ]
+      },
+      {
+        "id": "operation_mode_zone1_action",
+        "title": {
+          "en": "Set Zone 1 Operation Mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_action",
+        "title": {
+          "en": "Set Zone 2 Operation Mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_with_cool_action",
+        "title": {
+          "en": "Set Zone 1 Operation Mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_with_cool_action",
+        "title": {
+          "en": "Set Zone 2 Operation Mode to..."
+        },
+        "titleFormatted": {
+          "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat Room"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat Flow"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool Room"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool Flow"
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -1450,6 +1879,20 @@
       "capabilities": [
         "fan_power",
         "horizontal",
+        "measure_power.daily_consumed",
+        "measure_power.daily_consumed_auto",
+        "measure_power.daily_consumed_cooling",
+        "measure_power.daily_consumed_dry",
+        "measure_power.daily_consumed_fan",
+        "measure_power.daily_consumed_heating",
+        "measure_power.daily_consumed_other",
+        "measure_power.total_consumed",
+        "measure_power.total_consumed_auto",
+        "measure_power.total_consumed_cooling",
+        "measure_power.total_consumed_dry",
+        "measure_power.total_consumed_fan",
+        "measure_power.total_consumed_heating",
+        "measure_power.total_consumed_other",
         "measure_temperature",
         "onoff",
         "operation_mode",
@@ -1458,10 +1901,140 @@
         "vertical"
       ],
       "capabilitiesOptions": {
+        "measure_power.daily_consumed": {
+          "title": {
+            "en": "Last Daily Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_auto": {
+          "title": {
+            "en": "Last Daily Auto Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_cooling": {
+          "title": {
+            "en": "Last Daily Cooling Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_dry": {
+          "title": {
+            "en": "Last Daily Dry Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_fan": {
+          "title": {
+            "en": "Last Daily Fan Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_heating": {
+          "title": {
+            "en": "Last Daily Heating Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_other": {
+          "title": {
+            "en": "Last Daily Other Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.total_consumed": {
+          "title": {
+            "en": "Total Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_auto": {
+          "title": {
+            "en": "Total Auto Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_cooling": {
+          "title": {
+            "en": "Total Cooling Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_dry": {
+          "title": {
+            "en": "Total Dry Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_fan": {
+          "title": {
+            "en": "Total Fan Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_heating": {
+          "title": {
+            "en": "Total Heating Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_other": {
+          "title": {
+            "en": "Total Other Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
         "measure_temperature": {
           "title": {
             "en": "Room Temperature"
           }
+        },
+        "target_temperature": {
+          "min": 10,
+          "max": 31
         },
         "thermostat_mode": {
           "insights": true,
@@ -1472,10 +2045,10 @@
       },
       "pair": [
         {
-          "id": "start",
+          "id": "login_credentials",
           "template": "login_credentials",
           "navigation": {
-            "next": "list_my_devices"
+            "next": "list_devices"
           },
           "options": {
             "logo": "pair_logo.png",
@@ -1486,14 +2059,14 @@
           }
         },
         {
-          "id": "list_my_devices",
+          "id": "list_devices",
           "template": "list_devices",
           "navigation": {
-            "next": "add_my_devices"
+            "next": "add_devices"
           }
         },
         {
-          "id": "add_my_devices",
+          "id": "add_devices",
           "template": "add_devices"
         }
       ],
@@ -1521,7 +2094,7 @@
     },
     {
       "name": {
-        "en": "Air-to-Water Heat Pump"
+        "en": "Air-to-Water Heat Pump (legacy)"
       },
       "images": {
         "small": "drivers/melcloudHP/assets/images/small.png",
@@ -1555,37 +2128,9 @@
         },
         "target_temperature": {
           "min": 10,
-          "max": 30,
-          "insights": true
+          "max": 30
         }
       },
-      "pair": [
-        {
-          "id": "start",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_my_devices"
-          },
-          "options": {
-            "logo": "pair_logo.png",
-            "usernameLabel": "MELCloud Username",
-            "usernamePlaceholder": "user@domain.com",
-            "passwordLabel": "Password",
-            "passwordPlaceholder": "P4ssw0rd"
-          }
-        },
-        {
-          "id": "list_my_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_my_devices"
-          }
-        },
-        {
-          "id": "add_my_devices",
-          "template": "add_devices"
-        }
-      ],
       "id": "melcloudHP",
       "settings": [
         {
@@ -1636,11 +2181,413 @@
               "id": "cool_flow_temperature",
               "type": "number",
               "label": {
-                "en": "Cool Flow (ºC) [if supported]"
+                "en": "Cool Flow (ºC)"
               },
               "value": 18,
               "min": 10,
               "max": 30
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Air-to-Water Heat Pump"
+      },
+      "images": {
+        "small": "drivers/melcloudHP/assets/images/small.png",
+        "large": "drivers/melcloudHP/assets/images/large.png"
+      },
+      "class": "thermostat",
+      "capabilities": [
+        "alarm_generic.booster_heater1",
+        "alarm_generic.booster_heater2",
+        "alarm_generic.booster_heater2_plus",
+        "alarm_generic.defrost_mode",
+        "alarm_water.immersion_heater",
+        "eco_hot_water",
+        "measure_power.daily_co_p",
+        "measure_power.daily_consumed",
+        "measure_power.daily_consumed_cooling",
+        "measure_power.daily_consumed_heating",
+        "measure_power.daily_consumed_hotwater",
+        "measure_power.daily_produced",
+        "measure_power.daily_produced_cooling",
+        "measure_power.daily_produced_heating",
+        "measure_power.daily_produced_hotwater",
+        "measure_power.total_consumed",
+        "measure_power.total_consumed_cooling",
+        "measure_power.total_consumed_heating",
+        "measure_power.total_consumed_hotwater",
+        "measure_power.total_produced",
+        "measure_power.total_produced_cooling",
+        "measure_power.total_produced_heating",
+        "measure_power.total_produced_hotwater",
+        "measure_power.heat_pump_frequency",
+        "measure_temperature",
+        "measure_temperature.flow",
+        "measure_temperature.outdoor",
+        "measure_temperature.return",
+        "measure_temperature.tank_water",
+        "measure_temperature.zone2",
+        "onoff",
+        "onoff.forced_hot_water",
+        "operation_mode_state",
+        "operation_mode_zone.zone1",
+        "operation_mode_zone.zone2",
+        "operation_mode_zone_with_cool.zone1",
+        "operation_mode_zone_with_cool.zone2",
+        "target_temperature",
+        "target_temperature.tank_water",
+        "target_temperature.zone1_flow_cool",
+        "target_temperature.zone1_flow_heat",
+        "target_temperature.zone2",
+        "target_temperature.zone2_flow_cool",
+        "target_temperature.zone2_flow_heat"
+      ],
+      "capabilitiesOptions": {
+        "alarm_generic.booster_heater1": {
+          "title": {
+            "en": "Booster Heater 1"
+          }
+        },
+        "alarm_generic.booster_heater2": {
+          "title": {
+            "en": "Booster Heater 2"
+          }
+        },
+        "alarm_generic.booster_heater2_plus": {
+          "title": {
+            "en": "Booster Heater 2 Plus"
+          }
+        },
+        "alarm_generic.defrost_mode": {
+          "title": {
+            "en": "Defrost Mode"
+          }
+        },
+        "alarm_water.immersion_heater": {
+          "title": {
+            "en": "Immersion Heater"
+          }
+        },
+        "measure_power.daily_co_p": {
+          "title": {
+            "en": "Last Daily CoP"
+          },
+          "units": {
+            "en": ""
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed": {
+          "title": {
+            "en": "Last Daily Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_cooling": {
+          "title": {
+            "en": "Last Daily Cooling Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_heating": {
+          "title": {
+            "en": "Last Daily Heating Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_consumed_hotwater": {
+          "title": {
+            "en": "Last Daily Hot Water Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_produced": {
+          "title": {
+            "en": "Last Daily Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_produced_cooling": {
+          "title": {
+            "en": "Last Daily Cooling Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_produced_heating": {
+          "title": {
+            "en": "Last Daily Heating Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.daily_produced_hotwater": {
+          "title": {
+            "en": "Last Daily Hot Water Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 2
+        },
+        "measure_power.total_consumed": {
+          "title": {
+            "en": "Total Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_cooling": {
+          "title": {
+            "en": "Total Cooling Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_heating": {
+          "title": {
+            "en": "Total Heating Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_consumed_hotwater": {
+          "title": {
+            "en": "Total Hot Water Consumption"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_produced": {
+          "title": {
+            "en": "Total Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_produced_cooling": {
+          "title": {
+            "en": "Total Cooling Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_produced_heating": {
+          "title": {
+            "en": "Total Heating Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.total_produced_hotwater": {
+          "title": {
+            "en": "Total Hot Water Production"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "decimals": 0
+        },
+        "measure_power.heat_pump_frequency": {
+          "icon": "/assets/heat_pump_frequency.svg",
+          "title": {
+            "en": "Heat Pump Frequency"
+          },
+          "units": {
+            "en": "Hz"
+          }
+        },
+        "measure_temperature": {
+          "title": {
+            "en": "Room Temperature - Zone 1"
+          }
+        },
+        "measure_temperature.flow": {
+          "title": {
+            "en": "Flow Temperature"
+          }
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "en": "Outdoor Temperature"
+          }
+        },
+        "measure_temperature.return": {
+          "title": {
+            "en": "Return Temperature"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "en": "Water Tank Temperature"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "en": "Room Temperature - Zone 2"
+          }
+        },
+        "onoff.forced_hot_water": {
+          "title": {
+            "en": "Forced Hot Water"
+          }
+        },
+        "operation_mode_state": {
+          "title": {
+            "en": "Operation Mode"
+          }
+        },
+        "operation_mode_zone.zone1": {
+          "title": {
+            "en": "Zone Operation Mode - Zone 1"
+          }
+        },
+        "operation_mode_zone.zone2": {
+          "title": {
+            "en": "Zone Operation Mode - Zone 2"
+          }
+        },
+        "operation_mode_zone_with_cool.zone1": {
+          "title": {
+            "en": "Zone Operation Mode - Zone 1"
+          }
+        },
+        "operation_mode_zone_with_cool.zone2": {
+          "title": {
+            "en": "Zone Operation Mode - Zone 2"
+          }
+        },
+        "target_temperature": {
+          "title": {
+            "en": "Zone 1"
+          },
+          "min": 10,
+          "max": 30
+        },
+        "target_temperature.tank_water": {
+          "title": {
+            "en": "Water Tank"
+          },
+          "min": 40,
+          "max": 60
+        },
+        "target_temperature.zone1_flow_cool": {
+          "title": {
+            "en": "Cool Flow - Zone 1"
+          },
+          "min": 10,
+          "max": 30
+        },
+        "target_temperature.zone1_flow_heat": {
+          "title": {
+            "en": "Heat Flow - Zone 1"
+          },
+          "min": 25,
+          "max": 60
+        },
+        "target_temperature.zone2": {
+          "title": {
+            "en": "Zone 2"
+          },
+          "min": 10,
+          "max": 30
+        },
+        "target_temperature.zone2_flow_cool": {
+          "title": {
+            "en": "Cool Flow - Zone 2"
+          },
+          "min": 10,
+          "max": 30
+        },
+        "target_temperature.zone2_flow_heat": {
+          "title": {
+            "en": "Heat Flow - Zone 2"
+          },
+          "min": 25,
+          "max": 60
+        }
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "pair_logo.png",
+            "usernameLabel": "MELCloud Username",
+            "usernamePlaceholder": "user@domain.com",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "P4ssw0rd"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "melcloud_atw",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Update Frequency"
+          },
+          "children": [
+            {
+              "id": "interval",
+              "type": "number",
+              "label": {
+                "en": "minutes"
+              },
+              "value": 5,
+              "min": 1,
+              "max": 60
             }
           ]
         }
@@ -1725,7 +2672,10 @@
       "title": {
         "en": "Eco Hot Water"
       },
+      "getable": true,
+      "setable": false,
       "uiComponent": "sensor",
+      "icon": "/assets/eco_hot_water.svg",
       "insights": true,
       "insightsTitleTrue": {
         "en": "Eco Hot Water On"
@@ -1733,10 +2683,7 @@
       "insightsTitleFalse": {
         "en": "Eco Hot Water Off"
       },
-      "getable": true,
-      "setable": false,
-      "uiQuickAction": false,
-      "icon": "/assets/eco_hot_water.svg"
+      "uiQuickAction": false
     },
     "fan_power": {
       "type": "number",
@@ -1896,12 +2843,6 @@
       "insights": true,
       "values": [
         {
-          "id": "off",
-          "title": {
-            "en": "Off"
-          }
-        },
-        {
           "id": "heat",
           "title": {
             "en": "Heat"
@@ -2017,17 +2958,48 @@
           "title": {
             "en": "Curve"
           }
+        }
+      ]
+    },
+    "operation_mode_zone_with_cool": {
+      "type": "enum",
+      "title": {
+        "en": "Zone Operation Mode"
+      },
+      "uiComponent": "picker",
+      "insights": true,
+      "getable": true,
+      "setable": true,
+      "uiQuickAction": false,
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Heat Room"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Heat Flow"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Curve"
+          }
         },
         {
           "id": "3",
           "title": {
-            "en": "Cool Room [if supported]"
+            "en": "Cool Room"
           }
         },
         {
           "id": "4",
           "title": {
-            "en": "Cool Flow [if supported]"
+            "en": "Cool Flow"
           }
         }
       ]

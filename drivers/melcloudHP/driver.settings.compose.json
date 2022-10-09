@@ -47,7 +47,7 @@
         "id": "cool_flow_temperature",
         "type": "number",
         "label": {
-          "en": "Cool Flow (ºC) [if supported]"
+          "en": "Cool Flow (ºC)"
         },
         "value": 18,
         "min": 10,
