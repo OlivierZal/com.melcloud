@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "Air-to-Water Heat Pump"
+    "en": "Air-to-Water Heat Pump (legacy)"
   },
   "images": {
     "small": "drivers/melcloudHP/assets/images/small.png",
@@ -34,35 +34,7 @@
     },
     "target_temperature": {
       "min": 10,
-      "max": 30,
-      "insights": true
+      "max": 30
     }
-  },
-  "pair": [
-    {
-      "id": "start",
-      "template": "login_credentials",
-      "navigation": {
-        "next": "list_my_devices"
-      },
-      "options": {
-        "logo": "pair_logo.png",
-        "usernameLabel": "MELCloud Username",
-        "usernamePlaceholder": "user@domain.com",
-        "passwordLabel": "Password",
-        "passwordPlaceholder": "P4ssw0rd"
-      }
-    },
-    {
-      "id": "list_my_devices",
-      "template": "list_devices",
-      "navigation": {
-        "next": "add_my_devices"
-      }
-    },
-    {
-      "id": "add_my_devices",
-      "template": "add_devices"
-    }
-  ]
+  }
 }
