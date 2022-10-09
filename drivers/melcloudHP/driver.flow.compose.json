@@ -93,13 +93,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room [if supported]"
+                "en": "Cool Room"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow [if supported]"
+                "en": "Cool Flow"
               }
             }
           ]
@@ -138,14 +138,14 @@
     {
       "id": "Hot_Water_Trigger",
       "title": {
-        "en": "Hot Water Zone has changed"
+        "en": "Flow temperature has changed"
       },
       "args": []
     },
     {
       "id": "Cold_Water_Trigger",
       "title": {
-        "en": "Cold Water Zone has changed"
+        "en": "Return temperature has changed"
       },
       "args": []
     }
@@ -154,10 +154,10 @@
     {
       "id": "Operation_Mode_Condition",
       "title": {
-        "en": "Operation mode is !{{equals|does not equal}} to..."
+        "en": "Operation mode !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Operation mode is !{{equals|does not equal}} to [[operation_mode_condition]]"
+        "en": "Operation mode !{{equals|doesn't equal}} to [[operation_mode_condition]]"
       },
       "args": [
         {
@@ -213,10 +213,10 @@
     {
       "id": "Pump1_Thermostat_Condition",
       "title": {
-        "en": "Zone operation mode is !{{equals|does not equal}} to..."
+        "en": "Zone operation mode !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Zone operation mode is !{{equals|does not equal}} to [[mode_hpz1_condition]]"
+        "en": "Zone operation mode !{{equals|doesn't equal}} to [[mode_hpz1_condition]]"
       },
       "args": [
         {
@@ -244,13 +244,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room [if supported]"
+                "en": "Cool Room"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow [if supported]"
+                "en": "Cool Flow"
               }
             }
           ]
@@ -260,10 +260,10 @@
     {
       "id": "Forced_Hot_Water_Condition",
       "title": {
-        "en": "Forced hot water is !{{equals|does not equal}} to..."
+        "en": "Forced hot water !{{equals|doesn't equal}} to..."
       },
       "titleFormatted": {
-        "en": "Forced hot water is !{{equals|does not equal}} to [[forced_hot_water_condition]]"
+        "en": "Forced hot water !{{equals|doesn't equal}} to [[forced_hot_water_condition]]"
       },
       "args": [
         {
@@ -289,10 +289,10 @@
     {
       "id": "Cold_Water_Condition",
       "title": {
-        "en": "Cold water zone !{{is|isn't}} lower or equal than..."
+        "en": "Flow temperature !{{is|isn't}} lower than..."
       },
       "titleFormatted": {
-        "en": "Cold water zone !{{is|isn't}} lower or equal than [[cold_water_value]]"
+        "en": "Flow temperature !{{is|isn't}} lower than [[cold_water_value]]"
       },
       "args": [
         {
@@ -309,10 +309,10 @@
     {
       "id": "Hot_Water_Condition",
       "title": {
-        "en": "Hot water zone !{{is|isn't}} greater or equal than..."
+        "en": "Return temperature !{{is|isn't}} greater than..."
       },
       "titleFormatted": {
-        "en": "Hot water zone !{{is|isn't}} greater or equal than [[hot_water_value]]"
+        "en": "Return temperature !{{is|isn't}} greater than [[hot_water_value]]"
       },
       "args": [
         {
@@ -397,13 +397,13 @@
             {
               "id": "3",
               "title": {
-                "en": "Cool Room [if supported]"
+                "en": "Cool Room"
               }
             },
             {
               "id": "4",
               "title": {
-                "en": "Cool Flow [if supported]"
+                "en": "Cool Flow"
               }
             }
           ]
@@ -442,10 +442,10 @@
     {
       "id": "Heat_Water_Action",
       "title": {
-        "en": "Set heat water flow to..."
+        "en": "Set heat flow temperature..."
       },
       "titleFormatted": {
-        "en": "Set heat water flow to [[heat_water_value]]"
+        "en": "Set heat flow temperature to [[heat_water_value]]"
       },
       "args": [
         {
@@ -462,10 +462,10 @@
     {
       "id": "Cool_Water_Action",
       "title": {
-        "en": "Set cool water flow to..."
+        "en": "Set cool flow temperature to..."
       },
       "titleFormatted": {
-        "en": "Set cool water flow to [[cool_water_value]]"
+        "en": "Set cool flow temperature to [[cool_water_value]]"
       },
       "args": [
         {
