@@ -1,21 +1,18 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Defrost Mode"
+    "en": "Immersion Heater"
   },
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Defrost Mode On"
+    "en": "Immersion Heater On"
   },
   "insightsTitleFalse": {
-    "en": "Defrost Mode Off"
+    "en": "Immersion Heater Off"
   },
   "getable": true,
   "setable": false,
-  "units": {
-    "en": ""
-  },
   "uiQuickAction": false,
-  "icon": "/assets/Defrost.svg"
+  "icon": "/assets/immersion_heater.svg"
 }

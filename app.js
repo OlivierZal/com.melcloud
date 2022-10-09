@@ -1,6 +1,6 @@
-const Homey = require('homey');
+const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
-class MelCloud extends Homey.App {
+class MELCloud extends Homey.App {
 }
 
-module.exports = MelCloud;
+module.exports = MELCloud;
