@@ -13,5 +13,8 @@
   },
   "3.1.6": {
     "en": "Add logs and fix/improve flow cards. Some capabilities or settings have been moved to benefit from the best Homey features. Some value names have changed for more compliance with MELCloud, so you may need to update some of your flows if necessary. Fixed a sync issue when a second zone is configured."
+  },
+  "4.0.0": {
+    "en": "Added power consumption reporting and reshaped air-to-water device display: 2-zone device are now handled with the same device, and measured temperature are shown with target temperature when possible."
   }
 }
