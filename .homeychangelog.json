@@ -13,5 +13,8 @@
   },
   "4.0.0": {
     "en": "Added power consumption reporting and reshaped air-to-water device display: 2-zone device are now handled with the same device, and measured temperature are shown with target temperature when possible."
+  },
+  "5.0.0": {
+    "en": "Syncing has been completely reshaped and app core has been redesigned."
   }
 }
