@@ -16,5 +16,8 @@
   },
   "5.0.0": {
     "en": "Syncing has been completely reshaped and app core has been redesigned."
+  },
+  "5.0.1": {
+    "en": "Added specific CoPs"
   }
 }
