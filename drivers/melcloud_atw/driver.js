@@ -6,13 +6,13 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.heatPumpType = 'Atw';
 
     this.atwCapabilities = [
+      'eco_hot_water',
       'measure_temperature',
       'measure_temperature.outdoor',
       'measure_temperature.flow',
       'measure_temperature.return',
       'onoff',
       'onoff.forced_hot_water',
-      'eco_hot_water',
       'operation_mode_state',
       'target_temperature',
       'target_temperature.zone1_flow_heat',
