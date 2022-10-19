@@ -158,11 +158,6 @@
       },
       "decimals": 0
     },
-    "measure_temperature": {
-      "title": {
-        "en": "Room Temperature"
-      }
-    },
     "target_temperature": {
       "min": 10,
       "max": 31
