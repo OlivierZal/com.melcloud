@@ -1,325 +1,88 @@
 {
   "triggers": [
     {
-      "id": "Full_Thermostat_Trigger",
+      "id": "fan_power_changed",
       "title": {
-        "en": "Full thermostat mode has changed to..."
+        "en": "Fan Speed changed"
       },
-      "titleFormatted": {
-        "en": "Full thermostat mode has changed to [[mode_capability_action]]"
-      },
-      "args": [
+      "tokens": [
         {
-          "name": "mode_capability_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "any",
-              "title": {
-                "en": "Any"
-              }
-            },
-            {
-              "id": "off",
-              "title": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "heat",
-              "title": {
-                "en": "Heat"
-              }
-            },
-            {
-              "id": "dry",
-              "title": {
-                "en": "Dry"
-              }
-            },
-            {
-              "id": "cool",
-              "title": {
-                "en": "Cool"
-              }
-            },
-            {
-              "id": "fan",
-              "title": {
-                "en": "Fan"
-              }
-            },
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            }
-          ]
+          "name": "fan_power",
+          "type": "number",
+          "title": {
+            "en": "Fan Speed"
+          },
+          "example": 5
         }
       ]
     },
     {
-      "id": "Fan_Speed_Trigger",
+      "id": "horizontal_changed",
       "title": {
-        "en": "Fan speed has changed to..."
+        "en": "Horizontal Vane Direction changed"
       },
-      "titleFormatted": {
-        "en": "Fan speed has changed to [[fan_speed_action]]"
-      },
-      "args": [
+      "tokens": [
         {
-          "name": "fan_speed_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "any",
-              "title": {
-                "en": "Any"
-              }
-            },
-            {
-              "id": "0",
-              "label": {
-                "en": "Auto"
-              }
-            },
-            {
-              "id": "1",
-              "label": {
-                "en": "Very Slow"
-              }
-            },
-            {
-              "id": "2",
-              "label": {
-                "en": "Slow"
-              }
-            },
-            {
-              "id": "3",
-              "label": {
-                "en": "Medium"
-              }
-            },
-            {
-              "id": "4",
-              "label": {
-                "en": "High"
-              }
-            },
-            {
-              "id": "5",
-              "label": {
-                "en": "Very High"
-              }
-            }
-          ]
+          "name": "horizontal",
+          "type": "string",
+          "title": {
+            "en": "Horizontal Vane Direction"
+          },
+          "example": {
+            "en": "Swing"
+          }
         }
       ]
     },
     {
-      "id": "Vertical_Swing_Trigger",
+      "id": "operation_mode_changed",
       "title": {
-        "en": "Vertical vane position has changed to..."
+        "en": "Full Thermostat Mode changed"
       },
-      "titleFormatted": {
-        "en": "Vertical vane position has changed to [[vertical_swing_action]]"
-      },
-      "args": [
+      "tokens": [
         {
-          "name": "vertical_swing_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "any",
-              "title": {
-                "en": "Any"
-              }
-            },
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            },
-            {
-              "id": "top",
-              "title": {
-                "en": "Top"
-              }
-            },
-            {
-              "id": "middletop",
-              "title": {
-                "en": "Middle Top"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Middle"
-              }
-            },
-            {
-              "id": "middlebottom",
-              "title": {
-                "en": "Middle Bottom"
-              }
-            },
-            {
-              "id": "bottom",
-              "title": {
-                "en": "Bottom"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing"
-              }
-            }
-          ]
+          "name": "operation_mode",
+          "type": "string",
+          "title": {
+            "en": "Full Thermostat Mode"
+          },
+          "example": {
+            "en": "Auto"
+          }
         }
       ]
     },
     {
-      "id": "Horizontal_Swing_Trigger",
+      "id": "vertical_changed",
       "title": {
-        "en": "Horizontal vane position has changed to..."
+        "en": "Vertical Vane Direction changed"
       },
-      "titleFormatted": {
-        "en": "Horizontal vane position has changed to [[horizontal_swing_action]]"
-      },
-      "args": [
+      "tokens": [
         {
-          "name": "horizontal_swing_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "any",
-              "title": {
-                "en": "Any"
-              }
-            },
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            },
-            {
-              "id": "left",
-              "title": {
-                "en": "Left"
-              }
-            },
-            {
-              "id": "middleleft",
-              "title": {
-                "en": "Middle Left"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Middle"
-              }
-            },
-            {
-              "id": "middleright",
-              "title": {
-                "en": "Middle Right"
-              }
-            },
-            {
-              "id": "right",
-              "title": {
-                "en": "Right"
-              }
-            },
-            {
-              "id": "split",
-              "title": {
-                "en": "Split"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing"
-              }
-            }
-          ]
+          "name": "vertical",
+          "type": "string",
+          "title": {
+            "en": "Vertical Vane Direction"
+          },
+          "example": {
+            "en": "Auto"
+          }
         }
       ]
     }
   ],
   "conditions": [
     {
-      "id": "Full_Thermostat_Condition",
+      "id": "fan_power_condition",
       "title": {
-        "en": "Full thermostastat mode is !{{equals|does not equal}} to..."
+        "en": "Fan Speed !{{is|isn't}}..."
       },
       "titleFormatted": {
-        "en": "Full thermostastat mode is !{{equals|does not equal}} to [[mode_capability_condition]]"
+        "en": "Fan Speed !{{is|isn't}} [[fan_power]]"
       },
       "args": [
         {
-          "name": "mode_capability_condition",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "off",
-              "title": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "heat",
-              "title": {
-                "en": "Heat"
-              }
-            },
-            {
-              "id": "dry",
-              "title": {
-                "en": "Dry"
-              }
-            },
-            {
-              "id": "cool",
-              "title": {
-                "en": "Cool"
-              }
-            },
-            {
-              "id": "fan",
-              "title": {
-                "en": "Fan"
-              }
-            },
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Fan_Speed_Condition",
-      "title": {
-        "en": "Fan speed is !{{equals|does not equal}} to..."
-      },
-      "titleFormatted": {
-        "en": "Fan speed is !{{equals|does not equal}} to [[fan_speed_condition]]"
-      },
-      "args": [
-        {
-          "name": "fan_speed_condition",
+          "name": "fan_power",
           "type": "dropdown",
           "values": [
             {
@@ -363,75 +126,16 @@
       ]
     },
     {
-      "id": "Vertical_Swing_Condition",
+      "id": "horizontal_condition",
       "title": {
-        "en": "Vertical vane position is !{{equals|does not equal}} to..."
+        "en": "Horizontal Vane Direction !{{is|isn't}}..."
       },
       "titleFormatted": {
-        "en": "Vertical vane position is !{{equals|does not equal}} to [[vertical_swing_condition]]"
+        "en": "Horizontal Vane Direction !{{is|isn't}} [[horizontal]]"
       },
       "args": [
         {
-          "name": "vertical_swing_condition",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            },
-            {
-              "id": "top",
-              "title": {
-                "en": "Top"
-              }
-            },
-            {
-              "id": "middletop",
-              "title": {
-                "en": "Middle Top"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Middle"
-              }
-            },
-            {
-              "id": "middlebottom",
-              "title": {
-                "en": "Middle Bottom"
-              }
-            },
-            {
-              "id": "bottom",
-              "title": {
-                "en": "Bottom"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Horizontal_Swing_Condition",
-      "title": {
-        "en": "Horizontal vane position is !{{equals|does not equal}} to..."
-      },
-      "titleFormatted": {
-        "en": "Horizontal vane position is !{{equals|does not equal}} to [[horizontal_swing_condition]]"
-      },
-      "args": [
-        {
-          "name": "horizontal_swing_condition",
+          "name": "horizontal",
           "type": "dropdown",
           "values": [
             {
@@ -474,6 +178,112 @@
               "id": "split",
               "title": {
                 "en": "Split"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_condition",
+      "title": {
+        "en": "Full Thermostat Mode !{{is|isn't}}..."
+      },
+      "titleFormatted": {
+        "en": "Full Thermostat Mode !{{is|isn't}} [[operation_mode]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan"
+              }
+            },
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vertical_condition",
+      "title": {
+        "en": "Vertical Vane Direction !{{is|isn't}}..."
+      },
+      "titleFormatted": {
+        "en": "Vertical Vane Direction !{{is|isn't}} [[vertical]]"
+      },
+      "args": [
+        {
+          "name": "vertical",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Top"
+              }
+            },
+            {
+              "id": "middletop",
+              "title": {
+                "en": "Middle Top"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middlebottom",
+              "title": {
+                "en": "Middle Bottom"
+              }
+            },
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Bottom"
               }
             },
             {
@@ -489,69 +299,16 @@
   ],
   "actions": [
     {
-      "id": "Full_Thermostat_Action",
+      "id": "fan_power_action",
       "title": {
-        "en": "Set full mode to..."
+        "en": "Set Fan Speed to..."
       },
       "titleFormatted": {
-        "en": "Set full mode to [[mode_capability_action]]"
+        "en": "Set Fan Speed to [[fan_power]]"
       },
       "args": [
         {
-          "name": "mode_capability_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "off",
-              "title": {
-                "en": "Off"
-              }
-            },
-            {
-              "id": "heat",
-              "title": {
-                "en": "Heat"
-              }
-            },
-            {
-              "id": "dry",
-              "title": {
-                "en": "Dry"
-              }
-            },
-            {
-              "id": "cool",
-              "title": {
-                "en": "Cool"
-              }
-            },
-            {
-              "id": "fan",
-              "title": {
-                "en": "Fan"
-              }
-            },
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Fan_Speed_Action",
-      "title": {
-        "en": "Set fan speed to..."
-      },
-      "titleFormatted": {
-        "en": "Set fan speed to [[fan_speed_action]]"
-      },
-      "args": [
-        {
-          "name": "fan_speed_action",
+          "name": "fan_power",
           "type": "dropdown",
           "values": [
             {
@@ -595,75 +352,16 @@
       ]
     },
     {
-      "id": "Vertical_Swing_Action",
+      "id": "horizontal_action",
       "title": {
-        "en": "Set vertical vane position to..."
+        "en": "Set Horizontal Vane Direction to..."
       },
       "titleFormatted": {
-        "en": "Set vertical vane position to [[vertical_swing_action]]"
+        "en": "Set Horizontal Vane Direction to [[horizontal]]"
       },
       "args": [
         {
-          "name": "vertical_swing_action",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "en": "Auto"
-              }
-            },
-            {
-              "id": "top",
-              "title": {
-                "en": "Top"
-              }
-            },
-            {
-              "id": "middletop",
-              "title": {
-                "en": "Middle Top"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Middle"
-              }
-            },
-            {
-              "id": "middlebottom",
-              "title": {
-                "en": "Middle Bottom"
-              }
-            },
-            {
-              "id": "bottom",
-              "title": {
-                "en": "Bottom"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "Horizontal_Swing_Action",
-      "title": {
-        "en": "Set horizontal vane position to..."
-      },
-      "titleFormatted": {
-        "en": "Set horizontal vane position to [[horizontal_swing_action]]"
-      },
-      "args": [
-        {
-          "name": "horizontal_swing_action",
+          "name": "horizontal",
           "type": "dropdown",
           "values": [
             {
@@ -706,6 +404,112 @@
               "id": "split",
               "title": {
                 "en": "Split"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "operation_mode_action",
+      "title": {
+        "en": "Set Full Thermostat Mode to..."
+      },
+      "titleFormatted": {
+        "en": "Set Full Thermostat Mode to [[operation_mode]]"
+      },
+      "args": [
+        {
+          "name": "operation_mode",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan"
+              }
+            },
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vertical_action",
+      "title": {
+        "en": "Set Vertical Vane Direction to..."
+      },
+      "titleFormatted": {
+        "en": "Set Vertical Vane Direction to [[vertical]]"
+      },
+      "args": [
+        {
+          "name": "vertical",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Auto"
+              }
+            },
+            {
+              "id": "top",
+              "title": {
+                "en": "Top"
+              }
+            },
+            {
+              "id": "middletop",
+              "title": {
+                "en": "Middle Top"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Middle"
+              }
+            },
+            {
+              "id": "middlebottom",
+              "title": {
+                "en": "Middle Bottom"
+              }
+            },
+            {
+              "id": "bottom",
+              "title": {
+                "en": "Bottom"
               }
             },
             {

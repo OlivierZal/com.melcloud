@@ -1,6 +1,6 @@
-const MELCloudDriverMixin = require('../melclouddrivermixin');
+const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
-class MELCloudDriverAtw extends MELCloudDriverMixin {
+class MELCloudHPDriver extends Homey.Driver {
   async onInit() {
     this.deviceType = 1;
 
@@ -105,37 +105,37 @@ class MELCloudDriverAtw extends MELCloudDriverMixin {
   triggerOperationMode(device) {
     this.operationModeTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`operation_mode_state\` has been triggered (${device.getCapabilityValue('operation_mode_state')})`))
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode_state\` has changed to \`${device.getCapabilityValue('operation_mode_state')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode_state\` has not been triggered (${error})`));
   }
 
   triggerOperationModeZone(device) {
     this.operationModeZoneTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`operation_mode_zone\` has been triggered (${device.getCapabilityValue('operation_mode_zone')})`))
+      .then(this.log(`\`${device.getName()}\`: \`operation_mode_zone\` has changed to \`${device.getCapabilityValue('operation_mode_zone')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`operation_mode_zone\` has not been triggered (${error})`));
   }
 
   triggerFlowTemperature(device) {
     this.flowTemperatureTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`flow_temperature\` has been triggered (${device.getCapabilityValue('flow_temperature')})`))
+      .then(this.log(`\`${device.getName()}\`: \`flow_temperature\` has changed to \`${device.getCapabilityValue('flow_temperature')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`flow_temperature\` has not been triggered (${error})`));
   }
 
   triggerReturnTemperature(device) {
     this.returnTemperatureTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`return_temperature\` has been triggered (${device.getCapabilityValue('return_temperature')})`))
+      .then(this.log(`\`${device.getName()}\`: \`return_temperature\` has changed to \`${device.getCapabilityValue('return_temperature')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`return_temperature\` has not been triggered (${error})`));
   }
 
   triggerForcedHotWater(device) {
     this.forcedHotWaterTrigger
       .trigger(device)
-      .then(this.log(`\`${device.getName()}\`: \`forced_hot_water\` has been triggered (${device.getCapabilityValue('forced_hot_water')})`))
+      .then(this.log(`\`${device.getName()}\`: \`forced_hot_water\` has changed to \`${device.getCapabilityValue('forced_hot_water')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`forced_hot_water\` has not been triggered (${error})`));
   }
 }
 
-module.exports = MELCloudDriverAtw;
+module.exports = MELCloudHPDriver;
