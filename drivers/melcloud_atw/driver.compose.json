@@ -14,30 +14,6 @@
     "alarm_generic.defrost_mode",
     "alarm_water.immersion_heater",
     "eco_hot_water",
-    "measure_power.daily_consumed",
-    "measure_power.daily_consumed_cooling",
-    "measure_power.daily_consumed_heating",
-    "measure_power.daily_consumed_hotwater",
-    "measure_power.daily_cop",
-    "measure_power.daily_cop_cooling",
-    "measure_power.daily_cop_heating",
-    "measure_power.daily_cop_hotwater",
-    "measure_power.daily_produced",
-    "measure_power.daily_produced_cooling",
-    "measure_power.daily_produced_heating",
-    "measure_power.daily_produced_hotwater",
-    "measure_power.total_consumed",
-    "measure_power.total_consumed_cooling",
-    "measure_power.total_consumed_heating",
-    "measure_power.total_consumed_hotwater",
-    "measure_power.total_cop",
-    "measure_power.total_cop_cooling",
-    "measure_power.total_cop_heating",
-    "measure_power.total_cop_hotwater",
-    "measure_power.total_produced",
-    "measure_power.total_produced_cooling",
-    "measure_power.total_produced_heating",
-    "measure_power.total_produced_hotwater",
     "measure_power.heat_pump_frequency",
     "measure_temperature",
     "measure_temperature.flow",
@@ -45,6 +21,30 @@
     "measure_temperature.return",
     "measure_temperature.tank_water",
     "measure_temperature.zone2",
+    "meter_power.daily_cop",
+    "meter_power.daily_cop_cooling",
+    "meter_power.daily_cop_heating",
+    "meter_power.daily_cop_hotwater",
+    "meter_power.daily_consumed",
+    "meter_power.daily_consumed_cooling",
+    "meter_power.daily_consumed_heating",
+    "meter_power.daily_consumed_hotwater",
+    "meter_power.daily_produced",
+    "meter_power.daily_produced_cooling",
+    "meter_power.daily_produced_heating",
+    "meter_power.daily_produced_hotwater",
+    "meter_power.total_cop",
+    "meter_power.total_cop_cooling",
+    "meter_power.total_cop_heating",
+    "meter_power.total_cop_hotwater",
+    "meter_power.total_consumed",
+    "meter_power.total_consumed_cooling",
+    "meter_power.total_consumed_heating",
+    "meter_power.total_consumed_hotwater",
+    "meter_power.total_produced",
+    "meter_power.total_produced_cooling",
+    "meter_power.total_produced_heating",
+    "meter_power.total_produced_hotwater",
     "onoff",
     "onoff.forced_hot_water",
     "operation_mode_state",
@@ -86,7 +86,15 @@
         "en": "Immersion Heater"
       }
     },
-    "measure_power.daily_cop": {
+    "measure_power.heat_pump_frequency": {
+      "title": {
+        "en": "Heat Pump Frequency"
+      },
+       "units": {
+         "en": "Hz"
+      }
+    },
+    "meter_power.daily_cop": {
       "title": {
         "en": "Last Daily CoP"
       },
@@ -95,7 +103,7 @@
       },
       "decimals": 2
     },
-    "measure_power.daily_cop_cooling": {
+    "meter_power.daily_cop_cooling": {
       "title": {
         "en": "Last Daily Cooling CoP"
       },
@@ -104,7 +112,7 @@
       },
       "decimals": 2
     },
-    "measure_power.daily_cop_heating": {
+    "meter_power.daily_cop_heating": {
       "title": {
         "en": "Last Daily Heating CoP"
       },
@@ -113,88 +121,56 @@
       },
       "decimals": 2
     },
-    "measure_power.daily_cop_hotwater": {
+    "meter_power.daily_cop_hotwater": {
       "title": {
-        "en": "Last Daily HotWater CoP"
+        "en": "Last Daily Hot Water CoP"
       },
        "units": {
          "en": ""
       },
       "decimals": 2
     },
-    "measure_power.daily_consumed": {
+    "meter_power.daily_consumed": {
       "title": {
         "en": "Last Daily Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_cooling": {
+    "meter_power.daily_consumed_cooling": {
       "title": {
         "en": "Last Daily Cooling Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_heating": {
+    "meter_power.daily_consumed_heating": {
       "title": {
         "en": "Last Daily Heating Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_hotwater": {
+    "meter_power.daily_consumed_hotwater": {
       "title": {
         "en": "Last Daily Hot Water Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_produced": {
+    "meter_power.daily_produced": {
       "title": {
         "en": "Last Daily Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_produced_cooling": {
+    "meter_power.daily_produced_cooling": {
       "title": {
         "en": "Last Daily Cooling Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_produced_heating": {
+    "meter_power.daily_produced_heating": {
       "title": {
         "en": "Last Daily Heating Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_produced_hotwater": {
+    "meter_power.daily_produced_hotwater": {
       "title": {
         "en": "Last Daily Hot Water Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.total_cop": {
+    "meter_power.total_cop": {
       "title": {
         "en": "Total CoP"
       },
@@ -203,7 +179,7 @@
       },
       "decimals": 2
     },
-    "measure_power.total_cop_cooling": {
+    "meter_power.total_cop_cooling": {
       "title": {
         "en": "Total Cooling CoP"
       },
@@ -212,7 +188,7 @@
       },
       "decimals": 2
     },
-    "measure_power.total_cop_heating": {
+    "meter_power.total_cop_heating": {
       "title": {
         "en": "Total Heating CoP"
       },
@@ -221,94 +197,53 @@
       },
       "decimals": 2
     },
-    "measure_power.total_cop_hotwater": {
+    "meter_power.total_cop_hotwater": {
       "title": {
-        "en": "Total HotWater CoP"
+        "en": "Total Hot Water CoP"
       },
        "units": {
          "en": ""
       },
       "decimals": 2
     },
-    "measure_power.total_consumed": {
+    "meter_power.total_consumed": {
       "title": {
         "en": "Total Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_cooling": {
+    "meter_power.total_consumed_cooling": {
       "title": {
         "en": "Total Cooling Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_heating": {
+    "meter_power.total_consumed_heating": {
       "title": {
         "en": "Total Heating Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_hotwater": {
+    "meter_power.total_consumed_hotwater": {
       "title": {
         "en": "Total Hot Water Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_produced": {
+    "meter_power.total_produced": {
       "title": {
         "en": "Total Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_produced_cooling": {
+    "meter_power.total_produced_cooling": {
       "title": {
         "en": "Total Cooling Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_produced_heating": {
+    "meter_power.total_produced_heating": {
       "title": {
         "en": "Total Heating Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_produced_hotwater": {
+    "meter_power.total_produced_hotwater": {
       "title": {
         "en": "Total Hot Water Production"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
-    },
-    "measure_power.heat_pump_frequency": {
-      "icon": "/assets/heat_pump_frequency.svg",
-      "title": {
-        "en": "Heat Pump Frequency"
-      },
-       "units": {
-         "en": "Hz"
       }
     },
     "measure_temperature": {
@@ -373,7 +308,7 @@
     },
     "target_temperature": {
       "title": {
-        "en": "Target Temperature - Zone 1"
+        "en": "Room Target Temperature - Zone 1"
       },
       "min": 10,
       "max": 30
@@ -401,7 +336,7 @@
     },
     "target_temperature.zone2": {
       "title": {
-        "en": "Target Temperature - Zone 2"
+        "en": "Room Target Temperature - Zone 2"
       },
       "min": 10,
       "max": 30

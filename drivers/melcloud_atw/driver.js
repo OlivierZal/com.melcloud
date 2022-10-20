@@ -6,7 +6,6 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.heatPumpType = 'Atw';
 
     this.atwCapabilities = [
-      'eco_hot_water',
       'measure_temperature',
       'measure_temperature.outdoor',
       'measure_temperature.flow',
@@ -16,36 +15,6 @@ class MELCloudAtwDriver extends Homey.Driver {
       'operation_mode_state',
       'target_temperature',
       'target_temperature.zone1_flow_heat',
-      'alarm_generic.booster_heater1',
-      'alarm_generic.booster_heater2',
-      'alarm_generic.booster_heater2_plus',
-      'alarm_generic.defrost_mode',
-      'alarm_water.immersion_heater',
-      'measure_power.heat_pump_frequency',
-      'measure_power.daily_cop',
-      'measure_power.daily_produced',
-      'measure_power.daily_consumed',
-      'measure_power.daily_cop_cooling',
-      'measure_power.daily_produced_cooling',
-      'measure_power.daily_consumed_cooling',
-      'measure_power.daily_cop_heating',
-      'measure_power.daily_produced_heating',
-      'measure_power.daily_consumed_heating',
-      'measure_power.daily_cop_hotwater',
-      'measure_power.daily_produced_hotwater',
-      'measure_power.daily_consumed_hotwater',
-      'measure_power.total_cop',
-      'measure_power.total_produced',
-      'measure_power.total_consumed',
-      'measure_power.total_cop_cooling',
-      'measure_power.total_produced_cooling',
-      'measure_power.total_consumed_cooling',
-      'measure_power.total_cop_heating',
-      'measure_power.total_produced_heating',
-      'measure_power.total_consumed_heating',
-      'measure_power.total_cop_hotwater',
-      'measure_power.total_produced_hotwater',
-      'measure_power.total_consumed_hotwater',
     ];
     this.coolAtwCapabilities = [
       'operation_mode_zone_with_cool.zone1',
@@ -69,6 +38,39 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.otherAtwCapabilities = [
       'measure_temperature.tank_water',
       'target_temperature.tank_water',
+    ];
+    this.dashboardCapabilities = [
+      'alarm_generic.booster_heater1',
+      'alarm_generic.booster_heater2',
+      'alarm_generic.booster_heater2_plus',
+      'alarm_generic.defrost_mode',
+      'alarm_water.immersion_heater',
+      'eco_hot_water',
+      'measure_power.heat_pump_frequency',
+      'meter_power.daily_cop',
+      'meter_power.daily_cop_cooling',
+      'meter_power.daily_cop_heating',
+      'meter_power.daily_cop_hotwater',
+      'meter_power.daily_produced',
+      'meter_power.daily_consumed',
+      'meter_power.daily_produced_cooling',
+      'meter_power.daily_consumed_cooling',
+      'meter_power.daily_produced_heating',
+      'meter_power.daily_consumed_heating',
+      'meter_power.daily_produced_hotwater',
+      'meter_power.daily_consumed_hotwater',
+      'meter_power.total_cop',
+      'meter_power.total_cop_cooling',
+      'meter_power.total_cop_heating',
+      'meter_power.total_cop_hotwater',
+      'meter_power.total_produced',
+      'meter_power.total_consumed',
+      'meter_power.total_produced_cooling',
+      'meter_power.total_consumed_cooling',
+      'meter_power.total_produced_heating',
+      'meter_power.total_consumed_heating',
+      'meter_power.total_produced_hotwater',
+      'meter_power.total_consumed_hotwater',
     ];
 
     // Condition flowcards
@@ -134,7 +136,7 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('target_temperature_tank_water')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityCoolFlowTemperatureZone2(args.target_temperature);
+        await args.device.onCapabilityTankWaterTemperature(args.target_temperature);
       });
 
     this.homey.flow

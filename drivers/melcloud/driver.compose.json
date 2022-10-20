@@ -16,147 +16,91 @@
     "vertical",
     "horizontal",
     "thermostat_mode",
-    "measure_power.daily_consumed",
-    "measure_power.daily_consumed_auto",
-    "measure_power.daily_consumed_cooling",
-    "measure_power.daily_consumed_dry",
-    "measure_power.daily_consumed_fan",
-    "measure_power.daily_consumed_heating",
-    "measure_power.daily_consumed_other",
-    "measure_power.total_consumed",
-    "measure_power.total_consumed_auto",
-    "measure_power.total_consumed_cooling",
-    "measure_power.total_consumed_dry",
-    "measure_power.total_consumed_fan",
-    "measure_power.total_consumed_heating",
-    "measure_power.total_consumed_other"
+    "meter_power.daily_consumed",
+    "meter_power.daily_consumed_auto",
+    "meter_power.daily_consumed_cooling",
+    "meter_power.daily_consumed_dry",
+    "meter_power.daily_consumed_fan",
+    "meter_power.daily_consumed_heating",
+    "meter_power.daily_consumed_other",
+    "meter_power.total_consumed",
+    "meter_power.total_consumed_auto",
+    "meter_power.total_consumed_cooling",
+    "meter_power.total_consumed_dry",
+    "meter_power.total_consumed_fan",
+    "meter_power.total_consumed_heating",
+    "meter_power.total_consumed_other"
   ],
   "capabilitiesOptions": {
-    "measure_power.daily_consumed": {
+    "meter_power.daily_consumed": {
       "title": {
         "en": "Last Daily Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_auto": {
+    "meter_power.daily_consumed_auto": {
       "title": {
         "en": "Last Daily Auto Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_cooling": {
+    "meter_power.daily_consumed_cooling": {
       "title": {
         "en": "Last Daily Cooling Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_dry": {
+    "meter_power.daily_consumed_dry": {
       "title": {
         "en": "Last Daily Dry Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_fan": {
+    "meter_power.daily_consumed_fan": {
       "title": {
         "en": "Last Daily Fan Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_heating": {
+    "meter_power.daily_consumed_heating": {
       "title": {
         "en": "Last Daily Heating Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.daily_consumed_other": {
+    "meter_power.daily_consumed_other": {
       "title": {
         "en": "Last Daily Other Consumption"
-      },
-      "units": {
-        "en": "kWh"
-      },
-      "decimals": 2
+      }
     },
-    "measure_power.total_consumed": {
+    "meter_power.total_consumed": {
       "title": {
         "en": "Total Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_auto": {
+    "meter_power.total_consumed_auto": {
       "title": {
         "en": "Total Auto Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_cooling": {
+    "meter_power.total_consumed_cooling": {
       "title": {
         "en": "Total Cooling Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_dry": {
+    "meter_power.total_consumed_dry": {
       "title": {
         "en": "Total Dry Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_fan": {
+    "meter_power.total_consumed_fan": {
       "title": {
         "en": "Total Fan Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_heating": {
+    "meter_power.total_consumed_heating": {
       "title": {
         "en": "Total Heating Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
-    "measure_power.total_consumed_other": {
+    "meter_power.total_consumed_other": {
       "title": {
         "en": "Total Other Consumption"
-      },
-       "units": {
-         "en": "kWh"
-      },
-      "decimals": 0
+      }
     },
     "target_temperature": {
       "min": 10,
