@@ -1,102 +1,131 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
 class MELCloudAtwDevice extends Homey.Device {
-  cleanCapabilities() {
+  /* eslint-disable no-await-in-loop, no-restricted-syntax */
+  async handleCapabilities() {
+    const settings = this.getSettings();
     const store = this.getStore();
 
     const currentCapabilities = this.getCapabilities();
     const requiredCapabilities = this.driver.manifest.capabilities;
-    currentCapabilities.forEach((capability) => {
+
+    for (const capability of currentCapabilities) {
       if (!requiredCapabilities.includes(capability)) {
-        this.removeCapability(capability);
+        await this.removeCapability(capability);
       }
-    });
-    this.driver.atwCapabilities.forEach((capability) => {
+    }
+
+    for (const capability of this.driver.atwCapabilities) {
       if (!this.hasCapability(capability)) {
-        this.addCapability(capability);
+        await this.addCapability(capability);
       }
-    });
+    }
+
     if (store.canCool) {
-      this.driver.notCoolAtwCapabilities.forEach((capability) => {
+      for (const capability of this.driver.notCoolAtwCapabilities) {
         if (this.hasCapability(capability)) {
-          this.removeCapability(capability);
+          await this.removeCapability(capability);
         }
-      });
-      this.driver.coolAtwCapabilities.forEach((capability) => {
+      }
+      for (const capability of this.driver.coolAtwCapabilities) {
         if (!this.hasCapability(capability)) {
-          this.addCapability(capability);
+          await this.addCapability(capability);
         }
-      });
+      }
     } else {
-      this.driver.coolAtwCapabilities.forEach((capability) => {
+      for (const capability of this.driver.coolAtwCapabilities) {
         if (this.hasCapability(capability)) {
-          this.removeCapability(capability);
+          await this.removeCapability(capability);
         }
-      });
-      this.driver.notCoolAtwCapabilities.forEach((capability) => {
+      }
+      for (const capability of this.driver.notCoolAtwCapabilities) {
         if (!this.hasCapability(capability)) {
-          this.addCapability(capability);
+          await this.addCapability(capability);
         }
-      });
+      }
     }
+
     if (store.hasZone2) {
-      this.driver.zone2AtwCapabilities.forEach((capability) => {
+      for (const capability of this.driver.zone2AtwCapabilities) {
         if (!this.hasCapability(capability)) {
-          this.addCapability(capability);
+          await this.addCapability(capability);
         }
-      });
+      }
       if (store.canCool) {
-        this.driver.notCoolZone2AtwCapabilities.forEach((capability) => {
+        for (const capability of this.driver.notCoolZone2AtwCapabilities) {
           if (this.hasCapability(capability)) {
-            this.removeCapability(capability);
+            await this.removeCapability(capability);
           }
-        });
-        this.driver.coolZone2AtwCapabilities.forEach((capability) => {
+        }
+        for (const capability of this.driver.coolZone2AtwCapabilities) {
           if (!this.hasCapability(capability)) {
-            this.addCapability(capability);
+            await this.addCapability(capability);
           }
-        });
+        }
       } else {
-        this.driver.coolZone2AtwCapabilities.forEach((capability) => {
+        for (const capability of this.driver.coolZone2AtwCapabilities) {
           if (this.hasCapability(capability)) {
-            this.removeCapability(capability);
+            await this.removeCapability(capability);
           }
-        });
-        this.driver.notCoolZone2AtwCapabilities.forEach((capability) => {
+        }
+        for (const capability of this.driver.notCoolZone2AtwCapabilities) {
           if (!this.hasCapability(capability)) {
-            this.addCapability(capability);
+            await this.addCapability(capability);
           }
-        });
+        }
       }
     } else {
-      this.driver.zone2AtwCapabilities.forEach((capability) => {
+      for (const capability of this.driver.zone2AtwCapabilities) {
         if (this.hasCapability(capability)) {
-          this.removeCapability(capability);
+          await this.removeCapability(capability);
         }
-      });
-      this.driver.coolZone2AtwCapabilities.forEach((capability) => {
-        if (this.hasCapability(capability)) {
-          this.removeCapability(capability);
-        }
-      });
-      this.driver.notCoolZone2AtwCapabilities.forEach((capability) => {
-        if (this.hasCapability(capability)) {
-          this.removeCapability(capability);
-        }
-      });
-    }
-    this.driver.otherAtwCapabilities.forEach((capability) => {
-      if (!this.hasCapability(capability)) {
-        this.addCapability(capability);
       }
-    });
+      for (const capability of this.driver.coolZone2AtwCapabilities) {
+        if (this.hasCapability(capability)) {
+          await this.removeCapability(capability);
+        }
+      }
+      for (const capability of this.driver.notCoolZone2AtwCapabilities) {
+        if (this.hasCapability(capability)) {
+          await this.removeCapability(capability);
+        }
+      }
+    }
+
+    for (const capability of this.driver.otherAtwCapabilities) {
+      if (!this.hasCapability(capability)) {
+        await this.addCapability(capability);
+      }
+    }
+
+    await this.handleDashboardCapabilities(this.driver.dashboardCapabilities, settings);
   }
 
-  async onInit() {
-    await this.setWarning(null);
-    this.cleanCapabilities();
+  async handleDashboardCapabilities(capabilities, settings) {
+    for (const capability of capabilities) {
+      if (this.driver.dashboardCapabilities.includes(capability)) {
+        if (!settings[capability] && this.hasCapability(capability)) {
+          await this.removeCapability(capability);
+        } else if (settings[capability] && !this.hasCapability(capability)) {
+          await this.addCapability(capability);
+        }
+      }
+    }
+  }
+  /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
+  async onInit() {
     const store = this.getStore();
+
+    await this.setWarning(null);
+    if (!store.warnedAboutSettings) {
+      await this.setWarning('NEW: customize your dashboard from the settings!');
+      await this.setStoreValue('warnedAboutSettings', true);
+      await this.setWarning(null);
+    }
+
+    await this.handleCapabilities();
+
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('onoff.forced_hot_water', this.onCapabilityForcedHotWater.bind(this));
     this.registerCapabilityListener('target_temperature', this.onCapabilityTargetTemperatureZone1.bind(this));
@@ -123,35 +152,38 @@ class MELCloudAtwDevice extends Homey.Device {
     this.registerCapabilityListener('target_temperature.tank_water', this.onCapabilityTankWaterTemperature.bind(this));
 
     await this.syncDataFromDevice();
-    await this.parseEnergyReports();
+    await this.runEnergyReports();
   }
 
-  async parseEnergyReports() {
+  async runEnergyReports() {
     this.homey.clearTimeout(this.reportTimeout);
 
-    const reportData = {};
-    reportData.daily = await this.homey.app.fetchEnergyReport(this, true);
-    reportData.total = await this.homey.app.fetchEnergyReport(this, false);
-    Object.entries(reportData).forEach(async (entry) => {
+    const reportMapping = {};
+    const report = {};
+    report.daily = await this.homey.app.fetchEnergyReport(this, true);
+    report.total = await this.homey.app.fetchEnergyReport(this, false);
+    Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
-      const reportMapping = {};
-
       ['Consumed', 'Produced'].forEach((type) => {
-        reportMapping[`measure_power.${period}_${type.toLowerCase()}`] = 0;
+        reportMapping[`meter_power.${period}_${type.toLowerCase()}`] = 0;
         ['Cooling', 'Heating', 'HotWater'].forEach((mode) => {
-          reportMapping[`measure_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}`] = data[`Total${mode}${type}`];
-          reportMapping[`measure_power.${period}_${type.toLowerCase()}`] += reportMapping[`measure_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}`];
+          reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}`] = data[`Total${mode}${type}`];
+          reportMapping[`meter_power.${period}_${type.toLowerCase()}`] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}`];
         });
       });
       ['Cooling', 'Heating', 'HotWater'].forEach((mode) => {
-        reportMapping[`measure_power.${period}_cop_${mode.toLowerCase()}`] = data[`Total${mode}Produced`] / data[`Total${mode}Consumed`];
+        reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}`] = data[`Total${mode}Produced`] / data[`Total${mode}Consumed`];
       });
-      reportMapping[`measure_power.${period}_cop`] = reportMapping[`measure_power.${period}_produced`] / reportMapping[`measure_power.${period}_consumed`];
-      Object.entries(reportMapping).forEach(async (total) => {
-        const [capability, value] = total;
-        await this.setOrNotCapabilityValue(capability, value);
-      });
+      reportMapping[`meter_power.${period}_cop`] = reportMapping[`meter_power.${period}_produced`] / reportMapping[`meter_power.${period}_consumed`];
     });
+
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const capability in reportMapping) {
+      if (Object.prototype.hasOwnProperty.call(reportMapping, capability)) {
+        await this.setOrNotCapabilityValue(capability, reportMapping[capability]);
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
     this.reportTimeout = this.homey
       .setTimeout(this.syncDataFromDevice.bind(this), 24 * 60 * 60 * 1000);
@@ -246,8 +278,9 @@ class MELCloudAtwDevice extends Homey.Device {
       }
     }
 
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
     const deviceList = await this.homey.app.listDevices(this.driver);
-    deviceList.forEach(async (device) => {
+    for (const device of deviceList) {
       if (device.DeviceID === data.id && device.BuildingID === data.buildingid) {
         let hasStoreChanged = false;
         if (device.Device.CanCool !== store.canCool) {
@@ -259,7 +292,7 @@ class MELCloudAtwDevice extends Homey.Device {
           hasStoreChanged = true;
         }
         if (hasStoreChanged) {
-          this.cleanCapabilities();
+          await this.handleCapabilities();
         }
 
         await this.setOrNotCapabilityValue('alarm_generic.booster_heater1', device.Device.BoosterHeater1Status);
@@ -270,8 +303,10 @@ class MELCloudAtwDevice extends Homey.Device {
         await this.setOrNotCapabilityValue('measure_power.heat_pump_frequency', device.Device.HeatPumpFrequency);
         await this.setOrNotCapabilityValue('measure_temperature.flow', device.Device.FlowTemperature);
         await this.setOrNotCapabilityValue('measure_temperature.return', device.Device.ReturnTemperature);
+        break;
       }
-    });
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
     const interval = this.getSetting('interval');
     this.syncTimeout = this.homey
@@ -367,8 +402,30 @@ class MELCloudAtwDevice extends Homey.Device {
     await this.syncDeviceFromData(updateJson);
   }
 
+  async onSettings(event) {
+    if (!event.changedKeys.includes('interval') || event.changedKeys.length > 1) {
+      await this.handleDashboardCapabilities(event.changedKeys, event.newSettings);
+      await this.setWarning('Exit device and return to refresh your dashboard');
+      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      for (const capability of event.changedKeys) {
+        if (!capability.startsWith('meter_power')) {
+          await this.syncDataFromDevice();
+          break;
+        }
+      }
+      for (const capability of event.changedKeys) {
+        if (capability.startsWith('meter_power')) {
+          await this.runEnergyReports();
+          break;
+        }
+      }
+      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+      await this.setWarning(null);
+    }
+  }
+
   async setOrNotCapabilityValue(capability, value) {
-    if (value !== this.getCapabilityValue(capability)) {
+    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
         .then(this.log(`\`${this.getName()}\`: capability \`${capability}\` is \`${value}\``))
         .catch((error) => this.error(`\`${this.getName()}\`: capability \`${capability}\` has not been set to \`${value}\` (${error})`));
