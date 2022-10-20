@@ -14,26 +14,26 @@
     "alarm_generic.defrost_mode",
     "alarm_water.immersion_heater",
     "eco_hot_water",
-    "measure_power.daily_consumed",
-    "measure_power.daily_consumed_cooling",
-    "measure_power.daily_consumed_heating",
-    "measure_power.daily_consumed_hotwater",
     "measure_power.daily_cop",
     "measure_power.daily_cop_cooling",
     "measure_power.daily_cop_heating",
     "measure_power.daily_cop_hotwater",
+    "measure_power.daily_consumed",
+    "measure_power.daily_consumed_cooling",
+    "measure_power.daily_consumed_heating",
+    "measure_power.daily_consumed_hotwater",
     "measure_power.daily_produced",
     "measure_power.daily_produced_cooling",
     "measure_power.daily_produced_heating",
     "measure_power.daily_produced_hotwater",
-    "measure_power.total_consumed",
-    "measure_power.total_consumed_cooling",
-    "measure_power.total_consumed_heating",
-    "measure_power.total_consumed_hotwater",
     "measure_power.total_cop",
     "measure_power.total_cop_cooling",
     "measure_power.total_cop_heating",
     "measure_power.total_cop_hotwater",
+    "measure_power.total_consumed",
+    "measure_power.total_consumed_cooling",
+    "measure_power.total_consumed_heating",
+    "measure_power.total_consumed_hotwater",
     "measure_power.total_produced",
     "measure_power.total_produced_cooling",
     "measure_power.total_produced_heating",
@@ -115,7 +115,7 @@
     },
     "measure_power.daily_cop_hotwater": {
       "title": {
-        "en": "Last Daily HotWater CoP"
+        "en": "Last Daily Hot Water CoP"
       },
        "units": {
          "en": ""
@@ -223,7 +223,7 @@
     },
     "measure_power.total_cop_hotwater": {
       "title": {
-        "en": "Total HotWater CoP"
+        "en": "Total Hot Water CoP"
       },
        "units": {
          "en": ""
@@ -237,7 +237,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_cooling": {
       "title": {
@@ -246,7 +246,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_heating": {
       "title": {
@@ -255,7 +255,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_hotwater": {
       "title": {
@@ -264,7 +264,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_produced": {
       "title": {
@@ -273,7 +273,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_produced_cooling": {
       "title": {
@@ -282,7 +282,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_produced_heating": {
       "title": {
@@ -291,7 +291,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_produced_hotwater": {
       "title": {
@@ -300,7 +300,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.heat_pump_frequency": {
       "icon": "/assets/heat_pump_frequency.svg",
@@ -373,7 +373,7 @@
     },
     "target_temperature": {
       "title": {
-        "en": "Target Temperature - Zone 1"
+        "en": "Room Target Temperature - Zone 1"
       },
       "min": 10,
       "max": 30
@@ -401,7 +401,7 @@
     },
     "target_temperature.zone2": {
       "title": {
-        "en": "Target Temperature - Zone 2"
+        "en": "Room Target Temperature - Zone 2"
       },
       "min": 10,
       "max": 30

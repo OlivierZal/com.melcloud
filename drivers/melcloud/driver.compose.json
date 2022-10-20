@@ -102,7 +102,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_auto": {
       "title": {
@@ -111,7 +111,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_cooling": {
       "title": {
@@ -120,7 +120,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_dry": {
       "title": {
@@ -129,7 +129,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_fan": {
       "title": {
@@ -138,7 +138,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_heating": {
       "title": {
@@ -147,7 +147,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "measure_power.total_consumed_other": {
       "title": {
@@ -156,7 +156,7 @@
        "units": {
          "en": "kWh"
       },
-      "decimals": 0
+      "decimals": 2
     },
     "target_temperature": {
       "min": 10,

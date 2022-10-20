@@ -16,5 +16,173 @@
         "max": 60
       }
     ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Energy Measurement Display"
+    },
+    "children": [
+      {
+        "id": "measure_power.daily_consumed",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Cooling Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Heating Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_consumed_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Hot Water Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_produced",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_produced_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Cooling Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_produced_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Heating Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.daily_produced_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Hot Water Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_cop",
+        "type": "checkbox",
+        "label": {
+          "en": "Total CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_cop_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_cop_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_cop_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_consumed",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_consumed_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_produced",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_produced_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_produced_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating Production"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.total_produced_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water Production"
+        },
+        "value": false
+      }
+    ]
   }
 ]

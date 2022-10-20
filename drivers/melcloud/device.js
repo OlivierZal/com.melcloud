@@ -11,9 +11,8 @@ function operationModeToDevice(value) {
     case 'fan':
       return 7;
     case 'auto':
-      return 8;
     default:
-      throw new Error(`Capability \`operation_mode\`: invalid value \`${value}\``);
+      return 8;
   }
 }
 
@@ -28,16 +27,13 @@ function operationModeFromDevice(value) {
     case 7:
       return 'fan';
     case 8:
-      return 'auto';
     default:
-      throw new Error(`MELCloud \`OperationMode\`: invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
 function verticalToDevice(value) {
   switch (value) {
-    case 'auto':
-      return 0;
     case 'top':
       return 1;
     case 'middletop':
@@ -50,15 +46,14 @@ function verticalToDevice(value) {
       return 5;
     case 'swing':
       return 7;
+    case 'auto':
     default:
-      throw new Error(`Capability \`vertical\`: invalid value \`${value}\``);
+      return 0;
   }
 }
 
 function verticalFromDevice(value) {
   switch (value) {
-    case 0:
-      return 'auto';
     case 1:
       return 'top';
     case 2:
@@ -71,15 +66,14 @@ function verticalFromDevice(value) {
       return 'bottom';
     case 7:
       return 'swing';
+    case 0:
     default:
-      throw new Error(`MELCLoud \`VaneVertical\`: invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
 function horizontalToDevice(value) {
   switch (value) {
-    case 'auto':
-      return 0;
     case 'left':
       return 1;
     case 'middleleft':
@@ -94,15 +88,14 @@ function horizontalToDevice(value) {
       return 8;
     case 'swing':
       return 12;
+    case 'auto':
     default:
-      throw new Error(`Capability \`horizontal\`: invalid value \`${value}\``);
+      return 0;
   }
 }
 
 function horizontalFromDevice(value) {
   switch (value) {
-    case 0:
-      return 'auto';
     case 1:
       return 'left';
     case 2:
@@ -117,30 +110,33 @@ function horizontalFromDevice(value) {
       return 'split';
     case 12:
       return 'swing';
+    case 0:
     default:
-      throw new Error(`MELCloud \`VaneHorizontal\`: invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
 class MELCloudAtaDevice extends Homey.Device {
-  cleanCapabilities() {
+  /* eslint-disable no-await-in-loop, no-restricted-syntax */
+  async handleCapabilities() {
     const currentCapabilities = this.getCapabilities();
     const requiredCapabilities = this.driver.manifest.capabilities;
-    currentCapabilities.forEach((capability) => {
+    for (const capability of currentCapabilities) {
       if (!requiredCapabilities.includes(capability)) {
-        this.removeCapability(capability);
+        await this.removeCapability(capability);
       }
-    });
-    requiredCapabilities.forEach((capability) => {
+    }
+    for (const capability of requiredCapabilities) {
       if (!this.hasCapability(capability)) {
-        this.addCapability(capability);
+        await this.addCapability(capability);
       }
-    });
+    }
   }
+  /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
   async onInit() {
     await this.setWarning(null);
-    this.cleanCapabilities();
+    await this.handleCapabilities();
 
     this.registerCapabilityListener('onoff', await this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('target_temperature', await this.onCapabilityTargetTemperature.bind(this));
@@ -157,13 +153,12 @@ class MELCloudAtaDevice extends Homey.Device {
   async parseEnergyReports() {
     this.homey.clearTimeout(this.reportTimeout);
 
-    const reportData = {};
-    reportData.daily = await this.homey.app.fetchEnergyReport(this, true);
-    reportData.total = await this.homey.app.fetchEnergyReport(this, false);
-    Object.entries(reportData).forEach((entry) => {
+    const reportMapping = {};
+    const report = {};
+    report.daily = await this.homey.app.fetchEnergyReport(this, true);
+    report.total = await this.homey.app.fetchEnergyReport(this, false);
+    Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
-      const reportMapping = {};
-
       const deviceCount = data.UsageDisclaimerPercentages
         ? data.UsageDisclaimerPercentages.split(', ').length : 1;
       reportMapping[`measure_power.${period}_consumed`] = 0;
@@ -171,11 +166,15 @@ class MELCloudAtaDevice extends Homey.Device {
         reportMapping[`measure_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] / deviceCount;
         reportMapping[`measure_power.${period}_consumed`] += reportMapping[`measure_power.${period}_consumed_${mode.toLowerCase()}`];
       });
-      Object.entries(reportMapping).forEach(async (total) => {
-        const [capability, value] = total;
-        await this.setOrNotCapabilityValue(capability, value);
-      });
     });
+
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const capability in reportMapping) {
+      if (Object.prototype.hasOwnProperty.call(reportMapping, capability)) {
+        await this.setOrNotCapabilityValue(capability, reportMapping[capability]);
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
     this.reportTimeout = this.homey
       .setTimeout(this.syncDataFromDevice.bind(this), 24 * 60 * 60 * 1000);
@@ -279,9 +278,9 @@ class MELCloudAtaDevice extends Homey.Device {
   }
 
   async onCapabilityOperationMode(value) {
-    await this.setWarning(null);
     if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
-      await this.setWarning(`\`${value}\` has well been registered (even if \`heat\` is displayed)`);
+      await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
+      await this.setWarning(null);
     }
     const updateJson = {
       EffectiveFlags: 0x2,

@@ -31,7 +31,7 @@ class MELCloudApp extends Homey.App {
           this.homey.settings.set('ContextKey', result.data.LoginData.ContextKey);
           return true;
         });
-        this.log('Login to MELCloud: authentication has been successfully completed');
+        this.log('Login to MELCloud: authentication has been completed');
       } catch (error) {
         this.error(`Login to MELCloud: a problem occurred (${error})`);
       }
@@ -86,7 +86,7 @@ class MELCloudApp extends Homey.App {
         });
         return devices;
       });
-      driver.log('Searching for devices: search has been successfully completed');
+      driver.log('Searching for devices: search has been completed');
     } catch (error) {
       driver.error(`Searching for devices: a problem occurred (${error})`);
     }
