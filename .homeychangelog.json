@@ -22,5 +22,8 @@
   },
   "5.1.1": {
     "en": "Made other capabilities available for display or not from settings."
+  },
+  "5.1.2": {
+    "en": "Added missing triggers."
   }
 }
