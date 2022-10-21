@@ -319,7 +319,7 @@ class MELCloudAtwDevice extends Homey.Device {
         await this.setOrNotCapabilityValue('alarm_generic.booster_heater2', device.Device.BoosterHeater2Status);
         await this.setOrNotCapabilityValue('alarm_generic.booster_heater2_plus', device.Device.BoosterHeater2PlusStatus);
         await this.setOrNotCapabilityValue('alarm_generic.defrost_mode', Boolean(device.Device.DefrostMode));
-        await this.setOrNotCapabilityValue('alarm_water.immersion_heater', device.Device.ImmersionHeaterStatus);
+        await this.setOrNotCapabilityValue('alarm_generic.immersion_heater', device.Device.ImmersionHeaterStatus);
         await this.setOrNotCapabilityValue('measure_power.heat_pump_frequency', device.Device.HeatPumpFrequency);
         await this.setOrNotCapabilityValue('measure_temperature.flow', device.Device.FlowTemperature);
         await this.setOrNotCapabilityValue('measure_temperature.return', device.Device.ReturnTemperature);

@@ -434,7 +434,7 @@
         ]
       },
       {
-        "id": "alarm_water.immersion_heater_false",
+        "id": "alarm_generic.immersion_heater_false",
         "title": {
           "en": "Immersion Heater turned Off"
         },
@@ -447,7 +447,7 @@
         ]
       },
       {
-        "id": "alarm_water.immersion_heater_true",
+        "id": "alarm_generic.immersion_heater_true",
         "title": {
           "en": "Immersion Heater turned On"
         },
@@ -2500,7 +2500,7 @@
         "alarm_generic.booster_heater2",
         "alarm_generic.booster_heater2_plus",
         "alarm_generic.defrost_mode",
-        "alarm_water.immersion_heater",
+        "alarm_generic.immersion_heater",
         "eco_hot_water",
         "measure_power.heat_pump_frequency",
         "measure_temperature",
@@ -2569,7 +2569,7 @@
             "en": "Defrost Mode"
           }
         },
-        "alarm_water.immersion_heater": {
+        "alarm_generic.immersion_heater": {
           "title": {
             "en": "Immersion Heater"
           }
@@ -2930,7 +2930,7 @@
               "value": true
             },
             {
-              "id": "alarm_water.immersion_heater",
+              "id": "alarm_generic.immersion_heater",
               "type": "checkbox",
               "label": {
                 "en": "Immersion Heater"

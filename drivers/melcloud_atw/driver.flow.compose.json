@@ -49,13 +49,13 @@
       }
     },
     {
-      "id": "alarm_water.immersion_heater_false",
+      "id": "alarm_generic.immersion_heater_false",
       "title": {
         "en": "Immersion Heater turned Off"
       }
     },
     {
-      "id": "alarm_water.immersion_heater_true",
+      "id": "alarm_generic.immersion_heater_true",
       "title": {
         "en": "Immersion Heater turned On"
       }

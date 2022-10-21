@@ -44,7 +44,7 @@ class MELCloudAtwDriver extends Homey.Driver {
       'alarm_generic.booster_heater2',
       'alarm_generic.booster_heater2_plus',
       'alarm_generic.defrost_mode',
-      'alarm_water.immersion_heater',
+      'alarm_generic.immersion_heater',
       'eco_hot_water',
       'measure_power.heat_pump_frequency',
       'meter_power.daily_cop',

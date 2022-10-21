@@ -56,7 +56,7 @@
         "value": true
       },
       {
-        "id": "alarm_water.immersion_heater",
+        "id": "alarm_generic.immersion_heater",
         "type": "checkbox",
         "label": {
           "en": "Immersion Heater"
