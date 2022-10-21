@@ -16,5 +16,261 @@
         "max": 60
       }
     ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Dashboard Customization"
+    },
+    "children": [
+      {
+        "id": "alarm_generic.booster_heater1",
+        "type": "checkbox",
+        "label": {
+          "en": "Booster Heater 1"
+        },
+        "value": true
+      },
+      {
+        "id": "alarm_generic.booster_heater2",
+        "type": "checkbox",
+        "label": {
+          "en": "Booster Heater 2"
+        },
+        "value": true
+      },
+      {
+        "id": "alarm_generic.booster_heater2_plus",
+        "type": "checkbox",
+        "label": {
+          "en": "Booster Heater 2 Plus"
+        },
+        "value": false
+      },
+      {
+        "id": "alarm_generic.defrost_mode",
+        "type": "checkbox",
+        "label": {
+          "en": "Defrost Mode"
+        },
+        "value": true
+      },
+      {
+        "id": "alarm_water.immersion_heater",
+        "type": "checkbox",
+        "label": {
+          "en": "Immersion Heater"
+        },
+        "value": false
+      },
+      {
+        "id": "eco_hot_water",
+        "type": "checkbox",
+        "label": {
+          "en": "Eco Hot Water"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_power.heat_pump_frequency",
+        "type": "checkbox",
+        "label": {
+          "en": "Heat Pump Frequency"
+        },
+        "value": true
+      },
+      {
+        "id": "meter_power.daily_cop",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_cop_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Cooling CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_cop_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Heating CoP"
+        },
+        "value": true
+      },
+      {
+        "id": "meter_power.daily_cop_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Hot Water CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_consumed",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Cooling Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Heating Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_consumed_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Hot Water Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_produced",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_produced_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Cooling Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_produced_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Heating Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.daily_produced_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Last Daily Hot Water Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_cop",
+        "type": "checkbox",
+        "label": {
+          "en": "Total CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_cop_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_cop_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_cop_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water CoP"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_consumed",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_consumed_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water Consumption"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_produced",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_produced_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Cooling Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_produced_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Heating Production"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.total_produced_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Total Hot Water Production"
+        },
+        "value": false
+      }
+    ]
   }
 ]

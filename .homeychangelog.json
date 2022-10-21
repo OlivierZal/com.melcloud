@@ -16,5 +16,11 @@
   },
   "5.0.0": {
     "en": "Redesigned app core and improved device sync."
+  },
+  "5.1.0": {
+    "en": "Energy measurement display can be customized from settings."
+  },
+  "5.1.1": {
+    "en": "Made other capabilities available for display or not from settings."
   }
 }
