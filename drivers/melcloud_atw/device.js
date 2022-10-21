@@ -1,5 +1,25 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
+function operationModeFromDevice(value) {
+  switch (value) {
+    case 1:
+      return 'dhw';
+    case 2:
+      return 'heating';
+    case 3:
+      return 'cooling';
+    case 4:
+      return 'defrost';
+    case 5:
+      return 'standby';
+    case 6:
+      return 'legionella';
+    case 0:
+    default:
+      return 'idle';
+  }
+}
+
 class MELCloudAtwDevice extends Homey.Device {
   /* eslint-disable no-await-in-loop, no-restricted-syntax */
   async handleCapabilities() {
@@ -250,7 +270,7 @@ class MELCloudAtwDevice extends Homey.Device {
     await this.setOrNotCapabilityValue('onoff', resultData.Power);
     await this.setOrNotCapabilityValue('onoff.forced_hot_water', resultData.ForcedHotWaterMode);
     await this.setOrNotCapabilityValue('eco_hot_water', resultData.EcoHotWater);
-    await this.setOrNotCapabilityValue('operation_mode_state', String(resultData.OperationMode));
+    await this.setOrNotCapabilityValue('operation_mode_state', operationModeFromDevice(resultData.OperationMode));
     await this.setOrNotCapabilityValue('measure_temperature', resultData.RoomTemperatureZone1);
     await this.setOrNotCapabilityValue('measure_temperature.outdoor', resultData.OutdoorTemperature);
     await this.setOrNotCapabilityValue('measure_temperature.tank_water', resultData.TankWaterTemperature);

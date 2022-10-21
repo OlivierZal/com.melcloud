@@ -10,43 +10,43 @@
   "uiQuickAction": false,
   "values": [
     {
-      "id": "0",
+      "id": "idle",
       "title": {
         "en": "Idle"
       }
     },
     {
-      "id": "1",
+      "id": "dhw",
       "title": {
         "en": "Domestic House Water"
       }
     },
     {
-      "id": "2",
+      "id": "heating",
       "title": {
         "en": "Heating"
       }
     },
     {
-      "id": "3",
+      "id": "cooling",
       "title": {
         "en": "Cooling"
       }
     },
     {
-      "id": "4",
+      "id": "defrost",
       "title": {
         "en": "Defrost"
       }
     },
     {
-      "id": "5",
+      "id": "standby",
       "title": {
         "en": "Standby"
       }
     },
     {
-      "id": "6",
+      "id": "legionella",
       "title": {
         "en": "Legionella"
       }

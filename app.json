@@ -330,6 +330,136 @@
         ]
       },
       {
+        "id": "alarm_generic.booster_heater1_false",
+        "title": {
+          "en": "Booster Heater 1 turned Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater1_true",
+        "title": {
+          "en": "Booster Heater 1 turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_false",
+        "title": {
+          "en": "Booster Heater 2 turned Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_true",
+        "title": {
+          "en": "Booster Heater 2 turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_plus_false",
+        "title": {
+          "en": "Booster Heater 2 Plus turned Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_plus_true",
+        "title": {
+          "en": "Booster Heater 2 Plus turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.defrost_mode_false",
+        "title": {
+          "en": "Defrost Mode turned Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.defrost_mode_true",
+        "title": {
+          "en": "Defrost Mode turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_water.immersion_heater_false",
+        "title": {
+          "en": "Immersion Heater turned Off"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_water.immersion_heater_true",
+        "title": {
+          "en": "Immersion Heater turned On"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
         "id": "eco_hot_water_false",
         "title": {
           "en": "Eco Hot Water turned Off"
@@ -1104,43 +1234,43 @@
             "type": "dropdown",
             "values": [
               {
-                "id": "0",
+                "id": "idle",
                 "label": {
                   "en": "Idle"
                 }
               },
               {
-                "id": "1",
+                "id": "dhw",
                 "label": {
-                  "en": "Domestic Hot Water"
+                  "en": "DHW"
                 }
               },
               {
-                "id": "2",
+                "id": "heating",
                 "label": {
                   "en": "Heating"
                 }
               },
               {
-                "id": "3",
+                "id": "cooling",
                 "label": {
                   "en": "Cooling"
                 }
               },
               {
-                "id": "4",
+                "id": "defrost",
                 "label": {
                   "en": "Defrost"
                 }
               },
               {
-                "id": "5",
+                "id": "standby",
                 "label": {
                   "en": "Standby"
                 }
               },
               {
-                "id": "6",
+                "id": "legionella",
                 "label": {
                   "en": "Legionella"
                 }
@@ -3312,43 +3442,43 @@
       "uiQuickAction": false,
       "values": [
         {
-          "id": "0",
+          "id": "idle",
           "title": {
             "en": "Idle"
           }
         },
         {
-          "id": "1",
+          "id": "dhw",
           "title": {
             "en": "Domestic House Water"
           }
         },
         {
-          "id": "2",
+          "id": "heating",
           "title": {
             "en": "Heating"
           }
         },
         {
-          "id": "3",
+          "id": "cooling",
           "title": {
             "en": "Cooling"
           }
         },
         {
-          "id": "4",
+          "id": "defrost",
           "title": {
             "en": "Defrost"
           }
         },
         {
-          "id": "5",
+          "id": "standby",
           "title": {
             "en": "Standby"
           }
         },
         {
-          "id": "6",
+          "id": "legionella",
           "title": {
             "en": "Legionella"
           }
