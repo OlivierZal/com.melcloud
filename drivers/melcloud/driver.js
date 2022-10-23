@@ -5,6 +5,18 @@ class MELCloudAtaDriver extends Homey.Driver {
     this.deviceType = 0;
     this.heatPumpType = 'Ata';
 
+    this.setCapabilityMapping = {
+      onoff: ['Power', 0x1],
+      operation_mode: ['OperationMode', 0x2],
+      target_temperature: ['SetTemperature', 0x4],
+      fan_power: ['SetFanSpeed', 0x8],
+      vertical: ['VaneVertical', 0x10],
+      horizontal: ['VaneHorizontal', 0x100],
+    };
+    this.getCapabilityMapping = {
+      measure_temperature: 'RoomTemperature',
+    };
+
     // Condition flowcards
     this.homey.flow
       .getConditionCard('operation_mode_condition')
@@ -65,6 +77,17 @@ class MELCloudAtaDriver extends Homey.Driver {
   onPair(session) {
     session.setHandler('login', async (data) => this.homey.app.login(data.username, data.password));
     session.setHandler('list_devices', async () => this.discoverDevices());
+  }
+
+  getCapabilityTag(capability) {
+    if (capability in this.getCapabilityMapping) {
+      return this.getCapabilityMapping[capability];
+    }
+    return this.setCapabilityMapping[capability][0];
+  }
+
+  getCapabilityEffectiveFlag(capability) {
+    return this.setCapabilityMapping[capability][1];
   }
 }
 

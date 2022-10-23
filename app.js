@@ -93,6 +93,19 @@ class MELCloudApp extends Homey.App {
     return deviceList;
   }
 
+  async getDeviceFromList(device) {
+    const data = device.getData();
+    const deviceList = await this.listDevices(device.driver);
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const deviceFromList of deviceList) {
+      if (deviceFromList.DeviceID === data.id && deviceFromList.BuildingID === data.buildingid) {
+        return deviceFromList;
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
+    return null;
+  }
+
   async getDevice(device) {
     let resultData = {};
     const data = device.getData();
@@ -193,6 +206,82 @@ class MELCloudApp extends Homey.App {
       }
     }
     return reportData;
+  }
+
+  async syncDataFromDevice(device) {
+    this.homey.clearTimeout(device.syncTimeout);
+
+    const resultData = await this.getDevice(device);
+
+    await this.updateCapabilities(device, resultData);
+  }
+
+  async syncDataToDevice(device, updateJson) {
+    this.homey.clearTimeout(device.syncTimeout);
+
+    const data = device.getData();
+    const json = {
+      DeviceID: data.id,
+      EffectiveFlags: 0,
+      HasPendingCommand: true,
+    };
+    Object.keys(device.driver.setCapabilityMapping).forEach((capability) => {
+      if (device.hasCapability(capability)) {
+        if (capability in updateJson) {
+          // eslint-disable-next-line no-bitwise
+          json.EffectiveFlags |= device.driver.getCapabilityEffectiveFlag(capability);
+          json[
+            device.driver.getCapabilityTag(capability)
+          ] = device.getCapabilityValueToDevice(capability, updateJson[capability]);
+        } else {
+          json[
+            device.driver.getCapabilityTag(capability)
+          ] = device.getCapabilityValueToDevice(capability);
+        }
+      }
+    });
+    const resultData = await this.setDevice(device, json);
+
+    await this.updateCapabilities(device, resultData);
+  }
+
+  async updateCapabilities(device, resultData) {
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const capability in device.driver.setCapabilityMapping) {
+      if (!resultData.EffectiveFlags
+          // eslint-disable-next-line no-bitwise
+          || device.driver.getCapabilityEffectiveFlag(capability) & resultData.EffectiveFlags) {
+        await device.setCapabilityValueFromDevice(
+          capability,
+          resultData[device.driver.getCapabilityTag(capability)],
+        );
+      }
+    }
+
+    for (const capability in device.driver.getCapabilityMapping) {
+      if (Object.prototype.hasOwnProperty.call(device.driver.getCapabilityMapping, capability)) {
+        await device.setCapabilityValueFromDevice(
+          capability,
+          resultData[device.driver.getCapabilityTag(capability)],
+        );
+      }
+    }
+
+    let deviceFromList;
+    if (device.driver.listCapabilityMapping) {
+      deviceFromList = await this.getDeviceFromList(device);
+      for (const capability in device.driver.listCapabilityMapping) {
+        if (Object.prototype.hasOwnProperty.call(device.driver.listCapabilityMapping, capability)) {
+          await device.setCapabilityValueFromDevice(
+            capability,
+            deviceFromList.Device[device.driver.getCapabilityTag(capability)],
+          );
+        }
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
+
+    await device.endSyncData(deviceFromList);
   }
 }
 
