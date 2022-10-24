@@ -25,5 +25,8 @@
   },
   "5.1.2": {
     "en": "Added missing triggers."
+  },
+  "5.2.0": {
+    "en": "Improved sync to avoid overlaps with other sources."
   }
 }
