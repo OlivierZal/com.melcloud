@@ -218,19 +218,21 @@ class MELCloudAtwDevice extends Homey.Device {
   }
 
   async endSyncData(deviceFromList) {
-    const store = this.getStore();
+    if (deviceFromList) {
+      const store = this.getStore();
 
-    let hasStoreChanged = false;
-    if (deviceFromList.Device.CanCool !== store.canCool) {
-      await this.setStoreValue('canCool', deviceFromList.Device.CanCool);
-      hasStoreChanged = true;
-    }
-    if (deviceFromList.Device.HasZone2 !== store.hasZone2) {
-      await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2);
-      hasStoreChanged = true;
-    }
-    if (hasStoreChanged) {
-      await this.handleCapabilities();
+      let hasStoreChanged = false;
+      if (deviceFromList.Device.CanCool !== store.canCool) {
+        await this.setStoreValue('canCool', deviceFromList.Device.CanCool);
+        hasStoreChanged = true;
+      }
+      if (deviceFromList.Device.HasZone2 !== store.hasZone2) {
+        await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2);
+        hasStoreChanged = true;
+      }
+      if (hasStoreChanged) {
+        await this.handleCapabilities();
+      }
     }
 
     const interval = this.getSetting('interval');
