@@ -2329,7 +2329,7 @@
         },
         "target_temperature": {
           "min": 10,
-          "max": 31
+          "max": 38
         },
         "thermostat_mode": {
           "insights": true,
@@ -2379,8 +2379,8 @@
               "label": {
                 "en": "minutes"
               },
-              "value": 15,
-              "min": 1,
+              "value": 5,
+              "min": 3,
               "max": 60
             }
           ]
@@ -2886,7 +2886,7 @@
                 "en": "minutes"
               },
               "value": 5,
-              "min": 1,
+              "min": 3,
               "max": 60
             }
           ]

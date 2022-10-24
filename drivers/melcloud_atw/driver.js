@@ -5,6 +5,40 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.deviceType = 1;
     this.heatPumpType = 'Atw';
 
+    this.setCapabilityMapping = {
+      onoff: ['Power', 0x1],
+      'operation_mode_zone.zone1': ['OperationModeZone1', 0x8],
+      'operation_mode_zone_with_cool.zone1': ['OperationModeZone1', 0x8],
+      'operation_mode_zone.zone2': ['OperationModeZone2', 0x10],
+      'operation_mode_zone_with_cool.zone2': ['OperationModeZone2', 0x10],
+      'onoff.forced_hot_water': ['ForcedHotWaterMode', 0x10000],
+      target_temperature: ['SetTemperatureZone1', 0x200000080],
+      'target_temperature.zone2': ['SetTemperatureZone2', 0x800000200],
+      'target_temperature.zone1_flow_cool': ['SetCoolFlowTemperatureZone1', 0x1000000000000],
+      'target_temperature.zone1_flow_heat': ['SetHeatFlowTemperatureZone1', 0x1000000000000],
+      'target_temperature.zone2_flow_cool': ['SetCoolFlowTemperatureZone2', 0x1000000000000],
+      'target_temperature.zone2_flow_heat': ['SetHeatFlowTemperatureZone2', 0x1000000000000],
+      'target_temperature.tank_water': ['SetTankWaterTemperature', 0x1000000000020],
+    };
+    this.getCapabilityMapping = {
+      eco_hot_water: 'EcoHotWater',
+      measure_temperature: 'RoomTemperatureZone1',
+      'measure_temperature.zone2': 'RoomTemperatureZone2',
+      'measure_temperature.outdoor': 'OutdoorTemperature',
+      'measure_temperature.tank_water': 'TankWaterTemperature',
+      operation_mode_state: 'OperationMode',
+    };
+    this.listCapabilityMapping = {
+      'alarm_generic.booster_heater1': 'BoosterHeater1Status',
+      'alarm_generic.booster_heater2': 'BoosterHeater2Status',
+      'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
+      'alarm_generic.defrost_mode': 'DefrostMode',
+      'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
+      'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
+      'measure_temperature.flow': 'FlowTemperature',
+      'measure_temperature.return': 'ReturnTemperature',
+    };
+
     this.atwCapabilities = [
       'measure_temperature',
       'measure_temperature.outdoor',
@@ -118,7 +152,7 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('operation_mode_zone1_with_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone1(args.operation_mode_zone);
+        await args.device.onCapabilityOperationModeZone1WithCool(args.operation_mode_zone);
       });
 
     this.homey.flow
@@ -130,7 +164,7 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('operation_mode_zone2_with_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone2(args.operation_mode_zone);
+        await args.device.onCapabilityOperationModeZone2WithCool(args.operation_mode_zone);
       });
 
     this.homey.flow
@@ -222,6 +256,20 @@ class MELCloudAtwDriver extends Homey.Driver {
   onPair(session) {
     session.setHandler('login', async (data) => this.homey.app.login(data.username, data.password));
     session.setHandler('list_devices', async () => this.discoverDevices());
+  }
+
+  getCapabilityTag(capability) {
+    if (capability in this.getCapabilityMapping) {
+      return this.getCapabilityMapping[capability];
+    }
+    if (capability in this.listCapabilityMapping) {
+      return this.listCapabilityMapping[capability];
+    }
+    return this.setCapabilityMapping[capability][0];
+  }
+
+  getCapabilityEffectiveFlag(capability) {
+    return this.setCapabilityMapping[capability][1];
   }
 }
 
