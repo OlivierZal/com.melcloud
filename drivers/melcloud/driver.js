@@ -6,12 +6,12 @@ class MELCloudAtaDriver extends Homey.Driver {
     this.heatPumpType = 'Ata';
 
     this.setCapabilityMapping = {
-      onoff: ['Power', 0x1],
-      operation_mode: ['OperationMode', 0x2],
-      target_temperature: ['SetTemperature', 0x4],
-      fan_power: ['SetFanSpeed', 0x8],
-      vertical: ['VaneVertical', 0x10],
-      horizontal: ['VaneHorizontal', 0x100],
+      onoff: ['Power', BigInt(0x1)],
+      operation_mode: ['OperationMode', BigInt(0x2)],
+      target_temperature: ['SetTemperature', BigInt(0x4)],
+      fan_power: ['SetFanSpeed', BigInt(0x8)],
+      vertical: ['VaneVertical', BigInt(0x10)],
+      horizontal: ['VaneHorizontal', BigInt(0x100)],
     };
     this.getCapabilityMapping = {
       measure_temperature: 'RoomTemperature',

@@ -222,14 +222,14 @@ class MELCloudApp extends Homey.App {
     const data = device.getData();
     const json = {
       DeviceID: data.id,
-      EffectiveFlags: 0,
       HasPendingCommand: true,
     };
+    let effectiveFlags = BigInt(0);
     Object.keys(device.driver.setCapabilityMapping).forEach((capability) => {
       if (device.hasCapability(capability)) {
         if (capability in updateJson) {
           // eslint-disable-next-line no-bitwise
-          json.EffectiveFlags |= device.driver.getCapabilityEffectiveFlag(capability);
+          effectiveFlags |= device.driver.getCapabilityEffectiveFlag(capability);
           json[
             device.driver.getCapabilityTag(capability)
           ] = device.getCapabilityValueToDevice(capability, updateJson[capability]);
@@ -240,6 +240,7 @@ class MELCloudApp extends Homey.App {
         }
       }
     });
+    json.EffectiveFlags = Number(effectiveFlags);
     const resultData = await this.setDevice(device, json);
 
     await this.updateCapabilities(device, resultData);
@@ -248,9 +249,10 @@ class MELCloudApp extends Homey.App {
   async updateCapabilities(device, resultData) {
     /* eslint-disable no-await-in-loop, no-restricted-syntax */
     for (const capability in device.driver.setCapabilityMapping) {
-      if (!resultData.EffectiveFlags
-          // eslint-disable-next-line no-bitwise
-          || device.driver.getCapabilityEffectiveFlag(capability) & resultData.EffectiveFlags) {
+      if (!resultData.EffectiveFlags || (
+        // eslint-disable-next-line no-bitwise
+        device.driver.getCapabilityEffectiveFlag(capability) & BigInt(resultData.EffectiveFlags))
+      ) {
         await device.setCapabilityValueFromDevice(
           capability,
           resultData[device.driver.getCapabilityTag(capability)],

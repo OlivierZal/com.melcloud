@@ -6,19 +6,19 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.heatPumpType = 'Atw';
 
     this.setCapabilityMapping = {
-      onoff: ['Power', 0x1],
-      'operation_mode_zone.zone1': ['OperationModeZone1', 0x8],
-      'operation_mode_zone_with_cool.zone1': ['OperationModeZone1', 0x8],
-      'operation_mode_zone.zone2': ['OperationModeZone2', 0x10],
-      'operation_mode_zone_with_cool.zone2': ['OperationModeZone2', 0x10],
-      'onoff.forced_hot_water': ['ForcedHotWaterMode', 0x10000],
-      target_temperature: ['SetTemperatureZone1', 0x200000080],
-      'target_temperature.zone2': ['SetTemperatureZone2', 0x800000200],
-      'target_temperature.zone1_flow_cool': ['SetCoolFlowTemperatureZone1', 0x1000000000000],
-      'target_temperature.zone1_flow_heat': ['SetHeatFlowTemperatureZone1', 0x1000000000000],
-      'target_temperature.zone2_flow_cool': ['SetCoolFlowTemperatureZone2', 0x1000000000000],
-      'target_temperature.zone2_flow_heat': ['SetHeatFlowTemperatureZone2', 0x1000000000000],
-      'target_temperature.tank_water': ['SetTankWaterTemperature', 0x1000000000020],
+      onoff: ['Power', BigInt(0x1)],
+      'operation_mode_zone.zone1': ['OperationModeZone1', BigInt(0x8)],
+      'operation_mode_zone_with_cool.zone1': ['OperationModeZone1', BigInt(0x8)],
+      'operation_mode_zone.zone2': ['OperationModeZone2', BigInt(0x10)],
+      'operation_mode_zone_with_cool.zone2': ['OperationModeZone2', BigInt(0x10)],
+      'onoff.forced_hot_water': ['ForcedHotWaterMode', BigInt(0x10000)],
+      target_temperature: ['SetTemperatureZone1', BigInt(0x200000080)],
+      'target_temperature.zone2': ['SetTemperatureZone2', BigInt(0x800000200)],
+      'target_temperature.zone1_flow_cool': ['SetCoolFlowTemperatureZone1', BigInt(0x1000000000000)],
+      'target_temperature.zone1_flow_heat': ['SetHeatFlowTemperatureZone1', BigInt(0x1000000000000)],
+      'target_temperature.zone2_flow_cool': ['SetCoolFlowTemperatureZone2', BigInt(0x1000000000000)],
+      'target_temperature.zone2_flow_heat': ['SetHeatFlowTemperatureZone2', BigInt(0x1000000000000)],
+      'target_temperature.tank_water': ['SetTankWaterTemperature', BigInt(0x1000000000020)],
     };
     this.getCapabilityMapping = {
       eco_hot_water: 'EcoHotWater',
