@@ -353,7 +353,7 @@ class MELCloudAtwDevice extends Homey.Device {
       /* eslint-disable no-await-in-loop, no-restricted-syntax */
       for (const capability of event.changedKeys) {
         if (!capability.startsWith('meter_power')) {
-          await this.syncDataFromDevice(this);
+          await this.homey.app.syncDataFromDevice(this);
           break;
         }
       }
