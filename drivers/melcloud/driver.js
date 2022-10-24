@@ -32,7 +32,7 @@ class MELCloudAtaDriver extends Homey.Driver {
 
     this.homey.flow
       .getConditionCard('horizontal_condition')
-      .registerRunListener((args) => args.hotizontal === args.device.getCapabilityValue('horizontal'));
+      .registerRunListener((args) => args.horizontal === args.device.getCapabilityValue('horizontal'));
 
     // Action flowcards
     this.homey.flow
@@ -56,7 +56,7 @@ class MELCloudAtaDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('horizontal_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityVaneHorizontal(args.vertical);
+        await args.device.onCapabilityVaneHorizontal(args.horizontal);
       });
   }
 
