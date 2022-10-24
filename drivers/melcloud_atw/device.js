@@ -144,12 +144,7 @@ class MELCloudAtwDevice extends Homey.Device {
   async onInit() {
     const store = this.getStore();
 
-    await this.setWarning(null);
-    if (!store.warnedAboutSettings) {
-      await this.setWarning('NEW: customize your dashboard from the settings!');
-      await this.setStoreValue('warnedAboutSettings', true);
-      await this.setWarning(null);
-    }
+    await this.setWarning('NEW: customize your dashboard from the settings!');
 
     await this.handleCapabilities();
 

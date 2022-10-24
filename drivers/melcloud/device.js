@@ -148,7 +148,7 @@ class MELCloudAtaDevice extends Homey.Device {
   /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
   async onInit() {
-    await this.setWarning(null);
+    await this.setWarning('Your app has been optimized! You may need to recreate some flow cards');
 
     await this.handleCapabilities();
 
