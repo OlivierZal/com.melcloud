@@ -31,5 +31,8 @@
   },
   "5.2.1": {
     "en": "Fixed bugs, including horizontal vane control and reports not processed daily."
+  },
+  "5.2.2": {
+    "en": "Fixed bugs."
   }
 }
