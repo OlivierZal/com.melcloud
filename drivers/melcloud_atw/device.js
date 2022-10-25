@@ -201,9 +201,9 @@ class MELCloudAtwDevice extends Homey.Device {
     }
     /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
+    this.log(this.getName(), '- Energy reports have been processed');
     this.reportTimeout = this.homey
       .setTimeout(this.runEnergyReports.bind(this), 24 * 60 * 60 * 1000);
-    this.log(`\`${this.getName()}\`: energy reports have been processed`);
   }
 
   async endSyncData(deviceFromList) {
@@ -227,7 +227,7 @@ class MELCloudAtwDevice extends Homey.Device {
     const interval = this.getSetting('interval');
     this.syncTimeout = this.homey
       .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, interval * 60 * 1000);
-    this.log(`\`${this.getName()}\`: sync from device has been completed, next one in ${interval} minutes`);
+    this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
   async onCapabilityOnoff(value) {
@@ -318,15 +318,15 @@ class MELCloudAtwDevice extends Homey.Device {
       }
       await this.setOrNotCapabilityValue(capability, newValue);
     } catch (error) {
-      this.error(`\`${this.getName()}\`: capability \`${capability}\` cannot be set from \`${error.message}\``);
+      this.error(this.getName(), '-', capability, 'cannot be set from', error.message);
     }
   }
 
   async setOrNotCapabilityValue(capability, value) {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
-        .then(this.log(`\`${this.getName()}\`: capability \`${capability}\` is \`${value}\``))
-        .catch((error) => this.error(`\`${this.getName()}\`: ${error.message}`));
+        .then(this.log(this.getName(), '-', capability, 'is', value))
+        .catch((error) => this.error(this.getName(), '-', error.message));
     }
   }
 
