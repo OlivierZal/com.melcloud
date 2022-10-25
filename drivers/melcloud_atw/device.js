@@ -335,38 +335,28 @@ class MELCloudAtwDevice extends Homey.Device {
   }
 
   async onSettings(event) {
-    if (event.changedKeys.includes('interval')) {
-      this.homey.clearTimeout(this.syncTimeout);
-
-      this.homey.app.syncDataFromDevice(this);
-
-      const { interval } = event.newSettings;
-      this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, interval * 60 * 1000);
-      this.log(`\`${this.getName()}\`: sync from device has been completed, sync from device in ${interval} minutes`);
-    }
-
     if (!event.changedKeys.includes('interval') || event.changedKeys.length > 1) {
       await this.handleDashboardCapabilities(event.changedKeys, event.newSettings);
       await this.setWarning('Exit device and return to refresh your dashboard');
-
-      /* eslint-disable no-await-in-loop, no-restricted-syntax */
-      for (const capability of event.changedKeys) {
-        if (!capability.startsWith('meter_power')) {
-          await this.homey.app.syncDataFromDevice(this);
-          break;
-        }
-      }
-      for (const capability of event.changedKeys) {
-        if (capability.startsWith('meter_power')) {
-          await this.runEnergyReports();
-          break;
-        }
-      }
-      /* eslint-enable no-await-in-loop, no-restricted-syntax */
-
       await this.setWarning(null);
     }
+
+    let hasReported = false;
+    let hasSynced = false;
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const capability of event.changedKeys) {
+      if (capability.startsWith('meter_power')) {
+        if (!hasReported) {
+          await this.runEnergyReports();
+          hasReported = true;
+        }
+      } else if (!hasSynced) {
+        this.syncTimeout = this.homey
+          .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 5 * 1000);
+        hasSynced = true;
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
   }
 
   onDeleted() {

@@ -297,16 +297,10 @@ class MELCloudAtaDevice extends Homey.Device {
     }
   }
 
-  onSettings(event) {
+  async onSettings(event) {
     if (event.changedKeys.includes('interval')) {
-      this.homey.clearTimeout(this.syncTimeout);
-
-      this.homey.app.syncDataFromDevice(this);
-
-      const { interval } = event.newSettings;
       this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, interval * 60 * 1000);
-      this.log(`\`${this.getName()}\`: sync from device has been completed, sync from device in ${interval} minutes`);
+        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 5 * 1000);
     }
   }
 
