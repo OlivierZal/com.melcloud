@@ -22,7 +22,7 @@ class MELCloudApp extends Homey.App {
         this.log('Login to MELCloud...');
         response = await http.post(options).then((result) => {
           if (result.response.statusCode !== 200) {
-            throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+            throw new Error(`Status Code: ${result.response.statusCode}`);
           }
           this.log(result.data);
           if (result.data.ErrorMessage) {
@@ -31,9 +31,8 @@ class MELCloudApp extends Homey.App {
           this.homey.settings.set('ContextKey', result.data.LoginData.ContextKey);
           return true;
         });
-        this.log('Login to MELCloud: authentication has been completed');
       } catch (error) {
-        this.error(`Login to MELCloud: a problem occurred (${error.message})`);
+        this.error('Login to MELCloud:', error.message);
       }
     }
     return response;
@@ -50,8 +49,9 @@ class MELCloudApp extends Homey.App {
       driver.log('Searching for devices...');
       deviceList = await http.get(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+          throw new Error(`Status Code: ${result.response.statusCode}`);
         }
+        driver.log(result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
@@ -86,9 +86,8 @@ class MELCloudApp extends Homey.App {
         });
         return devices;
       });
-      driver.log('Searching for devices: search has been completed');
     } catch (error) {
-      driver.error(`Searching for devices: a problem occurred (${error.message})`);
+      driver.error('Searching for devices:', error.message);
     }
     return deviceList;
   }
@@ -96,13 +95,14 @@ class MELCloudApp extends Homey.App {
   async getDeviceFromList(device) {
     const data = device.getData();
     const deviceList = await this.listDevices(device.driver);
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    /* eslint-disable no-restricted-syntax */
     for (const deviceFromList of deviceList) {
       if (deviceFromList.DeviceID === data.id && deviceFromList.BuildingID === data.buildingid) {
         return deviceFromList;
       }
     }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
+    /* eslint-enable no-restricted-syntax */
+    device.error(device.getName(), '- Not found while searching for devices');
     return null;
   }
 
@@ -115,10 +115,10 @@ class MELCloudApp extends Homey.App {
       json: true,
     };
     try {
-      device.log(`\`${device.getName()}\`: syncing from device...`);
+      device.log(device.getName(), '- Syncing from device...');
       resultData = await http.get(options).then(async (result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+          throw new Error(`Status Code: ${result.response.statusCode}`);
         }
         device.log(result.data);
         if (result.data.ErrorMessage) {
@@ -128,9 +128,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(`\`${device.getName()}\`: device not found while syncing from device`);
+        device.error(device.getName(), '- Not found while syncing from device');
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while syncing from device (${error.message})`);
+        device.error(device.getName(), '- Syncing from device:', error.message);
       }
     }
     return resultData;
@@ -144,12 +144,12 @@ class MELCloudApp extends Homey.App {
       json,
     };
     try {
-      device.log(`\`${device.getName()}\`: syncing with device...`);
+      device.log(device.getName(), '- Syncing with device...');
+      device.log(json);
       resultData = await http.post(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+          throw new Error(`Status Code: ${result.response.statusCode}`);
         }
-        device.log(json);
         device.log(result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
@@ -158,9 +158,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(`\`${device.getName()}\`: device not found while syncing with device`);
+        device.error(device.getName(), '- Not found while syncing with device');
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while syncing with device (${error.message})`);
+        device.error(device.getName(), '- Syncing with device:', error.message);
       }
     }
     return resultData;
@@ -187,10 +187,10 @@ class MELCloudApp extends Homey.App {
     const period = daily ? 'daily' : 'total';
 
     try {
-      device.log(`\`${device.getName()}\`: fetching ${period} energy report...`);
+      device.log(device.getName(), '- Fetching', period, 'energy report...');
       reportData = await http.post(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+          throw new Error(`Status Code: ${result.response.statusCode}`);
         }
         device.log(result.data);
         if (result.data.ErrorMessage) {
@@ -200,9 +200,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(`\`${device.getName()}\`: device not found while fetching ${period} energy report`);
+        device.error(device.getName(), '- Not found while fetching', period, 'energy report');
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while fetching ${period} energy report (${error.message})`);
+        device.error(device.getName(), '- Fetching', period, 'energy report:', error.message);
       }
     }
     return reportData;
