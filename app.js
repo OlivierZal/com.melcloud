@@ -33,7 +33,7 @@ class MELCloudApp extends Homey.App {
         });
         this.log('Login to MELCloud: authentication has been completed');
       } catch (error) {
-        this.error(`Login to MELCloud: a problem occurred (${error})`);
+        this.error(`Login to MELCloud: a problem occurred (${error.message})`);
       }
     }
     return response;
@@ -88,7 +88,7 @@ class MELCloudApp extends Homey.App {
       });
       driver.log('Searching for devices: search has been completed');
     } catch (error) {
-      driver.error(`Searching for devices: a problem occurred (${error})`);
+      driver.error(`Searching for devices: a problem occurred (${error.message})`);
     }
     return deviceList;
   }
@@ -130,7 +130,7 @@ class MELCloudApp extends Homey.App {
       if (error instanceof SyntaxError) {
         device.error(`\`${device.getName()}\`: device not found while syncing from device`);
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while syncing from device (${error})`);
+        device.error(`\`${device.getName()}\`: a problem occurred while syncing from device (${error.message})`);
       }
     }
     return resultData;
@@ -160,7 +160,7 @@ class MELCloudApp extends Homey.App {
       if (error instanceof SyntaxError) {
         device.error(`\`${device.getName()}\`: device not found while syncing with device`);
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while syncing with device (${error})`);
+        device.error(`\`${device.getName()}\`: a problem occurred while syncing with device (${error.message})`);
       }
     }
     return resultData;
@@ -202,7 +202,7 @@ class MELCloudApp extends Homey.App {
       if (error instanceof SyntaxError) {
         device.error(`\`${device.getName()}\`: device not found while fetching ${period} energy report`);
       } else {
-        device.error(`\`${device.getName()}\`: a problem occurred while fetching ${period} energy report (${error})`);
+        device.error(`\`${device.getName()}\`: a problem occurred while fetching ${period} energy report (${error.message})`);
       }
     }
     return reportData;

@@ -11,8 +11,9 @@ function operationModeToDevice(value) {
     case 'fan':
       return 7;
     case 'auto':
-    default:
       return 8;
+    default:
+      return null;
   }
 }
 
@@ -35,6 +36,8 @@ function operationModeFromDevice(value) {
 
 function verticalToDevice(value) {
   switch (value) {
+    case 'auto':
+      return 0;
     case 'top':
       return 1;
     case 'middletop':
@@ -47,9 +50,8 @@ function verticalToDevice(value) {
       return 5;
     case 'swing':
       return 7;
-    case 'auto':
     default:
-      return 0;
+      return null;
   }
 }
 
@@ -76,6 +78,8 @@ function verticalFromDevice(value) {
 
 function horizontalToDevice(value) {
   switch (value) {
+    case 'auto':
+      return 0;
     case 'left':
       return 1;
     case 'middleleft':
@@ -90,9 +94,8 @@ function horizontalToDevice(value) {
       return 8;
     case 'swing':
       return 12;
-    case 'auto':
     default:
-      return 0;
+      return null;
   }
 }
 
@@ -277,7 +280,7 @@ class MELCloudAtaDevice extends Homey.Device {
       }
       await this.setOrNotCapabilityValue(capability, newValue);
     } catch (error) {
-      this.error(`\`${this.getName()}\`: \`${error}\` is invalid for capability \`${capability}\``);
+      this.error(`\`${this.getName()}\`: capability \`${capability}\` cannot be set from \`${error.message}\``);
     }
   }
 
@@ -285,7 +288,7 @@ class MELCloudAtaDevice extends Homey.Device {
     if (value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
         .then(this.log(`\`${this.getName()}\`: capability \`${capability}\` is \`${value}\``))
-        .catch((error) => this.error(`\`${this.getName()}\`: capability \`${capability}\` has not been set to \`${value}\` (${error})`));
+        .catch((error) => this.error(`\`${this.getName()}\`: ${error.message}`));
     }
   }
 

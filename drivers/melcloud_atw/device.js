@@ -318,7 +318,7 @@ class MELCloudAtwDevice extends Homey.Device {
       }
       await this.setOrNotCapabilityValue(capability, newValue);
     } catch (error) {
-      this.error(`\`${this.getName()}\`: \`${error}\` is invalid for capability \`${capability}\``);
+      this.error(`\`${this.getName()}\`: capability \`${capability}\` cannot be set from \`${error.message}\``);
     }
   }
 
@@ -326,7 +326,7 @@ class MELCloudAtwDevice extends Homey.Device {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
         .then(this.log(`\`${this.getName()}\`: capability \`${capability}\` is \`${value}\``))
-        .catch((error) => this.error(`\`${this.getName()}\`: capability \`${capability}\` has not been set to \`${value}\` (${error})`));
+        .catch((error) => this.error(`\`${this.getName()}\`: ${error.message}`));
     }
   }
 
