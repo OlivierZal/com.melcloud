@@ -11,7 +11,7 @@
         "label": {
           "en": "minutes"
         },
-        "value": 5,
+        "value": 15,
         "min": 3,
         "max": 60
       }
