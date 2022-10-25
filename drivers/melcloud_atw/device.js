@@ -1,12 +1,5 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
-function targetTemperatureToDevice(value) {
-  if (value > 30) {
-    return 30;
-  }
-  return value;
-}
-
 function operationModeFromDevice(value) {
   switch (value) {
     case 1:
@@ -294,8 +287,6 @@ class MELCloudAtwDevice extends Homey.Device {
       newValue = this.getCapabilityValue(capability);
     }
     switch (capability) {
-      case 'target_temperature':
-        return targetTemperatureToDevice(newValue);
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
