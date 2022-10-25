@@ -37,9 +37,8 @@ function operationModeFromDevice(value) {
     case 7:
       return 'fan';
     case 8:
-      return 'auto';
     default:
-      throw new Error(`invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
@@ -65,8 +64,6 @@ function verticalToDevice(value) {
 
 function verticalFromDevice(value) {
   switch (value) {
-    case 0:
-      return 'auto';
     case 1:
       return 'top';
     case 2:
@@ -79,8 +76,9 @@ function verticalFromDevice(value) {
       return 'bottom';
     case 7:
       return 'swing';
+    case 0:
     default:
-      throw new Error(`invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
@@ -108,8 +106,6 @@ function horizontalToDevice(value) {
 
 function horizontalFromDevice(value) {
   switch (value) {
-    case 0:
-      return 'auto';
     case 1:
       return 'left';
     case 2:
@@ -124,8 +120,9 @@ function horizontalFromDevice(value) {
       return 'split';
     case 12:
       return 'swing';
+    case 0:
     default:
-      throw new Error(`invalid value \`${value}\``);
+      return 'auto';
   }
 }
 
