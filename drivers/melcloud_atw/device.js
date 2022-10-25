@@ -2,6 +2,8 @@ const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
 function operationModeFromDevice(value) {
   switch (value) {
+    case 0:
+      return 'idle';
     case 1:
       return 'dhw';
     case 2:
@@ -14,9 +16,8 @@ function operationModeFromDevice(value) {
       return 'standby';
     case 6:
       return 'legionella';
-    case 0:
     default:
-      return 'idle';
+      throw new Error(value);
   }
 }
 
@@ -298,23 +299,27 @@ class MELCloudAtwDevice extends Homey.Device {
   }
 
   async setCapabilityValueFromDevice(capability, value) {
-    let newValue = value;
-    switch (capability) {
-      case 'alarm_generic.defrost_mode':
-        newValue = Boolean(newValue);
-        break;
-      case 'operation_mode_state':
-        newValue = operationModeFromDevice(newValue);
-        break;
-      case 'operation_mode_zone.zone1':
-      case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool.zone1':
-      case 'operation_mode_zone_with_cool.zone2':
-        newValue = String(newValue);
-        break;
-      default:
+    try {
+      let newValue = value;
+      switch (capability) {
+        case 'alarm_generic.defrost_mode':
+          newValue = Boolean(newValue);
+          break;
+        case 'operation_mode_state':
+          newValue = operationModeFromDevice(newValue);
+          break;
+        case 'operation_mode_zone.zone1':
+        case 'operation_mode_zone.zone2':
+        case 'operation_mode_zone_with_cool.zone1':
+        case 'operation_mode_zone_with_cool.zone2':
+          newValue = String(newValue);
+          break;
+        default:
+      }
+      await this.setOrNotCapabilityValue(capability, newValue);
+    } catch (error) {
+      this.error(`\`${this.getName()}\`: \`${error}\` is invalid for capability \`${capability}\``);
     }
-    await this.setOrNotCapabilityValue(capability, newValue);
   }
 
   async setOrNotCapabilityValue(capability, value) {

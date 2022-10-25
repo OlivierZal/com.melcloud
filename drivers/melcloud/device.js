@@ -27,8 +27,9 @@ function operationModeFromDevice(value) {
     case 7:
       return 'fan';
     case 8:
-    default:
       return 'auto';
+    default:
+      throw new Error(value);
   }
 }
 
@@ -54,6 +55,8 @@ function verticalToDevice(value) {
 
 function verticalFromDevice(value) {
   switch (value) {
+    case 0:
+      return 'auto';
     case 1:
       return 'top';
     case 2:
@@ -66,9 +69,8 @@ function verticalFromDevice(value) {
       return 'bottom';
     case 7:
       return 'swing';
-    case 0:
     default:
-      return 'auto';
+      throw new Error(value);
   }
 }
 
@@ -96,6 +98,8 @@ function horizontalToDevice(value) {
 
 function horizontalFromDevice(value) {
   switch (value) {
+    case 0:
+      return 'auto';
     case 1:
       return 'left';
     case 2:
@@ -110,9 +114,8 @@ function horizontalFromDevice(value) {
       return 'split';
     case 12:
       return 'swing';
-    case 0:
     default:
-      return 'auto';
+      throw new Error(value);
   }
 }
 
@@ -258,20 +261,24 @@ class MELCloudAtaDevice extends Homey.Device {
   }
 
   async setCapabilityValueFromDevice(capability, value) {
-    let newValue = value;
-    switch (capability) {
-      case 'operation_mode':
-        newValue = operationModeFromDevice(newValue);
-        break;
-      case 'vertical':
-        newValue = verticalFromDevice(newValue);
-        break;
-      case 'horizontal':
-        newValue = horizontalFromDevice(newValue);
-        break;
-      default:
+    try {
+      let newValue = value;
+      switch (capability) {
+        case 'operation_mode':
+          newValue = operationModeFromDevice(newValue);
+          break;
+        case 'vertical':
+          newValue = verticalFromDevice(newValue);
+          break;
+        case 'horizontal':
+          newValue = horizontalFromDevice(newValue);
+          break;
+        default:
+      }
+      await this.setOrNotCapabilityValue(capability, newValue);
+    } catch (error) {
+      this.error(`\`${this.getName()}\`: \`${error}\` is invalid for capability \`${capability}\``);
     }
-    await this.setOrNotCapabilityValue(capability, newValue);
   }
 
   async setOrNotCapabilityValue(capability, value) {

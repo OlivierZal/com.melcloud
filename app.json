@@ -2328,8 +2328,8 @@
           }
         },
         "target_temperature": {
-          "min": 10,
-          "max": 38
+          "min": 16,
+          "max": 31
         },
         "thermostat_mode": {
           "insights": true,
