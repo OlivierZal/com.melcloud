@@ -232,7 +232,7 @@ class MELCloudApp extends Homey.App {
           effectiveFlags |= device.driver.getCapabilityEffectiveFlag(capability);
           json[
             device.driver.getCapabilityTag(capability)
-          ] = device.getCapabilityValueToDevice(capability, updateJson[capability]);
+          ] = updateJson[capability];
         } else {
           json[
             device.driver.getCapabilityTag(capability)

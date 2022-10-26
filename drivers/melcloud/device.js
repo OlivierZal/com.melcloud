@@ -141,25 +141,30 @@ class MELCloudAtaDevice extends Homey.Device {
   /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
   async onInit() {
-    await this.setWarning('Your app has been optimized! You may need to recreate some flow cards');
+    this.updateJson = {};
 
+    await this.setWarning(null);
     await this.handleCapabilities();
 
-    this.registerCapabilityListener('onoff', await this.onCapabilityOnoff.bind(this));
-    this.registerCapabilityListener('target_temperature', await this.onCapabilityTargetTemperature.bind(this));
-    this.registerCapabilityListener('thermostat_mode', await this.onCapabilityThermostatMode.bind(this));
-    this.registerCapabilityListener('operation_mode', await this.onCapabilityOperationMode.bind(this));
-    this.registerCapabilityListener('fan_power', await this.onCapabilityFanSpeed.bind(this));
-    this.registerCapabilityListener('vertical', await this.onCapabilityVaneVertical.bind(this));
-    this.registerCapabilityListener('horizontal', await this.onCapabilityVaneHorizontal.bind(this));
+    this.registerCapabilityListener('onoff', async (value) => { await this.onCapabilityOnoff(value); });
+    this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapabilityTargetTemperature(value); });
+    this.registerCapabilityListener('thermostat_mode', async (value) => { await this.onCapabilityThermostatMode(value); });
+    this.registerCapabilityListener('operation_mode', async (value) => { await this.onCapabilityOperationMode(value); });
+    this.registerCapabilityListener('fan_power', async (value) => { await this.onCapabilityFanSpeed(value); });
+    this.registerCapabilityListener('vertical', async (value) => { await this.onCapabilityVaneVertical(value); });
+    this.registerCapabilityListener('horizontal', async (value) => { await this.onCapabilityVaneHorizontal(value); });
 
     await this.homey.app.syncDataFromDevice(this);
     await this.runEnergyReports();
+    this.reportTimeout = this.homey.setTimeout(() => {
+      this.runEnergyReports();
+      this.reportInterval = this.homey.setInterval(() => {
+        this.runEnergyReports();
+      }, 24 * 60 * 60 * 1000);
+    }, new Date().setHours(24, 0, 0, 0) - new Date().getTime());
   }
 
   async runEnergyReports() {
-    this.homey.clearTimeout(this.reportTimeout);
-
     const reportMapping = {};
     const report = {};
     report.daily = await this.homey.app.fetchEnergyReport(this, true);
@@ -184,8 +189,6 @@ class MELCloudAtaDevice extends Homey.Device {
     /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
     this.log(this.getName(), '- Energy reports have been processed');
-    this.reportTimeout = this.homey
-      .setTimeout(this.runEnergyReports.bind(this), 24 * 60 * 60 * 1000);
   }
 
   async endSyncData() {
@@ -206,44 +209,102 @@ class MELCloudAtaDevice extends Homey.Device {
   }
 
   async onCapabilityOnoff(value) {
-    await this.homey.app.syncDataToDevice(this, { onoff: value });
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityTargetTemperature(value) {
-    await this.homey.app.syncDataToDevice(this, { target_temperature: value });
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.target_temperature = this.getCapabilityValueToDevice('target_temperature', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityThermostatMode(value) {
-    const updateJson = {};
-    if ((value !== 'off') !== this.getCapabilityValue('onoff')) {
-      updateJson.onoff = value !== 'off';
-    }
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.onoff = value !== 'off';
     if (value !== 'off') {
-      updateJson.operation_mode = value;
+      this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
     }
-    if (updateJson) {
-      await this.homey.app.syncDataToDevice(this, updateJson);
-    }
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityOperationMode(value) {
+    this.homey.clearTimeout(this.syncTimeout);
+
     if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
       await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
       await this.setWarning(null);
     }
-    await this.homey.app.syncDataToDevice(this, { operation_mode: value });
+
+    this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityFanSpeed(value) {
-    await this.homey.app.syncDataToDevice(this, { fan_power: value });
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.fan_power = this.getCapabilityValueToDevice('fan_power', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityVaneVertical(value) {
-    await this.homey.app.syncDataToDevice(this, { vertical: value });
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.vertical = this.getCapabilityValueToDevice('vertical', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   async onCapabilityVaneHorizontal(value) {
-    await this.homey.app.syncDataToDevice(this, { horizontal: value });
+    this.homey.clearTimeout(this.syncTimeout);
+
+    this.updateJson.horizontal = this.getCapabilityValueToDevice('horizontal', value);
+
+    this.syncTimeout = this.homey.setTimeout(() => {
+      if (this.updateJson) {
+        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.updateJson = {};
+      }
+    }, 1 * 1000);
   }
 
   getCapabilityValueToDevice(capability, value) {
@@ -294,12 +355,14 @@ class MELCloudAtaDevice extends Homey.Device {
 
   async onSettings(event) {
     if (event.changedKeys.includes('interval')) {
+      this.homey.clearTimeout(this.syncTimeout);
       this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 5 * 1000);
+        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
     }
   }
 
   onDeleted() {
+    this.homey.clearInterval(this.reportInterval);
     this.homey.clearTimeout(this.reportTimeout);
     this.homey.clearTimeout(this.syncTimeout);
   }
