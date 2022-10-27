@@ -201,9 +201,9 @@ class MELCloudAtaDevice extends Homey.Device {
   }
 
   async updateThermostatMode(isOn, operationMode) {
-    let value = 'off';
-    if (isOn && !['dry', 'fan'].includes(operationMode)) {
-      value = operationMode;
+    let value = operationMode;
+    if (!isOn || ['dry', 'fan'].includes(operationMode)) {
+      value = 'off';
     }
     await this.setOrNotCapabilityValue('thermostat_mode', value);
   }
