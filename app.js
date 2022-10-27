@@ -209,16 +209,12 @@ class MELCloudApp extends Homey.App {
   }
 
   async syncDataFromDevice(device) {
-    this.homey.clearTimeout(device.syncTimeout);
-
     const resultData = await this.getDevice(device);
 
     await this.updateCapabilities(device, resultData);
   }
 
   async syncDataToDevice(device, updateJson) {
-    this.homey.clearTimeout(device.syncTimeout);
-
     const data = device.getData();
     const json = {
       DeviceID: data.id,
