@@ -2,18 +2,30 @@
   {
     "type": "group",
     "label": {
-      "en": "Device Update Frequency"
+      "en": "Device Options"
     },
     "children": [
       {
         "id": "interval",
         "type": "number",
         "label": {
+          "en": "Device Update Frequency"
+        },
+        "units": {
           "en": "minutes"
         },
         "value": 5,
         "min": 1,
         "max": 60
+      },
+      {
+        "id": "always_on",
+        "type": "checkbox",
+        "label": {
+          "en": "Keep Device On"
+        },
+        "value": false,
+        "hint": "Keep the device on, unless it is turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   },
