@@ -119,16 +119,17 @@ class MELCloudAtwDevice extends Homey.Device {
       }
     }
 
-    await this.handleDashboardCapabilities(this.driver.dashboardCapabilities, settings);
+    await this.handleDashboardCapabilities(settings);
   }
 
-  async handleDashboardCapabilities(capabilities, settings) {
-    for (const capability of capabilities) {
-      if (this.driver.dashboardCapabilities.includes(capability)) {
-        if (!settings[capability] && this.hasCapability(capability)) {
-          await this.removeCapability(capability);
-        } else if (settings[capability] && !this.hasCapability(capability)) {
+  async handleDashboardCapabilities(settings, capabilities) {
+    const dashboardCapabilities = capabilities ?? this.driver.dashboardAtwCapabilities;
+    for (const capability of dashboardCapabilities) {
+      if (this.driver.dashboardAtwCapabilities.includes(capability)) {
+        if (settings[capability] && !this.hasCapability(capability)) {
           await this.addCapability(capability);
+        } else if (!settings[capability] && this.hasCapability(capability)) {
+          await this.removeCapability(capability);
         }
       }
     }
@@ -136,12 +137,12 @@ class MELCloudAtwDevice extends Homey.Device {
   /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
   async onInit() {
-    this.updateJson = {};
-
     await this.setWarning(null);
-    await this.handleCapabilities();
 
     const store = this.getStore();
+    this.updateJson = {};
+    await this.handleCapabilities();
+
     this.registerCapabilityListener('onoff', async (value) => { await this.onCapabilityOnoff(value); });
     this.registerCapabilityListener('onoff.forced_hot_water', async (value) => { await this.onCapabilityForcedHotWater(value); });
     this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapabilityTargetTemperatureZone1(value); });
@@ -234,6 +235,11 @@ class MELCloudAtwDevice extends Homey.Device {
 
   async onCapabilityOnoff(value) {
     this.homey.clearTimeout(this.syncTimeout);
+
+    await this.setWarning(null);
+    if (this.getSetting('always_on')) {
+      await this.setWarning('Setting `Always On` is activated');
+    }
 
     this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value);
 
@@ -402,11 +408,10 @@ class MELCloudAtwDevice extends Homey.Device {
   }
 
   getCapabilityValueToDevice(capability, value) {
-    let newValue = value;
-    if (newValue === undefined) {
-      newValue = this.getCapabilityValue(capability);
-    }
+    const newValue = value ?? this.getCapabilityValue(capability);
     switch (capability) {
+      case 'onoff':
+        return this.getSetting('always_on') ? true : newValue;
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
@@ -423,6 +428,11 @@ class MELCloudAtwDevice extends Homey.Device {
       switch (capability) {
         case 'alarm_generic.defrost_mode':
           newValue = Boolean(newValue);
+          break;
+        case 'onoff':
+          if (this.getSetting('always_on') && !newValue) {
+            await this.setSettings({ always_on: false });
+          }
           break;
         case 'operation_mode_state':
           newValue = operationModeFromDevice(newValue);
@@ -450,29 +460,41 @@ class MELCloudAtwDevice extends Homey.Device {
   }
 
   async onSettings(event) {
-    if (!event.changedKeys.includes('interval') || event.changedKeys.length > 1) {
-      await this.handleDashboardCapabilities(event.changedKeys, event.newSettings);
-      await this.setWarning('Exit device and return to refresh your dashboard');
-      await this.setWarning(null);
-    }
+    await this.setWarning(null);
+
+    await this.handleDashboardCapabilities(event.newSettings, event.changedKeys);
 
     let hasReported = false;
     let hasSynced = false;
+    let needsSync = false;
     /* eslint-disable no-await-in-loop, no-restricted-syntax */
-    for (const capability of event.changedKeys) {
-      if (capability.startsWith('meter_power')) {
+    for (const setting of event.changedKeys) {
+      if (!['always_on', 'interval'].includes(setting)) {
+        await this.setWarning('Exit device and return to refresh your dashboard');
+      }
+      if (setting.startsWith('meter_power')) {
         if (!hasReported) {
           await this.runEnergyReports();
           hasReported = true;
         }
       } else if (!hasSynced) {
-        this.homey.clearTimeout(this.syncTimeout);
-        this.syncTimeout = this.homey
-          .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
-        hasSynced = true;
+        if (!needsSync) {
+          needsSync = true;
+        }
+        if (setting === 'always_on' && event.newSettings.always_on) {
+          await this.onCapabilityOnoff(true);
+          hasSynced = true;
+          needsSync = false;
+        }
       }
     }
     /* eslint-enable no-await-in-loop, no-restricted-syntax */
+
+    if (needsSync) {
+      this.homey.clearTimeout(this.syncTimeout);
+      this.syncTimeout = this.homey
+        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
+    }
   }
 
   onDeleted() {

@@ -2,13 +2,16 @@
   {
     "type": "group",
     "label": {
-      "en": "Device Update Frequency"
+      "en": "Device Options"
     },
     "children": [
       {
         "id": "interval",
         "type": "number",
         "label": {
+          "en": "Device Update Frequency"
+        },
+        "units": {
           "en": "minutes"
         },
         "value": 5,

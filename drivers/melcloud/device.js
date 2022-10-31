@@ -141,9 +141,9 @@ class MELCloudAtaDevice extends Homey.Device {
   /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
   async onInit() {
-    this.updateJson = {};
-
     await this.setWarning(null);
+
+    this.updateJson = {};
     await this.handleCapabilities();
 
     this.registerCapabilityListener('onoff', async (value) => { await this.onCapabilityOnoff(value); });
@@ -253,9 +253,9 @@ class MELCloudAtaDevice extends Homey.Device {
   async onCapabilityOperationMode(value) {
     this.homey.clearTimeout(this.syncTimeout);
 
+    await this.setWarning(null);
     if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
       await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
-      await this.setWarning(null);
     }
 
     this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
@@ -308,10 +308,7 @@ class MELCloudAtaDevice extends Homey.Device {
   }
 
   getCapabilityValueToDevice(capability, value) {
-    let newValue = value;
-    if (newValue === undefined) {
-      newValue = this.getCapabilityValue(capability);
-    }
+    const newValue = value ?? this.getCapabilityValue(capability);
     switch (capability) {
       case 'operation_mode':
         return operationModeToDevice(newValue);

@@ -73,7 +73,7 @@ class MELCloudAtwDriver extends Homey.Driver {
       'measure_temperature.tank_water',
       'target_temperature.tank_water',
     ];
-    this.dashboardCapabilities = [
+    this.dashboardAtwCapabilities = [
       'alarm_generic.booster_heater1',
       'alarm_generic.booster_heater2',
       'alarm_generic.booster_heater2_plus',
