@@ -43,5 +43,8 @@
   },
   "5.3.0": {
     "en": "Improved sync by agglomerating requests to MELCloud, reports will be processed every day at 0:00 AM UTC, updated some settings."
+  },
+  "5.4.0": {
+    "en": "Added back an \"Always On\" option in settings."
   }
 }
