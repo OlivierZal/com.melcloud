@@ -46,5 +46,8 @@
   },
   "5.4.0": {
     "en": "Added back an \"Always On\" option in settings."
+  },
+  "5.5.0": {
+    "en": "Refactored the application."
   }
 }

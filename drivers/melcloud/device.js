@@ -213,7 +213,7 @@ class MELCloudAtaDevice extends Homey.Device {
 
     switch (capability) {
       case 'thermostat_mode':
-        this.updateJson.onoff = value !== 'off';
+        this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value !== 'off');
         if (value !== 'off') {
           this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
         }
