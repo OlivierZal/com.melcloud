@@ -140,67 +140,67 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('onoff_forced_hot_water_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityForcedHotWater(args.onoff_forced_hot_water === 'true');
+        await args.device.onCapability('onoff.forced_hot_water', args.onoff_forced_hot_water === 'true');
       });
 
     this.homey.flow
       .getActionCard('operation_mode_zone1_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone1(args.operation_mode_zone);
+        await args.device.onCapability('operation_mode.zone1', args.operation_mode_zone);
       });
 
     this.homey.flow
       .getActionCard('operation_mode_zone1_with_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone1WithCool(args.operation_mode_zone);
+        await args.device.onCapability('operation_mode_with_cool.zone1', args.operation_mode_zone);
       });
 
     this.homey.flow
       .getActionCard('operation_mode_zone2_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone2(args.operation_mode_zone);
+        await args.device.onCapability('operation_mode.zone2', args.operation_mode_zone);
       });
 
     this.homey.flow
       .getActionCard('operation_mode_zone2_with_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationModeZone2WithCool(args.operation_mode_zone);
+        await args.device.onCapability('operation_mode_with_cool.zone2', args.operation_mode_zone);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_tank_water')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityTankWaterTemperature(args.target_temperature);
+        await args.device.onCapability('target_temperature.tank_water', args.target_temperature);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_zone2')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityTargetTemperatureZone2(args.target_temperature);
+        await args.device.onCapability('target_temperature.zone2', args.target_temperature);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_zone1_flow_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityCoolFlowTemperatureZone1(args.target_temperature);
+        await args.device.onCapability('target_temperature.zone1_flow_cool', args.target_temperature);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_zone1_flow_heat_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityHeatFlowTemperatureZone1(args.target_temperature);
+        await args.device.onCapability('target_temperature.zone1_flow_heat', args.target_temperature);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_zone2_flow_cool_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityCoolFlowTemperatureZone2(args.target_temperature);
+        await args.device.onCapability('target_temperature.zone2_flow_cool', args.target_temperature);
       });
 
     this.homey.flow
       .getActionCard('target_temperature_zone2_flow_heat_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityHeatFlowTemperatureZone2(args.target_temperature);
+        await args.device.onCapability('target_temperature.zone2_flow_heat', args.target_temperature);
       });
   }
 

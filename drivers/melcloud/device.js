@@ -146,13 +146,13 @@ class MELCloudAtaDevice extends Homey.Device {
     this.updateJson = {};
     await this.handleCapabilities();
 
-    this.registerCapabilityListener('onoff', async (value) => { await this.onCapabilityOnoff(value); });
-    this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapabilityTargetTemperature(value); });
-    this.registerCapabilityListener('thermostat_mode', async (value) => { await this.onCapabilityThermostatMode(value); });
-    this.registerCapabilityListener('operation_mode', async (value) => { await this.onCapabilityOperationMode(value); });
-    this.registerCapabilityListener('fan_power', async (value) => { await this.onCapabilityFanSpeed(value); });
-    this.registerCapabilityListener('vertical', async (value) => { await this.onCapabilityVaneVertical(value); });
-    this.registerCapabilityListener('horizontal', async (value) => { await this.onCapabilityVaneHorizontal(value); });
+    this.registerCapabilityListener('onoff', async (value) => { await this.onCapability('onoff', value); });
+    this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapability('target_temperature', value); });
+    this.registerCapabilityListener('thermostat_mode', async (value) => { await this.onCapability('thermostat_mode', value); });
+    this.registerCapabilityListener('operation_mode', async (value) => { await this.onCapability('operation_mode', value); });
+    this.registerCapabilityListener('fan_power', async (value) => { await this.onCapability('fan_power', value); });
+    this.registerCapabilityListener('vertical', async (value) => { await this.onCapability('vertical', value); });
+    this.registerCapabilityListener('horizontal', async (value) => { await this.onCapability('horizontal', value); });
 
     await this.homey.app.syncDataFromDevice(this);
     await this.runEnergyReports();
@@ -208,96 +208,26 @@ class MELCloudAtaDevice extends Homey.Device {
     await this.setOrNotCapabilityValue('thermostat_mode', value);
   }
 
-  async onCapabilityOnoff(value) {
+  async onCapability(capability, value) {
     this.homey.clearTimeout(this.syncTimeout);
 
-    this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityTargetTemperature(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.target_temperature = this.getCapabilityValueToDevice('target_temperature', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityThermostatMode(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.onoff = value !== 'off';
-    if (value !== 'off') {
-      this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
+    switch (capability) {
+      case 'thermostat_mode':
+        this.updateJson.onoff = value !== 'off';
+        if (value !== 'off') {
+          this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
+        }
+        break;
+      case 'operation_mode':
+        await this.setWarning(null);
+        if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
+          await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
+        }
+        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        break;
+      default:
+        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
     }
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityOperationMode(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    await this.setWarning(null);
-    if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
-      await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
-    }
-
-    this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityFanSpeed(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.fan_power = this.getCapabilityValueToDevice('fan_power', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityVaneVertical(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.vertical = this.getCapabilityValueToDevice('vertical', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityVaneHorizontal(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.horizontal = this.getCapabilityValueToDevice('horizontal', value);
 
     this.syncTimeout = this.homey.setTimeout(() => {
       if (this.updateJson) {

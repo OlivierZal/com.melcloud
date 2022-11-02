@@ -143,30 +143,30 @@ class MELCloudAtwDevice extends Homey.Device {
     this.updateJson = {};
     await this.handleCapabilities();
 
-    this.registerCapabilityListener('onoff', async (value) => { await this.onCapabilityOnoff(value); });
-    this.registerCapabilityListener('onoff.forced_hot_water', async (value) => { await this.onCapabilityForcedHotWater(value); });
-    this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapabilityTargetTemperatureZone1(value); });
-    this.registerCapabilityListener('target_temperature.zone1_flow_heat', async (value) => { await this.onCapabilityHeatFlowTemperatureZone1(value); });
+    this.registerCapabilityListener('onoff', async (value) => { await this.onCapability('onoff', value); });
+    this.registerCapabilityListener('onoff.forced_hot_water', async (value) => { await this.onCapability('onoff.forced_hot_water', value); });
+    this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapability('target_temperature', value); });
+    this.registerCapabilityListener('target_temperature.zone1_flow_heat', async (value) => { await this.onCapability('target_temperature.zone1_flow_heat', value); });
 
     if (store.canCool) {
-      this.registerCapabilityListener('operation_mode_zone_with_cool.zone1', async (value) => { await this.onCapabilityOperationModeZone1WithCool(value); });
-      this.registerCapabilityListener('target_temperature.zone1_flow_cool', async (value) => { await this.onCapabilityCoolFlowTemperatureZone1(value); });
+      this.registerCapabilityListener('operation_mode_zone_with_cool.zone1', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone1', value); });
+      this.registerCapabilityListener('target_temperature.zone1_flow_cool', async (value) => { await this.onCapability('target_temperature.zone1_flow_cool', value); });
     } else {
-      this.registerCapabilityListener('operation_mode_zone.zone1', async (value) => { await this.onCapabilityOperationModeZone1(value); });
+      this.registerCapabilityListener('operation_mode_zone.zone1', async (value) => { await this.onCapability('operation_mode_zone.zone1', value); });
     }
 
     if (store.hasZone2) {
-      this.registerCapabilityListener('target_temperature.zone2', async (value) => { await this.onCapabilityTargetTemperatureZone2(value); });
-      this.registerCapabilityListener('target_temperature.zone2_flow_heat', async (value) => { await this.onCapabilityHeatFlowTemperatureZone2(value); });
+      this.registerCapabilityListener('target_temperature.zone2', async (value) => { await this.onCapability('target_temperature.zone2', value); });
+      this.registerCapabilityListener('target_temperature.zone2_flow_heat', async (value) => { await this.onCapability('target_temperature.zone2_flow_heat', value); });
       if (store.canCool) {
-        this.registerCapabilityListener('operation_mode_zone_with_cool.zone2', async (value) => { await this.onCapabilityOperationModeZone2WithCool(value); });
-        this.registerCapabilityListener('target_temperature.zone2_flow_cool', async (value) => { await this.onCapabilityCoolFlowTemperatureZone2(value); });
+        this.registerCapabilityListener('operation_mode_zone_with_cool.zone2', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone2', value); });
+        this.registerCapabilityListener('target_temperature.zone2_flow_cool', async (value) => { await this.onCapability('target_temperature.zone2_flow_cool', value); });
       } else {
-        this.registerCapabilityListener('operation_mode_zone.zone2', async (value) => { await this.onCapabilityOperationModeZone2(value); });
+        this.registerCapabilityListener('operation_mode_zone.zone2', async (value) => { await this.onCapability('operation_mode_zone.zone2', value); });
       }
     }
 
-    this.registerCapabilityListener('target_temperature.tank_water', async (value) => { await this.onCapabilityTankWaterTemperature(value); });
+    this.registerCapabilityListener('target_temperature.tank_water', async (value) => { await this.onCapability('target_temperature.tank_water', value); });
 
     await this.homey.app.syncDataFromDevice(this);
     await this.runEnergyReports();
@@ -233,171 +233,20 @@ class MELCloudAtwDevice extends Homey.Device {
     this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
-  async onCapabilityOnoff(value) {
+  async onCapability(capability, value) {
     this.homey.clearTimeout(this.syncTimeout);
 
-    await this.setWarning(null);
-    if (this.getSetting('always_on')) {
-      await this.setWarning('Setting `Always On` is activated');
+    switch (capability) {
+      case 'onoff':
+        await this.setWarning(null);
+        if (this.getSetting('always_on')) {
+          await this.setWarning('Setting `Always On` is activated');
+        }
+        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        break;
+      default:
+        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
     }
-
-    this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityForcedHotWater(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['onoff.forced_hot_water'] = this.getCapabilityValueToDevice('onoff.forced_hot_water', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityOperationModeZone1(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['operation_mode_zone.zone1'] = this.getCapabilityValueToDevice('operation_mode_zone.zone1', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityOperationModeZone1WithCool(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['operation_mode_zone_with_cool.zone1'] = this.getCapabilityValueToDevice('operation_mode_zone_with_cool.zone1', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityOperationModeZone2(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['operation_mode_zone.zone2'] = this.getCapabilityValueToDevice('operation_mode_zone.zone2', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityOperationModeZone2WithCool(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['operation_mode_zone_with_cool.zone2'] = this.getCapabilityValueToDevice('operation_mode_zone_with_cool.zone2', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityTargetTemperatureZone1(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson.target_temperature = this.getCapabilityValueToDevice('target_temperature', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityCoolFlowTemperatureZone1(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.zone1_flow_cool'] = this.getCapabilityValueToDevice('target_temperature.zone1_flow_cool', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityHeatFlowTemperatureZone1(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.zone1_flow_heat'] = this.getCapabilityValueToDevice('target_temperature.zone1_flow_heat', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityTargetTemperatureZone2(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.zone2'] = this.getCapabilityValueToDevice('target_temperature.zone2', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityCoolFlowTemperatureZone2(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.zone2_flow_cool'] = this.getCapabilityValueToDevice('target_temperature.zone2_flow_cool', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityHeatFlowTemperatureZone2(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.zone2_flow_heat'] = this.getCapabilityValueToDevice('target_temperature.zone2_flow_heat', value);
-
-    this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
-        this.updateJson = {};
-      }
-    }, 1 * 1000);
-  }
-
-  async onCapabilityTankWaterTemperature(value) {
-    this.homey.clearTimeout(this.syncTimeout);
-
-    this.updateJson['target_temperature.tank_water'] = this.getCapabilityValueToDevice('target_temperature.tank_water', value);
 
     this.syncTimeout = this.homey.setTimeout(() => {
       if (this.updateJson) {
@@ -482,7 +331,7 @@ class MELCloudAtwDevice extends Homey.Device {
           needsSync = true;
         }
         if (setting === 'always_on' && event.newSettings.always_on) {
-          await this.onCapabilityOnoff(true);
+          await this.onCapability('onoff', true);
           hasSynced = true;
           needsSync = false;
         }
