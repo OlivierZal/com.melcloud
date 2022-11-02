@@ -38,25 +38,25 @@ class MELCloudAtaDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('operation_mode_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityOperationMode(args.operation_mode);
+        await args.device.onCapability('operation_mode', args.operation_mode);
       });
 
     this.homey.flow
       .getActionCard('fan_power_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityFanSpeed(Number(args.fan_power));
+        await args.device.onCapability('fan_power', Number(args.fan_power));
       });
 
     this.homey.flow
       .getActionCard('vertical_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityVaneVertical(args.vertical);
+        await args.device.onCapability('vertical', args.vertical);
       });
 
     this.homey.flow
       .getActionCard('horizontal_action')
       .registerRunListener(async (args) => {
-        await args.device.onCapabilityVaneHorizontal(args.horizontal);
+        await args.device.onCapability('horizontal', args.horizontal);
       });
   }
 
