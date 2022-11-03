@@ -1,4 +1,4 @@
-const Homey = require('homey'); // eslint-disable-line import/no-unresolved
+const MELCloudDeviceMixin = require('../../mixins/device_mixin');
 
 function operationModeToDevice(value) {
   switch (value) {
@@ -122,11 +122,11 @@ function horizontalFromDevice(value) {
   }
 }
 
-class MELCloudAtaDevice extends Homey.Device {
-  /* eslint-disable no-await-in-loop, no-restricted-syntax */
+class MELCloudAtaDevice extends MELCloudDeviceMixin {
   async handleCapabilities() {
     const currentCapabilities = this.getCapabilities();
     const requiredCapabilities = this.driver.manifest.capabilities;
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
     for (const capability of currentCapabilities) {
       if (!requiredCapabilities.includes(capability)) {
         await this.removeCapability(capability);
@@ -137,15 +137,10 @@ class MELCloudAtaDevice extends Homey.Device {
         await this.addCapability(capability);
       }
     }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
   }
-  /* eslint-enable no-await-in-loop, no-restricted-syntax */
 
-  async onInit() {
-    await this.setWarning(null);
-
-    this.updateJson = {};
-    await this.handleCapabilities();
-
+  registerCapabilityListeners() {
     this.registerCapabilityListener('onoff', async (value) => { await this.onCapability('onoff', value); });
     this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapability('target_temperature', value); });
     this.registerCapabilityListener('thermostat_mode', async (value) => { await this.onCapability('thermostat_mode', value); });
@@ -153,15 +148,6 @@ class MELCloudAtaDevice extends Homey.Device {
     this.registerCapabilityListener('fan_power', async (value) => { await this.onCapability('fan_power', value); });
     this.registerCapabilityListener('vertical', async (value) => { await this.onCapability('vertical', value); });
     this.registerCapabilityListener('horizontal', async (value) => { await this.onCapability('horizontal', value); });
-
-    await this.homey.app.syncDataFromDevice(this);
-    await this.runEnergyReports();
-    this.reportTimeout = this.homey.setTimeout(() => {
-      this.runEnergyReports();
-      this.reportInterval = this.homey.setInterval(() => {
-        this.runEnergyReports();
-      }, 24 * 60 * 60 * 1000);
-    }, new Date().setHours(24, 0, 0, 0) - new Date().getTime());
   }
 
   async runEnergyReports() {
@@ -219,9 +205,9 @@ class MELCloudAtaDevice extends Homey.Device {
         }
         break;
       case 'operation_mode':
-        await this.setWarning(null);
         if (['dry', 'fan'].includes(value) && this.getCapabilityValue('thermostat_mode') !== 'off') {
           await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
+          await this.setWarning(null);
         }
         this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
         break;
@@ -270,28 +256,6 @@ class MELCloudAtaDevice extends Homey.Device {
     } catch (error) {
       this.error(this.getName(), '-', capability, 'cannot be set from', error.message);
     }
-  }
-
-  async setOrNotCapabilityValue(capability, value) {
-    if (value !== this.getCapabilityValue(capability)) {
-      await this.setCapabilityValue(capability, value)
-        .then(this.log(this.getName(), '-', capability, 'is', value))
-        .catch((error) => this.error(this.getName(), '-', error.message));
-    }
-  }
-
-  async onSettings(event) {
-    if (event.changedKeys.includes('interval')) {
-      this.homey.clearTimeout(this.syncTimeout);
-      this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
-    }
-  }
-
-  onDeleted() {
-    this.homey.clearInterval(this.reportInterval);
-    this.homey.clearTimeout(this.reportTimeout);
-    this.homey.clearTimeout(this.syncTimeout);
   }
 }
 

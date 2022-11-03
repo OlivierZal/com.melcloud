@@ -1,6 +1,6 @@
-const Homey = require('homey'); // eslint-disable-line import/no-unresolved
+const MELCloudDriverMixin = require('../../mixins/driver_mixin');
 
-class MELCloudAtaDriver extends Homey.Driver {
+class MELCloudAtaDriver extends MELCloudDriverMixin {
   async onInit() {
     this.deviceType = 0;
     this.heatPumpType = 'Ata';
@@ -15,6 +15,9 @@ class MELCloudAtaDriver extends Homey.Driver {
     };
     this.getCapabilityMapping = {
       measure_temperature: 'RoomTemperature',
+    };
+    this.listCapabilityMapping = {
+      'measure_power.wifi': 'WifiSignalStrength',
     };
 
     // Condition flowcards
@@ -72,22 +75,6 @@ class MELCloudAtaDriver extends Homey.Driver {
       }
     ));
     return devices;
-  }
-
-  onPair(session) {
-    session.setHandler('login', async (data) => this.homey.app.login(data.username, data.password));
-    session.setHandler('list_devices', async () => this.discoverDevices());
-  }
-
-  getCapabilityTag(capability) {
-    if (capability in this.getCapabilityMapping) {
-      return this.getCapabilityMapping[capability];
-    }
-    return this.setCapabilityMapping[capability][0];
-  }
-
-  getCapabilityEffectiveFlag(capability) {
-    return this.setCapabilityMapping[capability][1];
   }
 }
 

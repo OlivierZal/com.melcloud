@@ -2241,6 +2241,7 @@
         "vertical",
         "horizontal",
         "thermostat_mode",
+        "measure_power.wifi",
         "meter_power.daily_consumed",
         "meter_power.daily_consumed_auto",
         "meter_power.daily_consumed_cooling",
@@ -2257,6 +2258,14 @@
         "meter_power.total_consumed_other"
       ],
       "capabilitiesOptions": {
+        "measure_power.wifi": {
+          "title": {
+            "en": "Wifi Signal Strength"
+          },
+          "units": {
+            "en": "dBm"
+          }
+        },
         "meter_power.daily_consumed": {
           "title": {
             "en": "Last Daily Consumption"
@@ -2506,6 +2515,7 @@
         "alarm_generic.immersion_heater",
         "eco_hot_water",
         "measure_power.heat_pump_frequency",
+        "measure_power.wifi",
         "measure_temperature",
         "measure_temperature.flow",
         "measure_temperature.outdoor",
@@ -2583,6 +2593,14 @@
           },
           "units": {
             "en": "Hz"
+          }
+        },
+        "measure_power.wifi": {
+          "title": {
+            "en": "Wifi Signal Strength"
+          },
+          "units": {
+            "en": "dBm"
           }
         },
         "meter_power.daily_cop": {
@@ -2902,7 +2920,7 @@
                 "en": "Keep Device On"
               },
               "value": false,
-              "hint": "Keep the device on, unless it is turned off manually (from a remote control or directly from the physical device)"
+              "hint": "This setting will be deactivated if the device is turned off manually (from a remote control or directly from the physical device)"
             }
           ]
         },
@@ -2967,6 +2985,14 @@
                 "en": "Heat Pump Frequency"
               },
               "value": true
+            },
+            {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Wifi Signal Strength"
+              },
+              "value": false
             },
             {
               "id": "meter_power.daily_cop",

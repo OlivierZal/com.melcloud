@@ -1,6 +1,6 @@
-const Homey = require('homey'); // eslint-disable-line import/no-unresolved
+const MELCloudDriverMixin = require('../../mixins/driver_mixin');
 
-class MELCloudAtwDriver extends Homey.Driver {
+class MELCloudAtwDriver extends MELCloudDriverMixin {
   async onInit() {
     this.deviceType = 1;
     this.heatPumpType = 'Atw';
@@ -35,6 +35,7 @@ class MELCloudAtwDriver extends Homey.Driver {
       'alarm_generic.defrost_mode': 'DefrostMode',
       'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
       'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
+      'measure_power.wifi': 'WifiSignalStrength',
       'measure_temperature.flow': 'FlowTemperature',
       'measure_temperature.return': 'ReturnTemperature',
     };
@@ -72,39 +73,6 @@ class MELCloudAtwDriver extends Homey.Driver {
     this.otherAtwCapabilities = [
       'measure_temperature.tank_water',
       'target_temperature.tank_water',
-    ];
-    this.dashboardAtwCapabilities = [
-      'alarm_generic.booster_heater1',
-      'alarm_generic.booster_heater2',
-      'alarm_generic.booster_heater2_plus',
-      'alarm_generic.defrost_mode',
-      'alarm_generic.immersion_heater',
-      'eco_hot_water',
-      'measure_power.heat_pump_frequency',
-      'meter_power.daily_cop',
-      'meter_power.daily_cop_cooling',
-      'meter_power.daily_cop_heating',
-      'meter_power.daily_cop_hotwater',
-      'meter_power.daily_produced',
-      'meter_power.daily_consumed',
-      'meter_power.daily_produced_cooling',
-      'meter_power.daily_consumed_cooling',
-      'meter_power.daily_produced_heating',
-      'meter_power.daily_consumed_heating',
-      'meter_power.daily_produced_hotwater',
-      'meter_power.daily_consumed_hotwater',
-      'meter_power.total_cop',
-      'meter_power.total_cop_cooling',
-      'meter_power.total_cop_heating',
-      'meter_power.total_cop_hotwater',
-      'meter_power.total_produced',
-      'meter_power.total_consumed',
-      'meter_power.total_produced_cooling',
-      'meter_power.total_consumed_cooling',
-      'meter_power.total_produced_heating',
-      'meter_power.total_consumed_heating',
-      'meter_power.total_produced_hotwater',
-      'meter_power.total_consumed_hotwater',
     ];
 
     // Condition flowcards
@@ -251,25 +219,6 @@ class MELCloudAtwDriver extends Homey.Driver {
       return deviceInfo;
     });
     return devices;
-  }
-
-  onPair(session) {
-    session.setHandler('login', async (data) => this.homey.app.login(data.username, data.password));
-    session.setHandler('list_devices', async () => this.discoverDevices());
-  }
-
-  getCapabilityTag(capability) {
-    if (capability in this.getCapabilityMapping) {
-      return this.getCapabilityMapping[capability];
-    }
-    if (capability in this.listCapabilityMapping) {
-      return this.listCapabilityMapping[capability];
-    }
-    return this.setCapabilityMapping[capability][0];
-  }
-
-  getCapabilityEffectiveFlag(capability) {
-    return this.setCapabilityMapping[capability][1];
   }
 }
 
