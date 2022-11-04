@@ -49,5 +49,8 @@
   },
   "5.5.0": {
     "en": "Refactored the application."
+  },
+  "5.6.0": {
+    "en": "Added wifi signal strength (can be enable from settings)."
   }
 }
