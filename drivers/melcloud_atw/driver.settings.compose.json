@@ -25,7 +25,7 @@
           "en": "Keep Device On"
         },
         "value": false,
-        "hint": "Keep the device on, unless it is turned off manually (from a remote control or directly from the physical device)"
+        "hint": "This setting will be deactivated if the device is turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   },
@@ -90,6 +90,14 @@
           "en": "Heat Pump Frequency"
         },
         "value": true
+      },
+      {
+        "id": "measure_power.wifi",
+        "type": "checkbox",
+        "label": {
+          "en": "Wifi Signal Strength"
+        },
+        "value": false
       },
       {
         "id": "meter_power.daily_cop",

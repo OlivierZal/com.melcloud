@@ -15,6 +15,7 @@
     "alarm_generic.immersion_heater",
     "eco_hot_water",
     "measure_power.heat_pump_frequency",
+    "measure_power.wifi",
     "measure_temperature",
     "measure_temperature.flow",
     "measure_temperature.outdoor",
@@ -92,6 +93,14 @@
       },
        "units": {
          "en": "Hz"
+      }
+    },
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wifi Signal Strength"
+      },
+      "units": {
+        "en": "dBm"
       }
     },
     "meter_power.daily_cop": {

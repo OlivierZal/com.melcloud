@@ -16,6 +16,7 @@
     "vertical",
     "horizontal",
     "thermostat_mode",
+    "measure_power.wifi",
     "meter_power.daily_consumed",
     "meter_power.daily_consumed_auto",
     "meter_power.daily_consumed_cooling",
@@ -32,6 +33,14 @@
     "meter_power.total_consumed_other"
   ],
   "capabilitiesOptions": {
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wifi Signal Strength"
+      },
+      "units": {
+        "en": "dBm"
+      }
+    },
     "meter_power.daily_consumed": {
       "title": {
         "en": "Last Daily Consumption"

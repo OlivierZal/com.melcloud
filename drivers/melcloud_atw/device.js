@@ -1,4 +1,4 @@
-const Homey = require('homey'); // eslint-disable-line import/no-unresolved
+const MELCloudDeviceMixin = require('../../mixins/device_mixin');
 
 function operationModeFromDevice(value) {
   switch (value) {
@@ -21,15 +21,13 @@ function operationModeFromDevice(value) {
   }
 }
 
-class MELCloudAtwDevice extends Homey.Device {
-  /* eslint-disable no-await-in-loop, no-restricted-syntax */
+class MELCloudAtwDevice extends MELCloudDeviceMixin {
   async handleCapabilities() {
-    const settings = this.getSettings();
     const store = this.getStore();
-
     const currentCapabilities = this.getCapabilities();
     const requiredCapabilities = this.driver.manifest.capabilities;
 
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
     for (const capability of currentCapabilities) {
       if (!requiredCapabilities.includes(capability)) {
         await this.removeCapability(capability);
@@ -118,64 +116,23 @@ class MELCloudAtwDevice extends Homey.Device {
         await this.addCapability(capability);
       }
     }
-
-    await this.handleDashboardCapabilities(settings);
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
   }
 
-  async handleDashboardCapabilities(settings, capabilities) {
-    const dashboardCapabilities = capabilities ?? this.driver.dashboardAtwCapabilities;
-    for (const capability of dashboardCapabilities) {
-      if (this.driver.dashboardAtwCapabilities.includes(capability)) {
-        if (settings[capability] && !this.hasCapability(capability)) {
-          await this.addCapability(capability);
-        } else if (!settings[capability] && this.hasCapability(capability)) {
-          await this.removeCapability(capability);
-        }
-      }
-    }
-  }
-  /* eslint-enable no-await-in-loop, no-restricted-syntax */
-
-  async onInit() {
-    await this.setWarning(null);
-
-    const store = this.getStore();
-    this.updateJson = {};
-    await this.handleCapabilities();
-
+  registerCapabilityListeners() {
     this.registerCapabilityListener('onoff', async (value) => { await this.onCapability('onoff', value); });
     this.registerCapabilityListener('onoff.forced_hot_water', async (value) => { await this.onCapability('onoff.forced_hot_water', value); });
     this.registerCapabilityListener('target_temperature', async (value) => { await this.onCapability('target_temperature', value); });
+    this.registerCapabilityListener('target_temperature.zone1_flow_cool', async (value) => { await this.onCapability('target_temperature.zone1_flow_cool', value); });
     this.registerCapabilityListener('target_temperature.zone1_flow_heat', async (value) => { await this.onCapability('target_temperature.zone1_flow_heat', value); });
-
-    if (store.canCool) {
-      this.registerCapabilityListener('operation_mode_zone_with_cool.zone1', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone1', value); });
-      this.registerCapabilityListener('target_temperature.zone1_flow_cool', async (value) => { await this.onCapability('target_temperature.zone1_flow_cool', value); });
-    } else {
-      this.registerCapabilityListener('operation_mode_zone.zone1', async (value) => { await this.onCapability('operation_mode_zone.zone1', value); });
-    }
-
-    if (store.hasZone2) {
-      this.registerCapabilityListener('target_temperature.zone2', async (value) => { await this.onCapability('target_temperature.zone2', value); });
-      this.registerCapabilityListener('target_temperature.zone2_flow_heat', async (value) => { await this.onCapability('target_temperature.zone2_flow_heat', value); });
-      if (store.canCool) {
-        this.registerCapabilityListener('operation_mode_zone_with_cool.zone2', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone2', value); });
-        this.registerCapabilityListener('target_temperature.zone2_flow_cool', async (value) => { await this.onCapability('target_temperature.zone2_flow_cool', value); });
-      } else {
-        this.registerCapabilityListener('operation_mode_zone.zone2', async (value) => { await this.onCapability('operation_mode_zone.zone2', value); });
-      }
-    }
-
+    this.registerCapabilityListener('target_temperature.zone2', async (value) => { await this.onCapability('target_temperature.zone2', value); });
+    this.registerCapabilityListener('target_temperature.zone2_flow_cool', async (value) => { await this.onCapability('target_temperature.zone2_flow_cool', value); });
+    this.registerCapabilityListener('target_temperature.zone2_flow_heat', async (value) => { await this.onCapability('target_temperature.zone2_flow_heat', value); });
     this.registerCapabilityListener('target_temperature.tank_water', async (value) => { await this.onCapability('target_temperature.tank_water', value); });
-
-    await this.homey.app.syncDataFromDevice(this);
-    await this.runEnergyReports();
-    this.reportTimeout = this.homey.setTimeout(() => {
-      this.runEnergyReports();
-      this.reportInterval = this.homey.setInterval(() => {
-        this.runEnergyReports();
-      }, 24 * 60 * 60 * 1000);
-    }, new Date().setHours(24, 0, 0, 0) - new Date().getTime());
+    this.registerCapabilityListener('operation_mode_zone.zone1', async (value) => { await this.onCapability('operation_mode_zone.zone1', value); });
+    this.registerCapabilityListener('operation_mode_zone.zone2', async (value) => { await this.onCapability('operation_mode_zone.zone2', value); });
+    this.registerCapabilityListener('operation_mode_zone_with_cool.zone1', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone1', value); });
+    this.registerCapabilityListener('operation_mode_zone_with_cool.zone2', async (value) => { await this.onCapability('operation_mode_zone_with_cool.zone2', value); });
   }
 
   async runEnergyReports() {
@@ -238,9 +195,9 @@ class MELCloudAtwDevice extends Homey.Device {
 
     switch (capability) {
       case 'onoff':
-        await this.setWarning(null);
         if (this.getSetting('always_on')) {
           await this.setWarning('Setting `Always On` is activated');
+          await this.setWarning(null);
         }
         this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
         break;
@@ -298,58 +255,6 @@ class MELCloudAtwDevice extends Homey.Device {
     } catch (error) {
       this.error(this.getName(), '-', capability, 'cannot be set from', error.message);
     }
-  }
-
-  async setOrNotCapabilityValue(capability, value) {
-    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await this.setCapabilityValue(capability, value)
-        .then(this.log(this.getName(), '-', capability, 'is', value))
-        .catch((error) => this.error(this.getName(), '-', error.message));
-    }
-  }
-
-  async onSettings(event) {
-    await this.setWarning(null);
-
-    await this.handleDashboardCapabilities(event.newSettings, event.changedKeys);
-
-    let hasReported = false;
-    let hasSynced = false;
-    let needsSync = false;
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
-    for (const setting of event.changedKeys) {
-      if (!['always_on', 'interval'].includes(setting)) {
-        await this.setWarning('Exit device and return to refresh your dashboard');
-      }
-      if (setting.startsWith('meter_power')) {
-        if (!hasReported) {
-          await this.runEnergyReports();
-          hasReported = true;
-        }
-      } else if (!hasSynced) {
-        if (!needsSync) {
-          needsSync = true;
-        }
-        if (setting === 'always_on' && event.newSettings.always_on) {
-          await this.onCapability('onoff', true);
-          hasSynced = true;
-          needsSync = false;
-        }
-      }
-    }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
-
-    if (needsSync) {
-      this.homey.clearTimeout(this.syncTimeout);
-      this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
-    }
-  }
-
-  onDeleted() {
-    this.homey.clearInterval(this.reportInterval);
-    this.homey.clearTimeout(this.reportTimeout);
-    this.homey.clearTimeout(this.syncTimeout);
   }
 }
 
