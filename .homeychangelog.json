@@ -52,5 +52,8 @@
   },
   "5.6.0": {
     "en": "Added wifi signal strength (can be enable from settings)."
+  },
+  "5.6.1": {
+    "en": "Removed useless condition from the code."
   }
 }
