@@ -265,20 +265,17 @@ class MELCloudApp extends Homey.App {
       }
     }
 
-    let deviceFromList;
-    if (device.driver.listCapabilityMapping) {
-      deviceFromList = await this.getDeviceFromList(device);
-      if (deviceFromList) {
-        for (const capability in device.driver.listCapabilityMapping) {
-          if (Object.prototype.hasOwnProperty.call(
-            device.driver.listCapabilityMapping,
+    const deviceFromList = await this.getDeviceFromList(device);
+    if (deviceFromList) {
+      for (const capability in device.driver.listCapabilityMapping) {
+        if (Object.prototype.hasOwnProperty.call(
+          device.driver.listCapabilityMapping,
+          capability,
+        )) {
+          await device.setCapabilityValueFromDevice(
             capability,
-          )) {
-            await device.setCapabilityValueFromDevice(
-              capability,
-              deviceFromList.Device[device.driver.getCapabilityTag(capability)],
-            );
-          }
+            deviceFromList.Device[device.driver.getCapabilityTag(capability)],
+          );
         }
       }
     }
