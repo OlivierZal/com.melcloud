@@ -153,8 +153,8 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
   async runEnergyReports() {
     const reportMapping = {};
     const report = {};
-    report.daily = await this.homey.app.fetchEnergyReport(this, true);
-    report.total = await this.homey.app.fetchEnergyReport(this, false);
+    report.daily = await this.homey.app.reportEnergyCost(this, true);
+    report.total = await this.homey.app.reportEnergyCost(this, false);
     Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
       const deviceCount = data.UsageDisclaimerPercentages
@@ -182,7 +182,7 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
 
     const interval = this.getSetting('interval');
     this.syncTimeout = this.homey
-      .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, interval * 60 * 1000);
+      .setTimeout(() => { this.syncDataFromDevice(); }, interval * 60 * 1000);
     this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
@@ -217,7 +217,7 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
 
     this.syncTimeout = this.homey.setTimeout(() => {
       if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.syncDataToDevice(this.updateJson);
         this.updateJson = {};
       }
     }, 1 * 1000);

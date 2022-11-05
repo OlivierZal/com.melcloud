@@ -38,7 +38,9 @@ class MELCloudApp extends Homey.App {
     return response;
   }
 
-  async listDevices(driver) {
+  async listDevices(instance) {
+    const driver = instance instanceof Homey.Device ? instance.driver : instance;
+
     let deviceList = [];
     const options = {
       uri: `${this.baseUrl}/User/ListDevices`,
@@ -46,7 +48,11 @@ class MELCloudApp extends Homey.App {
       json: true,
     };
     try {
-      driver.log('Searching for devices...');
+      if (instance instanceof Homey.Device) {
+        instance.log(instance.getName(), '- Searching for devices...');
+      } else {
+        instance.log('Searching for devices...');
+      }
       deviceList = await http.get(options).then((result) => {
         if (result.response.statusCode !== 200) {
           throw new Error(`Status Code: ${result.response.statusCode}`);
@@ -87,23 +93,19 @@ class MELCloudApp extends Homey.App {
         return devices;
       });
     } catch (error) {
-      driver.error('Searching for devices:', error.message);
-    }
-    return deviceList;
-  }
-
-  async getDeviceFromList(device) {
-    const data = device.getData();
-    const deviceList = await this.listDevices(device.driver);
-    /* eslint-disable no-restricted-syntax */
-    for (const deviceFromList of deviceList) {
-      if (deviceFromList.DeviceID === data.id && deviceFromList.BuildingID === data.buildingid) {
-        return deviceFromList;
+      if (error instanceof SyntaxError) {
+        if (instance instanceof Homey.Device) {
+          instance.error(instance.getName(), '- Not found while searching for devices');
+        } else {
+          instance.error('Not found while searching for devices');
+        }
+      } else if (instance instanceof Homey.Device) {
+        instance.error(instance.getName(), '- Searching for devices:', error.message);
+      } else {
+        instance.error('Searching for devices:', error.message);
       }
     }
-    /* eslint-enable no-restricted-syntax */
-    device.error(device.getName(), '- Not found while searching for devices');
-    return null;
+    return deviceList;
   }
 
   async getDevice(device) {
@@ -166,7 +168,7 @@ class MELCloudApp extends Homey.App {
     return resultData;
   }
 
-  async fetchEnergyReport(device, daily) {
+  async reportEnergyCost(device, daily) {
     let reportData = {};
 
     const yesterday = new Date();
@@ -187,7 +189,7 @@ class MELCloudApp extends Homey.App {
     const period = daily ? 'daily' : 'total';
 
     try {
-      device.log(device.getName(), '- Fetching', period, 'energy report...');
+      device.log(device.getName(), '- Reporting', period, 'energy cost...');
       reportData = await http.post(options).then((result) => {
         if (result.response.statusCode !== 200) {
           throw new Error(`Status Code: ${result.response.statusCode}`);
@@ -200,88 +202,12 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(device.getName(), '- Not found while fetching', period, 'energy report');
+        device.error(device.getName(), '- Not found while reporting', period, 'energy cost');
       } else {
-        device.error(device.getName(), '- Fetching', period, 'energy report:', error.message);
+        device.error(device.getName(), '- Reporting', period, 'energy cost:', error.message);
       }
     }
     return reportData;
-  }
-
-  async syncDataFromDevice(device) {
-    const resultData = await this.getDevice(device);
-
-    await this.updateCapabilities(device, resultData);
-  }
-
-  async syncDataToDevice(device, updateJson) {
-    const data = device.getData();
-    const json = {
-      DeviceID: data.id,
-      HasPendingCommand: true,
-    };
-    let effectiveFlags = BigInt(0);
-    Object.keys(device.driver.setCapabilityMapping).forEach((capability) => {
-      if (device.hasCapability(capability)) {
-        if (capability in updateJson) {
-          // eslint-disable-next-line no-bitwise
-          effectiveFlags |= device.driver.getCapabilityEffectiveFlag(capability);
-          json[
-            device.driver.getCapabilityTag(capability)
-          ] = updateJson[capability];
-        } else {
-          json[
-            device.driver.getCapabilityTag(capability)
-          ] = device.getCapabilityValueToDevice(capability);
-        }
-      }
-    });
-    json.EffectiveFlags = Number(effectiveFlags);
-    const resultData = await this.setDevice(device, json);
-
-    await this.updateCapabilities(device, resultData);
-  }
-
-  async updateCapabilities(device, resultData) {
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
-    for (const capability in device.driver.setCapabilityMapping) {
-      if (!resultData.EffectiveFlags || (
-        // eslint-disable-next-line no-bitwise
-        device.driver.getCapabilityEffectiveFlag(capability) & BigInt(resultData.EffectiveFlags))
-      ) {
-        await device.setCapabilityValueFromDevice(
-          capability,
-          resultData[device.driver.getCapabilityTag(capability)],
-        );
-      }
-    }
-
-    for (const capability in device.driver.getCapabilityMapping) {
-      if (Object.prototype.hasOwnProperty.call(device.driver.getCapabilityMapping, capability)) {
-        await device.setCapabilityValueFromDevice(
-          capability,
-          resultData[device.driver.getCapabilityTag(capability)],
-        );
-      }
-    }
-
-    const deviceFromList = await this.getDeviceFromList(device);
-    if (deviceFromList) {
-      for (const capability in device.driver.listCapabilityMapping) {
-        if (Object.prototype.hasOwnProperty.call(
-          device.driver.listCapabilityMapping,
-          capability,
-        )) {
-          await device.setCapabilityValueFromDevice(
-            capability,
-            deviceFromList.Device[device.driver.getCapabilityTag(capability)],
-          );
-        }
-      }
-    }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
-
-    await device.endSyncData(deviceFromList);
   }
 }
 
