@@ -1,23 +1,6 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
 class MELCloudDeviceMixin extends Homey.Device {
-  async handleDashboardCapabilities(settings, capabilities) {
-    const newSettings = settings ?? this.getSettings();
-    let newCapabilities = capabilities ?? Object.keys(newSettings);
-    newCapabilities = newCapabilities
-      .filter((capability) => this.driver.manifest.capabilities.includes(capability))
-      .filter((capability) => Object.keys(newSettings).includes(capability));
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
-    for (const capability of newCapabilities) {
-      if (newSettings[capability] && !this.hasCapability(capability)) {
-        await this.addCapability(capability);
-      } else if (!newSettings[capability] && this.hasCapability(capability)) {
-        await this.removeCapability(capability);
-      }
-    }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
-  }
-
   async onInit() {
     await this.handleCapabilities();
     await this.handleDashboardCapabilities();
@@ -25,7 +8,7 @@ class MELCloudDeviceMixin extends Homey.Device {
     this.updateJson = {};
     this.registerCapabilityListeners();
 
-    await this.homey.app.syncDataFromDevice(this);
+    await this.syncDataFromDevice();
     await this.runEnergyReports();
     this.reportTimeout = this.homey.setTimeout(() => {
       this.runEnergyReports();
@@ -68,7 +51,7 @@ class MELCloudDeviceMixin extends Homey.Device {
     if (needsSync) {
       this.homey.clearTimeout(this.syncTimeout);
       this.syncTimeout = this.homey
-        .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, 1 * 1000);
+        .setTimeout(() => { this.syncDataFromDevice(this); }, 1 * 1000);
     }
   }
 
@@ -76,6 +59,121 @@ class MELCloudDeviceMixin extends Homey.Device {
     this.homey.clearInterval(this.reportInterval);
     this.homey.clearTimeout(this.reportTimeout);
     this.homey.clearTimeout(this.syncTimeout);
+  }
+
+  async handleDashboardCapabilities(settings, capabilities) {
+    const newSettings = settings ?? this.getSettings();
+    let newCapabilities = capabilities ?? Object.keys(newSettings);
+    newCapabilities = newCapabilities
+      .filter((capability) => this.driver.manifest.capabilities.includes(capability))
+      .filter((capability) => Object.keys(newSettings).includes(capability));
+    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    for (const capability of newCapabilities) {
+      if (newSettings[capability] && !this.hasCapability(capability)) {
+        await this.addCapability(capability);
+      } else if (!newSettings[capability] && this.hasCapability(capability)) {
+        await this.removeCapability(capability);
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax */
+  }
+
+  async getDeviceFromListDevices() {
+    const data = this.getData();
+    const deviceList = await this.homey.app.listDevices(this);
+    /* eslint-disable no-restricted-syntax */
+    for (const deviceFromListDevices of deviceList) {
+      if (deviceFromListDevices.DeviceID === data.id
+          && deviceFromListDevices.BuildingID === data.buildingid) {
+        return deviceFromListDevices;
+      }
+    }
+    /* eslint-enable no-restricted-syntax */
+    this.error(this.getName(), '- Not found while searching from device list');
+    return null;
+  }
+
+  async syncDataFromDevice() {
+    const resultData = await this.homey.app.getDevice(this);
+
+    await this.updateCapabilities(resultData);
+  }
+
+  async syncDataToDevice(updateJson) {
+    const data = this.getData();
+    const json = {
+      DeviceID: data.id,
+      HasPendingCommand: true,
+    };
+    let effectiveFlags = BigInt(0);
+    Object.keys(this.driver.setCapabilityMapping).forEach((capability) => {
+      if (this.hasCapability(capability)) {
+        if (capability in updateJson) {
+          // eslint-disable-next-line no-bitwise
+          effectiveFlags |= this.driver.getCapabilityEffectiveFlag(capability);
+          json[
+            this.driver.getCapabilityTag(capability)
+          ] = updateJson[capability];
+        } else {
+          json[
+            this.driver.getCapabilityTag(capability)
+          ] = this.getCapabilityValueToDevice(capability);
+        }
+      }
+    });
+    json.EffectiveFlags = Number(effectiveFlags);
+
+    const resultData = await this.homey.app.setDevice(this, json);
+    await this.updateCapabilities(resultData);
+
+    const deviceFromListDevices = await this.getDeviceFromListDevices();
+    await this.updateListCapabilities(deviceFromListDevices);
+    await this.endSyncData(deviceFromListDevices);
+  }
+
+  async updateCapabilities(resultData) {
+    if (resultData) {
+      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      for (const capability in this.driver.setCapabilityMapping) {
+        if (!resultData.EffectiveFlags || (
+          // eslint-disable-next-line no-bitwise
+          this.driver.getCapabilityEffectiveFlag(capability) & BigInt(resultData.EffectiveFlags))
+        ) {
+          await this.setCapabilityValueFromDevice(
+            capability,
+            resultData[this.driver.getCapabilityTag(capability)],
+          );
+        }
+      }
+
+      for (const capability in this.driver.getCapabilityMapping) {
+        if (Object.prototype.hasOwnProperty.call(this.driver.getCapabilityMapping, capability)) {
+          await this.setCapabilityValueFromDevice(
+            capability,
+            resultData[this.driver.getCapabilityTag(capability)],
+          );
+        }
+      }
+      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+    }
+  }
+
+  async updateListCapabilities(deviceFromListDevices) {
+    if (deviceFromListDevices) {
+      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      for (const capability in this.driver.listCapabilityMapping) {
+        if (Object.prototype.hasOwnProperty.call(
+          this.driver.listCapabilityMapping,
+          capability,
+        )) {
+          await this.setCapabilityValueFromDevice(
+            capability,
+            deviceFromListDevices.Device[this.driver.getCapabilityTag(capability)],
+          );
+        }
+      }
+      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+    }
   }
 
   async setOrNotCapabilityValue(capability, value) {

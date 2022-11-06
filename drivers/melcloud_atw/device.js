@@ -138,8 +138,8 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
   async runEnergyReports() {
     const reportMapping = {};
     const report = {};
-    report.daily = await this.homey.app.fetchEnergyReport(this, true);
-    report.total = await this.homey.app.fetchEnergyReport(this, false);
+    report.daily = await this.homey.app.reportEnergyCost(this, true);
+    report.total = await this.homey.app.reportEnergyCost(this, false);
     Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
       ['Consumed', 'Produced'].forEach((type) => {
@@ -166,17 +166,17 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
     this.log(this.getName(), '- Energy reports have been processed');
   }
 
-  async endSyncData(deviceFromList) {
-    if (deviceFromList) {
+  async endSyncData(deviceFromListDevices) {
+    if (deviceFromListDevices) {
       const store = this.getStore();
 
       let hasStoreChanged = false;
-      if (deviceFromList.Device.CanCool !== store.canCool) {
-        await this.setStoreValue('canCool', deviceFromList.Device.CanCool);
+      if (deviceFromListDevices.Device.CanCool !== store.canCool) {
+        await this.setStoreValue('canCool', deviceFromListDevices.Device.CanCool);
         hasStoreChanged = true;
       }
-      if (deviceFromList.Device.HasZone2 !== store.hasZone2) {
-        await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2);
+      if (deviceFromListDevices.Device.HasZone2 !== store.hasZone2) {
+        await this.setStoreValue('hasZone2', deviceFromListDevices.Device.HasZone2);
         hasStoreChanged = true;
       }
       if (hasStoreChanged) {
@@ -186,7 +186,7 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
 
     const interval = this.getSetting('interval');
     this.syncTimeout = this.homey
-      .setTimeout(() => { this.homey.app.syncDataFromDevice(this); }, interval * 60 * 1000);
+      .setTimeout(() => { this.syncDataFromDevice(); }, interval * 60 * 1000);
     this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
@@ -207,7 +207,7 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
 
     this.syncTimeout = this.homey.setTimeout(() => {
       if (this.updateJson) {
-        this.homey.app.syncDataToDevice(this, this.updateJson);
+        this.syncDataToDevice(this.updateJson);
         this.updateJson = {};
       }
     }, 1 * 1000);
