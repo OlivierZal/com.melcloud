@@ -125,10 +125,6 @@ class MELCloudDeviceMixin extends Homey.Device {
 
     const resultData = await this.homey.app.setDevice(this, json);
     await this.updateCapabilities(resultData);
-
-    const deviceFromListDevices = await this.getDeviceFromListDevices();
-    await this.updateListCapabilities(deviceFromListDevices);
-    await this.endSyncData(deviceFromListDevices);
   }
 
   async updateCapabilities(resultData) {
@@ -156,6 +152,10 @@ class MELCloudDeviceMixin extends Homey.Device {
       }
       /* eslint-enable no-await-in-loop, no-restricted-syntax */
     }
+
+    const deviceFromListDevices = await this.getDeviceFromListDevices();
+    await this.updateListCapabilities(deviceFromListDevices);
+    await this.endSyncData(deviceFromListDevices);
   }
 
   async updateListCapabilities(deviceFromListDevices) {
