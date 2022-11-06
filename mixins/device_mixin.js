@@ -51,7 +51,7 @@ class MELCloudDeviceMixin extends Homey.Device {
     if (needsSync) {
       this.homey.clearTimeout(this.syncTimeout);
       this.syncTimeout = this.homey
-        .setTimeout(() => { this.syncDataFromDevice(this); }, 1 * 1000);
+        .setTimeout(() => { this.syncDataFromDevice(); }, 1 * 1000);
     }
   }
 
