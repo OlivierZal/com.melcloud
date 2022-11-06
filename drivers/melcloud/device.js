@@ -177,13 +177,8 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
     this.log(this.getName(), '- Energy reports have been processed');
   }
 
-  async endSyncData() {
+  async customSyncData() {
     await this.updateThermostatMode(this.getCapabilityValue('onoff'), this.getCapabilityValue('operation_mode'));
-
-    const interval = this.getSetting('interval');
-    this.syncTimeout = this.homey
-      .setTimeout(() => { this.syncDataFromDevice(); }, interval * 60 * 1000);
-    this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
   async updateThermostatMode(isOn, operationMode) {

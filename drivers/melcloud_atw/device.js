@@ -166,7 +166,7 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
     this.log(this.getName(), '- Energy reports have been processed');
   }
 
-  async endSyncData(deviceFromListDevices) {
+  async customSyncData(deviceFromListDevices) {
     if (deviceFromListDevices) {
       const store = this.getStore();
 
@@ -179,15 +179,11 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
         await this.setStoreValue('hasZone2', deviceFromListDevices.Device.HasZone2);
         hasStoreChanged = true;
       }
+
       if (hasStoreChanged) {
         await this.handleCapabilities();
       }
     }
-
-    const interval = this.getSetting('interval');
-    this.syncTimeout = this.homey
-      .setTimeout(() => { this.syncDataFromDevice(); }, interval * 60 * 1000);
-    this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
   }
 
   async onCapability(capability, value) {
