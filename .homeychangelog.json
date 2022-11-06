@@ -55,5 +55,8 @@
   },
   "5.6.1": {
     "en": "Removed useless condition from the code."
+  },
+  "5.6.2": {
+    "en": "Improved logs and error handling."
   }
 }
