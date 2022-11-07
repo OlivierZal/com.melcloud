@@ -5,6 +5,8 @@ class MELCloudDeviceMixin extends Homey.Device {
     await this.handleCapabilities();
     await this.handleDashboardCapabilities();
 
+    this.data = this.getData();
+    this.uid = `${this.data.buildingid}-${this.data.id}`;
     this.updateJson = {};
     this.registerCapabilityListeners();
 
@@ -79,18 +81,12 @@ class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async getDeviceFromListDevices() {
-    const data = this.getData();
-    const deviceList = await this.homey.app.listDevices(this);
-    /* eslint-disable no-restricted-syntax */
-    for (const deviceFromListDevices of deviceList) {
-      if (deviceFromListDevices.DeviceID === data.id
-          && deviceFromListDevices.BuildingID === data.buildingid) {
-        return deviceFromListDevices;
-      }
+    const listDevices = await this.homey.app.listDevices(this);
+    const deviceFromListDevices = listDevices[this.uid];
+    if (!deviceFromListDevices) {
+      this.error(this.getName(), '- Not found while searching from device list');
     }
-    /* eslint-enable no-restricted-syntax */
-    this.error(this.getName(), '- Not found while searching from device list');
-    return null;
+    return deviceFromListDevices;
   }
 
   async syncDataFromDevice() {
@@ -99,9 +95,8 @@ class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async syncDataToDevice(updateJson) {
-    const data = this.getData();
     const json = {
-      DeviceID: data.id,
+      DeviceID: this.data.id,
       HasPendingCommand: true,
     };
     let effectiveFlags = BigInt(0);

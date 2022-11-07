@@ -64,8 +64,8 @@ class MELCloudAtaDriver extends MELCloudDriverMixin {
   }
 
   async discoverDevices() {
-    const deviceList = await this.homey.app.listDevices(this);
-    const devices = deviceList.map((device) => (
+    const listDevices = await this.homey.app.listDevices(this);
+    const deviceList = Object.values(listDevices).map((device) => (
       {
         name: device.DeviceName,
         data: {
@@ -74,7 +74,7 @@ class MELCloudAtaDriver extends MELCloudDriverMixin {
         },
       }
     ));
-    return devices;
+    return deviceList;
   }
 }
 

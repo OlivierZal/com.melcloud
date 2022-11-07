@@ -7,7 +7,7 @@ class MELCloudApp extends Homey.App {
   }
 
   async login(username, password) {
-    let response = false;
+    let response;
     if (username && password) {
       const options = {
         uri: `${this.baseUrl}/Login/ClientLogin`,
@@ -35,13 +35,13 @@ class MELCloudApp extends Homey.App {
         this.error('Login to MELCloud:', error.message);
       }
     }
-    return response;
+    return response ?? false;
   }
 
   async listDevices(instance) {
     const driver = instance instanceof Homey.Device ? instance.driver : instance;
 
-    let deviceList = [];
+    let listDevices;
     const options = {
       uri: `${this.baseUrl}/User/ListDevices`,
       headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
@@ -53,7 +53,7 @@ class MELCloudApp extends Homey.App {
       } else {
         instance.log('Searching for devices...');
       }
-      deviceList = await http.get(options).then((result) => {
+      listDevices = await http.get(options).then((result) => {
         if (result.response.statusCode !== 200) {
           throw new Error(`Status Code: ${result.response.statusCode}`);
         }
@@ -61,30 +61,30 @@ class MELCloudApp extends Homey.App {
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
-        const devices = [];
+        const devices = {};
         result.data.forEach((data) => {
           data.Structure.Devices.forEach((device) => {
             if (driver.deviceType === device.Device.DeviceType) {
-              devices.push(device);
+              devices[`${device.BuildingID}-${device.DeviceID}`] = device;
             }
           });
           data.Structure.Areas.forEach((area) => {
             area.Devices.forEach((device) => {
               if (driver.deviceType === device.Device.DeviceType) {
-                devices.push(device);
+                devices[`${device.BuildingID}-${device.DeviceID}`] = device;
               }
             });
           });
           data.Structure.Floors.forEach((floor) => {
             floor.Devices.forEach((device) => {
               if (driver.deviceType === device.Device.DeviceType) {
-                devices.push(device);
+                devices[`${device.BuildingID}-${device.DeviceID}`] = device;
               }
             });
             floor.Areas.forEach((area) => {
               area.Devices.forEach((device) => {
                 if (driver.deviceType === device.Device.DeviceType) {
-                  devices.push(device);
+                  devices[`${device.BuildingID}-${device.DeviceID}`] = device;
                 }
               });
             });
@@ -105,14 +105,13 @@ class MELCloudApp extends Homey.App {
         instance.error('Searching for devices:', error.message);
       }
     }
-    return deviceList;
+    return listDevices ?? {};
   }
 
   async getDevice(device) {
-    let resultData = {};
-    const data = device.getData();
+    let resultData;
     const options = {
-      uri: `${this.baseUrl}/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
+      uri: `${this.baseUrl}/Device/Get?id=${device.data.id}&buildingID=${device.data.buildingid}`,
       headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
       json: true,
     };
@@ -135,11 +134,11 @@ class MELCloudApp extends Homey.App {
         device.error(device.getName(), '- Syncing from device:', error.message);
       }
     }
-    return resultData;
+    return resultData ?? {};
   }
 
   async setDevice(device, json) {
-    let resultData = {};
+    let resultData;
     const options = {
       uri: `${this.baseUrl}/Device/Set${device.driver.heatPumpType}`,
       headers: { 'X-MitsContextKey': device.homey.settings.get('ContextKey') },
@@ -165,22 +164,21 @@ class MELCloudApp extends Homey.App {
         device.error(device.getName(), '- Syncing with device:', error.message);
       }
     }
-    return resultData;
+    return resultData ?? {};
   }
 
   async reportEnergyCost(device, daily) {
-    let reportData = {};
+    let reportData;
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const toDate = `${yesterday.toISOString().split('T')[0]}T00:00:00`;
 
-    const data = device.getData();
     const options = {
       uri: `${this.baseUrl}/EnergyCost/Report`,
       headers: { 'X-MitsContextKey': device.homey.settings.get('ContextKey') },
       json: {
-        DeviceId: data.id,
+        DeviceId: device.data.id,
         FromDate: daily ? toDate : '1970-01-01T00:00:00',
         ToDate: toDate,
         UseCurrency: false,
@@ -207,7 +205,7 @@ class MELCloudApp extends Homey.App {
         device.error(device.getName(), '- Reporting', period, 'energy cost:', error.message);
       }
     }
-    return reportData;
+    return reportData ?? {};
   }
 }
 
