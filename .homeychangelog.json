@@ -61,5 +61,8 @@
   },
   "5.6.3": {
     "en": "Fixed missing sync."
+  },
+  "5.6.4": {
+    "en": "Avoided useless loop."
   }
 }
