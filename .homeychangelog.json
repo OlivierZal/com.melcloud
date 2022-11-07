@@ -64,5 +64,8 @@
   },
   "5.6.4": {
     "en": "Avoided useless loop."
+  },
+  "5.6.5": {
+    "en": "Changed variable name."
   }
 }
