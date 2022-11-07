@@ -249,7 +249,7 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
       }
       await this.setOrNotCapabilityValue(capability, newValue);
     } catch (error) {
-      this.error(this.getName(), '-', capability, 'cannot be set from', error.message);
+      this.error(this.getName(), '-', capability, 'cannot be set from', String(error.message));
     }
   }
 }
