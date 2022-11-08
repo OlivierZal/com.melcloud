@@ -226,9 +226,6 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
     try {
       let newValue = value;
       switch (capability) {
-        case 'alarm_generic.defrost_mode':
-          newValue = Boolean(newValue);
-          break;
         case 'onoff':
           if (this.getSetting('always_on') && !newValue) {
             await this.setSettings({ always_on: false });
@@ -242,6 +239,9 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
         case 'operation_mode_zone_with_cool.zone1':
         case 'operation_mode_zone_with_cool.zone2':
           newValue = String(newValue);
+          break;
+        case 'alarm_generic.defrost_mode':
+          newValue = Boolean(newValue);
           break;
         default:
       }

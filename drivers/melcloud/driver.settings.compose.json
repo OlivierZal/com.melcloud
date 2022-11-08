@@ -17,6 +17,15 @@
         "value": 5,
         "min": 1,
         "max": 60
+      },
+      {
+        "id": "always_on",
+        "type": "checkbox",
+        "label": {
+          "en": "Keep Device On"
+        },
+        "value": false,
+        "hint": "This setting will be deactivated if the device is turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   }
