@@ -6,18 +6,18 @@ class MELCloudAtaDriver extends MELCloudDriverMixin {
     this.heatPumpType = 'Ata';
 
     this.setCapabilityMapping = {
-      onoff: ['Power', BigInt(0x1)],
-      operation_mode: ['OperationMode', BigInt(0x2)],
-      target_temperature: ['SetTemperature', BigInt(0x4)],
-      fan_power: ['SetFanSpeed', BigInt(0x8)],
-      vertical: ['VaneVertical', BigInt(0x10)],
-      horizontal: ['VaneHorizontal', BigInt(0x100)],
+      onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
+      operation_mode: { tag: 'OperationMode', effectiveFlag: BigInt(0x2) },
+      target_temperature: { tag: 'SetTemperature', effectiveFlag: BigInt(0x4) },
+      fan_power: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
+      vertical: { tag: 'VaneVertical', effectiveFlag: BigInt(0x10) },
+      horizontal: { tag: 'VaneHorizontal', effectiveFlag: BigInt(0x100) },
     };
     this.getCapabilityMapping = {
-      measure_temperature: 'RoomTemperature',
+      measure_temperature: { tag: 'RoomTemperature' },
     };
     this.listCapabilityMapping = {
-      'measure_power.wifi': 'WifiSignalStrength',
+      'measure_power.wifi': { tag: 'WifiSignalStrength' },
     };
 
     // Condition flowcards

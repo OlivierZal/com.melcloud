@@ -19,12 +19,12 @@ class MELCloudApp extends Homey.App {
         },
       };
       try {
-        this.log('Login to MELCloud...');
+        this.instanceLog('Login to MELCloud...');
         response = await http.post(options).then((result) => {
           if (result.response.statusCode !== 200) {
-            throw new Error(`Status Code: ${result.response.statusCode}`);
+            throw new Error(result.response.statusCode);
           }
-          this.log(result.data);
+          this.instanceLog('Login to MELCloud:', result.data);
           if (result.data.ErrorMessage) {
             throw new Error(result.data.ErrorMessage);
           }
@@ -32,7 +32,10 @@ class MELCloudApp extends Homey.App {
           return true;
         });
       } catch (error) {
-        this.error('Login to MELCloud:', error.message);
+        if (error instanceof SyntaxError) {
+          error.message = 'Not found';
+        }
+        this.instanceError('Login to MELCloud:', error.message);
       }
     }
     return response ?? false;
@@ -48,16 +51,12 @@ class MELCloudApp extends Homey.App {
       json: true,
     };
     try {
-      if (instance instanceof Homey.Device) {
-        instance.log(instance.getName(), '- Searching for devices...');
-      } else {
-        instance.log('Searching for devices...');
-      }
+      instance.instanceLog('Searching for devices...');
       listDevices = await http.get(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`Status Code: ${result.response.statusCode}`);
+          throw new Error(result.response.statusCode);
         }
-        driver.log(result.data);
+        instance.instanceLog('Searching for devices:', result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
@@ -94,16 +93,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        if (instance instanceof Homey.Device) {
-          instance.error(instance.getName(), '- Not found while searching for devices');
-        } else {
-          instance.error('Not found while searching for devices');
-        }
-      } else if (instance instanceof Homey.Device) {
-        instance.error(instance.getName(), '- Searching for devices:', error.message);
-      } else {
-        instance.error('Searching for devices:', error.message);
+        error.message = 'Not found';
       }
+      instance.instanceError('Searching for devices:', error.message);
     }
     return listDevices ?? {};
   }
@@ -116,12 +108,12 @@ class MELCloudApp extends Homey.App {
       json: true,
     };
     try {
-      device.log(device.getName(), '- Syncing from device...');
+      device.instanceLog('Syncing from device...');
       resultData = await http.get(options).then(async (result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`Status Code: ${result.response.statusCode}`);
+          throw new Error(result.response.statusCode);
         }
-        device.log(result.data);
+        device.instanceLog('Syncing from device:', result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
@@ -129,10 +121,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(device.getName(), '- Not found while syncing from device');
-      } else {
-        device.error(device.getName(), '- Syncing from device:', error.message);
+        error.message = 'Not found';
       }
+      device.instanceError('Syncing from device:', error.message);
     }
     return resultData ?? {};
   }
@@ -145,13 +136,12 @@ class MELCloudApp extends Homey.App {
       json,
     };
     try {
-      device.log(device.getName(), '- Syncing with device...');
-      device.log(json);
+      device.instanceLog('Syncing with device...', json);
       resultData = await http.post(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`Status Code: ${result.response.statusCode}`);
+          throw new Error(result.response.statusCode);
         }
-        device.log(result.data);
+        device.instanceLog('Syncing with device:', result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
@@ -159,10 +149,9 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(device.getName(), '- Not found while syncing with device');
-      } else {
-        device.error(device.getName(), '- Syncing with device:', error.message);
+        error.message = 'Not found';
       }
+      device.instanceError('Syncing with device:', error.message);
     }
     return resultData ?? {};
   }
@@ -187,12 +176,12 @@ class MELCloudApp extends Homey.App {
     const period = daily ? 'daily' : 'total';
 
     try {
-      device.log(device.getName(), '- Reporting', period, 'energy cost...');
+      device.instanceLog('Reporting', period, 'energy cost...');
       reportData = await http.post(options).then((result) => {
         if (result.response.statusCode !== 200) {
-          throw new Error(`Status Code: ${result.response.statusCode}`);
+          throw new Error(result.response.statusCode);
         }
-        device.log(result.data);
+        device.instanceLog('Reporting', period, 'energy cost:', result.data);
         if (result.data.ErrorMessage) {
           throw new Error(result.data.ErrorMessage);
         }
@@ -200,12 +189,19 @@ class MELCloudApp extends Homey.App {
       });
     } catch (error) {
       if (error instanceof SyntaxError) {
-        device.error(device.getName(), '- Not found while reporting', period, 'energy cost');
-      } else {
-        device.error(device.getName(), '- Reporting', period, 'energy cost:', error.message);
+        error.message = 'Not found';
       }
+      device.instanceError('Reporting', period, 'energy cost:', error.message);
     }
     return reportData ?? {};
+  }
+
+  instanceLog(...message) {
+    this.log(...message);
+  }
+
+  instanceError(...message) {
+    this.error(...message);
   }
 }
 
