@@ -191,6 +191,13 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
     this.homey.clearTimeout(this.syncTimeout);
 
     switch (capability) {
+      case 'onoff':
+        if (this.getSetting('always_on')) {
+          await this.setWarning('Setting `Always On` is activated');
+          await this.setWarning(null);
+        }
+        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        break;
       case 'thermostat_mode':
         this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value !== 'off');
         if (value !== 'off') {
@@ -219,6 +226,8 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
   getCapabilityValueToDevice(capability, value) {
     const newValue = value ?? this.getCapabilityValue(capability);
     switch (capability) {
+      case 'onoff':
+        return this.getSetting('always_on') ? true : newValue;
       case 'operation_mode':
         return operationModeToDevice(newValue);
       case 'vertical':
@@ -234,6 +243,11 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
     try {
       let newValue = value;
       switch (capability) {
+        case 'onoff':
+          if (this.getSetting('always_on') && !newValue) {
+            await this.setSettings({ always_on: false });
+          }
+          break;
         case 'operation_mode':
           newValue = operationModeFromDevice(newValue);
           break;
