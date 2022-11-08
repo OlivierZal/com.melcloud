@@ -193,16 +193,16 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
           await this.setWarning('Setting `Always On` is activated');
           await this.setWarning(null);
         }
-        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        this.updateData[capability] = this.getCapabilityValueToDevice(capability, value);
         break;
       default:
-        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        this.updateData[capability] = this.getCapabilityValueToDevice(capability, value);
     }
 
     this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.syncDataToDevice(this.updateJson);
-        this.updateJson = {};
+      if (this.updateData) {
+        this.syncDataToDevice(this.updateData);
+        this.updateData = {};
       }
     }, 1 * 1000);
   }

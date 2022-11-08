@@ -1,5 +1,5 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
-const http = require('http.min');
+const axios = require('axios');
 
 class MELCloudHPDevice extends Homey.Device {
   async getOtherZoneFlowTemperatureSettings() {
@@ -46,20 +46,17 @@ class MELCloudHPDevice extends Homey.Device {
     this.homey.clearTimeout(this.syncTimeout);
 
     const data = this.getData();
-    const options = {
-      uri: `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`,
-      headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') },
-      json: true,
-    };
+    const url = `https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/Get?id=${data.id}&buildingID=${data.buildingid}`;
+    const config = { headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') } };
     try {
       this.log(`\`${this.getName()}\`: syncing from device...`);
-      await http.get(options).then(async (result) => {
-        if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+      await axios.get(url, config).then(async (response) => {
+        if (response.status !== 200) {
+          throw new Error(`\`statusCode\`: ${response.status}`);
         }
-        this.log(result.data);
-        if (result.data.ErrorMessage) {
-          throw new Error(result.data.ErrorMessage);
+        this.log(response.data);
+        if (response.data.ErrorMessage) {
+          throw new Error(response.data.ErrorMessage);
         }
 
         // Get data
@@ -69,22 +66,22 @@ class MELCloudHPDevice extends Homey.Device {
         let operationModeZone;
         let targetTemperature;
         if (data.zone === 2) {
-          coolFlowTemperature = result.data.SetCoolFlowTemperatureZone2;
-          heatFlowTemperature = result.data.SetHeatFlowTemperatureZone2;
-          measureTemperature = result.data.RoomTemperatureZone2;
-          operationModeZone = String(result.data.OperationModeZone2);
-          targetTemperature = result.data.SetTemperatureZone2;
+          coolFlowTemperature = response.data.SetCoolFlowTemperatureZone2;
+          heatFlowTemperature = response.data.SetHeatFlowTemperatureZone2;
+          measureTemperature = response.data.RoomTemperatureZone2;
+          operationModeZone = String(response.data.OperationModeZone2);
+          targetTemperature = response.data.SetTemperatureZone2;
         } else {
-          coolFlowTemperature = result.data.SetCoolFlowTemperatureZone1;
-          heatFlowTemperature = result.data.SetHeatFlowTemperatureZone1;
-          measureTemperature = result.data.RoomTemperatureZone1;
-          operationModeZone = String(result.data.OperationModeZone1);
-          targetTemperature = result.data.SetTemperatureZone1;
+          coolFlowTemperature = response.data.SetCoolFlowTemperatureZone1;
+          heatFlowTemperature = response.data.SetHeatFlowTemperatureZone1;
+          measureTemperature = response.data.RoomTemperatureZone1;
+          operationModeZone = String(response.data.OperationModeZone1);
+          targetTemperature = response.data.SetTemperatureZone1;
         }
 
         // Update capabilities
-        await this.setCapabilityValue('onoff', result.data.Power)
-          .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`${result.data.Power}\``))
+        await this.setCapabilityValue('onoff', response.data.Power)
+          .then(this.log(`\`${this.getName()}\`: capability \`onoff\` equals to \`${response.data.Power}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`onoff\` has not been set (${error})`));
 
         await this.setCapabilityValue('measure_temperature', measureTemperature)
@@ -107,16 +104,16 @@ class MELCloudHPDevice extends Homey.Device {
             .catch((error) => this.error(`\`${this.getName()}\`: capability \`target_temperature\` has not been set (${error})`));
         }
 
-        await this.setCapabilityValue('watertank_temperature', result.data.TankWaterTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`watertank_temperature\` equals to \`${result.data.TankWaterTemperature}\``))
+        await this.setCapabilityValue('watertank_temperature', response.data.TankWaterTemperature)
+          .then(this.log(`\`${this.getName()}\`: capability \`watertank_temperature\` equals to \`${response.data.TankWaterTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`watertank_temperature\` has not been set (${error})`));
 
-        await this.setCapabilityValue('outdoor_temperature', result.data.OutdoorTemperature)
-          .then(this.log(`\`${this.getName()}\`: capability \`outdoor_temperature\` equals to \`${result.data.OutdoorTemperature}\``))
+        await this.setCapabilityValue('outdoor_temperature', response.data.OutdoorTemperature)
+          .then(this.log(`\`${this.getName()}\`: capability \`outdoor_temperature\` equals to \`${response.data.OutdoorTemperature}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`outdoor_temperature\` has not been set (${error})`));
 
         const oldOperationMode = this.getCapabilityValue('operation_mode_state');
-        const operationMode = String(result.data.OperationMode);
+        const operationMode = String(response.data.OperationMode);
         await this.setCapabilityValue('operation_mode_state', operationMode)
           .then(this.log(`\`${this.getName()}\`: capability \`operation_mode_state\` equals to \`${operationMode}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`operation_mode_state\` has not been set (${error})`));
@@ -133,7 +130,7 @@ class MELCloudHPDevice extends Homey.Device {
         }
 
         const oldForcedHotWater = this.getCapabilityValue('forced_hot_water');
-        const forcedHotWater = String(result.data.ForcedHotWaterMode);
+        const forcedHotWater = String(response.data.ForcedHotWaterMode);
         await this.setCapabilityValue('forced_hot_water', forcedHotWater)
           .then(this.log(`\`${this.getName()}\`: capability \`forced_hot_water\` equals to \`${forcedHotWater}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`forced_hot_water\` has not been set (${error})`));
@@ -141,8 +138,8 @@ class MELCloudHPDevice extends Homey.Device {
           this.driver.triggerForcedHotWater(this);
         }
 
-        await this.setCapabilityValue('eco_hot_water', result.data.EcoHotWater)
-          .then(this.log(`\`${this.getName()}\`: capability \`eco_hot_water\` equals to \`${result.data.EcoHotWater}\``))
+        await this.setCapabilityValue('eco_hot_water', response.data.EcoHotWater)
+          .then(this.log(`\`${this.getName()}\`: capability \`eco_hot_water\` equals to \`${response.data.EcoHotWater}\``))
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`eco_hot_water\` has not been set (${error})`));
 
         // Update capabilities from data only available via `ListDevice`
@@ -192,7 +189,7 @@ class MELCloudHPDevice extends Homey.Device {
         await this.setSettings({
           cool_flow_temperature: coolFlowTemperature,
           heat_flow_temperature: heatFlowTemperature,
-          set_watertank_temperature: result.data.SetTankWaterTemperature,
+          set_watertank_temperature: response.data.SetTankWaterTemperature,
         });
       });
 
@@ -217,55 +214,49 @@ class MELCloudHPDevice extends Homey.Device {
     const otherSettings = this.getOtherZoneFlowTemperatureSettings();
     const ContextKey = this.homey.settings.get('ContextKey');
 
-    let options;
+    let json;
+    const url = 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw';
+    const config = { headers: { 'X-MitsContextKey': ContextKey } };
     if (data.zone === 2) {
-      options = {
-        uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
-        headers: { 'X-MitsContextKey': ContextKey },
-        json: {
-          DeviceID: data.id,
-          EffectiveFlags: 0x1000800010231,
-          ForcedHotWaterMode: this.getCapabilityValue('forced_hot_water') === 'true',
-          HasPendingCommand: true,
-          OperationModeZone2: Number(this.getCapabilityValue('operation_mode_zone')),
-          Power: this.getCapabilityValue('onoff'),
-          SetCoolFlowTemperatureZone1: otherSettings.cool_flow_temperature,
-          SetCoolFlowTemperatureZone2: settings.cool_flow_temperature,
-          SetHeatFlowTemperatureZone1: otherSettings.heat_flow_temperature,
-          SetHeatFlowTemperatureZone2: settings.heat_flow_temperature,
-          SetTankWaterTemperature: settings.set_watertank_temperature,
-          SetTemperatureZone2: this.getCapabilityValue('target_temperature'),
-        },
+      json = {
+        DeviceID: data.id,
+        EffectiveFlags: 0x1000800010231,
+        ForcedHotWaterMode: this.getCapabilityValue('forced_hot_water') === 'true',
+        HasPendingCommand: true,
+        OperationModeZone2: Number(this.getCapabilityValue('operation_mode_zone')),
+        Power: this.getCapabilityValue('onoff'),
+        SetCoolFlowTemperatureZone1: otherSettings.cool_flow_temperature,
+        SetCoolFlowTemperatureZone2: settings.cool_flow_temperature,
+        SetHeatFlowTemperatureZone1: otherSettings.heat_flow_temperature,
+        SetHeatFlowTemperatureZone2: settings.heat_flow_temperature,
+        SetTankWaterTemperature: settings.set_watertank_temperature,
+        SetTemperatureZone2: this.getCapabilityValue('target_temperature'),
       };
     } else {
-      options = {
-        uri: 'https://app.melcloud.com/Mitsubishi.Wifi.Client/Device/SetAtw',
-        headers: { 'X-MitsContextKey': ContextKey },
-        json: {
-          DeviceID: data.id,
-          EffectiveFlags: 0x10002000100a9,
-          ForcedHotWaterMode: this.getCapabilityValue('forced_hot_water') === 'true',
-          HasPendingCommand: true,
-          OperationModeZone1: Number(this.getCapabilityValue('operation_mode_zone')),
-          Power: this.getCapabilityValue('onoff'),
-          SetCoolFlowTemperatureZone1: settings.cool_flow_temperature,
-          SetCoolFlowTemperatureZone2: otherSettings.cool_flow_temperature,
-          SetHeatFlowTemperatureZone1: settings.heat_flow_temperature,
-          SetHeatFlowTemperatureZone2: otherSettings.heat_flow_temperature,
-          SetTankWaterTemperature: settings.set_watertank_temperature,
-          SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
-        },
+      json = {
+        DeviceID: data.id,
+        EffectiveFlags: 0x10002000100a9,
+        ForcedHotWaterMode: this.getCapabilityValue('forced_hot_water') === 'true',
+        HasPendingCommand: true,
+        OperationModeZone1: Number(this.getCapabilityValue('operation_mode_zone')),
+        Power: this.getCapabilityValue('onoff'),
+        SetCoolFlowTemperatureZone1: settings.cool_flow_temperature,
+        SetCoolFlowTemperatureZone2: otherSettings.cool_flow_temperature,
+        SetHeatFlowTemperatureZone1: settings.heat_flow_temperature,
+        SetHeatFlowTemperatureZone2: otherSettings.heat_flow_temperature,
+        SetTankWaterTemperature: settings.set_watertank_temperature,
+        SetTemperatureZone1: this.getCapabilityValue('target_temperature'),
       };
     }
     try {
       this.log(`\`${this.getName()}\`: syncing with device...`);
-      await http.post(options).then((result) => {
-        if (result.response.statusCode !== 200) {
-          throw new Error(`\`statusCode\`: ${result.response.statusCode}`);
+      await axios.post(url, json, config).then((response) => {
+        if (response.status !== 200) {
+          throw new Error(`\`statusCode\`: ${response.status}`);
         }
-        this.log(result.data);
-        if (result.data.ErrorMessage) {
-          throw new Error(result.data.ErrorMessage);
+        this.log(response.data);
+        if (response.data.ErrorMessage) {
+          throw new Error(response.data.ErrorMessage);
         }
       });
 

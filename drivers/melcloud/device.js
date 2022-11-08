@@ -196,12 +196,12 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
           await this.setWarning('Setting `Always On` is activated');
           await this.setWarning(null);
         }
-        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        this.updateData[capability] = this.getCapabilityValueToDevice(capability, value);
         break;
       case 'thermostat_mode':
-        this.updateJson.onoff = this.getCapabilityValueToDevice('onoff', value !== 'off');
+        this.updateData.onoff = this.getCapabilityValueToDevice('onoff', value !== 'off');
         if (value !== 'off') {
-          this.updateJson.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
+          this.updateData.operation_mode = this.getCapabilityValueToDevice('operation_mode', value);
         }
         break;
       case 'operation_mode':
@@ -209,16 +209,16 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
           await this.setWarning(`\`${value}\` has been saved (even if \`heat\` is displayed)`);
           await this.setWarning(null);
         }
-        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        this.updateData[capability] = this.getCapabilityValueToDevice(capability, value);
         break;
       default:
-        this.updateJson[capability] = this.getCapabilityValueToDevice(capability, value);
+        this.updateData[capability] = this.getCapabilityValueToDevice(capability, value);
     }
 
     this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateJson) {
-        this.syncDataToDevice(this.updateJson);
-        this.updateJson = {};
+      if (this.updateData) {
+        this.syncDataToDevice(this.updateData);
+        this.updateData = {};
       }
     }, 1 * 1000);
   }

@@ -7,7 +7,7 @@ class MELCloudDeviceMixin extends Homey.Device {
 
     this.data = this.getData();
     this.uid = `${this.data.buildingid}-${this.data.id}`;
-    this.updateJson = {};
+    this.updateData = {};
     this.registerCapabilityListeners();
 
     await this.syncDataFromDevice();
@@ -94,8 +94,8 @@ class MELCloudDeviceMixin extends Homey.Device {
     await this.syncData(resultData);
   }
 
-  async syncDataToDevice(updateJson) {
-    const json = {
+  async syncDataToDevice(updateData) {
+    const data = {
       DeviceID: this.data.id,
       HasPendingCommand: true,
     };
@@ -104,18 +104,18 @@ class MELCloudDeviceMixin extends Homey.Device {
       const [capability, values] = entry;
       if (this.hasCapability(capability)) {
         const { tag, effectiveFlag } = values;
-        if (capability in updateJson) {
+        if (capability in updateData) {
           // eslint-disable-next-line no-bitwise
           effectiveFlags |= effectiveFlag;
-          json[tag] = updateJson[capability];
+          data[tag] = updateData[capability];
         } else {
-          json[tag] = this.getCapabilityValueToDevice(capability);
+          data[tag] = this.getCapabilityValueToDevice(capability);
         }
       }
     });
-    json.EffectiveFlags = Number(effectiveFlags);
+    data.EffectiveFlags = Number(effectiveFlags);
 
-    const resultData = await this.homey.app.setDevice(this, json);
+    const resultData = await this.homey.app.setDevice(this, data);
     await this.syncData(resultData);
   }
 
