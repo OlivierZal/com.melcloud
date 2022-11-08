@@ -136,6 +136,14 @@ class MELCloudHPDriver extends Homey.Driver {
       .then(this.log(`\`${device.getName()}\`: \`forced_hot_water\` has changed to \`${device.getCapabilityValue('forced_hot_water')}\``))
       .catch((error) => this.error(`\`${device.getName()}\`: \`forced_hot_water\` has not been triggered (${error})`));
   }
+
+  instanceLog(...message) {
+    this.log(...message);
+  }
+
+  instanceError(...message) {
+    this.error(...message);
+  }
 }
 
 module.exports = MELCloudHPDriver;
