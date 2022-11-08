@@ -84,7 +84,7 @@ class MELCloudDeviceMixin extends Homey.Device {
     const listDevices = await this.homey.app.listDevices(this);
     const deviceFromListDevices = listDevices[this.uid];
     if (!deviceFromListDevices) {
-      this.error(this.getName(), '- Not found while searching from device list');
+      this.instanceError('Not found while searching from device list');
     }
     return deviceFromListDevices;
   }
@@ -100,18 +100,16 @@ class MELCloudDeviceMixin extends Homey.Device {
       HasPendingCommand: true,
     };
     let effectiveFlags = BigInt(0);
-    Object.keys(this.driver.setCapabilityMapping).forEach((capability) => {
+    Object.entries(this.driver.setCapabilityMapping).forEach((entry) => {
+      const [capability, values] = entry;
       if (this.hasCapability(capability)) {
+        const { tag, effectiveFlag } = values;
         if (capability in updateJson) {
           // eslint-disable-next-line no-bitwise
-          effectiveFlags |= this.driver.getCapabilityEffectiveFlag(capability);
-          json[
-            this.driver.getCapabilityTag(capability)
-          ] = updateJson[capability];
+          effectiveFlags |= effectiveFlag;
+          json[tag] = updateJson[capability];
         } else {
-          json[
-            this.driver.getCapabilityTag(capability)
-          ] = this.getCapabilityValueToDevice(capability);
+          json[tag] = this.getCapabilityValueToDevice(capability);
         }
       }
     });
@@ -132,60 +130,56 @@ class MELCloudDeviceMixin extends Homey.Device {
     const interval = this.getSetting('interval');
     this.syncTimeout = this.homey
       .setTimeout(() => { this.syncDataFromDevice(); }, interval * 60 * 1000);
-    this.log(this.getName(), '- Next sync from device in', interval, 'minutes');
+    this.instanceLog('Next sync from device in', interval, 'minutes');
   }
 
   async updateCapabilities(resultData) {
     if (resultData) {
-      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.setCapabilityMapping) {
-        if (!resultData.EffectiveFlags || (
-          // eslint-disable-next-line no-bitwise
-          this.driver.getCapabilityEffectiveFlag(capability) & BigInt(resultData.EffectiveFlags))
-        ) {
-          await this.setCapabilityValueFromDevice(
-            capability,
-            resultData[this.driver.getCapabilityTag(capability)],
-          );
+        const { effectiveFlag } = this.driver.setCapabilityMapping[capability];
+        // eslint-disable-next-line no-bitwise
+        if (resultData.EffectiveFlags === 0 || BigInt(resultData.EffectiveFlags) & effectiveFlag) {
+          const { tag } = this.driver.setCapabilityMapping[capability];
+          await this.setCapabilityValueFromDevice(capability, resultData[tag]);
         }
       }
+      /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
 
+      /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.getCapabilityMapping) {
-        if (Object.prototype.hasOwnProperty.call(this.driver.getCapabilityMapping, capability)) {
-          await this.setCapabilityValueFromDevice(
-            capability,
-            resultData[this.driver.getCapabilityTag(capability)],
-          );
-        }
+        const { tag } = this.driver.getCapabilityMapping[capability];
+        await this.setCapabilityValueFromDevice(capability, resultData[tag]);
       }
-      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+      /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
     }
   }
 
   async updateListCapabilities(deviceFromListDevices) {
     if (deviceFromListDevices) {
-      /* eslint-disable no-await-in-loop, no-restricted-syntax */
+      /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.listCapabilityMapping) {
-        if (Object.prototype.hasOwnProperty.call(
-          this.driver.listCapabilityMapping,
-          capability,
-        )) {
-          await this.setCapabilityValueFromDevice(
-            capability,
-            deviceFromListDevices.Device[this.driver.getCapabilityTag(capability)],
-          );
-        }
+        const { tag } = this.driver.listCapabilityMapping[capability];
+        await this.setCapabilityValueFromDevice(capability, deviceFromListDevices.Device[tag]);
       }
-      /* eslint-enable no-await-in-loop, no-restricted-syntax */
+      /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
     }
   }
 
   async setOrNotCapabilityValue(capability, value) {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
-        .then(this.log(this.getName(), '-', capability, 'is', value))
-        .catch((error) => this.error(this.getName(), '-', error.message));
+        .then(this.instanceLog(capability, 'is', value))
+        .catch((error) => this.instanceError(error.message));
     }
+  }
+
+  instanceLog(...message) {
+    this.log(this.getName(), '-', ...message);
+  }
+
+  instanceError(...message) {
+    this.error(this.getName(), '-', ...message);
   }
 }
 

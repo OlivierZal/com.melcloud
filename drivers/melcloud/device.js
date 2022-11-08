@@ -166,15 +166,13 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
       });
     });
 
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
+    /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
     for (const capability in reportMapping) {
-      if (Object.prototype.hasOwnProperty.call(reportMapping, capability)) {
-        await this.setCapabilityValueFromDevice(capability, reportMapping[capability]);
-      }
+      await this.setCapabilityValueFromDevice(capability, reportMapping[capability]);
     }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
+    /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
 
-    this.log(this.getName(), '- Energy reports have been processed');
+    this.instanceLog('Energy reports have been processed');
   }
 
   async customSyncData() {
@@ -249,7 +247,7 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
       }
       await this.setOrNotCapabilityValue(capability, newValue);
     } catch (error) {
-      this.error(this.getName(), '-', capability, 'cannot be set from', String(error.message));
+      this.instanceError(capability, 'cannot be set from', String(error.message));
     }
   }
 }

@@ -6,18 +6,12 @@ class MELCloudDriverMixin extends Homey.Driver {
     session.setHandler('list_devices', async () => this.discoverDevices());
   }
 
-  getCapabilityTag(capability) {
-    if (capability in this.getCapabilityMapping) {
-      return this.getCapabilityMapping[capability];
-    }
-    if (capability in this.listCapabilityMapping) {
-      return this.listCapabilityMapping[capability];
-    }
-    return this.setCapabilityMapping[capability][0];
+  instanceLog(...message) {
+    this.log(...message);
   }
 
-  getCapabilityEffectiveFlag(capability) {
-    return this.setCapabilityMapping[capability][1];
+  instanceError(...message) {
+    this.error(...message);
   }
 }
 
