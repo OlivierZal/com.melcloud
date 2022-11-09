@@ -399,5 +399,26 @@
       "id": "add_devices",
       "template": "add_devices"
     }
+  ],
+  "repair": [
+    {
+      "id": "login",
+      "template": "login_credentials",
+      "options": {
+        "logo": "logo.png",
+        "usernameLabel": {
+          "en": "MELCloud Username"
+        },
+        "usernamePlaceholder": {
+          "en": "user@domain.com"
+        },
+        "passwordLabel": {
+          "en": "Password"
+        },
+        "passwordPlaceholder": {
+          "en": "P4ssw0rd"
+        }
+      }
+    }
   ]
 }
