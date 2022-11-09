@@ -1,7 +1,7 @@
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 
 class MELCloudDriverMixin extends Homey.Driver {
-  onPair(session) {
+  async onPair(session) {
     session.setHandler('login', async (data) => this.homey.app.login(data.username, data.password));
     session.setHandler('list_devices', async () => this.discoverDevices());
   }

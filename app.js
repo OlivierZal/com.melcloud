@@ -21,8 +21,11 @@ class MELCloudApp extends Homey.App {
         this.instanceLog('Login to MELCloud...');
         login = await axios.post(url, data).then((response) => {
           this.instanceLog('Login to MELCloud:', response.data);
-          this.homey.settings.set('ContextKey', response.data.LoginData.ContextKey);
-          return true;
+          if (response.data.LoginData) {
+            this.homey.settings.set('ContextKey', response.data.LoginData.ContextKey);
+            return true;
+          }
+          return false;
         });
       } catch (error) {
         this.instanceError('Login to MELCloud:', error.message);

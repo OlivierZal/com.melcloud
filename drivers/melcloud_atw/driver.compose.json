@@ -367,17 +367,25 @@
   },
   "pair": [
     {
-      "id": "login_credentials",
+      "id": "login",
       "template": "login_credentials",
       "navigation": {
         "next": "list_devices"
       },
       "options": {
-        "logo": "pair_logo.png",
-        "usernameLabel": "MELCloud Username",
-        "usernamePlaceholder": "user@domain.com",
-        "passwordLabel": "Password",
-        "passwordPlaceholder": "P4ssw0rd"
+        "logo": "logo.png",
+        "usernameLabel": {
+          "en": "MELCloud Username"
+        },
+        "usernamePlaceholder": {
+          "en": "user@domain.com"
+        },
+        "passwordLabel": {
+          "en": "Password"
+        },
+        "passwordPlaceholder": {
+          "en": "P4ssw0rd"
+        }
       }
     },
     {
