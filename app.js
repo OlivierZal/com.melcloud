@@ -7,7 +7,7 @@ class MELCloudApp extends Homey.App {
   }
 
   async login(username, password) {
-    let login;
+    let login = false;
     if (username && password) {
       const url = `${this.baseUrl}/Login/ClientLogin`;
       const data = {
@@ -20,24 +20,15 @@ class MELCloudApp extends Homey.App {
       try {
         this.instanceLog('Login to MELCloud...');
         login = await axios.post(url, data).then((response) => {
-          if (response.status !== 200) {
-            throw new Error(response.status);
-          }
           this.instanceLog('Login to MELCloud:', response.data);
-          if (response.data.ErrorMessage) {
-            throw new Error(response.data.ErrorMessage);
-          }
           this.homey.settings.set('ContextKey', response.data.LoginData.ContextKey);
           return true;
         });
       } catch (error) {
-        if (error instanceof SyntaxError) {
-          error.message = 'Not found';
-        }
         this.instanceError('Login to MELCloud:', error.message);
       }
     }
-    return login ?? false;
+    return login;
   }
 
   async listDevices(instance) {
@@ -50,13 +41,7 @@ class MELCloudApp extends Homey.App {
     try {
       instance.instanceLog('Searching for devices...');
       listDevices = await axios.get(url, config).then((response) => {
-        if (response.status !== 200) {
-          throw new Error(response.status);
-        }
         instance.instanceLog('Searching for devices:', response.data);
-        if (response.data.ErrorMessage) {
-          throw new Error(response.data.ErrorMessage);
-        }
         const devices = {};
         response.data.forEach((data) => {
           data.Structure.Devices.forEach((device) => {
@@ -89,9 +74,6 @@ class MELCloudApp extends Homey.App {
         return devices;
       });
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        error.message = 'Not found';
-      }
       instance.instanceError('Searching for devices:', error.message);
     }
     return listDevices ?? {};
@@ -101,52 +83,34 @@ class MELCloudApp extends Homey.App {
     const url = `${this.baseUrl}/Device/Get?id=${device.data.id}&buildingID=${device.data.buildingid}`;
     const config = { headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') } };
 
-    let resultData;
+    let resultData = {};
     try {
       device.instanceLog('Syncing from device...');
       resultData = await axios.get(url, config).then(async (response) => {
-        if (response.status !== 200) {
-          throw new Error(response.status);
-        }
         device.instanceLog('Syncing from device:', response.data);
-        if (response.data.ErrorMessage) {
-          throw new Error(response.data.ErrorMessage);
-        }
         return response.data;
       });
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        error.message = 'Not found';
-      }
       device.instanceError('Syncing from device:', error.message);
     }
-    return resultData ?? {};
+    return resultData;
   }
 
   async setDevice(device, data) {
     const url = `${this.baseUrl}/Device/Set${device.driver.heatPumpType}`;
     const config = { headers: { 'X-MitsContextKey': device.homey.settings.get('ContextKey') } };
 
-    let resultData;
+    let resultData = {};
     try {
       device.instanceLog('Syncing with device...', data);
       resultData = await axios.post(url, data, config).then((response) => {
-        if (response.status !== 200) {
-          throw new Error(response.status);
-        }
         device.instanceLog('Syncing with device:', response.data);
-        if (response.data.ErrorMessage) {
-          throw new Error(response.data.ErrorMessage);
-        }
         return response.data;
       });
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        error.message = 'Not found';
-      }
       device.instanceError('Syncing with device:', error.message);
     }
-    return resultData ?? {};
+    return resultData;
   }
 
   async reportEnergyCost(device, daily) {
@@ -165,26 +129,17 @@ class MELCloudApp extends Homey.App {
       UseCurrency: false,
     };
 
-    let reportData;
+    let reportData = {};
     try {
       device.instanceLog('Reporting', period, 'energy cost...');
       reportData = await axios.post(url, data, config).then((response) => {
-        if (response.status !== 200) {
-          throw new Error(response.status);
-        }
         device.instanceLog('Reporting', period, 'energy cost:', response.data);
-        if (response.data.ErrorMessage) {
-          throw new Error(response.data.ErrorMessage);
-        }
         return response.data;
       });
     } catch (error) {
-      if (error instanceof SyntaxError) {
-        error.message = 'Not found';
-      }
       device.instanceError('Reporting', period, 'energy cost:', error.message);
     }
-    return reportData ?? {};
+    return reportData;
   }
 
   instanceLog(...message) {

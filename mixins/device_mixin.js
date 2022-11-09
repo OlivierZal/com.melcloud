@@ -134,19 +134,18 @@ class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async updateCapabilities(resultData) {
-    if (resultData) {
+    if (resultData.length) {
       /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.setCapabilityMapping) {
         const { effectiveFlag } = this.driver.setCapabilityMapping[capability];
-        // eslint-disable-next-line no-bitwise
-        if (resultData.EffectiveFlags === 0 || BigInt(resultData.EffectiveFlags) & effectiveFlag) {
+        if (resultData.EffectiveFlags === 0
+            // eslint-disable-next-line no-bitwise
+            || BigInt(resultData.EffectiveFlags ?? 0) & effectiveFlag) {
           const { tag } = this.driver.setCapabilityMapping[capability];
           await this.setCapabilityValueFromDevice(capability, resultData[tag]);
         }
       }
-      /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
 
-      /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.getCapabilityMapping) {
         const { tag } = this.driver.getCapabilityMapping[capability];
         await this.setCapabilityValueFromDevice(capability, resultData[tag]);

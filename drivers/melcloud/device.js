@@ -151,19 +151,22 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
   }
 
   async runEnergyReports() {
-    const reportMapping = {};
     const report = {};
     report.daily = await this.homey.app.reportEnergyCost(this, true);
     report.total = await this.homey.app.reportEnergyCost(this, false);
+
+    const reportMapping = {};
     Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
-      const deviceCount = data.UsageDisclaimerPercentages
-        ? data.UsageDisclaimerPercentages.split(', ').length : 1;
-      reportMapping[`meter_power.${period}_consumed`] = 0;
-      ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode) => {
-        reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] / deviceCount;
-        reportMapping[`meter_power.${period}_consumed`] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`];
-      });
+      if (data.length) {
+        const deviceCount = data.UsageDisclaimerPercentages
+          ? data.UsageDisclaimerPercentages.split(', ').length : 1;
+        reportMapping[`meter_power.${period}_consumed`] = 0;
+        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode) => {
+          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] / deviceCount;
+          reportMapping[`meter_power.${period}_consumed`] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`];
+        });
+      }
     });
 
     /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
@@ -171,8 +174,6 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
       await this.setCapabilityValueFromDevice(capability, reportMapping[capability]);
     }
     /* eslint-enable guard-for-in, no-await-in-loop, no-restricted-syntax */
-
-    this.instanceLog('Energy reports have been processed');
   }
 
   async customSyncData() {
