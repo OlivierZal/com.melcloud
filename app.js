@@ -2,8 +2,13 @@ const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 const axios = require('axios');
 
 class MELCloudApp extends Homey.App {
-  async onInit() {
+  onInit() {
     this.baseUrl = 'https://app.melcloud.com/Mitsubishi.Wifi.Client';
+    this.contextKey = this.homey.settings.get('ContextKey');
+
+    this.homey.setInterval(() => {
+      this.login(this.homey.settings.get('username'), this.homey.settings.get('password'));
+    }, 24 * 60 * 60 * 1000);
   }
 
   async login(username, password) {
@@ -31,6 +36,10 @@ class MELCloudApp extends Homey.App {
         this.instanceError('Login to MELCloud:', error.message);
       }
     }
+    if (login) {
+      this.homey.settings.set('username', username);
+      this.homey.settings.set('password', password);
+    }
     return login;
   }
 
@@ -38,7 +47,7 @@ class MELCloudApp extends Homey.App {
     const driver = instance instanceof Homey.Device ? instance.driver : instance;
 
     const url = `${this.baseUrl}/User/ListDevices`;
-    const config = { headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') } };
+    const config = { headers: { 'X-MitsContextKey': this.contextKey } };
 
     let listDevices;
     try {
@@ -84,7 +93,7 @@ class MELCloudApp extends Homey.App {
 
   async getDevice(device) {
     const url = `${this.baseUrl}/Device/Get?id=${device.data.id}&buildingID=${device.data.buildingid}`;
-    const config = { headers: { 'X-MitsContextKey': this.homey.settings.get('ContextKey') } };
+    const config = { headers: { 'X-MitsContextKey': this.contextKey } };
 
     let resultData = {};
     try {
@@ -101,7 +110,7 @@ class MELCloudApp extends Homey.App {
 
   async setDevice(device, data) {
     const url = `${this.baseUrl}/Device/Set${device.driver.heatPumpType}`;
-    const config = { headers: { 'X-MitsContextKey': device.homey.settings.get('ContextKey') } };
+    const config = { headers: { 'X-MitsContextKey': this.contextKey } };
 
     let resultData = {};
     try {
@@ -124,7 +133,7 @@ class MELCloudApp extends Homey.App {
     const toDate = `${yesterday.toISOString().split('T')[0]}T00:00:00`;
 
     const url = `${this.baseUrl}/EnergyCost/Report`;
-    const config = { headers: { 'X-MitsContextKey': device.homey.settings.get('ContextKey') } };
+    const config = { headers: { 'X-MitsContextKey': this.contextKey } };
     const data = {
       DeviceId: device.data.id,
       FromDate: daily ? toDate : '1970-01-01T00:00:00',
