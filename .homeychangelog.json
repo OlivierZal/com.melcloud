@@ -70,5 +70,8 @@
   },
   "6.0.0": {
     "en": "Changed request library (axios). Added an always on setting also for air-to-air heat pumps. Added repairing support and daily authentication refresh (some users may need to authenticate again to make it work)."
+  },
+  "6.0.1": {
+    "en": "Fixed code."
   }
 }
