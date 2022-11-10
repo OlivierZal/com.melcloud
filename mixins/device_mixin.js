@@ -134,7 +134,7 @@ class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async updateCapabilities(resultData) {
-    if (resultData.length) {
+    if (Object.keys(resultData).length) {
       /* eslint-disable guard-for-in, no-await-in-loop, no-restricted-syntax */
       for (const capability in this.driver.setCapabilityMapping) {
         const { effectiveFlag } = this.driver.setCapabilityMapping[capability];

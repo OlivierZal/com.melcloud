@@ -158,7 +158,7 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
     const reportMapping = {};
     Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
-      if (data.length) {
+      if (Object.keys(data).length) {
         const deviceCount = data.UsageDisclaimerPercentages
           ? data.UsageDisclaimerPercentages.split(', ').length : 1;
         reportMapping[`meter_power.${period}_consumed`] = 0;
@@ -217,10 +217,8 @@ class MELCloudAtaDevice extends MELCloudDeviceMixin {
     }
 
     this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateData) {
-        this.syncDataToDevice(this.updateData);
-        this.updateData = {};
-      }
+      this.syncDataToDevice(this.updateData);
+      this.updateData = {};
     }, 1 * 1000);
   }
 

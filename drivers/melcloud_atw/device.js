@@ -143,7 +143,7 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
     const reportMapping = {};
     Object.entries(report).forEach((entry) => {
       const [period, data] = entry;
-      if (data.length) {
+      if (Object.keys(data).length) {
         ['Consumed', 'Produced'].forEach((type) => {
           reportMapping[`meter_power.${period}_${type.toLowerCase()}`] = 0;
           ['Cooling', 'Heating', 'HotWater'].forEach((mode) => {
@@ -201,10 +201,8 @@ class MELCloudAtwDevice extends MELCloudDeviceMixin {
     }
 
     this.syncTimeout = this.homey.setTimeout(() => {
-      if (this.updateData) {
-        this.syncDataToDevice(this.updateData);
-        this.updateData = {};
-      }
+      this.syncDataToDevice(this.updateData);
+      this.updateData = {};
     }, 1 * 1000);
   }
 
