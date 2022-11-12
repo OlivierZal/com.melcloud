@@ -63,7 +63,7 @@ class MELCloudDeviceMixin extends Homey.Device {
     this.homey.clearTimeout(this.syncTimeout);
   }
 
-  async handleDashboardCapabilities(settings = null, capabilities = null) {
+  async handleDashboardCapabilities(settings, capabilities) {
     const newSettings = settings ?? this.getSettings();
     let newCapabilities = capabilities ?? Object.keys(newSettings);
     newCapabilities = newCapabilities
