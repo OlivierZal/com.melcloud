@@ -1,3 +1,6 @@
+import sourceMapSupport from 'source-map-support';
+sourceMapSupport.install();
+
 const Homey = require('homey'); // eslint-disable-line import/no-unresolved
 const axios = require('axios');
 
