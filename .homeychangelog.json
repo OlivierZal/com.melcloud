@@ -32,14 +32,8 @@
   "5.2.1": {
     "en": "Fixed bugs, including horizontal vane control and reports not processed daily."
   },
-  "5.2.2": {
-    "en": "Fixed bugs."
-  },
   "5.2.3": {
     "en": "Added notifications about new features."
-  },
-  "5.2.8": {
-    "en": "Improved logs."
   },
   "5.3.0": {
     "en": "Improved sync by agglomerating requests to MELCloud, reports will be processed every day at 0:00 AM UTC, updated some settings."
@@ -53,31 +47,10 @@
   "5.6.0": {
     "en": "Added wifi signal strength (can be enable from settings)."
   },
-  "5.6.1": {
-    "en": "Removed useless condition from the code."
-  },
   "5.6.2": {
     "en": "Improved logs and error handling."
   },
-  "5.6.3": {
-    "en": "Fixed missing sync."
-  },
-  "5.6.4": {
-    "en": "Avoided useless loop."
-  },
-  "5.6.5": {
-    "en": "Changed variable name."
-  },
   "6.0.0": {
     "en": "Changed request library (axios). Added an always on setting also for air-to-air heat pumps. Added repairing support and daily authentication refresh (some users may need to authenticate again to make it work)."
-  },
-  "6.0.1": {
-    "en": "Fixed code."
-  },
-  "6.0.2": {
-    "en": "Defaulted arguments."
-  },
-  "6.0.3": {
-    "en": "Remove useless thingswq"
   }
 }
