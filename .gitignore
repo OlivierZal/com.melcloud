@@ -1,4 +1,5 @@
 .homeychangelog.json
+node_modules/
 
 
 # Added by Homey CLI
