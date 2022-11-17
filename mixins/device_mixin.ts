@@ -1,6 +1,6 @@
 import Homey from 'homey'
-import MELCloudDriverMixin from './driver_mixin'
 import MELCloudApp from '../app'
+import MELCloudDriverMixin from './driver_mixin'
 import { Data, ListDevice, ListDevices, Settings, Value } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
