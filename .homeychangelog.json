@@ -55,5 +55,8 @@
   },
   "7.0.0": {
     "en": "Converted to TypeScript."
+  },
+  "7.0.1": {
+    "en": "Reordered imports."
   }
 }
