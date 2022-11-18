@@ -26,30 +26,30 @@ class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       }
     }
 
-    for (const capability of this.driver.atwCapabilities) {
+    for (const capability of this.driver.capabilitiesAtw) {
       if (!this.hasCapability(capability)) {
         await this.addCapability(capability)
       }
     }
 
     if (store.canCool === true) {
-      for (const capability of this.driver.notCoolAtwCapabilities) {
+      for (const capability of this.driver.notCoolCapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
         }
       }
-      for (const capability of this.driver.coolAtwCapabilities) {
+      for (const capability of this.driver.coolCapabilitiesAtw) {
         if (!this.hasCapability(capability)) {
           await this.addCapability(capability)
         }
       }
     } else {
-      for (const capability of this.driver.coolAtwCapabilities) {
+      for (const capability of this.driver.coolCapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
         }
       }
-      for (const capability of this.driver.notCoolAtwCapabilities) {
+      for (const capability of this.driver.notCoolCapabilitiesAtw) {
         if (!this.hasCapability(capability)) {
           await this.addCapability(capability)
         }
@@ -57,53 +57,53 @@ class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
 
     if (store.hasZone2 === true) {
-      for (const capability of this.driver.zone2AtwCapabilities) {
+      for (const capability of this.driver.zone2CapabilitiesAtw) {
         if (!this.hasCapability(capability)) {
           await this.addCapability(capability)
         }
       }
       if (store.canCool === true) {
-        for (const capability of this.driver.notCoolZone2AtwCapabilities) {
+        for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
           if (this.hasCapability(capability)) {
             await this.removeCapability(capability)
           }
         }
-        for (const capability of this.driver.coolZone2AtwCapabilities) {
+        for (const capability of this.driver.coolZone2CapabilitiesAtw) {
           if (!this.hasCapability(capability)) {
             await this.addCapability(capability)
           }
         }
       } else {
-        for (const capability of this.driver.coolZone2AtwCapabilities) {
+        for (const capability of this.driver.coolZone2CapabilitiesAtw) {
           if (this.hasCapability(capability)) {
             await this.removeCapability(capability)
           }
         }
-        for (const capability of this.driver.notCoolZone2AtwCapabilities) {
+        for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
           if (!this.hasCapability(capability)) {
             await this.addCapability(capability)
           }
         }
       }
     } else {
-      for (const capability of this.driver.zone2AtwCapabilities) {
+      for (const capability of this.driver.zone2CapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
         }
       }
-      for (const capability of this.driver.coolZone2AtwCapabilities) {
+      for (const capability of this.driver.coolZone2CapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
         }
       }
-      for (const capability of this.driver.notCoolZone2AtwCapabilities) {
+      for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
         }
       }
     }
 
-    for (const capability of this.driver.otherAtwCapabilities) {
+    for (const capability of this.driver.otherCapabilitiesAtw) {
       if (!this.hasCapability(capability)) {
         await this.addCapability(capability)
       }

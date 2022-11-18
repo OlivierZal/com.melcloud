@@ -63,7 +63,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   async listDevices (driver: MELCloudDriverMixin): Promise<ListDevices> {
-    const listDevices: ListDevices = {}
+    const devices: ListDevices = {}
 
     const url: string = `${this.baseUrl}/User/ListDevices`
     const config: Headers = { headers: { 'X-MitsContextKey': this.contextKey } }
@@ -73,29 +73,29 @@ export default class MELCloudApp extends Homey.App {
       const { data } = await axios.get<Building[]>(url, config)
       driver.log('Searching for devices:', data)
       data.forEach((building: Building) => {
-        building.Structure.Devices.forEach((listDevice: ListDevice) => {
-          if (driver.deviceType === listDevice.Device.DeviceType) {
-            listDevices[listDevice.DeviceID] = listDevice
+        building.Structure.Devices.forEach((device: ListDevice) => {
+          if (driver.deviceType === device.Device.DeviceType) {
+            devices[device.DeviceID] = device
           }
         })
         building.Structure.Floors.forEach((floor) => {
-          floor.Devices.forEach((listDevice) => {
-            if (driver.deviceType === listDevice.Device.DeviceType) {
-              listDevices[listDevice.DeviceID] = listDevice
+          floor.Devices.forEach((device) => {
+            if (driver.deviceType === device.Device.DeviceType) {
+              devices[device.DeviceID] = device
             }
           })
           floor.Areas.forEach((area) => {
-            area.Devices.forEach((listDevice) => {
-              if (driver.deviceType === listDevice.Device.DeviceType) {
-                listDevices[listDevice.DeviceID] = listDevice
+            area.Devices.forEach((device) => {
+              if (driver.deviceType === device.Device.DeviceType) {
+                devices[device.DeviceID] = device
               }
             })
           })
         })
         building.Structure.Areas.forEach((area) => {
-          area.Devices.forEach((listDevice) => {
-            if (driver.deviceType === listDevice.Device.DeviceType) {
-              listDevices[listDevice.DeviceID] = listDevice
+          area.Devices.forEach((device) => {
+            if (driver.deviceType === device.Device.DeviceType) {
+              devices[device.DeviceID] = device
             }
           })
         })
@@ -103,7 +103,7 @@ export default class MELCloudApp extends Homey.App {
     } catch (error: unknown) {
       driver.error('Searching for devices:', error instanceof Error ? error.message : error)
     }
-    return listDevices
+    return devices
   }
 
   async getDevice (device: MELCloudDeviceMixin): Promise<Data> {

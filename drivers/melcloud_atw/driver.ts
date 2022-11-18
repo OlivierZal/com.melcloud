@@ -40,13 +40,13 @@ const listCapabilityMappingAtw = {
 } as const
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  atwCapabilities!: string[]
-  coolAtwCapabilities!: string[]
-  notCoolAtwCapabilities!: string[]
-  zone2AtwCapabilities!: string[]
-  coolZone2AtwCapabilities!: string[]
-  notCoolZone2AtwCapabilities!: string[]
-  otherAtwCapabilities!: string[]
+  capabilitiesAtw!: string[]
+  coolCapabilitiesAtw!: string[]
+  notCoolCapabilitiesAtw!: string[]
+  zone2CapabilitiesAtw!: string[]
+  coolZone2CapabilitiesAtw!: string[]
+  notCoolZone2CapabilitiesAtw!: string[]
+  otherCapabilitiesAtw!: string[]
 
   async onInit (): Promise<void> {
     await super.onInit()
@@ -58,7 +58,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
 
-    this.atwCapabilities = [
+    this.capabilitiesAtw = [
       'measure_temperature',
       'measure_temperature.outdoor',
       'measure_temperature.flow',
@@ -69,26 +69,26 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'target_temperature',
       'target_temperature.zone1_flow_heat'
     ]
-    this.coolAtwCapabilities = [
+    this.coolCapabilitiesAtw = [
       'operation_mode_zone_with_cool.zone1',
       'target_temperature.zone1_flow_cool'
     ]
-    this.notCoolAtwCapabilities = [
+    this.notCoolCapabilitiesAtw = [
       'operation_mode_zone.zone1'
     ]
-    this.zone2AtwCapabilities = [
+    this.zone2CapabilitiesAtw = [
       'measure_temperature.zone2',
       'target_temperature.zone2',
       'target_temperature.zone2_flow_heat'
     ]
-    this.coolZone2AtwCapabilities = [
+    this.coolZone2CapabilitiesAtw = [
       'operation_mode_zone_with_cool.zone2',
       'target_temperature.zone2_flow_cool'
     ]
-    this.notCoolZone2AtwCapabilities = [
+    this.notCoolZone2CapabilitiesAtw = [
       'operation_mode_zone.zone2'
     ]
-    this.otherAtwCapabilities = [
+    this.otherCapabilitiesAtw = [
       'measure_temperature.tank_water',
       'target_temperature.tank_water'
     ]
@@ -191,8 +191,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   async discoverDevices (): Promise<DeviceInfo[]> {
-    const listDevices: ListDevices = await this.app.listDevices(this)
-    const devices: DeviceInfo[] = Object.values(listDevices).map((device) => {
+    const devices: ListDevices = await this.app.listDevices(this)
+    return Object.values(devices).map((device) => {
       const deviceInfo = {
         name: device.DeviceName,
         data: {
@@ -205,38 +205,37 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         },
         capabilities: [] as string[]
       }
-      this.atwCapabilities.forEach((capability) => {
+      this.capabilitiesAtw.forEach((capability) => {
         deviceInfo.capabilities.push(capability)
       })
       if (device.Device.CanCool) {
-        this.coolAtwCapabilities.forEach((capability) => {
+        this.coolCapabilitiesAtw.forEach((capability) => {
           deviceInfo.capabilities.push(capability)
         })
       } else {
-        this.notCoolAtwCapabilities.forEach((capability) => {
+        this.notCoolCapabilitiesAtw.forEach((capability) => {
           deviceInfo.capabilities.push(capability)
         })
       }
       if (device.Device.HasZone2) {
-        this.zone2AtwCapabilities.forEach((capability) => {
+        this.zone2CapabilitiesAtw.forEach((capability) => {
           deviceInfo.capabilities.push(capability)
         })
         if (device.Device.CanCool) {
-          this.coolZone2AtwCapabilities.forEach((capability) => {
+          this.coolZone2CapabilitiesAtw.forEach((capability) => {
             deviceInfo.capabilities.push(capability)
           })
         } else {
-          this.notCoolZone2AtwCapabilities.forEach((capability) => {
+          this.notCoolZone2CapabilitiesAtw.forEach((capability) => {
             deviceInfo.capabilities.push(capability)
           })
         }
       }
-      this.otherAtwCapabilities.forEach((capability) => {
+      this.otherCapabilitiesAtw.forEach((capability) => {
         deviceInfo.capabilities.push(capability)
       })
       return deviceInfo
     })
-    return devices
   }
 }
 

@@ -104,8 +104,8 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async getDeviceFromList (): Promise<ListDevice | null> {
-    const listDevices: ListDevices = await this.app.listDevices(this.driver)
-    const device: ListDevice = listDevices[this.id]
+    const devices: ListDevices = await this.app.listDevices(this.driver)
+    const device: ListDevice = devices[this.id]
     if (device === undefined) {
       this.instanceError('Not found while searching from device list')
       return null
