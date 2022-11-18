@@ -58,5 +58,8 @@
   },
   "7.0.1": {
     "en": "Reordered imports."
+  },
+  "7.0.2": {
+    "en": "Added source map support."
   }
 }
