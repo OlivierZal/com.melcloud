@@ -61,5 +61,8 @@
   },
   "7.0.2": {
     "en": "Added source map support."
+  },
+  "7.0.3": {
+    "en": "Renamed some variables."
   }
 }
