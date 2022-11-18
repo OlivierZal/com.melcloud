@@ -1,3 +1,5 @@
+import 'source-map-support/register'
+
 export interface Area {
   Devices: ListDevice[]
 }

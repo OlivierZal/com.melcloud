@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import Homey from 'homey'
 import PairSession from 'homey/lib/PairSession'
 import MELCloudApp from '../app'

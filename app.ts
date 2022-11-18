@@ -1,10 +1,9 @@
+import 'source-map-support/register'
 import axios from 'axios'
-import sourceMapSupport from 'source-map-support'
 import Homey from 'homey'
 import MELCloudDeviceMixin from './mixins/device_mixin'
 import MELCloudDriverMixin from './mixins/driver_mixin'
 import { Building, Data, Headers, ListDevice, ListDevices, LoginCredentials, LoginData } from './types'
-sourceMapSupport.install()
 
 export default class MELCloudApp extends Homey.App {
   baseUrl!: string

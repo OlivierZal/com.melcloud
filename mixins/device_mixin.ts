@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import Homey from 'homey'
 import MELCloudApp from '../app'
 import MELCloudDriverMixin from './driver_mixin'
