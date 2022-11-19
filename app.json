@@ -2603,26 +2603,56 @@
         "alarm_generic.booster_heater1": {
           "title": {
             "en": "Booster Heater 1"
+          },
+          "insightsTitleTrue": {
+            "en": "Booster Heater 1 on"
+          },
+          "insightsTitleFalse": {
+            "en": "Booster Heater 1 off"
           }
         },
         "alarm_generic.booster_heater2": {
           "title": {
             "en": "Booster Heater 2"
+          },
+          "insightsTitleTrue": {
+            "en": "Booster Heater 2 on"
+          },
+          "insightsTitleFalse": {
+            "en": "Booster Heater 2 off"
           }
         },
         "alarm_generic.booster_heater2_plus": {
           "title": {
             "en": "Booster Heater 2 Plus"
+          },
+          "insightsTitleTrue": {
+            "en": "Booster Heater 2 Plus on"
+          },
+          "insightsTitleFalse": {
+            "en": "Booster Heater 2 Plus off"
           }
         },
         "alarm_generic.defrost_mode": {
           "title": {
             "en": "Defrost Mode"
+          },
+          "insightsTitleTrue": {
+            "en": "Defrost Mode on"
+          },
+          "insightsTitleFalse": {
+            "en": "Defrost Mode off"
           }
         },
         "alarm_generic.immersion_heater": {
           "title": {
             "en": "Immersion Heater"
+          },
+          "insightsTitleTrue": {
+            "en": "Immersion Heater on"
+          },
+          "insightsTitleFalse": {
+            "en": "Immersion Heater off"
           }
         },
         "measure_power.heat_pump_frequency": {
