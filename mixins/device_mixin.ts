@@ -1,17 +1,41 @@
 import 'source-map-support/register'
+
 import Homey from 'homey'
 import MELCloudApp from '../app'
-import MELCloudDriverMixin from './driver_mixin'
-import { Data, ListDevice, ListDevices, Settings, Value } from '../types'
+import MELCloudDeviceAta from '../drivers/melcloud/device'
+import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import MELCloudDriverAta from '../drivers/melcloud/driver'
+import MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
+import { Diff, GetData, ListDevice, ListDevices, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
   app!: MELCloudApp
-  driver!: MELCloudDriverMixin
+  driver!: MELCloudDriverAta | MELCloudDriverAtw
+  diff!: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>
+
+  setCapabilityMapping!: {
+    [capability: string]: {
+      tag: string
+      effectiveFlag: bigint
+    }
+  }
+
+  getCapabilityMapping!: {
+    [capability: string]: {
+      tag: string
+    }
+  }
+
+  listCapabilityMapping!: {
+    [capability: string]: {
+      tag: string
+    }
+  }
 
   id!: number
   buildingid!: number
+  deviceFromList!: ListDevice | null
   requiredCapabilities!: string[]
-  newData!: Data
 
   reportInterval: NodeJS.Timeout | undefined
   reportTimeout: NodeJS.Timeout | undefined
@@ -23,8 +47,9 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     const data = this.getData()
     this.id = data.id
     this.buildingid = data.buildingid
+    this.deviceFromList = null
     this.requiredCapabilities = this.driver.manifest.capabilities
-    this.newData = {}
+    this.diff = {}
 
     await this.handleCapabilities()
     await this.handleDashboardCapabilities()
@@ -34,6 +59,14 @@ export default class MELCloudDeviceMixin extends Homey.Device {
 
     await this.runEnergyReports()
     this.planEnergyReports()
+  }
+
+  registerCapabilityListeners (): void {
+    Object.keys(this.setCapabilityMapping).forEach((capability: string) => {
+      this.registerCapabilityListener(capability, async (value: boolean | number | string) => {
+        await this.onCapability(capability, value)
+      })
+    })
   }
 
   planEnergyReports (): void {
@@ -114,40 +147,40 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async syncDataFromDevice (): Promise<void> {
-    const resultData: Data = await this.app.getDevice(this)
+    const resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {} = await this.app.getDevice(this as MELCloudDeviceAta | MELCloudDeviceAtw)
     await this.syncData(resultData)
   }
 
-  async syncDataToDevice (newData: { [capability: string]: Value }): Promise<void> {
-    this.newData = {}
+  async syncDataToDevice (diff: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>): Promise<void> {
+    this.diff = {}
+    const updateData: UpdateData<MELCloudDeviceAta | MELCloudDeviceAtw> = this.buildUpdateData(diff)
+    const resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {} = await this.app.setDevice(this as MELCloudDeviceAta | MELCloudDeviceAtw, updateData)
+    await this.syncData(resultData)
+  }
 
-    const updateData: Data = {}
+  buildUpdateData (diff: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>): UpdateData<MELCloudDeviceAta | MELCloudDeviceAtw> {
+    const updateData: any = {}
     let effectiveFlags: bigint = BigInt(0)
-    Object.entries(this.driver.setCapabilityMapping).forEach((entry) => {
-      const [capability, values] = entry
+    Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
+      const [capability, { tag, effectiveFlag }]: [string, { tag: string, effectiveFlag: bigint }] = entry
       if (this.hasCapability(capability)) {
-        const { tag, effectiveFlag } = values
-        if (capability in newData) {
+        if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = newData[capability]
+          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof typeof diff])
         } else {
           updateData[tag] = this.getCapabilityValueToDevice(capability)
         }
       }
     })
     updateData.EffectiveFlags = Number(effectiveFlags)
-
-    const resultData: Data = await this.app.setDevice(this, updateData)
-    await this.syncData(resultData)
+    return updateData
   }
 
-  async syncData (resultData: Data): Promise<void> {
+  async syncData (resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {}): Promise<void> {
+    this.deviceFromList = await this.getDeviceFromList()
     await this.updateCapabilities(resultData)
-
-    const deviceFromList: ListDevice | null = await this.getDeviceFromList()
-    await this.updateListCapabilities(deviceFromList)
-
-    await this.customSyncData(deviceFromList)
+    await this.updateListCapabilities()
+    await this.customUpdate()
 
     const interval: number = this.getSetting('interval')
     this.syncTimeout = this.homey
@@ -157,37 +190,36 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.instanceLog('Next sync from device in', interval, 'minutes')
   }
 
-  async updateCapabilities (resultData: Data): Promise<void> {
-    if (Object.keys(resultData).length > 0) {
-      for (const capability in this.driver.setCapabilityMapping) {
+  async updateCapabilities (resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {}): Promise<void> {
+    if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
+      for (const capability in this.setCapabilityMapping) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
-        const { effectiveFlag } = this.driver.setCapabilityMapping[capability]
-        if (effectiveFlags === BigInt(0) || Boolean((effectiveFlags ?? BigInt(0)) & effectiveFlag)) {
-          const { tag } = this.driver.setCapabilityMapping[capability]
-          await this.setCapabilityValueFromDevice(capability, resultData[tag])
+        const { effectiveFlag, tag } = this.setCapabilityMapping[capability]
+        if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
+          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
         }
       }
-      for (const capability in this.driver.getCapabilityMapping) {
-        const { tag } = this.driver.getCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, resultData[tag])
+      for (const capability in this.getCapabilityMapping) {
+        const { tag } = this.getCapabilityMapping[capability]
+        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
       }
     }
   }
 
-  async updateListCapabilities (deviceFromList: ListDevice | null): Promise<void> {
-    if (deviceFromList !== null) {
-      for (const capability in this.driver.listCapabilityMapping) {
-        const { tag } = this.driver.listCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, deviceFromList.Device[tag])
+  async updateListCapabilities (): Promise<void> {
+    if (this.deviceFromList !== null) {
+      for (const capability in this.listCapabilityMapping) {
+        const { tag } = this.listCapabilityMapping[capability]
+        await this.setCapabilityValueFromDevice(capability, this.deviceFromList.Device[tag])
       }
     }
   }
 
-  async setOrNotCapabilityValue (capability: string, value: Value): Promise<void> {
+  async setOrNotCapabilityValue (capability: string, value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
         .then(() => this.instanceLog(capability, 'is', value))
-        .catch((error) => this.instanceError(error.message))
+        .catch((error: unknown) => this.instanceError(error instanceof Error ? error.message : error))
     }
   }
 
@@ -203,11 +235,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     throw new Error('Method not implemented.')
   }
 
-  registerCapabilityListeners (): void {
-    throw new Error('Method not implemented.')
-  }
-
-  async onCapability (_capability: string, _value?: Value): Promise<void> {
+  async onCapability (_capability: string, _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -215,15 +243,15 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     throw new Error('Method not implemented.')
   }
 
-  getCapabilityValueToDevice (_capability: string): Value {
+  getCapabilityValueToDevice (_capability: string, _value?: boolean | number | string): boolean | number {
     throw new Error('Method not implemented.')
   }
 
-  async setCapabilityValueFromDevice (_capability: string, _value: Value): Promise<void> {
+  async setCapabilityValueFromDevice (_capability: string, _value: boolean | number): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  async customSyncData (_deviceFromList?: ListDevice | null): Promise<void> {
+  async customUpdate (): Promise<void> {
     throw new Error('Method not implemented.')
   }
 }
