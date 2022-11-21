@@ -64,5 +64,8 @@
   },
   "7.0.3": {
     "en": "Renamed some variables."
+  },
+  "7.0.4": {
+    "en": "Customized boolean capability names."
   }
 }
