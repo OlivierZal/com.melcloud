@@ -2,6 +2,11 @@ import 'source-map-support/register'
 
 import MELCloudDeviceAta from './drivers/melcloud/device'
 import MELCloudDeviceAtw from './drivers/melcloud_atw/device'
+import MELCloudDriverAta from './drivers/melcloud/driver'
+import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
+
+export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
+export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 interface DeviceData {
   DeviceID: number
@@ -69,7 +74,7 @@ export interface DeviceInfo {
   capabilities?: string[]
 }
 
-export type ReportMapping<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+export type ReportMapping<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ReportMappingAtw
   : ReportMappingAta
 
@@ -117,7 +122,7 @@ interface ReportMappingAtw {
   'meter_power.total_produced_hotwater': number
 }
 
-export type ReportData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ReportDataAtw
   : ReportDataAta
 
@@ -146,13 +151,13 @@ export interface ReportPostData extends DeviceData {
   UseCurrency: false
 }
 
-export type GetData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = UpdateData<T> & DeviceData & GetDeviceData<T>
+export type GetData<T extends MELCloudDevice> = UpdateData<T> & DeviceData & GetDeviceData<T>
 
-export type PostData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = UpdateData<T> & DeviceData & { HasPendingCommand: true }
+export type PostData<T extends MELCloudDevice> = UpdateData<T> & DeviceData & { HasPendingCommand: true }
 
-export type UpdateData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = SetDeviceData<T> & { EffectiveFlags: number }
+export type UpdateData<T extends MELCloudDevice> = SetDeviceData<T> & { EffectiveFlags: number }
 
-type GetDeviceData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? GetDeviceDataAtw
   : GetDeviceDataAta
 
@@ -169,7 +174,7 @@ interface GetDeviceDataAtw {
   TankWaterTemperature: number
 }
 
-type SetDeviceData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+type SetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetDeviceDataAtw
   : SetDeviceDataAta
 
@@ -197,7 +202,7 @@ interface SetDeviceDataAtw {
   SetTemperatureZone2: number
 }
 
-export type Diff<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+export type Diff<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? DiffAtw
   : DiffAta
 

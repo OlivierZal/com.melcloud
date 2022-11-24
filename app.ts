@@ -2,10 +2,6 @@ import 'source-map-support/register'
 
 import axios from 'axios'
 import Homey from 'homey'
-import MELCloudDeviceAta from './drivers/melcloud/device'
-import MELCloudDeviceAtw from './drivers/melcloud_atw/device'
-import MELCloudDriverAta from './drivers/melcloud/driver'
-import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 import * as types from './types'
 
 export default class MELCloudApp extends Homey.App {
@@ -62,7 +58,7 @@ export default class MELCloudApp extends Homey.App {
     return false
   }
 
-  async listDevices (driver: MELCloudDriverAta | MELCloudDriverAtw): Promise<types.ListDevices> {
+  async listDevices (driver: types.MELCloudDriver): Promise<types.ListDevices> {
     const devices: types.ListDevices = {}
 
     driver.log('Searching for devices...')
@@ -103,7 +99,7 @@ export default class MELCloudApp extends Homey.App {
     return devices
   }
 
-  async getDevice (device: MELCloudDeviceAta | MELCloudDeviceAtw): Promise<types.GetData<typeof device> | {}> {
+  async getDevice (device: types.MELCloudDevice): Promise<types.GetData<typeof device> | {}> {
     device.instanceLog('Syncing from device...')
     try {
       const { data } = await axios.get<types.GetData<typeof device>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
@@ -115,7 +111,7 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async setDevice (device: MELCloudDeviceAta | MELCloudDeviceAtw, updateData: types.UpdateData<typeof device>): Promise<types.GetData<typeof device> | {}> {
+  async setDevice (device: types.MELCloudDevice, updateData: types.UpdateData<typeof device>): Promise<types.GetData<typeof device> | {}> {
     const postData: types.PostData<typeof device> = {
       DeviceID: device.id,
       HasPendingCommand: true,
@@ -133,7 +129,7 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async reportEnergyCost (device: MELCloudDeviceAta | MELCloudDeviceAtw, daily: boolean): Promise<types.ReportData<typeof device> | {}> {
+  async reportEnergyCost (device: types.MELCloudDevice, daily: boolean): Promise<types.ReportData<typeof device> | {}> {
     const period = daily ? 'daily' : 'total'
 
     const yesterday: Date = new Date()

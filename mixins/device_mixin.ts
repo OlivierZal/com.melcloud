@@ -2,16 +2,12 @@ import 'source-map-support/register'
 
 import Homey from 'homey'
 import MELCloudApp from '../app'
-import MELCloudDeviceAta from '../drivers/melcloud/device'
-import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
-import MELCloudDriverAta from '../drivers/melcloud/driver'
-import MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
-import { Diff, GetData, ListDevice, ListDevices, Settings, UpdateData } from '../types'
+import { Diff, GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
   app!: MELCloudApp
-  driver!: MELCloudDriverAta | MELCloudDriverAtw
-  diff!: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>
+  driver!: MELCloudDriver
+  diff!: Diff<MELCloudDevice>
 
   setCapabilityMapping!: {
     [capability: string]: {
@@ -147,18 +143,18 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   }
 
   async syncDataFromDevice (): Promise<void> {
-    const resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {} = await this.app.getDevice(this as MELCloudDeviceAta | MELCloudDeviceAtw)
+    const resultData: GetData<MELCloudDevice> | {} = await this.app.getDevice(this as MELCloudDevice)
     await this.syncData(resultData)
   }
 
-  async syncDataToDevice (diff: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>): Promise<void> {
+  async syncDataToDevice (diff: Diff<MELCloudDevice>): Promise<void> {
     this.diff = {}
-    const updateData: UpdateData<MELCloudDeviceAta | MELCloudDeviceAtw> = this.buildUpdateData(diff)
-    const resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {} = await this.app.setDevice(this as MELCloudDeviceAta | MELCloudDeviceAtw, updateData)
+    const updateData: UpdateData<MELCloudDevice> = this.buildUpdateData(diff)
+    const resultData: GetData<MELCloudDevice> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
     await this.syncData(resultData)
   }
 
-  buildUpdateData (diff: Diff<MELCloudDeviceAta | MELCloudDeviceAtw>): UpdateData<MELCloudDeviceAta | MELCloudDeviceAtw> {
+  buildUpdateData (diff: Diff<MELCloudDevice>): UpdateData<MELCloudDevice> {
     const updateData: any = {}
     let effectiveFlags: bigint = BigInt(0)
     Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
@@ -176,7 +172,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     return updateData
   }
 
-  async syncData (resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {}): Promise<void> {
+  async syncData (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
     this.deviceFromList = await this.getDeviceFromList()
     await this.updateCapabilities(resultData)
     await this.updateListCapabilities()
@@ -190,7 +186,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.instanceLog('Next sync from device in', interval, 'minutes')
   }
 
-  async updateCapabilities (resultData: GetData<MELCloudDeviceAta | MELCloudDeviceAtw> | {}): Promise<void> {
+  async updateCapabilities (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
     if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
       for (const capability in this.setCapabilityMapping) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
