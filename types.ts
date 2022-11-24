@@ -70,7 +70,7 @@ export interface DeviceInfo {
 }
 
 export interface ReportData {
-  [tag: string]: number | string | null
+  [tag: string]: number | string
 }
 
 export interface ReportPostData extends DeviceData {
