@@ -133,7 +133,7 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async reportEnergyCost (device: MELCloudDeviceAta | MELCloudDeviceAtw, daily: boolean): Promise<types.ReportData> {
+  async reportEnergyCost (device: MELCloudDeviceAta | MELCloudDeviceAtw, daily: boolean): Promise<types.ReportData<typeof device> | {}> {
     const period = daily ? 'daily' : 'total'
 
     const yesterday: Date = new Date()
@@ -149,7 +149,7 @@ export default class MELCloudApp extends Homey.App {
 
     device.instanceLog('Reporting', period, 'energy cost...', postData)
     try {
-      const { data } = await axios.post<types.ReportData>('/EnergyCost/Report', postData)
+      const { data } = await axios.post<types.ReportData<typeof device>>('/EnergyCost/Report', postData)
       device.instanceLog('Reporting', period, 'energy cost:', data)
       return data
     } catch (error: unknown) {
