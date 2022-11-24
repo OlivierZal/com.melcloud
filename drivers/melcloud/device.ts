@@ -97,28 +97,42 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async runEnergyReports (): Promise<void> {
-    const report: { daily: ReportData, total: ReportData } = {
+    const report: { daily: ReportData<MELCloudDeviceAta> | {}, total: ReportData<MELCloudDeviceAta> | {} } = {
       daily: await this.app.reportEnergyCost(this, true),
       total: await this.app.reportEnergyCost(this, false)
     }
 
-    const reportMapping: ReportMapping = {}
-    Object.entries(report).forEach((entry: [string, ReportData]) => {
-      const [period, data]: [string, ReportData] = entry
-      if (Object.keys(data).length > 0) {
+    const reportMapping: ReportMapping<MELCloudDeviceAta> = {
+      'meter_power.daily_consumed': 0,
+      'meter_power.daily_consumed_auto': 0,
+      'meter_power.daily_consumed_cooling': 0,
+      'meter_power.daily_consumed_dry': 0,
+      'meter_power.daily_consumed_fan': 0,
+      'meter_power.daily_consumed_heating': 0,
+      'meter_power.daily_consumed_other': 0,
+      'meter_power.total_consumed': 0,
+      'meter_power.total_consumed_auto': 0,
+      'meter_power.total_consumed_cooling': 0,
+      'meter_power.total_consumed_dry': 0,
+      'meter_power.total_consumed_fan': 0,
+      'meter_power.total_consumed_heating': 0,
+      'meter_power.total_consumed_other': 0
+    }
+    Object.entries(report).forEach((entry: [string, ReportData<MELCloudDeviceAta> | {}]) => {
+      const [period, data]: [string, ReportData<MELCloudDeviceAta> | {}] = entry
+      if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
-          : 1
-        reportMapping[`meter_power.${period}_consumed`] = 0;
+          : 1;
         ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string) => {
-          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] as number / deviceCount
-          reportMapping[`meter_power.${period}_consumed`] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`]
+          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAta>] = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number / deviceCount
+          reportMapping[`meter_power.${period}_consumed` as keyof ReportMapping<MELCloudDeviceAta>] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAta>]
         })
       }
     })
 
     for (const capability in reportMapping) {
-      await this.setCapabilityValueFromDevice(capability, reportMapping[capability])
+      await this.setCapabilityValueFromDevice(capability, reportMapping[capability as keyof ReportMapping<MELCloudDeviceAta>])
     }
   }
 

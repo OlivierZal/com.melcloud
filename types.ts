@@ -69,18 +69,81 @@ export interface DeviceInfo {
   capabilities?: string[]
 }
 
-export interface ReportData {
-  [tag: string]: number | string
+export type ReportMapping<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+  ? ReportMappingAtw
+  : ReportMappingAta
+
+interface ReportMappingAta {
+  'meter_power.daily_consumed': number
+  'meter_power.daily_consumed_auto': number
+  'meter_power.daily_consumed_cooling': number
+  'meter_power.daily_consumed_dry': number
+  'meter_power.daily_consumed_fan': number
+  'meter_power.daily_consumed_heating': number
+  'meter_power.daily_consumed_other': number
+  'meter_power.total_consumed': number
+  'meter_power.total_consumed_auto': number
+  'meter_power.total_consumed_cooling': number
+  'meter_power.total_consumed_dry': number
+  'meter_power.total_consumed_fan': number
+  'meter_power.total_consumed_heating': number
+  'meter_power.total_consumed_other': number
+}
+
+interface ReportMappingAtw {
+  'meter_power.daily_cop': number
+  'meter_power.daily_cop_cooling': number
+  'meter_power.daily_cop_heating': number
+  'meter_power.daily_cop_hotwater': number
+  'meter_power.daily_consumed': number
+  'meter_power.daily_consumed_cooling': number
+  'meter_power.daily_consumed_heating': number
+  'meter_power.daily_consumed_hotwater': number
+  'meter_power.daily_produced': number
+  'meter_power.daily_produced_cooling': number
+  'meter_power.daily_produced_heating': number
+  'meter_power.daily_produced_hotwater': number
+  'meter_power.total_cop': number
+  'meter_power.total_cop_cooling': number
+  'meter_power.total_cop_heating': number
+  'meter_power.total_cop_hotwater': number
+  'meter_power.total_consumed': number
+  'meter_power.total_consumed_cooling': number
+  'meter_power.total_consumed_heating': number
+  'meter_power.total_consumed_hotwater': number
+  'meter_power.total_produced': number
+  'meter_power.total_produced_cooling': number
+  'meter_power.total_produced_heating': number
+  'meter_power.total_produced_hotwater': number
+}
+
+export type ReportData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = T extends MELCloudDeviceAtw
+  ? ReportDataAtw
+  : ReportDataAta
+
+interface ReportDataAta {
+  TotalHeatingConsumed: number
+  TotalCoolingConsumed: number
+  TotalAutoConsumed: number
+  TotalDryConsumed: number
+  TotalFanConsumed: number
+  TotalOtherConsumed: number
+  UsageDisclaimerPercentages: string
+}
+
+interface ReportDataAtw {
+  TotalHeatingConsumed: number
+  TotalCoolingConsumed: number
+  TotalHotWaterConsumed: number
+  TotalHeatingProduced: number
+  TotalCoolingProduced: number
+  TotalHotWaterProduced: number
 }
 
 export interface ReportPostData extends DeviceData {
   FromDate: string
   ToDate: string
   UseCurrency: false
-}
-
-export interface ReportMapping {
-  [tag: string]: number
 }
 
 export type GetData<T extends MELCloudDeviceAta | MELCloudDeviceAtw> = UpdateData<T> & DeviceData & GetDeviceData<T>
