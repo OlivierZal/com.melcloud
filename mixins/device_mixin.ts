@@ -135,7 +135,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     const devices: ListDevices = await this.app.listDevices(this.driver)
     const device: ListDevice = devices[this.id]
     if (device === undefined) {
-      this.instanceError('Not found while searching from device list')
+      this.error('Not found while searching from device list')
       return null
     }
     return device
@@ -173,8 +173,8 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   async setOrNotCapabilityValue (capability: string, value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
-        .then(() => this.instanceLog(capability, 'is', value))
-        .catch((error: unknown) => this.instanceError(error instanceof Error ? error.message : error))
+        .then(() => this.log(capability, 'is', value))
+        .catch((error: unknown) => this.error(error instanceof Error ? error.message : error))
     }
   }
 
@@ -189,7 +189,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
       .setTimeout(async () => {
         await this.syncDataFromDevice()
       }, newInterval * 60 * 1000)
-    this.instanceLog('Next sync from device in', newInterval, 'minutes')
+    this.log('Next sync from device in', newInterval, 'minutes')
   }
 
   async runEnergyReports (): Promise<void> {
@@ -244,11 +244,11 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.homey.clearTimeout(this.syncTimeout)
   }
 
-  instanceLog (...message: any[]): void {
-    this.log(this.getName(), '-', ...message)
+  log (...message: any[]): void {
+    super.log(this.getName(), '-', ...message)
   }
 
-  instanceError (...message: any[]): void {
-    this.error(this.getName(), '-', ...message)
+  error (...message: any[]): void {
+    super.error(this.getName(), '-', ...message)
   }
 }

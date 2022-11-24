@@ -100,13 +100,13 @@ export default class MELCloudApp extends Homey.App {
   }
 
   async getDevice (device: types.MELCloudDevice): Promise<types.GetData<typeof device> | {}> {
-    device.instanceLog('Syncing from device...')
+    device.log('Syncing from device...')
     try {
       const { data } = await axios.get<types.GetData<typeof device>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
-      device.instanceLog('Syncing from device:', data)
+      device.log('Syncing from device:', data)
       return data
     } catch (error: unknown) {
-      device.instanceError('Syncing from device:', error instanceof Error ? error.message : error)
+      device.error('Syncing from device:', error instanceof Error ? error.message : error)
     }
     return {}
   }
@@ -118,13 +118,13 @@ export default class MELCloudApp extends Homey.App {
       ...updateData
     }
 
-    device.instanceLog('Syncing with device...', postData)
+    device.log('Syncing with device...', postData)
     try {
       const { data } = await axios.post<types.GetData<typeof device>>(`/Device/Set${device.driver.heatPumpType}`, postData)
-      device.instanceLog('Syncing with device:', data)
+      device.log('Syncing with device:', data)
       return data
     } catch (error: unknown) {
-      device.instanceError('Syncing with device:', error instanceof Error ? error.message : error)
+      device.error('Syncing with device:', error instanceof Error ? error.message : error)
     }
     return {}
   }
@@ -143,13 +143,13 @@ export default class MELCloudApp extends Homey.App {
       UseCurrency: false
     }
 
-    device.instanceLog('Reporting', period, 'energy cost...', postData)
+    device.log('Reporting', period, 'energy cost...', postData)
     try {
       const { data } = await axios.post<types.ReportData<typeof device>>('/EnergyCost/Report', postData)
-      device.instanceLog('Reporting', period, 'energy cost:', data)
+      device.log('Reporting', period, 'energy cost:', data)
       return data
     } catch (error: unknown) {
-      device.instanceError('Reporting', period, 'energy cost:', error instanceof Error ? error.message : error)
+      device.error('Reporting', period, 'energy cost:', error instanceof Error ? error.message : error)
     }
     return {}
   }

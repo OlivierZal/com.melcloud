@@ -129,7 +129,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         this.diff[capability] = value as number
         break
       default:
-        this.instanceError('Unknown capability', capability, '- with value', value)
+        this.error('Unknown capability', capability, '- with value', value)
     }
 
     this.syncTimeout = this.homey.setTimeout(async () => {
