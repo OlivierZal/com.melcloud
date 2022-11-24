@@ -44,9 +44,9 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.id = data.id
     this.buildingid = data.buildingid
     this.deviceFromList = null
-    this.requiredCapabilities = this.driver.manifest.capabilities
     this.diff = {}
 
+    this.requiredCapabilities = this.driver.manifest.capabilities
     await this.handleCapabilities()
     await this.handleDashboardCapabilities()
 
@@ -57,12 +57,143 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.planEnergyReports()
   }
 
+  async handleCapabilities (): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  async handleDashboardCapabilities (settings?: Settings, capabilities?: string[]): Promise<void> {
+    const newSettings: Settings = settings ?? this.getSettings()
+    let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
+    newCapabilities = newCapabilities
+      .filter((capability) => this.requiredCapabilities.includes(capability))
+      .filter((capability) => Object.keys(newSettings).includes(capability))
+    for (const capability of newCapabilities) {
+      if (newSettings[capability] === true && !this.hasCapability(capability)) {
+        await this.addCapability(capability)
+      } else if (newSettings[capability] === false && this.hasCapability(capability)) {
+        await this.removeCapability(capability)
+      }
+    }
+  }
+
   registerCapabilityListeners (): void {
     Object.keys(this.setCapabilityMapping).forEach((capability: string) => {
       this.registerCapabilityListener(capability, async (value: boolean | number | string) => {
         await this.onCapability(capability, value)
       })
     })
+  }
+
+  async onCapability (_capability: string, _value: boolean | number | string): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  async syncDataToDevice (diff: Diff<MELCloudDevice>): Promise<void> {
+    this.diff = {}
+    const updateData: UpdateData<MELCloudDevice> = this.buildUpdateData(diff)
+    const resultData: GetData<MELCloudDevice> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
+    await this.syncData(resultData)
+  }
+
+  buildUpdateData (diff: Diff<MELCloudDevice>): UpdateData<MELCloudDevice> {
+    const updateData: any = {}
+    let effectiveFlags: bigint = BigInt(0)
+    Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
+      const [capability, { tag, effectiveFlag }]: [string, { tag: string, effectiveFlag: bigint }] = entry
+      if (this.hasCapability(capability)) {
+        if (capability in diff) {
+          effectiveFlags |= effectiveFlag
+          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof typeof diff])
+        } else {
+          updateData[tag] = this.getCapabilityValueToDevice(capability)
+        }
+      }
+    })
+    updateData.EffectiveFlags = Number(effectiveFlags)
+    return updateData
+  }
+
+  getCapabilityValueToDevice (_capability: string, _value?: boolean | number | string): boolean | number {
+    throw new Error('Method not implemented.')
+  }
+
+  async syncDataFromDevice (): Promise<void> {
+    const resultData: GetData<MELCloudDevice> | {} = await this.app.getDevice(this as MELCloudDevice)
+    await this.syncData(resultData)
+  }
+
+  async syncData (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
+    this.deviceFromList = await this.getDeviceFromList()
+    await this.updateCapabilities(resultData)
+    await this.updateListCapabilities()
+    await this.customUpdate()
+
+    await this.planNextSyncFromDevice()
+  }
+
+  async getDeviceFromList (): Promise<ListDevice | null> {
+    const devices: ListDevices = await this.app.listDevices(this.driver)
+    const device: ListDevice = devices[this.id]
+    if (device === undefined) {
+      this.instanceError('Not found while searching from device list')
+      return null
+    }
+    return device
+  }
+
+  async updateCapabilities (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
+    if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
+      for (const capability in this.setCapabilityMapping) {
+        const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
+        const { effectiveFlag, tag } = this.setCapabilityMapping[capability]
+        if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
+          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
+        }
+      }
+      for (const capability in this.getCapabilityMapping) {
+        const { tag } = this.getCapabilityMapping[capability]
+        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
+      }
+    }
+  }
+
+  async updateListCapabilities (): Promise<void> {
+    if (this.deviceFromList !== null) {
+      for (const capability in this.listCapabilityMapping) {
+        const { tag } = this.listCapabilityMapping[capability]
+        await this.setCapabilityValueFromDevice(capability, this.deviceFromList.Device[tag])
+      }
+    }
+  }
+
+  async setCapabilityValueFromDevice (_capability: string, _value: boolean | number): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  async setOrNotCapabilityValue (capability: string, value: boolean | number | string): Promise<void> {
+    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
+      await this.setCapabilityValue(capability, value)
+        .then(() => this.instanceLog(capability, 'is', value))
+        .catch((error: unknown) => this.instanceError(error instanceof Error ? error.message : error))
+    }
+  }
+
+  async customUpdate (): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
+  planNextSyncFromDevice (interval?: number): void {
+    const newInterval: number = interval ?? this.getSetting('interval')
+    this.homey.clearTimeout(this.syncTimeout)
+    this.syncTimeout = this.homey
+      .setTimeout(async () => {
+        await this.syncDataFromDevice()
+      }, newInterval * 60 * 1000)
+    this.instanceLog('Next sync from device in', newInterval, 'minutes')
+  }
+
+  async runEnergyReports (): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   planEnergyReports (): void {
@@ -103,11 +234,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     await this.setWarning(null)
 
     if (needsSync) {
-      this.homey.clearTimeout(this.syncTimeout)
-      this.syncTimeout = this.homey
-        .setTimeout(async () => {
-          await this.syncDataFromDevice()
-        }, 1 * 1000)
+      this.planNextSyncFromDevice(1 * 1000)
     }
   }
 
@@ -117,137 +244,11 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     this.homey.clearTimeout(this.syncTimeout)
   }
 
-  async handleDashboardCapabilities (settings?: Settings, capabilities?: string[]): Promise<void> {
-    const newSettings: Settings = settings ?? this.getSettings()
-    let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
-    newCapabilities = newCapabilities
-      .filter((capability) => this.requiredCapabilities.includes(capability))
-      .filter((capability) => Object.keys(newSettings).includes(capability))
-    for (const capability of newCapabilities) {
-      if (newSettings[capability] === true && !this.hasCapability(capability)) {
-        await this.addCapability(capability)
-      } else if (newSettings[capability] === false && this.hasCapability(capability)) {
-        await this.removeCapability(capability)
-      }
-    }
-  }
-
-  async getDeviceFromList (): Promise<ListDevice | null> {
-    const devices: ListDevices = await this.app.listDevices(this.driver)
-    const device: ListDevice = devices[this.id]
-    if (device === undefined) {
-      this.instanceError('Not found while searching from device list')
-      return null
-    }
-    return device
-  }
-
-  async syncDataFromDevice (): Promise<void> {
-    const resultData: GetData<MELCloudDevice> | {} = await this.app.getDevice(this as MELCloudDevice)
-    await this.syncData(resultData)
-  }
-
-  async syncDataToDevice (diff: Diff<MELCloudDevice>): Promise<void> {
-    this.diff = {}
-    const updateData: UpdateData<MELCloudDevice> = this.buildUpdateData(diff)
-    const resultData: GetData<MELCloudDevice> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
-    await this.syncData(resultData)
-  }
-
-  buildUpdateData (diff: Diff<MELCloudDevice>): UpdateData<MELCloudDevice> {
-    const updateData: any = {}
-    let effectiveFlags: bigint = BigInt(0)
-    Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
-      const [capability, { tag, effectiveFlag }]: [string, { tag: string, effectiveFlag: bigint }] = entry
-      if (this.hasCapability(capability)) {
-        if (capability in diff) {
-          effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof typeof diff])
-        } else {
-          updateData[tag] = this.getCapabilityValueToDevice(capability)
-        }
-      }
-    })
-    updateData.EffectiveFlags = Number(effectiveFlags)
-    return updateData
-  }
-
-  async syncData (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
-    this.deviceFromList = await this.getDeviceFromList()
-    await this.updateCapabilities(resultData)
-    await this.updateListCapabilities()
-    await this.customUpdate()
-
-    const interval: number = this.getSetting('interval')
-    this.syncTimeout = this.homey
-      .setTimeout(async () => {
-        await this.syncDataFromDevice()
-      }, interval * 60 * 1000)
-    this.instanceLog('Next sync from device in', interval, 'minutes')
-  }
-
-  async updateCapabilities (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
-    if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
-      for (const capability in this.setCapabilityMapping) {
-        const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
-        const { effectiveFlag, tag } = this.setCapabilityMapping[capability]
-        if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
-        }
-      }
-      for (const capability in this.getCapabilityMapping) {
-        const { tag } = this.getCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
-      }
-    }
-  }
-
-  async updateListCapabilities (): Promise<void> {
-    if (this.deviceFromList !== null) {
-      for (const capability in this.listCapabilityMapping) {
-        const { tag } = this.listCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, this.deviceFromList.Device[tag])
-      }
-    }
-  }
-
-  async setOrNotCapabilityValue (capability: string, value: boolean | number | string): Promise<void> {
-    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await this.setCapabilityValue(capability, value)
-        .then(() => this.instanceLog(capability, 'is', value))
-        .catch((error: unknown) => this.instanceError(error instanceof Error ? error.message : error))
-    }
-  }
-
   instanceLog (...message: any[]): void {
     this.log(this.getName(), '-', ...message)
   }
 
   instanceError (...message: any[]): void {
     this.error(this.getName(), '-', ...message)
-  }
-
-  async handleCapabilities (): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  async onCapability (_capability: string, _value: boolean | number | string): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  async runEnergyReports (): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  getCapabilityValueToDevice (_capability: string, _value?: boolean | number | string): boolean | number {
-    throw new Error('Method not implemented.')
-  }
-
-  async setCapabilityValueFromDevice (_capability: string, _value: boolean | number): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-
-  async customUpdate (): Promise<void> {
-    throw new Error('Method not implemented.')
   }
 }

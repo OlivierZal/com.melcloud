@@ -156,79 +156,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async runEnergyReports (): Promise<void> {
-    const report: { daily: ReportData<MELCloudDeviceAtw> | {}, total: ReportData<MELCloudDeviceAtw> | {} } = {
-      daily: await this.app.reportEnergyCost(this, true),
-      total: await this.app.reportEnergyCost(this, false)
-    }
-
-    const reportMapping: ReportMapping<MELCloudDeviceAtw> = {
-      'meter_power.daily_cop': 0,
-      'meter_power.daily_cop_cooling': 0,
-      'meter_power.daily_cop_heating': 0,
-      'meter_power.daily_cop_hotwater': 0,
-      'meter_power.daily_consumed': 0,
-      'meter_power.daily_consumed_cooling': 0,
-      'meter_power.daily_consumed_heating': 0,
-      'meter_power.daily_consumed_hotwater': 0,
-      'meter_power.daily_produced': 0,
-      'meter_power.daily_produced_cooling': 0,
-      'meter_power.daily_produced_heating': 0,
-      'meter_power.daily_produced_hotwater': 0,
-      'meter_power.total_cop': 0,
-      'meter_power.total_cop_cooling': 0,
-      'meter_power.total_cop_heating': 0,
-      'meter_power.total_cop_hotwater': 0,
-      'meter_power.total_consumed': 0,
-      'meter_power.total_consumed_cooling': 0,
-      'meter_power.total_consumed_heating': 0,
-      'meter_power.total_consumed_hotwater': 0,
-      'meter_power.total_produced': 0,
-      'meter_power.total_produced_cooling': 0,
-      'meter_power.total_produced_heating': 0,
-      'meter_power.total_produced_hotwater': 0
-    }
-    Object.entries(report).forEach((entry: [string, ReportData<MELCloudDeviceAtw> | {}]) => {
-      const [period, data]: [string, ReportData<MELCloudDeviceAtw> | {}] = entry
-      if ('TotalHeatingConsumed' in data) {
-        ['Consumed', 'Produced'].forEach((type: string) => {
-          ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
-            reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] = data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
-            reportMapping[`meter_power.${period}_${type.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>]
-          })
-        });
-        ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
-          reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] = data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
-        })
-        reportMapping[`meter_power.${period}_cop` as keyof ReportMapping<MELCloudDeviceAtw>] = reportMapping[`meter_power.${period}_produced` as keyof ReportMapping<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as keyof ReportMapping<MELCloudDeviceAtw>]
-      }
-    })
-
-    for (const capability in reportMapping) {
-      await this.setCapabilityValueFromDevice(capability, reportMapping[capability as keyof ReportMapping<MELCloudDeviceAtw>])
-    }
-  }
-
-  async customUpdate (): Promise<void> {
-    if (this.deviceFromList !== null) {
-      const store = this.getStore()
-
-      let hasStoreChanged = false
-      if (this.deviceFromList.Device.CanCool !== store.canCool) {
-        await this.setStoreValue('canCool', this.deviceFromList.Device.CanCool)
-        hasStoreChanged = true
-      }
-      if (this.deviceFromList.Device.HasZone2 !== store.hasZone2) {
-        await this.setStoreValue('hasZone2', this.deviceFromList.Device.HasZone2)
-        hasStoreChanged = true
-      }
-
-      if (hasStoreChanged) {
-        await this.handleCapabilities()
-      }
-    }
-  }
-
   async onCapability (capability: string, value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
@@ -305,6 +232,79 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       default:
     }
     await this.setOrNotCapabilityValue(capability, newValue)
+  }
+
+  async customUpdate (): Promise<void> {
+    if (this.deviceFromList !== null) {
+      const store = this.getStore()
+
+      let hasStoreChanged = false
+      if (this.deviceFromList.Device.CanCool !== store.canCool) {
+        await this.setStoreValue('canCool', this.deviceFromList.Device.CanCool)
+        hasStoreChanged = true
+      }
+      if (this.deviceFromList.Device.HasZone2 !== store.hasZone2) {
+        await this.setStoreValue('hasZone2', this.deviceFromList.Device.HasZone2)
+        hasStoreChanged = true
+      }
+
+      if (hasStoreChanged) {
+        await this.handleCapabilities()
+      }
+    }
+  }
+
+  async runEnergyReports (): Promise<void> {
+    const report: { daily: ReportData<MELCloudDeviceAtw> | {}, total: ReportData<MELCloudDeviceAtw> | {} } = {
+      daily: await this.app.reportEnergyCost(this, true),
+      total: await this.app.reportEnergyCost(this, false)
+    }
+
+    const reportMapping: ReportMapping<MELCloudDeviceAtw> = {
+      'meter_power.daily_cop': 0,
+      'meter_power.daily_cop_cooling': 0,
+      'meter_power.daily_cop_heating': 0,
+      'meter_power.daily_cop_hotwater': 0,
+      'meter_power.daily_consumed': 0,
+      'meter_power.daily_consumed_cooling': 0,
+      'meter_power.daily_consumed_heating': 0,
+      'meter_power.daily_consumed_hotwater': 0,
+      'meter_power.daily_produced': 0,
+      'meter_power.daily_produced_cooling': 0,
+      'meter_power.daily_produced_heating': 0,
+      'meter_power.daily_produced_hotwater': 0,
+      'meter_power.total_cop': 0,
+      'meter_power.total_cop_cooling': 0,
+      'meter_power.total_cop_heating': 0,
+      'meter_power.total_cop_hotwater': 0,
+      'meter_power.total_consumed': 0,
+      'meter_power.total_consumed_cooling': 0,
+      'meter_power.total_consumed_heating': 0,
+      'meter_power.total_consumed_hotwater': 0,
+      'meter_power.total_produced': 0,
+      'meter_power.total_produced_cooling': 0,
+      'meter_power.total_produced_heating': 0,
+      'meter_power.total_produced_hotwater': 0
+    }
+    Object.entries(report).forEach((entry: [string, ReportData<MELCloudDeviceAtw> | {}]) => {
+      const [period, data]: [string, ReportData<MELCloudDeviceAtw> | {}] = entry
+      if ('TotalHeatingConsumed' in data) {
+        ['Consumed', 'Produced'].forEach((type: string) => {
+          ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
+            reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] = data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
+            reportMapping[`meter_power.${period}_${type.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>]
+          })
+        });
+        ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
+          reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAtw>] = data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
+        })
+        reportMapping[`meter_power.${period}_cop` as keyof ReportMapping<MELCloudDeviceAtw>] = reportMapping[`meter_power.${period}_produced` as keyof ReportMapping<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as keyof ReportMapping<MELCloudDeviceAtw>]
+      }
+    })
+
+    for (const capability in reportMapping) {
+      await this.setCapabilityValueFromDevice(capability, reportMapping[capability as keyof ReportMapping<MELCloudDeviceAtw>])
+    }
   }
 }
 

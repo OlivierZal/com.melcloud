@@ -20,11 +20,11 @@ export default class MELCloudDriverMixin extends Homey.Driver {
     session.setHandler('list_devices', async () => await this.discoverDevices())
   }
 
-  onRepair (session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) => await this.app.login(data))
-  }
-
   async discoverDevices (): Promise<DeviceInfo[]> {
     throw new Error('Method not implemented.')
+  }
+
+  onRepair (session: PairSession): void {
+    session.setHandler('login', async (data: LoginCredentials) => await this.app.login(data))
   }
 }
