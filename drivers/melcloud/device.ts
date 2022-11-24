@@ -1,11 +1,29 @@
 import 'source-map-support/register'
+
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAta from './driver'
-import { Data, ReportMapping, Value } from '../../types'
+import { Diff, ReportData, ReportMapping } from '../../types'
+
+const setCapabilityMappingAta = {
+  onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
+  operation_mode: { tag: 'OperationMode', effectiveFlag: BigInt(0x2) },
+  target_temperature: { tag: 'SetTemperature', effectiveFlag: BigInt(0x4) },
+  fan_power: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
+  vertical: { tag: 'VaneVertical', effectiveFlag: BigInt(0x10) },
+  horizontal: { tag: 'VaneHorizontal', effectiveFlag: BigInt(0x100) }
+} as const
+
+const getCapabilityMappingAta = {
+  measure_temperature: { tag: 'RoomTemperature' }
+} as const
+
+const listCapabilityMappingAta = {
+  'measure_power.wifi': { tag: 'WifiSignalStrength' }
+} as const
 
 function reverse (mapping: any): any {
   const reversedMapping: any = {}
-  Object.keys(mapping).forEach((key) => {
+  Object.keys(mapping).forEach((key: any) => {
     reversedMapping[mapping[key]] = key
   })
   return reversedMapping
@@ -46,8 +64,16 @@ const horizontalFromDevice: { [key: number]: string } = {
 
 const horizontalToDevice = reverse(horizontalFromDevice)
 
-class MELCloudDeviceAta extends MELCloudDeviceMixin {
+export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   driver!: MELCloudDriverAta
+  diff!: Diff<MELCloudDeviceAta>
+
+  async onInit (): Promise<void> {
+    this.setCapabilityMapping = setCapabilityMappingAta
+    this.getCapabilityMapping = getCapabilityMappingAta
+    this.listCapabilityMapping = listCapabilityMappingAta
+    await super.onInit()
+  }
 
   async handleCapabilities (): Promise<void> {
     const currentCapabilities = this.getCapabilities()
@@ -64,44 +90,27 @@ class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   registerCapabilityListeners (): void {
-    this.registerCapabilityListener('onoff', async (value: boolean) => {
-      await this.onCapability('onoff', value)
-    })
-    this.registerCapabilityListener('target_temperature', async (value: number) => {
-      await this.onCapability('target_temperature', value)
-    })
-    this.registerCapabilityListener('thermostat_mode', async (value: string) => {
+    super.registerCapabilityListeners()
+    this.registerCapabilityListener('thermostat_mode', async (value) => {
       await this.onCapability('thermostat_mode', value)
-    })
-    this.registerCapabilityListener('operation_mode', async (value: string) => {
-      await this.onCapability('operation_mode', value)
-    })
-    this.registerCapabilityListener('fan_power', async (value: number) => {
-      await this.onCapability('fan_power', value)
-    })
-    this.registerCapabilityListener('vertical', async (value: string) => {
-      await this.onCapability('vertical', value)
-    })
-    this.registerCapabilityListener('horizontal', async (value: string) => {
-      await this.onCapability('horizontal', value)
     })
   }
 
   async runEnergyReports (): Promise<void> {
-    const report: { daily: Data, total: Data } = {
+    const report: { daily: ReportData, total: ReportData } = {
       daily: await this.app.reportEnergyCost(this, true),
       total: await this.app.reportEnergyCost(this, false)
     }
 
     const reportMapping: ReportMapping = {}
-    Object.entries(report).forEach((entry) => {
-      const [period, data]: [string, Data] = entry
+    Object.entries(report).forEach((entry: [string, ReportData]) => {
+      const [period, data]: [string, ReportData] = entry
       if (Object.keys(data).length > 0) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1
         reportMapping[`meter_power.${period}_consumed`] = 0;
-        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode) => {
+        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string) => {
           reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`] = data[`Total${mode}Consumed`] as number / deviceCount
           reportMapping[`meter_power.${period}_consumed`] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}`]
         })
@@ -113,19 +122,16 @@ class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  async customSyncData (): Promise<void> {
-    await this.updateThermostatMode(this.getCapabilityValue('onoff'), this.getCapabilityValue('operation_mode'))
-  }
-
-  async updateThermostatMode (isOn: boolean, operationMode: string): Promise<void> {
-    let value: string = operationMode
+  async customUpdate (): Promise<void> {
+    const isOn: boolean = this.getCapabilityValue('onoff')
+    let operationMode: string = this.getCapabilityValue('operation_mode')
     if (!isOn || ['dry', 'fan'].includes(operationMode)) {
-      value = 'off'
+      operationMode = 'off'
     }
-    await this.setOrNotCapabilityValue('thermostat_mode', value)
+    await this.setOrNotCapabilityValue('thermostat_mode', operationMode)
   }
 
-  async onCapability (capability: string, value: Value): Promise<void> {
+  async onCapability (capability: string, value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
     switch (capability) {
@@ -134,35 +140,43 @@ class MELCloudDeviceAta extends MELCloudDeviceMixin {
           await this.setWarning('Setting `Always On` is activated')
           await this.setWarning(null)
         }
-        this.newData[capability] = this.getCapabilityValueToDevice(capability, value)
+        this.diff[capability] = value as boolean
         break
       case 'thermostat_mode':
-        this.newData.onoff = this.getCapabilityValueToDevice('onoff', value !== 'off')
-        if (value !== 'off') {
-          this.newData.operation_mode = this.getCapabilityValueToDevice('operation_mode', value)
+        this.diff.onoff = value as string !== 'off'
+        if (value as string !== 'off') {
+          this.diff.operation_mode = value as string
         }
         break
       case 'operation_mode':
         if (['dry', 'fan'].includes(value as string) && this.getCapabilityValue('thermostat_mode') !== 'off') {
-          await this.setWarning(`\`${String(value)}\` has been saved (even if \`heat\` is displayed)`)
+          await this.setWarning(`\`${value as string}\` has been saved (even if \`heat\` is displayed)`)
           await this.setWarning(null)
         }
-        this.newData[capability] = this.getCapabilityValueToDevice(capability, value)
+        this.diff[capability] = value as string
+        break
+      case 'vertical':
+      case 'horizontal':
+        this.diff[capability] = value as string
+        break
+      case 'target_temperature':
+      case 'fan_power':
+        this.diff[capability] = value as number
         break
       default:
-        this.newData[capability] = this.getCapabilityValueToDevice(capability, value)
+        this.instanceError('Unknown capability', capability, '- with value', value)
     }
 
     this.syncTimeout = this.homey.setTimeout(async () => {
-      await this.syncDataToDevice(this.newData)
+      await this.syncDataToDevice(this.diff)
     }, 1 * 1000)
   }
 
-  getCapabilityValueToDevice (capability: string, value?: Value): Value {
-    const newValue: Value = value ?? this.getCapabilityValue(capability)
+  getCapabilityValueToDevice (capability: string, value?: boolean | number | string): boolean | number {
+    const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true ? true : newValue
+        return this.getSetting('always_on') === true ? true : newValue as boolean
       case 'operation_mode':
         return operationModeToDevice[newValue as keyof typeof operationModeToDevice]
       case 'vertical':
@@ -170,12 +184,12 @@ class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'horizontal':
         return horizontalToDevice[newValue as keyof typeof horizontalToDevice]
       default:
-        return newValue
+        return newValue as number
     }
   }
 
-  async setCapabilityValueFromDevice (capability: string, value: Value): Promise<void> {
-    let newValue: Value = value
+  async setCapabilityValueFromDevice (capability: string, value: boolean | number): Promise<void> {
+    let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true && newValue === false) {
