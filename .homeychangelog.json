@@ -67,5 +67,8 @@
   },
   "7.0.4": {
     "en": "Customized boolean capability names."
+  },
+  "7.1.0": {
+    "en": "Typed more and better."
   }
 }
