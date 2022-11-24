@@ -43,16 +43,16 @@ export interface ListDevice {
 
 export interface Building {
   Structure: {
-    Devices: ListDevice[] | []
+    Devices: ListDevice[]
     Areas: Array<{
       Devices: ListDevice[]
-    }> | []
+    }>
     Floors: Array<{
-      Devices: ListDevice[] | []
+      Devices: ListDevice[]
       Areas: Array<{
         Devices: ListDevice[]
-      }> | []
-    }> | []
+      }>
+    }>
   }
 }
 
