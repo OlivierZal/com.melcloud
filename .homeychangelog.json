@@ -82,5 +82,8 @@
   },
   "7.1.4": {
     "en": "Added readonly modifier."
+  },
+  "7.1.5": {
+    "en": "Added types."
   }
 }
