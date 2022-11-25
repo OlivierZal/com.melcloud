@@ -128,7 +128,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     await this.updateListCapabilities()
     await this.customUpdate()
 
-    await this.planNextSyncFromDevice()
+    this.planNextSyncFromDevice()
   }
 
   async getDeviceFromList (): Promise<ListDevice | null> {
