@@ -103,7 +103,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof typeof diff])
+          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof Diff<MELCloudDevice>])
         } else {
           updateData[tag] = this.getCapabilityValueToDevice(capability)
         }
@@ -147,12 +147,12 @@ export default class MELCloudDeviceMixin extends Homey.Device {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         const { effectiveFlag, tag } = this.setCapabilityMapping[capability]
         if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
+          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof GetData<MELCloudDevice>])
         }
       }
       for (const capability in this.getCapabilityMapping) {
         const { tag } = this.getCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof typeof resultData])
+        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof GetData<MELCloudDevice>])
       }
     }
   }
