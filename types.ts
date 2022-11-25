@@ -8,13 +8,9 @@ import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
-interface DeviceData {
-  DeviceID: number
-}
-
 export interface LoginData {
-  LoginData?: {
-    ContextKey: string
+  readonly LoginData?: {
+    readonly ContextKey: string
   }
 }
 
@@ -35,27 +31,27 @@ export interface ListDevices {
 }
 
 export interface ListDevice {
-  BuildingID: number
-  DeviceID: number
-  DeviceName: string
-  Device: {
-    [tag: string]: boolean | number
-    CanCool: boolean
-    DeviceType: number
-    HasZone2: boolean
+  readonly BuildingID: number
+  readonly DeviceID: number
+  readonly DeviceName: string
+  readonly Device: {
+    readonly CanCool: boolean
+    readonly DeviceType: number
+    readonly HasZone2: boolean
+    readonly [tag: string]: boolean | number
   }
 }
 
 export interface Building {
-  Structure: {
-    Devices: ListDevice[]
-    Areas: Array<{
-      Devices: ListDevice[]
+  readonly Structure: {
+    readonly Devices: ListDevice[]
+    readonly Areas: Array<{
+      readonly Devices: ListDevice[]
     }>
-    Floors: Array<{
-      Devices: ListDevice[]
-      Areas: Array<{
-        Devices: ListDevice[]
+    readonly Floors: Array<{
+      readonly Devices: ListDevice[]
+      readonly Areas: Array<{
+        readonly Devices: ListDevice[]
       }>
     }>
   }
@@ -127,22 +123,22 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   : ReportDataAta
 
 interface ReportDataAta {
-  TotalHeatingConsumed: number
-  TotalCoolingConsumed: number
-  TotalAutoConsumed: number
-  TotalDryConsumed: number
-  TotalFanConsumed: number
-  TotalOtherConsumed: number
-  UsageDisclaimerPercentages: string
+  readonly TotalHeatingConsumed: number
+  readonly TotalCoolingConsumed: number
+  readonly TotalAutoConsumed: number
+  readonly TotalDryConsumed: number
+  readonly TotalFanConsumed: number
+  readonly TotalOtherConsumed: number
+  readonly UsageDisclaimerPercentages: string
 }
 
 interface ReportDataAtw {
-  TotalHeatingConsumed: number
-  TotalCoolingConsumed: number
-  TotalHotWaterConsumed: number
-  TotalHeatingProduced: number
-  TotalCoolingProduced: number
-  TotalHotWaterProduced: number
+  readonly TotalHeatingConsumed: number
+  readonly TotalCoolingConsumed: number
+  readonly TotalHotWaterConsumed: number
+  readonly TotalHeatingProduced: number
+  readonly TotalCoolingProduced: number
+  readonly TotalHotWaterProduced: number
 }
 
 export interface ReportPostData extends DeviceData {
@@ -151,28 +147,32 @@ export interface ReportPostData extends DeviceData {
   UseCurrency: false
 }
 
-export type GetData<T extends MELCloudDevice> = UpdateData<T> & DeviceData & GetDeviceData<T>
-
-export type PostData<T extends MELCloudDevice> = UpdateData<T> & DeviceData & { HasPendingCommand: true }
-
-export type UpdateData<T extends MELCloudDevice> = SetDeviceData<T> & { EffectiveFlags: number }
+export type GetData<T extends MELCloudDevice> = { +readonly [tag in keyof UpdateData<T>]: UpdateData<T>[tag] } & GetDeviceData<T>
 
 type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? GetDeviceDataAtw
   : GetDeviceDataAta
 
 interface GetDeviceDataAta {
-  RoomTemperature: number
+  readonly RoomTemperature: number
 }
 
 interface GetDeviceDataAtw {
-  EcoHotWater: boolean
-  OperationMode: number
-  OutdoorTemperature: number
-  RoomTemperatureZone1: number
-  RoomTemperatureZone2: number
-  TankWaterTemperature: number
+  readonly EcoHotWater: boolean
+  readonly OperationMode: number
+  readonly OutdoorTemperature: number
+  readonly RoomTemperatureZone1: number
+  readonly RoomTemperatureZone2: number
+  readonly TankWaterTemperature: number
 }
+
+export type PostData<T extends MELCloudDevice> = UpdateData<T> & DeviceData & { HasPendingCommand: true }
+
+interface DeviceData {
+  DeviceID: number
+}
+
+export type UpdateData<T extends MELCloudDevice> = SetDeviceData<T> & { EffectiveFlags: number }
 
 type SetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetDeviceDataAtw

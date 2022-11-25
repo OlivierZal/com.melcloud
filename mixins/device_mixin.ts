@@ -5,32 +5,33 @@ import MELCloudApp from '../app'
 import { Diff, GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
-  app!: MELCloudApp
-  driver!: MELCloudDriver
-  diff!: Diff<MELCloudDevice>
-
   setCapabilityMapping!: {
-    [capability: string]: {
-      tag: string
-      effectiveFlag: bigint
+    readonly [capability: string]: {
+      readonly tag: string
+      readonly effectiveFlag: bigint
     }
   }
 
   getCapabilityMapping!: {
-    [capability: string]: {
-      tag: string
+    readonly [capability: string]: {
+      readonly tag: string
     }
   }
 
   listCapabilityMapping!: {
-    [capability: string]: {
-      tag: string
+    readonly [capability: string]: {
+      readonly tag: string
     }
   }
+
+  readonly driver!: MELCloudDriver
+  app!: MELCloudApp
 
   id!: number
   buildingid!: number
   deviceFromList!: ListDevice | null
+  diff!: Diff<MELCloudDevice>
+
   requiredCapabilities!: string[]
 
   reportInterval: NodeJS.Timeout | undefined
