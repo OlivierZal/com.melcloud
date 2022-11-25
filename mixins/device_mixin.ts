@@ -2,7 +2,7 @@ import 'source-map-support/register'
 
 import Homey from 'homey'
 import MELCloudApp from '../app'
-import { Diff, GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, Settings, UpdateData } from '../types'
+import { GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
   setCapabilityMapping!: {
@@ -30,7 +30,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   id!: number
   buildingid!: number
   deviceFromList!: ListDevice | null
-  diff!: Diff<MELCloudDevice>
+  diff!: SetCapabilities<MELCloudDevice>
 
   requiredCapabilities!: string[]
 
@@ -89,14 +89,14 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     throw new Error('Method not implemented.')
   }
 
-  async syncDataToDevice (diff: Diff<MELCloudDevice>): Promise<void> {
+  async syncDataToDevice (diff: SetCapabilities<MELCloudDevice>): Promise<void> {
     this.diff = {}
     const updateData: UpdateData<MELCloudDevice> = this.buildUpdateData(diff)
     const resultData: GetData<MELCloudDevice> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
     await this.syncData(resultData)
   }
 
-  buildUpdateData (diff: Diff<MELCloudDevice>): UpdateData<MELCloudDevice> {
+  buildUpdateData (diff: SetCapabilities<MELCloudDevice>): UpdateData<MELCloudDevice> {
     const updateData: any = {}
     let effectiveFlags: bigint = BigInt(0)
     Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
@@ -104,7 +104,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof Diff<MELCloudDevice>])
+          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof SetCapabilities<MELCloudDevice>])
         } else {
           updateData[tag] = this.getCapabilityValueToDevice(capability)
         }

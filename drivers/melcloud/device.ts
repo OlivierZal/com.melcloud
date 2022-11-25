@@ -2,7 +2,7 @@ import 'source-map-support/register'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAta from './driver'
-import { Diff, ReportData, ReportMapping } from '../../types'
+import { Capabilities, ReportCapabilities, ReportData, SetCapabilities } from '../../types'
 
 const setCapabilityMappingAta = {
   onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
@@ -66,7 +66,7 @@ const horizontalToDevice = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   driver!: MELCloudDriverAta
-  diff!: Diff<MELCloudDeviceAta>
+  diff!: SetCapabilities<MELCloudDeviceAta>
 
   async onInit (): Promise<void> {
     this.setCapabilityMapping = setCapabilityMappingAta
@@ -96,7 +96,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     })
   }
 
-  async onCapability (capability: string, value: boolean | number | string): Promise<void> {
+  async onCapability (capability: keyof SetCapabilities<MELCloudDeviceAta> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
     switch (capability) {
@@ -137,7 +137,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }, 1 * 1000)
   }
 
-  getCapabilityValueToDevice (capability: string, value?: boolean | number | string): boolean | number {
+  getCapabilityValueToDevice (capability: keyof SetCapabilities<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
     const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
     switch (capability) {
       case 'onoff':
@@ -153,7 +153,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  async setCapabilityValueFromDevice (capability: string, value: boolean | number): Promise<void> {
+  async setCapabilityValueFromDevice (capability: keyof Capabilities<MELCloudDeviceAta>, value: boolean | number): Promise<void> {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
@@ -190,7 +190,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       total: await this.app.reportEnergyCost(this, false)
     }
 
-    const reportMapping: ReportMapping<MELCloudDeviceAta> = {
+    const reportMapping: ReportCapabilities<MELCloudDeviceAta> = {
       'meter_power.daily_consumed': 0,
       'meter_power.daily_consumed_auto': 0,
       'meter_power.daily_consumed_cooling': 0,
@@ -213,14 +213,14 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1;
         ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string) => {
-          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAta>] = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number / deviceCount
-          reportMapping[`meter_power.${period}_consumed` as keyof ReportMapping<MELCloudDeviceAta>] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportMapping<MELCloudDeviceAta>]
+          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportCapabilities<MELCloudDeviceAta>] = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number / deviceCount
+          reportMapping[`meter_power.${period}_consumed` as keyof ReportCapabilities<MELCloudDeviceAta>] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as keyof ReportCapabilities<MELCloudDeviceAta>]
         })
       }
     })
 
     for (const capability in reportMapping) {
-      await this.setCapabilityValueFromDevice(capability, reportMapping[capability as keyof ReportMapping<MELCloudDeviceAta>])
+      await this.setCapabilityValueFromDevice(capability as keyof Capabilities<MELCloudDeviceAta>, reportMapping[capability as keyof ReportCapabilities<MELCloudDeviceAta>])
     }
   }
 }

@@ -106,25 +106,25 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.homey.flow
       .getActionCard('operation_mode_zone1_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
-        await args.device.onCapability('operation_mode.zone1', args.operation_mode_zone)
+        await args.device.onCapability('operation_mode_zone.zone1', args.operation_mode_zone)
       })
 
     this.homey.flow
       .getActionCard('operation_mode_zone1_with_cool_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
-        await args.device.onCapability('operation_mode_with_cool.zone1', args.operation_mode_zone)
+        await args.device.onCapability('operation_mode_zone_with_cool.zone1', args.operation_mode_zone)
       })
 
     this.homey.flow
       .getActionCard('operation_mode_zone2_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
-        await args.device.onCapability('operation_mode.zone2', args.operation_mode_zone)
+        await args.device.onCapability('operation_mode_zone.zone2', args.operation_mode_zone)
       })
 
     this.homey.flow
       .getActionCard('operation_mode_zone2_with_cool_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
-        await args.device.onCapability('operation_mode_with_cool.zone2', args.operation_mode_zone)
+        await args.device.onCapability('operation_mode_zone_with_cool.zone2', args.operation_mode_zone)
       })
 
     this.homey.flow
