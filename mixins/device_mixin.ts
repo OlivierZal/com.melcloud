@@ -2,7 +2,7 @@ import 'source-map-support/register'
 
 import Homey from 'homey'
 import MELCloudApp from '../app'
-import { GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, Settings, UpdateData } from '../types'
+import { Capability, GetData, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, SetCapability, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
   setCapabilityMapping!: {
@@ -77,36 +77,38 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     }
   }
 
-  registerCapabilityListeners (): void {
-    Object.keys(this.setCapabilityMapping).forEach((capability: string) => {
+  registerCapabilityListeners <T extends MELCloudDevice> (): void {
+    Object.keys(this.setCapabilityMapping).forEach((capability) => {
       this.registerCapabilityListener(capability, async (value: boolean | number | string) => {
-        await this.onCapability(capability, value)
+        await this.onCapability(capability as SetCapability<T>, value)
       })
     })
   }
 
-  async onCapability (_capability: string, _value: boolean | number | string): Promise<void> {
+  async onCapability <T extends MELCloudDevice> (_capability: SetCapability<T>, _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  async syncDataToDevice (diff: SetCapabilities<MELCloudDevice>): Promise<void> {
+  async syncDataToDevice <T extends MELCloudDevice> (diff: SetCapabilities<T>): Promise<void> {
     this.diff = {}
-    const updateData: UpdateData<MELCloudDevice> = this.buildUpdateData(diff)
-    const resultData: GetData<MELCloudDevice> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
+
+    const updateData: UpdateData<T> = this.buildUpdateData(diff)
+    const resultData: GetData<T> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
     await this.syncData(resultData)
   }
 
-  buildUpdateData (diff: SetCapabilities<MELCloudDevice>): UpdateData<MELCloudDevice> {
+  buildUpdateData <T extends MELCloudDevice> (diff: SetCapabilities<T>): UpdateData<T> {
     const updateData: any = {}
+
     let effectiveFlags: bigint = BigInt(0)
     Object.entries(this.setCapabilityMapping).forEach((entry: [string, { tag: string, effectiveFlag: bigint }]) => {
       const [capability, { tag, effectiveFlag }]: [string, { tag: string, effectiveFlag: bigint }] = entry
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(capability, diff[capability as keyof SetCapabilities<MELCloudDevice>])
+          updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as boolean | number | string)
         } else {
-          updateData[tag] = this.getCapabilityValueToDevice(capability)
+          updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>)
         }
       }
     })
@@ -114,16 +116,16 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     return updateData
   }
 
-  getCapabilityValueToDevice (_capability: string, _value?: boolean | number | string): boolean | number {
+  getCapabilityValueToDevice <T extends MELCloudDevice> (_capability: SetCapability<T>, _value?: boolean | number | string): boolean | number {
     throw new Error('Method not implemented.')
   }
 
-  async syncDataFromDevice (): Promise<void> {
-    const resultData: GetData<MELCloudDevice> | {} = await this.app.getDevice(this as MELCloudDevice)
+  async syncDataFromDevice <T extends MELCloudDevice> (): Promise<void> {
+    const resultData: GetData<T> | {} = await this.app.getDevice(this as MELCloudDevice)
     await this.syncData(resultData)
   }
 
-  async syncData (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
+  async syncData <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
     this.deviceFromList = await this.getDeviceFromList()
     await this.updateCapabilities(resultData)
     await this.updateListCapabilities()
@@ -142,36 +144,36 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     return device
   }
 
-  async updateCapabilities (resultData: GetData<MELCloudDevice> | {}): Promise<void> {
+  async updateCapabilities <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
     if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
       for (const capability in this.setCapabilityMapping) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         const { effectiveFlag, tag } = this.setCapabilityMapping[capability]
         if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof GetData<MELCloudDevice>])
+          await this.setCapabilityValueFromDevice(capability as Capability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
         }
       }
       for (const capability in this.getCapabilityMapping) {
         const { tag } = this.getCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, resultData[tag as keyof GetData<MELCloudDevice>])
+        await this.setCapabilityValueFromDevice(capability as Capability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
       }
     }
   }
 
-  async updateListCapabilities (): Promise<void> {
+  async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
     if (this.deviceFromList !== null) {
       for (const capability in this.listCapabilityMapping) {
         const { tag } = this.listCapabilityMapping[capability]
-        await this.setCapabilityValueFromDevice(capability, this.deviceFromList.Device[tag])
+        await this.setCapabilityValueFromDevice(capability as Capability<T>, this.deviceFromList.Device[tag])
       }
     }
   }
 
-  async setCapabilityValueFromDevice (_capability: string, _value: boolean | number): Promise<void> {
+  async setCapabilityValueFromDevice <T extends MELCloudDevice> (_capability: Capability<T>, _value: boolean | number): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  async setOrNotCapabilityValue (capability: string, value: boolean | number | string): Promise<void> {
+  async setOrNotCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
         .then(() => this.log(capability, 'is', value))
