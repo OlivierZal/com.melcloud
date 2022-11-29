@@ -2,10 +2,10 @@ import 'source-map-support/register'
 
 import axios from 'axios'
 import Homey from 'homey'
-import * as types from './types'
+import { Building, GetData, ListDevice, ListDevices, LoginCredentials, LoginData, LoginPostData, MELCloudDevice, MELCloudDriver, PostData, ReportData, ReportPostData, UpdateData } from './types'
 
 export default class MELCloudApp extends Homey.App {
-  loginCredentials!: types.LoginCredentials
+  loginCredentials!: LoginCredentials
 
   async onInit (): Promise<void> {
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
@@ -24,10 +24,10 @@ export default class MELCloudApp extends Homey.App {
     }, 24 * 60 * 60 * 1000)
   }
 
-  async login (loginCredentials: types.LoginCredentials): Promise<boolean> {
+  async login (loginCredentials: LoginCredentials): Promise<boolean> {
     const { username, password } = loginCredentials
     if (username !== '' && password !== '') {
-      const postData: types.LoginPostData = {
+      const postData: LoginPostData = {
         AppVersion: '1.9.3.0',
         Email: username,
         Password: password,
@@ -36,7 +36,7 @@ export default class MELCloudApp extends Homey.App {
 
       this.log('Login to MELCloud...', postData)
       try {
-        const { data } = await axios.post<types.LoginData>('/Login/ClientLogin', postData)
+        const { data } = await axios.post<LoginData>('/Login/ClientLogin', postData)
         this.log('Login to MELCloud:', data)
         if (data.LoginData?.ContextKey != null) {
           this.homey.settings.set('ContextKey', data.LoginData.ContextKey)
@@ -58,27 +58,27 @@ export default class MELCloudApp extends Homey.App {
     return false
   }
 
-  async listDevices (driver: types.MELCloudDriver): Promise<types.ListDevices> {
-    const devices: types.ListDevices = {}
+  async listDevices <T extends MELCloudDriver> (driver: T): Promise<ListDevices> {
+    const devices: ListDevices = {}
 
     driver.log('Searching for devices...')
     try {
-      const { data } = await axios.get<types.Building[]>('/User/ListDevices')
+      const { data } = await axios.get<Building[]>('/User/ListDevices')
       driver.log('Searching for devices:', data)
-      data.forEach((building: types.Building) => {
-        building.Structure.Devices.forEach((device: types.ListDevice) => {
+      data.forEach((building: Building) => {
+        building.Structure.Devices.forEach((device: ListDevice) => {
           if (driver.deviceType === device.Device.DeviceType) {
             devices[device.DeviceID] = device
           }
         })
         building.Structure.Floors.forEach((floor) => {
-          floor.Devices.forEach((device: types.ListDevice) => {
+          floor.Devices.forEach((device: ListDevice) => {
             if (driver.deviceType === device.Device.DeviceType) {
               devices[device.DeviceID] = device
             }
           })
           floor.Areas.forEach((area) => {
-            area.Devices.forEach((device: types.ListDevice) => {
+            area.Devices.forEach((device: ListDevice) => {
               if (driver.deviceType === device.Device.DeviceType) {
                 devices[device.DeviceID] = device
               }
@@ -86,7 +86,7 @@ export default class MELCloudApp extends Homey.App {
           })
         })
         building.Structure.Areas.forEach((area) => {
-          area.Devices.forEach((device: types.ListDevice) => {
+          area.Devices.forEach((device: ListDevice) => {
             if (driver.deviceType === device.Device.DeviceType) {
               devices[device.DeviceID] = device
             }
@@ -99,10 +99,10 @@ export default class MELCloudApp extends Homey.App {
     return devices
   }
 
-  async getDevice (device: types.MELCloudDevice): Promise<types.GetData<typeof device> | {}> {
+  async getDevice <T extends MELCloudDevice> (device: T): Promise<GetData<T> | {}> {
     device.log('Syncing from device...')
     try {
-      const { data } = await axios.get<types.GetData<typeof device>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
+      const { data } = await axios.get<GetData<T>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
       device.log('Syncing from device:', data)
       return data
     } catch (error: unknown) {
@@ -111,8 +111,8 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async setDevice (device: types.MELCloudDevice, updateData: types.UpdateData<typeof device>): Promise<types.GetData<typeof device> | {}> {
-    const postData: types.PostData<typeof device> = {
+  async setDevice <T extends MELCloudDevice> (device: T, updateData: UpdateData<T>): Promise<GetData<T> | {}> {
+    const postData: PostData<T> = {
       DeviceID: device.id,
       HasPendingCommand: true,
       ...updateData
@@ -120,7 +120,7 @@ export default class MELCloudApp extends Homey.App {
 
     device.log('Syncing with device...', postData)
     try {
-      const { data } = await axios.post<types.GetData<typeof device>>(`/Device/Set${device.driver.heatPumpType}`, postData)
+      const { data } = await axios.post<GetData<T>>(`/Device/Set${device.driver.heatPumpType}`, postData)
       device.log('Syncing with device:', data)
       return data
     } catch (error: unknown) {
@@ -129,14 +129,14 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async reportEnergyCost (device: types.MELCloudDevice, daily: boolean): Promise<types.ReportData<typeof device> | {}> {
+  async reportEnergyCost <T extends MELCloudDevice> (device: T, daily: boolean): Promise<ReportData<T> | {}> {
     const period = daily ? 'daily' : 'total'
 
     const yesterday: Date = new Date()
     yesterday.setDate(yesterday.getDate() - 1)
     const toDate: string = `${yesterday.toISOString().split('T')[0]}T00:00:00`
 
-    const postData: types.ReportPostData = {
+    const postData: ReportPostData = {
       DeviceID: device.id,
       FromDate: daily ? toDate : '1970-01-01T00:00:00',
       ToDate: toDate,
@@ -145,7 +145,7 @@ export default class MELCloudApp extends Homey.App {
 
     device.log('Reporting', period, 'energy cost...', postData)
     try {
-      const { data } = await axios.post<types.ReportData<typeof device>>('/EnergyCost/Report', postData)
+      const { data } = await axios.post<ReportData<T>>('/EnergyCost/Report', postData)
       device.log('Reporting', period, 'energy cost:', data)
       return data
     } catch (error: unknown) {
