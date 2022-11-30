@@ -58,35 +58,35 @@ export default class MELCloudApp extends Homey.App {
     return false
   }
 
-  async listDevices <T extends MELCloudDriver> (driver: T): Promise<ListDevices> {
-    const devices: ListDevices = {}
+  async listDevices <T extends MELCloudDriver> (driver: T): Promise<ListDevices<T>> {
+    const devices: ListDevices<T> = {}
 
     driver.log('Searching for devices...')
     try {
-      const { data } = await axios.get<Building[]>('/User/ListDevices')
+      const { data } = await axios.get<Array<Building<T>>>('/User/ListDevices')
       driver.log('Searching for devices:', data)
-      data.forEach((building: Building) => {
-        building.Structure.Devices.forEach((device: ListDevice) => {
+      data.forEach((building: Building<T>): void => {
+        building.Structure.Devices.forEach((device: ListDevice<T>): void => {
           if (driver.deviceType === device.Device.DeviceType) {
             devices[device.DeviceID] = device
           }
         })
-        building.Structure.Floors.forEach((floor) => {
-          floor.Devices.forEach((device: ListDevice) => {
+        building.Structure.Floors.forEach((floor): void => {
+          floor.Devices.forEach((device: ListDevice<T>): void => {
             if (driver.deviceType === device.Device.DeviceType) {
               devices[device.DeviceID] = device
             }
           })
-          floor.Areas.forEach((area) => {
-            area.Devices.forEach((device: ListDevice) => {
+          floor.Areas.forEach((area): void => {
+            area.Devices.forEach((device: ListDevice<T>): void => {
               if (driver.deviceType === device.Device.DeviceType) {
                 devices[device.DeviceID] = device
               }
             })
           })
         })
-        building.Structure.Areas.forEach((area) => {
-          area.Devices.forEach((device: ListDevice) => {
+        building.Structure.Areas.forEach((area): void => {
+          area.Devices.forEach((device: ListDevice<T>): void => {
             if (driver.deviceType === device.Device.DeviceType) {
               devices[device.DeviceID] = device
             }

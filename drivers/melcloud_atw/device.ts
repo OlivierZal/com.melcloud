@@ -2,44 +2,7 @@ import 'source-map-support/register'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
-import { Capability, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability } from '../../types'
-
-const setCapabilityMappingAtw = {
-  onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
-  'operation_mode_zone.zone1': { tag: 'OperationModeZone1', effectiveFlag: BigInt(0x8) },
-  'operation_mode_zone_with_cool.zone1': { tag: 'OperationModeZone1', effectiveFlag: BigInt(0x8) },
-  'operation_mode_zone.zone2': { tag: 'OperationModeZone2', effectiveFlag: BigInt(0x10) },
-  'operation_mode_zone_with_cool.zone2': { tag: 'OperationModeZone2', effectiveFlag: BigInt(0x10) },
-  'onoff.forced_hot_water': { tag: 'ForcedHotWaterMode', effectiveFlag: BigInt(0x10000) },
-  target_temperature: { tag: 'SetTemperatureZone1', effectiveFlag: BigInt(0x200000080) },
-  'target_temperature.zone2': { tag: 'SetTemperatureZone2', effectiveFlag: BigInt(0x800000200) },
-  'target_temperature.zone1_flow_cool': { tag: 'SetCoolFlowTemperatureZone1', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone1_flow_heat': { tag: 'SetHeatFlowTemperatureZone1', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone2_flow_cool': { tag: 'SetCoolFlowTemperatureZone2', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone2_flow_heat': { tag: 'SetHeatFlowTemperatureZone2', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.tank_water': { tag: 'SetTankWaterTemperature', effectiveFlag: BigInt(0x1000000000020) }
-} as const
-
-const getCapabilityMappingAtw = {
-  eco_hot_water: { tag: 'EcoHotWater' },
-  measure_temperature: { tag: 'RoomTemperatureZone1' },
-  'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
-  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
-  'measure_temperature.tank_water': { tag: 'TankWaterTemperature' },
-  operation_mode_state: { tag: 'OperationMode' }
-} as const
-
-const listCapabilityMappingAtw = {
-  'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
-  'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
-  'alarm_generic.booster_heater2_plus': { tag: 'BoosterHeater2PlusStatus' },
-  'alarm_generic.defrost_mode': { tag: 'DefrostMode' },
-  'alarm_generic.immersion_heater': { tag: 'ImmersionHeaterStatus' },
-  'measure_power.heat_pump_frequency': { tag: 'HeatPumpFrequency' },
-  'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  'measure_temperature.flow': { tag: 'FlowTemperature' },
-  'measure_temperature.return': { tag: 'ReturnTemperature' }
-} as const
+import { Capability, getCapabilityMappingAtw, listCapabilityMappingAtw, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability, setCapabilityMappingAtw } from '../../types'
 
 const operationModeFromDevice = {
   0: 'idle',
@@ -52,6 +15,10 @@ const operationModeFromDevice = {
 } as const
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
+  setCapabilityMapping!: typeof setCapabilityMappingAtw
+  getCapabilityMapping!: typeof getCapabilityMappingAtw
+  listCapabilityMapping!: typeof listCapabilityMappingAtw
+
   driver!: MELCloudDriverAtw
   diff!: SetCapabilities<MELCloudDeviceAtw>
 
@@ -304,16 +271,15 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       'meter_power.total_produced_heating': 0,
       'meter_power.total_produced_hotwater': 0
     }
-    Object.entries(report).forEach((entry: [string, ReportData<MELCloudDeviceAtw> | {}]) => {
-      const [period, data]: [string, ReportData<MELCloudDeviceAtw> | {}] = entry
+    Object.entries(report).forEach(([period, data]: [string, ReportData<MELCloudDeviceAtw> | {}]): void => {
       if ('TotalHeatingConsumed' in data) {
-        ['Consumed', 'Produced'].forEach((type: string) => {
-          ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
+        ['Consumed', 'Produced'].forEach((type) => {
+          ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
             reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] = data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
             reportMapping[`meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>]
           })
         });
-        ['Cooling', 'Heating', 'HotWater'].forEach((mode: string) => {
+        ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
           reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] = data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
         })
         reportMapping[`meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>] = reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
