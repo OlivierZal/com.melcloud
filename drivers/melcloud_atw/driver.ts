@@ -165,9 +165,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
-    const devices: ListDevices = await this.app.listDevices(this)
-    return Object.values(devices).map((device: ListDevice): DeviceInfo<MELCloudDeviceAtw> => {
-      const deviceInfo: any = {
+    const devices: ListDevices<MELCloudDriverAtw> = await this.app.listDevices(this)
+    return Object.values(devices).map((device: ListDevice<MELCloudDriverAtw>): DeviceInfo<MELCloudDeviceAtw> => {
+      const deviceInfo: DeviceInfo<MELCloudDeviceAtw> = {
         name: device.DeviceName,
         data: {
           id: device.DeviceID,
@@ -179,33 +179,33 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         },
         capabilities: [] as Array<Capability<MELCloudDeviceAtw>>
       }
-      this.capabilitiesAtw.forEach((capability: string) => {
+      this.capabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
         deviceInfo.capabilities.push(capability)
       })
       if (device.Device.CanCool) {
-        this.coolCapabilitiesAtw.forEach((capability: string) => {
+        this.coolCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
           deviceInfo.capabilities.push(capability)
         })
       } else {
-        this.notCoolCapabilitiesAtw.forEach((capability: string) => {
+        this.notCoolCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
           deviceInfo.capabilities.push(capability)
         })
       }
       if (device.Device.HasZone2) {
-        this.zone2CapabilitiesAtw.forEach((capability: string) => {
+        this.zone2CapabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
           deviceInfo.capabilities.push(capability)
         })
         if (device.Device.CanCool) {
-          this.coolZone2CapabilitiesAtw.forEach((capability: string) => {
+          this.coolZone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
             deviceInfo.capabilities.push(capability)
           })
         } else {
-          this.notCoolZone2CapabilitiesAtw.forEach((capability: string) => {
+          this.notCoolZone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
             deviceInfo.capabilities.push(capability)
           })
         }
       }
-      this.otherCapabilitiesAtw.forEach((capability: string) => {
+      this.otherCapabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
         deviceInfo.capabilities.push(capability)
       })
       return deviceInfo

@@ -2,28 +2,11 @@ import 'source-map-support/register'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAta from './driver'
-import { Capability, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability } from '../../types'
-
-const setCapabilityMappingAta = {
-  onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
-  operation_mode: { tag: 'OperationMode', effectiveFlag: BigInt(0x2) },
-  target_temperature: { tag: 'SetTemperature', effectiveFlag: BigInt(0x4) },
-  fan_power: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
-  vertical: { tag: 'VaneVertical', effectiveFlag: BigInt(0x10) },
-  horizontal: { tag: 'VaneHorizontal', effectiveFlag: BigInt(0x100) }
-} as const
-
-const getCapabilityMappingAta = {
-  measure_temperature: { tag: 'RoomTemperature' }
-} as const
-
-const listCapabilityMappingAta = {
-  'measure_power.wifi': { tag: 'WifiSignalStrength' }
-} as const
+import { Capability, getCapabilityMappingAta, listCapabilityMappingAta, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability, setCapabilityMappingAta } from '../../types'
 
 function reverse (mapping: any): any {
   const reversedMapping: any = {}
-  Object.keys(mapping).forEach((key: any) => {
+  Object.keys(mapping).forEach((key: any): void => {
     reversedMapping[mapping[key]] = key
   })
   return reversedMapping
@@ -65,6 +48,10 @@ const horizontalFromDevice: { [key: number]: string } = {
 const horizontalToDevice = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
+  setCapabilityMapping!: typeof setCapabilityMappingAta
+  getCapabilityMapping!: typeof getCapabilityMappingAta
+  listCapabilityMapping!: typeof listCapabilityMappingAta
+
   driver!: MELCloudDriverAta
   diff!: SetCapabilities<MELCloudDeviceAta>
 
@@ -91,7 +78,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
 
   registerCapabilityListeners (): void {
     super.registerCapabilityListeners()
-    this.registerCapabilityListener('thermostat_mode', async (value) => {
+    this.registerCapabilityListener('thermostat_mode', async (value: 'auto' | 'cool' | 'heat' | 'off'): Promise<void> => {
       await this.onCapability('thermostat_mode', value)
     })
   }
@@ -210,13 +197,12 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       'meter_power.total_consumed_heating': 0,
       'meter_power.total_consumed_other': 0
     }
-    Object.entries(report).forEach((entry: [string, ReportData<MELCloudDeviceAta> | {}]) => {
-      const [period, data]: [string, ReportData<MELCloudDeviceAta> | {}] = entry
+    Object.entries(report).forEach(([period, data]: [string, ReportData<MELCloudDeviceAta> | {}]): void => {
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1;
-        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string) => {
+        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string): void => {
           reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>] = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number / deviceCount
           reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
         })
