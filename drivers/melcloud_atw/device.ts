@@ -2,7 +2,7 @@ import 'source-map-support/register'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
-import { Capability, MELCloudDevice, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability } from '../../types'
+import { Capability, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability } from '../../types'
 
 const setCapabilityMappingAtw = {
   onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
@@ -156,7 +156,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async onCapability <T extends MELCloudDevice> (capability: SetCapability<T>, value: boolean | number | string): Promise<void> {
+  async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
     switch (capability) {
@@ -212,7 +212,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }, 1 * 1000)
   }
 
-  getCapabilityValueToDevice <T extends MELCloudDevice> (capability: SetCapability<T>, value?: boolean | number | string): boolean | number {
+  getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
     const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
     switch (capability) {
       case 'onoff':
@@ -227,7 +227,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async setCapabilityValueFromDevice <T extends MELCloudDevice> (capability: Capability<T>, value: boolean | number): Promise<void> {
+  async setCapabilityValueFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':

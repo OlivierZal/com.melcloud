@@ -2,16 +2,16 @@ import 'source-map-support/register'
 
 import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { DeviceInfo, ListDevice, ListDevices } from '../../types'
+import { Capability, DeviceInfo, ListDevice, ListDevices, SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  capabilitiesAtw!: string[]
-  coolCapabilitiesAtw!: string[]
-  notCoolCapabilitiesAtw!: string[]
-  zone2CapabilitiesAtw!: string[]
-  coolZone2CapabilitiesAtw!: string[]
-  notCoolZone2CapabilitiesAtw!: string[]
-  otherCapabilitiesAtw!: string[]
+  capabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
+  coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  zone2CapabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
+  coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  otherCapabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
 
   async onInit (): Promise<void> {
     await super.onInit()
@@ -164,9 +164,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       })
   }
 
-  async discoverDevices (): Promise<DeviceInfo[]> {
+  async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
     const devices: ListDevices = await this.app.listDevices(this)
-    return Object.values(devices).map((device: ListDevice): DeviceInfo => {
+    return Object.values(devices).map((device: ListDevice): DeviceInfo<MELCloudDeviceAtw> => {
       const deviceInfo: any = {
         name: device.DeviceName,
         data: {
@@ -177,7 +177,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
           canCool: device.Device.CanCool,
           hasZone2: device.Device.HasZone2
         },
-        capabilities: [] as string[]
+        capabilities: [] as Array<Capability<MELCloudDeviceAtw>>
       }
       this.capabilitiesAtw.forEach((capability: string) => {
         deviceInfo.capabilities.push(capability)

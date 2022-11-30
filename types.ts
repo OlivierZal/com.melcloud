@@ -57,17 +57,29 @@ export interface Building {
   }
 }
 
-export interface DeviceInfo {
+export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? DeviceInfoAtw
+  : DeviceInfoAta
+
+interface DeviceInfoAta {
   readonly name: string
   readonly data: {
     readonly id: number
     readonly buildingid: number
   }
-  readonly store?: {
+}
+
+interface DeviceInfoAtw {
+  readonly name: string
+  readonly data: {
+    readonly id: number
+    readonly buildingid: number
+  }
+  readonly store: {
     readonly canCool: boolean
     readonly hasZone2: boolean
   }
-  readonly capabilities?: string[]
+  readonly capabilities: Array<Capability<MELCloudDeviceAtw>>
 }
 
 export type GetData<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>

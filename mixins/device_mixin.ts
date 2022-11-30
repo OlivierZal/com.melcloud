@@ -85,7 +85,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     })
   }
 
-  async onCapability <T extends MELCloudDevice> (_capability: SetCapability<T>, _value: boolean | number | string): Promise<void> {
+  async onCapability (_capability: SetCapability<MELCloudDevice> | 'thermostat_mode', _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -116,7 +116,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     return updateData
   }
 
-  getCapabilityValueToDevice <T extends MELCloudDevice> (_capability: SetCapability<T>, _value?: boolean | number | string): boolean | number {
+  getCapabilityValueToDevice (_capability: SetCapability<MELCloudDevice>, _value?: boolean | number | string): boolean | number {
     throw new Error('Method not implemented.')
   }
 
@@ -169,7 +169,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     }
   }
 
-  async setCapabilityValueFromDevice <T extends MELCloudDevice> (_capability: Capability<T>, _value: boolean | number): Promise<void> {
+  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDevice>, _value: boolean | number): Promise<void> {
     throw new Error('Method not implemented.')
   }
 

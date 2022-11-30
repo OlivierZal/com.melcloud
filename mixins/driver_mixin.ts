@@ -3,7 +3,7 @@ import 'source-map-support/register'
 import Homey from 'homey'
 import PairSession from 'homey/lib/PairSession'
 import MELCloudApp from '../app'
-import { DeviceInfo, LoginCredentials } from '../types'
+import { DeviceInfo, LoginCredentials, MELCloudDevice } from '../types'
 
 export default class MELCloudDriverMixin extends Homey.Driver {
   app!: MELCloudApp
@@ -20,7 +20,7 @@ export default class MELCloudDriverMixin extends Homey.Driver {
     session.setHandler('list_devices', async () => await this.discoverDevices())
   }
 
-  async discoverDevices (): Promise<DeviceInfo[]> {
+  async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDevice>>> {
     throw new Error('Method not implemented.')
   }
 
