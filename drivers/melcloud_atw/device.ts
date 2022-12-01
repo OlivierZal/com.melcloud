@@ -4,7 +4,7 @@ import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
 import { Capability, getCapabilityMappingAtw, listCapabilityMappingAtw, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability, setCapabilityMappingAtw } from '../../types'
 
-const operationModeFromDevice = {
+const operationModeFromDevice: { [key: number]: string } = {
   0: 'idle',
   1: 'dhw',
   2: 'heating',
