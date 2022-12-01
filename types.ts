@@ -201,6 +201,10 @@ type ListCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof typeof listCapabilityMappingAtw
   : keyof typeof listCapabilityMappingAta
 
+export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? keyof ReportCapabilitiesAtw
+  : keyof ReportCapabilitiesAta
+
 export type SetCapabilities<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetCapabilitiesAtw
   : SetCapabilitiesAta
@@ -273,10 +277,6 @@ interface ReportCapabilitiesAtw {
   'meter_power.total_produced_heating': number
   'meter_power.total_produced_hotwater': number
 }
-
-export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? keyof ReportCapabilitiesAtw
-  : keyof ReportCapabilitiesAta
 
 export type ReportCapabilities<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ReportCapabilitiesAtw
