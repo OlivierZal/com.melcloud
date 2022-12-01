@@ -169,6 +169,12 @@ interface ListDeviceDataAtw {
 }
 
 interface ReportDataAta {
+  readonly Heating: number[]
+  readonly Cooling: number[]
+  readonly Auto: number[]
+  readonly Dry: number[]
+  readonly Fan: number[]
+  readonly Other: number[]
   readonly TotalHeatingConsumed: number
   readonly TotalCoolingConsumed: number
   readonly TotalAutoConsumed: number
@@ -235,6 +241,13 @@ interface SetCapabilitiesAtw {
 }
 
 interface ReportCapabilitiesAta {
+  'meter_power.hourly_consumed': number
+  'meter_power.hourly_consumed_auto': number
+  'meter_power.hourly_consumed_cooling': number
+  'meter_power.hourly_consumed_dry': number
+  'meter_power.hourly_consumed_fan': number
+  'meter_power.hourly_consumed_heating': number
+  'meter_power.hourly_consumed_other': number
   'meter_power.daily_consumed': number
   'meter_power.daily_consumed_auto': number
   'meter_power.daily_consumed_cooling': number

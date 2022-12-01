@@ -1,13 +1,16 @@
 import 'source-map-support/register'
-
 import axios from 'axios'
+import { DateTime, Settings } from 'luxon'
 import Homey from 'homey'
+
 import { Building, GetData, ListDevice, ListDevices, LoginCredentials, LoginData, LoginPostData, MELCloudDevice, MELCloudDriver, PostData, ReportData, ReportPostData, UpdateData } from './types'
 
 export default class MELCloudApp extends Homey.App {
   loginCredentials!: LoginCredentials
 
   async onInit (): Promise<void> {
+    Settings.defaultZone = this.homey.clock.getTimezone()
+
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] = this.homey.settings.get('ContextKey')
 
@@ -129,27 +132,21 @@ export default class MELCloudApp extends Homey.App {
     return {}
   }
 
-  async reportEnergyCost <T extends MELCloudDevice> (device: T, daily: boolean): Promise<ReportData<T> | {}> {
-    const period = daily ? 'daily' : 'total'
-
-    const yesterday: Date = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const toDate: string = `${yesterday.toISOString().split('T')[0]}T00:00:00`
-
+  async reportEnergyCost <T extends MELCloudDevice> (device: T, fromDate: DateTime, toDate: DateTime): Promise<ReportData<T> | {}> {
     const postData: ReportPostData = {
       DeviceID: device.id,
-      FromDate: daily ? toDate : '1970-01-01T00:00:00',
-      ToDate: toDate,
+      FromDate: fromDate.toISODate(),
+      ToDate: toDate.toISODate(),
       UseCurrency: false
     }
 
-    device.log('Reporting', period, 'energy cost...', postData)
+    device.log('Reporting energy cost...', postData)
     try {
       const { data } = await axios.post<ReportData<T>>('/EnergyCost/Report', postData)
-      device.log('Reporting', period, 'energy cost:', data)
+      device.log('Reporting energy cost:', data)
       return data
     } catch (error: unknown) {
-      device.error('Reporting', period, 'energy cost:', error instanceof Error ? error.message : error)
+      device.error('Reporting energy cost:', error instanceof Error ? error.message : error)
     }
     return {}
   }
