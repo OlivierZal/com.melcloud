@@ -78,7 +78,7 @@ interface DeviceInfoAtw {
     readonly canCool: boolean
     readonly hasZone2: boolean
   }
-  readonly capabilities: Array<Capability<MELCloudDeviceAtw>>
+  readonly capabilities: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
 }
 
 export type GetData<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
@@ -193,11 +193,11 @@ export type SetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAt
   ? keyof typeof setCapabilityMappingAtw
   : keyof typeof setCapabilityMappingAta
 
-type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+export type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof typeof getCapabilityMappingAtw
   : keyof typeof getCapabilityMappingAta
 
-type ListCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+export type ListCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof typeof listCapabilityMappingAtw
   : keyof typeof listCapabilityMappingAta
 

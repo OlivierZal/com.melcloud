@@ -2,16 +2,16 @@ import 'source-map-support/register'
 
 import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { Capability, DeviceInfo, ListDevice, ListDevices, SetCapability } from '../../types'
+import { DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  capabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
+  capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
   coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
-  zone2CapabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
+  zone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>>
   coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
-  otherCapabilitiesAtw!: Array<Capability<MELCloudDeviceAtw>>
+  otherCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>>
 
   async onInit (): Promise<void> {
     await super.onInit()
@@ -177,9 +177,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
           canCool: device.Device.CanCool,
           hasZone2: device.Device.HasZone2
         },
-        capabilities: [] as Array<Capability<MELCloudDeviceAtw>>
+        capabilities: [] as Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
       }
-      this.capabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
+      this.capabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>): void => {
         deviceInfo.capabilities.push(capability)
       })
       if (device.Device.CanCool) {
@@ -192,7 +192,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         })
       }
       if (device.Device.HasZone2) {
-        this.zone2CapabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
+        this.zone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>): void => {
           deviceInfo.capabilities.push(capability)
         })
         if (device.Device.CanCool) {
@@ -205,7 +205,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
           })
         }
       }
-      this.otherCapabilitiesAtw.forEach((capability: Capability<MELCloudDeviceAtw>): void => {
+      this.otherCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>): void => {
         deviceInfo.capabilities.push(capability)
       })
       return deviceInfo
