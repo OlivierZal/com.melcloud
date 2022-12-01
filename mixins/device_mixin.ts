@@ -63,7 +63,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   }
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
-    Object.keys(this.setCapabilityMapping).forEach((capability) => {
+    Object.keys(this.setCapabilityMapping).forEach((capability): void => {
       this.registerCapabilityListener(capability, async (value: boolean | number | string): Promise<void> => {
         await this.onCapability(capability as SetCapability<T>, value)
       })
@@ -144,6 +144,10 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     }
   }
 
+  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDevice>, _value: boolean | number): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
   async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
     if (this.deviceFromList !== null) {
       for (const capability in this.listCapabilityMapping) {
@@ -151,10 +155,6 @@ export default class MELCloudDeviceMixin extends Homey.Device {
         await this.setCapabilityValueFromDevice(capability as Capability<T>, this.deviceFromList.Device[tag])
       }
     }
-  }
-
-  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDevice>, _value: boolean | number): Promise<void> {
-    throw new Error('Method not implemented.')
   }
 
   async setOrNotCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {

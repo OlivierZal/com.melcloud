@@ -6,13 +6,13 @@ import { Capability, getCapabilityMappingAta, listCapabilityMappingAta, ReportCa
 
 function reverse (mapping: any): any {
   const reversedMapping: any = {}
-  Object.keys(mapping).forEach((key: any): void => {
-    reversedMapping[mapping[key]] = key
+  Object.entries(mapping).forEach(([key, value]: [any, any]): void => {
+    reversedMapping[value] = key
   })
   return reversedMapping
 }
 
-const operationModeFromDevice: { [key: number]: string } = {
+const operationModeFromDevice: { [key: number]: keyof typeof operationModeToDevice } = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -20,9 +20,9 @@ const operationModeFromDevice: { [key: number]: string } = {
   8: 'auto'
 } as const
 
-const operationModeToDevice = reverse(operationModeFromDevice)
+const operationModeToDevice: { [key: string]: keyof typeof operationModeFromDevice } = reverse(operationModeFromDevice)
 
-const verticalFromDevice: { [key: number]: string } = {
+const verticalFromDevice: { [key: number]: keyof typeof verticalToDevice } = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -32,9 +32,9 @@ const verticalFromDevice: { [key: number]: string } = {
   7: 'swing'
 } as const
 
-const verticalToDevice = reverse(verticalFromDevice)
+const verticalToDevice: { [key: string]: keyof typeof verticalFromDevice } = reverse(verticalFromDevice)
 
-const horizontalFromDevice: { [key: number]: string } = {
+const horizontalFromDevice: { [key: number]: keyof typeof horizontalToDevice } = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',
@@ -45,7 +45,7 @@ const horizontalFromDevice: { [key: number]: string } = {
   12: 'swing'
 } as const
 
-const horizontalToDevice = reverse(horizontalFromDevice)
+const horizontalToDevice: { [key: string]: keyof typeof horizontalFromDevice } = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   setCapabilityMapping!: typeof setCapabilityMappingAta
