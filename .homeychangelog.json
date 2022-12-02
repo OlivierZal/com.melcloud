@@ -85,5 +85,8 @@
   },
   "7.1.5": {
     "en": "Added types."
+  },
+  "7.2.0": {
+    "en": "Energy reporting is now handled according to user timezone (and no more according UTC forced by Homey). Made available hourly consumption for air-to-air heat pumps (cannot be retrieved from MELCloud API for air-to-water heat pumps) and last daily consumption becomes the (cumulated) daily consumption and is updated every hour. Capabalities displayed in the dashboard can be customized from device settings."
   }
 }
