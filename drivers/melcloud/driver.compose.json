@@ -17,6 +17,13 @@
     "horizontal",
     "thermostat_mode",
     "measure_power.wifi",
+    "meter_power.hourly_consumed",
+    "meter_power.hourly_consumed_auto",
+    "meter_power.hourly_consumed_cooling",
+    "meter_power.hourly_consumed_dry",
+    "meter_power.hourly_consumed_fan",
+    "meter_power.hourly_consumed_heating",
+    "meter_power.hourly_consumed_other",
     "meter_power.daily_consumed",
     "meter_power.daily_consumed_auto",
     "meter_power.daily_consumed_cooling",
@@ -41,39 +48,74 @@
         "en": "dBm"
       }
     },
+    "meter_power.hourly_consumed": {
+      "title": {
+        "en": "Hourly Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_auto": {
+      "title": {
+        "en": "Hourly Auto Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_cooling": {
+      "title": {
+        "en": "Hourly Cooling Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_dry": {
+      "title": {
+        "en": "Hourly Dry Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_fan": {
+      "title": {
+        "en": "Hourly Fan Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_heating": {
+      "title": {
+        "en": "Hourly Heating Consumption"
+      }
+    },
+    "meter_power.hourly_consumed_other": {
+      "title": {
+        "en": "Hourly Other Consumption"
+      }
+    },
     "meter_power.daily_consumed": {
       "title": {
-        "en": "Last Daily Consumption"
+        "en": "Daily Consumption"
       }
     },
     "meter_power.daily_consumed_auto": {
       "title": {
-        "en": "Last Daily Auto Consumption"
+        "en": "Daily Auto Consumption"
       }
     },
     "meter_power.daily_consumed_cooling": {
       "title": {
-        "en": "Last Daily Cooling Consumption"
+        "en": "Daily Cooling Consumption"
       }
     },
     "meter_power.daily_consumed_dry": {
       "title": {
-        "en": "Last Daily Dry Consumption"
+        "en": "Daily Dry Consumption"
       }
     },
     "meter_power.daily_consumed_fan": {
       "title": {
-        "en": "Last Daily Fan Consumption"
+        "en": "Daily Fan Consumption"
       }
     },
     "meter_power.daily_consumed_heating": {
       "title": {
-        "en": "Last Daily Heating Consumption"
+        "en": "Daily Heating Consumption"
       }
     },
     "meter_power.daily_consumed_other": {
       "title": {
-        "en": "Last Daily Other Consumption"
+        "en": "Daily Other Consumption"
       }
     },
     "meter_power.total_consumed": {

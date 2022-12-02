@@ -1,4 +1,5 @@
 import 'source-map-support/register'
+import { DateTime } from 'luxon'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAta from './driver'
@@ -176,12 +177,14 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async runEnergyReports (): Promise<void> {
-    const report: { daily: ReportData<MELCloudDeviceAta> | {}, total: ReportData<MELCloudDeviceAta> | {} } = {
-      daily: await this.app.reportEnergyCost(this, true),
-      total: await this.app.reportEnergyCost(this, false)
-    }
-
     const reportMapping: ReportCapabilities<MELCloudDeviceAta> = {
+      'meter_power.hourly_consumed': 0,
+      'meter_power.hourly_consumed_auto': 0,
+      'meter_power.hourly_consumed_cooling': 0,
+      'meter_power.hourly_consumed_dry': 0,
+      'meter_power.hourly_consumed_fan': 0,
+      'meter_power.hourly_consumed_heating': 0,
+      'meter_power.hourly_consumed_other': 0,
       'meter_power.daily_consumed': 0,
       'meter_power.daily_consumed_auto': 0,
       'meter_power.daily_consumed_cooling': 0,
@@ -197,21 +200,46 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       'meter_power.total_consumed_heating': 0,
       'meter_power.total_consumed_other': 0
     }
-    Object.entries(report).forEach(([period, data]: [string, ReportData<MELCloudDeviceAta> | {}]): void => {
+    const toDate: DateTime = DateTime.now().minus({ hours: 1 })
+    const periods: { [period: string]: { fromDate: DateTime, toDate: DateTime } } = {
+      hourly: { fromDate: toDate, toDate },
+      daily: { fromDate: toDate, toDate },
+      total: { fromDate: DateTime.local(1970), toDate }
+    }
+    for (const period in periods) {
+      const { fromDate, toDate } = periods[period]
+      const data: ReportData<MELCloudDeviceAta> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1;
         ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string): void => {
-          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>] = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number / deviceCount
-          reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
+          let modeData: number
+          if (period === 'hourly') {
+            modeData = (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
+          } else {
+            modeData = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
+          }
+          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>] = modeData / deviceCount
+          reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>] +=
+            reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
         })
       }
-    })
+    }
 
     for (const capability in reportMapping) {
       await this.setCapabilityValueFromDevice(capability as Capability<MELCloudDeviceAta>, reportMapping[capability as ReportCapability<MELCloudDeviceAta>])
     }
+  }
+
+  planEnergyReports (): void {
+    const date: DateTime = DateTime.now().plus({ hours: 1 }).set({ minute: 0, second: 0, millisecond: 0 })
+    this.reportTimeout = this.homey.setTimeout(async () => {
+      await this.runEnergyReports()
+      this.reportInterval = this.homey.setInterval(async () => {
+        await this.runEnergyReports()
+      }, 60 * 60 * 1000)
+    }, Number(date.diffNow()))
   }
 }
 

@@ -1,8 +1,8 @@
 import 'source-map-support/register'
-
 import Homey from 'homey'
+
 import MELCloudApp from '../app'
-import { Capability, getCapabilityMappingAta, getCapabilityMappingAtw, GetData, listCapabilityMappingAta, listCapabilityMappingAtw, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, SetCapability, setCapabilityMappingAta, setCapabilityMappingAtw, Settings, UpdateData } from '../types'
+import { Capability, GetCapability, getCapabilityMappingAta, getCapabilityMappingAtw, GetData, ListCapability, listCapabilityMappingAta, listCapabilityMappingAtw, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, SetCapability, setCapabilityMappingAta, setCapabilityMappingAtw, Settings, UpdateData } from '../types'
 
 export default class MELCloudDeviceMixin extends Homey.Device {
   setCapabilityMapping!: typeof setCapabilityMappingAta | typeof setCapabilityMappingAtw
@@ -134,12 +134,12 @@ export default class MELCloudDeviceMixin extends Homey.Device {
         const { effectiveFlag, tag } = this.setCapabilityMapping[capability as keyof typeof this.setCapabilityMapping]
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(capability as Capability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
+          await this.setCapabilityValueFromDevice(capability as SetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
         }
       }
       for (const capability in this.getCapabilityMapping) {
         const { tag } = this.getCapabilityMapping[capability as keyof typeof this.getCapabilityMapping]
-        await this.setCapabilityValueFromDevice(capability as Capability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
+        await this.setCapabilityValueFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
       }
     }
   }
@@ -152,7 +152,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
     if (this.deviceFromList !== null) {
       for (const capability in this.listCapabilityMapping) {
         const { tag } = this.listCapabilityMapping[capability as keyof typeof this.listCapabilityMapping]
-        await this.setCapabilityValueFromDevice(capability as Capability<T>, this.deviceFromList.Device[tag])
+        await this.setCapabilityValueFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag])
       }
     }
   }
@@ -184,12 +184,7 @@ export default class MELCloudDeviceMixin extends Homey.Device {
   }
 
   planEnergyReports (): void {
-    this.reportTimeout = this.homey.setTimeout(async () => {
-      await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async () => {
-        await this.runEnergyReports()
-      }, 24 * 60 * 60 * 1000)
-    }, new Date().setHours(24, 0, 0, 0) - new Date().getTime())
+    throw new Error('Method not implemented.')
   }
 
   async onSettings (event: { newSettings: Settings, changedKeys: string[] }): Promise<void> {

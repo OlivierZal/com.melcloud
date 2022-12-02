@@ -1,4 +1,5 @@
 import 'source-map-support/register'
+import { DateTime } from 'luxon'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
@@ -240,11 +241,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async runEnergyReports (): Promise<void> {
-    const report: { daily: ReportData<MELCloudDeviceAtw> | {}, total: ReportData<MELCloudDeviceAtw> | {} } = {
-      daily: await this.app.reportEnergyCost(this, true),
-      total: await this.app.reportEnergyCost(this, false)
-    }
-
     const reportMapping: ReportCapabilities<MELCloudDeviceAtw> = {
       'meter_power.daily_cop': 0,
       'meter_power.daily_cop_cooling': 0,
@@ -271,24 +267,43 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       'meter_power.total_produced_heating': 0,
       'meter_power.total_produced_hotwater': 0
     }
-    Object.entries(report).forEach(([period, data]: [string, ReportData<MELCloudDeviceAtw> | {}]): void => {
+    const toDate: DateTime = DateTime.now().minus({ days: 1 })
+    const periods: { [period: string]: { fromDate: DateTime, toDate: DateTime } } = {
+      daily: { fromDate: toDate, toDate },
+      total: { fromDate: DateTime.local(1970), toDate }
+    }
+    for (const period in periods) {
+      const { fromDate, toDate } = periods[period]
+      const data: ReportData<MELCloudDeviceAtw> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('TotalHeatingConsumed' in data) {
-        ['Consumed', 'Produced'].forEach((type) => {
-          ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
-            reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] = data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
-            reportMapping[`meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>]
-          })
-        });
         ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
-          reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] = data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
+          ['Consumed', 'Produced'].forEach((type) => {
+            reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] =
+              data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
+            reportMapping[`meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] +=
+              reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>]
+          })
+          reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] =
+            data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
         })
-        reportMapping[`meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>] = reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
+        reportMapping[`meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>] =
+          reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
       }
-    })
+    }
 
     for (const capability in reportMapping) {
       await this.setCapabilityValueFromDevice(capability as Capability<MELCloudDeviceAtw>, reportMapping[capability as ReportCapability<MELCloudDeviceAtw>])
     }
+  }
+
+  planEnergyReports (): void {
+    const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    this.reportTimeout = this.homey.setTimeout(async () => {
+      await this.runEnergyReports()
+      this.reportInterval = this.homey.setInterval(async () => {
+        await this.runEnergyReports()
+      }, 24 * 60 * 60 * 1000)
+    }, Number(date.diffNow()))
   }
 }
 
