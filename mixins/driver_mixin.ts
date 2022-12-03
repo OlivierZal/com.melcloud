@@ -1,11 +1,11 @@
 import 'source-map-support/register'
-import Homey from 'homey'
+import { Driver } from 'homey'
 import PairSession from 'homey/lib/PairSession'
 
 import MELCloudApp from '../app'
 import { DeviceInfo, LoginCredentials, MELCloudDevice } from '../types'
 
-export default class MELCloudDriverMixin extends Homey.Driver {
+export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
 
   deviceType!: number

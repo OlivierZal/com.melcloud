@@ -1,10 +1,10 @@
 import 'source-map-support/register'
-import Homey from 'homey'
+import { Device } from 'homey'
 
 import MELCloudApp from '../app'
 import { Capability, GetCapability, getCapabilityMappingAta, getCapabilityMappingAtw, GetData, ListCapability, listCapabilityMappingAta, listCapabilityMappingAtw, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, SetCapability, setCapabilityMappingAta, setCapabilityMappingAtw, Settings, UpdateData } from '../types'
 
-export default class MELCloudDeviceMixin extends Homey.Device {
+export default class MELCloudDeviceMixin extends Device {
   setCapabilityMapping!: typeof setCapabilityMappingAta | typeof setCapabilityMappingAtw
   getCapabilityMapping!: typeof getCapabilityMappingAta | typeof getCapabilityMappingAtw
   listCapabilityMapping!: typeof listCapabilityMappingAta | typeof listCapabilityMappingAtw

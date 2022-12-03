@@ -1,11 +1,11 @@
 import 'source-map-support/register'
 import axios from 'axios'
 import { DateTime, Settings } from 'luxon'
-import Homey from 'homey'
+import { App } from 'homey'
 
 import { Building, GetData, ListDevice, ListDevices, LoginCredentials, LoginData, LoginPostData, MELCloudDevice, MELCloudDriver, PostData, ReportData, ReportPostData, UpdateData } from './types'
 
-export default class MELCloudApp extends Homey.App {
+export default class MELCloudApp extends App {
   loginCredentials!: LoginCredentials
 
   async onInit (): Promise<void> {
