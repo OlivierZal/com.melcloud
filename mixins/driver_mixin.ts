@@ -16,8 +16,8 @@ export default class MELCloudDriverMixin extends Driver {
   }
 
   onPair (session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) => await this.app.login(data))
-    session.setHandler('list_devices', async () => await this.discoverDevices())
+    session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
+    session.setHandler('list_devices', async (): Promise<Array<DeviceInfo<MELCloudDevice>>> => await this.discoverDevices())
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDevice>>> {
@@ -25,6 +25,6 @@ export default class MELCloudDriverMixin extends Driver {
   }
 
   onRepair (session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) => await this.app.login(data))
+    session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
   }
 }

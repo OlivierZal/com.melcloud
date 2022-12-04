@@ -51,8 +51,8 @@ export default class MELCloudDeviceMixin extends Device {
     const newSettings: Settings = settings ?? this.getSettings()
     let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
     newCapabilities = newCapabilities
-      .filter((capability) => this.requiredCapabilities.includes(capability))
-      .filter((capability) => Object.keys(newSettings).includes(capability))
+      .filter((capability: string): boolean => this.requiredCapabilities.includes(capability))
+      .filter((capability: string): boolean => Object.keys(newSettings).includes(capability))
     for (const capability of newCapabilities) {
       if (newSettings[capability] === true && !this.hasCapability(capability)) {
         await this.addCapability(capability)
@@ -160,8 +160,8 @@ export default class MELCloudDeviceMixin extends Device {
   async setOrNotCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await this.setCapabilityValue(capability, value)
-        .then(() => this.log(capability, 'is', value))
-        .catch((error: unknown) => this.error(error instanceof Error ? error.message : error))
+        .then((): void => this.log(capability, 'is', value))
+        .catch((error: unknown): void => this.error(error instanceof Error ? error.message : error))
     }
   }
 
@@ -173,7 +173,7 @@ export default class MELCloudDeviceMixin extends Device {
     const newInterval: number = interval ?? this.getSetting('interval')
     this.homey.clearTimeout(this.syncTimeout)
     this.syncTimeout = this.homey
-      .setTimeout(async () => {
+      .setTimeout(async (): Promise<void> => {
         await this.syncDataFromDevice()
       }, newInterval * 60 * 1000)
     this.log('Next sync from device in', newInterval, 'minutes')

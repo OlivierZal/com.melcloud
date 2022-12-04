@@ -22,7 +22,7 @@ export default class MELCloudApp extends App {
   }
 
   refreshLogin (): void {
-    this.homey.setInterval(async () => {
+    this.homey.setInterval(async (): Promise<void> => {
       await this.login(this.loginCredentials)
     }, 24 * 60 * 60 * 1000)
   }

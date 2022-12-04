@@ -175,7 +175,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         this.error('Unknown capability', capability, '- with value', value)
     }
 
-    this.syncTimeout = this.homey.setTimeout(async () => {
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.syncDataToDevice(this.diff)
     }, 1 * 1000)
   }
@@ -277,7 +277,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       const data: ReportData<MELCloudDeviceAtw> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('TotalHeatingConsumed' in data) {
         ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
-          ['Consumed', 'Produced'].forEach((type) => {
+          ['Consumed', 'Produced'].forEach((type: string): void => {
             reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] =
               data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
             reportMapping[`meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] +=
@@ -298,9 +298,9 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
 
   planEnergyReports (): void {
     const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-    this.reportTimeout = this.homey.setTimeout(async () => {
+    this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async () => {
+      this.reportInterval = this.homey.setInterval(async (): Promise<void> => {
         await this.runEnergyReports()
       }, 24 * 60 * 60 * 1000)
     }, Number(date.diffNow()))
