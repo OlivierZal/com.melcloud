@@ -91,5 +91,8 @@
   },
   "7.2.1": {
     "en": "Added community topic."
+  },
+  "7.2.2": {
+    "en": "Added support value."
   }
 }
