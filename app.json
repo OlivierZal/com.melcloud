@@ -2661,6 +2661,7 @@
       "name": {
         "en": "Air-to-Water Heat Pump (legacy)"
       },
+      "deprecated": true,
       "images": {
         "small": "drivers/melcloudHP/assets/images/small.png",
         "large": "drivers/melcloudHP/assets/images/large.png"
