@@ -284,7 +284,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
               reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>]
           })
           reportMapping[`meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>] =
-            data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / (data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>])
+            data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>]
         })
         reportMapping[`meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>] =
           reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]

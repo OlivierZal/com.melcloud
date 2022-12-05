@@ -2,6 +2,7 @@
   "triggers": [
     {
       "id": "fan_power_changed",
+      "deprecated": true,
       "title": {
         "en": "Fan Speed changed"
       },
@@ -74,6 +75,7 @@
   "conditions": [
     {
       "id": "fan_power_condition",
+      "deprecated": true,
       "title": {
         "en": "Fan Speed !{{is|isn't}}..."
       },
@@ -300,6 +302,7 @@
   "actions": [
     {
       "id": "fan_power_action",
+      "deprecated": true,
       "title": {
         "en": "Set Fan Speed to..."
       },

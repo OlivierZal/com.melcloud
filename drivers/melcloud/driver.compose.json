@@ -8,7 +8,7 @@
   },
   "class": "thermostat",
   "capabilities": [
-    "fan_power",
+    "dim",
     "measure_temperature",
     "onoff",
     "operation_mode",
@@ -40,6 +40,12 @@
     "meter_power.total_consumed_other"
   ],
   "capabilitiesOptions": {
+    "dim": {
+      "title": {
+        "en": "Fan Speed"
+      },
+      "step": 0.2
+    },
     "measure_power.wifi": {
       "title": {
         "en": "Wifi Signal Strength"

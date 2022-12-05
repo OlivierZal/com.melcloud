@@ -18,12 +18,6 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
       ))
 
     this.homey.flow
-      .getConditionCard('fan_power_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAta, fan_power: string }): boolean => (
-        Number(args.fan_power) === args.device.getCapabilityValue('fan_power')
-      ))
-
-    this.homey.flow
       .getConditionCard('vertical_condition')
       .registerRunListener((args: { device: MELCloudDeviceAta, vertical: string }): boolean => (
         args.vertical === args.device.getCapabilityValue('vertical')
@@ -43,12 +37,6 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
       })
 
     this.homey.flow
-      .getActionCard('fan_power_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAta, fan_power: string }): Promise<void> => {
-        await args.device.onCapability('fan_power', Number(args.fan_power))
-      })
-
-    this.homey.flow
       .getActionCard('vertical_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAta, vertical: string }): Promise<void> => {
         await args.device.onCapability('vertical', args.vertical)
@@ -58,6 +46,19 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
       .getActionCard('horizontal_action')
       .registerRunListener(async (args: { device: MELCloudDeviceAta, horizontal: string }): Promise<void> => {
         await args.device.onCapability('horizontal', args.horizontal)
+      })
+
+    // Deprecated
+    this.homey.flow
+      .getConditionCard('fan_power_condition')
+      .registerRunListener((args: { device: MELCloudDeviceAta, fan_power: string }): boolean => (
+        Number(args.fan_power) / 5 === args.device.getCapabilityValue('dim')
+      ))
+
+    this.homey.flow
+      .getActionCard('fan_power_action')
+      .registerRunListener(async (args: { device: MELCloudDeviceAta, fan_power: string }): Promise<void> => {
+        await args.device.onCapability('dim', Number(args.fan_power) / 5)
       })
   }
 

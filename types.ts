@@ -219,7 +219,7 @@ interface SetCapabilitiesAta {
   onoff?: boolean
   operation_mode?: string
   target_temperature?: number
-  fan_power?: number
+  dim?: number
   vertical?: string
   horizontal?: string
 }
@@ -299,7 +299,7 @@ export const setCapabilityMappingAta = {
   onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
   operation_mode: { tag: 'OperationMode', effectiveFlag: BigInt(0x2) },
   target_temperature: { tag: 'SetTemperature', effectiveFlag: BigInt(0x4) },
-  fan_power: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
+  dim: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
   vertical: { tag: 'VaneVertical', effectiveFlag: BigInt(0x10) },
   horizontal: { tag: 'VaneHorizontal', effectiveFlag: BigInt(0x100) }
 } as const

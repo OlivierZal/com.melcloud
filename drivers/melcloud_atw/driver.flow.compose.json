@@ -97,7 +97,7 @@
             "en": "Operation Mode"
           },
           "example": {
-            "en": "Heating"
+            "en": "heating"
           }
         }
       ]
@@ -116,7 +116,7 @@
             "en": "Zone 1 Operation Mode"
           },
           "example": {
-            "en": "Heat Room"
+            "en": "0 (Heat Room)"
           }
         }
       ]
@@ -135,7 +135,7 @@
             "en": "Zone 2 Operation Mode"
           },
           "example": {
-            "en": "Heat Room"
+            "en": "0 (Heat Room)"
           }
         }
       ]
@@ -154,7 +154,7 @@
             "en": "Zone 1 Operation Mode"
           },
           "example": {
-            "en": "Heat Room"
+            "en": "0 (Heat Room)"
           }
         }
       ]
@@ -173,7 +173,7 @@
             "en": "Zone 2 Operation Mode"
           },
           "example": {
-            "en": "Heat Room"
+            "en": "0 (Heat Room)"
           }
         }
       ]

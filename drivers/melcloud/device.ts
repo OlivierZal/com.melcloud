@@ -108,17 +108,17 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         }
         this.diff.operation_mode = value as string
         break
+      case 'target_temperature':
+        this.diff.target_temperature = value as number
+        break
+      case 'dim':
+        this.diff.dim = value as number
+        break
       case 'vertical':
         this.diff.vertical = value as string
         break
       case 'horizontal':
         this.diff.horizontal = value as string
-        break
-      case 'target_temperature':
-        this.diff.target_temperature = value as number
-        break
-      case 'fan_power':
-        this.diff.fan_power = value as number
         break
       default:
         this.error('Unknown capability', capability, '- with value', value)
@@ -134,6 +134,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') === true ? true : newValue as boolean
+      case 'dim':
+        return newValue as number * 5
       case 'operation_mode':
         return operationModeToDevice[newValue as keyof typeof operationModeToDevice]
       case 'vertical':
@@ -152,6 +154,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         if (this.getSetting('always_on') === true && newValue === false) {
           await this.setSettings({ always_on: false })
         }
+        break
+      case 'dim':
+        newValue = newValue as number / 5
         break
       case 'operation_mode':
         newValue = operationModeFromDevice[newValue as keyof typeof operationModeFromDevice]
