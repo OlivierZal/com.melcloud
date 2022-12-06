@@ -97,5 +97,8 @@
   },
   "7.2.3": {
     "en": "Minor changes."
+  },
+  "7.2.4": {
+    "en": "Made the code more readable."
   }
 }
