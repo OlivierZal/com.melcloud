@@ -15,15 +15,15 @@ import {
   setCapabilityMappingAtw
 } from '../../types'
 
-const operationModeFromDevice: { [key: number]: string } = {
-  0: 'idle',
-  1: 'dhw',
-  2: 'heating',
-  3: 'cooling',
-  4: 'defrost',
-  5: 'standby',
-  6: 'legionella'
-} as const
+const operationModeFromDevice: string[] = [
+  'idle',
+  'dhw',
+  'heating',
+  'cooling',
+  'defrost',
+  'standby',
+  'legionella'
+]
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   setCapabilityMapping!: typeof setCapabilityMappingAtw
@@ -212,7 +212,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         }
         break
       case 'operation_mode_state':
-        newValue = operationModeFromDevice[newValue as keyof typeof operationModeFromDevice]
+        newValue = operationModeFromDevice[newValue as number]
         break
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':

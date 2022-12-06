@@ -15,15 +15,15 @@ import {
   setCapabilityMappingAta
 } from '../../types'
 
-function reverse (mapping: any): any {
-  const reversedMapping: any = {}
-  Object.entries(mapping).forEach(([key, value]: [any, any]): void => {
-    reversedMapping[value] = key
+function reverse (mapping: { [capabilityValue: string]: string }): { [deviceValue: string]: number } {
+  const reversedMapping: { [deviceValue: string]: number } = {}
+  Object.entries(mapping).forEach(([capabilityValue, deviceValue]: [string, string]): void => {
+    reversedMapping[deviceValue] = Number(capabilityValue)
   })
   return reversedMapping
 }
 
-const operationModeFromDevice: { [key: number]: keyof typeof operationModeToDevice } = {
+const operationModeFromDevice: { [capabilityValue: string]: string } = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -31,9 +31,9 @@ const operationModeFromDevice: { [key: number]: keyof typeof operationModeToDevi
   8: 'auto'
 } as const
 
-const operationModeToDevice: { [key: string]: keyof typeof operationModeFromDevice } = reverse(operationModeFromDevice)
+const operationModeToDevice: { [deviceValue: string]: number } = reverse(operationModeFromDevice)
 
-const verticalFromDevice: { [key: number]: keyof typeof verticalToDevice } = {
+const verticalFromDevice: { [capabilityValue: string]: string } = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -43,9 +43,9 @@ const verticalFromDevice: { [key: number]: keyof typeof verticalToDevice } = {
   7: 'swing'
 } as const
 
-const verticalToDevice: { [key: string]: keyof typeof verticalFromDevice } = reverse(verticalFromDevice)
+const verticalToDevice: { [deviceValue: string]: number } = reverse(verticalFromDevice)
 
-const horizontalFromDevice: { [key: number]: keyof typeof horizontalToDevice } = {
+const horizontalFromDevice: { [capabilityValue: string]: string } = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',
@@ -56,7 +56,7 @@ const horizontalFromDevice: { [key: number]: keyof typeof horizontalToDevice } =
   12: 'swing'
 } as const
 
-const horizontalToDevice: { [key: string]: keyof typeof horizontalFromDevice } = reverse(horizontalFromDevice)
+const horizontalToDevice: { [deviceValue: string]: number } = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   setCapabilityMapping!: typeof setCapabilityMappingAta
