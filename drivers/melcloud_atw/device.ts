@@ -3,7 +3,17 @@ import { DateTime } from 'luxon'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
-import { Capability, getCapabilityMappingAtw, listCapabilityMappingAtw, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability, setCapabilityMappingAtw } from '../../types'
+import {
+  Capability,
+  getCapabilityMappingAtw,
+  listCapabilityMappingAtw,
+  ReportCapabilities,
+  ReportCapability,
+  ReportData,
+  SetCapabilities,
+  SetCapability,
+  setCapabilityMappingAtw
+} from '../../types'
 
 const operationModeFromDevice: { [key: number]: string } = {
   0: 'idle',
@@ -175,9 +185,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         this.error('Unknown capability', capability, '- with value', value)
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => {
-      await this.syncDataToDevice(this.diff)
-    }, 1 * 1000)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1 * 1000)
   }
 
   getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
@@ -287,7 +295,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
             data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] / data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>]
         })
         reportMapping[`meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>] =
-          reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] / reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
+          reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] /
+          reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
       }
     }
 
@@ -300,9 +309,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
     this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => {
-        await this.runEnergyReports()
-      }, 24 * 60 * 60 * 1000)
+      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 24 * 60 * 60 * 1000)
     }, Number(date.diffNow()))
   }
 }

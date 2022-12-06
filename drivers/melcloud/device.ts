@@ -3,7 +3,17 @@ import { DateTime } from 'luxon'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAta from './driver'
-import { Capability, getCapabilityMappingAta, listCapabilityMappingAta, ReportCapabilities, ReportCapability, ReportData, SetCapabilities, SetCapability, setCapabilityMappingAta } from '../../types'
+import {
+  Capability,
+  getCapabilityMappingAta,
+  listCapabilityMappingAta,
+  ReportCapabilities,
+  ReportCapability,
+  ReportData,
+  SetCapabilities,
+  SetCapability,
+  setCapabilityMappingAta
+} from '../../types'
 
 function reverse (mapping: any): any {
   const reversedMapping: any = {}
@@ -124,9 +134,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         this.error('Unknown capability', capability, '- with value', value)
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => {
-      await this.syncDataToDevice(this.diff)
-    }, 1 * 1000)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1 * 1000)
   }
 
   getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
@@ -236,9 +244,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     const date: DateTime = DateTime.now().plus({ hours: 1 }).set({ minute: 0, second: 0, millisecond: 0 })
     this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => {
-        await this.runEnergyReports()
-      }, 60 * 60 * 1000)
+      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 60 * 60 * 1000)
     }, Number(date.diffNow()))
   }
 }

@@ -2,7 +2,26 @@ import 'source-map-support/register'
 import { Device } from 'homey'
 
 import MELCloudApp from '../app'
-import { Capability, GetCapability, getCapabilityMappingAta, getCapabilityMappingAtw, GetData, ListCapability, listCapabilityMappingAta, listCapabilityMappingAtw, ListDevice, ListDevices, MELCloudDevice, MELCloudDriver, SetCapabilities, SetCapability, setCapabilityMappingAta, setCapabilityMappingAtw, Settings, UpdateData } from '../types'
+import {
+  Capability,
+  GetCapability,
+  getCapabilityMappingAta,
+  getCapabilityMappingAtw,
+  GetData,
+  ListCapability,
+  listCapabilityMappingAta,
+  listCapabilityMappingAtw,
+  ListDevice,
+  ListDevices,
+  MELCloudDevice,
+  MELCloudDriver,
+  SetCapabilities,
+  SetCapability,
+  setCapabilityMappingAta,
+  setCapabilityMappingAtw,
+  Settings,
+  UpdateData
+} from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
   setCapabilityMapping!: typeof setCapabilityMappingAta | typeof setCapabilityMappingAtw
@@ -172,10 +191,7 @@ export default class MELCloudDeviceMixin extends Device {
   planNextSyncFromDevice (interval?: number): void {
     const newInterval: number = interval ?? this.getSetting('interval')
     this.homey.clearTimeout(this.syncTimeout)
-    this.syncTimeout = this.homey
-      .setTimeout(async (): Promise<void> => {
-        await this.syncDataFromDevice()
-      }, newInterval * 60 * 1000)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval * 60 * 1000)
     this.log('Next sync from device in', newInterval, 'minutes')
   }
 
