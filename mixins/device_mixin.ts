@@ -1,4 +1,3 @@
-import 'source-map-support/register'
 import { Device } from 'homey'
 
 import MELCloudApp from '../app'

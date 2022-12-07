@@ -1,4 +1,3 @@
-import 'source-map-support/register'
 import { Driver } from 'homey'
 import PairSession from 'homey/lib/PairSession'
 

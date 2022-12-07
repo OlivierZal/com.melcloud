@@ -1,4 +1,3 @@
-import 'source-map-support/register'
 import { DateTime } from 'luxon'
 
 import MELCloudDeviceMixin from '../../mixins/device_mixin'

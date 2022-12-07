@@ -1,5 +1,3 @@
-import 'source-map-support/register'
-
 import MELCloudDeviceAta from './drivers/melcloud/device'
 import MELCloudDeviceAtw from './drivers/melcloud_atw/device'
 import MELCloudDriverAta from './drivers/melcloud/driver'

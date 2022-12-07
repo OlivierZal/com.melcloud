@@ -1,5 +1,3 @@
-import 'source-map-support/register'
-
 import MELCloudDeviceAta from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import { DeviceInfo, ListDevice, ListDevices } from '../../types'
