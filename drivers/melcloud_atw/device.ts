@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 
-import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import MELCloudDriverAtw from './driver'
+import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
   getCapabilityMappingAtw,
