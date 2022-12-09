@@ -103,5 +103,8 @@
   },
   "7.2.5": {
     "en": "Minor changes."
+  },
+  "7.3.0": {
+    "en": "Improved flow card management."
   }
 }
