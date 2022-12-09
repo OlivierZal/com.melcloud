@@ -3,6 +3,7 @@ import { Device } from 'homey'
 import MELCloudApp from '../app'
 import {
   Capability,
+  DeviceInfo,
   GetCapability,
   getCapabilityMappingAta,
   getCapabilityMappingAtw,
@@ -44,7 +45,7 @@ export default class MELCloudDeviceMixin extends Device {
   async onInit (): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
-    const data: any = this.getData()
+    const data: DeviceInfo<MELCloudDevice>['data'] = this.getData()
     this.id = data.id
     this.buildingid = data.buildingid
     this.deviceFromList = null
