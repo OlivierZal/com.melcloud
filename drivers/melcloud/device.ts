@@ -73,8 +73,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async handleCapabilities (): Promise<void> {
-    const currentCapabilities = this.getCapabilities()
-    for (const capability of currentCapabilities) {
+    for (const capability of this.getCapabilities()) {
       if (!this.requiredCapabilities.includes(capability)) {
         await this.removeCapability(capability)
       }
