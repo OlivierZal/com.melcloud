@@ -207,13 +207,13 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       'meter_power.total_consumed_other': 0
     }
     const toDate: DateTime = DateTime.now().minus({ hours: 1 })
-    const periods: { [period: string]: { fromDate: DateTime, toDate: DateTime } } = {
+    const periods: { [period in 'hourly' | 'daily' | 'total']: { fromDate: DateTime, toDate: DateTime } } = {
       hourly: { fromDate: toDate, toDate },
       daily: { fromDate: toDate, toDate },
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const period in periods) {
-      const { fromDate, toDate } = periods[period]
+      const { fromDate, toDate } = periods[period as keyof typeof periods]
       const data: ReportData<MELCloudDeviceAta> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
