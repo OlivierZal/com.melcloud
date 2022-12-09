@@ -70,9 +70,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         })
     })
 
-    const temperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
+    const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
       .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('target_temperature') && capability !== 'target_temperature')
-    temperatureCapabilities.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
+    flowTemperatureCapabilities.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
       this.homey.flow
         .getActionCard(`${capability.replace('.', '_')}_action`)
         .registerRunListener(async (args: { device: MELCloudDeviceAtw, target_temperature: number }): Promise<void> => {
