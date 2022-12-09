@@ -2091,7 +2091,8 @@
         ]
       },
       {
-        "id": "target_temperature_tank_water_action",
+        "id": "target_temperature_tank_water",
+        "deprecated": true,
         "title": {
           "en": "Set Water Tank Target Temperature to..."
         },
@@ -2113,8 +2114,7 @@
         ]
       },
       {
-        "id": "target_temperature_tank_water",
-        "deprecated": true,
+        "id": "target_temperature_tank_water_action",
         "title": {
           "en": "Set Water Tank Target Temperature to..."
         },
