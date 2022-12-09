@@ -294,61 +294,149 @@ export type ReportCapabilities<T extends MELCloudDevice> = T extends MELCloudDev
   : ReportCapabilitiesAta
 
 export const setCapabilityMappingAta = {
-  onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
-  operation_mode: { tag: 'OperationMode', effectiveFlag: BigInt(0x2) },
-  target_temperature: { tag: 'SetTemperature', effectiveFlag: BigInt(0x4) },
-  fan_power: { tag: 'SetFanSpeed', effectiveFlag: BigInt(0x8) },
-  vertical: { tag: 'VaneVertical', effectiveFlag: BigInt(0x10) },
-  horizontal: { tag: 'VaneHorizontal', effectiveFlag: BigInt(0x100) }
+  onoff: {
+    tag: 'Power',
+    effectiveFlag: BigInt(0x1)
+  },
+  operation_mode: {
+    tag: 'OperationMode',
+    effectiveFlag: BigInt(0x2)
+  },
+  target_temperature: {
+    tag: 'SetTemperature',
+    effectiveFlag: BigInt(0x4)
+  },
+  fan_power: {
+    tag: 'SetFanSpeed',
+    effectiveFlag: BigInt(0x8)
+  },
+  vertical: {
+    tag: 'VaneVertical',
+    effectiveFlag: BigInt(0x10)
+  },
+  horizontal: {
+    tag: 'VaneHorizontal',
+    effectiveFlag: BigInt(0x100)
+  }
 } as const
 
 export const setCapabilityMappingAtw = {
   onoff: { tag: 'Power', effectiveFlag: BigInt(0x1) },
-  'operation_mode_zone.zone1': { tag: 'OperationModeZone1', effectiveFlag: BigInt(0x8) },
-  'operation_mode_zone_with_cool.zone1': { tag: 'OperationModeZone1', effectiveFlag: BigInt(0x8) },
-  'operation_mode_zone.zone2': { tag: 'OperationModeZone2', effectiveFlag: BigInt(0x10) },
-  'operation_mode_zone_with_cool.zone2': { tag: 'OperationModeZone2', effectiveFlag: BigInt(0x10) },
-  'onoff.forced_hot_water': { tag: 'ForcedHotWaterMode', effectiveFlag: BigInt(0x10000) },
-  target_temperature: { tag: 'SetTemperatureZone1', effectiveFlag: BigInt(0x200000080) },
-  'target_temperature.zone2': { tag: 'SetTemperatureZone2', effectiveFlag: BigInt(0x800000200) },
-  'target_temperature.zone1_flow_cool': { tag: 'SetCoolFlowTemperatureZone1', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone1_flow_heat': { tag: 'SetHeatFlowTemperatureZone1', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone2_flow_cool': { tag: 'SetCoolFlowTemperatureZone2', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.zone2_flow_heat': { tag: 'SetHeatFlowTemperatureZone2', effectiveFlag: BigInt(0x1000000000000) },
-  'target_temperature.tank_water': { tag: 'SetTankWaterTemperature', effectiveFlag: BigInt(0x1000000000020) }
+  'operation_mode_zone.zone1': {
+    tag: 'OperationModeZone1',
+    effectiveFlag: BigInt(0x8)
+  },
+  'operation_mode_zone_with_cool.zone1': {
+    tag: 'OperationModeZone1',
+    effectiveFlag: BigInt(0x8)
+  },
+  'operation_mode_zone.zone2': {
+    tag: 'OperationModeZone2',
+    effectiveFlag: BigInt(0x10)
+  },
+  'operation_mode_zone_with_cool.zone2': {
+    tag: 'OperationModeZone2',
+    effectiveFlag: BigInt(0x10)
+  },
+  'onoff.forced_hot_water': {
+    tag: 'ForcedHotWaterMode',
+    effectiveFlag: BigInt(0x10000)
+  },
+  target_temperature: {
+    tag: 'SetTemperatureZone1',
+    effectiveFlag: BigInt(0x200000080)
+  },
+  'target_temperature.zone2': {
+    tag: 'SetTemperatureZone2',
+    effectiveFlag: BigInt(0x800000200)
+  },
+  'target_temperature.zone1_flow_cool': {
+    tag: 'SetCoolFlowTemperatureZone1',
+    effectiveFlag: BigInt(0x1000000000000)
+  },
+  'target_temperature.zone1_flow_heat': {
+    tag: 'SetHeatFlowTemperatureZone1',
+    effectiveFlag: BigInt(0x1000000000000)
+  },
+  'target_temperature.zone2_flow_cool': {
+    tag: 'SetCoolFlowTemperatureZone2',
+    effectiveFlag: BigInt(0x1000000000000)
+  },
+  'target_temperature.zone2_flow_heat': {
+    tag: 'SetHeatFlowTemperatureZone2',
+    effectiveFlag: BigInt(0x1000000000000)
+  },
+  'target_temperature.tank_water': {
+    tag: 'SetTankWaterTemperature',
+    effectiveFlag: BigInt(0x1000000000020)
+  }
 } as const
 
 export const getCapabilityMappingAta = {
-  measure_temperature: { tag: 'RoomTemperature' }
+  measure_temperature: {
+    tag: 'RoomTemperature'
+  }
 } as const
 
 export const getCapabilityMappingAtw = {
-  eco_hot_water: { tag: 'EcoHotWater' },
-  measure_temperature: { tag: 'RoomTemperatureZone1' },
-  'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
-  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
-  'measure_temperature.tank_water': { tag: 'TankWaterTemperature' },
-  operation_mode_state: { tag: 'OperationMode' }
+  eco_hot_water: {
+    tag: 'EcoHotWater'
+  },
+  measure_temperature: {
+    tag: 'RoomTemperatureZone1'
+  },
+  'measure_temperature.zone2': {
+    tag: 'RoomTemperatureZone2'
+  },
+  'measure_temperature.outdoor': {
+    tag: 'OutdoorTemperature'
+  },
+  'measure_temperature.tank_water': {
+    tag: 'TankWaterTemperature'
+  },
+  operation_mode_state: {
+    tag: 'OperationMode'
+  }
 } as const
 
 export const listCapabilityMappingAta = {
-  'measure_power.wifi': { tag: 'WifiSignalStrength' }
+  'measure_power.wifi': {
+    tag: 'WifiSignalStrength'
+  }
 } as const
 
 export const listCapabilityMappingAtw = {
-  'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
-  'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
-  'alarm_generic.booster_heater2_plus': { tag: 'BoosterHeater2PlusStatus' },
-  'alarm_generic.defrost_mode': { tag: 'DefrostMode' },
-  'alarm_generic.immersion_heater': { tag: 'ImmersionHeaterStatus' },
-  'measure_power.heat_pump_frequency': { tag: 'HeatPumpFrequency' },
-  'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  'measure_temperature.flow': { tag: 'FlowTemperature' },
-  'measure_temperature.return': { tag: 'ReturnTemperature' }
+  'alarm_generic.booster_heater1': {
+    tag: 'BoosterHeater1Status'
+  },
+  'alarm_generic.booster_heater2': {
+    tag: 'BoosterHeater2Status'
+  },
+  'alarm_generic.booster_heater2_plus': {
+    tag: 'BoosterHeater2PlusStatus'
+  },
+  'alarm_generic.defrost_mode': {
+    tag: 'DefrostMode'
+  },
+  'alarm_generic.immersion_heater': {
+    tag: 'ImmersionHeaterStatus'
+  },
+  'measure_power.heat_pump_frequency': {
+    tag: 'HeatPumpFrequency'
+  },
+  'measure_power.wifi': {
+    tag: 'WifiSignalStrength'
+  },
+  'measure_temperature.flow': {
+    tag: 'FlowTemperature'
+  },
+  'measure_temperature.return': {
+    tag: 'ReturnTemperature'
+  }
 } as const
 
 export interface Settings {
-  readonly [setting: string]: any
+  [setting: string]: any
 }
 
 export type FlowArgsAta = { device: MELCloudDeviceAta } & { [capability in SetCapability<MELCloudDeviceAta>]: string }

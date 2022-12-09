@@ -44,7 +44,7 @@ export default class MELCloudDeviceMixin extends Device {
   async onInit (): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
-    const data = this.getData()
+    const data: any = this.getData()
     this.id = data.id
     this.buildingid = data.buildingid
     this.deviceFromList = null
@@ -201,13 +201,13 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  async onSettings (event: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
-    await this.handleDashboardCapabilities(event.newSettings, event.changedKeys)
+  async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
+    await this.handleDashboardCapabilities(newSettings, changedKeys)
 
     let hasReported: boolean = false
     let hasSynced: boolean = false
     let needsSync: boolean = false
-    for (const setting of event.changedKeys) {
+    for (const setting of changedKeys) {
       if (!['always_on', 'interval'].includes(setting)) {
         await this.setWarning('Exit device and return to refresh your dashboard')
       }
@@ -220,7 +220,7 @@ export default class MELCloudDeviceMixin extends Device {
         if (!needsSync) {
           needsSync = true
         }
-        if (setting === 'always_on' && event.newSettings.always_on === true) {
+        if (setting === 'always_on' && newSettings.always_on === true) {
           await this.onCapability('onoff', true)
           hasSynced = true
           needsSync = false

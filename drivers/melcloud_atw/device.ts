@@ -4,6 +4,7 @@ import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
+  DeviceInfo,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   ReportCapabilities,
@@ -40,7 +41,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async handleCapabilities (): Promise<void> {
-    const store = this.getStore()
+    const store: DeviceInfo<MELCloudDeviceAtw>['store'] = this.getStore()
 
     for (const capability of this.getCapabilities()) {
       if (!this.requiredCapabilities.includes(capability)) {
@@ -54,7 +55,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       }
     }
 
-    if (store.canCool === true) {
+    if (store.canCool) {
       for (const capability of this.driver.notCoolCapabilitiesAtw) {
         if (this.hasCapability(capability)) {
           await this.removeCapability(capability)
@@ -78,13 +79,13 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       }
     }
 
-    if (store.hasZone2 === true) {
+    if (store.hasZone2) {
       for (const capability of this.driver.zone2CapabilitiesAtw) {
         if (!this.hasCapability(capability)) {
           await this.addCapability(capability)
         }
       }
-      if (store.canCool === true) {
+      if (store.canCool) {
         for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
           if (this.hasCapability(capability)) {
             await this.removeCapability(capability)
@@ -228,9 +229,9 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
 
   async customUpdate (): Promise<void> {
     if (this.deviceFromList !== null) {
-      const store = this.getStore()
+      const store: DeviceInfo<MELCloudDeviceAtw>['store'] = this.getStore()
 
-      let hasStoreChanged = false
+      let hasStoreChanged: boolean = false
       if (this.deviceFromList.Device.CanCool !== store.canCool) {
         await this.setStoreValue('canCool', this.deviceFromList.Device.CanCool)
         hasStoreChanged = true
