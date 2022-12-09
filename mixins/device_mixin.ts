@@ -69,8 +69,7 @@ export default class MELCloudDeviceMixin extends Device {
     const newSettings: Settings = settings ?? this.getSettings()
     let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
     newCapabilities = newCapabilities
-      .filter((capability: string): boolean => this.requiredCapabilities.includes(capability))
-      .filter((capability: string): boolean => Object.keys(newSettings).includes(capability))
+      .filter((capability: string): boolean => this.requiredCapabilities.includes(capability) && Object.keys(newSettings).includes(capability))
     for (const capability of newCapabilities) {
       if (newSettings[capability] === true && !this.hasCapability(capability)) {
         await this.addCapability(capability)

@@ -1,6 +1,11 @@
 import MELCloudDeviceAta from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { DeviceInfo, ListDevice, ListDevices } from '../../types'
+import { DeviceInfo, FlowArgsAta, ListDevice, ListDevices, SetCapability } from '../../types'
+
+const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
+function getCapabilityArg (args: FlowArgsAta, capability: SetCapability<MELCloudDeviceAta>): number | string {
+  return capability === 'fan_power' ? Number(args[capability]) : args[capability]
+}
 
 export default class MELCloudDriverAta extends MELCloudDriverMixin {
   async onInit (): Promise<void> {
@@ -8,55 +13,18 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.deviceType = 0
     this.heatPumpType = 'Ata'
 
-    // Condition flowcards
-    this.homey.flow
-      .getConditionCard('operation_mode_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAta, operation_mode: string }): boolean => (
-        args.operation_mode === args.device.getCapabilityValue('operation_mode')
-      ))
-
-    this.homey.flow
-      .getConditionCard('fan_power_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAta, fan_power: string }): boolean => (
-        Number(args.fan_power) === args.device.getCapabilityValue('fan_power')
-      ))
-
-    this.homey.flow
-      .getConditionCard('vertical_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAta, vertical: string }): boolean => (
-        args.vertical === args.device.getCapabilityValue('vertical')
-      ))
-
-    this.homey.flow
-      .getConditionCard('horizontal_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAta, horizontal: string }): boolean => (
-        args.horizontal === args.device.getCapabilityValue('horizontal')
-      ))
-
-    // Action flowcards
-    this.homey.flow
-      .getActionCard('operation_mode_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAta, operation_mode: string }): Promise<void> => {
-        await args.device.onCapability('operation_mode', args.operation_mode)
-      })
-
-    this.homey.flow
-      .getActionCard('fan_power_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAta, fan_power: string }): Promise<void> => {
-        await args.device.onCapability('fan_power', Number(args.fan_power))
-      })
-
-    this.homey.flow
-      .getActionCard('vertical_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAta, vertical: string }): Promise<void> => {
-        await args.device.onCapability('vertical', args.vertical)
-      })
-
-    this.homey.flow
-      .getActionCard('horizontal_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAta, horizontal: string }): Promise<void> => {
-        await args.device.onCapability('horizontal', args.horizontal)
-      })
+    flowCapabilities.forEach((capability: SetCapability<MELCloudDeviceAta>): void => {
+      this.homey.flow
+        .getConditionCard(`${capability}_condition`)
+        .registerRunListener((args: FlowArgsAta): boolean => (
+          getCapabilityArg(args, capability) === args.device.getCapabilityValue(capability)
+        ))
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+          await args.device.onCapability(capability, getCapabilityArg(args, capability))
+        })
+    })
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAta>>> {

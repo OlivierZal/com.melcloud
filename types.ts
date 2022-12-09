@@ -350,3 +350,5 @@ export const listCapabilityMappingAtw = {
 export interface Settings {
   readonly [setting: string]: any
 }
+
+export type FlowArgsAta = { device: MELCloudDeviceAta } & { [capability in SetCapability<MELCloudDeviceAta>]: string }

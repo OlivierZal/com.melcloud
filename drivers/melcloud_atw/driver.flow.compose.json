@@ -665,7 +665,7 @@
       ]
     },
     {
-      "id": "target_temperature_tank_water",
+      "id": "target_temperature_tank_water_action",
       "title": {
         "en": "Set Water Tank Target Temperature to..."
       },
@@ -682,7 +682,25 @@
       ]
     },
     {
-      "id": "target_temperature_zone2",
+      "id": "target_temperature_tank_water",
+      "deprecated": true,
+      "title": {
+        "en": "Set Water Tank Target Temperature to..."
+      },
+      "titleFormatted": {
+        "en": "Set Water Tank Target Temperature to [[target_temperature]]"
+      },
+      "args": [
+        {
+          "name": "target_temperature",
+          "type": "number",
+          "min": 40,
+          "max": 60
+        }
+      ]
+    },
+    {
+      "id": "target_temperature_zone2_action",
       "$filter": "capabilities=target_temperature.zone2",
       "title": {
         "en": "Set Zone 2 Target Temperature to..."
