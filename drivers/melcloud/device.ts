@@ -14,7 +14,7 @@ import {
   setCapabilityMappingAta
 } from '../../types'
 
-function reverse (mapping: { [capabilityValue: string]: string }): { [deviceValue: string]: number } {
+function reverse (mapping: { [capabilityValue: number]: string }): { [deviceValue: string]: number } {
   const reversedMapping: { [deviceValue: string]: number } = {}
   Object.entries(mapping).forEach(([capabilityValue, deviceValue]: [string, string]): void => {
     reversedMapping[deviceValue] = Number(capabilityValue)
@@ -22,7 +22,7 @@ function reverse (mapping: { [capabilityValue: string]: string }): { [deviceValu
   return reversedMapping
 }
 
-const operationModeFromDevice: { [capabilityValue: string]: string } = {
+const operationModeFromDevice: { [capabilityValue: number]: string } = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -32,7 +32,7 @@ const operationModeFromDevice: { [capabilityValue: string]: string } = {
 
 const operationModeToDevice: { [deviceValue: string]: number } = reverse(operationModeFromDevice)
 
-const verticalFromDevice: { [capabilityValue: string]: string } = {
+const verticalFromDevice: { [capabilityValue: number]: string } = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -44,7 +44,7 @@ const verticalFromDevice: { [capabilityValue: string]: string } = {
 
 const verticalToDevice: { [deviceValue: string]: number } = reverse(verticalFromDevice)
 
-const horizontalFromDevice: { [capabilityValue: string]: string } = {
+const horizontalFromDevice: { [capabilityValue: number]: string } = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',
@@ -141,11 +141,11 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'onoff':
         return this.getSetting('always_on') === true ? true : newValue as boolean
       case 'operation_mode':
-        return operationModeToDevice[newValue as keyof typeof operationModeToDevice]
+        return operationModeToDevice[newValue as string]
       case 'vertical':
-        return verticalToDevice[newValue as keyof typeof verticalToDevice]
+        return verticalToDevice[newValue as string]
       case 'horizontal':
-        return horizontalToDevice[newValue as keyof typeof horizontalToDevice]
+        return horizontalToDevice[newValue as string]
       default:
         return newValue as number
     }
@@ -160,13 +160,13 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         }
         break
       case 'operation_mode':
-        newValue = operationModeFromDevice[newValue as keyof typeof operationModeFromDevice]
+        newValue = operationModeFromDevice[newValue as number]
         break
       case 'vertical':
-        newValue = verticalFromDevice[newValue as keyof typeof verticalFromDevice]
+        newValue = verticalFromDevice[newValue as number]
         break
       case 'horizontal':
-        newValue = horizontalFromDevice[newValue as keyof typeof horizontalFromDevice]
+        newValue = horizontalFromDevice[newValue as number]
         break
       default:
     }
@@ -213,7 +213,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const period in periods) {
-      const { fromDate, toDate } = periods[period as keyof typeof periods]
+      const { fromDate, toDate } = periods[period as 'hourly' | 'daily' | 'total']
       const data: ReportData<MELCloudDeviceAta> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'

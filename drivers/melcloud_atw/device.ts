@@ -280,7 +280,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const period in periods) {
-      const { fromDate, toDate } = periods[period as keyof typeof periods]
+      const { fromDate, toDate } = periods[period as 'daily' | 'total']
       const data: ReportData<MELCloudDeviceAtw> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('TotalHeatingConsumed' in data) {
         ['Cooling', 'Heating', 'HotWater'].forEach((mode: string): void => {
