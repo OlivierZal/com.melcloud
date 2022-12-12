@@ -9,8 +9,8 @@
     ],
     "parserOptions": {
         "ecmaVersion": "latest",
-        "project": ["./tsconfig.json"],
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": ["./tsconfig.json"]
     },
     "rules": {
     }
