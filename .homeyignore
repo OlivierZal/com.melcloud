@@ -1,1 +1,2 @@
-renovate.json
+/renovate.json
+/.eslintrc.json
