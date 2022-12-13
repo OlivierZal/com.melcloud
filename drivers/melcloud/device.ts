@@ -212,8 +212,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       daily: { fromDate: toDate, toDate },
       total: { fromDate: DateTime.local(1970), toDate }
     }
-    for (const period in periods) {
-      const { fromDate, toDate } = periods[period as 'hourly' | 'daily' | 'total']
+    for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
       const data: ReportData<MELCloudDeviceAta> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
@@ -226,15 +225,18 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           } else {
             modeData = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
           }
-          reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>] = modeData / deviceCount
-          reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>] +=
-            reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
+          reportMapping[
+            `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
+          ] = modeData / deviceCount
+          reportMapping[
+            `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>
+          ] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
         })
       }
     }
 
-    for (const capability in reportMapping) {
-      await this.setCapabilityValueFromDevice(capability as Capability<MELCloudDeviceAta>, reportMapping[capability as ReportCapability<MELCloudDeviceAta>])
+    for (const [capability, value] of Object.entries(reportMapping)) {
+      await this.setCapabilityValueFromDevice(capability as Capability<MELCloudDeviceAta>, value)
     }
   }
 

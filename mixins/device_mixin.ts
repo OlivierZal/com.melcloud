@@ -148,15 +148,13 @@ export default class MELCloudDeviceMixin extends Device {
 
   async updateCapabilities <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
     if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
-      for (const capability in this.setCapabilityMapping) {
-        const { effectiveFlag, tag } = this.setCapabilityMapping[capability as keyof typeof this.setCapabilityMapping]
+      for (const [capability, { effectiveFlag, tag }] of Object.entries(this.setCapabilityMapping)) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         if (effectiveFlags === BigInt(0) || Boolean(effectiveFlags & effectiveFlag)) {
           await this.setCapabilityValueFromDevice(capability as SetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
         }
       }
-      for (const capability in this.getCapabilityMapping) {
-        const { tag } = this.getCapabilityMapping[capability as keyof typeof this.getCapabilityMapping]
+      for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
         await this.setCapabilityValueFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
       }
     }
@@ -168,9 +166,8 @@ export default class MELCloudDeviceMixin extends Device {
 
   async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
     if (this.deviceFromList !== null) {
-      for (const capability in this.listCapabilityMapping) {
-        const { tag } = this.listCapabilityMapping[capability as keyof typeof this.listCapabilityMapping]
-        await this.setCapabilityValueFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag])
+      for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
+        await this.setCapabilityValueFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
       }
     }
   }
@@ -241,11 +238,11 @@ export default class MELCloudDeviceMixin extends Device {
     this.homey.clearTimeout(this.syncTimeout)
   }
 
-  log (...message: any[]): void {
-    super.log(this.getName(), '-', ...message)
+  log (...args: any[]): void {
+    super.log(this.getName(), '-', ...args)
   }
 
-  error (...message: any[]): void {
-    super.error(this.getName(), '-', ...message)
+  error (...args: any[]): void {
+    super.error(this.getName(), '-', ...args)
   }
 }
