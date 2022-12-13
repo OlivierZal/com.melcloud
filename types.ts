@@ -282,7 +282,11 @@ export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? DeviceInfoAtw
   : DeviceInfoAta
 
-export type FlowArgsAta = { device: MELCloudDeviceAta } & { [capability in SetCapability<MELCloudDeviceAta>]: string }
+export type FlowArgsAta = {
+  device: MELCloudDeviceAta
+} & {
+  [capability in SetCapability<MELCloudDeviceAta>]: string
+}
 
 interface SetDeviceDataAta {
   readonly EffectiveFlags: number
