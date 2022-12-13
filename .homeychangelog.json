@@ -130,5 +130,8 @@
   },
   "7.3.8": {
     "en": "Fix CoP values in some cases.wq"
+  },
+  "7.3.9": {
+    "en": "Simplified logging."
   }
 }
