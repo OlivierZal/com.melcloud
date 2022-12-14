@@ -44,92 +44,62 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     const store: DeviceInfo<MELCloudDeviceAtw>['store'] = this.getStore()
 
     for (const capability of this.getCapabilities()) {
-      if (!this.requiredCapabilities.includes(capability)) {
-        await this.removeCapability(capability)
-      }
+      if (!this.requiredCapabilities.includes(capability)) await this.removeCapability(capability)
     }
 
     for (const capability of this.driver.capabilitiesAtw) {
-      if (!this.hasCapability(capability)) {
-        await this.addCapability(capability)
-      }
+      if (!this.hasCapability(capability)) await this.addCapability(capability)
     }
 
     if (store.canCool) {
       for (const capability of this.driver.notCoolCapabilitiesAtw) {
-        if (this.hasCapability(capability)) {
-          await this.removeCapability(capability)
-        }
+        if (this.hasCapability(capability)) await this.removeCapability(capability)
       }
       for (const capability of this.driver.coolCapabilitiesAtw) {
-        if (!this.hasCapability(capability)) {
-          await this.addCapability(capability)
-        }
+        if (!this.hasCapability(capability)) await this.addCapability(capability)
       }
     } else {
       for (const capability of this.driver.coolCapabilitiesAtw) {
-        if (this.hasCapability(capability)) {
-          await this.removeCapability(capability)
-        }
+        if (this.hasCapability(capability)) await this.removeCapability(capability)
       }
       for (const capability of this.driver.notCoolCapabilitiesAtw) {
-        if (!this.hasCapability(capability)) {
-          await this.addCapability(capability)
-        }
+        if (!this.hasCapability(capability)) await this.addCapability(capability)
       }
     }
 
     if (store.hasZone2) {
       for (const capability of this.driver.zone2CapabilitiesAtw) {
-        if (!this.hasCapability(capability)) {
-          await this.addCapability(capability)
-        }
+        if (!this.hasCapability(capability)) await this.addCapability(capability)
       }
       if (store.canCool) {
         for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-          if (this.hasCapability(capability)) {
-            await this.removeCapability(capability)
-          }
+          if (this.hasCapability(capability)) await this.removeCapability(capability)
         }
         for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-          if (!this.hasCapability(capability)) {
-            await this.addCapability(capability)
-          }
+          if (!this.hasCapability(capability)) await this.addCapability(capability)
         }
       } else {
         for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-          if (this.hasCapability(capability)) {
-            await this.removeCapability(capability)
-          }
+          if (this.hasCapability(capability)) await this.removeCapability(capability)
         }
         for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-          if (!this.hasCapability(capability)) {
-            await this.addCapability(capability)
-          }
+          if (!this.hasCapability(capability)) await this.addCapability(capability)
         }
       }
     } else {
       for (const capability of this.driver.zone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) {
-          await this.removeCapability(capability)
-        }
+        if (this.hasCapability(capability)) await this.removeCapability(capability)
       }
       for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) {
-          await this.removeCapability(capability)
-        }
+        if (this.hasCapability(capability)) await this.removeCapability(capability)
       }
       for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) {
-          await this.removeCapability(capability)
-        }
+        if (this.hasCapability(capability)) await this.removeCapability(capability)
       }
     }
 
     for (const capability of this.driver.otherCapabilitiesAtw) {
-      if (!this.hasCapability(capability)) {
-        await this.addCapability(capability)
-      }
+      if (!this.hasCapability(capability)) await this.addCapability(capability)
     }
   }
 
@@ -184,7 +154,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         this.error('Unknown capability', capability, '- with value', value)
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1 * 1000)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
   }
 
   getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
@@ -206,9 +176,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true && newValue === false) {
-          await this.setSettings({ always_on: false })
-        }
+        if (this.getSetting('always_on') === true && newValue === false) await this.setSettings({ always_on: false })
         break
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]
@@ -241,9 +209,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         hasStoreChanged = true
       }
 
-      if (hasStoreChanged) {
-        await this.handleCapabilities()
-      }
+      if (hasStoreChanged) await this.handleCapabilities()
     }
   }
 

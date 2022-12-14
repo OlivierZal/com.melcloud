@@ -74,14 +74,10 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
 
   async handleCapabilities (): Promise<void> {
     for (const capability of this.getCapabilities()) {
-      if (!this.requiredCapabilities.includes(capability)) {
-        await this.removeCapability(capability)
-      }
+      if (!this.requiredCapabilities.includes(capability)) await this.removeCapability(capability)
     }
     for (const capability of this.requiredCapabilities) {
-      if (!this.hasCapability(capability)) {
-        await this.addCapability(capability)
-      }
+      if (!this.hasCapability(capability)) await this.addCapability(capability)
     }
   }
 
@@ -105,9 +101,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'thermostat_mode':
         this.diff.onoff = value !== 'off'
-        if (value !== 'off') {
-          this.diff.operation_mode = value as string
-        }
+        if (value !== 'off') this.diff.operation_mode = value as string
         break
       case 'operation_mode':
         if (['dry', 'fan'].includes(value as string) && this.getCapabilityValue('thermostat_mode') !== 'off') {
@@ -132,7 +126,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         this.error('Unknown capability', capability, '- with value', value)
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1 * 1000)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
   }
 
   getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
@@ -155,9 +149,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true && newValue === false) {
-          await this.setSettings({ always_on: false })
-        }
+        if (this.getSetting('always_on') === true && newValue === false) await this.setSettings({ always_on: false })
         break
       case 'operation_mode':
         newValue = operationModeFromDevice[newValue as number]
@@ -176,9 +168,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   async customUpdate (): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     let operationMode: string = this.getCapabilityValue('operation_mode')
-    if (!isOn || ['dry', 'fan'].includes(operationMode)) {
-      operationMode = 'off'
-    }
+    if (!isOn || ['dry', 'fan'].includes(operationMode)) operationMode = 'off'
     await this.setOrNotCapabilityValue('thermostat_mode', operationMode)
   }
 
@@ -219,12 +209,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1;
         ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string): void => {
-          let modeData: number
-          if (period === 'hourly') {
-            modeData = (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
-          } else {
-            modeData = data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
-          }
+          const modeData: number = period === 'hourly'
+            ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
+            : data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
           reportMapping[
             `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
           ] = modeData / deviceCount

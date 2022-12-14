@@ -204,18 +204,14 @@ export default class MELCloudDeviceMixin extends Device {
     let hasSynced: boolean = false
     let needsSync: boolean = false
     for (const setting of changedKeys) {
-      if (!['always_on', 'interval'].includes(setting)) {
-        await this.setWarning('Exit device and return to refresh your dashboard')
-      }
+      if (!['always_on', 'interval'].includes(setting)) await this.setWarning('Exit device and return to refresh your dashboard')
       if (setting.startsWith('meter_power')) {
         if (!hasReported) {
           await this.runEnergyReports()
           hasReported = true
         }
       } else if (!hasSynced) {
-        if (!needsSync) {
-          needsSync = true
-        }
+        if (!needsSync) needsSync = true
         if (setting === 'always_on' && newSettings.always_on === true) {
           await this.onCapability('onoff', true)
           hasSynced = true
@@ -225,9 +221,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
     await this.setWarning(null)
 
-    if (needsSync) {
-      this.planNextSyncFromDevice(1 * 1000)
-    }
+    if (needsSync) this.planNextSyncFromDevice(1000)
   }
 
   onDeleted (): void {

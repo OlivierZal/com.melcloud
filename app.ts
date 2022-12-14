@@ -82,29 +82,21 @@ export default class MELCloudApp extends App {
       driver.log('Searching for devices:', data)
       data.forEach((building: Building<T>): void => {
         building.Structure.Devices.forEach((device: ListDevice<T>): void => {
-          if (driver.deviceType === device.Device.DeviceType) {
-            devices[device.DeviceID] = device
-          }
+          if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
         })
         building.Structure.Floors.forEach((floor): void => {
           floor.Devices.forEach((device: ListDevice<T>): void => {
-            if (driver.deviceType === device.Device.DeviceType) {
-              devices[device.DeviceID] = device
-            }
+            if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
           })
           floor.Areas.forEach((area): void => {
             area.Devices.forEach((device: ListDevice<T>): void => {
-              if (driver.deviceType === device.Device.DeviceType) {
-                devices[device.DeviceID] = device
-              }
+              if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
             })
           })
         })
         building.Structure.Areas.forEach((area): void => {
           area.Devices.forEach((device: ListDevice<T>): void => {
-            if (driver.deviceType === device.Device.DeviceType) {
-              devices[device.DeviceID] = device
-            }
+            if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
           })
         })
       })
