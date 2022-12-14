@@ -80,26 +80,26 @@ export default class MELCloudApp extends App {
     try {
       const { data } = await axios.get<Array<Building<T>>>('/User/ListDevices')
       driver.log('Searching for devices:', data)
-      data.forEach((building: Building<T>): void => {
-        building.Structure.Devices.forEach((device: ListDevice<T>): void => {
+      for (const building of data) {
+        for (const device of building.Structure.Devices) {
           if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
-        })
-        building.Structure.Floors.forEach((floor): void => {
-          floor.Devices.forEach((device: ListDevice<T>): void => {
+        }
+        for (const floor of building.Structure.Floors) {
+          for (const device of floor.Devices) {
             if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
-          })
-          floor.Areas.forEach((area): void => {
-            area.Devices.forEach((device: ListDevice<T>): void => {
+          }
+          for (const area of floor.Areas) {
+            for (const device of area.Devices) {
               if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
-            })
-          })
-        })
-        building.Structure.Areas.forEach((area): void => {
-          area.Devices.forEach((device: ListDevice<T>): void => {
+            }
+          }
+        }
+        for (const area of building.Structure.Areas) {
+          for (const device of area.Devices) {
             if (driver.deviceType === device.Device.DeviceType) devices[device.DeviceID] = device
-          })
-        })
-      })
+          }
+        }
+      }
     } catch (error: unknown) {
       driver.error('Searching for devices:', error instanceof Error ? error.message : error)
     }

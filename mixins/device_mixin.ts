@@ -81,11 +81,11 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
-    Object.keys(this.setCapabilityMapping).forEach((capability): void => {
+    for (const capability of Object.keys(this.setCapabilityMapping)) {
       this.registerCapabilityListener(capability, async (value: boolean | number | string): Promise<void> => {
         await this.onCapability(capability as SetCapability<T>, value)
       })
-    })
+    }
   }
 
   async onCapability (_capability: SetCapability<MELCloudDevice> | 'thermostat_mode', _value: boolean | number | string): Promise<void> {
@@ -104,7 +104,7 @@ export default class MELCloudDeviceMixin extends Device {
     const updateData: any = {}
 
     let effectiveFlags: bigint = BigInt(0)
-    Object.entries(this.setCapabilityMapping).forEach(([capability, { tag, effectiveFlag }]: [string, { tag: string, effectiveFlag: bigint }]): void => {
+    for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
@@ -113,7 +113,7 @@ export default class MELCloudDeviceMixin extends Device {
           updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>)
         }
       }
-    })
+    }
     updateData.EffectiveFlags = Number(effectiveFlags)
     return updateData
   }

@@ -18,7 +18,7 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.deviceType = 0
     this.heatPumpType = 'Ata'
 
-    flowCapabilities.forEach((capability: SetCapability<MELCloudDeviceAta>): void => {
+    for (const capability of flowCapabilities) {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgsAta): boolean => (
@@ -29,7 +29,7 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
         .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
           await args.device.onCapability(capability, getCapabilityArg(args, capability))
         })
-    })
+    }
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAta>>> {

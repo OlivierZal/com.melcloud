@@ -53,7 +53,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
 
     const operationModeZoneCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
       .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('operation_mode_zone'))
-    operationModeZoneCapabilities.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
+    for (const capability of operationModeZoneCapabilities) {
       let flowPrefix: string = `operation_mode_zone${capability[capability.length - 1]}`
       if (capability.includes('with_cool')) flowPrefix += '_with_cool'
       this.homey.flow
@@ -66,17 +66,17 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
           await args.device.onCapability(capability, args.operation_mode_zone)
         })
-    })
+    }
 
     const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
       .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('target_temperature') && capability !== 'target_temperature')
-    flowTemperatureCapabilities.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
+    for (const capability of flowTemperatureCapabilities) {
       this.homey.flow
         .getActionCard(`${capability.replace('.', '_')}_action`)
         .registerRunListener(async (args: { device: MELCloudDeviceAtw, target_temperature: number }): Promise<void> => {
           await args.device.onCapability(capability, args.target_temperature)
         })
-    })
+    }
 
     this.homey.flow
       .getConditionCard('eco_hot_water_condition')
@@ -124,35 +124,35 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         },
         capabilities: [] as Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
       }
-      this.capabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>): void => {
+      for (const capability of this.capabilitiesAtw) {
         deviceInfo.capabilities.push(capability)
-      })
-      if (device.Device.CanCool) {
-        this.coolCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
-          deviceInfo.capabilities.push(capability)
-        })
-      } else {
-        this.notCoolCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
-          deviceInfo.capabilities.push(capability)
-        })
       }
-      if (device.Device.HasZone2) {
-        this.zone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>): void => {
+      if (device.Device.CanCool) {
+        for (const capability of this.coolCapabilitiesAtw) {
           deviceInfo.capabilities.push(capability)
-        })
-        if (device.Device.CanCool) {
-          this.coolZone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
-            deviceInfo.capabilities.push(capability)
-          })
-        } else {
-          this.notCoolZone2CapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw>): void => {
-            deviceInfo.capabilities.push(capability)
-          })
+        }
+      } else {
+        for (const capability of this.notCoolCapabilitiesAtw) {
+          deviceInfo.capabilities.push(capability)
         }
       }
-      this.otherCapabilitiesAtw.forEach((capability: SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>): void => {
+      if (device.Device.HasZone2) {
+        for (const capability of this.zone2CapabilitiesAtw) {
+          deviceInfo.capabilities.push(capability)
+        }
+        if (device.Device.CanCool) {
+          for (const capability of this.coolZone2CapabilitiesAtw) {
+            deviceInfo.capabilities.push(capability)
+          }
+        } else {
+          for (const capability of this.notCoolZone2CapabilitiesAtw) {
+            deviceInfo.capabilities.push(capability)
+          }
+        }
+      }
+      for (const capability of this.otherCapabilitiesAtw) {
         deviceInfo.capabilities.push(capability)
-      })
+      }
       return deviceInfo
     })
   }

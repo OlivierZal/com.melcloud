@@ -14,15 +14,15 @@ import {
   setCapabilityMappingAta
 } from '../../types'
 
-function reverse (mapping: { [capabilityValue: number]: string }): { [deviceValue: string]: number } {
-  const reversedMapping: { [deviceValue: string]: number } = {}
-  Object.entries(mapping).forEach(([capabilityValue, deviceValue]: [string, string]): void => {
+function reverse (mapping: Record<number, string>): Record<string, number> {
+  const reversedMapping: Record<string, number> = {}
+  for (const [capabilityValue, deviceValue] of Object.entries(mapping)) {
     reversedMapping[deviceValue] = Number(capabilityValue)
-  })
+  }
   return reversedMapping
 }
 
-const operationModeFromDevice: { [capabilityValue: number]: string } = {
+const operationModeFromDevice: Record<number, string> = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -30,9 +30,9 @@ const operationModeFromDevice: { [capabilityValue: number]: string } = {
   8: 'auto'
 } as const
 
-const operationModeToDevice: { [deviceValue: string]: number } = reverse(operationModeFromDevice)
+const operationModeToDevice: Record<string, number> = reverse(operationModeFromDevice)
 
-const verticalFromDevice: { [capabilityValue: number]: string } = {
+const verticalFromDevice: Record<number, string> = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -42,9 +42,9 @@ const verticalFromDevice: { [capabilityValue: number]: string } = {
   7: 'swing'
 } as const
 
-const verticalToDevice: { [deviceValue: string]: number } = reverse(verticalFromDevice)
+const verticalToDevice: Record<string, number> = reverse(verticalFromDevice)
 
-const horizontalFromDevice: { [capabilityValue: number]: string } = {
+const horizontalFromDevice: Record<number, string> = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',
@@ -55,7 +55,7 @@ const horizontalFromDevice: { [capabilityValue: number]: string } = {
   12: 'swing'
 } as const
 
-const horizontalToDevice: { [deviceValue: string]: number } = reverse(horizontalFromDevice)
+const horizontalToDevice: Record<string, number> = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   setCapabilityMapping!: typeof setCapabilityMappingAta
@@ -207,8 +207,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       if ('UsageDisclaimerPercentages' in data) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
-          : 1;
-        ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'].forEach((mode: string): void => {
+          : 1
+        for (const mode of ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other']) {
           const modeData: number = period === 'hourly'
             ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
             : data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
@@ -218,7 +218,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           reportMapping[
             `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>
           ] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
-        })
+        }
       }
     }
 
