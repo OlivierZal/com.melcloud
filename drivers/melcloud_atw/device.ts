@@ -304,7 +304,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
 
     for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.setCapabilityValueFromDevice(capability as Capability<MELCloudDeviceAtw>, value)
+      await this.setCapabilityValueFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
     }
   }
 
