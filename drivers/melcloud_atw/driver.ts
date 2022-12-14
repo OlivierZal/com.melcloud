@@ -109,10 +109,28 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       })
   }
 
+  getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
+    let requiredCapabilities: string[] = [...this.capabilitiesAtw]
+    if (canCool) {
+      requiredCapabilities = [...this.coolCapabilitiesAtw, ...requiredCapabilities]
+    } else {
+      requiredCapabilities = [...this.notCoolCapabilitiesAtw, ...requiredCapabilities]
+    }
+    if (hasZone2) {
+      requiredCapabilities = [...this.zone2CapabilitiesAtw, ...requiredCapabilities]
+      if (canCool) {
+        requiredCapabilities = [...this.coolZone2CapabilitiesAtw, ...requiredCapabilities]
+      } else {
+        requiredCapabilities = [...this.notCoolZone2CapabilitiesAtw, ...requiredCapabilities]
+      }
+    }
+    return [...this.otherCapabilitiesAtw, ...requiredCapabilities]
+  }
+
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
     const devices: ListDevices<MELCloudDriverAtw> = await this.app.listDevices(this)
-    return Object.values(devices).map((device: ListDevice<MELCloudDriverAtw>): DeviceInfo<MELCloudDeviceAtw> => {
-      const deviceInfo: DeviceInfo<MELCloudDeviceAtw> = {
+    return Object.values(devices).map((device: ListDevice<MELCloudDriverAtw>): DeviceInfo<MELCloudDeviceAtw> => (
+      {
         name: device.DeviceName,
         data: {
           id: device.DeviceID,
@@ -122,39 +140,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
           canCool: device.Device.CanCool,
           hasZone2: device.Device.HasZone2
         },
-        capabilities: [] as Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
+        capabilities: this.getRequiredCapabilities(device.Device.CanCool, device.Device.HasZone2)
       }
-      for (const capability of this.capabilitiesAtw) {
-        deviceInfo.capabilities.push(capability)
-      }
-      if (device.Device.CanCool) {
-        for (const capability of this.coolCapabilitiesAtw) {
-          deviceInfo.capabilities.push(capability)
-        }
-      } else {
-        for (const capability of this.notCoolCapabilitiesAtw) {
-          deviceInfo.capabilities.push(capability)
-        }
-      }
-      if (device.Device.HasZone2) {
-        for (const capability of this.zone2CapabilitiesAtw) {
-          deviceInfo.capabilities.push(capability)
-        }
-        if (device.Device.CanCool) {
-          for (const capability of this.coolZone2CapabilitiesAtw) {
-            deviceInfo.capabilities.push(capability)
-          }
-        } else {
-          for (const capability of this.notCoolZone2CapabilitiesAtw) {
-            deviceInfo.capabilities.push(capability)
-          }
-        }
-      }
-      for (const capability of this.otherCapabilitiesAtw) {
-        deviceInfo.capabilities.push(capability)
-      }
-      return deviceInfo
-    })
+    ))
   }
 }
 

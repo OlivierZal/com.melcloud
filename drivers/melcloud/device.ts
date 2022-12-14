@@ -58,27 +58,16 @@ const horizontalFromDevice: Record<number, string> = {
 const horizontalToDevice: Record<string, number> = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
-  setCapabilityMapping!: typeof setCapabilityMappingAta
-  getCapabilityMapping!: typeof getCapabilityMappingAta
-  listCapabilityMapping!: typeof listCapabilityMappingAta
-
-  driver!: MELCloudDriverAta
-  diff!: SetCapabilities<MELCloudDeviceAta>
+  declare driver: MELCloudDriverAta
+  declare diff: SetCapabilities<MELCloudDeviceAta>
 
   async onInit (): Promise<void> {
+    this.requiredCapabilities = this.driver.manifest.capabilities
+
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
     this.listCapabilityMapping = listCapabilityMappingAta
     await super.onInit()
-  }
-
-  async handleCapabilities (): Promise<void> {
-    for (const capability of this.getCapabilities()) {
-      if (!this.requiredCapabilities.includes(capability)) await this.removeCapability(capability)
-    }
-    for (const capability of this.requiredCapabilities) {
-      if (!this.hasCapability(capability)) await this.addCapability(capability)
-    }
   }
 
   registerCapabilityListeners (): void {
@@ -121,9 +110,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'fan_power':
         this.diff.fan_power = value as number
-        break
-      default:
-        this.error('Unknown capability', capability, '- with value', value)
     }
 
     this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
@@ -159,8 +145,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'horizontal':
         newValue = horizontalFromDevice[newValue as number]
-        break
-      default:
     }
     await this.setOrNotCapabilityValue(capability, newValue)
   }

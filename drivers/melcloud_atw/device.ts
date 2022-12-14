@@ -4,7 +4,6 @@ import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
-  DeviceInfo,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   ReportCapabilities,
@@ -26,81 +25,17 @@ const operationModeFromDevice: string[] = [
 ]
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
-  setCapabilityMapping!: typeof setCapabilityMappingAtw
-  getCapabilityMapping!: typeof getCapabilityMappingAtw
-  listCapabilityMapping!: typeof listCapabilityMappingAtw
-
-  driver!: MELCloudDriverAtw
-  diff!: SetCapabilities<MELCloudDeviceAtw>
+  declare driver: MELCloudDriverAtw
+  declare diff: SetCapabilities<MELCloudDeviceAtw>
 
   async onInit (): Promise<void> {
+    const { canCool, hasZone2 } = this.getStore()
+    this.requiredCapabilities = this.driver.getRequiredCapabilities(canCool, hasZone2)
+
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
     await super.onInit()
-  }
-
-  async handleCapabilities (): Promise<void> {
-    const store: DeviceInfo<MELCloudDeviceAtw>['store'] = this.getStore()
-
-    for (const capability of this.getCapabilities()) {
-      if (!this.requiredCapabilities.includes(capability)) await this.removeCapability(capability)
-    }
-
-    for (const capability of this.driver.capabilitiesAtw) {
-      if (!this.hasCapability(capability)) await this.addCapability(capability)
-    }
-
-    if (store.canCool) {
-      for (const capability of this.driver.notCoolCapabilitiesAtw) {
-        if (this.hasCapability(capability)) await this.removeCapability(capability)
-      }
-      for (const capability of this.driver.coolCapabilitiesAtw) {
-        if (!this.hasCapability(capability)) await this.addCapability(capability)
-      }
-    } else {
-      for (const capability of this.driver.coolCapabilitiesAtw) {
-        if (this.hasCapability(capability)) await this.removeCapability(capability)
-      }
-      for (const capability of this.driver.notCoolCapabilitiesAtw) {
-        if (!this.hasCapability(capability)) await this.addCapability(capability)
-      }
-    }
-
-    if (store.hasZone2) {
-      for (const capability of this.driver.zone2CapabilitiesAtw) {
-        if (!this.hasCapability(capability)) await this.addCapability(capability)
-      }
-      if (store.canCool) {
-        for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-          if (this.hasCapability(capability)) await this.removeCapability(capability)
-        }
-        for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-          if (!this.hasCapability(capability)) await this.addCapability(capability)
-        }
-      } else {
-        for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-          if (this.hasCapability(capability)) await this.removeCapability(capability)
-        }
-        for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-          if (!this.hasCapability(capability)) await this.addCapability(capability)
-        }
-      }
-    } else {
-      for (const capability of this.driver.zone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) await this.removeCapability(capability)
-      }
-      for (const capability of this.driver.coolZone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) await this.removeCapability(capability)
-      }
-      for (const capability of this.driver.notCoolZone2CapabilitiesAtw) {
-        if (this.hasCapability(capability)) await this.removeCapability(capability)
-      }
-    }
-
-    for (const capability of this.driver.otherCapabilitiesAtw) {
-      if (!this.hasCapability(capability)) await this.addCapability(capability)
-    }
   }
 
   async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
@@ -149,9 +84,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         break
       case 'target_temperature.tank_water':
         this.diff['target_temperature.tank_water'] = value as number
-        break
-      default:
-        this.error('Unknown capability', capability, '- with value', value)
     }
 
     this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
@@ -189,22 +121,19 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         break
       case 'alarm_generic.defrost_mode':
         newValue = Boolean(newValue)
-        break
-      default:
     }
     await this.setOrNotCapabilityValue(capability, newValue)
   }
 
   async customUpdate (): Promise<void> {
     if (this.deviceFromList !== null) {
-      const store: DeviceInfo<MELCloudDeviceAtw>['store'] = this.getStore()
-
+      const { canCool, hasZone2 } = this.getStore()
       let hasStoreChanged: boolean = false
-      if (this.deviceFromList.Device.CanCool !== store.canCool) {
+      if (this.deviceFromList.Device.CanCool !== canCool) {
         await this.setStoreValue('canCool', this.deviceFromList.Device.CanCool)
         hasStoreChanged = true
       }
-      if (this.deviceFromList.Device.HasZone2 !== store.hasZone2) {
+      if (this.deviceFromList.Device.HasZone2 !== hasZone2) {
         await this.setStoreValue('hasZone2', this.deviceFromList.Device.HasZone2)
         hasStoreChanged = true
       }
