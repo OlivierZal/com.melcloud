@@ -11,7 +11,6 @@ import {
   LoginData,
   LoginPostData,
   MELCloudDevice,
-  MELCloudDriver,
   PostData,
   ReportData,
   ReportPostData,
@@ -72,7 +71,7 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  async listDevices <T extends MELCloudDriver> (driver: T): Promise<ListDevices<T>> {
+  async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<ListDevices<T>> {
     const devices: ListDevices<T> = {}
 
     driver.log('Searching for devices...')

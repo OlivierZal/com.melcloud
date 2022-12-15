@@ -128,8 +128,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
-    const devices: ListDevices<MELCloudDriverAtw> = await this.app.listDevices(this)
-    return Object.values(devices).map((device: ListDevice<MELCloudDriverAtw>): DeviceInfo<MELCloudDeviceAtw> => (
+    const devices: ListDevices<MELCloudDeviceAtw> = await this.app.listDevices(this)
+    return Object.values(devices).map((device: ListDevice<MELCloudDeviceAtw>): DeviceInfo<MELCloudDeviceAtw> => (
       {
         name: device.DeviceName,
         data: {

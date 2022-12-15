@@ -212,7 +212,7 @@ interface ListDeviceDataAtw {
   readonly ReturnTemperature: number
 }
 
-export type ListDeviceData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
+type ListDeviceData<T extends MELCloudDevice> = T extends MELCloudDevice
   ? ListDeviceDataAtw
   : ListDeviceDataAta
 
@@ -225,7 +225,7 @@ export interface GetCapabilityMapping<T extends MELCloudDevice> {
   tag: keyof GetDeviceData<T>
 }
 
-export interface ListCapabilityMapping<T extends MELCloudDriver> {
+export interface ListCapabilityMapping<T extends MELCloudDevice> {
   tag: keyof ListDeviceData<T>
 }
 
@@ -338,13 +338,13 @@ export const getCapabilityMappingAtw: Record<GetCapability<MELCloudDeviceAtw>, G
   }
 } as const
 
-export const listCapabilityMappingAta: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDriverAta>> = {
+export const listCapabilityMappingAta: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDeviceAta>> = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength'
   }
 } as const
 
-export const listCapabilityMappingAtw: Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDriverAtw>> = {
+export const listCapabilityMappingAtw: Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDeviceAtw>> = {
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
   },
@@ -423,14 +423,17 @@ export interface LoginData {
   }
 }
 
-export interface ListDevice<T extends MELCloudDriver> {
+interface BaseListDevice {
   readonly BuildingID: number
   readonly DeviceID: number
   readonly DeviceName: string
-  readonly Device: ListDeviceData<T>
 }
 
-export interface Building<T extends MELCloudDriver> {
+export type ListDevice<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? BaseListDevice & { Device: ListDeviceData<MELCloudDeviceAtw> }
+  : BaseListDevice & { Device: ListDeviceData<MELCloudDeviceAta> }
+
+export interface Building<T extends MELCloudDevice> {
   readonly Structure: {
     readonly Devices: Array<ListDevice<T>>
     readonly Areas: Array<{
@@ -445,7 +448,7 @@ export interface Building<T extends MELCloudDriver> {
   }
 }
 
-export type ListDevices<T extends MELCloudDriver> = Record<number, ListDevice<T>>
+export type ListDevices<T extends MELCloudDevice> = Record<number, ListDevice<T>>
 
 export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? Required<Readonly<SetDeviceData<MELCloudDeviceAtw>>>

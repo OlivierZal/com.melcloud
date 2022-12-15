@@ -2,7 +2,9 @@ import { Driver } from 'homey'
 import PairSession from 'homey/lib/PairSession'
 
 import MELCloudApp from '../app'
-import { DeviceInfo, LoginCredentials, MELCloudDevice } from '../types'
+import MELCloudDeviceAta from '../drivers/melcloud/device'
+import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import { DeviceInfo, LoginCredentials } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
@@ -16,10 +18,10 @@ export default class MELCloudDriverMixin extends Driver {
 
   onPair (session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
-    session.setHandler('list_devices', async (): Promise<Array<DeviceInfo<MELCloudDevice>>> => await this.discoverDevices())
+    session.setHandler('list_devices', async (): Promise<Array<DeviceInfo<MELCloudDeviceAta>> | Array<DeviceInfo<MELCloudDeviceAtw>>> => await this.discoverDevices())
   }
 
-  async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDevice>>> {
+  async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAta>> | Array<DeviceInfo<MELCloudDeviceAtw>>> {
     throw new Error('Method not implemented.')
   }
 

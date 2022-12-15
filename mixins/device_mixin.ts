@@ -2,9 +2,7 @@ import { Device } from 'homey'
 
 import MELCloudApp from '../app'
 import MELCloudDeviceAta from '../drivers/melcloud/device'
-import MELCloudDriverAta from '../drivers/melcloud/driver'
 import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
-import MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import {
   Capability,
   ExtendedSetCapability,
@@ -14,7 +12,6 @@ import {
   ListCapability,
   ListCapabilityMapping,
   ListDevice,
-  ListDeviceData,
   ListDevices,
   MELCloudDevice,
   MELCloudDriver,
@@ -26,22 +23,22 @@ import {
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
-  setCapabilityMapping!: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>> |
-  Record<SetCapability<MELCloudDeviceAtw>, SetCapabilityMapping<MELCloudDeviceAtw>>
+  setCapabilityMapping!: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>>
+  | Record<SetCapability<MELCloudDeviceAtw>, SetCapabilityMapping<MELCloudDeviceAtw>>
 
-  getCapabilityMapping!: Record<GetCapability<MELCloudDeviceAta>, GetCapabilityMapping<MELCloudDeviceAta>> |
-  Record<GetCapability<MELCloudDeviceAtw>, GetCapabilityMapping<MELCloudDeviceAtw>>
+  getCapabilityMapping!: Record<GetCapability<MELCloudDeviceAta>, GetCapabilityMapping<MELCloudDeviceAta>>
+  | Record<GetCapability<MELCloudDeviceAtw>, GetCapabilityMapping<MELCloudDeviceAtw>>
 
-  listCapabilityMapping!: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDriverAta>> |
-  Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDriverAtw>>
+  listCapabilityMapping!: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDeviceAta>>
+  | Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDeviceAtw>>
 
   declare driver: MELCloudDriver
   app!: MELCloudApp
 
   id!: number
   buildingid!: number
-  deviceFromList!: ListDevice<MELCloudDriver> | null
-  diff!: SetCapabilities<MELCloudDevice>
+  deviceFromList!: ListDevice<MELCloudDeviceAta> | ListDevice<MELCloudDeviceAtw> | null
+  diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
 
   requiredCapabilities!: string[]
 
@@ -99,7 +96,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async onCapability (_capability: ExtendedSetCapability<MELCloudDevice>, _value: boolean | number | string): Promise<void> {
+  async onCapability (_capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -132,7 +129,7 @@ export default class MELCloudDeviceMixin extends Device {
     return updateData
   }
 
-  getCapabilityValueToDevice (_capability: SetCapability<MELCloudDevice>, _value?: boolean | number | string): boolean | number {
+  getCapabilityValueToDevice (_capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>, _value?: boolean | number | string): boolean | number {
     throw new Error('Method not implemented.')
   }
 
@@ -150,7 +147,7 @@ export default class MELCloudDeviceMixin extends Device {
     this.planNextSyncFromDevice()
   }
 
-  async getDeviceFromList <T extends MELCloudDriver> (): Promise<ListDevice<T> | null> {
+  async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
     const devices: ListDevices<T> = await this.app.listDevices(this.driver)
     const device: ListDevice<T> = devices[this.id]
     if (device === undefined) {
@@ -180,7 +177,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDevice>, _value: boolean | number): Promise<void> {
+  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>, _value: boolean | number): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -189,7 +186,7 @@ export default class MELCloudDeviceMixin extends Device {
       for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
         await this.setCapabilityValueFromDevice(
           capability as ListCapability<T>,
-          this.deviceFromList.Device[tag as keyof ListDeviceData<MELCloudDriver>]
+          this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device]
         )
       }
     }
