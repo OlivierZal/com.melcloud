@@ -1,15 +1,18 @@
 import { Device } from 'homey'
 
 import MELCloudApp from '../app'
+import MELCloudDeviceAta from '../drivers/melcloud/device'
+import MELCloudDriverAta from '../drivers/melcloud/driver'
+import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import {
   Capability,
+  ExtendedSetCapability,
   GetCapability,
-  getCapabilityMappingAta,
-  getCapabilityMappingAtw,
+  GetCapabilityMapping,
   GetData,
   ListCapability,
-  listCapabilityMappingAta,
-  listCapabilityMappingAtw,
+  ListCapabilityMapping,
   ListDevice,
   ListDeviceData,
   ListDevices,
@@ -17,16 +20,20 @@ import {
   MELCloudDriver,
   SetCapabilities,
   SetCapability,
-  setCapabilityMappingAta,
-  setCapabilityMappingAtw,
+  SetCapabilityMapping,
   Settings,
   UpdateData
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
-  setCapabilityMapping!: typeof setCapabilityMappingAta | typeof setCapabilityMappingAtw
-  getCapabilityMapping!: typeof getCapabilityMappingAta | typeof getCapabilityMappingAtw
-  listCapabilityMapping!: typeof listCapabilityMappingAta | typeof listCapabilityMappingAtw
+  setCapabilityMapping!: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>> |
+  Record<SetCapability<MELCloudDeviceAtw>, SetCapabilityMapping<MELCloudDeviceAtw>>
+
+  getCapabilityMapping!: Record<GetCapability<MELCloudDeviceAta>, GetCapabilityMapping<MELCloudDeviceAta>> |
+  Record<GetCapability<MELCloudDeviceAtw>, GetCapabilityMapping<MELCloudDeviceAtw>>
+
+  listCapabilityMapping!: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDriverAta>> |
+  Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDriverAtw>>
 
   declare driver: MELCloudDriver
   app!: MELCloudApp
@@ -92,7 +99,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async onCapability (_capability: SetCapability<MELCloudDevice> | 'thermostat_mode', _value: boolean | number | string): Promise<void> {
+  async onCapability (_capability: ExtendedSetCapability<MELCloudDevice>, _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -155,12 +162,12 @@ export default class MELCloudDeviceMixin extends Device {
 
   async updateCapabilities <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
     if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
-      for (const [capability, { effectiveFlag, tag }] of Object.entries(this.setCapabilityMapping)) {
+      for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
           await this.setCapabilityValueFromDevice(
             capability as SetCapability<T>,
-            resultData[tag as keyof GetData<T>] as boolean | number
+            resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number
           )
         }
       }

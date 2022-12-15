@@ -1,6 +1,6 @@
 import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
+import { Capability, DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
@@ -110,7 +110,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
-    let requiredCapabilities: string[] = [...this.capabilitiesAtw]
+    let requiredCapabilities: Array<Capability<MELCloudDeviceAtw>> = [...this.capabilitiesAtw]
     if (canCool) {
       requiredCapabilities = [...this.coolCapabilitiesAtw, ...requiredCapabilities]
     } else {

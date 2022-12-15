@@ -125,6 +125,10 @@ export type SetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAt
   ? keyof SetCapabilitiesAtw
   : keyof SetCapabilitiesAta
 
+export type ExtendedSetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? keyof SetCapabilitiesAtw
+  : keyof SetCapabilitiesAta | 'thermostat_mode'
+
 export type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof GetCapabilitiesAtw
   : keyof GetCapabilitiesAta
@@ -140,30 +144,34 @@ export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDevic
 export type Capability<T extends MELCloudDevice> = SetCapability<T> | GetCapability<T> | ListCapability<T> | ReportCapability<T>
 
 interface SetDeviceDataAta {
-  readonly EffectiveFlags: number
-  readonly OperationMode: number
-  readonly Power: boolean
-  readonly SetTemperature: number
-  readonly SetFanSpeed: number
-  readonly VaneVertical: number
-  readonly VaneHorizontal: number
+  EffectiveFlags: number
+  OperationMode?: number
+  Power?: boolean
+  SetTemperature?: number
+  SetFanSpeed?: number
+  VaneVertical?: number
+  VaneHorizontal?: number
 }
 
 interface SetDeviceDataAtw {
-  readonly EffectiveFlags: number
-  readonly ForcedHotWaterMode: boolean
-  readonly OperationModeZone1: number
-  readonly OperationModeZone2: number
-  readonly OutdoorTemperature: number
-  readonly Power: boolean
-  readonly SetCoolFlowTemperatureZone1: number
-  readonly SetCoolFlowTemperatureZone2: number
-  readonly SetHeatFlowTemperatureZone1: number
-  readonly SetHeatFlowTemperatureZone2: number
-  readonly SetTankWaterTemperature: number
-  readonly SetTemperatureZone1: number
-  readonly SetTemperatureZone2: number
+  EffectiveFlags: number
+  ForcedHotWaterMode?: boolean
+  OperationModeZone1?: number
+  OperationModeZone2?: number
+  OutdoorTemperature?: number
+  Power?: boolean
+  SetCoolFlowTemperatureZone1?: number
+  SetCoolFlowTemperatureZone2?: number
+  SetHeatFlowTemperatureZone1?: number
+  SetHeatFlowTemperatureZone2?: number
+  SetTankWaterTemperature?: number
+  SetTemperatureZone1?: number
+  SetTemperatureZone2?: number
 }
+
+type SetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? SetDeviceDataAtw
+  : SetDeviceDataAta
 
 interface GetDeviceDataAta {
   readonly RoomTemperature: number
@@ -208,33 +216,20 @@ export type ListDeviceData<T extends MELCloudDriver> = T extends MELCloudDriverA
   ? ListDeviceDataAtw
   : ListDeviceDataAta
 
-interface SetCapabilityMappingAta {
-  tag: keyof SetDeviceDataAta
+export interface SetCapabilityMapping<T extends MELCloudDevice> {
+  tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
   effectiveFlag: bigint
 }
 
-interface SetCapabilityMappingAtw {
-  tag: keyof SetDeviceDataAtw
-  effectiveFlag: bigint
+export interface GetCapabilityMapping<T extends MELCloudDevice> {
+  tag: keyof GetDeviceData<T>
 }
 
-interface GetCapabilityMappingAta {
-  tag: keyof GetDeviceDataAta
+export interface ListCapabilityMapping<T extends MELCloudDriver> {
+  tag: keyof ListDeviceData<T>
 }
 
-interface GetCapabilityMappingAtw {
-  tag: keyof GetDeviceDataAtw
-}
-
-interface ListCapabilityMappingAta {
-  tag: keyof ListDeviceDataAta
-}
-
-interface ListCapabilityMappingAtw {
-  tag: keyof ListDeviceDataAtw
-}
-
-export const setCapabilityMappingAta: Record<keyof SetCapabilitiesAta, SetCapabilityMappingAta> = {
+export const setCapabilityMappingAta: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>> = {
   onoff: {
     tag: 'Power',
     effectiveFlag: 0x1n
@@ -261,7 +256,7 @@ export const setCapabilityMappingAta: Record<keyof SetCapabilitiesAta, SetCapabi
   }
 } as const
 
-export const setCapabilityMappingAtw: Record<keyof SetCapabilitiesAtw, SetCapabilityMappingAtw> = {
+export const setCapabilityMappingAtw: Record<SetCapability<MELCloudDeviceAtw>, SetCapabilityMapping<MELCloudDeviceAtw>> = {
   onoff: {
     tag: 'Power',
     effectiveFlag: 0x1n
@@ -316,13 +311,13 @@ export const setCapabilityMappingAtw: Record<keyof SetCapabilitiesAtw, SetCapabi
   }
 } as const
 
-export const getCapabilityMappingAta: Record<keyof GetCapabilitiesAta, GetCapabilityMappingAta> = {
+export const getCapabilityMappingAta: Record<GetCapability<MELCloudDeviceAta>, GetCapabilityMapping<MELCloudDeviceAta>> = {
   measure_temperature: {
     tag: 'RoomTemperature'
   }
 } as const
 
-export const getCapabilityMappingAtw: Record<keyof GetCapabilitiesAtw, GetCapabilityMappingAtw> = {
+export const getCapabilityMappingAtw: Record<GetCapability<MELCloudDeviceAtw>, GetCapabilityMapping<MELCloudDeviceAtw>> = {
   eco_hot_water: {
     tag: 'EcoHotWater'
   },
@@ -343,13 +338,13 @@ export const getCapabilityMappingAtw: Record<keyof GetCapabilitiesAtw, GetCapabi
   }
 } as const
 
-export const listCapabilityMappingAta: Record<keyof ListCapabilitiesAta, ListCapabilityMappingAta> = {
+export const listCapabilityMappingAta: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDriverAta>> = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength'
   }
 } as const
 
-export const listCapabilityMappingAtw: Record<keyof ListCapabilitiesAtw, ListCapabilityMappingAtw> = {
+export const listCapabilityMappingAtw: Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDriverAtw>> = {
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
   },
@@ -397,7 +392,7 @@ interface DeviceInfoAtw {
     readonly canCool: boolean
     readonly hasZone2: boolean
   }
-  readonly capabilities: string[]
+  readonly capabilities: Array<Capability<MELCloudDeviceAtw>>
 }
 
 export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
@@ -453,8 +448,8 @@ export interface Building<T extends MELCloudDriver> {
 export type ListDevices<T extends MELCloudDriver> = Record<number, ListDevice<T>>
 
 export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? SetDeviceDataAtw
-  : SetDeviceDataAta
+  ? Required<Readonly<SetDeviceData<MELCloudDeviceAtw>>>
+  : Required<Readonly<SetDeviceData<MELCloudDeviceAta>>>
 
 export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
   readonly DeviceID: number

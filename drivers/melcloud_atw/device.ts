@@ -4,6 +4,7 @@ import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
+  ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   ReportCapabilities,
@@ -38,7 +39,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
     switch (capability) {

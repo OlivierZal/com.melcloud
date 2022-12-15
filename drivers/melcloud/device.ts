@@ -4,6 +4,7 @@ import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
+  ExtendedSetCapability,
   getCapabilityMappingAta,
   listCapabilityMappingAta,
   ReportCapabilities,
@@ -77,7 +78,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     })
   }
 
-  async onCapability (capability: SetCapability<MELCloudDeviceAta> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: boolean | number | string): Promise<void> {
     this.homey.clearTimeout(this.syncTimeout)
 
     switch (capability) {
