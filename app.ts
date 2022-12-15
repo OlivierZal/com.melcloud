@@ -6,7 +6,6 @@ import { App } from 'homey'
 import {
   Building,
   GetData,
-  ListDevice,
   ListDevices,
   LoginCredentials,
   LoginData,

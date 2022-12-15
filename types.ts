@@ -6,154 +6,7 @@ import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
-export interface Settings {
-  [setting: string]: any
-}
-
-export const setCapabilityMappingAta = {
-  onoff: {
-    tag: 'Power',
-    effectiveFlag: BigInt(0x1)
-  },
-  operation_mode: {
-    tag: 'OperationMode',
-    effectiveFlag: BigInt(0x2)
-  },
-  target_temperature: {
-    tag: 'SetTemperature',
-    effectiveFlag: BigInt(0x4)
-  },
-  fan_power: {
-    tag: 'SetFanSpeed',
-    effectiveFlag: BigInt(0x8)
-  },
-  vertical: {
-    tag: 'VaneVertical',
-    effectiveFlag: BigInt(0x10)
-  },
-  horizontal: {
-    tag: 'VaneHorizontal',
-    effectiveFlag: BigInt(0x100)
-  }
-} as const
-
-export const setCapabilityMappingAtw = {
-  onoff: {
-    tag: 'Power',
-    effectiveFlag: BigInt(0x1)
-  },
-  'operation_mode_zone.zone1': {
-    tag: 'OperationModeZone1',
-    effectiveFlag: BigInt(0x8)
-  },
-  'operation_mode_zone_with_cool.zone1': {
-    tag: 'OperationModeZone1',
-    effectiveFlag: BigInt(0x8)
-  },
-  'operation_mode_zone.zone2': {
-    tag: 'OperationModeZone2',
-    effectiveFlag: BigInt(0x10)
-  },
-  'operation_mode_zone_with_cool.zone2': {
-    tag: 'OperationModeZone2',
-    effectiveFlag: BigInt(0x10)
-  },
-  'onoff.forced_hot_water': {
-    tag: 'ForcedHotWaterMode',
-    effectiveFlag: BigInt(0x10000)
-  },
-  target_temperature: {
-    tag: 'SetTemperatureZone1',
-    effectiveFlag: BigInt(0x200000080)
-  },
-  'target_temperature.zone2': {
-    tag: 'SetTemperatureZone2',
-    effectiveFlag: BigInt(0x800000200)
-  },
-  'target_temperature.zone1_flow_cool': {
-    tag: 'SetCoolFlowTemperatureZone1',
-    effectiveFlag: BigInt(0x1000000000000)
-  },
-  'target_temperature.zone1_flow_heat': {
-    tag: 'SetHeatFlowTemperatureZone1',
-    effectiveFlag: BigInt(0x1000000000000)
-  },
-  'target_temperature.zone2_flow_cool': {
-    tag: 'SetCoolFlowTemperatureZone2',
-    effectiveFlag: BigInt(0x1000000000000)
-  },
-  'target_temperature.zone2_flow_heat': {
-    tag: 'SetHeatFlowTemperatureZone2',
-    effectiveFlag: BigInt(0x1000000000000)
-  },
-  'target_temperature.tank_water': {
-    tag: 'SetTankWaterTemperature',
-    effectiveFlag: BigInt(0x1000000000020)
-  }
-} as const
-
-export const getCapabilityMappingAta = {
-  measure_temperature: {
-    tag: 'RoomTemperature'
-  }
-} as const
-
-export const getCapabilityMappingAtw = {
-  eco_hot_water: {
-    tag: 'EcoHotWater'
-  },
-  measure_temperature: {
-    tag: 'RoomTemperatureZone1'
-  },
-  'measure_temperature.zone2': {
-    tag: 'RoomTemperatureZone2'
-  },
-  'measure_temperature.outdoor': {
-    tag: 'OutdoorTemperature'
-  },
-  'measure_temperature.tank_water': {
-    tag: 'TankWaterTemperature'
-  },
-  operation_mode_state: {
-    tag: 'OperationMode'
-  }
-} as const
-
-export const listCapabilityMappingAta = {
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength'
-  }
-} as const
-
-export const listCapabilityMappingAtw = {
-  'alarm_generic.booster_heater1': {
-    tag: 'BoosterHeater1Status'
-  },
-  'alarm_generic.booster_heater2': {
-    tag: 'BoosterHeater2Status'
-  },
-  'alarm_generic.booster_heater2_plus': {
-    tag: 'BoosterHeater2PlusStatus'
-  },
-  'alarm_generic.defrost_mode': {
-    tag: 'DefrostMode'
-  },
-  'alarm_generic.immersion_heater': {
-    tag: 'ImmersionHeaterStatus'
-  },
-  'measure_power.heat_pump_frequency': {
-    tag: 'HeatPumpFrequency'
-  },
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength'
-  },
-  'measure_temperature.flow': {
-    tag: 'FlowTemperature'
-  },
-  'measure_temperature.return': {
-    tag: 'ReturnTemperature'
-  }
-} as const
+export type Settings = Record<string, any>
 
 interface SetCapabilitiesAta {
   onoff?: boolean
@@ -183,6 +36,35 @@ interface SetCapabilitiesAtw {
 export type SetCapabilities<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetCapabilitiesAtw
   : SetCapabilitiesAta
+
+interface GetCapabilitiesAta {
+  measure_temperature: number
+}
+
+interface GetCapabilitiesAtw {
+  eco_hot_water: boolean
+  measure_temperature: number
+  'measure_temperature.zone2': number
+  'measure_temperature.outdoor': number
+  'measure_temperature.tank_water': number
+  operation_mode_state: number
+}
+
+interface ListCapabilitiesAta {
+  'measure_power.wifi': number
+}
+
+interface ListCapabilitiesAtw {
+  'alarm_generic.booster_heater1': boolean
+  'alarm_generic.booster_heater2': boolean
+  'alarm_generic.booster_heater2_plus': boolean
+  'alarm_generic.defrost_mode': boolean
+  'alarm_generic.immersion_heater': boolean
+  'measure_power.heat_pump_frequency': boolean
+  'measure_power.wifi': number
+  'measure_temperature.flow': boolean
+  'measure_temperature.return': boolean
+}
 
 interface ReportCapabilitiesAta {
   'meter_power.hourly_consumed': number
@@ -240,53 +122,22 @@ export type ReportCapabilities<T extends MELCloudDevice> = T extends MELCloudDev
   : ReportCapabilitiesAta
 
 export type SetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? keyof typeof setCapabilityMappingAtw
-  : keyof typeof setCapabilityMappingAta
+  ? keyof SetCapabilitiesAtw
+  : keyof SetCapabilitiesAta
 
 export type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? keyof typeof getCapabilityMappingAtw
-  : keyof typeof getCapabilityMappingAta
+  ? keyof GetCapabilitiesAtw
+  : keyof GetCapabilitiesAta
 
 export type ListCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? keyof typeof listCapabilityMappingAtw
-  : keyof typeof listCapabilityMappingAta
+  ? keyof ListCapabilitiesAtw
+  : keyof ListCapabilitiesAta
 
 export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof ReportCapabilitiesAtw
   : keyof ReportCapabilitiesAta
 
 export type Capability<T extends MELCloudDevice> = SetCapability<T> | GetCapability<T> | ListCapability<T> | ReportCapability<T>
-
-interface DeviceInfoAta {
-  readonly name: string
-  readonly data: {
-    readonly id: number
-    readonly buildingid: number
-  }
-}
-
-interface DeviceInfoAtw {
-  readonly name: string
-  readonly data: {
-    readonly id: number
-    readonly buildingid: number
-  }
-  readonly store: {
-    readonly canCool: boolean
-    readonly hasZone2: boolean
-  }
-  readonly capabilities: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
-}
-
-export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? DeviceInfoAtw
-  : DeviceInfoAta
-
-export type FlowArgsAta = {
-  device: MELCloudDeviceAta
-} & {
-  [capability in SetCapability<MELCloudDeviceAta>]: string
-}
 
 interface SetDeviceDataAta {
   readonly EffectiveFlags: number
@@ -353,9 +204,211 @@ interface ListDeviceDataAtw {
   readonly ReturnTemperature: number
 }
 
-type ListDeviceData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
+export type ListDeviceData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
   ? ListDeviceDataAtw
   : ListDeviceDataAta
+
+interface SetCapabilityMappingAta {
+  tag: keyof SetDeviceDataAta
+  effectiveFlag: bigint
+}
+
+interface SetCapabilityMappingAtw {
+  tag: keyof SetDeviceDataAtw
+  effectiveFlag: bigint
+}
+
+interface GetCapabilityMappingAta {
+  tag: keyof GetDeviceDataAta
+}
+
+interface GetCapabilityMappingAtw {
+  tag: keyof GetDeviceDataAtw
+}
+
+interface ListCapabilityMappingAta {
+  tag: keyof ListDeviceDataAta
+}
+
+interface ListCapabilityMappingAtw {
+  tag: keyof ListDeviceDataAtw
+}
+
+export const setCapabilityMappingAta: Record<keyof SetCapabilitiesAta, SetCapabilityMappingAta> = {
+  onoff: {
+    tag: 'Power',
+    effectiveFlag: 0x1n
+  },
+  operation_mode: {
+    tag: 'OperationMode',
+    effectiveFlag: 0x2n
+  },
+  target_temperature: {
+    tag: 'SetTemperature',
+    effectiveFlag: 0x4n
+  },
+  fan_power: {
+    tag: 'SetFanSpeed',
+    effectiveFlag: 0x8n
+  },
+  vertical: {
+    tag: 'VaneVertical',
+    effectiveFlag: 0x10n
+  },
+  horizontal: {
+    tag: 'VaneHorizontal',
+    effectiveFlag: 0x100n
+  }
+} as const
+
+export const setCapabilityMappingAtw: Record<keyof SetCapabilitiesAtw, SetCapabilityMappingAtw> = {
+  onoff: {
+    tag: 'Power',
+    effectiveFlag: 0x1n
+  },
+  'operation_mode_zone.zone1': {
+    tag: 'OperationModeZone1',
+    effectiveFlag: 0x8n
+  },
+  'operation_mode_zone_with_cool.zone1': {
+    tag: 'OperationModeZone1',
+    effectiveFlag: 0x8n
+  },
+  'operation_mode_zone.zone2': {
+    tag: 'OperationModeZone2',
+    effectiveFlag: 0x10n
+  },
+  'operation_mode_zone_with_cool.zone2': {
+    tag: 'OperationModeZone2',
+    effectiveFlag: 0x10n
+  },
+  'onoff.forced_hot_water': {
+    tag: 'ForcedHotWaterMode',
+    effectiveFlag: 0x10000n
+  },
+  target_temperature: {
+    tag: 'SetTemperatureZone1',
+    effectiveFlag: 0x200000080n
+  },
+  'target_temperature.zone2': {
+    tag: 'SetTemperatureZone2',
+    effectiveFlag: 0x800000200n
+  },
+  'target_temperature.zone1_flow_cool': {
+    tag: 'SetCoolFlowTemperatureZone1',
+    effectiveFlag: 0x1000000000000n
+  },
+  'target_temperature.zone1_flow_heat': {
+    tag: 'SetHeatFlowTemperatureZone1',
+    effectiveFlag: 0x1000000000000n
+  },
+  'target_temperature.zone2_flow_cool': {
+    tag: 'SetCoolFlowTemperatureZone2',
+    effectiveFlag: 0x1000000000000n
+  },
+  'target_temperature.zone2_flow_heat': {
+    tag: 'SetHeatFlowTemperatureZone2',
+    effectiveFlag: 0x1000000000000n
+  },
+  'target_temperature.tank_water': {
+    tag: 'SetTankWaterTemperature',
+    effectiveFlag: 0x1000000000020n
+  }
+} as const
+
+export const getCapabilityMappingAta: Record<keyof GetCapabilitiesAta, GetCapabilityMappingAta> = {
+  measure_temperature: {
+    tag: 'RoomTemperature'
+  }
+} as const
+
+export const getCapabilityMappingAtw: Record<keyof GetCapabilitiesAtw, GetCapabilityMappingAtw> = {
+  eco_hot_water: {
+    tag: 'EcoHotWater'
+  },
+  measure_temperature: {
+    tag: 'RoomTemperatureZone1'
+  },
+  'measure_temperature.zone2': {
+    tag: 'RoomTemperatureZone2'
+  },
+  'measure_temperature.outdoor': {
+    tag: 'OutdoorTemperature'
+  },
+  'measure_temperature.tank_water': {
+    tag: 'TankWaterTemperature'
+  },
+  operation_mode_state: {
+    tag: 'OperationMode'
+  }
+} as const
+
+export const listCapabilityMappingAta: Record<keyof ListCapabilitiesAta, ListCapabilityMappingAta> = {
+  'measure_power.wifi': {
+    tag: 'WifiSignalStrength'
+  }
+} as const
+
+export const listCapabilityMappingAtw: Record<keyof ListCapabilitiesAtw, ListCapabilityMappingAtw> = {
+  'alarm_generic.booster_heater1': {
+    tag: 'BoosterHeater1Status'
+  },
+  'alarm_generic.booster_heater2': {
+    tag: 'BoosterHeater2Status'
+  },
+  'alarm_generic.booster_heater2_plus': {
+    tag: 'BoosterHeater2PlusStatus'
+  },
+  'alarm_generic.defrost_mode': {
+    tag: 'DefrostMode'
+  },
+  'alarm_generic.immersion_heater': {
+    tag: 'ImmersionHeaterStatus'
+  },
+  'measure_power.heat_pump_frequency': {
+    tag: 'HeatPumpFrequency'
+  },
+  'measure_power.wifi': {
+    tag: 'WifiSignalStrength'
+  },
+  'measure_temperature.flow': {
+    tag: 'FlowTemperature'
+  },
+  'measure_temperature.return': {
+    tag: 'ReturnTemperature'
+  }
+} as const
+
+interface DeviceInfoAta {
+  readonly name: string
+  readonly data: {
+    readonly id: number
+    readonly buildingid: number
+  }
+}
+
+interface DeviceInfoAtw {
+  readonly name: string
+  readonly data: {
+    readonly id: number
+    readonly buildingid: number
+  }
+  readonly store: {
+    readonly canCool: boolean
+    readonly hasZone2: boolean
+  }
+  readonly capabilities: string[]
+}
+
+export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? DeviceInfoAtw
+  : DeviceInfoAta
+
+export type FlowArgsAta = {
+  device: MELCloudDeviceAta
+} & {
+  [capability in SetCapability<MELCloudDeviceAta>]: string
+}
 
 export interface LoginCredentials {
   username: string
@@ -397,9 +450,7 @@ export interface Building<T extends MELCloudDriver> {
   }
 }
 
-export interface ListDevices<T extends MELCloudDriver> {
-  [DeviceID: number]: ListDevice<T>
-}
+export type ListDevices<T extends MELCloudDriver> = Record<number, ListDevice<T>>
 
 export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetDeviceDataAtw

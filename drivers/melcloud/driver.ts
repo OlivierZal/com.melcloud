@@ -3,6 +3,7 @@ import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import { DeviceInfo, FlowArgsAta, ListDevice, ListDevices, SetCapability } from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
+
 function getCapabilityArg (args: FlowArgsAta, capability: SetCapability<MELCloudDeviceAta>): number | string {
   switch (capability) {
     case 'fan_power':
