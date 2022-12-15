@@ -116,10 +116,7 @@ export default class MELCloudDeviceMixin extends Device {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(
-            capability as SetCapability<T>,
-            diff[capability as keyof SetCapabilities<T>] as boolean | number | string
-          )
+          updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as boolean | number | string)
         } else {
           updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>)
         }
@@ -162,17 +159,11 @@ export default class MELCloudDeviceMixin extends Device {
       for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(
-            capability as SetCapability<T>,
-            resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number
-          )
+          await this.setCapabilityValueFromDevice(capability as SetCapability<T>, resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
         }
       }
       for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
-        await this.setCapabilityValueFromDevice(
-          capability as GetCapability<T>,
-          resultData[tag as keyof GetData<T>] as boolean | number
-        )
+        await this.setCapabilityValueFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
       }
     }
   }
@@ -184,10 +175,7 @@ export default class MELCloudDeviceMixin extends Device {
   async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
     if (this.deviceFromList !== null) {
       for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
-        await this.setCapabilityValueFromDevice(
-          capability as ListCapability<T>,
-          this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device]
-        )
+        await this.setCapabilityValueFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
       }
     }
   }
