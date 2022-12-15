@@ -78,7 +78,7 @@ export default class MELCloudDeviceMixin extends Device {
     const newSettings: Settings = settings ?? this.getSettings()
     let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
     newCapabilities = newCapabilities
-      .filter((capability: string): boolean => this.requiredCapabilities.includes(capability) && Object.keys(newSettings).includes(capability))
+      .filter((capability: string): boolean => this.driver.manifest.capabilities.includes(capability) === true && Object.keys(newSettings).includes(capability))
     for (const capability of newCapabilities) {
       if (newSettings[capability] === true && !this.hasCapability(capability)) {
         await this.addCapability(capability)
@@ -191,10 +191,10 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planNextSyncFromDevice (interval?: number): void {
-    const newInterval: number = interval ?? this.getSetting('interval')
+    const newInterval: number = interval ?? this.getSetting('interval') * 60
     this.homey.clearTimeout(this.syncTimeout)
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval * 60 * 1000)
-    this.log('Next sync from device in', newInterval, 'minutes')
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval * 1000)
+    this.log('Next sync from device in', newInterval, 'second(s)')
   }
 
   async runEnergyReports (): Promise<void> {
@@ -211,8 +211,8 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setWarning('Exit device and return to refresh your dashboard')
       await this.setWarning(null)
     }
-    if ('always_on' in changedKeys && newSettings.always_on === true) await this.onCapability('onoff', true)
-    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice(1000)
+    if (changedKeys.includes('always_on') && newSettings.always_on === true) await this.onCapability('onoff', true)
+    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice(1)
     if (changedKeys.some((setting: string): boolean => setting.startsWith('meter_power'))) await this.runEnergyReports()
   }
 

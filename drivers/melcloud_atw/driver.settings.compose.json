@@ -97,7 +97,7 @@
         "label": {
           "en": "Wifi Signal Strength"
         },
-        "value": false
+        "value": true
       },
       {
         "id": "meter_power.daily_cop",

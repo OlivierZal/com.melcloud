@@ -206,10 +206,13 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
 
   planEnergyReports (): void {
     const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+    const interval: number = Number(date.diffNow())
     this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 24 * 60 * 60 * 1000)
-    }, Number(date.diffNow()))
+      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 24 * 3600 * 1000)
+      this.log('Next energy cost report in 1 day')
+    }, interval)
+    this.log('Next energy cost report in', (interval / (3600 * 1000)).toFixed(2), 'hour(s)')
   }
 }
 

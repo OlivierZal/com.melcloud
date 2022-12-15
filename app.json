@@ -2501,6 +2501,14 @@
           },
           "children": [
             {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Wifi Signal Strength"
+              },
+              "value": true
+            },
+            {
               "id": "meter_power.hourly_consumed",
               "type": "checkbox",
               "label": {
@@ -3331,7 +3339,7 @@
               "label": {
                 "en": "Wifi Signal Strength"
               },
-              "value": false
+              "value": true
             },
             {
               "id": "meter_power.daily_cop",
