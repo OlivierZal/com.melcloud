@@ -1,6 +1,6 @@
 import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { Capability, DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
+import { DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
@@ -110,21 +110,12 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
-    let requiredCapabilities: Array<Capability<MELCloudDeviceAtw>> = [...this.capabilitiesAtw]
-    if (canCool) {
-      requiredCapabilities = [...this.coolCapabilitiesAtw, ...requiredCapabilities]
-    } else {
-      requiredCapabilities = [...this.notCoolCapabilitiesAtw, ...requiredCapabilities]
-    }
-    if (hasZone2) {
-      requiredCapabilities = [...this.zone2CapabilitiesAtw, ...requiredCapabilities]
-      if (canCool) {
-        requiredCapabilities = [...this.coolZone2CapabilitiesAtw, ...requiredCapabilities]
-      } else {
-        requiredCapabilities = [...this.notCoolZone2CapabilitiesAtw, ...requiredCapabilities]
-      }
-    }
-    return [...this.otherCapabilitiesAtw, ...requiredCapabilities]
+    return [
+      ...this.capabilitiesAtw,
+      ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
+      ...hasZone2 ? [...this.zone2CapabilitiesAtw, ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw] : [],
+      ...this.otherCapabilitiesAtw
+    ]
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
