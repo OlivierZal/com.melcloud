@@ -56,7 +56,6 @@ export default class MELCloudDeviceMixin extends Device {
     this.diff = {}
 
     await this.handleCapabilities()
-    await this.handleDashboardCapabilities()
 
     this.registerCapabilityListeners()
     await this.syncDataFromDevice()
@@ -66,26 +65,19 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async handleCapabilities (): Promise<void> {
-    for (const capability of this.requiredCapabilities) {
-      if (!this.hasCapability(capability)) await this.addCapability(capability)
+    const requiredCapabilities = [...this.requiredCapabilities, ...this.getDashboardCapabilities()]
+    for (const capability of requiredCapabilities) {
+      await this.addCapability(capability)
     }
     for (const capability of this.getCapabilities()) {
-      if (!this.requiredCapabilities.includes(capability)) await this.removeCapability(capability)
+      if (!requiredCapabilities.includes(capability)) await this.removeCapability(capability)
     }
   }
 
-  async handleDashboardCapabilities (settings?: Settings, capabilities?: string[]): Promise<void> {
-    const newSettings: Settings = settings ?? this.getSettings()
-    let newCapabilities: string[] = capabilities ?? Object.keys(newSettings)
-    newCapabilities = newCapabilities
-      .filter((capability: string): boolean => this.driver.manifest.capabilities.includes(capability) === true && Object.keys(newSettings).includes(capability))
-    for (const capability of newCapabilities) {
-      if (newSettings[capability] === true && !this.hasCapability(capability)) {
-        await this.addCapability(capability)
-      } else if (newSettings[capability] === false && this.hasCapability(capability)) {
-        await this.removeCapability(capability)
-      }
-    }
+  getDashboardCapabilities (): string[] {
+    const settings: Settings = this.getSettings()
+    return Object.keys(settings)
+      .filter((capability: string): boolean => this.driver.manifest.capabilities.includes(capability) === true && settings[capability] === true)
   }
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
@@ -216,10 +208,34 @@ export default class MELCloudDeviceMixin extends Device {
     if (changedKeys.some((setting: string): boolean => setting.startsWith('meter_power'))) await this.runEnergyReports()
   }
 
+  async handleDashboardCapabilities (newSettings: Settings, changedCapabilities: string[]): Promise<void> {
+    for (const capability of changedCapabilities) {
+      if (newSettings[capability] === true) {
+        await this.addCapability(capability)
+      } else {
+        await this.removeCapability(capability)
+      }
+    }
+  }
+
   onDeleted (): void {
     this.homey.clearInterval(this.reportInterval)
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearTimeout(this.syncTimeout)
+  }
+
+  async addCapability (capability: string): Promise<void> {
+    if (this.driver.manifest.capabilities.includes(capability) === true && !this.hasCapability(capability)) {
+      await super.addCapability(capability)
+      this.log('Capability', capability, 'added')
+    }
+  }
+
+  async removeCapability (capability: string): Promise<void> {
+    if (this.hasCapability(capability)) {
+      await super.removeCapability(capability)
+      this.log('Capability', capability, 'removed')
+    }
   }
 
   log (...args: any[]): void {

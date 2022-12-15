@@ -63,7 +63,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare diff: SetCapabilities<MELCloudDeviceAta>
 
   async onInit (): Promise<void> {
-    this.requiredCapabilities = this.driver.manifest.capabilities
+    this.requiredCapabilities = [...Object.keys(setCapabilityMappingAta), ...Object.keys(getCapabilityMappingAta)]
 
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
