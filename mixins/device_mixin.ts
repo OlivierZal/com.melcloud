@@ -109,9 +109,9 @@ export default class MELCloudDeviceMixin extends Device {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as boolean | number | string)
+          updateData[tag] = this.convertToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as boolean | number | string)
         } else {
-          updateData[tag] = this.getCapabilityValueToDevice(capability as SetCapability<T>)
+          updateData[tag] = this.convertToDevice(capability as SetCapability<T>)
         }
       }
     }
@@ -119,7 +119,7 @@ export default class MELCloudDeviceMixin extends Device {
     return updateData
   }
 
-  getCapabilityValueToDevice (_capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>, _value?: boolean | number | string): boolean | number {
+  convertToDevice (_capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>, _value?: boolean | number | string): boolean | number {
     throw new Error('Method not implemented.')
   }
 
@@ -152,30 +152,30 @@ export default class MELCloudDeviceMixin extends Device {
       for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
         const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
         if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.setCapabilityValueFromDevice(capability as SetCapability<T>, resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
+          await this.convertFromDevice(capability as SetCapability<T>, resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
         }
       }
       for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
-        await this.setCapabilityValueFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
+        await this.convertFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
       }
     }
   }
 
-  async setCapabilityValueFromDevice (_capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>, _value: boolean | number): Promise<void> {
+  async convertFromDevice (_capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>, _value: boolean | number): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
   async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
     if (this.deviceFromList !== null) {
       for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
-        await this.setCapabilityValueFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
+        await this.convertFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
       }
     }
   }
 
-  async setOrNotCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
+  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await this.setCapabilityValue(capability, value).then((): void => this.log(capability, 'is', value)).catch(this.error)
+      await super.setCapabilityValue(capability, value).then((): void => this.log(capability, 'is', value)).catch(this.error)
     }
   }
 

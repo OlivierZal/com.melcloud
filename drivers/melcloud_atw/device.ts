@@ -90,7 +90,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
   }
 
-  getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
+  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
     const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
     switch (capability) {
       case 'onoff':
@@ -105,7 +105,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async setCapabilityValueFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
+  async convertFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
@@ -123,7 +123,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'alarm_generic.defrost_mode':
         newValue = Boolean(newValue)
     }
-    await this.setOrNotCapabilityValue(capability, newValue)
+    await this.setCapabilityValue(capability, newValue)
   }
 
   async customUpdate (): Promise<void> {
@@ -200,7 +200,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
 
     for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.setCapabilityValueFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
+      await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
     }
   }
 

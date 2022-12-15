@@ -120,7 +120,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
   }
 
-  getCapabilityValueToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
+  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
     const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
     switch (capability) {
       case 'onoff':
@@ -136,7 +136,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  async setCapabilityValueFromDevice (capability: Capability<MELCloudDeviceAta>, value: boolean | number): Promise<void> {
+  async convertFromDevice (capability: Capability<MELCloudDeviceAta>, value: boolean | number): Promise<void> {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
@@ -151,14 +151,14 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'horizontal':
         newValue = horizontalFromDevice[newValue as number]
     }
-    await this.setOrNotCapabilityValue(capability, newValue)
+    await this.setCapabilityValue(capability, newValue)
   }
 
   async customUpdate (): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     let operationMode: string = this.getCapabilityValue('operation_mode')
     if (!isOn || ['dry', 'fan'].includes(operationMode)) operationMode = 'off'
-    await this.setOrNotCapabilityValue('thermostat_mode', operationMode)
+    await this.setCapabilityValue('thermostat_mode', operationMode)
   }
 
   async runEnergyReports (): Promise<void> {
@@ -212,7 +212,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
 
     for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.setCapabilityValueFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
+      await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
     }
   }
 
