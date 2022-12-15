@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 
 import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
@@ -207,12 +207,13 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   planEnergyReports (): void {
     const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
     const interval: number = Number(date.diffNow())
+    const duration: string = Duration.fromMillis(interval).shiftTo('hours', 'minutes', 'seconds').toHuman()
     this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
       this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 24 * 3600 * 1000)
       this.log('Next energy cost report in 1 day')
     }, interval)
-    this.log('Next energy cost report in', (interval / (3600 * 1000)).toFixed(2), 'hour(s)')
+    this.log('Next energy cost report in', duration)
   }
 }
 

@@ -34,7 +34,7 @@ export default class MELCloudApp extends App {
   }
 
   refreshLogin (): void {
-    this.homey.setInterval(async (): Promise<boolean> => await this.login(this.loginCredentials), 24 * 60 * 60 * 1000)
+    this.homey.setInterval(async (): Promise<boolean> => await this.login(this.loginCredentials), 24 * 3600 * 1000)
   }
 
   async login (loginCredentials: LoginCredentials): Promise<boolean> {

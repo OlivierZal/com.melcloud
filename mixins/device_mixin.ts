@@ -1,4 +1,5 @@
 import { Device } from 'homey'
+import { Duration } from 'luxon'
 
 import MELCloudApp from '../app'
 import MELCloudDeviceAta from '../drivers/melcloud/device'
@@ -183,10 +184,11 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planNextSyncFromDevice (interval?: number): void {
-    const newInterval: number = interval ?? this.getSetting('interval') * 60
+    const newInterval: number = interval ?? this.getSetting('interval') * 60 * 1000
+    const duration: string = Duration.fromMillis(newInterval).shiftTo('minutes', 'seconds').toHuman()
     this.homey.clearTimeout(this.syncTimeout)
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval * 1000)
-    this.log('Next sync from device in', newInterval, 'second(s)')
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval)
+    this.log('Next sync from device in', duration)
   }
 
   async runEnergyReports (): Promise<void> {
@@ -204,7 +206,7 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) await this.onCapability('onoff', true)
-    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice(1)
+    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice(1000)
     if (changedKeys.some((setting: string): boolean => setting.startsWith('meter_power'))) await this.runEnergyReports()
   }
 

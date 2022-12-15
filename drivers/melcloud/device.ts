@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon'
+import { DateTime, Duration } from 'luxon'
 
 import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
@@ -63,7 +63,11 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare diff: SetCapabilities<MELCloudDeviceAta>
 
   async onInit (): Promise<void> {
-    this.requiredCapabilities = [...Object.keys(setCapabilityMappingAta), ...Object.keys(getCapabilityMappingAta)]
+    this.requiredCapabilities = [
+      ...Object.keys(setCapabilityMappingAta),
+      ...Object.keys(getCapabilityMappingAta),
+      'thermostat_mode'
+    ]
 
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
@@ -215,12 +219,13 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   planEnergyReports (): void {
     const date: DateTime = DateTime.now().plus({ hours: 1 }).set({ minute: 0, second: 0, millisecond: 0 })
     const interval: number = Number(date.diffNow())
+    const duration: string = Duration.fromMillis(interval).shiftTo('hours', 'minutes', 'seconds').toHuman()
     this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
       await this.runEnergyReports()
       this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 3600 * 1000)
       this.log('Next energy cost report in 1 hour')
     }, interval)
-    this.log('Next energy cost report in', (interval / (60 * 1000)).toFixed(2), 'minute(s)')
+    this.log('Next energy cost report in', duration)
   }
 }
 
