@@ -41,14 +41,8 @@
   "5.4.0": {
     "en": "Added back an \"Always On\" option in settings."
   },
-  "5.5.0": {
-    "en": "Refactored the application."
-  },
   "5.6.0": {
     "en": "Added wifi signal strength (can be enable from settings)."
-  },
-  "5.6.2": {
-    "en": "Improved logs and error handling."
   },
   "6.0.0": {
     "en": "Changed request library (axios). Added an always on setting also for air-to-air heat pumps. Added repairing support and daily authentication refresh (some users may need to authenticate again to make it work)."
@@ -56,82 +50,13 @@
   "7.0.0": {
     "en": "Converted to TypeScript."
   },
-  "7.0.1": {
-    "en": "Reordered imports."
-  },
-  "7.0.2": {
-    "en": "Added source map support."
-  },
-  "7.0.3": {
-    "en": "Renamed some variables."
-  },
-  "7.0.4": {
-    "en": "Customized boolean capability names."
-  },
-  "7.1.0": {
-    "en": "Typed more and better."
-  },
-  "7.1.1": {
-    "en": "Organized better."
-  },
-  "7.1.2": {
-    "en": "Removed useless code."
-  },
-  "7.1.3": {
-    "en": "Simplified code."
-  },
-  "7.1.4": {
-    "en": "Added readonly modifier."
-  },
-  "7.1.5": {
-    "en": "Added types."
-  },
   "7.2.0": {
     "en": "Energy reporting is now handled according to user timezone (and no more according UTC forced by Homey). Made available hourly consumption for air-to-air heat pumps (cannot be retrieved from MELCloud API for air-to-water heat pumps) and last daily consumption becomes the (cumulated) daily consumption and is updated every hour. Capabalities displayed in the dashboard can be customized from device settings."
   },
   "7.2.1": {
     "en": "Added community topic."
   },
-  "7.2.2": {
-    "en": "Added support value."
-  },
-  "7.2.3": {
-    "en": "Minor changes."
-  },
-  "7.2.4": {
-    "en": "Made the code more readable."
-  },
-  "7.2.5": {
-    "en": "Minor changes."
-  },
-  "7.3.0": {
-    "en": "Improved flow card management."
-  },
-  "7.3.1": {
-    "en": "Minor changes."
-  },
-  "7.3.2": {
-    "en": "Updated package.json."
-  },
-  "7.3.3": {
-    "en": "Typed more."
-  },
-  "7.3.4": {
-    "en": "Added types."
-  },
-  "7.3.5": {
-    "en": "Updated package.json."
-  },
-  "7.3.6": {
-    "en": "Updated package.jsonwq"
-  },
-  "7.3.7": {
-    "en": "Updated libs."
-  },
-  "7.3.8": {
-    "en": "Fix CoP values in some cases.wq"
-  },
-  "7.3.9": {
-    "en": "Simplified logging."
+  "8.0.0": {
+    "en": "Redesigned capability and flow handling for performance improvement and code readability. Typed more and better. Added logs."
   }
 }
