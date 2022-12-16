@@ -6,10 +6,10 @@ import MELCloudDeviceAta from '../drivers/melcloud/device'
 import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import {
   Capability,
+  Data,
   ExtendedSetCapability,
   GetCapability,
   GetCapabilityMapping,
-  GetData,
   ListCapability,
   ListCapabilityMapping,
   ListDevice,
@@ -97,8 +97,8 @@ export default class MELCloudDeviceMixin extends Device {
     this.diff = {}
 
     const updateData: UpdateData<T> = this.buildUpdateData(diff)
-    const resultData: GetData<T> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
-    await this.syncData(resultData)
+    const data: Data<T> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
+    await this.syncData(data)
   }
 
   buildUpdateData <T extends MELCloudDevice> (diff: SetCapabilities<T>): UpdateData<T> {
@@ -124,13 +124,13 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async syncDataFromDevice <T extends MELCloudDevice> (): Promise<void> {
-    const resultData: GetData<T> | {} = await this.app.getDevice(this as MELCloudDevice)
-    await this.syncData(resultData)
+    const data: Data<T> | {} = await this.app.getDevice(this as MELCloudDevice)
+    await this.syncData(data)
   }
 
-  async syncData <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
+  async syncData <T extends MELCloudDevice> (data: Data<T> | {}): Promise<void> {
     this.deviceFromList = await this.getDeviceFromList()
-    await this.updateCapabilities(resultData)
+    await this.updateCapabilities(data)
     await this.updateListCapabilities()
     await this.customUpdate()
 
@@ -147,16 +147,16 @@ export default class MELCloudDeviceMixin extends Device {
     return device
   }
 
-  async updateCapabilities <T extends MELCloudDevice> (resultData: GetData<T> | {}): Promise<void> {
-    if ('EffectiveFlags' in resultData && resultData.EffectiveFlags != null) {
+  async updateCapabilities <T extends MELCloudDevice> (data: Data<T> | {}): Promise<void> {
+    if ('EffectiveFlags' in data && data.EffectiveFlags != null) {
       for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
-        const effectiveFlags: bigint = BigInt(resultData.EffectiveFlags)
+        const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
         if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.convertFromDevice(capability as SetCapability<T>, resultData[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
+          await this.convertFromDevice(capability as SetCapability<T>, data[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
         }
       }
       for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
-        await this.convertFromDevice(capability as GetCapability<T>, resultData[tag as keyof GetData<T>] as boolean | number)
+        await this.convertFromDevice(capability as GetCapability<T>, data[tag as keyof Data<T>] as boolean | number)
       }
     }
   }
@@ -170,12 +170,6 @@ export default class MELCloudDeviceMixin extends Device {
       for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
         await this.convertFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
       }
-    }
-  }
-
-  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
-    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value).then((): void => this.log(capability, 'is', value)).catch(this.error)
     }
   }
 
@@ -237,6 +231,12 @@ export default class MELCloudDeviceMixin extends Device {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
       this.log('Capability', capability, 'removed')
+    }
+  }
+
+  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
+    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
+      await super.setCapabilityValue(capability, value).then((): void => this.log(capability, 'is', value)).catch(this.error)
     }
   }
 

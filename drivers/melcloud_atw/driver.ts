@@ -109,15 +109,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       })
   }
 
-  getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
-    return [
-      ...this.capabilitiesAtw,
-      ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
-      ...hasZone2 ? [...this.zone2CapabilitiesAtw, ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw] : [],
-      ...this.otherCapabilitiesAtw
-    ]
-  }
-
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
     const devices: ListDevices<MELCloudDeviceAtw> = await this.app.listDevices(this)
     return Object.values(devices).map((device: ListDevice<MELCloudDeviceAtw>): DeviceInfo<MELCloudDeviceAtw> => (
@@ -134,6 +125,15 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         capabilities: this.getRequiredCapabilities(device.Device.CanCool, device.Device.HasZone2)
       }
     ))
+  }
+
+  getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
+    return [
+      ...this.capabilitiesAtw,
+      ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
+      ...hasZone2 ? [...this.zone2CapabilitiesAtw, ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw] : [],
+      ...this.otherCapabilitiesAtw
+    ]
   }
 }
 

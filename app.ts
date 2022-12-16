@@ -5,7 +5,7 @@ import { App } from 'homey'
 
 import {
   Building,
-  GetData,
+  Data,
   ListDevices,
   LoginCredentials,
   LoginData,
@@ -104,10 +104,10 @@ export default class MELCloudApp extends App {
     return devices
   }
 
-  async getDevice <T extends MELCloudDevice> (device: T): Promise<GetData<T> | {}> {
+  async getDevice <T extends MELCloudDevice> (device: T): Promise<Data<T> | {}> {
     device.log('Syncing from device...')
     try {
-      const { data } = await axios.get<GetData<T>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
+      const { data } = await axios.get<Data<T>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
       device.log('Syncing from device:', data)
       return data
     } catch (error: unknown) {
@@ -116,7 +116,7 @@ export default class MELCloudApp extends App {
     return {}
   }
 
-  async setDevice <T extends MELCloudDevice> (device: T, updateData: UpdateData<T>): Promise<GetData<T> | {}> {
+  async setDevice <T extends MELCloudDevice> (device: T, updateData: UpdateData<T>): Promise<Data<T> | {}> {
     const postData: PostData<T> = {
       DeviceID: device.id,
       HasPendingCommand: true,
@@ -125,7 +125,7 @@ export default class MELCloudApp extends App {
 
     device.log('Syncing with device...', postData)
     try {
-      const { data } = await axios.post<GetData<T>>(`/Device/Set${device.driver.heatPumpType}`, postData)
+      const { data } = await axios.post<Data<T>>(`/Device/Set${device.driver.heatPumpType}`, postData)
       device.log('Syncing with device:', data)
       return data
     } catch (error: unknown) {

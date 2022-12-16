@@ -459,7 +459,7 @@ export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
   readonly HasPendingCommand: true
 }
 
-export type GetData<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
+export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
 
 export interface ReportPostData {
   readonly DeviceID: number
