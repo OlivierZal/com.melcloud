@@ -68,10 +68,14 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       ...Object.keys(getCapabilityMappingAta),
       'thermostat_mode'
     ]
-
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
     this.listCapabilityMapping = listCapabilityMappingAta
+    this.reportPlanningParameters = {
+      frequency: { hours: 1 },
+      plus: { hours: 1 },
+      set: { minute: 1, second: 0, millisecond: 0 }
+    }
     await super.onInit()
   }
 
@@ -117,7 +121,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         this.diff.fan_power = value as number
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
+    this.syncTimeout = this.homey
+      .setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), Number(Duration.fromObject({ seconds: 1 })))
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
@@ -214,18 +219,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     for (const [capability, value] of Object.entries(reportMapping)) {
       await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
     }
-  }
-
-  planEnergyReports (): void {
-    const date: DateTime = DateTime.now().plus({ hours: 1 }).set({ minute: 0, second: 0, millisecond: 0 })
-    const interval: number = Number(date.diffNow())
-    const duration: string = Duration.fromMillis(interval).shiftTo('hours', 'minutes', 'seconds').toHuman()
-    this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
-      await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 3600 * 1000)
-      this.log('Next energy cost report in 1 hour')
-    }, interval)
-    this.log('Next energy cost report in', duration)
   }
 }
 

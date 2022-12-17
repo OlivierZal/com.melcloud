@@ -1,6 +1,6 @@
 import 'source-map-support/register'
 import axios from 'axios'
-import { DateTime, Settings } from 'luxon'
+import { DateTime, Duration, Settings } from 'luxon'
 import { App } from 'homey'
 
 import {
@@ -34,7 +34,8 @@ export default class MELCloudApp extends App {
   }
 
   refreshLogin (): void {
-    this.homey.setInterval(async (): Promise<boolean> => await this.login(this.loginCredentials), 24 * 3600 * 1000)
+    this.homey
+      .setInterval(async (): Promise<boolean> => await this.login(this.loginCredentials), Number(Duration.fromObject({ days: 1 })))
   }
 
   async login (loginCredentials: LoginCredentials): Promise<boolean> {

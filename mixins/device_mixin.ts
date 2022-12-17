@@ -1,5 +1,5 @@
+import { DateTime, Duration } from 'luxon'
 import { Device } from 'homey'
-import { Duration } from 'luxon'
 
 import MELCloudApp from '../app'
 import MELCloudDeviceAta from '../drivers/melcloud/device'
@@ -43,9 +43,14 @@ export default class MELCloudDeviceMixin extends Device {
 
   requiredCapabilities!: string[]
 
+  syncTimeout: NodeJS.Timeout | undefined
   reportInterval: NodeJS.Timeout | undefined
   reportTimeout: NodeJS.Timeout | undefined
-  syncTimeout: NodeJS.Timeout | undefined
+  reportPlanningParameters!: {
+    frequency: object
+    plus: object
+    set: object
+  }
 
   async onInit (): Promise<void> {
     this.app = this.homey.app as MELCloudApp
@@ -134,7 +139,7 @@ export default class MELCloudDeviceMixin extends Device {
     await this.updateListCapabilities()
     await this.customUpdate()
 
-    this.planNextSyncFromDevice()
+    this.planNextSyncFromDevice({ minutes: this.getSetting('interval') })
   }
 
   async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
@@ -177,12 +182,11 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  planNextSyncFromDevice (interval?: number): void {
-    const newInterval: number = interval ?? this.getSetting('interval') * 60 * 1000
-    const duration: string = Duration.fromMillis(newInterval).shiftTo('minutes', 'seconds').toHuman()
+  planNextSyncFromDevice (object: object): void {
+    const next: number = Number(Duration.fromObject(object))
     this.homey.clearTimeout(this.syncTimeout)
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), newInterval)
-    this.log('Next sync from device in', duration)
+    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), next)
+    this.log('Next sync from device will run in', Duration.fromMillis(next).shiftTo('minutes', 'seconds').toHuman())
   }
 
   async runEnergyReports (): Promise<void> {
@@ -190,7 +194,15 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planEnergyReports (): void {
-    throw new Error('Method not implemented.')
+    const { plus, set, frequency } = this.reportPlanningParameters
+    const interval: Duration = Duration.fromObject(frequency)
+    const next: number = Number(DateTime.now().plus(plus).set(set).diffNow())
+    this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
+      await this.runEnergyReports()
+      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), Number(interval))
+      this.log('Energy cost report will run every', interval.shiftTo('days', 'hours').toHuman())
+    }, next)
+    this.log('Next energy cost report will run in', Duration.fromMillis(next).shiftTo('hours', 'minutes', 'seconds').toHuman())
   }
 
   async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
@@ -200,7 +212,7 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) await this.onCapability('onoff', true)
-    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice(1000)
+    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice({ seconds: 1 })
     if (changedKeys.some((setting: string): boolean => setting.startsWith('meter_power'))) await this.runEnergyReports()
   }
 

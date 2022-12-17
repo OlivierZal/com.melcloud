@@ -32,10 +32,14 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   async onInit (): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
     this.requiredCapabilities = this.driver.getRequiredCapabilities(canCool, hasZone2)
-
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
+    this.reportPlanningParameters = {
+      frequency: { days: 1 },
+      plus: { days: 1 },
+      set: { hour: 0, minute: 1, second: 0, millisecond: 0 }
+    }
     await super.onInit()
   }
 
@@ -87,7 +91,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         this.diff['target_temperature.tank_water'] = value as number
     }
 
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), 1000)
+    this.syncTimeout = this.homey
+      .setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), Number(Duration.fromObject({ seconds: 1 })))
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
@@ -202,18 +207,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     for (const [capability, value] of Object.entries(reportMapping)) {
       await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
     }
-  }
-
-  planEnergyReports (): void {
-    const date: DateTime = DateTime.now().plus({ days: 1 }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
-    const interval: number = Number(date.diffNow())
-    const duration: string = Duration.fromMillis(interval).shiftTo('hours', 'minutes', 'seconds').toHuman()
-    this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
-      await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), 24 * 3600 * 1000)
-      this.log('Next energy cost report in 1 day')
-    }, interval)
-    this.log('Next energy cost report in', duration)
   }
 }
 
