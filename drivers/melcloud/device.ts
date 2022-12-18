@@ -88,7 +88,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: boolean | number | string): Promise<void> {
     this.clearSyncTimeout()
-
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
@@ -120,7 +119,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'fan_power':
         this.diff.fan_power = value as number
     }
-
     this.applySyncDataToDevice()
   }
 
@@ -214,11 +212,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         }
       }
     }
-
     for (const [capability, value] of Object.entries(reportMapping)) {
       await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
     }
-
     this.planEnergyReports()
   }
 }

@@ -45,7 +45,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
     this.clearSyncTimeout()
-
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
@@ -90,7 +89,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'target_temperature.tank_water':
         this.diff['target_temperature.tank_water'] = value as number
     }
-
     this.applySyncDataToDevice()
   }
 
@@ -142,7 +140,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         await this.setStoreValue('hasZone2', this.deviceFromList.Device.HasZone2)
         hasStoreChanged = true
       }
-
       if (hasStoreChanged) await this.handleCapabilities()
     }
   }
@@ -202,11 +199,9 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
           reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
       }
     }
-
     for (const [capability, value] of Object.entries(reportMapping)) {
       await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
     }
-
     this.planEnergyReports()
   }
 }
