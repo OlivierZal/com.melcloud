@@ -1,4 +1,4 @@
-import { DateTime, Duration } from 'luxon'
+import { DateTime } from 'luxon'
 
 import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
@@ -87,7 +87,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: boolean | number | string): Promise<void> {
-    this.homey.clearTimeout(this.syncTimeout)
+    this.clearSyncTimeout()
 
     switch (capability) {
       case 'onoff':
@@ -121,8 +121,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         this.diff.fan_power = value as number
     }
 
-    this.syncTimeout = this.homey
-      .setTimeout(async (): Promise<void> => await this.syncDataToDevice(this.diff), Number(Duration.fromObject({ seconds: 1 })))
+    this.applySyncDataToDevice()
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
@@ -219,6 +218,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     for (const [capability, value] of Object.entries(reportMapping)) {
       await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
     }
+
+    this.planEnergyReports()
   }
 }
 

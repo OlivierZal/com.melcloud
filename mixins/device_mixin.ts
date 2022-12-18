@@ -66,8 +66,9 @@ export default class MELCloudDeviceMixin extends Device {
     this.registerCapabilityListeners()
     await this.syncDataFromDevice()
 
-    await this.runEnergyReports()
-    this.planEnergyReports()
+    if (this.getCapabilities().some((capability: string): boolean => capability.startsWith('meter_power'))) {
+      await this.runEnergyReports()
+    }
   }
 
   async handleCapabilities (): Promise<void> {
@@ -96,6 +97,14 @@ export default class MELCloudDeviceMixin extends Device {
 
   async onCapability (_capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, _value: boolean | number | string): Promise<void> {
     throw new Error('Method not implemented.')
+  }
+
+  clearSyncTimeout (): void {
+    this.homey.clearTimeout(this.syncTimeout)
+  }
+
+  applySyncDataToDevice (): void {
+    this.syncTimeout = this.setTimeout('sync to device', async (): Promise<void> => await this.syncDataToDevice(this.diff), { seconds: 1 })
   }
 
   async syncDataToDevice <T extends MELCloudDevice> (diff: SetCapabilities<T>): Promise<void> {
@@ -183,10 +192,8 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planNextSyncFromDevice (object: object): void {
-    const next: number = Number(Duration.fromObject(object))
-    this.homey.clearTimeout(this.syncTimeout)
-    this.syncTimeout = this.homey.setTimeout(async (): Promise<void> => await this.syncDataFromDevice(), next)
-    this.log('Next sync from device will run in', Duration.fromMillis(next).shiftTo('minutes', 'seconds').toHuman())
+    this.clearSyncTimeout()
+    this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => await this.syncDataFromDevice(), object)
   }
 
   async runEnergyReports (): Promise<void> {
@@ -194,15 +201,11 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planEnergyReports (): void {
+    const type = 'energy cost report'
     const { plus, set, frequency } = this.reportPlanningParameters
-    const interval: Duration = Duration.fromObject(frequency)
-    const next: number = Number(DateTime.now().plus(plus).set(set).diffNow())
-    this.reportTimeout = this.homey.setTimeout(async (): Promise<void> => {
-      await this.runEnergyReports()
-      this.reportInterval = this.homey.setInterval(async (): Promise<void> => await this.runEnergyReports(), Number(interval))
-      this.log('Energy cost report will run every', interval.shiftTo('days', 'hours').toHuman())
-    }, next)
-    this.log('Next energy cost report will run in', Duration.fromMillis(next).shiftTo('hours', 'minutes', 'seconds').toHuman())
+    this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
+      this.reportInterval = this.setInterval(type, async (): Promise<void> => await this.runEnergyReports(), frequency)
+    }, DateTime.now().plus(plus).set(set).diffNow().toObject())
   }
 
   async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
@@ -227,9 +230,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   onDeleted (): void {
+    this.clearSyncTimeout()
     this.homey.clearInterval(this.reportInterval)
     this.homey.clearTimeout(this.reportTimeout)
-    this.homey.clearTimeout(this.syncTimeout)
   }
 
   async addCapability (capability: string): Promise<void> {
@@ -250,6 +253,18 @@ export default class MELCloudDeviceMixin extends Device {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value).then((): void => this.log(capability, 'is', value)).catch(this.error)
     }
+  }
+
+  setInterval (type: string, callback: Function, object: object): NodeJS.Timeout {
+    const duration: Duration = Duration.fromObject(object)
+    this.log(type.charAt(0).toUpperCase() + type.slice(1), 'will run every', duration.shiftTo('days', 'hours').toHuman())
+    return this.homey.setInterval(callback, Number(duration))
+  }
+
+  setTimeout (type: string, callback: Function, object: object): NodeJS.Timeout {
+    const duration: Duration = Duration.fromObject(object)
+    this.log('Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman())
+    return this.homey.setTimeout(callback, Number(duration))
   }
 
   log (...args: any[]): void {
