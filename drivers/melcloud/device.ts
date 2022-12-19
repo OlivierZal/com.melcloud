@@ -161,9 +161,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async customUpdate (): Promise<void> {
-    const isOn: boolean = this.getCapabilityValue('onoff')
     let operationMode: string = this.getCapabilityValue('operation_mode')
-    if (!isOn || ['dry', 'fan'].includes(operationMode)) {
+    if (this.getCapabilityValue('onoff') === false || ['dry', 'fan'].includes(operationMode)) {
       operationMode = 'off'
     }
     await this.setCapabilityValue('thermostat_mode', operationMode)

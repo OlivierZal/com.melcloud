@@ -131,7 +131,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async customUpdate (deviceFromList: ListDevice<MELCloudDeviceAtw>): Promise<void> {
+  async customUpdate (deviceFromList: ListDevice<MELCloudDeviceAtw> | null): Promise<void> {
+    if (deviceFromList === null) {
+      return
+    }
     const { canCool, hasZone2 } = this.getStore()
     let hasStoreChanged: boolean = false
     if (deviceFromList.Device.CanCool !== canCool) {

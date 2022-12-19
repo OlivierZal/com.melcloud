@@ -112,9 +112,7 @@ export default class MELCloudDeviceMixin extends Device {
     this.diff = {}
     const updateData: UpdateData<T> = this.buildUpdateData(diff)
     const data: Data<T> | null = await this.app.setDevice(this as unknown as T, updateData)
-    if (data !== null) {
-      await this.syncData(data)
-    }
+    await this.syncData(data)
   }
 
   buildUpdateData <T extends MELCloudDevice> (diff: SetCapabilities<T>): UpdateData<T> {
@@ -140,18 +138,15 @@ export default class MELCloudDeviceMixin extends Device {
 
   async syncDataFromDevice <T extends MELCloudDevice> (): Promise<void> {
     const data: Data<T> | null = await this.app.getDevice(this as unknown as T)
-    if (data !== null) {
-      await this.syncData(data)
-    }
+    await this.syncData(data)
   }
 
-  async syncData <T extends MELCloudDevice> (data: Data<T>): Promise<void> {
+  async syncData <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
     await this.updateCapabilities(data)
-    const deviceFromList = await this.getDeviceFromList()
-    if (deviceFromList !== null) {
-      await this.updateListCapabilities(deviceFromList)
-      await this.customUpdate(deviceFromList)
-    }
+
+    const deviceFromList: ListDevice<T> | null = await this.getDeviceFromList()
+    await this.updateListCapabilities(deviceFromList)
+    await this.customUpdate(deviceFromList)
     this.planNextSyncFromDevice({ minutes: this.getSetting('interval') })
   }
 
@@ -165,7 +160,10 @@ export default class MELCloudDeviceMixin extends Device {
     return device
   }
 
-  async updateCapabilities <T extends MELCloudDevice> (data: Data<T>): Promise<void> {
+  async updateCapabilities <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
+    if (data === null) {
+      return
+    }
     if (data.EffectiveFlags !== undefined) {
       for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
         const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
@@ -183,13 +181,16 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T>): Promise<void> {
+  async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
+    if (deviceFromList === null) {
+      return
+    }
     for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
       await this.convertFromDevice(capability as ListCapability<T>, deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as boolean | number)
     }
   }
 
-  async customUpdate <T extends MELCloudDevice> (_deviceFromList?: ListDevice<T>): Promise<void> {
+  async customUpdate (_deviceFromList?: ListDevice<MELCloudDeviceAta> | ListDevice<MELCloudDeviceAtw> | null): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
