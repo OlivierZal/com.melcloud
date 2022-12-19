@@ -61,5 +61,8 @@
   },
   "8.0.1": {
     "en": "Fixed possible sync issues between Homey and MELCloud times for energy reporting."
+  },
+  "8.0.2": {
+    "en": "Fixed an issue when planning energy reports for the first time after an init."
   }
 }
