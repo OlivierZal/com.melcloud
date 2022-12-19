@@ -7,6 +7,7 @@ import {
   ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
+  ListDevice,
   ReportCapabilities,
   ReportCapability,
   ReportData,
@@ -44,7 +45,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
-    this.clearSyncTimeout()
+    this.clearSyncPlanning()
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
@@ -111,7 +112,9 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true && newValue === false) await this.setSettings({ always_on: false })
+        if (this.getSetting('always_on') === true && newValue === false) {
+          await this.setSettings({ always_on: false })
+        }
         break
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]
@@ -128,19 +131,19 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async customUpdate (): Promise<void> {
-    if (this.deviceFromList !== null) {
-      const { canCool, hasZone2 } = this.getStore()
-      let hasStoreChanged: boolean = false
-      if (this.deviceFromList.Device.CanCool !== canCool) {
-        await this.setStoreValue('canCool', this.deviceFromList.Device.CanCool)
-        hasStoreChanged = true
-      }
-      if (this.deviceFromList.Device.HasZone2 !== hasZone2) {
-        await this.setStoreValue('hasZone2', this.deviceFromList.Device.HasZone2)
-        hasStoreChanged = true
-      }
-      if (hasStoreChanged) await this.handleCapabilities()
+  async customUpdate (deviceFromList: ListDevice<MELCloudDeviceAtw>): Promise<void> {
+    const { canCool, hasZone2 } = this.getStore()
+    let hasStoreChanged: boolean = false
+    if (deviceFromList.Device.CanCool !== canCool) {
+      await this.setStoreValue('canCool', deviceFromList.Device.CanCool)
+      hasStoreChanged = true
+    }
+    if (deviceFromList.Device.HasZone2 !== hasZone2) {
+      await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2)
+      hasStoreChanged = true
+    }
+    if (hasStoreChanged) {
+      await this.handleCapabilities()
     }
   }
 
@@ -177,8 +180,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAtw> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
-      if ('TotalHeatingConsumed' in data) {
+      const data: ReportData<MELCloudDeviceAtw> | null = await this.app.reportEnergyCost(this, fromDate, toDate)
+      if (data !== null) {
         for (const mode of ['Cooling', 'Heating', 'HotWater']) {
           for (const type of ['Consumed', 'Produced']) {
             reportMapping[

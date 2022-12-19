@@ -212,7 +212,7 @@ interface ListDeviceDataAtw {
   readonly ReturnTemperature: number
 }
 
-type ListDeviceData<T extends MELCloudDevice> = T extends MELCloudDevice
+type ListDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ListDeviceDataAtw
   : ListDeviceDataAta
 
@@ -399,11 +399,7 @@ export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? DeviceInfoAtw
   : DeviceInfoAta
 
-export type FlowArgsAta = {
-  device: MELCloudDeviceAta
-} & {
-  [capability in SetCapability<MELCloudDeviceAta>]: string
-}
+export type FlowArgsAta = { device: MELCloudDeviceAta } & { [capability in SetCapability<MELCloudDeviceAta>]: string }
 
 export interface LoginCredentials {
   username: string
@@ -420,6 +416,7 @@ export interface LoginPostData {
 export interface LoginData {
   readonly LoginData?: {
     readonly ContextKey: string
+    readonly Expiry: string
   }
 }
 
@@ -429,9 +426,7 @@ interface BaseListDevice {
   readonly DeviceName: string
 }
 
-export type ListDevice<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? BaseListDevice & { Device: ListDeviceData<MELCloudDeviceAtw> }
-  : BaseListDevice & { Device: ListDeviceData<MELCloudDeviceAta> }
+export type ListDevice<T extends MELCloudDevice> = BaseListDevice & { Device: ListDeviceData<T> }
 
 export interface Building<T extends MELCloudDevice> {
   readonly Structure: {

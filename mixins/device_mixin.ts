@@ -39,12 +39,11 @@ export default class MELCloudDeviceMixin extends Device {
 
   id!: number
   buildingid!: number
-  deviceFromList!: ListDevice<MELCloudDeviceAta> | ListDevice<MELCloudDeviceAtw> | null
   diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
 
-  syncTimeout: NodeJS.Timeout | undefined
-  reportInterval: NodeJS.Timeout | undefined
-  reportTimeout: NodeJS.Timeout | undefined
+  syncTimeout!: NodeJS.Timeout
+  reportTimeout!: NodeJS.Timeout
+  reportInterval!: NodeJS.Timeout | null
   reportPlanningParameters!: {
     frequency: object
     plus: object
@@ -57,31 +56,36 @@ export default class MELCloudDeviceMixin extends Device {
     const { id, buildingid } = this.getData()
     this.id = id
     this.buildingid = buildingid
-    this.deviceFromList = null
     this.diff = {}
 
-    await this.handleCapabilities()
+    const dashboardCapabilities: string[] = this.getDashboardCapabilities()
+    await this.handleCapabilities(dashboardCapabilities)
     this.registerCapabilityListeners()
     await this.syncDataFromDevice()
-    if (this.getCapabilities().some((capability: string): boolean => capability.startsWith('meter_power'))) {
-      await this.runEnergyReports()
-    }
-  }
 
-  async handleCapabilities (): Promise<void> {
-    const requiredCapabilities = [...this.requiredCapabilities, ...this.getDashboardCapabilities()]
-    for (const capability of requiredCapabilities) {
-      await this.addCapability(capability)
-    }
-    for (const capability of this.getCapabilities()) {
-      if (!requiredCapabilities.includes(capability)) await this.removeCapability(capability)
+    this.reportInterval = null
+    if (dashboardCapabilities.some((capability: string): boolean => capability.startsWith('meter_power'))) {
+      await this.runEnergyReports()
     }
   }
 
   getDashboardCapabilities (settings?: Settings): string[] {
     const newSettings: Settings = settings ?? this.getSettings()
-    return Object.keys(newSettings)
-      .filter((setting: string): boolean => this.driver.manifest.capabilities.includes(setting) === true && newSettings[setting] === true)
+    return Object.keys(newSettings).filter((setting: string): boolean => (
+      this.driver.manifest.capabilities.includes(setting) === true && newSettings[setting] === true
+    ))
+  }
+
+  async handleCapabilities (dashboardCapabilities?: string[]): Promise<void> {
+    const requiredCapabilities = [...this.requiredCapabilities, ...dashboardCapabilities ?? this.getDashboardCapabilities()]
+    for (const capability of requiredCapabilities) {
+      await this.addCapability(capability)
+    }
+    for (const capability of this.getCapabilities()) {
+      if (!requiredCapabilities.includes(capability)) {
+        await this.removeCapability(capability)
+      }
+    }
   }
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
@@ -96,7 +100,7 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  clearSyncTimeout (): void {
+  clearSyncPlanning (): void {
     this.homey.clearTimeout(this.syncTimeout)
   }
 
@@ -107,8 +111,10 @@ export default class MELCloudDeviceMixin extends Device {
   async syncDataToDevice <T extends MELCloudDevice> (diff: SetCapabilities<T>): Promise<void> {
     this.diff = {}
     const updateData: UpdateData<T> = this.buildUpdateData(diff)
-    const data: Data<T> | {} = await this.app.setDevice(this as MELCloudDevice, updateData)
-    await this.syncData(data)
+    const data: Data<T> | null = await this.app.setDevice(this as unknown as T, updateData)
+    if (data !== null) {
+      await this.syncData(data)
+    }
   }
 
   buildUpdateData <T extends MELCloudDevice> (diff: SetCapabilities<T>): UpdateData<T> {
@@ -133,36 +139,43 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async syncDataFromDevice <T extends MELCloudDevice> (): Promise<void> {
-    const data: Data<T> | {} = await this.app.getDevice(this as MELCloudDevice)
-    await this.syncData(data)
+    const data: Data<T> | null = await this.app.getDevice(this as unknown as T)
+    if (data !== null) {
+      await this.syncData(data)
+    }
   }
 
-  async syncData <T extends MELCloudDevice> (data: Data<T> | {}): Promise<void> {
-    this.deviceFromList = await this.getDeviceFromList()
+  async syncData <T extends MELCloudDevice> (data: Data<T>): Promise<void> {
     await this.updateCapabilities(data)
-    await this.updateListCapabilities()
-    await this.customUpdate()
+    const deviceFromList = await this.getDeviceFromList()
+    if (deviceFromList !== null) {
+      await this.updateListCapabilities(deviceFromList)
+      await this.customUpdate(deviceFromList)
+    }
     this.planNextSyncFromDevice({ minutes: this.getSetting('interval') })
   }
 
   async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
     const devices: ListDevices<T> = await this.app.listDevices(this.driver)
     const device: ListDevice<T> = devices[this.id]
-    if (device !== undefined) return device
-    this.error('Not found while searching from device list')
-    return null
+    if (device === undefined) {
+      this.error('Not found while searching from device list')
+      return null
+    }
+    return device
   }
 
-  async updateCapabilities <T extends MELCloudDevice> (data: Data<T> | {}): Promise<void> {
-    if (!('EffectiveFlags' in data && data.EffectiveFlags != null)) return
-    for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
-      const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
-      if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
-        await this.convertFromDevice(capability as SetCapability<T>, data[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
+  async updateCapabilities <T extends MELCloudDevice> (data: Data<T>): Promise<void> {
+    if (data.EffectiveFlags !== undefined) {
+      for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
+        const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
+        if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
+          await this.convertFromDevice(capability as SetCapability<T>, data[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
+        }
       }
     }
     for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
-      await this.convertFromDevice(capability as GetCapability<T>, data[tag as keyof Data<T>] as boolean | number)
+      await this.convertFromDevice(capability as GetCapability<T>, data[tag as GetCapabilityMapping<T>['tag']] as boolean | number)
     }
   }
 
@@ -170,19 +183,18 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  async updateListCapabilities <T extends MELCloudDevice> (): Promise<void> {
-    if (this.deviceFromList === null) return
+  async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T>): Promise<void> {
     for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
-      await this.convertFromDevice(capability as ListCapability<T>, this.deviceFromList.Device[tag as keyof typeof this.deviceFromList.Device])
+      await this.convertFromDevice(capability as ListCapability<T>, deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as boolean | number)
     }
   }
 
-  async customUpdate (): Promise<void> {
+  async customUpdate <T extends MELCloudDevice> (_deviceFromList?: ListDevice<T>): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
   planNextSyncFromDevice (object: object): void {
-    this.clearSyncTimeout()
+    this.clearSyncPlanning()
     this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => await this.syncDataFromDevice(), object)
   }
 
@@ -191,7 +203,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planEnergyReports (): void {
-    if (this.reportInterval !== undefined) return
+    if (this.reportInterval !== null) {
+      return
+    }
     const type = 'energy cost report'
     const { plus, set, frequency } = this.reportPlanningParameters
     this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
@@ -205,16 +219,18 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setWarning('Exit device and return to refresh your dashboard')
       await this.setWarning(null)
     }
-    if (changedKeys.includes('always_on') && newSettings.always_on === true) await this.onCapability('onoff', true)
-    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) this.planNextSyncFromDevice({ seconds: 1 })
-
+    if (changedKeys.includes('always_on') && newSettings.always_on === true) {
+      await this.onCapability('onoff', true)
+    }
+    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) {
+      this.planNextSyncFromDevice({ seconds: 1 })
+    }
     const changedEnergyKeys = changedKeys.filter((setting: string): boolean => setting.startsWith('meter_power'))
     if (changedEnergyKeys.length !== 0) {
       if (changedEnergyKeys.some((setting: string): boolean => newSettings[setting] === true)) {
         await this.runEnergyReports()
       } else if (this.getDashboardCapabilities(newSettings).filter((setting: string): boolean => setting.startsWith('meter_power')).length === 0) {
-        this.homey.clearTimeout(this.reportTimeout)
-        this.homey.clearInterval(this.reportInterval)
+        this.clearReportPlanning()
       }
     }
   }
@@ -229,10 +245,15 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  onDeleted (): void {
-    this.clearSyncTimeout()
+  clearReportPlanning (): void {
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearInterval(this.reportInterval)
+    this.reportInterval = null
+  }
+
+  onDeleted (): void {
+    this.clearSyncPlanning()
+    this.clearReportPlanning()
   }
 
   async addCapability (capability: string): Promise<void> {
@@ -255,8 +276,8 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  setInterval (type: string, callback: Function, object: object): NodeJS.Timeout {
-    const duration: Duration = Duration.fromObject(object)
+  setInterval (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
+    const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       type.charAt(0).toUpperCase() + type.slice(1), 'will run every', duration.shiftTo('days', 'hours').toHuman(),
       'starting', DateTime.now().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
@@ -264,8 +285,8 @@ export default class MELCloudDeviceMixin extends Device {
     return this.homey.setInterval(callback, Number(duration))
   }
 
-  setTimeout (type: string, callback: Function, object: object): NodeJS.Timeout {
-    const duration: Duration = Duration.fromObject(object)
+  setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
+    const duration: Duration = Duration.fromDurationLike(interval)
     this.log('Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman())
     return this.homey.setTimeout(callback, Number(duration))
   }

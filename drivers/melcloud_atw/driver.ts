@@ -55,7 +55,9 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('operation_mode_zone'))
     for (const capability of operationModeZoneCapabilities) {
       let flowPrefix: string = `operation_mode_zone${capability[capability.length - 1]}`
-      if (capability.includes('with_cool')) flowPrefix += '_with_cool'
+      if (capability.includes('with_cool')) {
+        flowPrefix += '_with_cool'
+      }
       this.homey.flow
         .getConditionCard(`${flowPrefix}_condition`)
         .registerRunListener((args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): boolean => (

@@ -87,7 +87,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: boolean | number | string): Promise<void> {
-    this.clearSyncTimeout()
+    this.clearSyncPlanning()
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
@@ -98,7 +98,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'thermostat_mode':
         this.diff.onoff = value !== 'off'
-        if (value !== 'off') this.diff.operation_mode = value as string
+        if (value !== 'off') {
+          this.diff.operation_mode = value as string
+        }
         break
       case 'operation_mode':
         if (['dry', 'fan'].includes(value as string) && this.getCapabilityValue('thermostat_mode') !== 'off') {
@@ -142,7 +144,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     let newValue: boolean | number | string = value
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true && newValue === false) await this.setSettings({ always_on: false })
+        if (this.getSetting('always_on') === true && newValue === false) {
+          await this.setSettings({ always_on: false })
+        }
         break
       case 'operation_mode':
         newValue = operationModeFromDevice[newValue as number]
@@ -159,7 +163,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   async customUpdate (): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     let operationMode: string = this.getCapabilityValue('operation_mode')
-    if (!isOn || ['dry', 'fan'].includes(operationMode)) operationMode = 'off'
+    if (!isOn || ['dry', 'fan'].includes(operationMode)) {
+      operationMode = 'off'
+    }
     await this.setCapabilityValue('thermostat_mode', operationMode)
   }
 
@@ -194,8 +200,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAta> | {} = await this.app.reportEnergyCost(this, fromDate, toDate)
-      if ('UsageDisclaimerPercentages' in data) {
+      const data: ReportData<MELCloudDeviceAta> | null = await this.app.reportEnergyCost(this, fromDate, toDate)
+      if (data !== null) {
         const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1
