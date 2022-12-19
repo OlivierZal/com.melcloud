@@ -210,8 +210,9 @@ export default class MELCloudDeviceMixin extends Device {
     const type = 'energy cost report'
     const { plus, set, frequency } = this.reportPlanningParameters
     this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
+      await this.runEnergyReports()
       this.reportInterval = this.setInterval(type, async (): Promise<void> => await this.runEnergyReports(), frequency)
-    }, DateTime.now().plus(plus).set(set).diffNow().toObject())
+    }, DateTime.now().plus(plus).set(set).diffNow())
   }
 
   async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
@@ -288,7 +289,10 @@ export default class MELCloudDeviceMixin extends Device {
 
   setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
-    this.log('Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman())
+    this.log(
+      'Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
+      'at', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+    )
     return this.homey.setTimeout(callback, Number(duration))
   }
 
