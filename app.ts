@@ -29,47 +29,55 @@ export default class MELCloudApp extends App {
       username: this.homey.settings.get('username') ?? '',
       password: this.homey.settings.get('password') ?? ''
     }
-    this.refreshLogin()
+    await this.refreshLogin()
   }
 
-  refreshLogin (): void {
+  async refreshLogin (): Promise<void> {
     const expiry: string = this.homey.settings.get('Expiry')
-    if (expiry !== null) {
-      this.homey.clearTimeout(this.loginTimeout)
-      const interval: number = Math.min(Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow()), Math.pow(2, 31) - 1)
+    if (expiry === null) {
+      return
+    }
+    this.homey.clearTimeout(this.loginTimeout)
+    const ms: number = Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+    if (ms > 0) {
+      const maxTimeout: number = Math.pow(2, 31) - 1
+      const interval: number = Math.min(ms, maxTimeout)
       this.loginTimeout = this.setTimeout('login refresh', async (): Promise<boolean> => await this.login(this.loginCredentials), interval)
+    } else {
+      await this.login(this.loginCredentials)
     }
   }
 
   async login (loginCredentials: LoginCredentials): Promise<boolean> {
     const { username, password } = loginCredentials
-    if (username !== '' && password !== '') {
-      const postData: LoginPostData = {
-        AppVersion: '1.9.3.0',
-        Email: username,
-        Password: password,
-        Persist: true
-      }
-      this.log('Login to MELCloud...', postData)
-      try {
-        const { data } = await axios.post<LoginData>('/Login/ClientLogin', postData)
-        this.log('Login to MELCloud:', data)
-        if (data.LoginData?.ContextKey !== undefined) {
-          this.homey.settings.set('ContextKey', data.LoginData.ContextKey)
-          this.homey.settings.set('Expiry', data.LoginData.Expiry)
-          axios.defaults.headers.common['X-MitsContextKey'] = data.LoginData.ContextKey
-          if (username !== this.loginCredentials.username) {
-            this.refreshCredentials('username', username)
-          }
-          if (password !== this.loginCredentials.password) {
-            this.refreshCredentials('password', password)
-          }
-          this.refreshLogin()
-          return true
+    if (username === '' && password === '') {
+      return false
+    }
+    const postData: LoginPostData = {
+      AppVersion: '1.9.3.0',
+      Email: username,
+      Password: password,
+      Persist: true
+    }
+    this.log('Login to MELCloud...', postData)
+    try {
+      const { data } = await axios.post<LoginData>('/Login/ClientLogin', postData)
+      this.log('Login to MELCloud:', data)
+      if (data.LoginData?.ContextKey !== undefined) {
+        this.homey.settings.set('ContextKey', data.LoginData.ContextKey)
+        this.homey.settings.set('Expiry', data.LoginData.Expiry)
+        axios.defaults.headers.common['X-MitsContextKey'] = data.LoginData.ContextKey
+        if (username !== this.loginCredentials.username) {
+          this.refreshCredentials('username', username)
         }
-      } catch (error: unknown) {
-        this.error('Login to MELCloud:', error instanceof Error ? error.message : error)
+        if (password !== this.loginCredentials.password) {
+          this.refreshCredentials('password', password)
+        }
+        await this.refreshLogin()
+        return true
       }
+    } catch (error: unknown) {
+      this.error('Login to MELCloud:', error instanceof Error ? error.message : error)
     }
     return false
   }
