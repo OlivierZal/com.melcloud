@@ -64,5 +64,8 @@
   },
   "8.0.2": {
     "en": "Fixed an issue when planning energy reports for the first time after an init."
+  },
+  "8.0.3": {
+    "en": "Run backend tasks (login refresh, reporting) only when needed."
   }
 }
