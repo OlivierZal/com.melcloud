@@ -1,6 +1,6 @@
 import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { DeviceInfo, GetCapability, ListCapability, ListDevice, ListDevices, SetCapability } from '../../types'
+import { DeviceInfo, GetCapability, ListCapability, ListDevice, SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
@@ -112,8 +112,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   }
 
   async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAtw>>> {
-    const devices: ListDevices<MELCloudDeviceAtw> = await this.app.listDevices(this)
-    return Object.values(devices).map((device: ListDevice<MELCloudDeviceAtw>): DeviceInfo<MELCloudDeviceAtw> => (
+    const devices: Array<ListDevice<MELCloudDeviceAtw>> = await this.app.listDevices(this)
+    return devices.map((device: ListDevice<MELCloudDeviceAtw>): DeviceInfo<MELCloudDeviceAtw> => (
       {
         name: device.DeviceName,
         data: {
