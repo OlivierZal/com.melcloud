@@ -144,7 +144,7 @@ class MELCloudHPDevice extends Homey.Device {
 
         // Update capabilities from data only available via `ListDevice`
         const deviceList = await this.homey.app.listDevices(this.driver);
-        Object.values(deviceList).forEach(async (device) => {
+        deviceList.forEach(async (device) => {
           if (device.DeviceID === data.id && device.BuildingID === data.buildingid) {
             const flowTemperature = device.Device.FlowTemperature;
             const oldFlowTemperature = this.getCapabilityValue('flow_temperature');

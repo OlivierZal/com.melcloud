@@ -443,8 +443,6 @@ export interface Building<T extends MELCloudDevice> {
   }
 }
 
-export type ListDevices<T extends MELCloudDevice> = Record<number, ListDevice<T>>
-
 export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? Required<Readonly<SetDeviceData<MELCloudDeviceAtw>>>
   : Required<Readonly<SetDeviceData<MELCloudDeviceAta>>>

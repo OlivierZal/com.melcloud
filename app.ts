@@ -5,7 +5,7 @@ import { App } from 'homey'
 import {
   Building,
   Data,
-  ListDevices,
+  ListDevice,
   LoginCredentials,
   LoginData,
   LoginPostData,
@@ -79,8 +79,8 @@ export default class MELCloudApp extends App {
     this.loginCredentials[setting] = value
   }
 
-  async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<ListDevices<T>> {
-    const devices: ListDevices<T> = {}
+  async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<Array<ListDevice<T>>> {
+    const devices: Array<ListDevice<T>> = []
     driver.log('Searching for devices...')
     try {
       const { data } = await axios.get<Array<Building<T>>>('/User/ListDevices')
@@ -88,19 +88,19 @@ export default class MELCloudApp extends App {
       for (const building of data) {
         for (const device of building.Structure.Devices) {
           if (driver.deviceType === device.Device.DeviceType) {
-            devices[device.DeviceID] = device
+            devices.push(device)
           }
         }
         for (const floor of building.Structure.Floors) {
           for (const device of floor.Devices) {
             if (driver.deviceType === device.Device.DeviceType) {
-              devices[device.DeviceID] = device
+              devices.push(device)
             }
           }
           for (const area of floor.Areas) {
             for (const device of area.Devices) {
               if (driver.deviceType === device.Device.DeviceType) {
-                devices[device.DeviceID] = device
+                devices.push(device)
               }
             }
           }
@@ -108,7 +108,7 @@ export default class MELCloudApp extends App {
         for (const area of building.Structure.Areas) {
           for (const device of area.Devices) {
             if (driver.deviceType === device.Device.DeviceType) {
-              devices[device.DeviceID] = device
+              devices.push(device)
             }
           }
         }

@@ -13,7 +13,6 @@ import {
   ListCapability,
   ListCapabilityMapping,
   ListDevice,
-  ListDevices,
   MELCloudDevice,
   MELCloudDriver,
   SetCapabilities,
@@ -151,13 +150,12 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
-    const devices: ListDevices<T> = await this.app.listDevices(this.driver)
-    const device: ListDevice<T> = devices[this.id]
-    if (device === undefined) {
-      this.error('Not found while searching from device list')
-      return null
+    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(this.driver)
+    const devices: Array<ListDevice<T>> = listDevices.filter((device: ListDevice<T>): boolean => device.DeviceID === this.id)
+    if (devices.length === 1) {
+      return devices[0]
     }
-    return device
+    return null
   }
 
   async updateCapabilities <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
@@ -281,7 +279,7 @@ export default class MELCloudDeviceMixin extends Device {
   setInterval (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
-      type.charAt(0).toUpperCase() + type.slice(1), 'will run every', duration.shiftTo('days', 'hours').toHuman(),
+      `${type.charAt(0).toUpperCase()}${type.slice(1)}`, 'will run every', duration.shiftTo('days', 'hours').toHuman(),
       'starting', DateTime.now().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     )
     return this.homey.setInterval(callback, Number(duration))
