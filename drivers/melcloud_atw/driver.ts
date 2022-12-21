@@ -9,7 +9,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   zone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>>
   coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
-  otherCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>>
 
   async onInit (): Promise<void> {
     await super.onInit()
@@ -21,10 +20,12 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'measure_temperature.outdoor',
       'measure_temperature.flow',
       'measure_temperature.return',
+      'measure_temperature.tank_water',
       'onoff',
       'onoff.forced_hot_water',
       'operation_mode_state',
       'target_temperature',
+      'target_temperature.tank_water',
       'target_temperature.zone1_flow_heat'
     ]
     this.coolCapabilitiesAtw = [
@@ -45,10 +46,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     ]
     this.notCoolZone2CapabilitiesAtw = [
       'operation_mode_zone.zone2'
-    ]
-    this.otherCapabilitiesAtw = [
-      'measure_temperature.tank_water',
-      'target_temperature.tank_water'
     ]
 
     const operationModeZoneCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
@@ -131,10 +128,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
 
   getRequiredCapabilities (canCool: boolean, hasZone2: boolean): DeviceInfo<MELCloudDeviceAtw>['capabilities'] {
     return [
-      ...this.capabilitiesAtw,
-      ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
-      ...hasZone2 ? [...this.zone2CapabilitiesAtw, ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw] : [],
-      ...this.otherCapabilitiesAtw
+      ...this.capabilitiesAtw, ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
+      ...hasZone2 ? [...this.zone2CapabilitiesAtw, ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw] : []
     ]
   }
 }
