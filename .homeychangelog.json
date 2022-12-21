@@ -60,15 +60,9 @@
     "en": "Redesigned capability and flow handling for performance improvement and code readability. Typed more and better. Added logs."
   },
   "8.0.1": {
-    "en": "Fixed possible sync issues between Homey and MELCloud times for energy reporting."
-  },
-  "8.0.2": {
-    "en": "Fixed an issue when planning energy reports for the first time after an init."
+    "en": "Fixed possible energy reporting issues."
   },
   "8.0.3": {
     "en": "Run backend tasks (login refresh, reporting) only when needed."
-  },
-  "8.0.4": {
-    "en": "Improved logs and backend task triggers."
   }
 }
