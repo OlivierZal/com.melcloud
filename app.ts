@@ -27,16 +27,13 @@ export default class MELCloudApp extends App {
   }
 
   async refreshLogin (): Promise<void> {
+    this.clearLoginRefresh()
     const loginCredentials: LoginCredentials = {
       username: this.homey.settings.get('username') ?? '',
       password: this.homey.settings.get('password') ?? ''
     }
-    const expiry: string = this.homey.settings.get('Expiry')
-    if (expiry === null) {
-      return
-    }
-    this.homey.clearTimeout(this.loginTimeout)
-    const ms: number = Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+    const expiry: string | null = this.homey.settings.get('Expiry')
+    const ms: number = expiry !== null ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow()) : 0
     if (ms > 0) {
       const maxTimeout: number = Math.pow(2, 31) - 1
       const interval: number = Math.min(ms, maxTimeout)
@@ -44,6 +41,11 @@ export default class MELCloudApp extends App {
     } else {
       await this.login(loginCredentials)
     }
+  }
+
+  clearLoginRefresh (): void {
+    this.homey.clearTimeout(this.loginTimeout)
+    this.log('Login refresh has been stopped')
   }
 
   async login (loginCredentials: LoginCredentials): Promise<boolean> {
@@ -171,7 +173,7 @@ export default class MELCloudApp extends App {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next', type, 'will run in', duration.shiftTo('days').toHuman(),
-      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATE_FULL)
+      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
   }

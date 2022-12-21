@@ -43,10 +43,10 @@ export default class MELCloudDeviceMixin extends Device {
   syncTimeout!: NodeJS.Timeout
   reportTimeout!: NodeJS.Timeout
   reportInterval!: NodeJS.Timeout | null
-  reportPlanningParameters!: {
-    frequency: object
-    plus: object
-    set: object
+  reportPlanParameters!: {
+    interval: object
+    duration: object
+    values: object
   }
 
   async onInit (): Promise<void> {
@@ -99,7 +99,7 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  clearSyncPlanning (): void {
+  clearSyncPlan (): void {
     this.homey.clearTimeout(this.syncTimeout)
     this.log('Sync has been paused')
   }
@@ -194,7 +194,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   planSyncFromDevice (object: object): void {
-    this.clearSyncPlanning()
+    this.clearSyncPlan()
     this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => await this.syncFromDevice(), object)
   }
 
@@ -207,11 +207,11 @@ export default class MELCloudDeviceMixin extends Device {
       return
     }
     const type = 'energy cost report'
-    const { plus, set, frequency } = this.reportPlanningParameters
+    const { interval, duration, values } = this.reportPlanParameters
     this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.setInterval(type, async (): Promise<void> => await this.runEnergyReports(), frequency)
-    }, DateTime.now().plus(plus).set(set).diffNow())
+      this.reportInterval = this.setInterval(type, async (): Promise<void> => await this.runEnergyReports(), interval)
+    }, DateTime.now().plus(duration).set(values).diffNow())
   }
 
   async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
@@ -231,7 +231,7 @@ export default class MELCloudDeviceMixin extends Device {
       if (changedEnergyKeys.some((setting: string): boolean => newSettings[setting] === true)) {
         await this.runEnergyReports()
       } else if (this.getDashboardCapabilities(newSettings).filter((setting: string): boolean => setting.startsWith('meter_power')).length === 0) {
-        this.clearReportPlanning()
+        this.clearReportPlan()
       }
     }
   }
@@ -246,7 +246,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  clearReportPlanning (): void {
+  clearReportPlan (): void {
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearInterval(this.reportInterval)
     this.reportInterval = null
@@ -254,8 +254,8 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   onDeleted (): void {
-    this.clearSyncPlanning()
-    this.clearReportPlanning()
+    this.clearSyncPlan()
+    this.clearReportPlan()
   }
 
   async addCapability (capability: string): Promise<void> {
@@ -282,7 +282,7 @@ export default class MELCloudDeviceMixin extends Device {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       `${type.charAt(0).toUpperCase()}${type.slice(1)}`, 'will run every', duration.shiftTo('days', 'hours').toHuman(),
-      'starting', DateTime.now().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      'starting', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     )
     return this.homey.setInterval(callback, Number(duration))
   }
@@ -291,7 +291,7 @@ export default class MELCloudDeviceMixin extends Device {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
-      'at', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
   }

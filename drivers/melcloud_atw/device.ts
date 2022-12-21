@@ -36,16 +36,16 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
-    this.reportPlanningParameters = {
-      frequency: { days: 1 },
-      plus: { days: 1 },
-      set: { hour: 0, minute: 1, second: 0, millisecond: 0 }
+    this.reportPlanParameters = {
+      interval: { days: 1 },
+      duration: { days: 1 },
+      values: { hour: 0, minute: 1, second: 0, millisecond: 0 }
     }
     await super.onInit()
   }
 
   async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
-    this.clearSyncPlanning()
+    this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
