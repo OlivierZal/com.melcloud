@@ -64,5 +64,8 @@
   },
   "8.0.3": {
     "en": "Run backend tasks (login refresh, reporting) only when needed."
+  },
+  "8.0.6": {
+    "en": "Minor change."
   }
 }
