@@ -67,5 +67,8 @@
   },
   "8.0.3": {
     "en": "Run backend tasks (login refresh, reporting) only when needed."
+  },
+  "8.0.4": {
+    "en": "Improved logs and backend task triggers."
   }
 }
