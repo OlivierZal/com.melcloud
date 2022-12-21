@@ -1,7 +1,7 @@
 {
   "type": "enum",
   "title": {
-    "en": "Zone Operation Mode"
+    "en": "Operation Mode"
   },
   "uiComponent": "picker",
   "insights": true,
