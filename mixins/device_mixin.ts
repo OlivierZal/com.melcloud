@@ -274,7 +274,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value).then((): void => this.log('Capability', capability, 'is:', value)).catch(this.error)
+      await super.setCapabilityValue(capability, value).then((): void => this.log('Capability', capability, 'is', value)).catch(this.error)
     }
   }
 
