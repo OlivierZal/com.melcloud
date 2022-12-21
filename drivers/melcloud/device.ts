@@ -121,7 +121,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'fan_power':
         this.diff.fan_power = value as number
     }
-    this.applySyncDataToDevice()
+    this.applySyncToDevice()
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {

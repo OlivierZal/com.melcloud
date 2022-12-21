@@ -90,7 +90,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'target_temperature.tank_water':
         this.diff['target_temperature.tank_water'] = value as number
     }
-    this.applySyncDataToDevice()
+    this.applySyncToDevice()
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {

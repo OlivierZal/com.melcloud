@@ -17,22 +17,20 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
-  loginCredentials!: LoginCredentials
   loginTimeout!: NodeJS.Timeout
 
   async onInit (): Promise<void> {
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] = this.homey.settings.get('ContextKey')
-
-    this.loginCredentials = {
-      username: this.homey.settings.get('username') ?? '',
-      password: this.homey.settings.get('password') ?? ''
-    }
     await this.refreshLogin()
   }
 
   async refreshLogin (): Promise<void> {
+    const loginCredentials: LoginCredentials = {
+      username: this.homey.settings.get('username') ?? '',
+      password: this.homey.settings.get('password') ?? ''
+    }
     const expiry: string = this.homey.settings.get('Expiry')
     if (expiry === null) {
       return
@@ -42,9 +40,9 @@ export default class MELCloudApp extends App {
     if (ms > 0) {
       const maxTimeout: number = Math.pow(2, 31) - 1
       const interval: number = Math.min(ms, maxTimeout)
-      this.loginTimeout = this.setTimeout('login refresh', async (): Promise<boolean> => await this.login(this.loginCredentials), interval)
+      this.loginTimeout = this.setTimeout('login refresh', async (): Promise<boolean> => await this.login(loginCredentials), interval)
     } else {
-      await this.login(this.loginCredentials)
+      await this.login(loginCredentials)
     }
   }
 
@@ -67,11 +65,11 @@ export default class MELCloudApp extends App {
         this.homey.settings.set('ContextKey', data.LoginData.ContextKey)
         this.homey.settings.set('Expiry', data.LoginData.Expiry)
         axios.defaults.headers.common['X-MitsContextKey'] = data.LoginData.ContextKey
-        if (username !== this.loginCredentials.username) {
-          this.refreshCredentials('username', username)
+        if (username !== this.homey.settings.get('username')) {
+          this.homey.settings.set('username', username)
         }
-        if (password !== this.loginCredentials.password) {
-          this.refreshCredentials('password', password)
+        if (password !== this.homey.settings.get('password')) {
+          this.homey.settings.set('password', password)
         }
         await this.refreshLogin()
         return true
@@ -80,11 +78,6 @@ export default class MELCloudApp extends App {
       this.error('Login to MELCloud:', error instanceof Error ? error.message : error)
     }
     return false
-  }
-
-  refreshCredentials (setting: 'username' | 'password', value: string): void {
-    this.homey.settings.set(setting, value)
-    this.loginCredentials[setting] = value
   }
 
   async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<Array<ListDevice<T>>> {
