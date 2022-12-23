@@ -64,5 +64,8 @@
   },
   "8.0.3": {
     "en": "Run backend tasks (login refresh, reporting) only when needed."
+  },
+  "8.0.7": {
+    "en": "Taken into consideration that MELCloud time is at least 5 minutes late to run energy reports."
   }
 }
