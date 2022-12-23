@@ -74,7 +74,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.reportPlanParameters = {
       interval: { hours: 1 },
       duration: { hours: 1 },
-      values: { minute: 1, second: 0, millisecond: 0 }
+      values: { minute: 10, second: 0, millisecond: 0 }
     }
     await super.onInit()
   }

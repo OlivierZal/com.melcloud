@@ -39,7 +39,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.reportPlanParameters = {
       interval: { days: 1 },
       duration: { days: 1 },
-      values: { hour: 0, minute: 1, second: 0, millisecond: 0 }
+      values: { hour: 0, minute: 10, second: 0, millisecond: 0 }
     }
     await super.onInit()
   }
