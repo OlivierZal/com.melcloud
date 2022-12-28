@@ -45,5 +45,11 @@
         "username": "OlivierZalmanski"
       }
     }
+  },
+  "api": {
+    "login": {
+      "method": "POST",
+      "path": "/login"
+    }
   }
 }

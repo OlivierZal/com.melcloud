@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { DateTime, Duration, Settings } from 'luxon'
 import { App } from 'homey'
-
 import {
   Building,
   Data,

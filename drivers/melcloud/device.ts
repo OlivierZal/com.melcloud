@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon'
-
 import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
