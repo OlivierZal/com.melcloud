@@ -1,6 +1,5 @@
 import { DateTime, Duration } from 'luxon'
 import { Device } from 'homey'
-
 import MELCloudApp from '../app'
 import MELCloudDeviceAta from '../drivers/melcloud/device'
 import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'

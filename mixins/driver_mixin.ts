@@ -1,6 +1,5 @@
 import { Driver } from 'homey'
 import PairSession from 'homey/lib/PairSession'
-
 import MELCloudApp from '../app'
 import MELCloudDeviceAta from '../drivers/melcloud/device'
 import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'

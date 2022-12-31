@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="/homey.js" data-origin="settings">
+    </script>
+  </head>
+  <body>
+    <header class="homey-header">
+      <h1 class="homey-title" data-i18n="settings.title">
+      </h1>
+    </header>
+    <fieldset class="homey-form-fieldset">
+      <legend class="homey-form-legend">Credentials</legend>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="username">Username</label>
+        <input class="homey-form-input" id="username" type="text" value="" />
+      </div>
+      <div class="homey-form-group">
+        <label class="homey-form-label" for="password">Password</label>
+        <input class="homey-form-input" id="password" type="password" value="" />
+      </div>
+    </fieldset>
+    <button id="save" class="homey-button-primary-full">Save</button>
+    <script type="text/javascript">
+      function onHomeyReady (Homey) {
+        Homey.ready()
+        const usernameElement = document.getElementById('username')
+        const passwordElement = document.getElementById('password')
+        const saveElement = document.getElementById('save')
+        Homey.get('username', function (err, username) {
+          if (err) {
+            return Homey.alert(err)
+          }
+          usernameElement.value = username
+        })
+        Homey.get('password', function (err, password) {
+          if (err) {
+            return Homey.alert(err)
+          }
+          passwordElement.value = password
+        })
+        saveElement.addEventListener('click', function () {
+          Homey.api(
+            'POST',
+            '/login',
+            { username: usernameElement.value, password: passwordElement.value },
+            function (error, result) {
+              if (error) {
+                return Homey.alert(error)
+              }
+              if (result === false) {
+                return Homey.alert('Authentication failed')
+              }
+              Homey.set('username', usernameElement.value, function (err) {
+                if (err) {
+                  return Homey.alert(err)
+                }
+              })
+              Homey.set('password', passwordElement.value, function (err) {
+                if (err) {
+                  return Homey.alert(err)
+                }
+              })
+              return Homey.alert('Authentication succeeded')
+            }
+          )
+        })
+      }
+    </script>
+  </body>
+</html>

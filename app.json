@@ -47,6 +47,12 @@
       }
     }
   },
+  "api": {
+    "login": {
+      "method": "POST",
+      "path": "/login"
+    }
+  },
   "flow": {
     "triggers": [
       {
