@@ -67,5 +67,8 @@
   },
   "8.0.7": {
     "en": "Taken into consideration that MELCloud time is at least 5 minutes late to run energy reports."
+  },
+  "9.0.0": {
+    "en": "Added app settings."
   }
 }
