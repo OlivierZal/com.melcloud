@@ -50,6 +50,10 @@
     "login": {
       "method": "POST",
       "path": "/login"
+    },
+    "setSettings": {
+      "method": "POST",
+      "path": "/settings/devices"
     }
   }
 }
