@@ -87,6 +87,9 @@
         applyElement.addEventListener('click', function () {
           const body = {}
           if (intervalElement.value !== '0') {
+            if (intervalElement.value < 1 || intervalElement.value > 60) {
+              return Homey.alert('The frequency must be between 1 and 60.')
+            }
             body.interval = Number(intervalElement.value)
           }
           if (alwaysOnElement.value !== '') {

@@ -4,6 +4,11 @@ import { App } from 'homey'
 import {
   Building,
   Data,
+  Error,
+  ErrorData,
+  ErrorLog,
+  ErrorLogData,
+  ErrorLogPostData,
   ListDevice,
   LoginCredentials,
   LoginData,
@@ -166,6 +171,44 @@ export default class MELCloudApp extends App {
       device.error('Reporting energy cost:', error instanceof Error ? error.message : error)
     }
     return null
+  }
+
+  async setSettings (settings: Settings): Promise<void> {
+    for (const device of this.getDevices()) {
+      await device.setSettings(settings)
+    }
+  }
+
+  getDevices (): MELCloudDevice[] {
+    const devices: MELCloudDevice[] = []
+    for (const driver of Object.values(this.homey.drivers.getDrivers())) {
+      for (const device of driver.getDevices()) {
+        devices.push(device as MELCloudDevice)
+      }
+    }
+    return devices
+  }
+
+  async getUnitErrorLog (): Promise<ErrorLog> {
+    const postData: ErrorLogPostData = {
+      DeviceIDs: this.getDevices().map((device: MELCloudDevice): number => device.id),
+      Duration: Math.round(Math.abs(Number(DateTime.local(1970).diffNow('days').toObject().days)))
+    }
+    this.log('Reporting error log...', postData)
+    try {
+      const { data } = await axios.post<ErrorLogData>('/Report/GetUnitErrorLog2', postData)
+      this.log('Reporting error log:', data)
+      return data.map((errorData: ErrorData): Error => {
+        const { DeviceId, ...error } = errorData
+        return {
+          deviceName: this.getDevices().filter((device: MELCloudDevice): boolean => device.id === DeviceId)[0].getName(),
+          ...error
+        }
+      })
+    } catch (error: unknown) {
+      this.error('Reporting error log:', error instanceof Error ? error.message : error)
+    }
+    return []
   }
 
   setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {

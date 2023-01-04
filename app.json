@@ -55,6 +55,10 @@
     "setSettings": {
       "method": "POST",
       "path": "/settings/devices"
+    },
+    "getUnitErrorLog": {
+      "method": "GET",
+      "path": "/report/error_log"
     }
   },
   "flow": {
