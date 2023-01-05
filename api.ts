@@ -7,8 +7,8 @@ module.exports = {
   async login ({ homey, body }: { homey: Homey, body: LoginCredentials }): Promise<boolean> {
     return await (homey.app as MELCloudApp).login(body)
   },
-  async setSettings ({ homey, body }: { homey: Homey, body: Settings }): Promise<void> {
-    await (homey.app as MELCloudApp).setSettings(body)
+  async setSettings ({ homey, body }: { homey: Homey, body: Settings }): Promise<boolean> {
+    return await (homey.app as MELCloudApp).setSettings(body)
   },
   async getUnitErrorLog ({ homey }: { homey: Homey }): Promise<ErrorLog | null> {
     const app: MELCloudApp = homey.app as MELCloudApp

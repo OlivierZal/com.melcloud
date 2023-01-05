@@ -75,9 +75,12 @@ function onHomeyReady (Homey) {
           'POST',
           '/settings/devices',
           body,
-          function (error) {
+          function (error, setSettings) {
             if (error) {
               return Homey.alert(error)
+            }
+            if (setSettings === false) {
+              return Homey.alert('No change to apply')
             }
             return Homey.alert('Change has been applied to all devices')
           }

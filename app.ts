@@ -170,10 +170,16 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setSettings (settings: Settings): Promise<void> {
+  async setSettings (settings: Settings): Promise<boolean> {
+    const changedKeys: string[] = Object.keys(settings)
+    if (changedKeys.length === 0) {
+      return false
+    }
     for (const device of this.getDevices()) {
       await device.setSettings(settings)
+      await device.onSettings({ newSettings: device.getSettings(), changedKeys })
     }
+    return true
   }
 
   getDevices (): MELCloudDevice[] {
