@@ -104,7 +104,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   applySyncToDevice (): void {
-    this.syncTimeout = this.setTimeout('sync to device', async (): Promise<void> => await this.syncToDevice(this.diff), { seconds: 1 })
+    this.syncTimeout = this.setTimeout('sync to device', async (): Promise<void> => {
+      await this.syncToDevice(this.diff)
+    }, { seconds: 1 })
   }
 
   async syncToDevice <T extends MELCloudDevice> (diff: SetCapabilities<T>): Promise<void> {
@@ -194,7 +196,9 @@ export default class MELCloudDeviceMixin extends Device {
 
   planSyncFromDevice (object: object): void {
     this.clearSyncPlan()
-    this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => await this.syncFromDevice(), object)
+    this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => {
+      await this.syncFromDevice()
+    }, object)
   }
 
   async runEnergyReports (): Promise<void> {
@@ -209,7 +213,9 @@ export default class MELCloudDeviceMixin extends Device {
     const { interval, duration, values } = this.reportPlanParameters
     this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
       await this.runEnergyReports()
-      this.reportInterval = this.setInterval(type, async (): Promise<void> => await this.runEnergyReports(), interval)
+      this.reportInterval = this.setInterval(type, async (): Promise<void> => {
+        await this.runEnergyReports()
+      }, interval)
     }, DateTime.now().plus(duration).set(values).diffNow())
   }
 
@@ -273,7 +279,9 @@ export default class MELCloudDeviceMixin extends Device {
 
   async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value).then((): void => this.log('Capability', capability, 'is', value)).catch(this.error)
+      await super.setCapabilityValue(capability, value).then((): void => {
+        this.log('Capability', capability, 'is', value)
+      }).catch(this.error)
     }
   }
 

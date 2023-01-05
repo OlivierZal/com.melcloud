@@ -173,8 +173,11 @@
       },
       "options": {
         "logo": "logo.png",
+        "title": {
+          "en": "Continue if you have already successfully authenticated (including from the app settings)"
+        },
         "usernameLabel": {
-          "en": "MELCloud Username"
+          "en": "Username"
         },
         "usernamePlaceholder": {
           "en": "user@domain.com"
@@ -206,7 +209,7 @@
       "options": {
         "logo": "logo.png",
         "usernameLabel": {
-          "en": "MELCloud Username"
+          "en": "Username"
         },
         "usernamePlaceholder": {
           "en": "user@domain.com"
