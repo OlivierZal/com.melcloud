@@ -200,16 +200,13 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
       const data: ReportData<MELCloudDeviceAta> | null = await this.app.reportEnergyCost(this, fromDate, toDate)
       if (data !== null) {
-        const deviceCount: number = typeof data.UsageDisclaimerPercentages === 'string'
-          ? data.UsageDisclaimerPercentages.split(', ').length
-          : 1
         for (const mode of ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other']) {
           const modeData: number = period === 'hourly'
             ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
             : data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
           reportMapping[
             `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
-          ] = modeData / deviceCount
+          ] = modeData / data.UsageDisclaimerPercentages.split(', ').length
           reportMapping[
             `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>
           ] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]

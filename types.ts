@@ -435,6 +435,8 @@ export type ListDevice<T extends MELCloudDevice> = BaseListDevice & {
 }
 
 export interface Building<T extends MELCloudDevice> {
+  readonly ID: number
+  readonly Name: string
   readonly Structure: {
     readonly Devices: Array<ListDevice<T>>
     readonly Areas: Array<{
@@ -454,14 +456,14 @@ export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   : Required<Readonly<SetDeviceData<MELCloudDeviceAta>>>
 
 export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
-  readonly DeviceID: number
+  readonly DeviceID: T['id']
   readonly HasPendingCommand: true
 }
 
 export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
 
-export interface ReportPostData {
-  readonly DeviceID: number
+export interface ReportPostData<T extends MELCloudDevice> {
+  readonly DeviceID: T['id']
   readonly FromDate: string
   readonly ToDate: string
   readonly UseCurrency: false
@@ -497,12 +499,12 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   : ReportDataAta
 
 export interface ErrorLogPostData {
-  readonly DeviceIDs: number[]
+  readonly DeviceIDs: Array<MELCloudDevice['id']>
   readonly Duration: number
 }
 
 export interface ErrorData {
-  readonly DeviceId: number
+  readonly DeviceId: MELCloudDevice['id']
   readonly ErrorMessage: string
   readonly StartDate: string
   readonly EndDate: string
@@ -518,3 +520,56 @@ export interface Error {
 }
 
 export type ErrorLog = Error[]
+
+export interface FrostProtectionData {
+  readonly FPEnabled: boolean
+  readonly FPMinTemperature: number
+  readonly FPMaxTemperature: number
+}
+
+export interface FrostProtectionPostData {
+  readonly Enabled: boolean
+  readonly MinimumTemperature: number
+  readonly MaximumTemperature: number
+  readonly BuildingIds: [
+    Building<MELCloudDevice>['ID']
+  ]
+}
+
+export interface HolidayModeData {
+  readonly HMEnabled: boolean
+  readonly HMStartDate: number
+  readonly HMEndDate: number
+}
+
+export interface HolidayModePostData {
+  readonly Enabled: boolean
+  readonly StartDate: {
+    readonly Year: number
+    readonly Month: number
+    readonly Day: number
+    readonly Hour: number
+    readonly Minute: number
+    readonly Second: number
+  } | null
+  readonly EndDate: {
+    readonly Year: number
+    readonly Month: number
+    readonly Day: number
+    readonly Hour: number
+    readonly Minute: number
+    readonly Second: number
+  } | null
+  readonly HMTimeZones: [
+    {
+      readonly TimeZone: 121
+      readonly Buildings: [
+        Building<MELCloudDevice>['ID']
+      ]
+    }
+  ]
+}
+
+export interface UpdateSettingsData {
+  readonly Success: boolean
+}
