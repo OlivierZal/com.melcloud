@@ -48,17 +48,37 @@
     }
   },
   "api": {
-    "login": {
-      "method": "POST",
-      "path": "/login"
+    "getBuildings": {
+      "method": "GET",
+      "path": "/buildings"
     },
-    "setSettings": {
-      "method": "POST",
-      "path": "/settings/devices"
+    "getFrostProtectionSettings": {
+      "method": "GET",
+      "path": "/settings/frost_protection/buildings/:buildingId"
+    },
+    "getHolidayModeSettings": {
+      "method": "GET",
+      "path": "/settings/frost_protection/buildings/:buildingId"
     },
     "getUnitErrorLog": {
       "method": "GET",
       "path": "/report/error_log"
+    },
+    "login": {
+      "method": "POST",
+      "path": "/login"
+    },
+    "setDeviceSettings": {
+      "method": "POST",
+      "path": "/settings/devices"
+    },
+    "setFrostProtectionSettings": {
+      "method": "POST",
+      "path": "/settings/frost_protection/buildings/:buildingId"
+    },
+    "setHolidayModeSettings": {
+      "method": "POST",
+      "path": "/settings/holiday_mode/buildings/:buildingId"
     }
   },
   "flow": {

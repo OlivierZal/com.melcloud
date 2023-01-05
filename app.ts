@@ -59,14 +59,14 @@ export default class MELCloudApp extends App {
     if (username === '' && password === '') {
       return false
     }
-    const postData: LoginPostData = {
-      AppVersion: '1.9.3.0',
-      Email: username,
-      Password: password,
-      Persist: true
-    }
-    this.log('Login to MELCloud...', postData)
     try {
+      const postData: LoginPostData = {
+        AppVersion: '1.9.3.0',
+        Email: username,
+        Password: password,
+        Persist: true
+      }
+      this.log('Login to MELCloud...', postData)
       const { data } = await axios.post<LoginData>('/Login/ClientLogin', postData)
       this.log('Login to MELCloud:', data)
       if (data.LoginData?.ContextKey !== undefined) {
@@ -88,23 +88,20 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  async getBuildings (): Promise<Array<Building<MELCloudDevice>> | null> {
-    this.log('Searching for buildings...')
+  async getBuildings (): Promise<Array<Building<MELCloudDevice>>> {
     try {
+      this.log('Searching for buildings...')
       const { data } = await axios.get<Array<Building<MELCloudDevice>>>('/User/ListDevices')
       this.log('Searching for buildings:', data)
       return data
     } catch (error: unknown) {
       this.error('Searching for buildings:', error instanceof Error ? error.message : error)
     }
-    return null
+    return []
   }
 
   async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<Array<ListDevice<T>>> {
-    const data: Array<Building<T>> | null = await this.getBuildings()
-    if (data === null) {
-      return []
-    }
+    const data: Array<Building<T>> = await this.getBuildings()
     const devices: Array<ListDevice<T>> = []
     for (const building of data) {
       for (const device of building.Structure.Devices) {
@@ -138,8 +135,8 @@ export default class MELCloudApp extends App {
   }
 
   async getDevice <T extends MELCloudDevice> (device: T): Promise<Data<T> | null> {
-    device.log('Syncing from device...')
     try {
+      device.log('Syncing from device...')
       const { data } = await axios.get<Data<T>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
       device.log('Syncing from device:', data)
       return data
@@ -150,13 +147,13 @@ export default class MELCloudApp extends App {
   }
 
   async setDevice <T extends MELCloudDevice> (device: T, updateData: UpdateData<T>): Promise<Data<T> | null> {
-    const postData: PostData<T> = {
-      DeviceID: device.id,
-      HasPendingCommand: true,
-      ...updateData
-    }
-    device.log('Syncing with device...', postData)
     try {
+      const postData: PostData<T> = {
+        DeviceID: device.id,
+        HasPendingCommand: true,
+        ...updateData
+      }
+      device.log('Syncing with device...', postData)
       const { data } = await axios.post<Data<T>>(`/Device/Set${device.driver.heatPumpType}`, postData)
       device.log('Syncing with device:', data)
       return data
@@ -167,14 +164,14 @@ export default class MELCloudApp extends App {
   }
 
   async reportEnergyCost <T extends MELCloudDevice> (device: T, fromDate: DateTime, toDate: DateTime): Promise<ReportData<T> | null> {
-    const postData: ReportPostData<T> = {
-      DeviceID: device.id,
-      FromDate: fromDate.toISODate(),
-      ToDate: toDate.toISODate(),
-      UseCurrency: false
-    }
-    device.log('Reporting energy cost...', postData)
     try {
+      const postData: ReportPostData<T> = {
+        DeviceID: device.id,
+        FromDate: fromDate.toISODate(),
+        ToDate: toDate.toISODate(),
+        UseCurrency: false
+      }
+      device.log('Reporting energy cost...', postData)
       const { data } = await axios.post<ReportData<T>>('/EnergyCost/Report', postData)
       device.log('Reporting energy cost:', data)
       return data
@@ -184,7 +181,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setSettings (settings: Settings): Promise<boolean> {
+  async setDeviceSettings (settings: Settings): Promise<boolean> {
     const changedKeys: string[] = Object.keys(settings)
     if (changedKeys.length === 0) {
       return false
@@ -207,12 +204,12 @@ export default class MELCloudApp extends App {
   }
 
   async getUnitErrorLog (): Promise<ErrorLogData | null> {
-    const postData: ErrorLogPostData = {
-      DeviceIDs: this.getDevices().map((device: MELCloudDevice): MELCloudDevice['id'] => device.id),
-      Duration: Math.round(Math.abs(Number(DateTime.local(1970).diffNow('days').toObject().days)))
-    }
-    this.log('Reporting error log...', postData)
     try {
+      const postData: ErrorLogPostData = {
+        DeviceIDs: this.getDevices().map((device: MELCloudDevice): MELCloudDevice['id'] => device.id),
+        Duration: Math.round(Math.abs(Number(DateTime.local(1970).diffNow('days').toObject().days)))
+      }
+      this.log('Reporting error log...', postData)
       const { data } = await axios.post<ErrorLogData>('/Report/GetUnitErrorLog2', postData)
       this.log('Reporting error log:', data)
       return data
@@ -223,8 +220,8 @@ export default class MELCloudApp extends App {
   }
 
   async getFrostProtectionSettings (buildingId: Building<MELCloudDevice>['ID']): Promise<FrostProtectionData | null> {
-    this.log(`Getting frost protection settings for building ${buildingId}...`)
     try {
+      this.log(`Getting frost protection settings for building ${buildingId}...`)
       const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
       const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/ListDevices?tableName=DeviceLocation&id=${buildingDevices[0].id}`)
       this.log(`Getting frost protection settings for building ${buildingId}:`, data)
@@ -235,17 +232,17 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateFrostProtectionSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
-    const postData: FrostProtectionPostData = {
-      Enabled: enabled,
-      MinimumTemperature: minimumTemperature,
-      MaximumTemperature: maximumTemperature,
-      BuildingIds: [
-        buildingId
-      ]
-    }
-    this.log(`Updating frost protection settings for building ${buildingId}...`)
+  async setFrostProtectionSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
     try {
+      const postData: FrostProtectionPostData = {
+        Enabled: enabled,
+        MinimumTemperature: minimumTemperature,
+        MaximumTemperature: maximumTemperature,
+        BuildingIds: [
+          buildingId
+        ]
+      }
+      this.log(`Updating frost protection settings for building ${buildingId}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/FrostProtection/Update', postData)
       this.log(`Updating frost protection settings for building ${buildingId}:`, data)
       return data.Success
@@ -256,8 +253,8 @@ export default class MELCloudApp extends App {
   }
 
   async getHolidayModeSettings (buildingId: Building<MELCloudDevice>['ID']): Promise<HolidayModeData | null> {
-    this.log(`Getting holiday mode settings for building ${buildingId}...`)
     try {
+      this.log(`Getting holiday mode settings for building ${buildingId}...`)
       const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
       const { data } = await axios.get<HolidayModeData>(`/HolidayMode/ListDevices?tableName=DeviceLocation&id=${buildingDevices[0].id}`)
       this.log(`Getting holiday mode settings for building ${buildingId}:`, data)
@@ -268,43 +265,40 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateHolidayModeSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, startDate?: DateTime | '' | null, endDate?: DateTime | '' | null): Promise<boolean> {
-    if (enabled && !(startDate instanceof DateTime && endDate instanceof DateTime)) {
-      return false
-    }
-    const postData: HolidayModePostData = {
-      Enabled: enabled,
-      StartDate: enabled && startDate instanceof DateTime
-        ? {
-            Year: startDate.year,
-            Month: startDate.month,
-            Day: startDate.day,
-            Hour: startDate.hour,
-            Minute: startDate.minute,
-            Second: startDate.second
-          }
-        : null,
-      EndDate: enabled && endDate instanceof DateTime
-        ? {
-            Year: endDate.year,
-            Month: endDate.month,
-            Day: endDate.day,
-            Hour: endDate.hour,
-            Minute: endDate.minute,
-            Second: endDate.second
-          }
-        : null,
-      HMTimeZones: [
-        {
-          TimeZone: 121,
-          Buildings: [
-            buildingId
-          ]
-        }
-      ]
-    }
-    this.log(`Updating holiday mode settings for building ${buildingId}...`)
+  async setHolidayModeSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, startDate?: DateTime | '' | null, endDate?: DateTime | '' | null): Promise<boolean> {
     try {
+      const postData: HolidayModePostData = {
+        Enabled: enabled,
+        StartDate: enabled && startDate instanceof DateTime
+          ? {
+              Year: startDate.year,
+              Month: startDate.month,
+              Day: startDate.day,
+              Hour: startDate.hour,
+              Minute: startDate.minute,
+              Second: startDate.second
+            }
+          : null,
+        EndDate: enabled && endDate instanceof DateTime
+          ? {
+              Year: endDate.year,
+              Month: endDate.month,
+              Day: endDate.day,
+              Hour: endDate.hour,
+              Minute: endDate.minute,
+              Second: endDate.second
+            }
+          : null,
+        HMTimeZones: [
+          {
+            TimeZone: 121,
+            Buildings: [
+              buildingId
+            ]
+          }
+        ]
+      }
+      this.log(`Updating holiday mode settings for building ${buildingId}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/FrostProtection/Update', postData)
       this.log(`Updating holiday mode settings for building ${buildingId}:`, data)
       return data.Success
