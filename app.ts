@@ -4,9 +4,6 @@ import { App } from 'homey'
 import {
   Building,
   Data,
-  Error,
-  ErrorData,
-  ErrorLog,
   ErrorLogData,
   ErrorLogPostData,
   ListDevice,
@@ -189,7 +186,7 @@ export default class MELCloudApp extends App {
     return devices
   }
 
-  async getUnitErrorLog (): Promise<ErrorLog> {
+  async getUnitErrorLog (): Promise<ErrorLogData | null> {
     const postData: ErrorLogPostData = {
       DeviceIDs: this.getDevices().map((device: MELCloudDevice): number => device.id),
       Duration: Math.round(Math.abs(Number(DateTime.local(1970).diffNow('days').toObject().days)))
@@ -198,17 +195,11 @@ export default class MELCloudApp extends App {
     try {
       const { data } = await axios.post<ErrorLogData>('/Report/GetUnitErrorLog2', postData)
       this.log('Reporting error log:', data)
-      return data.map((errorData: ErrorData): Error => {
-        const { DeviceId, ...error } = errorData
-        return {
-          deviceName: this.getDevices().filter((device: MELCloudDevice): boolean => device.id === DeviceId)[0].getName(),
-          ...error
-        }
-      })
+      return data
     } catch (error: unknown) {
       this.error('Reporting error log:', error instanceof Error ? error.message : error)
     }
-    return []
+    return null
   }
 
   setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {

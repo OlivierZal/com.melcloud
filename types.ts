@@ -496,26 +496,25 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ReportDataAtw
   : ReportDataAta
 
-interface BaseErrorData {
+export interface ErrorLogPostData {
+  readonly DeviceIDs: number[]
+  readonly Duration: number
+}
+
+export interface ErrorData {
+  readonly DeviceId: number
   readonly ErrorMessage: string
   readonly StartDate: string
   readonly EndDate: string
   readonly Duration: number
 }
 
-export interface ErrorLogPostData {
-  readonly DeviceIDs: number[]
-  readonly Duration: number
-}
-
-export type ErrorData = BaseErrorData & {
-  readonly DeviceId: number
-}
-
 export type ErrorLogData = ErrorData[]
 
-export type Error = BaseErrorData & {
-  readonly deviceName: string
+export interface Error {
+  readonly Device: string
+  readonly 'Start Date': string
+  readonly Error: string
 }
 
 export type ErrorLog = Error[]

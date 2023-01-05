@@ -7,6 +7,10 @@
     <header class="homey-header">
       <h1 class="homey-title" data-i18n="settings.title"></h1>
     </header>
+    <legend class="homey-form-legend">Error Log</legend>
+    <div class="homey-form-group">
+      <table></table>
+    </div>
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Credentials</legend>
       <div class="homey-form-group">
@@ -38,6 +42,42 @@
     <script type="text/javascript">
       function onHomeyReady (Homey) {
         Homey.ready()
+
+        function generateTableHead (table, data) {
+          const thead = table.createTHead()
+          const row = thead.insertRow()
+          for (const key of data) {
+            const th = document.createElement('th')
+            const text = document.createTextNode(key)
+            th.appendChild(text)
+            row.appendChild(th)
+          }
+        }
+        function generateTable (table, data) {
+          for (const element of data) {
+            const row = table.insertRow()
+            for (const key in element) {
+              const cell = row.insertCell()
+              const text = document.createTextNode(element[key])
+              cell.appendChild(text)
+            }
+          }
+        }
+        Homey.api(
+          'GET',
+          '/report/error_log',
+          function (error, errorLog) {
+            if (error) {
+              Homey.alert(error)
+            }
+            if (errorLog !== null && errorLog.length > 0) {
+              const table = document.querySelector('table')
+              const data = Object.keys(errorLog[0])
+              generateTableHead(table, data)
+              generateTable(table, errorLog)
+            }
+          }
+        )
 
         const usernameElement = document.getElementById('username')
         const passwordElement = document.getElementById('password')
@@ -93,7 +133,7 @@
             body.interval = Number(intervalElement.value)
           }
           if (alwaysOnElement.value !== '') {
-            body.always_on = alwaysOnElement.value === 'true' ? true : false
+            body.always_on = alwaysOnElement.value === 'true'
           }
           if (Object.keys(body).length === 0) {
             return Homey.alert('No change to apply')
