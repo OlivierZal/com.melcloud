@@ -513,7 +513,7 @@ export type ErrorLogData = ErrorData[]
 
 export interface Error {
   readonly Device: string
-  readonly 'Start Date': string
+  readonly Date: string
   readonly Error: string
 }
 

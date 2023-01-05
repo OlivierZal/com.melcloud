@@ -19,11 +19,11 @@ module.exports = {
     return data.map((errorData: ErrorData): Error => (
       {
         Device: app.getDevices().filter((device: MELCloudDevice): boolean => device.id === errorData.DeviceId)[0].getName(),
-        'Start Date': errorData.StartDate !== null && DateTime.fromISO(errorData.StartDate).year !== 1
-          ? DateTime.fromISO(errorData.StartDate).setZone('utc').toLocal().toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+        Date: errorData.StartDate !== null && DateTime.fromISO(errorData.StartDate).year !== 1
+          ? DateTime.fromISO(errorData.StartDate, { zone: 'utc' }).toLocal().toFormat('dd LLL yy HH:mm')
           : '',
         Error: errorData.ErrorMessage ?? ''
       }
-    )).filter((error: Error): boolean => error['Start Date'] !== '' && error.Error !== '')
+    )).filter((error: Error): boolean => error.Date !== '' && error.Error !== '')
   }
 }

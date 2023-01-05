@@ -9,6 +9,12 @@
       <h1 class="homey-title" data-i18n="settings.title"></h1>
     </header>
     <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend">Error Log</legend>
+      <div class="homey-form-group">
+        <table></table>
+      </div>
+    </fieldset>
+    <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Credentials</legend>
       <div class="homey-form-group">
         <label class="homey-form-label" for="username">Username</label>
@@ -21,7 +27,7 @@
     </fieldset>
     <button id="save" class="homey-button-primary-full">Save</button>
     <fieldset class="homey-form-fieldset">
-      <legend class="homey-form-legend">Device Options</legend>
+      <legend class="homey-form-legend">Device Options - Bulk Actions</legend>
       <div class="homey-form-group">
         <label class="homey-form-label" for="interval">Device Update Frequency (minutes)</label>
         <input class="homey-form-input" id="interval" type="number" value="0" />
@@ -36,9 +42,5 @@
       </div>
     </fieldset>
     <button id="apply" class="homey-button-primary-full">Apply to all devices</button>
-    <legend class="homey-form-legend">Error Log</legend>
-    <div class="homey-form-group">
-      <table></table>
-    </div>
   </body>
 </html>
