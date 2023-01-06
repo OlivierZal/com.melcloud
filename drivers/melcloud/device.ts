@@ -90,7 +90,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
-          await this.setWarning('Setting `Always On` is activated')
+          await this.setWarning('Setting "Always On" is activated')
           await this.setWarning(null)
         }
         this.diff.onoff = value as boolean
@@ -103,7 +103,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'operation_mode':
         if (['dry', 'fan'].includes(value as string) && this.getCapabilityValue('thermostat_mode') !== 'off') {
-          await this.setWarning(`\`${value as string}\` has been saved (even if \`heat\` is displayed)`)
+          await this.setWarning(`"${(value as string).charAt(0).toUpperCase()}${(value as string).slice(1)}" has been saved (even if "Heat" is displayed)`)
           await this.setWarning(null)
         }
         this.diff.operation_mode = value as string

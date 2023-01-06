@@ -58,7 +58,7 @@
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/settings/holiday_mode/buildings/:buildingId"
     },
     "getUnitErrorLog": {
       "method": "GET",
@@ -2450,7 +2450,7 @@
           "options": {
             "logo": "logo.png",
             "title": {
-              "en": "Continue if you have already successfully authenticated (including from the app settings)"
+              "en": "\"Continue\" if you have already successfully authenticated (including from the app settings)"
             },
             "usernameLabel": {
               "en": "Username"
@@ -3230,7 +3230,7 @@
           "options": {
             "logo": "logo.png",
             "title": {
-              "en": "Continue if you have already successfully authenticated (including from the app settings)"
+              "en": "\"Continue\" if you have already successfully authenticated (including from the app settings)"
             },
             "usernameLabel": {
               "en": "Username"

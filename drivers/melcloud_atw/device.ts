@@ -48,7 +48,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     switch (capability) {
       case 'onoff':
         if (this.getSetting('always_on') === true) {
-          await this.setWarning('Setting `Always On` is activated')
+          await this.setWarning('Setting "Always On" is activated')
           await this.setWarning(null)
         }
         this.diff.onoff = value as boolean

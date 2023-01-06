@@ -538,8 +538,8 @@ export interface FrostProtectionPostData {
 
 export interface HolidayModeData {
   readonly HMEnabled: boolean
-  readonly HMStartDate: number
-  readonly HMEndDate: number
+  readonly HMStartDate: string | null
+  readonly HMEndDate: string | null
 }
 
 export interface HolidayModePostData {
@@ -562,7 +562,6 @@ export interface HolidayModePostData {
   } | null
   readonly HMTimeZones: [
     {
-      readonly TimeZone: 121
       readonly Buildings: [
         Building<MELCloudDevice>['ID']
       ]
@@ -572,4 +571,5 @@ export interface HolidayModePostData {
 
 export interface UpdateSettingsData {
   readonly Success: boolean
+  readonly AttributeErrors: Record<string, string[]> | null
 }
