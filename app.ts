@@ -274,24 +274,18 @@ export default class MELCloudApp extends App {
       this.log(`Getting holiday mode settings for building ${building.Name}...`)
       const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDevices[0].id}`)
       this.log(`Getting holiday mode settings for building ${building.Name}:`, data)
-      return {
-        HMEnabled: data.HMEnabled,
-        HMStartDate: data.HMStartDate !== null ? DateTime.fromISO(data.HMStartDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null,
-        HMEndDate: data.HMEndDate !== null ? DateTime.fromISO(data.HMEndDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null
-      }
+      return data
     } catch (error: unknown) {
       this.error(`Getting holiday mode settings for building ${building.Name}:`, error instanceof Error ? error.message : error)
     }
     return null
   }
 
-  async setHolidayModeSettings (building: Building<MELCloudDevice>, enabled: boolean, startDate?: DateTime | '' | null, endDate?: DateTime | '' | null): Promise<boolean> {
+  async setHolidayModeSettings (building: Building<MELCloudDevice>, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
     try {
-      if (enabled && !(startDate instanceof DateTime && endDate instanceof DateTime)) {
-        throw new Error('Date: bad format')
+      if (enabled && utcStartDate === null && utcEndDate === null) {
+        throw new Error('Date: Missing')
       }
-      const utcStartDate: DateTime | null = enabled && startDate instanceof DateTime ? startDate.toUTC() : null
-      const utcEndDate: DateTime | null = enabled && endDate instanceof DateTime ? endDate.toUTC() : null
       const postData: HolidayModePostData = {
         Enabled: enabled,
         StartDate: utcStartDate !== null

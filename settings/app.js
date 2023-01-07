@@ -231,10 +231,10 @@ function onHomeyReady (Homey) {
             return Homey.alert('End Date should be greater than Start Date')
           }
           getBuildingHolidayModeSettings()
-          return Homey.alert('Failure')
+          return Homey.alert('Update failed')
         }
         getBuildingHolidayModeSettings()
-        return Homey.alert('Success')
+        return Homey.alert('Update succeeded')
       }
     )
   })
@@ -259,9 +259,9 @@ function onHomeyReady (Homey) {
         }
         if (data === false) {
           getBuildingFrostProtectionSettings()
-          return Homey.alert('Failure')
+          return Homey.alert('Update failed')
         }
-        return Homey.alert('Success')
+        return Homey.alert('Update succeeded')
       }
     )
   })

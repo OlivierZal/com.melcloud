@@ -39,7 +39,15 @@ module.exports = {
     if (building === null) {
       return null
     }
-    return await app.getHolidayModeSettings(building)
+    const data: HolidayModeData | null = await app.getHolidayModeSettings(building)
+    if (data === null) {
+      return null
+    }
+    return {
+      HMEnabled: data.HMEnabled,
+      HMStartDate: data.HMStartDate !== null ? DateTime.fromISO(data.HMStartDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null,
+      HMEndDate: data.HMEndDate !== null ? DateTime.fromISO(data.HMEndDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null
+    }
   },
 
   async getUnitErrorLog ({ homey }: { homey: Homey }): Promise<ErrorLog | null> {
@@ -100,8 +108,8 @@ module.exports = {
     return await app.setHolidayModeSettings(
       building,
       enabled,
-      startDate !== '' ? DateTime.fromISO(startDate) : '',
-      endDate !== '' ? DateTime.fromISO(endDate) : ''
+      startDate !== '' ? DateTime.fromISO(startDate).toUTC() : null,
+      endDate !== '' ? DateTime.fromISO(endDate).toUTC() : null
     )
   }
 }
