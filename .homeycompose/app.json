@@ -57,7 +57,7 @@
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/settings/holiday_mode/buildings/:buildingId"
     },
     "getUnitErrorLog": {
       "method": "GET",

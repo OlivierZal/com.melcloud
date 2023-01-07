@@ -411,7 +411,7 @@
       "options": {
         "logo": "logo.png",
         "title": {
-          "en": "Continue if you have already successfully authenticated (including from the app settings)"
+          "en": "\"Continue\" if you have already successfully authenticated (including from the app settings)"
         },
         "usernameLabel": {
           "en": "Username"

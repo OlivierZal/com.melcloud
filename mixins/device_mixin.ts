@@ -289,7 +289,7 @@ export default class MELCloudDeviceMixin extends Device {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       `${type.charAt(0).toUpperCase()}${type.slice(1)}`, 'will run every', duration.shiftTo('days', 'hours').toHuman(),
-      'starting', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      'starting', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setInterval(callback, Number(duration))
   }
@@ -298,7 +298,7 @@ export default class MELCloudDeviceMixin extends Device {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
-      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
   }
