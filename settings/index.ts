@@ -1,8 +1,16 @@
+import Homey from 'homey/lib/Homey'
 import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevice } from '../types'
 
+type ExtendedHomey = Homey & {
+  alert: (message: string) => Promise<void>
+  confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => Promise<void>
+  get: (name: string, callback: (error: string | null, value: string) => Promise<void>) => string
+  set: (name: string, value: string, callback: (error: string | null) => Promise<void>) => Promise<void>
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function onHomeyReady (Homey: any): void {
-  Homey.ready()
+async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
+  await Homey.ready()
 
   function generateTableHead (table: any, keys: string[]): void {
     const thead = table.createTHead()
@@ -24,12 +32,14 @@ function onHomeyReady (Homey: any): void {
       }
     }
   }
+  // @ts-expect-error
   Homey.api(
     'GET',
     '/report/error_log',
-    function (error: string | null, data: ErrorLog): void {
+    async (error: string | null, data: ErrorLog): Promise<void> => {
       if (error !== null) {
-        return Homey.alert(error)
+        await Homey.alert(error)
+        return
       }
       if (data === null || data.length === 0) {
         return
@@ -43,41 +53,46 @@ function onHomeyReady (Homey: any): void {
   const usernameElement: any = document.getElementById('username')
   const passwordElement: any = document.getElementById('password')
   const saveElement: any = document.getElementById('save')
-  Homey.get('username', function (err: string | null, username: string): void {
+  Homey.get('username', async (err: string | null, username: string): Promise<void> => {
     if (err !== null) {
-      return Homey.alert(err)
+      await Homey.alert(err)
+      return
     }
     usernameElement.value = username
   })
-  Homey.get('password', function (err: string | null, password: string): void {
+  Homey.get('password', async (err: string | null, password: string): Promise<void> => {
     if (err !== null) {
-      return Homey.alert(err)
+      await Homey.alert(err)
+      return
     }
     passwordElement.value = password
   })
   saveElement.addEventListener('click', function (): void {
+    // @ts-expect-error
     Homey.api(
       'POST',
       '/login',
       { username: usernameElement.value, password: passwordElement.value },
-      function (error: string | null, login: boolean): void {
+      async (error: string | null, login: boolean): Promise<void> => {
         if (error !== null) {
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (!login) {
-          return Homey.alert('Authentication failed')
+          await Homey.alert('Authentication failed')
+          return
         }
-        Homey.set('username', usernameElement.value, function (err: string | null): void {
+        await Homey.set('username', usernameElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            return Homey.alert(err)
+            await Homey.alert(err)
           }
         })
-        Homey.set('password', passwordElement.value, function (err: string | null): void {
+        await Homey.set('password', passwordElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            return Homey.alert(err)
+            await Homey.alert(err)
           }
         })
-        return Homey.alert('Authentication succeeded')
+        await Homey.alert('Authentication succeeded')
       }
     )
   })
@@ -85,12 +100,13 @@ function onHomeyReady (Homey: any): void {
   const intervalElement: any = document.getElementById('interval')
   const alwaysOnElement: any = document.getElementById('always-on')
   const applyElement: any = document.getElementById('apply')
-  applyElement.addEventListener('click', function (): void {
+  applyElement.addEventListener('click', async (): Promise<void> => {
     const body: any = {}
     if (intervalElement.value !== '') {
       const interval = Number(intervalElement.value)
       if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
-        return Homey.alert('The frequency must be an integer between 1 and 60.')
+        await Homey.alert('The frequency must be an integer between 1 and 60.')
+        return
       }
       body.interval = interval
     }
@@ -98,30 +114,36 @@ function onHomeyReady (Homey: any): void {
       body.always_on = alwaysOnElement.value === 'true'
     }
     if (Object.keys(body).length === 0) {
-      return Homey.alert('No change to apply')
+      await Homey.alert('No change to apply')
+      return
     }
-    Homey.confirm(
+    await Homey.confirm(
       'Are you sure you want to override this setting on all devices?',
       null,
-      function (error: string | null, ok: boolean): void {
+      async (error: string | null, ok: boolean): Promise<void> => {
         if (error !== null) {
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (!ok) {
-          return Homey.alert('Change has not been applied')
+          await Homey.alert('Change has not been applied')
+          return
         }
+        // @ts-expect-error
         Homey.api(
           'POST',
           '/settings/devices',
           body,
-          function (error: string | null, setDeviceSettings: boolean): void {
+          async (error: string | null, setDeviceSettings: boolean): Promise<void> => {
             if (error !== null) {
-              return Homey.alert(error)
+              await Homey.alert(error)
+              return
             }
             if (!setDeviceSettings) {
-              return Homey.alert('No change to apply')
+              await Homey.alert('No change to apply')
+              return
             }
-            return Homey.alert('Change has been applied to all devices')
+            await Homey.alert('Change has been applied to all devices')
           }
         )
       }
@@ -140,15 +162,18 @@ function onHomeyReady (Homey: any): void {
   const refreshFrostProtectionElement: any = document.getElementById('refresh-frost-protection')
   const updateFrostProtectionElement: any = document.getElementById('update-frost-protection')
   function getBuildingHolidayModeSettings (): void {
+    // @ts-expect-error
     Homey.api(
       'GET',
       `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
-      function (error: string | null, data: HolidayModeData): void {
+      async (error: string | null, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (data === null) {
-          return Homey.alert('Holiday mode settings could not be retrieved')
+          await Homey.alert('Holiday mode settings could not be retrieved')
+          return
         }
         holidayModeEnabledElement.value = String(data.HMEnabled)
         if (data.HMEnabled) {
@@ -162,15 +187,18 @@ function onHomeyReady (Homey: any): void {
     )
   }
   function getBuildingFrostProtectionSettings (): void {
+    // @ts-expect-error
     Homey.api(
       'GET',
       `/settings/frost_protection/buildings/${buildingElement.value as number}`,
-      function (error: string | null, data: FrostProtectionData): void {
+      async (error: string | null, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (data === null) {
-          return Homey.alert('Frost protection settings could not be retrieved')
+          await Homey.alert('Frost protection settings could not be retrieved')
+          return
         }
         frostProtectionEnabledElement.value = String(data.FPEnabled)
         frostProtectionMinimumTemperatureElement.value = data.FPMinTemperature
@@ -178,12 +206,14 @@ function onHomeyReady (Homey: any): void {
       }
     )
   }
+  // @ts-expect-error
   Homey.api(
     'GET',
     '/buildings',
-    function (error: string | null, buildings: Array<Building<MELCloudDevice>>): void {
+    async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
       if (error !== null) {
-        return Homey.alert(error)
+        await Homey.alert(error)
+        return
       }
       for (const building of buildings) {
         const { ID, Name } = building
@@ -213,6 +243,7 @@ function onHomeyReady (Homey: any): void {
   })
   updateHolidayModeElement.addEventListener('click', function (): void {
     const enabled = holidayModeEnabledElement.value === 'true'
+    // @ts-expect-error
     Homey.api(
       'POST',
       `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
@@ -221,23 +252,27 @@ function onHomeyReady (Homey: any): void {
         startDate: enabled ? holidayModeStartDateElement.value : '',
         endDate: enabled ? holidayModeEndDateElement.value : ''
       },
-      function (error: string | null, data: boolean): void {
+      async (error: string | null, data: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingHolidayModeSettings()
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (!data) {
           if (enabled && (holidayModeStartDateElement.value === '' || holidayModeEndDateElement.value === '')) {
-            return Homey.alert('Start Date and/or End Date are missing')
+            await Homey.alert('Start Date and/or End Date are missing')
+            return
           }
           if (holidayModeEndDateElement.value < holidayModeStartDateElement.value) {
-            return Homey.alert('End Date should be greater than Start Date')
+            await Homey.alert('End Date should be greater than Start Date')
+            return
           }
           getBuildingHolidayModeSettings()
-          return Homey.alert('Update failed')
+          await Homey.alert('Update failed')
+          return
         }
         getBuildingHolidayModeSettings()
-        return Homey.alert('Update succeeded')
+        await Homey.alert('Update succeeded')
       }
     )
   })
@@ -247,6 +282,7 @@ function onHomeyReady (Homey: any): void {
   })
   updateFrostProtectionElement.addEventListener('click', function (): void {
     const enabled = frostProtectionEnabledElement.value === 'true'
+    // @ts-expect-error
     Homey.api(
       'POST',
       `/settings/frost_protection/buildings/${buildingElement.value as number}`,
@@ -255,16 +291,18 @@ function onHomeyReady (Homey: any): void {
         minimumTemperature: frostProtectionMinimumTemperatureElement.value,
         maximumTemperature: frostProtectionMaximumTemperatureElement.value
       },
-      function (error: string | null, data: boolean): void {
+      async (error: string | null, data: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingFrostProtectionSettings()
-          return Homey.alert(error)
+          await Homey.alert(error)
+          return
         }
         if (!data) {
           getBuildingFrostProtectionSettings()
-          return Homey.alert('Update failed')
+          await Homey.alert('Update failed')
+          return
         }
-        return Homey.alert('Update succeeded')
+        await Homey.alert('Update succeeded')
       }
     )
   })

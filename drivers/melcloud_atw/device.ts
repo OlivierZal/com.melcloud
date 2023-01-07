@@ -110,11 +110,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   async convertFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
     let newValue: boolean | number | string = value
     switch (capability) {
-      case 'onoff':
-        if (this.getSetting('always_on') === true && newValue === false) {
-          await this.setSettings({ always_on: false })
-        }
-        break
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]
         break

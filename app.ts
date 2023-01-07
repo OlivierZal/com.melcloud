@@ -88,7 +88,7 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  async getBuilding (buildingId: number): Promise<Building<MELCloudDevice> | null> {
+  async getBuilding (buildingId: Building<MELCloudDevice>['ID']): Promise<Building<MELCloudDevice> | null> {
     const buildings: Array<Building<MELCloudDevice>> = await this.getBuildings()
     return buildings.filter((building: Building<MELCloudDevice>): boolean => building.ID === buildingId)[0] ?? null
   }
