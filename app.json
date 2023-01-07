@@ -72,11 +72,11 @@
       "method": "POST",
       "path": "/settings/devices"
     },
-    "setFrostProtectionSettings": {
+    "updateFrostProtectionSettings": {
       "method": "POST",
       "path": "/settings/frost_protection/buildings/:buildingId"
     },
-    "setHolidayModeSettings": {
+    "updateHolidayModeSettings": {
       "method": "POST",
       "path": "/settings/holiday_mode/buildings/:buildingId"
     }

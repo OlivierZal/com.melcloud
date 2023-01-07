@@ -237,7 +237,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setFrostProtectionSettings (building: Building<MELCloudDevice>, enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
+  async updateFrostProtectionSettings (building: Building<MELCloudDevice>, enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
     try {
       const postData: FrostProtectionPostData = {
         Enabled: enabled,
@@ -281,9 +281,9 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setHolidayModeSettings (building: Building<MELCloudDevice>, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
+  async updateHolidayModeSettings (building: Building<MELCloudDevice>, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
     try {
-      if (enabled && utcStartDate === null && utcEndDate === null) {
+      if (enabled && (utcStartDate === null || utcEndDate === null)) {
         throw new Error('Date: Missing')
       }
       const postData: HolidayModePostData = {

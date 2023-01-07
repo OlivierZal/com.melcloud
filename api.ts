@@ -15,13 +15,8 @@ import {
 } from './types'
 
 module.exports = {
-  async getBuildings ({ homey }: { homey: Homey }): Promise<Record<Building<MELCloudDevice>['ID'], Building<MELCloudDevice>['Name']>> {
-    const buildings: Array<Building<MELCloudDevice>> = await (homey.app as MELCloudApp).getBuildings()
-    const map: Record<Building<MELCloudDevice>['ID'], Building<MELCloudDevice>['Name']> = {}
-    for (const building of buildings) {
-      map[building.ID] = building.Name
-    }
-    return map
+  async getBuildings ({ homey }: { homey: Homey }): Promise<Array<Building<MELCloudDevice>>> {
+    return await (homey.app as MELCloudApp).getBuildings()
   },
 
   async getFrostProtectionSettings ({ homey, params }: { homey: Homey, params: { buildingId: string } }): Promise<FrostProtectionData | null> {
@@ -75,7 +70,7 @@ module.exports = {
     return await (homey.app as MELCloudApp).setDeviceSettings(body)
   },
 
-  async setFrostProtectionSettings ({ homey, params, body }: {
+  async updateFrostProtectionSettings ({ homey, params, body }: {
     homey: Homey
     params: { buildingId: string }
     body: { enabled: boolean, minimumTemperature: number, maximumTemperature: number }
@@ -86,7 +81,7 @@ module.exports = {
       return false
     }
     const { enabled, minimumTemperature, maximumTemperature } = body
-    return await app.setFrostProtectionSettings(
+    return await app.updateFrostProtectionSettings(
       building,
       enabled,
       minimumTemperature,
@@ -94,7 +89,7 @@ module.exports = {
     )
   },
 
-  async setHolidayModeSettings ({ homey, params, body }: {
+  async updateHolidayModeSettings ({ homey, params, body }: {
     homey: Homey
     params: { buildingId: string }
     body: { enabled: boolean, startDate: string, endDate: string }
@@ -105,7 +100,7 @@ module.exports = {
       return false
     }
     const { enabled, startDate, endDate } = body
-    return await app.setHolidayModeSettings(
+    return await app.updateHolidayModeSettings(
       building,
       enabled,
       startDate !== '' ? DateTime.fromISO(startDate).toUTC() : null,

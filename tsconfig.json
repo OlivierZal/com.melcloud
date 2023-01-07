@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    "lib": ["es2022", "dom"],
     "outDir": ".homeybuild/",
     "target": "es2022"
   }
