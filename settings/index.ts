@@ -2,11 +2,11 @@ import Homey from 'homey/lib/Homey'
 import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevice } from '../types'
 
 type ExtendedHomey = Homey & {
-  alert: (message: string) => Promise<void>
   api: (method: 'GET' | 'POST', path: string, body: any, callback: (error: string | null, data: any) => Promise<void>) => Homey.ManagerApi
-  confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => Promise<void>
   get: (name: string, callback: (error: string | null, value: string) => Promise<void>) => string
   set: (name: string, value: string, callback: (error: string | null) => Promise<void>) => Promise<void>
+  alert: (message: string) => void
+  confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => void
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,7 +39,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     null,
     async (error: string | null, data: ErrorLog): Promise<void> => {
       if (error !== null) {
-        await Homey.alert(error)
+        Homey.alert(error)
         return
       }
       if (data === null || data.length === 0) {
@@ -51,19 +51,19 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     }
   )
 
-  const usernameElement: any = document.getElementById('username')
-  const passwordElement: any = document.getElementById('password')
-  const saveElement: any = document.getElementById('save')
+  const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
+  const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
+  const saveElement: HTMLElement = document.getElementById('save') as HTMLElement
   Homey.get('username', async (err: string | null, username: string): Promise<void> => {
     if (err !== null) {
-      await Homey.alert(err)
+      Homey.alert(err)
       return
     }
     usernameElement.value = username
   })
   Homey.get('password', async (err: string | null, password: string): Promise<void> => {
     if (err !== null) {
-      await Homey.alert(err)
+      Homey.alert(err)
       return
     }
     passwordElement.value = password
@@ -75,37 +75,37 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       { username: usernameElement.value, password: passwordElement.value },
       async (error: string | null, login: boolean): Promise<void> => {
         if (error !== null) {
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
         if (!login) {
-          await Homey.alert('Authentication failed')
+          Homey.alert('Authentication failed')
           return
         }
         await Homey.set('username', usernameElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            await Homey.alert(err)
+            Homey.alert(err)
           }
         })
         await Homey.set('password', passwordElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            await Homey.alert(err)
+            Homey.alert(err)
           }
         })
-        await Homey.alert('Authentication succeeded')
+        Homey.alert('Authentication succeeded')
       }
     )
   })
 
-  const intervalElement: any = document.getElementById('interval')
-  const alwaysOnElement: any = document.getElementById('always-on')
-  const applyElement: any = document.getElementById('apply')
-  applyElement.addEventListener('click', async (): Promise<void> => {
+  const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
+  const alwaysOnElement: HTMLInputElement = document.getElementById('always-on') as HTMLInputElement
+  const applyElement: HTMLElement = document.getElementById('apply') as HTMLElement
+  applyElement.addEventListener('click', (): void => {
     const body: any = {}
     if (intervalElement.value !== '') {
       const interval = Number(intervalElement.value)
       if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
-        await Homey.alert('The frequency must be an integer between 1 and 60.')
+        Homey.alert('The frequency must be an integer between 1 and 60.')
         return
       }
       body.interval = interval
@@ -114,64 +114,64 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       body.always_on = alwaysOnElement.value === 'true'
     }
     if (Object.keys(body).length === 0) {
-      await Homey.alert('No change to apply')
+      Homey.alert('No change to apply')
       return
     }
-    await Homey.confirm(
+    Homey.confirm(
       'Are you sure you want to override this setting on all devices?',
       null,
       async (error: string | null, ok: boolean): Promise<void> => {
         if (error !== null) {
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
         if (!ok) {
-          await Homey.alert('Change has not been applied')
+          Homey.alert('Change has not been applied')
           return
         }
         Homey.api(
           'POST',
           '/settings/devices',
           body,
-          async (error: string | null, setDeviceSettings: boolean): Promise<void> => {
+          async (error: string | null, success: boolean): Promise<void> => {
             if (error !== null) {
-              await Homey.alert(error)
+              Homey.alert(error)
               return
             }
-            if (!setDeviceSettings) {
-              await Homey.alert('No change to apply')
+            if (!success) {
+              Homey.alert('No change to apply')
               return
             }
-            await Homey.alert('Change has been applied to all devices')
+            Homey.alert('Change has been applied to all devices')
           }
         )
       }
     )
   })
 
-  const buildingElement: any = document.getElementById('building')
-  const holidayModeEnabledElement: any = document.getElementById('enabled-holiday-mode')
-  const holidayModeStartDateElement: any = document.getElementById('start-date')
-  const holidayModeEndDateElement: any = document.getElementById('end-date')
-  const refreshHolidayModeElement: any = document.getElementById('refresh-holiday-mode')
-  const updateHolidayModeElement: any = document.getElementById('update-holiday-mode')
-  const frostProtectionEnabledElement: any = document.getElementById('enabled-frost-protection')
-  const frostProtectionMinimumTemperatureElement: any = document.getElementById('min')
-  const frostProtectionMaximumTemperatureElement: any = document.getElementById('max')
-  const refreshFrostProtectionElement: any = document.getElementById('refresh-frost-protection')
-  const updateFrostProtectionElement: any = document.getElementById('update-frost-protection')
+  const buildingElement: HTMLInputElement = document.getElementById('building') as HTMLInputElement
+  const holidayModeEnabledElement: HTMLInputElement = document.getElementById('enabled-holiday-mode') as HTMLInputElement
+  const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
+  const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
+  const refreshHolidayModeElement: HTMLElement = document.getElementById('refresh-holiday-mode') as HTMLElement
+  const updateHolidayModeElement: HTMLElement = document.getElementById('update-holiday-mode') as HTMLElement
+  const frostProtectionEnabledElement: HTMLInputElement = document.getElementById('enabled-frost-protection') as HTMLInputElement
+  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
+  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
+  const refreshFrostProtectionElement: HTMLElement = document.getElementById('refresh-frost-protection') as HTMLElement
+  const updateFrostProtectionElement: HTMLElement = document.getElementById('update-frost-protection') as HTMLElement
   function getBuildingHolidayModeSettings (): void {
     Homey.api(
       'GET',
-      `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
+      `/settings/holiday_mode/buildings/${buildingElement.value}`,
       null,
       async (error: string | null, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
         if (data === null) {
-          await Homey.alert('Holiday mode settings could not be retrieved')
+          Homey.alert('Holiday mode settings could not be retrieved')
           return
         }
         holidayModeEnabledElement.value = String(data.HMEnabled)
@@ -188,20 +188,20 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
   function getBuildingFrostProtectionSettings (): void {
     Homey.api(
       'GET',
-      `/settings/frost_protection/buildings/${buildingElement.value as number}`,
+      `/settings/frost_protection/buildings/${buildingElement.value}`,
       null,
       async (error: string | null, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
         if (data === null) {
-          await Homey.alert('Frost protection settings could not be retrieved')
+          Homey.alert('Frost protection settings could not be retrieved')
           return
         }
         frostProtectionEnabledElement.value = String(data.FPEnabled)
-        frostProtectionMinimumTemperatureElement.value = data.FPMinTemperature
-        frostProtectionMaximumTemperatureElement.value = data.FPMaxTemperature
+        frostProtectionMinimumTemperatureElement.value = String(data.FPMinTemperature)
+        frostProtectionMaximumTemperatureElement.value = String(data.FPMaxTemperature)
       }
     )
   }
@@ -211,7 +211,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     null,
     async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
       if (error !== null) {
-        await Homey.alert(error)
+        Homey.alert(error)
         return
       }
       for (const building of buildings) {
@@ -244,33 +244,33 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     const enabled = holidayModeEnabledElement.value === 'true'
     Homey.api(
       'POST',
-      `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
+      `/settings/holiday_mode/buildings/${buildingElement.value}`,
       {
         enabled,
         startDate: enabled ? holidayModeStartDateElement.value : '',
         endDate: enabled ? holidayModeEndDateElement.value : ''
       },
-      async (error: string | null, data: boolean): Promise<void> => {
+      async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingHolidayModeSettings()
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
-        if (!data) {
+        if (!success) {
           if (enabled && (holidayModeStartDateElement.value === '' || holidayModeEndDateElement.value === '')) {
-            await Homey.alert('Start Date and/or End Date are missing')
+            Homey.alert('Start Date and/or End Date are missing')
             return
           }
           if (holidayModeEndDateElement.value < holidayModeStartDateElement.value) {
-            await Homey.alert('End Date should be greater than Start Date')
+            Homey.alert('End Date should be greater than Start Date')
             return
           }
           getBuildingHolidayModeSettings()
-          await Homey.alert('Update failed')
+          Homey.alert('Update failed')
           return
         }
         getBuildingHolidayModeSettings()
-        await Homey.alert('Update succeeded')
+        Homey.alert('Update succeeded')
       }
     )
   })
@@ -282,24 +282,24 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     const enabled = frostProtectionEnabledElement.value === 'true'
     Homey.api(
       'POST',
-      `/settings/frost_protection/buildings/${buildingElement.value as number}`,
+      `/settings/frost_protection/buildings/${buildingElement.value}`,
       {
         enabled,
         minimumTemperature: frostProtectionMinimumTemperatureElement.value,
         maximumTemperature: frostProtectionMaximumTemperatureElement.value
       },
-      async (error: string | null, data: boolean): Promise<void> => {
+      async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingFrostProtectionSettings()
-          await Homey.alert(error)
+          Homey.alert(error)
           return
         }
-        if (!data) {
+        if (!success) {
           getBuildingFrostProtectionSettings()
-          await Homey.alert('Update failed')
+          Homey.alert('Update failed')
           return
         }
-        await Homey.alert('Update succeeded')
+        Homey.alert('Update succeeded')
       }
     )
   })
