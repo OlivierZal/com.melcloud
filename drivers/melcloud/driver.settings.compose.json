@@ -22,10 +22,10 @@
         "id": "always_on",
         "type": "checkbox",
         "label": {
-          "en": "Disable Power Off"
+          "en": "Disable Power Off from Homey"
         },
         "value": false,
-        "hint": "This setting prevents the device from being turned off from Homey. The device can still be turned off manually (from a remote control or directly from the physical device)"
+        "hint": "This setting prevents the device from being turned off from Homey, the device can still be turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   },
