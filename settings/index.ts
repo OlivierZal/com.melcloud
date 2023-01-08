@@ -68,7 +68,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     }
     passwordElement.value = password
   })
-  saveElement.addEventListener('click', function (): void {
+  saveElement.addEventListener('click', (): void => {
     Homey.api(
       'POST',
       '/login',
@@ -226,21 +226,21 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       getBuildingFrostProtectionSettings()
     }
   )
-  buildingElement.addEventListener('change', function (): void {
+  buildingElement.addEventListener('change', (): void => {
     getBuildingHolidayModeSettings()
     getBuildingFrostProtectionSettings()
   })
 
-  holidayModeEnabledElement.addEventListener('change', function (): void {
+  holidayModeEnabledElement.addEventListener('change', (): void => {
     if (holidayModeEnabledElement.value === 'false') {
       holidayModeStartDateElement.value = ''
       holidayModeEndDateElement.value = ''
     }
   })
-  refreshHolidayModeElement.addEventListener('click', function (): void {
+  refreshHolidayModeElement.addEventListener('click', (): void => {
     getBuildingHolidayModeSettings()
   })
-  updateHolidayModeElement.addEventListener('click', function (): void {
+  updateHolidayModeElement.addEventListener('click', (): void => {
     const enabled = holidayModeEnabledElement.value === 'true'
     Homey.api(
       'POST',
@@ -275,10 +275,10 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     )
   })
 
-  refreshFrostProtectionElement.addEventListener('click', function (): void {
+  refreshFrostProtectionElement.addEventListener('click', (): void => {
     getBuildingFrostProtectionSettings()
   })
-  updateFrostProtectionElement.addEventListener('click', function (): void {
+  updateFrostProtectionElement.addEventListener('click', (): void => {
     const enabled = frostProtectionEnabledElement.value === 'true'
     Homey.api(
       'POST',
