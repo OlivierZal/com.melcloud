@@ -3,6 +3,7 @@ import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevic
 
 type ExtendedHomey = Homey & {
   alert: (message: string) => Promise<void>
+  api: (method: 'GET' | 'POST', path: string, body: any, callback: (error: string | null, data: any) => Promise<void>) => Homey.ManagerApi
   confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => Promise<void>
   get: (name: string, callback: (error: string | null, value: string) => Promise<void>) => string
   set: (name: string, value: string, callback: (error: string | null) => Promise<void>) => Promise<void>
@@ -32,10 +33,10 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       }
     }
   }
-  // @ts-expect-error
   Homey.api(
     'GET',
     '/report/error_log',
+    null,
     async (error: string | null, data: ErrorLog): Promise<void> => {
       if (error !== null) {
         await Homey.alert(error)
@@ -68,7 +69,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     passwordElement.value = password
   })
   saveElement.addEventListener('click', function (): void {
-    // @ts-expect-error
     Homey.api(
       'POST',
       '/login',
@@ -129,7 +129,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
           await Homey.alert('Change has not been applied')
           return
         }
-        // @ts-expect-error
         Homey.api(
           'POST',
           '/settings/devices',
@@ -162,10 +161,10 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
   const refreshFrostProtectionElement: any = document.getElementById('refresh-frost-protection')
   const updateFrostProtectionElement: any = document.getElementById('update-frost-protection')
   function getBuildingHolidayModeSettings (): void {
-    // @ts-expect-error
     Homey.api(
       'GET',
       `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
+      null,
       async (error: string | null, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
           await Homey.alert(error)
@@ -187,10 +186,10 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     )
   }
   function getBuildingFrostProtectionSettings (): void {
-    // @ts-expect-error
     Homey.api(
       'GET',
       `/settings/frost_protection/buildings/${buildingElement.value as number}`,
+      null,
       async (error: string | null, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
           await Homey.alert(error)
@@ -206,10 +205,10 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       }
     )
   }
-  // @ts-expect-error
   Homey.api(
     'GET',
     '/buildings',
+    null,
     async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
       if (error !== null) {
         await Homey.alert(error)
@@ -243,7 +242,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
   })
   updateHolidayModeElement.addEventListener('click', function (): void {
     const enabled = holidayModeEnabledElement.value === 'true'
-    // @ts-expect-error
     Homey.api(
       'POST',
       `/settings/holiday_mode/buildings/${buildingElement.value as number}`,
@@ -282,7 +280,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
   })
   updateFrostProtectionElement.addEventListener('click', function (): void {
     const enabled = frostProtectionEnabledElement.value === 'true'
-    // @ts-expect-error
     Homey.api(
       'POST',
       `/settings/frost_protection/buildings/${buildingElement.value as number}`,

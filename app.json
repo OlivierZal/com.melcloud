@@ -2524,10 +2524,10 @@
               "id": "always_on",
               "type": "checkbox",
               "label": {
-                "en": "Keep Device On"
+                "en": "Disable Power Off"
               },
               "value": false,
-              "hint": "This setting will be deactivated if the device is turned off manually (from a remote control or directly from the physical device)"
+              "hint": "This setting prevents the device from being turned off from Homey. The device can still be turned off manually (from a remote control or directly from the physical device)"
             }
           ]
         },
@@ -3304,10 +3304,10 @@
               "id": "always_on",
               "type": "checkbox",
               "label": {
-                "en": "Keep Device On"
+                "en": "Disable Power Off"
               },
               "value": false,
-              "hint": "This setting will be deactivated if the device is turned off manually (from a remote control or directly from the physical device)"
+              "hint": "This setting prevents the device from being turned off from Homey. The device can still be turned off manually (from a remote control or directly from the physical device)"
             }
           ]
         },
