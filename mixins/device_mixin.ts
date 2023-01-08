@@ -185,6 +185,7 @@ export default class MELCloudDeviceMixin extends Device {
     if (deviceFromList === null) {
       return
     }
+    this.log('Syncing from device list:', deviceFromList.Device)
     for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
       await this.convertFromDevice(capability as ListCapability<T>, deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as boolean | number)
     }
