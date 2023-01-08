@@ -13,22 +13,40 @@ type ExtendedHomey = Homey & {
 async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
   await Homey.ready()
 
+  const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
+  const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
+  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
+  const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
+  const alwaysOnElement: HTMLInputElement = document.getElementById('always-on') as HTMLInputElement
+  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
+  const buildingElement: HTMLInputElement = document.getElementById('building') as HTMLInputElement
+  const holidayModeEnabledElement: HTMLInputElement = document.getElementById('enabled-holiday-mode') as HTMLInputElement
+  const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
+  const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
+  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
+  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
+  const frostProtectionEnabledElement: HTMLInputElement = document.getElementById('enabled-frost-protection') as HTMLInputElement
+  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
+  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
+  const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
+  const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
+
   function generateTableHead (table: HTMLTableElement, keys: string[]): void {
-    const thead = table.createTHead()
+    const thead: HTMLTableSectionElement = table.createTHead()
     const row: HTMLTableRowElement = thead.insertRow()
     for (const key of keys) {
-      const th = document.createElement('th')
-      const text = document.createTextNode(key)
+      const th: HTMLTableCellElement = document.createElement('th')
+      const text: Text = document.createTextNode(key)
       th.appendChild(text)
       row.appendChild(th)
     }
   }
   function generateTable (table: HTMLTableElement, data: ErrorLog): void {
     for (const error of data) {
-      const row = table.insertRow()
+      const row: HTMLTableRowElement = table.insertRow()
       for (const value of Object.values(error)) {
-        const cell = row.insertCell()
-        const text = document.createTextNode(value)
+        const cell: HTMLTableCellElement = row.insertCell()
+        const text: Text = document.createTextNode(value)
         cell.appendChild(text)
       }
     }
@@ -51,9 +69,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     }
   )
 
-  const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
-  const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
-  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
   Homey.get('username', async (err: string | null, username: string): Promise<void> => {
     if (err !== null) {
       Homey.alert(err)
@@ -97,9 +112,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     )
   })
 
-  const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
-  const alwaysOnElement: HTMLInputElement = document.getElementById('always-on') as HTMLInputElement
-  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
   applyElement.addEventListener('click', (): void => {
     const body: Settings = {}
     if (intervalElement.value !== '') {
@@ -149,17 +161,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     )
   })
 
-  const buildingElement: HTMLInputElement = document.getElementById('building') as HTMLInputElement
-  const holidayModeEnabledElement: HTMLInputElement = document.getElementById('enabled-holiday-mode') as HTMLInputElement
-  const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
-  const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
-  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
-  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
-  const frostProtectionEnabledElement: HTMLInputElement = document.getElementById('enabled-frost-protection') as HTMLInputElement
-  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
-  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
-  const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
-  const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
   function getBuildingHolidayModeSettings (): void {
     Homey.api(
       'GET',
