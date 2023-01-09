@@ -23,6 +23,7 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
+  buildings!: Record<Building<MELCloudDevice>['ID'], Building<MELCloudDevice>['Name']>
   loginTimeout!: NodeJS.Timeout
 
   async onInit (): Promise<void> {
@@ -30,6 +31,7 @@ export default class MELCloudApp extends App {
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] = this.homey.settings.get('ContextKey')
     await this.refreshLogin()
+    await this.updateBuildings()
   }
 
   async refreshLogin (): Promise<void> {
@@ -88,9 +90,12 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  async getBuilding (buildingId: Building<MELCloudDevice>['ID']): Promise<Building<MELCloudDevice> | null> {
+  async updateBuildings (): Promise<void> {
     const buildings: Array<Building<MELCloudDevice>> = await this.getBuildings()
-    return buildings.filter((building: Building<MELCloudDevice>): boolean => building.ID === buildingId)[0] ?? null
+    this.buildings = {}
+    for (const building of buildings) {
+      this.buildings[building.ID] = building.Name
+    }
   }
 
   async getBuildings (): Promise<Array<Building<MELCloudDevice>>> {
@@ -224,32 +229,32 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async getFrostProtectionSettings (building: Building<MELCloudDevice>): Promise<FrostProtectionData | null> {
+  async getFrostProtectionSettings (buildingId: Building<MELCloudDevice>['ID']): Promise<FrostProtectionData | null> {
     try {
-      const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === building.ID)
-      this.log(`Getting frost protection settings for building ${building.Name}...`)
+      const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
+      this.log(`Getting frost protection settings for building ${this.buildings[buildingId]}...`)
       const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDevices[0].id}`)
-      this.log(`Getting frost protection settings for building ${building.Name}:`, data)
+      this.log(`Getting frost protection settings for building ${this.buildings[buildingId]}:`, data)
       return data
     } catch (error: unknown) {
-      this.error(`Getting frost protection settings for building ${building.Name}:`, error instanceof Error ? error.message : error)
+      this.error(`Getting frost protection settings for building ${this.buildings[buildingId]}:`, error instanceof Error ? error.message : error)
     }
     return null
   }
 
-  async updateFrostProtectionSettings (building: Building<MELCloudDevice>, enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
+  async updateFrostProtectionSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
     try {
       const postData: FrostProtectionPostData = {
         Enabled: enabled,
         MinimumTemperature: minimumTemperature,
         MaximumTemperature: maximumTemperature,
         BuildingIds: [
-          building.ID
+          buildingId
         ]
       }
-      this.log(`Updating frost protection settings for building ${building.Name}...`, postData)
+      this.log(`Updating frost protection settings for building ${this.buildings[buildingId]}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/FrostProtection/Update', postData)
-      this.log(`Updating frost protection settings for building ${building.Name}:`, data)
+      this.log(`Updating frost protection settings for building ${this.buildings[buildingId]}:`, data)
       if (!data.Success && data.AttributeErrors !== null) {
         let errorMessage: string = ''
         for (const [error, messages] of Object.entries(data.AttributeErrors)) {
@@ -263,25 +268,25 @@ export default class MELCloudApp extends App {
       }
       return data.Success
     } catch (error: unknown) {
-      this.error(`Updating frost protection settings for building ${building.Name}:`, error instanceof Error ? error.message : error)
+      this.error(`Updating frost protection settings for building ${this.buildings[buildingId]}:`, error instanceof Error ? error.message : error)
     }
     return false
   }
 
-  async getHolidayModeSettings (building: Building<MELCloudDevice>): Promise<HolidayModeData | null> {
+  async getHolidayModeSettings (buildingId: Building<MELCloudDevice>['ID']): Promise<HolidayModeData | null> {
     try {
-      const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === building.ID)
-      this.log(`Getting holiday mode settings for building ${building.Name}...`)
+      const buildingDevices: MELCloudDevice[] = this.getDevices().filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
+      this.log(`Getting holiday mode settings for building ${this.buildings[buildingId]}...`)
       const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDevices[0].id}`)
-      this.log(`Getting holiday mode settings for building ${building.Name}:`, data)
+      this.log(`Getting holiday mode settings for building ${this.buildings[buildingId]}:`, data)
       return data
     } catch (error: unknown) {
-      this.error(`Getting holiday mode settings for building ${building.Name}:`, error instanceof Error ? error.message : error)
+      this.error(`Getting holiday mode settings for building ${this.buildings[buildingId]}:`, error instanceof Error ? error.message : error)
     }
     return null
   }
 
-  async updateHolidayModeSettings (building: Building<MELCloudDevice>, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
+  async updateHolidayModeSettings (buildingId: Building<MELCloudDevice>['ID'], enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
     try {
       if (enabled && (utcStartDate === null || utcEndDate === null)) {
         throw new Error('Date: Missing')
@@ -311,14 +316,14 @@ export default class MELCloudApp extends App {
         HMTimeZones: [
           {
             Buildings: [
-              building.ID
+              buildingId
             ]
           }
         ]
       }
-      this.log(`Updating holiday mode settings for building ${building.Name}...`, postData)
+      this.log(`Updating holiday mode settings for building ${this.buildings[buildingId]}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/HolidayMode/Update', postData)
-      this.log(`Updating holiday mode settings for building ${building.Name}:`, data)
+      this.log(`Updating holiday mode settings for building ${this.buildings[buildingId]}:`, data)
       if (!data.Success && data.AttributeErrors !== null) {
         let errorMessage: string = ''
         for (const [error, messages] of Object.entries(data.AttributeErrors)) {
@@ -332,7 +337,7 @@ export default class MELCloudApp extends App {
       }
       return data.Success
     } catch (error: unknown) {
-      this.error(`Updating holiday mode settings for building ${building.Name}:`, error instanceof Error ? error.message : error)
+      this.error(`Updating holiday mode settings for building ${this.buildings[buildingId]}:`, error instanceof Error ? error.message : error)
     }
     return false
   }

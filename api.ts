@@ -16,25 +16,22 @@ import {
 
 module.exports = {
   async getBuildings ({ homey }: { homey: Homey }): Promise<Array<Building<MELCloudDevice>>> {
-    return await (homey.app as MELCloudApp).getBuildings()
+    const buildings: Array<Building<MELCloudDevice>> = await (homey.app as MELCloudApp).getBuildings()
+    return buildings.map((building) => (
+      {
+        ...building,
+        HMStartDate: building.HMStartDate !== null ? DateTime.fromISO(building.HMStartDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null,
+        HMEndDate: building.HMEndDate !== null ? DateTime.fromISO(building.HMEndDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null
+      }
+    ))
   },
 
   async getFrostProtectionSettings ({ homey, params }: { homey: Homey, params: { buildingId: string } }): Promise<FrostProtectionData | null> {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const building: Building<MELCloudDevice> | null = await app.getBuilding(Number(params.buildingId))
-    if (building === null) {
-      return null
-    }
-    return await app.getFrostProtectionSettings(building)
+    return await (homey.app as MELCloudApp).getFrostProtectionSettings(Number(params.buildingId))
   },
 
   async getHolidayModeSettings ({ homey, params }: { homey: Homey, params: { buildingId: string } }): Promise<HolidayModeData | null> {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const building: Building<MELCloudDevice> | null = await app.getBuilding(Number(params.buildingId))
-    if (building === null) {
-      return null
-    }
-    const data: HolidayModeData | null = await app.getHolidayModeSettings(building)
+    const data: HolidayModeData | null = await (homey.app as MELCloudApp).getHolidayModeSettings(Number(params.buildingId))
     if (data === null) {
       return null
     }
@@ -75,14 +72,9 @@ module.exports = {
     params: { buildingId: string }
     body: { enabled: boolean, minimumTemperature: number, maximumTemperature: number }
   }): Promise<boolean> {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const building: Building<MELCloudDevice> | null = await app.getBuilding(Number(params.buildingId))
-    if (building === null) {
-      return false
-    }
     const { enabled, minimumTemperature, maximumTemperature } = body
-    return await app.updateFrostProtectionSettings(
-      building,
+    return await (homey.app as MELCloudApp).updateFrostProtectionSettings(
+      Number(params.buildingId),
       enabled,
       minimumTemperature,
       maximumTemperature
@@ -94,14 +86,9 @@ module.exports = {
     params: { buildingId: string }
     body: { enabled: boolean, startDate: string, endDate: string }
   }): Promise<boolean> {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const building: Building<MELCloudDevice> | null = await app.getBuilding(Number(params.buildingId))
-    if (building === null) {
-      return false
-    }
     const { enabled, startDate, endDate } = body
-    return await app.updateHolidayModeSettings(
-      building,
+    return await (homey.app as MELCloudApp).updateHolidayModeSettings(
+      Number(params.buildingId),
       enabled,
       startDate !== '' ? DateTime.fromISO(startDate).toUTC() : null,
       endDate !== '' ? DateTime.fromISO(endDate).toUTC() : null

@@ -266,9 +266,14 @@ export default class MELCloudDeviceMixin extends Device {
     this.log('Energy cost reports have been stopped')
   }
 
-  onDeleted (): void {
+  async onAdded (): Promise<void> {
+    await this.app.updateBuildings()
+  }
+
+  async onDeleted (): Promise<void> {
     this.clearSyncPlan()
     this.clearReportPlan()
+    await this.app.updateBuildings()
   }
 
   async addCapability (capability: string): Promise<void> {
