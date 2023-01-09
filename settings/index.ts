@@ -5,8 +5,8 @@ type ExtendedHomey = Homey & {
   api: (method: 'GET' | 'POST', path: string, body: any, callback: (error: string | null, data: any) => Promise<void>) => Homey.ManagerApi
   get: (name: string, callback: (error: string | null, value: string) => Promise<void>) => string
   set: (name: string, value: string, callback: (error: string | null) => Promise<void>) => Promise<void>
-  alert: (message: string) => void
-  confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => void
+  alert: (message: string) => Promise<void>
+  confirm: (message: string, icon: string | null, callback: (error: string | null, ok: boolean) => Promise<void>) => Promise<void>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,11 +70,11 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       null,
       async (error: string | null, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (data === null) {
-          Homey.alert('Holiday mode settings could not be retrieved')
+          await Homey.alert('Holiday mode settings could not be retrieved')
           return
         }
         holidayModeEnabledElement.value = String(data.HMEnabled)
@@ -101,11 +101,11 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       null,
       async (error: string | null, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (data === null) {
-          Homey.alert('Frost protection settings could not be retrieved')
+          await Homey.alert('Frost protection settings could not be retrieved')
           return
         }
         frostProtectionEnabledElement.value = String(data.FPEnabled)
@@ -121,7 +121,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     null,
     async (error: string | null, data: ErrorLog): Promise<void> => {
       if (error !== null) {
-        Homey.alert(error)
+        await Homey.alert(error)
         return
       }
       if (data === null || data.length === 0) {
@@ -135,14 +135,14 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
 
   Homey.get('username', async (err: string | null, username: string): Promise<void> => {
     if (err !== null) {
-      Homey.alert(err)
+      await Homey.alert(err)
       return
     }
     usernameElement.value = username
   })
   Homey.get('password', async (err: string | null, password: string): Promise<void> => {
     if (err !== null) {
-      Homey.alert(err)
+      await Homey.alert(err)
       return
     }
     passwordElement.value = password
@@ -154,24 +154,24 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       { username: usernameElement.value, password: passwordElement.value },
       async (error: string | null, login: boolean): Promise<void> => {
         if (error !== null) {
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (!login) {
-          Homey.alert('Authentication failed')
+          await Homey.alert('Authentication failed')
           return
         }
         await Homey.set('username', usernameElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            Homey.alert(err)
+            await Homey.alert(err)
           }
         })
         await Homey.set('password', passwordElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
-            Homey.alert(err)
+            await Homey.alert(err)
           }
         })
-        Homey.alert('Authentication succeeded')
+        await Homey.alert('Authentication succeeded')
       }
     )
   })
@@ -181,7 +181,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     if (intervalElement.value !== '') {
       const interval: number = Number(intervalElement.value)
       if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
-        Homey.alert('The frequency must be an integer between 1 and 60.')
+        void Homey.alert('The frequency must be an integer between 1 and 60.')
         return
       }
       body.interval = interval
@@ -190,19 +190,19 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       body.always_on = alwaysOnElement.value === 'true'
     }
     if (Object.keys(body).length === 0) {
-      Homey.alert('No change to apply')
+      void Homey.alert('No change to apply')
       return
     }
-    Homey.confirm(
+    void Homey.confirm(
       'Are you sure you want to override this setting on all devices?',
       null,
       async (error: string | null, ok: boolean): Promise<void> => {
         if (error !== null) {
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (!ok) {
-          Homey.alert('Change has not been applied')
+          await Homey.alert('Change has not been applied')
           return
         }
         Homey.api(
@@ -211,14 +211,14 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
           body,
           async (error: string | null, success: boolean): Promise<void> => {
             if (error !== null) {
-              Homey.alert(error)
+              await Homey.alert(error)
               return
             }
             if (!success) {
-              Homey.alert('No change to apply')
+              await Homey.alert('No change to apply')
               return
             }
-            Homey.alert('Change has been applied to all devices')
+            await Homey.alert('Change has been applied to all devices')
           }
         )
       }
@@ -231,7 +231,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     null,
     async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
       if (error !== null) {
-        Homey.alert(error)
+        await Homey.alert(error)
         return
       }
       for (const building of buildings) {
@@ -274,24 +274,24 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingHolidayModeSettings()
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (!success) {
           if (enabled && (holidayModeStartDateElement.value === '' || holidayModeEndDateElement.value === '')) {
-            Homey.alert('Start Date and/or End Date are missing')
+            await Homey.alert('Start Date and/or End Date are missing')
             return
           }
           if (holidayModeEndDateElement.value < holidayModeStartDateElement.value) {
-            Homey.alert('End Date should be greater than Start Date')
+            await Homey.alert('End Date should be greater than Start Date')
             return
           }
           getBuildingHolidayModeSettings()
-          Homey.alert('Update failed')
+          await Homey.alert('Update failed')
           return
         }
         getBuildingHolidayModeSettings()
-        Homey.alert('Update succeeded')
+        await Homey.alert('Update succeeded')
       }
     )
   })
@@ -311,15 +311,15 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingFrostProtectionSettings()
-          Homey.alert(error)
+          await Homey.alert(error)
           return
         }
         if (!success) {
           getBuildingFrostProtectionSettings()
-          Homey.alert('Update failed')
+          await Homey.alert('Update failed')
           return
         }
-        Homey.alert('Update succeeded')
+        await Homey.alert('Update succeeded')
       }
     )
   })
