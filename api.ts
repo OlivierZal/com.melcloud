@@ -36,7 +36,7 @@ module.exports = {
       return null
     }
     return {
-      HMEnabled: data.HMEnabled,
+      ...data,
       HMStartDate: data.HMStartDate !== null ? DateTime.fromISO(data.HMStartDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null,
       HMEndDate: data.HMEndDate !== null ? DateTime.fromISO(data.HMEndDate, { zone: 'utc' }).toLocal().toISO({ includeOffset: false }) : null
     }

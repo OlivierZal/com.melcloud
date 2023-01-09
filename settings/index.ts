@@ -60,8 +60,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     Homey.api(
       'GET',
       `/settings/holiday_mode/buildings/${buildingElement.value}`,
-      null,
-      async (error: string | null, data: HolidayModeData): Promise<void> => {
+      async (error: string | null, data: HolidayModeData | null): Promise<void> => {
         if (error !== null) {
           // @ts-expect-error
           await Homey.alert(error)
@@ -94,8 +93,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     Homey.api(
       'GET',
       `/settings/frost_protection/buildings/${buildingElement.value}`,
-      null,
-      async (error: string | null, data: FrostProtectionData): Promise<void> => {
+      async (error: string | null, data: FrostProtectionData | null): Promise<void> => {
         if (error !== null) {
           // @ts-expect-error
           await Homey.alert(error)
@@ -117,7 +115,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   Homey.api(
     'GET',
     '/report/error_log',
-    null,
     async (error: string | null, data: ErrorLog): Promise<void> => {
       if (error !== null) {
         // @ts-expect-error
@@ -250,7 +247,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   Homey.api(
     'GET',
     '/buildings',
-    null,
     async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
       if (error !== null) {
         // @ts-expect-error
