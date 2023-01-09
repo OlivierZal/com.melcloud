@@ -47,10 +47,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true) {
-          await this.setWarning('Setting "Always On" is activated')
-          await this.setWarning(null)
-        }
+        await this.setAlwaysOnWarning()
         this.diff.onoff = value as boolean
         break
       case 'onoff.forced_hot_water':

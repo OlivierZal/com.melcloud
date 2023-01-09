@@ -8,6 +8,11 @@ export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 export type Settings = Record<string, any>
 
+export interface UpdateSettingsData {
+  readonly Success: boolean
+  readonly AttributeErrors: Record<string, string[]> | null
+}
+
 interface SetCapabilitiesAta {
   onoff?: boolean
   operation_mode?: string
@@ -424,6 +429,54 @@ export interface LoginData {
   }
 }
 
+export interface FrostProtectionPostData {
+  readonly Enabled: boolean
+  readonly MinimumTemperature: number
+  readonly MaximumTemperature: number
+  readonly BuildingIds: [
+    Building<MELCloudDevice>['ID']
+  ]
+}
+
+export interface FrostProtectionData {
+  readonly FPEnabled: boolean
+  readonly FPMinTemperature: number
+  readonly FPMaxTemperature: number
+}
+
+export interface HolidayModePostData {
+  readonly Enabled: boolean
+  readonly StartDate: {
+    readonly Year: number
+    readonly Month: number
+    readonly Day: number
+    readonly Hour: number
+    readonly Minute: number
+    readonly Second: number
+  } | null
+  readonly EndDate: {
+    readonly Year: number
+    readonly Month: number
+    readonly Day: number
+    readonly Hour: number
+    readonly Minute: number
+    readonly Second: number
+  } | null
+  readonly HMTimeZones: [
+    {
+      readonly Buildings: [
+        Building<MELCloudDevice>['ID']
+      ]
+    }
+  ]
+}
+
+export interface HolidayModeData {
+  readonly HMEnabled: boolean
+  readonly HMStartDate: string | null
+  readonly HMEndDate: string | null
+}
+
 interface BaseListDevice {
   readonly BuildingID: number
   readonly DeviceID: number
@@ -434,26 +487,26 @@ export type ListDevice<T extends MELCloudDevice> = BaseListDevice & {
   readonly Device: ListDeviceData<T>
 }
 
-export interface Building<T extends MELCloudDevice> {
-  readonly ID: number
-  readonly Name: string
-  readonly Structure: {
+export interface Structure<T extends MELCloudDevice> {
+  readonly Devices: Array<ListDevice<T>>
+  readonly Areas: Array<{
+    readonly Devices: Array<ListDevice<T>>
+  }>
+  readonly Floors: Array<{
     readonly Devices: Array<ListDevice<T>>
     readonly Areas: Array<{
       readonly Devices: Array<ListDevice<T>>
     }>
-    readonly Floors: Array<{
-      readonly Devices: Array<ListDevice<T>>
-      readonly Areas: Array<{
-        readonly Devices: Array<ListDevice<T>>
-      }>
-    }>
-  }
+  }>
 }
 
-export type UpdateData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? Required<Readonly<SetDeviceData<MELCloudDeviceAtw>>>
-  : Required<Readonly<SetDeviceData<MELCloudDeviceAta>>>
+export type Building<T extends MELCloudDevice> = FrostProtectionData & HolidayModeData & {
+  readonly ID: number
+  readonly Name: string
+  readonly Structure: Structure<T>
+}
+
+export type UpdateData<T extends MELCloudDevice> = Required<Readonly<SetDeviceData<T>>>
 
 export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
   readonly DeviceID: T['id']
@@ -520,56 +573,3 @@ export interface Error {
 }
 
 export type ErrorLog = Error[]
-
-export interface FrostProtectionData {
-  readonly FPEnabled: boolean
-  readonly FPMinTemperature: number
-  readonly FPMaxTemperature: number
-}
-
-export interface FrostProtectionPostData {
-  readonly Enabled: boolean
-  readonly MinimumTemperature: number
-  readonly MaximumTemperature: number
-  readonly BuildingIds: [
-    Building<MELCloudDevice>['ID']
-  ]
-}
-
-export interface HolidayModeData {
-  readonly HMEnabled: boolean
-  readonly HMStartDate: string | null
-  readonly HMEndDate: string | null
-}
-
-export interface HolidayModePostData {
-  readonly Enabled: boolean
-  readonly StartDate: {
-    readonly Year: number
-    readonly Month: number
-    readonly Day: number
-    readonly Hour: number
-    readonly Minute: number
-    readonly Second: number
-  } | null
-  readonly EndDate: {
-    readonly Year: number
-    readonly Month: number
-    readonly Day: number
-    readonly Hour: number
-    readonly Minute: number
-    readonly Second: number
-  } | null
-  readonly HMTimeZones: [
-    {
-      readonly Buildings: [
-        Building<MELCloudDevice>['ID']
-      ]
-    }
-  ]
-}
-
-export interface UpdateSettingsData {
-  readonly Success: boolean
-  readonly AttributeErrors: Record<string, string[]> | null
-}

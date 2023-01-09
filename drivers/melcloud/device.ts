@@ -89,17 +89,11 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
-        if (this.getSetting('always_on') === true) {
-          await this.setWarning('Setting "Always On" is activated')
-          await this.setWarning(null)
-        }
+        await this.setAlwaysOnWarning()
         this.diff.onoff = value as boolean
         break
       case 'thermostat_mode':
-        if (this.getSetting('always_on') === true) {
-          await this.setWarning('Setting "Always On" is activated')
-          await this.setWarning(null)
-        }
+        await this.setAlwaysOnWarning()
         this.diff.onoff = value !== 'off'
         if (value !== 'off') {
           this.diff.operation_mode = value as string

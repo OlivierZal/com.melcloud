@@ -15,19 +15,20 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
 
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
-  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
   const alwaysOnElement: HTMLInputElement = document.getElementById('always-on') as HTMLInputElement
-  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
   const buildingElement: HTMLInputElement = document.getElementById('building') as HTMLInputElement
   const holidayModeEnabledElement: HTMLInputElement = document.getElementById('enabled-holiday-mode') as HTMLInputElement
   const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
   const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
-  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
-  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
   const frostProtectionEnabledElement: HTMLInputElement = document.getElementById('enabled-frost-protection') as HTMLInputElement
   const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
   const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
+
+  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
+  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
+  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
+  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
 
@@ -51,6 +52,69 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       }
     }
   }
+  function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
+    if (settings !== undefined) {
+      holidayModeEnabledElement.value = String(settings.HMEnabled)
+      if (settings.HMEnabled) {
+        holidayModeStartDateElement.value = settings.HMStartDate ?? ''
+        holidayModeEndDateElement.value = settings.HMEndDate ?? ''
+      } else {
+        holidayModeStartDateElement.value = ''
+        holidayModeEndDateElement.value = ''
+      }
+      return
+    }
+    Homey.api(
+      'GET',
+      `/settings/holiday_mode/buildings/${buildingElement.value}`,
+      null,
+      async (error: string | null, data: HolidayModeData): Promise<void> => {
+        if (error !== null) {
+          Homey.alert(error)
+          return
+        }
+        if (data === null) {
+          Homey.alert('Holiday mode settings could not be retrieved')
+          return
+        }
+        holidayModeEnabledElement.value = String(data.HMEnabled)
+        if (data.HMEnabled) {
+          holidayModeStartDateElement.value = data.HMStartDate ?? ''
+          holidayModeEndDateElement.value = data.HMEndDate ?? ''
+        } else {
+          holidayModeStartDateElement.value = ''
+          holidayModeEndDateElement.value = ''
+        }
+      }
+    )
+  }
+  function getBuildingFrostProtectionSettings (settings?: FrostProtectionData): void {
+    if (settings !== undefined) {
+      frostProtectionEnabledElement.value = String(settings.FPEnabled)
+      frostProtectionMinimumTemperatureElement.value = String(settings.FPMinTemperature)
+      frostProtectionMaximumTemperatureElement.value = String(settings.FPMaxTemperature)
+      return
+    }
+    Homey.api(
+      'GET',
+      `/settings/frost_protection/buildings/${buildingElement.value}`,
+      null,
+      async (error: string | null, data: FrostProtectionData): Promise<void> => {
+        if (error !== null) {
+          Homey.alert(error)
+          return
+        }
+        if (data === null) {
+          Homey.alert('Frost protection settings could not be retrieved')
+          return
+        }
+        frostProtectionEnabledElement.value = String(data.FPEnabled)
+        frostProtectionMinimumTemperatureElement.value = String(data.FPMinTemperature)
+        frostProtectionMaximumTemperatureElement.value = String(data.FPMaxTemperature)
+      }
+    )
+  }
+
   Homey.api(
     'GET',
     '/report/error_log',
@@ -161,51 +225,6 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
     )
   })
 
-  function getBuildingHolidayModeSettings (): void {
-    Homey.api(
-      'GET',
-      `/settings/holiday_mode/buildings/${buildingElement.value}`,
-      null,
-      async (error: string | null, data: HolidayModeData): Promise<void> => {
-        if (error !== null) {
-          Homey.alert(error)
-          return
-        }
-        if (data === null) {
-          Homey.alert('Holiday mode settings could not be retrieved')
-          return
-        }
-        holidayModeEnabledElement.value = String(data.HMEnabled)
-        if (data.HMEnabled) {
-          holidayModeStartDateElement.value = data.HMStartDate ?? ''
-          holidayModeEndDateElement.value = data.HMEndDate ?? ''
-        } else {
-          holidayModeStartDateElement.value = ''
-          holidayModeEndDateElement.value = ''
-        }
-      }
-    )
-  }
-  function getBuildingFrostProtectionSettings (): void {
-    Homey.api(
-      'GET',
-      `/settings/frost_protection/buildings/${buildingElement.value}`,
-      null,
-      async (error: string | null, data: FrostProtectionData): Promise<void> => {
-        if (error !== null) {
-          Homey.alert(error)
-          return
-        }
-        if (data === null) {
-          Homey.alert('Frost protection settings could not be retrieved')
-          return
-        }
-        frostProtectionEnabledElement.value = String(data.FPEnabled)
-        frostProtectionMinimumTemperatureElement.value = String(data.FPMinTemperature)
-        frostProtectionMaximumTemperatureElement.value = String(data.FPMaxTemperature)
-      }
-    )
-  }
   Homey.api(
     'GET',
     '/buildings',
@@ -223,8 +242,9 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
         option.appendChild(optionText)
         buildingElement.appendChild(option)
       }
-      getBuildingHolidayModeSettings()
-      getBuildingFrostProtectionSettings()
+      const { HMEnabled, HMStartDate, HMEndDate, FPEnabled, FPMinTemperature, FPMaxTemperature } = buildings[0]
+      getBuildingHolidayModeSettings({ HMEnabled, HMStartDate, HMEndDate })
+      getBuildingFrostProtectionSettings({ FPEnabled, FPMinTemperature, FPMaxTemperature })
     }
   )
   buildingElement.addEventListener('change', (): void => {

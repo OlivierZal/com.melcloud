@@ -98,6 +98,13 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
+  async setAlwaysOnWarning (): Promise<void> {
+    if (this.getSetting('always_on') === true) {
+      await this.setWarning('"Power Off" is disabled')
+      await this.setWarning(null)
+    }
+  }
+
   clearSyncPlan (): void {
     this.homey.clearTimeout(this.syncTimeout)
     this.log('Sync has been paused')
