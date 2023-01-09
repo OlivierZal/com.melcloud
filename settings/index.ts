@@ -194,7 +194,7 @@ async function onHomeyReady (Homey: ExtendedHomey): Promise<void> {
       return
     }
     void Homey.confirm(
-      'Are you sure you want to override this setting on all devices?',
+      'Are you sure you want to override these settings on all devices?',
       null,
       async (error: string | null, ok: boolean): Promise<void> => {
         if (error !== null) {
