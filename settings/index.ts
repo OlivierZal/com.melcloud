@@ -34,6 +34,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       row.appendChild(th)
     }
   }
+
   function generateTable (table: HTMLTableElement, data: ErrorLog): void {
     for (const error of data) {
       const row: HTMLTableRowElement = table.insertRow()
@@ -44,6 +45,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       }
     }
   }
+
   function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
     if (settings !== undefined) {
       holidayModeEnabledElement.value = String(settings.HMEnabled)
@@ -82,6 +84,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       }
     )
   }
+
   function getBuildingFrostProtectionSettings (settings?: FrostProtectionData): void {
     if (settings !== undefined) {
       frostProtectionEnabledElement.value = String(settings.FPEnabled)

@@ -242,8 +242,8 @@ export default class MELCloudApp extends App {
 
   async getFrostProtectionSettings (buildingId: number): Promise<FrostProtectionData | null> {
     try {
-      if (!(buildingId in this.buildings[buildingId]) || this.buildings[buildingId].deviceIds.length === 0) {
-        throw new Error('building does not exist or has no device')
+      if (!(buildingId in this.buildings) || this.buildings[buildingId].deviceIds.length === 0) {
+        throw new Error(`building ${buildingId} does not exist or has no device`)
       }
       this.log(`Getting frost protection settings for building ${this.buildings[buildingId].buildingName}...`)
       const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${this.buildings[buildingId].deviceIds[0]}`)
@@ -257,7 +257,7 @@ export default class MELCloudApp extends App {
 
   async updateFrostProtectionSettings (buildingId: number, enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
     try {
-      if (!(buildingId in this.buildings[buildingId])) {
+      if (!(buildingId in this.buildings)) {
         throw new Error('building does not exist')
       }
       const postData: FrostProtectionPostData = {
@@ -291,8 +291,8 @@ export default class MELCloudApp extends App {
 
   async getHolidayModeSettings (buildingId: number): Promise<HolidayModeData | null> {
     try {
-      if (!(buildingId in this.buildings[buildingId]) || this.buildings[buildingId].deviceIds.length === 0) {
-        throw new Error('building does not exist or has no device')
+      if (!(buildingId in this.buildings) || this.buildings[buildingId].deviceIds.length === 0) {
+        throw new Error(`building ${buildingId} does not exist or has no device`)
       }
       this.log(`Getting holiday mode settings for building ${this.buildings[buildingId].buildingName}...`)
       const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${this.buildings[buildingId].deviceIds[0]}`)
@@ -306,7 +306,7 @@ export default class MELCloudApp extends App {
 
   async updateHolidayModeSettings (buildingId: number, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
     try {
-      if (!(buildingId in this.buildings[buildingId])) {
+      if (!(buildingId in this.buildings)) {
         throw new Error('building does not exist')
       }
       if (enabled && (utcStartDate === null || utcEndDate === null)) {
