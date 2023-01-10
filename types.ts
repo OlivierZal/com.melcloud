@@ -553,7 +553,8 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
 
 export interface ErrorLogPostData {
   readonly DeviceIDs: Array<MELCloudDevice['id']>
-  readonly Duration: number
+  readonly FromDate: string
+  readonly ToDate: string
 }
 
 export interface ErrorData {

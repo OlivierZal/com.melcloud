@@ -121,19 +121,18 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.applySyncToDevice()
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value?: boolean | number | string): boolean | number {
-    const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
+  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: boolean | number | string = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true ? true : newValue as boolean
+        return this.getSetting('always_on') === true ? true : value as boolean
       case 'operation_mode':
-        return operationModeToDevice[newValue as string]
+        return operationModeToDevice[value as string]
       case 'vertical':
-        return verticalToDevice[newValue as string]
+        return verticalToDevice[value as string]
       case 'horizontal':
-        return horizontalToDevice[newValue as string]
+        return horizontalToDevice[value as string]
       default:
-        return newValue as number
+        return value as number
     }
   }
 

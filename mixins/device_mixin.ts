@@ -67,15 +67,14 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  getDashboardCapabilities (settings?: Settings): string[] {
-    const newSettings: Settings = settings ?? this.getSettings()
-    return Object.keys(newSettings).filter((setting: string): boolean => (
-      this.driver.manifest.capabilities.includes(setting) === true && newSettings[setting] === true
+  getDashboardCapabilities (settings: Settings = this.getSettings()): string[] {
+    return Object.keys(settings).filter((setting: string): boolean => (
+      this.driver.manifest.capabilities.includes(setting) === true && settings[setting] === true
     ))
   }
 
-  async handleCapabilities (dashboardCapabilities?: string[]): Promise<void> {
-    const requiredCapabilities = [...this.requiredCapabilities, ...dashboardCapabilities ?? this.getDashboardCapabilities()]
+  async handleCapabilities (dashboardCapabilities: string[] = this.getDashboardCapabilities()): Promise<void> {
+    const requiredCapabilities = [...this.requiredCapabilities, ...dashboardCapabilities]
     for (const capability of requiredCapabilities) {
       await this.addCapability(capability)
     }
@@ -94,7 +93,10 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async onCapability (_capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, _value: boolean | number | string): Promise<void> {
+  async onCapability (
+    _capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>,
+    _value: boolean | number | string
+  ): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -140,7 +142,10 @@ export default class MELCloudDeviceMixin extends Device {
     return updateData
   }
 
-  convertToDevice (_capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>, _value?: boolean | number | string): boolean | number {
+  convertToDevice (
+    _capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
+    _value: boolean | number | string = this.getCapabilityValue(_capability)
+  ): boolean | number {
     throw new Error('Method not implemented.')
   }
 

@@ -5,15 +5,19 @@
     <script src="index.js" async></script>
   </head>
   <body>
+
     <header class="homey-header">
-      <h1 class="homey-title" data-i18n="settings.title"></h1>
+      <h1 class="homey-title" data-i18n="settings.title" />
     </header>
+
     <fieldset class="homey-form-fieldset">
     <legend class="homey-form-legend">Error Log</legend>
       <div class="homey-form-group">
+        <label class="homey-form-label" id="total_period"></label>
         <table></table>
       </div>
     </fieldset>
+    <button id="show" class="homey-button-secondary-full">View 10 more days</button>
 
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Credentials</legend>
@@ -26,7 +30,7 @@
         <input class="homey-form-input" id="password" type="password" value="" />
       </div>
     </fieldset>
-    <button id="save" class="homey-button-primary-full">Authenticate</button>
+    <button id="authenticate" class="homey-button-primary-full">Authenticate</button>
 
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Device Settings</legend>
@@ -49,7 +53,7 @@
       <legend class="homey-form-legend">Building Settings</legend>
       <div class="homey-form-group">
         <label class="homey-form-label" for="building">Choose Building…</label>
-        <select class="homey-form-select" name="building" id="building"></select>
+        <select class="homey-form-select" name="building" id="building" />
       </div>
     </fieldset>
 
@@ -94,5 +98,6 @@
     </fieldset>
     <button id="refresh-frost-protection" class="homey-button-secondary-full">Refresh</button>
     <button id="update-frost-protection" class="homey-button-primary-full">Update</button>
+
   </body>
 </html>

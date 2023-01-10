@@ -217,11 +217,14 @@ export default class MELCloudApp extends App {
     return true
   }
 
-  async getUnitErrorLog (): Promise<ErrorLogData | null> {
+  async getUnitErrorLog (offset: number = 0, period: number = 9): Promise<ErrorLogData | null> {
     try {
+      const today: DateTime = DateTime.now()
+      const days: number = offset + period * offset
       const postData: ErrorLogPostData = {
         DeviceIDs: this.getDeviceIds(),
-        Duration: Math.round(Math.abs(Number(DateTime.local(1970).diffNow('days').toObject().days)))
+        FromDate: today.minus({ days: days + period }).toISODate(),
+        ToDate: today.minus({ days }).toISODate()
       }
       this.log('Reporting error log...', postData)
       const { data } = await axios.post<ErrorLogData>('/Report/GetUnitErrorLog2', postData)
@@ -241,11 +244,11 @@ export default class MELCloudApp extends App {
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
 
     try {
+      this.log(`Getting frost protection settings for building ${buildingName}...`)
       const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
       if (buildingDeviceIds.length === 0) {
         throw new Error(`building ${buildingId} has no device`)
       }
-      this.log(`Getting frost protection settings for building ${buildingName}...`)
       const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
       this.log(`Getting frost protection settings for building ${buildingName}:`, data)
       return data
@@ -255,7 +258,12 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateFrostProtectionSettings (buildingId: number, enabled: boolean, minimumTemperature: number, maximumTemperature: number): Promise<boolean> {
+  async updateFrostProtectionSettings (
+    buildingId: number,
+    enabled: boolean,
+    minimumTemperature: number,
+    maximumTemperature: number
+  ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
       this.error(`Building ${buildingId} does not exist`)
       return false
@@ -300,11 +308,11 @@ export default class MELCloudApp extends App {
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
 
     try {
+      this.log(`Getting holiday mode settings for building ${buildingName}...`)
       const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
       if (buildingDeviceIds.length === 0) {
         throw new Error(`building ${buildingId} has no device`)
       }
-      this.log(`Getting holiday mode settings for building ${buildingName}...`)
       const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
       this.log(`Getting holiday mode settings for building ${buildingName}:`, data)
       return data
@@ -314,7 +322,12 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateHolidayModeSettings (buildingId: number, enabled: boolean, utcStartDate: DateTime | null, utcEndDate: DateTime | null): Promise<boolean> {
+  async updateHolidayModeSettings (
+    buildingId: number,
+    enabled: boolean,
+    utcStartDate: DateTime | null,
+    utcEndDate: DateTime | null
+  ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
       this.error(`Building ${buildingId} does not exist`)
       return false

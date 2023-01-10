@@ -89,18 +89,17 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.applySyncToDevice()
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value?: boolean | number | string): boolean | number {
-    const newValue: boolean | number | string = value ?? this.getCapabilityValue(capability)
+  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value: boolean | number | string = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true ? true : newValue as boolean
+        return this.getSetting('always_on') === true ? true : value as boolean
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        return Number(newValue)
+        return Number(value)
       default:
-        return newValue as boolean | number
+        return value as boolean | number
     }
   }
 

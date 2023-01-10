@@ -5,6 +5,16 @@ import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevic
 async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
+  let errorCount: number = 0
+  let hasLoadedBuildings: boolean = false
+  let hasLoadedTable: boolean = false
+  let hasLoadedTableHead: boolean = false
+  let offset: number = 0
+
+  const period: number = 9
+
+  const totalPeriodElement: HTMLElement = document.getElementById('total_period') as HTMLElement
+
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
@@ -17,12 +27,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
   const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
 
-  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
+  const showElement: HTMLButtonElement = document.getElementById('show') as HTMLButtonElement
+  const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
   const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
   const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
   const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
+
+  const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
 
   function generateTableHead (table: HTMLTableElement, keys: string[]): void {
     const thead: HTMLTableSectionElement = table.createTHead()
@@ -49,13 +62,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
     if (settings !== undefined) {
       holidayModeEnabledElement.value = String(settings.HMEnabled)
-      if (settings.HMEnabled) {
-        holidayModeStartDateElement.value = settings.HMStartDate ?? ''
-        holidayModeEndDateElement.value = settings.HMEndDate ?? ''
-      } else {
-        holidayModeStartDateElement.value = ''
-        holidayModeEndDateElement.value = ''
-      }
+      holidayModeStartDateElement.value = settings.HMEnabled ? (settings.HMStartDate ?? '') : ''
+      holidayModeEndDateElement.value = settings.HMEnabled ? (settings.HMEndDate ?? '') : ''
       return
     }
     // @ts-expect-error
@@ -74,13 +82,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           return
         }
         holidayModeEnabledElement.value = String(data.HMEnabled)
-        if (data.HMEnabled) {
-          holidayModeStartDateElement.value = data.HMStartDate ?? ''
-          holidayModeEndDateElement.value = data.HMEndDate ?? ''
-        } else {
-          holidayModeStartDateElement.value = ''
-          holidayModeEndDateElement.value = ''
-        }
+        holidayModeStartDateElement.value = data.HMEnabled ? (data.HMStartDate ?? '') : ''
+        holidayModeEndDateElement.value = data.HMEnabled ? (data.HMEndDate ?? '') : ''
       }
     )
   }
@@ -114,24 +117,81 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  // @ts-expect-error
-  Homey.api(
-    'GET',
-    '/report/error_log',
-    async (error: string | null, data: ErrorLog): Promise<void> => {
-      if (error !== null) {
-        // @ts-expect-error
-        await Homey.alert(error)
-        return
+  function generateErrorLog (): void {
+    // @ts-expect-error
+    Homey.api(
+      'GET',
+      `/report/error_log?offset=${offset}&period=${period}`,
+      async (error: string | null, data: ErrorLog): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error
+          await Homey.alert(error)
+          return
+        }
+        if (data === null) {
+          // @ts-expect-error
+          await Homey.alert('Error log could not be retrieved')
+          return
+        }
+        if (!hasLoadedTable) {
+          hasLoadedTable = true
+        }
+        offset++
+        errorCount += data.length
+        const errorLabel: string = [0, 1].includes(errorCount) ? 'error' : 'errors'
+        totalPeriodElement.innerText = `In the last ${offset * (period + 1)} days (${errorCount} ${errorLabel})`
+        if (data.length === 0) {
+          return
+        }
+        if (!hasLoadedTableHead) {
+          generateTableHead(table, Object.keys(data[0]))
+          hasLoadedTableHead = true
+        }
+        generateTable(table, data)
       }
-      if (data === null || data.length === 0) {
-        return
+    )
+  }
+
+  function getBuildings (): void {
+    // @ts-expect-error
+    Homey.api(
+      'GET',
+      '/buildings',
+      async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error
+          await Homey.alert(error)
+          return
+        }
+        for (const building of buildings) {
+          const { ID, Name } = building
+          const option: HTMLOptionElement = document.createElement('option')
+          option.setAttribute('value', String(ID))
+          const optionText: Text = document.createTextNode(Name)
+          option.appendChild(optionText)
+          buildingElement.appendChild(option)
+        }
+        if (buildings.length === 0) {
+          return
+        }
+        if (!hasLoadedBuildings) {
+          hasLoadedBuildings = true
+        }
+        const { HMEnabled, HMStartDate, HMEndDate, FPEnabled, FPMinTemperature, FPMaxTemperature } = buildings[0]
+        getBuildingHolidayModeSettings({ HMEnabled, HMStartDate, HMEndDate })
+        getBuildingFrostProtectionSettings({ FPEnabled, FPMinTemperature, FPMaxTemperature })
       }
-      const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
-      generateTableHead(table, Object.keys(data[0]))
-      generateTable(table, data)
+    )
+  }
+
+  function load (): void {
+    if (!hasLoadedTable) {
+      generateErrorLog()
     }
-  )
+    if (!hasLoadedBuildings) {
+      getBuildings()
+    }
+  }
 
   // @ts-expect-error
   Homey.get('username', async (err: string | null, username: string): Promise<void> => {
@@ -151,7 +211,16 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
     passwordElement.value = password
   })
-  saveElement.addEventListener('click', (): void => {
+
+  load()
+
+  totalPeriodElement.innerText = 'You must first authenticate yourself'
+
+  showElement.addEventListener('click', (): void => {
+    generateErrorLog()
+  })
+
+  authenticateElement.addEventListener('click', (): void => {
     // @ts-expect-error
     Homey.api(
       'POST',
@@ -168,6 +237,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           await Homey.alert('Authentication failed')
           return
         }
+        load()
         // @ts-expect-error
         await Homey.set('username', usernameElement.value, async (err: string | null): Promise<void> => {
           if (err !== null) {
@@ -246,29 +316,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   })
 
-  // @ts-expect-error
-  Homey.api(
-    'GET',
-    '/buildings',
-    async (error: string | null, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
-      if (error !== null) {
-        // @ts-expect-error
-        await Homey.alert(error)
-        return
-      }
-      for (const building of buildings) {
-        const { ID, Name } = building
-        const option = document.createElement('option')
-        option.setAttribute('value', String(ID))
-        const optionText = document.createTextNode(Name)
-        option.appendChild(optionText)
-        buildingElement.appendChild(option)
-      }
-      const { HMEnabled, HMStartDate, HMEndDate, FPEnabled, FPMinTemperature, FPMaxTemperature } = buildings[0]
-      getBuildingHolidayModeSettings({ HMEnabled, HMStartDate, HMEndDate })
-      getBuildingFrostProtectionSettings({ FPEnabled, FPMinTemperature, FPMaxTemperature })
-    }
-  )
   buildingElement.addEventListener('change', (): void => {
     getBuildingHolidayModeSettings()
     getBuildingFrostProtectionSettings()
