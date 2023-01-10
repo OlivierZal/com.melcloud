@@ -266,6 +266,11 @@ export default class MELCloudDeviceMixin extends Device {
     this.log('Energy cost reports have been stopped')
   }
 
+  async onDeleted (): Promise<void> {
+    this.clearSyncPlan()
+    this.clearReportPlan()
+  }
+
   async addCapability (capability: string): Promise<void> {
     if (this.driver.manifest.capabilities.includes(capability) === true && !this.hasCapability(capability)) {
       await super.addCapability(capability)
