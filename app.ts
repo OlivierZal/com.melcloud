@@ -30,8 +30,9 @@ export default class MELCloudApp extends App {
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] = this.homey.settings.get('ContextKey')
+
+    this.buildings = {}
     await this.refreshLogin()
-    await this.updateBuildings()
   }
 
   async refreshLogin (): Promise<void> {
@@ -90,14 +91,6 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  async updateBuildings (): Promise<void> {
-    const buildings: Array<Building<MELCloudDevice>> = await this.getBuildings()
-    this.buildings = {}
-    for (const building of buildings) {
-      this.buildings[building.ID] = building.Name
-    }
-  }
-
   getDeviceIds (buildingId?: number): Array<MELCloudDevice['id']> {
     const devices: MELCloudDevice[] = buildingId !== undefined ? this.getDevices(buildingId) : this.getDevices()
     return devices.map((device: MELCloudDevice): MELCloudDevice['id'] => device.id)
@@ -132,7 +125,7 @@ export default class MELCloudApp extends App {
     const buildings: Array<Building<T>> = await this.getBuildings()
     const devices: Array<ListDevice<T>> = []
     for (const building of buildings) {
-      if (building.ID in this.buildings && this.buildings[building.ID] !== building.Name) {
+      if (!(building.ID in this.buildings) || this.buildings[building.ID] !== building.Name) {
         this.buildings[building.ID] = building.Name
       }
       for (const device of building.Structure.Devices) {
