@@ -19,14 +19,11 @@ import {
 
 const format: string = 'dd LLL yy HH:mm'
 
-function fromUTCtoLocal (utcDate: string | null, format?: string, yesterday: boolean = false): string {
+function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   if (utcDate === null) {
     return ''
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, { zone: 'utc' }).toLocal()
-  if (yesterday) {
-    localDate.minus({ days: 1 })
-  }
   return format !== undefined ? localDate.toFormat(format) : localDate.toISO({ includeOffset: false })
 }
 
@@ -88,8 +85,8 @@ module.exports = {
           const date2 = DateTime.fromFormat(error2.Date, format)
           return Number(date2.diff(date1))
         }),
-      FromDateHuman: fromUTCtoLocal(data.FromDate, 'dd LLL yy'),
-      FromDateMinusOneDay: fromUTCtoLocal(data.FromDate, 'yyyy-MM-dd', true)
+      FromDateHuman: DateTime.fromISO(data.FromDate).toFormat('dd LLL yy'),
+      FromDateMinusOneDay: DateTime.fromISO(data.FromDate).minus({ days: 1 }).toISODate()
     }
   },
 

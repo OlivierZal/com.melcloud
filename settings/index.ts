@@ -68,7 +68,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
       // @ts-expect-error
-      await Homey.alert('Date: Choose an earlier date.')
+      await Homey.alert('Choose an earlier date.')
     }
     // @ts-expect-error
     Homey.api(
