@@ -89,7 +89,7 @@ module.exports = {
           return Number(date2.diff(date1))
         }),
       FromDateHuman: fromUTCtoLocal(data.FromDate, 'dd LLL yy'),
-      FromDateMinusOneDay: fromUTCtoLocal(data.FromDate, 'yyyy-MM-dd')
+      FromDateMinusOneDay: fromUTCtoLocal(data.FromDate, 'yyyy-MM-dd', true)
     }
   },
 

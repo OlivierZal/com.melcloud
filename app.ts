@@ -297,8 +297,8 @@ export default class MELCloudApp extends App {
     if (Enabled && (StartDate === null || EndDate === null)) {
       throw new Error('Start Date and/or End Date are missing.')
     }
-    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate) : null
-    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate) : null
+    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate, { zone: 'utc' }) : null
+    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate, { zone: 'utc' }) : null
     const postData: HolidayModePostData = {
       Enabled,
       StartDate: utcStartDate !== null
