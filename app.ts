@@ -22,8 +22,8 @@ import {
   PostData,
   ReportData,
   ReportPostData,
-  UpdateData,
-  UpdateSettingsData
+  SuccessData,
+  UpdateData
 } from './types'
 
 export default class MELCloudApp extends App {
@@ -221,165 +221,128 @@ export default class MELCloudApp extends App {
     return true
   }
 
-  async getUnitErrorLog (query: ErrorLogQuery): Promise<ErrorLogData | null> {
+  async getUnitErrorLog (query: ErrorLogQuery): Promise<ErrorLogData> {
     const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
     const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
     const offset: number = from === null ? (query.offset ?? 0) : 0
     const limit: number = from === null ? (query.limit ?? 29) : 0
-    try {
-      const days: number = offset + limit * offset
-      const postData: ErrorLogPostData = {
-        DeviceIDs: this.getDeviceIds(),
-        FromDate: (from ?? to.minus({ days: days + limit })).toISODate(),
-        ToDate: to.minus({ days }).toISODate()
-      }
-      this.log('Reporting error log...', postData)
-      const { data } = await axios.post<ErrorData[]>('/Report/GetUnitErrorLog2', postData)
-      this.log('Reporting error log:', data)
-      return {
-        Errors: data,
-        FromDate: postData.FromDate
-      }
-    } catch (error: unknown) {
-      this.error('Reporting error log:', error instanceof Error ? error.message : error)
+    const days: number = offset + limit * offset
+    const postData: ErrorLogPostData = {
+      DeviceIDs: this.getDeviceIds(),
+      FromDate: (from ?? to.minus({ days: days + limit })).toISODate(),
+      ToDate: to.minus({ days }).toISODate()
     }
-    return null
+    this.log('Reporting error log...', postData)
+    const { data } = await axios.post<ErrorData[] | SuccessData>('/Report/GetUnitErrorLog2', postData)
+    this.log('Reporting error log:', data)
+    this.handleFailure(data as SuccessData)
+    return {
+      Errors: data as ErrorData[],
+      FromDate: postData.FromDate
+    }
   }
 
-  async getFrostProtectionSettings (buildingId: number): Promise<FrostProtectionData | null> {
+  async getFrostProtectionSettings (buildingId: number): Promise<FrostProtectionData> {
     if (!(buildingId in this.buildings)) {
-      this.error(`Building ${buildingId} does not exist`)
-      return null
+      throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-
-    try {
-      this.log(`Getting frost protection settings for building ${buildingName}...`)
-      const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
-      if (buildingDeviceIds.length === 0) {
-        throw new Error(`building ${buildingId} has no device`)
-      }
-      const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
-      this.log(`Getting frost protection settings for building ${buildingName}:`, data)
-      return data
-    } catch (error: unknown) {
-      this.error(`Getting frost protection settings for building ${buildingName}:`, error instanceof Error ? error.message : error)
+    this.log(`Getting frost protection settings for building ${buildingName}...`)
+    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
+    if (buildingDeviceIds.length === 0) {
+      throw new Error(`building ${buildingId} has no device.`)
     }
-    return null
+    const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
+    this.log(`Getting frost protection settings for building ${buildingName}:`, data)
+    return data
   }
 
   async updateFrostProtectionSettings (buildingId: number, settings: FrostProtectionSettings): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
-      this.error(`Building ${buildingId} does not exist`)
-      return false
+      throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-
-    try {
-      const postData: FrostProtectionPostData = {
-        ...settings,
-        BuildingIds: [buildingId]
-      }
-      this.log(`Updating frost protection settings for building ${buildingName}...`, postData)
-      const { data } = await axios.post<UpdateSettingsData>('/FrostProtection/Update', postData)
-      this.log(`Updating frost protection settings for building ${buildingName}:`, data)
-      if (!data.Success && data.AttributeErrors !== null) {
-        let errorMessage: string = ''
-        for (const [error, messages] of Object.entries(data.AttributeErrors)) {
-          errorMessage += `${error}: `
-          for (const message of messages) {
-            errorMessage += `${message}, `
-          }
-          errorMessage = `${errorMessage.slice(0, -2)}; `
-        }
-        throw new Error(errorMessage.slice(0, -2))
-      }
-      return data.Success
-    } catch (error: unknown) {
-      this.error(`Updating frost protection settings for building ${buildingName}:`, error instanceof Error ? error.message : error)
+    const postData: FrostProtectionPostData = {
+      ...settings,
+      BuildingIds: [buildingId]
     }
-    return false
+    this.log(`Updating frost protection settings for building ${buildingName}...`, postData)
+    const { data } = await axios.post<SuccessData>('/FrostProtection/Update', postData)
+    this.log(`Updating frost protection settings for building ${buildingName}:`, data)
+    this.handleFailure(data)
+    return data.Success
   }
 
-  async getHolidayModeSettings (buildingId: number): Promise<HolidayModeData | null> {
+  async getHolidayModeSettings (buildingId: number): Promise<HolidayModeData> {
     if (!(buildingId in this.buildings)) {
-      this.error(`Building ${buildingId} does not exist`)
-      return null
+      throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-
-    try {
-      this.log(`Getting holiday mode settings for building ${buildingName}...`)
-      const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
-      if (buildingDeviceIds.length === 0) {
-        throw new Error(`building ${buildingId} has no device`)
-      }
-      const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
-      this.log(`Getting holiday mode settings for building ${buildingName}:`, data)
-      return data
-    } catch (error: unknown) {
-      this.error(`Getting holiday mode settings for building ${buildingName}:`, error instanceof Error ? error.message : error)
+    this.log(`Getting holiday mode settings for building ${buildingName}...`)
+    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
+    if (buildingDeviceIds.length === 0) {
+      throw new Error(`building ${buildingId} has no device.`)
     }
-    return null
+    const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
+    this.log(`Getting holiday mode settings for building ${buildingName}:`, data)
+    return data
   }
 
   async updateHolidayModeSettings (buildingId: number, settings: HolidayModeSettings): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
-      this.error(`Building ${buildingId} does not exist`)
-      return false
+      throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-
-    try {
-      const { Enabled, StartDate, EndDate } = settings
-      if (Enabled && (StartDate === null || EndDate === null)) {
-        throw new Error('Date: Missing')
-      }
-      const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate) : null
-      const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate) : null
-      const postData: HolidayModePostData = {
-        Enabled,
-        StartDate: utcStartDate !== null
-          ? {
-              Year: utcStartDate.year,
-              Month: utcStartDate.month,
-              Day: utcStartDate.day,
-              Hour: utcStartDate.hour,
-              Minute: utcStartDate.minute,
-              Second: utcStartDate.second
-            }
-          : null,
-        EndDate: utcEndDate !== null
-          ? {
-              Year: utcEndDate.year,
-              Month: utcEndDate.month,
-              Day: utcEndDate.day,
-              Hour: utcEndDate.hour,
-              Minute: utcEndDate.minute,
-              Second: utcEndDate.second
-            }
-          : null,
-        HMTimeZones: [{ Buildings: [buildingId] }]
-      }
-      this.log(`Updating holiday mode settings for building ${buildingName}...`, postData)
-      const { data } = await axios.post<UpdateSettingsData>('/HolidayMode/Update', postData)
-      this.log(`Updating holiday mode settings for building ${buildingName}:`, data)
-      if (!data.Success && data.AttributeErrors !== null) {
-        let errorMessage: string = ''
-        for (const [error, messages] of Object.entries(data.AttributeErrors)) {
-          errorMessage += `${error}: `
-          for (const message of messages) {
-            errorMessage += `${message}, `
-          }
-          errorMessage = `${errorMessage.slice(0, -2)}; `
-        }
-        throw new Error(errorMessage.slice(0, -2))
-      }
-      return data.Success
-    } catch (error: unknown) {
-      this.error(`Updating holiday mode settings for building ${buildingName}:`, error instanceof Error ? error.message : error)
+    const { Enabled, StartDate, EndDate } = settings
+    if (Enabled && (StartDate === null || EndDate === null)) {
+      throw new Error('Start Date and/or End Date are missing.')
     }
-    return false
+    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate) : null
+    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate) : null
+    const postData: HolidayModePostData = {
+      Enabled,
+      StartDate: utcStartDate !== null
+        ? {
+            Year: utcStartDate.year,
+            Month: utcStartDate.month,
+            Day: utcStartDate.day,
+            Hour: utcStartDate.hour,
+            Minute: utcStartDate.minute,
+            Second: utcStartDate.second
+          }
+        : null,
+      EndDate: utcEndDate !== null
+        ? {
+            Year: utcEndDate.year,
+            Month: utcEndDate.month,
+            Day: utcEndDate.day,
+            Hour: utcEndDate.hour,
+            Minute: utcEndDate.minute,
+            Second: utcEndDate.second
+          }
+        : null,
+      HMTimeZones: [{ Buildings: [buildingId] }]
+    }
+    this.log(`Updating holiday mode settings for building ${buildingName}...`, postData)
+    const { data } = await axios.post<SuccessData>('/HolidayMode/Update', postData)
+    this.log(`Updating holiday mode settings for building ${buildingName}:`, data)
+    this.handleFailure(data)
+    return data.Success
+  }
+
+  handleFailure (data: SuccessData): void {
+    if (data.Success === undefined || data.Success || data.AttributeErrors === null) {
+      return
+    }
+    let errorMessage: string = ''
+    for (const [error, messages] of Object.entries(data.AttributeErrors)) {
+      errorMessage += `${error}: `
+      for (const message of messages) {
+        errorMessage += `${message} `
+      }
+      errorMessage = `${errorMessage.slice(0, -1)}.\n`
+    }
+    throw new Error(errorMessage.slice(0, -1))
   }
 
   setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {

@@ -102,7 +102,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async setAlwaysOnWarning (): Promise<void> {
     if (this.getSetting('always_on') === true) {
-      await this.setWarning('"Power Off" is disabled')
+      await this.setWarning('"Power Off" is disabled.')
       await this.setWarning(null)
     }
   }
@@ -235,7 +235,7 @@ export default class MELCloudDeviceMixin extends Device {
   async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
     if (changedKeys.some((setting: string): boolean => !['always_on', 'interval'].includes(setting))) {
       await this.handleDashboardCapabilities(newSettings, changedKeys)
-      await this.setWarning('Exit device and return to refresh your dashboard')
+      await this.setWarning('Exit device and return to refresh your dashboard.')
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {

@@ -8,7 +8,7 @@ export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 export type Settings = Record<string, any>
 
-export interface UpdateSettingsData {
+export interface SuccessData {
   readonly Success: boolean
   readonly AttributeErrors: Record<string, string[]> | null
 }

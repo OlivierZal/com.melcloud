@@ -45,19 +45,16 @@ module.exports = {
   async getFrostProtectionSettings ({ homey, params }: {
     homey: Homey
     params: { buildingId: string }
-  }): Promise<FrostProtectionData | null> {
+  }): Promise<FrostProtectionData> {
     return await (homey.app as MELCloudApp).getFrostProtectionSettings(Number(params.buildingId))
   },
 
   async getHolidayModeSettings ({ homey, params }: {
     homey: Homey
     params: { buildingId: string }
-  }): Promise<HolidayModeData | null> {
+  }): Promise<HolidayModeData> {
     const app = homey.app as MELCloudApp
     const data: HolidayModeData | null = await app.getHolidayModeSettings(Number(params.buildingId))
-    if (data === null) {
-      return null
-    }
     return {
       ...data,
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
@@ -65,16 +62,13 @@ module.exports = {
     }
   },
 
-  async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog | null> {
+  async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const data: ErrorLogData | null = await app.getUnitErrorLog({
       ...query,
       offset: query.offset !== undefined ? Number(query.offset) : undefined,
       limit: query.limit !== undefined ? Number(query.limit) : undefined
     })
-    if (data === null) {
-      return null
-    }
     return {
       Errors: data.Errors
         .map((errorData: ErrorData): Error => {
@@ -94,8 +88,8 @@ module.exports = {
           const date2 = DateTime.fromFormat(error2.Date, format)
           return Number(date2.diff(date1))
         }),
-      FromDateHuman: fromUTCtoLocal(data.FromDate, format),
-      FromDateMinusOneDay: fromUTCtoLocal(data.FromDate, undefined, true)
+      FromDateHuman: fromUTCtoLocal(data.FromDate, 'dd LLL yy'),
+      FromDateMinusOneDay: fromUTCtoLocal(data.FromDate, 'yyyy-MM-dd')
     }
   },
 
