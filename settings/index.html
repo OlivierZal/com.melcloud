@@ -11,15 +11,6 @@
     </header>
 
     <fieldset class="homey-form-fieldset">
-    <legend class="homey-form-legend">Error Log</legend>
-      <div class="homey-form-group">
-        <label class="homey-form-label" id="total_period"></label>
-        <table></table>
-      </div>
-    </fieldset>
-    <button id="show" class="homey-button-secondary-full">View 10 more days</button>
-
-    <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Credentials</legend>
       <div class="homey-form-group">
         <label class="homey-form-label" for="username">Username</label>
@@ -31,6 +22,17 @@
       </div>
     </fieldset>
     <button id="authenticate" class="homey-button-primary-full">Authenticate</button>
+
+    <fieldset class="homey-form-fieldset">
+    <legend class="homey-form-legend">Error Log</legend>
+      <div class="homey-form-group">
+        <label class="homey-form-label" id="period"></label>
+        <table></table>
+      </div>
+    </fieldset>
+    <button id="view" class="homey-button-secondary-full">View from
+      <input id="from" type="date" value="" />
+    </button>
 
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Device Settings</legend>
@@ -60,7 +62,7 @@
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Holiday Mode</legend>
       <div class="homey-form-group">
-        <label class="homey-form-label" for="building">Enabled</label>
+        <label class="homey-form-label" for="enabled-holiday-mode">Enabled</label>
         <select class="homey-form-select" name="enabled-holiday-mode" id="enabled-holiday-mode">
           <option value="false">Off</option>
           <option value="true">On</option>
@@ -81,7 +83,7 @@
     <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Frost Protection</legend>
       <div class="homey-form-group">
-        <label class="homey-form-label" for="building">Enabled</label>
+        <label class="homey-form-label" for="enabled-frost-protection">Enabled</label>
         <select class="homey-form-select" name="enabled-frost-protection" id="enabled-frost-protection">
           <option value="false">Off</option>
           <option value="true">On</option>

@@ -5,37 +5,39 @@ import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevic
 async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  let errorCount: number = 0
-  let hasLoadedBuildings: boolean = false
-  let hasLoadedTable: boolean = false
-  let hasLoadedTableHead: boolean = false
+  let hasAuthenticated: boolean = true
+  let to: string = ''
   let offset: number = 0
+  const limit: number = 30
+  let errorCount: number = 0
+  let hasLoadedTableHead: boolean = false
+  let hasLoadedBuildings: boolean = false
 
-  const period: number = 9
-
-  const totalPeriodElement: HTMLElement = document.getElementById('total_period') as HTMLElement
+  const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
 
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
+  const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
+
+  const fromElement: HTMLInputElement = document.getElementById('from') as HTMLInputElement
+  const viewElement: HTMLButtonElement = document.getElementById('view') as HTMLButtonElement
+  const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
+
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
-  const alwaysOnElement: HTMLInputElement = document.getElementById('always-on') as HTMLInputElement
-  const buildingElement: HTMLInputElement = document.getElementById('building') as HTMLInputElement
-  const holidayModeEnabledElement: HTMLInputElement = document.getElementById('enabled-holiday-mode') as HTMLInputElement
+  const alwaysOnElement: HTMLSelectElement = document.getElementById('always-on') as HTMLSelectElement
+  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
+
+  const buildingElement: HTMLSelectElement = document.getElementById('building') as HTMLSelectElement
+  const holidayModeEnabledElement: HTMLSelectElement = document.getElementById('enabled-holiday-mode') as HTMLSelectElement
   const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
   const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
-  const frostProtectionEnabledElement: HTMLInputElement = document.getElementById('enabled-frost-protection') as HTMLInputElement
-  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
-  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
-
-  const showElement: HTMLButtonElement = document.getElementById('show') as HTMLButtonElement
-  const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
-  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
   const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
   const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
+  const frostProtectionEnabledElement: HTMLSelectElement = document.getElementById('enabled-frost-protection') as HTMLSelectElement
+  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
+  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
-
-  const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
 
   function generateTableHead (table: HTMLTableElement, keys: string[]): void {
     const thead: HTMLTableSectionElement = table.createTHead()
@@ -46,10 +48,13 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       th.appendChild(text)
       row.appendChild(th)
     }
+    if (!hasLoadedTableHead) {
+      hasLoadedTableHead = true
+    }
   }
 
-  function generateTable (table: HTMLTableElement, data: ErrorLog): void {
-    for (const error of data) {
+  function generateTable (table: HTMLTableElement, errors: ErrorLog['Errors']): void {
+    for (const error of errors) {
       const row: HTMLTableRowElement = table.insertRow()
       for (const value of Object.values(error)) {
         const cell: HTMLTableCellElement = row.insertCell()
@@ -57,6 +62,40 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         cell.appendChild(text)
       }
     }
+  }
+
+  function generateErrorLog (): void {
+    // @ts-expect-error
+    Homey.api(
+      'GET',
+      `/report/error_log?from=${fromElement.value}&to=${to}&limit=${limit}&offset=${offset}`,
+      async (error: string | null, data: ErrorLog | null): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error
+          await Homey.alert(error)
+          return
+        }
+        if (data === null) {
+          if (hasAuthenticated) {
+            hasAuthenticated = false
+          }
+          // @ts-expect-error
+          await Homey.alert('Error log could not be retrieved')
+          return
+        }
+        offset++
+        to = data.FromDateMinusOneDay
+        errorCount += data.Errors.length
+        periodElement.innerText = `From ${data.FromDateHuman} (${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'})`
+        if (data.Errors.length === 0) {
+          return
+        }
+        if (!hasLoadedTableHead) {
+          generateTableHead(table, Object.keys(data.Errors[0]))
+        }
+        generateTable(table, data.Errors)
+      }
+    )
   }
 
   function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
@@ -117,41 +156,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function generateErrorLog (): void {
-    // @ts-expect-error
-    Homey.api(
-      'GET',
-      `/report/error_log?offset=${offset}&period=${period}`,
-      async (error: string | null, data: ErrorLog): Promise<void> => {
-        if (error !== null) {
-          // @ts-expect-error
-          await Homey.alert(error)
-          return
-        }
-        if (data === null) {
-          // @ts-expect-error
-          await Homey.alert('Error log could not be retrieved')
-          return
-        }
-        if (!hasLoadedTable) {
-          hasLoadedTable = true
-        }
-        offset++
-        errorCount += data.length
-        const errorLabel: string = [0, 1].includes(errorCount) ? 'error' : 'errors'
-        totalPeriodElement.innerText = `In the last ${offset * (period + 1)} days (${errorCount} ${errorLabel})`
-        if (data.length === 0) {
-          return
-        }
-        if (!hasLoadedTableHead) {
-          generateTableHead(table, Object.keys(data[0]))
-          hasLoadedTableHead = true
-        }
-        generateTable(table, data)
-      }
-    )
-  }
-
   function getBuildings (): void {
     // @ts-expect-error
     Homey.api(
@@ -185,9 +189,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   }
 
   function load (): void {
-    if (!hasLoadedTable) {
-      generateErrorLog()
-    }
+    generateErrorLog()
     if (!hasLoadedBuildings) {
       getBuildings()
     }
@@ -200,7 +202,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       await Homey.alert(err)
       return
     }
-    usernameElement.value = username
+    usernameElement.value = username ?? ''
   })
   // @ts-expect-error
   Homey.get('password', async (err: string | null, password: string): Promise<void> => {
@@ -209,16 +211,13 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       await Homey.alert(err)
       return
     }
-    passwordElement.value = password
+    passwordElement.value = password ?? ''
   })
+  if (usernameElement.value === '' || passwordElement.value === '') {
+    hasAuthenticated = false
+  }
 
   load()
-
-  totalPeriodElement.innerText = 'You must first authenticate yourself'
-
-  showElement.addEventListener('click', (): void => {
-    generateErrorLog()
-  })
 
   authenticateElement.addEventListener('click', (): void => {
     // @ts-expect-error
@@ -236,6 +235,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           // @ts-expect-error
           await Homey.alert('Authentication failed')
           return
+        }
+        if (!hasAuthenticated) {
+          hasAuthenticated = true
         }
         load()
         // @ts-expect-error
@@ -256,6 +258,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         await Homey.alert('Authentication succeeded')
       }
     )
+  })
+
+  viewElement.addEventListener('click', (): void => {
+    fromElement.value = ''
+    generateErrorLog()
   })
 
   applyElement.addEventListener('click', (): void => {
@@ -331,15 +338,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     getBuildingHolidayModeSettings()
   })
   updateHolidayModeElement.addEventListener('click', (): void => {
-    const enabled: boolean = holidayModeEnabledElement.value === 'true'
+    const Enabled: boolean = holidayModeEnabledElement.value === 'true'
     // @ts-expect-error
     Homey.api(
       'POST',
       `/settings/holiday_mode/buildings/${buildingElement.value}`,
       {
-        enabled,
-        startDate: enabled ? holidayModeStartDateElement.value : '',
-        endDate: enabled ? holidayModeEndDateElement.value : ''
+        Enabled,
+        StartDate: Enabled ? holidayModeStartDateElement.value : '',
+        EndDate: Enabled ? holidayModeEndDateElement.value : ''
       },
       async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {
@@ -349,7 +356,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           return
         }
         if (!success) {
-          if (enabled && (holidayModeStartDateElement.value === '' || holidayModeEndDateElement.value === '')) {
+          if (Enabled && (holidayModeStartDateElement.value === '' || holidayModeEndDateElement.value === '')) {
             // @ts-expect-error
             await Homey.alert('Start Date and/or End Date are missing')
             return
@@ -380,9 +387,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       'POST',
       `/settings/frost_protection/buildings/${buildingElement.value}`,
       {
-        enabled: frostProtectionEnabledElement.value === 'true',
-        minimumTemperature: frostProtectionMinimumTemperatureElement.value,
-        maximumTemperature: frostProtectionMaximumTemperatureElement.value
+        Enabled: frostProtectionEnabledElement.value === 'true',
+        MinimumTemperature: frostProtectionMinimumTemperatureElement.value,
+        MaximumTemperature: frostProtectionMaximumTemperatureElement.value
       },
       async (error: string | null, success: boolean): Promise<void> => {
         if (error !== null) {

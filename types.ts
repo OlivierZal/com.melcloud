@@ -429,10 +429,13 @@ export interface LoginData {
   }
 }
 
-export interface FrostProtectionPostData {
+export interface FrostProtectionSettings {
   readonly Enabled: boolean
   readonly MinimumTemperature: number
   readonly MaximumTemperature: number
+}
+
+export type FrostProtectionPostData = FrostProtectionSettings & {
   readonly BuildingIds: [
     Building<MELCloudDevice>['ID']
   ]
@@ -442,6 +445,12 @@ export interface FrostProtectionData {
   readonly FPEnabled: boolean
   readonly FPMinTemperature: number
   readonly FPMaxTemperature: number
+}
+
+export interface HolidayModeSettings {
+  readonly Enabled: boolean
+  readonly StartDate: string | null
+  readonly EndDate: string | null
 }
 
 export interface HolidayModePostData {
@@ -551,6 +560,13 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? ReportDataAtw
   : ReportDataAta
 
+export interface ErrorLogQuery {
+  readonly from?: string
+  readonly to?: string
+  readonly offset?: number
+  readonly limit?: number
+}
+
 export interface ErrorLogPostData {
   readonly DeviceIDs: Array<MELCloudDevice['id']>
   readonly FromDate: string
@@ -565,7 +581,10 @@ export interface ErrorData {
   readonly Duration: number
 }
 
-export type ErrorLogData = ErrorData[]
+export interface ErrorLogData {
+  Errors: ErrorData[]
+  readonly FromDate: string
+}
 
 export interface Error {
   readonly Device: string
@@ -573,4 +592,8 @@ export interface Error {
   readonly Error: string
 }
 
-export type ErrorLog = Error[]
+export interface ErrorLog {
+  readonly Errors: Error[]
+  readonly FromDateHuman: string
+  readonly FromDateMinusOneDay: string
+}

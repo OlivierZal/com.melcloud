@@ -4,12 +4,16 @@ import { App } from 'homey'
 import {
   Building,
   Data,
+  ErrorData,
   ErrorLogData,
   ErrorLogPostData,
+  ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionPostData,
+  FrostProtectionSettings,
   HolidayModeData,
   HolidayModePostData,
+  HolidayModeSettings,
   ListDevice,
   LoginCredentials,
   LoginData,
@@ -217,19 +221,25 @@ export default class MELCloudApp extends App {
     return true
   }
 
-  async getUnitErrorLog (offset: number = 0, period: number = 9): Promise<ErrorLogData | null> {
+  async getUnitErrorLog (query: ErrorLogQuery): Promise<ErrorLogData | null> {
+    const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
+    const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
+    const offset: number = from === null ? (query.offset ?? 0) : 0
+    const limit: number = from === null ? (query.limit ?? 29) : 0
     try {
-      const today: DateTime = DateTime.now()
-      const days: number = offset + period * offset
+      const days: number = offset + limit * offset
       const postData: ErrorLogPostData = {
         DeviceIDs: this.getDeviceIds(),
-        FromDate: today.minus({ days: days + period }).toISODate(),
-        ToDate: today.minus({ days }).toISODate()
+        FromDate: (from ?? to.minus({ days: days + limit })).toISODate(),
+        ToDate: to.minus({ days }).toISODate()
       }
       this.log('Reporting error log...', postData)
-      const { data } = await axios.post<ErrorLogData>('/Report/GetUnitErrorLog2', postData)
+      const { data } = await axios.post<ErrorData[]>('/Report/GetUnitErrorLog2', postData)
       this.log('Reporting error log:', data)
-      return data
+      return {
+        Errors: data,
+        FromDate: postData.FromDate
+      }
     } catch (error: unknown) {
       this.error('Reporting error log:', error instanceof Error ? error.message : error)
     }
@@ -258,12 +268,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateFrostProtectionSettings (
-    buildingId: number,
-    enabled: boolean,
-    minimumTemperature: number,
-    maximumTemperature: number
-  ): Promise<boolean> {
+  async updateFrostProtectionSettings (buildingId: number, settings: FrostProtectionSettings): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
       this.error(`Building ${buildingId} does not exist`)
       return false
@@ -272,12 +277,8 @@ export default class MELCloudApp extends App {
 
     try {
       const postData: FrostProtectionPostData = {
-        Enabled: enabled,
-        MinimumTemperature: minimumTemperature,
-        MaximumTemperature: maximumTemperature,
-        BuildingIds: [
-          buildingId
-        ]
+        ...settings,
+        BuildingIds: [buildingId]
       }
       this.log(`Updating frost protection settings for building ${buildingName}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/FrostProtection/Update', postData)
@@ -322,12 +323,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async updateHolidayModeSettings (
-    buildingId: number,
-    enabled: boolean,
-    utcStartDate: DateTime | null,
-    utcEndDate: DateTime | null
-  ): Promise<boolean> {
+  async updateHolidayModeSettings (buildingId: number, settings: HolidayModeSettings): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
       this.error(`Building ${buildingId} does not exist`)
       return false
@@ -335,11 +331,14 @@ export default class MELCloudApp extends App {
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
 
     try {
-      if (enabled && (utcStartDate === null || utcEndDate === null)) {
+      const { Enabled, StartDate, EndDate } = settings
+      if (Enabled && (StartDate === null || EndDate === null)) {
         throw new Error('Date: Missing')
       }
+      const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate) : null
+      const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate) : null
       const postData: HolidayModePostData = {
-        Enabled: enabled,
+        Enabled,
         StartDate: utcStartDate !== null
           ? {
               Year: utcStartDate.year,
@@ -360,13 +359,7 @@ export default class MELCloudApp extends App {
               Second: utcEndDate.second
             }
           : null,
-        HMTimeZones: [
-          {
-            Buildings: [
-              buildingId
-            ]
-          }
-        ]
+        HMTimeZones: [{ Buildings: [buildingId] }]
       }
       this.log(`Updating holiday mode settings for building ${buildingName}...`, postData)
       const { data } = await axios.post<UpdateSettingsData>('/HolidayMode/Update', postData)
