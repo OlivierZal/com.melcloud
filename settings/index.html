@@ -9,8 +9,8 @@
       <h1 class="homey-title" data-i18n="settings.title" />
     </header>
 
-    <div id="is_not_authenticated">
-      <fieldset class="homey-form-fieldset">
+    <fieldset class="homey-form-fieldset" id="is_not_authenticated" style="display: none;">
+      <fieldset class="homey-form-fieldset" id="is_not_authenticated">
         <legend class="homey-form-legend">Credentials</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" for="username">Username</label>
@@ -22,9 +22,9 @@
         </div>
       </fieldset>
       <button id="authenticate" class="homey-button-primary-full">Authenticate</button>
-    </div>
+    </fieldset>
 
-    <div id="is_authenticated">
+    <fieldset class="homey-form-fieldset" id="is_authenticated">
       <fieldset class="homey-form-fieldset">
       <legend class="homey-form-legend">Error Log</legend>
         <div class="homey-form-group">
@@ -32,11 +32,11 @@
           <table></table>
         </div>
       </fieldset>
-      <button id="view" class="homey-button-primary-full">View from
+      <button id="see" class="homey-button-primary-full">See all errors since
         <input id="from" type="date" value="" />
       </button>
 
-      <fieldset class="homey-form-fieldset">
+      <fieldset class="homey-form-fieldset" style="margin-top: 50px;">
         <legend class="homey-form-legend">Device Settings</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" for="interval">Device Update Frequency (minutes)</label>
@@ -53,7 +53,7 @@
       </fieldset>
       <button id="apply" class="homey-button-primary-full">Apply to all devices</button>
 
-      <fieldset class="homey-form-fieldset">
+      <fieldset class="homey-form-fieldset" style="margin-top: 50px;">
         <legend class="homey-form-legend">Building Settings</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" for="building">Choose Building…</label>
@@ -82,7 +82,7 @@
       <button id="refresh-holiday-mode" class="homey-button-secondary">Refresh</button>
       <button id="update-holiday-mode" class="homey-button-primary">Update</button>
 
-      <fieldset class="homey-form-fieldset">
+      <fieldset class="homey-form-fieldset" style="margin-top: 50px;">
         <legend class="homey-form-legend">Frost Protection</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" for="enabled-frost-protection">Enabled</label>
@@ -102,6 +102,6 @@
       </fieldset>
       <button id="refresh-frost-protection" class="homey-button-secondary">Refresh</button>
       <button id="update-frost-protection" class="homey-button-primary">Update</button>
-    </div>
+    </fieldset>
   </body>
 </html>

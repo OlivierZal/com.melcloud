@@ -13,15 +13,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   let hasLoadedTableHead: boolean = false
   let hasLoadedBuildings: boolean = false
 
-  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is_not_authenticated') as HTMLDivElement
+  const isNotAuthenticatedElement: HTMLFieldSetElement = document.getElementById('is_not_authenticated') as HTMLFieldSetElement
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
   const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
-  const isAuthenticatedElement: HTMLDivElement = document.getElementById('is_authenticated') as HTMLDivElement
+  const isAuthenticatedElement: HTMLFieldSetElement = document.getElementById('is_authenticated') as HTMLFieldSetElement
 
   const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
   const fromElement: HTMLInputElement = document.getElementById('from') as HTMLInputElement
-  const viewElement: HTMLButtonElement = document.getElementById('view') as HTMLButtonElement
+  const seeElement: HTMLButtonElement = document.getElementById('see') as HTMLButtonElement
   const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
 
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
@@ -86,7 +86,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         toHuman = data.NextToDateHuman
         fromElement.value = data.NextFromDate
         errorCount += data.Errors.length
-        periodElement.innerText = `From ${data.FromDateHuman} (${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'})`
+        periodElement.innerText = `Since ${data.FromDateHuman}: ${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'}`
         if (data.Errors.length === 0) {
           return
         }
@@ -259,7 +259,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   })
 
-  viewElement.addEventListener('click', (): void => {
+  seeElement.addEventListener('click', (): void => {
     generateErrorLog()
   })
 
