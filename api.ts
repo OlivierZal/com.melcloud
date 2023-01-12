@@ -51,7 +51,7 @@ module.exports = {
     params: { buildingId: string }
   }): Promise<HolidayModeData> {
     const app = homey.app as MELCloudApp
-    const data: HolidayModeData | null = await app.getHolidayModeSettings(Number(params.buildingId))
+    const data: HolidayModeData = await app.getHolidayModeSettings(Number(params.buildingId))
     return {
       ...data,
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
@@ -61,7 +61,7 @@ module.exports = {
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const data: ErrorLogData | null = await app.getUnitErrorLog({
+    const data: ErrorLogData = await app.getUnitErrorLog({
       ...query,
       offset: query.offset !== undefined ? Number(query.offset) : undefined,
       limit: query.limit !== undefined ? Number(query.limit) : undefined
