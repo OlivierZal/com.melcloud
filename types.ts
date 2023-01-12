@@ -597,4 +597,5 @@ export interface ErrorLog {
   readonly FromDateHuman: string
   readonly NextFromDate: string
   readonly NextToDate: string
+  readonly NextToDateHuman: string
 }

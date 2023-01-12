@@ -6,6 +6,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
   let to: string = ''
+  let toHuman: string = ''
   const offset: number = 0
   const limit: number = 29
   let errorCount: number = 0
@@ -82,6 +83,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           return
         }
         to = data.NextToDate
+        toHuman = data.NextToDateHuman
         fromElement.value = data.NextFromDate
         errorCount += data.Errors.length
         periodElement.innerText = `From ${data.FromDateHuman} (${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'})`
@@ -248,10 +250,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       fromElement.value = to
       // @ts-expect-error
       void Homey.alert('Choose a date.')
-    } else if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
+      return
+    }
+    if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
       // @ts-expect-error
-      void Homey.alert('Choose an earlier date.')
+      void Homey.alert(`Choose a date before ${toHuman}.`)
     }
   })
 

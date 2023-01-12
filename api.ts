@@ -82,7 +82,8 @@ module.exports = {
         }),
       FromDateHuman: DateTime.fromISO(data.FromDate).toFormat('dd LLL yy'),
       NextFromDate: NextToDate.minus({ days: Number(query.limit) }).toISODate(),
-      NextToDate: NextToDate.toISODate()
+      NextToDate: NextToDate.toISODate(),
+      NextToDateHuman: NextToDate.toFormat('dd LLL yy')
     }
   },
 
