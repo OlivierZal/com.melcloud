@@ -563,8 +563,8 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
 export interface ErrorLogQuery {
   readonly from?: string
   readonly to?: string
-  readonly offset?: number
-  readonly limit?: number
+  readonly offset?: string
+  readonly limit?: string
 }
 
 export interface ErrorLogPostData {
@@ -595,5 +595,6 @@ export interface Error {
 export interface ErrorLog {
   readonly Errors: Error[]
   readonly FromDateHuman: string
-  readonly FromDateMinusOneDay: string
+  readonly NextFromDate: string
+  readonly NextToDate: string
 }

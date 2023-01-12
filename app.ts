@@ -224,8 +224,8 @@ export default class MELCloudApp extends App {
   async getUnitErrorLog (query: ErrorLogQuery): Promise<ErrorLogData> {
     const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
     const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
-    const offset: number = from === null ? (query.offset ?? 0) : 0
-    const limit: number = from === null ? (query.limit ?? 29) : 0
+    const offset: number = from === null ? (Number(query.offset ?? 0)) : 0
+    const limit: number = from === null ? (Number(query.limit ?? 29)) : 0
     const days: number = offset + limit * offset
     const postData: ErrorLogPostData = {
       DeviceIDs: this.getDeviceIds(),

@@ -5,20 +5,20 @@ import { Building, ErrorLog, FrostProtectionData, HolidayModeData, MELCloudDevic
 async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  let hasAuthenticated: boolean = true
   let to: string = ''
-  let offset: number = 0
-  let limit: number = 29
+  const offset: number = 0
+  const limit: number = 29
   let errorCount: number = 0
   let hasLoadedTableHead: boolean = false
   let hasLoadedBuildings: boolean = false
 
-  const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
-
+  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is_not_authenticated') as HTMLDivElement
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
   const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
+  const isAuthenticatedElement: HTMLDivElement = document.getElementById('is_authenticated') as HTMLDivElement
 
+  const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
   const fromElement: HTMLInputElement = document.getElementById('from') as HTMLInputElement
   const viewElement: HTMLButtonElement = document.getElementById('view') as HTMLButtonElement
   const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
@@ -38,6 +38,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
+
+  function hasAuthenticated (isAuthenticated: boolean = true): void {
+    isNotAuthenticatedElement.style.display = !isAuthenticated ? 'block' : 'none'
+    isAuthenticatedElement.style.display = isAuthenticated ? 'block' : 'none'
+  }
 
   function generateTableHead (table: HTMLTableElement, keys: string[]): void {
     const thead: HTMLTableSectionElement = table.createTHead()
@@ -64,35 +69,22 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   }
 
-  async function generateErrorLog (): Promise<void> {
-    if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
-      fromElement.value = to
-      // @ts-expect-error
-      await Homey.alert('Choose an earlier date.')
-    }
+  function generateErrorLog (): void {
     // @ts-expect-error
     Homey.api(
       'GET',
       `/report/error_log?from=${fromElement.value}&to=${to}&limit=${limit}&offset=${offset}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
-          if (hasAuthenticated) {
-            hasAuthenticated = false
-          }
+          hasAuthenticated(false)
           // @ts-expect-error
           await Homey.alert(error.message)
           return
         }
-        to = data.FromDateMinusOneDay
-        fromElement.value = to
-        if (offset !== 0) {
-          offset = 0
-        }
-        if (limit !== 0) {
-          limit = 0
-        }
+        to = data.NextToDate
+        fromElement.value = data.NextFromDate
         errorCount += data.Errors.length
-        periodElement.innerText = `From ${data.FromDateHuman} (${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'}).`
+        periodElement.innerText = `From ${data.FromDateHuman} (${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'})`
         if (data.Errors.length === 0) {
           return
         }
@@ -184,8 +176,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  async function load (): Promise<void> {
-    await generateErrorLog()
+  function load (): void {
+    hasAuthenticated()
+    generateErrorLog()
     if (!hasLoadedBuildings) {
       getBuildings()
     }
@@ -209,11 +202,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
     passwordElement.value = password ?? ''
   })
-  if (usernameElement.value === '' || passwordElement.value === '') {
-    hasAuthenticated = false
-  }
 
-  await load()
+  load()
 
   authenticateElement.addEventListener('click', (): void => {
     // @ts-expect-error
@@ -232,10 +222,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           await Homey.alert('Authentication failed.')
           return
         }
-        if (!hasAuthenticated) {
-          hasAuthenticated = true
-        }
-        await load()
+        load()
         // @ts-expect-error
         await Homey.set('username', usernameElement.value, async (err: Error): Promise<void> => {
           if (err !== null) {
@@ -256,8 +243,20 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   })
 
+  fromElement.addEventListener('change', (): void => {
+    if (fromElement.value === '') {
+      fromElement.value = to
+      // @ts-expect-error
+      void Homey.alert('Choose a date.')
+    } else if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
+      fromElement.value = to
+      // @ts-expect-error
+      void Homey.alert('Choose an earlier date.')
+    }
+  })
+
   viewElement.addEventListener('click', (): void => {
-    void generateErrorLog()
+    generateErrorLog()
   })
 
   applyElement.addEventListener('click', (): void => {

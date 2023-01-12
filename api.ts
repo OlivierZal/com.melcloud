@@ -39,17 +39,15 @@ module.exports = {
     ))
   },
 
-  async getFrostProtectionSettings ({ homey, params }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): Promise<FrostProtectionData> {
+  async getFrostProtectionSettings (
+    { homey, params }: { homey: Homey, params: { buildingId: string } }
+  ): Promise<FrostProtectionData> {
     return await (homey.app as MELCloudApp).getFrostProtectionSettings(Number(params.buildingId))
   },
 
-  async getHolidayModeSettings ({ homey, params }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): Promise<HolidayModeData> {
+  async getHolidayModeSettings (
+    { homey, params }: { homey: Homey, params: { buildingId: string } }
+  ): Promise<HolidayModeData> {
     const app = homey.app as MELCloudApp
     const data: HolidayModeData = await app.getHolidayModeSettings(Number(params.buildingId))
     return {
@@ -61,11 +59,8 @@ module.exports = {
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const data: ErrorLogData = await app.getUnitErrorLog({
-      ...query,
-      offset: query.offset !== undefined ? Number(query.offset) : undefined,
-      limit: query.limit !== undefined ? Number(query.limit) : undefined
-    })
+    const data: ErrorLogData = await app.getUnitErrorLog(query)
+    const NextToDate: DateTime = DateTime.fromISO(data.FromDate).minus({ days: 1 })
     return {
       Errors: data.Errors
         .map((errorData: ErrorData): Error => {
@@ -86,7 +81,8 @@ module.exports = {
           return Number(date2.diff(date1))
         }),
       FromDateHuman: DateTime.fromISO(data.FromDate).toFormat('dd LLL yy'),
-      FromDateMinusOneDay: DateTime.fromISO(data.FromDate).minus({ days: 1 }).toISODate()
+      NextFromDate: NextToDate.minus({ days: Number(query.limit) }).toISODate(),
+      NextToDate: NextToDate.toISODate()
     }
   },
 
