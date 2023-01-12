@@ -17,9 +17,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
   let to: string = ''
-  let toHuman: string = ''
-  const offset: number = 0
   const limit: number = 29
+  const offset: number = 0
+  let fromDateHuman: string = ''
   let errorCount: number = 0
   let hasLoadedTableHead: boolean = false
   let hasLoadedBuildings: boolean = false
@@ -85,8 +85,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     const query: ErrorLogQuery = {
       from: fromElement.value,
       to,
-      offset: String(offset),
-      limit: String(limit)
+      limit: String(limit),
+      offset: String(offset)
     }
     const queryString: string = new URLSearchParams(query as Record<string, string>).toString()
     // @ts-expect-error
@@ -98,11 +98,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           await Homey.alert(error.message)
           return
         }
-        to = data.NextToDate
-        toHuman = data.NextToDateHuman
+        fromDateHuman = data.FromDateHuman
         fromElement.value = data.NextFromDate
+        to = data.NextToDate
         errorCount += data.Errors.length
-        periodElement.innerText = `Since ${data.FromDateHuman}: ${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'}`
+        periodElement.innerText = `Since ${fromDateHuman}: ${errorCount} ${[0, 1].includes(errorCount) ? 'error' : 'errors'}`
         if (data.Errors.length === 0) {
           return
         }
@@ -260,7 +260,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     if (to !== '' && fromElement.value !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
       // @ts-expect-error
-      void Homey.alert(`Choose a date before ${toHuman}.`)
+      void Homey.alert(`Choose a date before ${fromDateHuman}.`)
     }
   })
 
@@ -335,13 +335,21 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   })
   holidayModeStartDateElement.addEventListener('change', (): void => {
-    if (holidayModeStartDateElement.value !== '' && holidayModeEnabledElement.value === 'false') {
-      holidayModeEnabledElement.value = 'true'
+    if (holidayModeStartDateElement.value !== '') {
+      if (holidayModeEnabledElement.value === 'false') {
+        holidayModeEnabledElement.value = 'true'
+      }
+    } else if (holidayModeEndDateElement.value === '' && holidayModeEnabledElement.value === 'true') {
+      holidayModeEnabledElement.value = 'false'
     }
   })
   holidayModeEndDateElement.addEventListener('change', (): void => {
     if (holidayModeEndDateElement.value !== '' && holidayModeEnabledElement.value === 'false') {
-      holidayModeEnabledElement.value = 'true'
+      if (holidayModeEnabledElement.value === 'false') {
+        holidayModeEnabledElement.value = 'true'
+      }
+    } else if (holidayModeStartDateElement.value === '' && holidayModeEnabledElement.value === 'true') {
+      holidayModeEnabledElement.value = 'false'
     }
   })
   refreshHolidayModeElement.addEventListener('click', (): void => {
@@ -377,13 +385,13 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   frostProtectionMinimumTemperatureElement.addEventListener('change', (): void => {
-    if (frostProtectionMaximumTemperatureElement.value === 'false') {
-      frostProtectionMaximumTemperatureElement.value = 'true'
+    if (frostProtectionEnabledElement.value === 'false') {
+      frostProtectionEnabledElement.value = 'true'
     }
   })
   frostProtectionMaximumTemperatureElement.addEventListener('change', (): void => {
-    if (frostProtectionMaximumTemperatureElement.value === 'false') {
-      frostProtectionMaximumTemperatureElement.value = 'true'
+    if (frostProtectionEnabledElement.value === 'false') {
+      frostProtectionEnabledElement.value = 'true'
     }
   })
   refreshFrostProtectionElement.addEventListener('click', (): void => {

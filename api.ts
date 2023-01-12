@@ -81,9 +81,8 @@ module.exports = {
           return Number(date2.diff(date1))
         }),
       FromDateHuman: DateTime.fromISO(data.FromDate).toFormat('dd LLL yy'),
-      NextFromDate: NextToDate.minus({ days: Number(query.limit) }).toISODate(),
-      NextToDate: NextToDate.toISODate(),
-      NextToDateHuman: NextToDate.toFormat('dd LLL yy')
+      NextFromDate: NextToDate.minus({ days: Number(query.limit ?? 1) }).toISODate(),
+      NextToDate: NextToDate.toISODate()
     }
   },
 
