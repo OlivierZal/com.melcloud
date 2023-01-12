@@ -257,11 +257,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   fromElement.addEventListener('change', (): void => {
-    if (fromElement.value === '') {
-      fromElement.value = to
-      // @ts-expect-error
-      void Homey.alert('Choose a date.')
-    } else if (to !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
+    if (to !== '' && fromElement.value !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
       // @ts-expect-error
       void Homey.alert(`Choose a date before ${toHuman}.`)
@@ -339,16 +335,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   })
   holidayModeStartDateElement.addEventListener('change', (): void => {
-    if (holidayModeStartDateElement.value !== '') {
-      holidayModeEnabledElement.value = 'true'
-    } else if (holidayModeEndDateElement.value === '') {
+    if (holidayModeStartDateElement.value !== '' && holidayModeEnabledElement.value === 'false') {
       holidayModeEnabledElement.value = 'true'
     }
   })
   holidayModeEndDateElement.addEventListener('change', (): void => {
-    if (holidayModeEndDateElement.value !== '') {
-      holidayModeEnabledElement.value = 'true'
-    } else if (holidayModeStartDateElement.value === '') {
+    if (holidayModeEndDateElement.value !== '' && holidayModeEnabledElement.value === 'false') {
       holidayModeEnabledElement.value = 'true'
     }
   })
@@ -384,6 +376,16 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   })
 
+  frostProtectionMinimumTemperatureElement.addEventListener('change', (): void => {
+    if (frostProtectionMaximumTemperatureElement.value === 'false') {
+      frostProtectionMaximumTemperatureElement.value = 'true'
+    }
+  })
+  frostProtectionMaximumTemperatureElement.addEventListener('change', (): void => {
+    if (frostProtectionMaximumTemperatureElement.value === 'false') {
+      frostProtectionMaximumTemperatureElement.value = 'true'
+    }
+  })
   refreshFrostProtectionElement.addEventListener('click', (): void => {
     getBuildingFrostProtectionSettings()
   })
