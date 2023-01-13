@@ -117,7 +117,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   function buildSettingsBody (settings: Array<HTMLInputElement | HTMLSelectElement>): Settings {
     const body: Settings = {}
     for (const setting of settings) {
-      body[setting.id] = ['true', 'false'].includes(setting.value) ? setting.value === 'true' : setting.value
+      if (setting.value !== '') {
+        body[setting.id] = ['true', 'false'].includes(setting.value) ? setting.value === 'true' : setting.value
+      }
     }
     return body
   }
@@ -276,6 +278,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     generateErrorLog()
   })
 
+  intervalElement.addEventListener('change', (): void => {
+    const interval: number = Number(intervalElement.value)
+    if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
+      intervalElement.value = ''
+      // @ts-expect-error
+      Homey.alert('The frequency must be an integer between 1 and 60.')
+    }
+  })
+
   applyElement.addEventListener('click', (): void => {
     const body: Settings = buildSettingsBody([intervalElement, alwaysOnElement])
     if (Object.keys(body).length === 0) {
@@ -330,6 +341,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       holidayModeEndDateElement.value = ''
     }
   })
+
   holidayModeStartDateElement.addEventListener('change', (): void => {
     if (holidayModeStartDateElement.value !== '') {
       if (holidayModeEnabledElement.value === 'false') {
@@ -339,6 +351,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       holidayModeEnabledElement.value = 'false'
     }
   })
+
   holidayModeEndDateElement.addEventListener('change', (): void => {
     if (holidayModeEndDateElement.value !== '' && holidayModeEnabledElement.value === 'false') {
       if (holidayModeEnabledElement.value === 'false') {
@@ -348,9 +361,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       holidayModeEnabledElement.value = 'false'
     }
   })
+
   refreshHolidayModeElement.addEventListener('click', (): void => {
     getBuildingHolidayModeSettings()
   })
+
   updateHolidayModeElement.addEventListener('click', (): void => {
     const Enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
@@ -385,14 +400,17 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       frostProtectionEnabledElement.value = 'true'
     }
   })
+
   frostProtectionMaximumTemperatureElement.addEventListener('change', (): void => {
     if (frostProtectionEnabledElement.value === 'false') {
       frostProtectionEnabledElement.value = 'true'
     }
   })
+
   refreshFrostProtectionElement.addEventListener('click', (): void => {
     getBuildingFrostProtectionSettings()
   })
+
   updateFrostProtectionElement.addEventListener('click', (): void => {
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
