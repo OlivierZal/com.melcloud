@@ -119,7 +119,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     const body: Settings = {}
     for (const setting of settings) {
       if (setting.value !== '') {
-        body[setting.id] = ['true', 'false'].includes(setting.value) ? setting.value === 'true' : setting.value
+        body[setting.id] = ['true', 'false'].includes(setting.value)
+          ? setting.value === 'true'
+          : !Number.isNaN(Number.parseInt(setting.value)) ? Number.parseInt(setting.value) : setting.value
       }
     }
     return body
@@ -280,8 +282,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   intervalElement.addEventListener('change', (): void => {
-    const interval: number = Number(intervalElement.value)
-    if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
+    const interval: number = Number.parseInt(intervalElement.value)
+    if (Number.isNaN(interval) || interval < 1 || interval > 60) {
       intervalElement.value = ''
       // @ts-expect-error
       Homey.alert('The frequency must be an integer between 1 and 60.')

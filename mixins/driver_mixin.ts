@@ -1,7 +1,7 @@
 import { Driver } from 'homey'
 import PairSession from 'homey/lib/PairSession'
 import MELCloudApp from '../app'
-import { DeviceInfo, ListDevice, LoginCredentials, MELCloudDevice } from '../types'
+import { DeviceDetails, ListDevice, LoginCredentials, MELCloudDevice } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
@@ -14,13 +14,13 @@ export default class MELCloudDriverMixin extends Driver {
 
   onPair (session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
-    session.setHandler('list_devices', async (): Promise<DeviceInfo[]> => await this.discoverDevices())
+    session.setHandler('list_devices', async (): Promise<DeviceDetails[]> => await this.discoverDevices())
   }
 
-  async discoverDevices <T extends MELCloudDevice> (): Promise<DeviceInfo[]> {
+  async discoverDevices <T extends MELCloudDevice> (): Promise<DeviceDetails[]> {
     const devices: Array<ListDevice<T>> = await this.app.listDevices(this.deviceType)
-    return devices.map((device: ListDevice<T>): DeviceInfo => {
-      const deviceInfo: DeviceInfo = {
+    return devices.map((device: ListDevice<T>): DeviceDetails => {
+      const deviceDetails: DeviceDetails = {
         name: device.DeviceName,
         data: {
           id: device.DeviceID,
@@ -33,9 +33,9 @@ export default class MELCloudDriverMixin extends Driver {
       }
       const capabilities: string[] = this.getRequiredCapabilities(device.Device.CanCool, device.Device.HasZone2)
       if (capabilities.length > 0) {
-        deviceInfo.capabilities = capabilities
+        deviceDetails.capabilities = capabilities
       }
-      return deviceInfo
+      return deviceDetails
     })
   }
 

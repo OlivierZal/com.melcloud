@@ -3,8 +3,7 @@ import Homey from 'homey/lib/Homey'
 import MELCloudApp from './app'
 import {
   Building,
-  Error,
-  ErrorData,
+  ErrorDetails,
   ErrorLog,
   ErrorLogData,
   ErrorLogQuery,
@@ -48,8 +47,7 @@ module.exports = {
   async getHolidayModeSettings (
     { homey, params }: { homey: Homey, params: { buildingId: string } }
   ): Promise<HolidayModeData> {
-    const app = homey.app as MELCloudApp
-    const data: HolidayModeData = await app.getHolidayModeSettings(Number(params.buildingId))
+    const data: HolidayModeData = await (homey.app as MELCloudApp).getHolidayModeSettings(Number(params.buildingId))
     return {
       ...data,
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
@@ -59,11 +57,35 @@ module.exports = {
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const data: ErrorLogData = await app.getUnitErrorLog(query)
-    const NextToDate: DateTime = DateTime.fromISO(data.FromDate).minus({ days: 1 })
+
+    const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
+    const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
+    let limit: number = 0
+    let offset: number = 0
+    if (from === null) {
+      if (query.limit !== undefined) {
+        limit = Number.parseInt(query.limit)
+        if (Number.isNaN(limit)) {
+          limit = 29
+        }
+      }
+      if (query.offset !== undefined) {
+        offset = Number.parseInt(query.offset)
+        if (Number.isNaN(limit)) {
+          offset = 0
+        }
+      }
+    }
+
+    const days: number = limit * offset + offset
+    const fromDate: DateTime = from ?? to.minus({ days: days + limit })
+    const toDate: DateTime = to.minus({ days })
+    const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate) as ErrorLogData[]
+
+    const NextToDate: DateTime = fromDate.minus({ days: 1 })
     return {
-      Errors: data.Errors
-        .map((errorData: ErrorData): Error => {
+      Errors: data
+        .map((errorData: ErrorLogData): ErrorDetails => {
           const devices: MELCloudDevice[] = app.getDevices()
             .filter((device: MELCloudDevice): boolean => device.id === errorData.DeviceId)
           return {
@@ -74,13 +96,13 @@ module.exports = {
             Error: errorData.ErrorMessage ?? ''
           }
         })
-        .filter((error: Error): boolean => error.Date !== '' && error.Error !== '')
-        .sort((error1: Error, error2: Error): number => {
+        .filter((error: ErrorDetails): boolean => error.Date !== '' && error.Error !== '')
+        .sort((error1: ErrorDetails, error2: ErrorDetails): number => {
           const date1 = DateTime.fromFormat(error1.Date, format)
           const date2 = DateTime.fromFormat(error2.Date, format)
           return Number(date2.diff(date1))
         }),
-      FromDateHuman: DateTime.fromISO(data.FromDate).toFormat('dd LLL yy'),
+      FromDateHuman: fromDate.toFormat('dd LLL yy'),
       NextFromDate: NextToDate.minus({ days: Number(query.limit ?? 1) }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }
@@ -99,8 +121,7 @@ module.exports = {
     params: { buildingId: string }
     body: FrostProtectionSettings
   }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).updateFrostProtectionSettings(
-      Number(params.buildingId), body)
+    return await (homey.app as MELCloudApp).updateFrostProtectionSettings(Number(params.buildingId), body)
   },
 
   async updateHolidayModeSettings ({ homey, params, body }: {
@@ -108,13 +129,6 @@ module.exports = {
     params: { buildingId: string }
     body: HolidayModeSettings
   }): Promise<boolean> {
-    const { Enabled } = body
-    let { StartDate, EndDate } = body
-    StartDate = StartDate !== null && StartDate !== '' ? DateTime.fromISO(StartDate).toUTC().toISO() : null
-    EndDate = EndDate !== null && EndDate !== '' ? DateTime.fromISO(EndDate).toUTC().toISO() : null
-    return await (homey.app as MELCloudApp).updateHolidayModeSettings(
-      Number(params.buildingId),
-      { Enabled, StartDate, EndDate }
-    )
+    return await (homey.app as MELCloudApp).updateHolidayModeSettings(Number(params.buildingId), body)
   }
 }

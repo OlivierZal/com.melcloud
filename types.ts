@@ -8,11 +8,19 @@ export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 export type CapabilityValue = boolean | number | string
 
-export type Settings = Record<string, any>
+export interface Settings extends Record<string, any> {
+  always_on?: boolean
+  interval?: number
+}
 
 export interface SuccessData {
   readonly Success: boolean
   readonly AttributeErrors: Record<string, string[]> | null
+}
+
+export interface FailureData extends SuccessData {
+  readonly Success: false
+  readonly AttributeErrors: Record<string, string[]>
 }
 
 interface SetCapabilitiesAta {
@@ -200,7 +208,7 @@ interface ListDeviceDataAta {
   readonly WifiSignalStrength: number
 }
 
-type ListDeviceDataAtw = ListDeviceDataAta & {
+interface ListDeviceDataAtw extends ListDeviceDataAta {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -373,7 +381,7 @@ export const listCapabilityMappingAtw: Record<ListCapability<MELCloudDeviceAtw>,
   }
 } as const
 
-export interface DeviceInfo {
+export interface DeviceDetails {
   readonly name: string
   readonly data: {
     readonly id: number
@@ -417,7 +425,7 @@ export interface FrostProtectionSettings {
   readonly MaximumTemperature: number
 }
 
-export type FrostProtectionPostData = FrostProtectionSettings & {
+export interface FrostProtectionPostData extends FrostProtectionSettings {
   readonly BuildingIds: [
     Building<MELCloudDevice>['ID']
   ]
@@ -474,7 +482,7 @@ interface BaseListDevice {
   readonly DeviceName: string
 }
 
-export type ListDevice<T extends MELCloudDevice> = BaseListDevice & {
+export interface ListDevice<T extends MELCloudDevice> extends BaseListDevice {
   readonly Device: ListDeviceData<T>
 }
 
@@ -491,7 +499,7 @@ export interface Structure<T extends MELCloudDevice> {
   }>
 }
 
-export type Building<T extends MELCloudDevice> = FrostProtectionData & HolidayModeData & {
+export interface Building<T extends MELCloudDevice> extends FrostProtectionData, HolidayModeData {
   readonly ID: number
   readonly Name: string
   readonly Structure: Structure<T>
@@ -555,7 +563,7 @@ export interface ErrorLogPostData {
   readonly ToDate: string
 }
 
-export interface ErrorData {
+export interface ErrorLogData {
   readonly DeviceId: MELCloudDevice['id']
   readonly ErrorMessage: string
   readonly StartDate: string
@@ -563,19 +571,14 @@ export interface ErrorData {
   readonly Duration: number
 }
 
-export interface ErrorLogData {
-  Errors: ErrorData[]
-  readonly FromDate: string
-}
-
-export interface Error {
+export interface ErrorDetails {
   readonly Device: string
   readonly Date: string
   readonly Error: string
 }
 
 export interface ErrorLog {
-  readonly Errors: Error[]
+  readonly Errors: ErrorDetails[]
   readonly FromDateHuman: string
   readonly NextFromDate: string
   readonly NextToDate: string

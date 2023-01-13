@@ -4,10 +4,9 @@ import { App } from 'homey'
 import {
   Building,
   Data,
-  ErrorData,
   ErrorLogData,
   ErrorLogPostData,
-  ErrorLogQuery,
+  FailureData,
   FrostProtectionData,
   FrostProtectionPostData,
   FrostProtectionSettings,
@@ -208,25 +207,19 @@ export default class MELCloudApp extends App {
     return true
   }
 
-  async getUnitErrorLog (query: ErrorLogQuery): Promise<ErrorLogData> {
-    const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
-    const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
-    const limit: number = from === null ? (Number(query.limit ?? 29)) : 0
-    const offset: number = from === null ? (Number(query.offset ?? 0)) : 0
-    const days: number = limit * offset + offset
+  async getUnitErrorLog (fromDate: DateTime, toDate: DateTime): Promise<ErrorLogData[] | boolean> {
     const postData: ErrorLogPostData = {
       DeviceIDs: this.getDeviceIds(),
-      FromDate: (from ?? to.minus({ days: days + limit })).toISODate(),
-      ToDate: to.minus({ days }).toISODate()
+      FromDate: fromDate.toISODate(),
+      ToDate: toDate.toISODate()
     }
     this.log('Reporting error log...', postData)
-    const { data } = await axios.post<ErrorData[] | SuccessData>('/Report/GetUnitErrorLog2', postData)
+    const { data } = await axios.post<ErrorLogData[] | FailureData>('/Report/GetUnitErrorLog2', postData)
     this.log('Reporting error log:', data)
-    this.handleFailure(data as SuccessData)
-    return {
-      Errors: data as ErrorData[],
-      FromDate: postData.FromDate
+    if ('Success' in data) {
+      return this.handleFailure(data)
     }
+    return data
   }
 
   async getFrostProtectionSettings (buildingId: number): Promise<FrostProtectionData> {
@@ -256,8 +249,7 @@ export default class MELCloudApp extends App {
     this.log(`Updating frost protection settings for building ${buildingName}...`, postData)
     const { data } = await axios.post<SuccessData>('/FrostProtection/Update', postData)
     this.log(`Updating frost protection settings for building ${buildingName}:`, data)
-    this.handleFailure(data)
-    return data.Success
+    return this.handleFailure(data)
   }
 
   async getHolidayModeSettings (buildingId: number): Promise<HolidayModeData> {
@@ -284,8 +276,8 @@ export default class MELCloudApp extends App {
     if (Enabled && (StartDate === null || EndDate === null)) {
       throw new Error('Start Date and/or End Date are missing.')
     }
-    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate, { zone: 'utc' }) : null
-    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate, { zone: 'utc' }) : null
+    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate).toUTC() : null
+    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate).toUTC() : null
     const postData: HolidayModePostData = {
       Enabled,
       StartDate: utcStartDate !== null
@@ -313,13 +305,12 @@ export default class MELCloudApp extends App {
     this.log(`Updating holiday mode settings for building ${buildingName}...`, postData)
     const { data } = await axios.post<SuccessData>('/HolidayMode/Update', postData)
     this.log(`Updating holiday mode settings for building ${buildingName}:`, data)
-    this.handleFailure(data)
-    return data.Success
+    return this.handleFailure(data)
   }
 
-  handleFailure (data: SuccessData): void {
-    if (data.Success === undefined || data.Success || data.AttributeErrors === null) {
-      return
+  handleFailure (data: SuccessData): boolean {
+    if (data.Success || data.AttributeErrors === null) {
+      return data.Success
     }
     let errorMessage: string = ''
     for (const [error, messages] of Object.entries(data.AttributeErrors)) {
