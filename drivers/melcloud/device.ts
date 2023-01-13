@@ -86,12 +86,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async onCapability (capability: SetCapability<MELCloudDeviceAta> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
-    this.clearSyncPlan()
+    await super.onCapability(capability, value)
     switch (capability) {
-      case 'onoff':
-        await this.setAlwaysOnWarning()
-        this.diff.onoff = value as boolean
-        break
       case 'thermostat_mode':
         await this.setAlwaysOnWarning()
         this.diff.onoff = value !== 'off'

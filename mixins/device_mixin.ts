@@ -7,7 +7,6 @@ import {
   Capability,
   CapabilityValue,
   Data,
-  ExtendedSetCapability,
   GetCapability,
   GetCapabilityMapping,
   ListCapability,
@@ -94,11 +93,12 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async onCapability (
-    _capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>,
-    _value: CapabilityValue
-  ): Promise<void> {
-    throw new Error('Method not implemented.')
+  async onCapability (capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
+    this.clearSyncPlan()
+    if (capability === 'onoff') {
+      await this.setAlwaysOnWarning()
+      this.diff.onoff = value as boolean
+    }
   }
 
   async setAlwaysOnWarning (): Promise<void> {

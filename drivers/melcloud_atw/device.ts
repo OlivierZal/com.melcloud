@@ -44,12 +44,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
-    this.clearSyncPlan()
+    await super.onCapability(capability, value)
     switch (capability) {
-      case 'onoff':
-        await this.setAlwaysOnWarning()
-        this.diff.onoff = value as boolean
-        break
       case 'onoff.forced_hot_water':
         this.diff['onoff.forced_hot_water'] = value as boolean
         break
