@@ -133,16 +133,15 @@ export default class MELCloudApp extends App {
       if (!(building.ID in this.buildings) || this.buildings[building.ID] !== building.Name) {
         this.buildings[building.ID] = building.Name
       }
-      devices.concat(building.Structure.Devices.filter(filter))
-      devices.concat(building.Structure.Devices.filter(filter))
+      devices.push(...building.Structure.Devices.filter(filter))
       for (const floor of building.Structure.Floors) {
-        devices.concat(floor.Devices.filter(filter))
+        devices.push(...floor.Devices.filter(filter))
         for (const area of floor.Areas) {
-          devices.concat(area.Devices.filter(filter))
+          devices.push(...area.Devices.filter(filter))
         }
       }
       for (const area of building.Structure.Areas) {
-        devices.concat(area.Devices.filter(filter))
+        devices.push(...area.Devices.filter(filter))
       }
     }
     return devices
