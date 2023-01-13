@@ -4,7 +4,6 @@ import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
   CapabilityValue,
-  ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   ListDevice,
@@ -44,7 +43,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
+  async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':

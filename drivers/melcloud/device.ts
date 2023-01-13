@@ -4,7 +4,6 @@ import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
   CapabilityValue,
-  ExtendedSetCapability,
   getCapabilityMappingAta,
   listCapabilityMappingAta,
   ReportCapabilities,
@@ -86,7 +85,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     })
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
+  async onCapability (capability: SetCapability<MELCloudDeviceAta> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':

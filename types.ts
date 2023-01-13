@@ -132,10 +132,6 @@ export type SetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAt
   ? keyof SetCapabilitiesAtw
   : keyof SetCapabilitiesAta
 
-export type ExtendedSetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? keyof SetCapabilitiesAtw
-  : keyof SetCapabilitiesAta | 'thermostat_mode'
-
 export type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof GetCapabilitiesAtw
   : keyof GetCapabilitiesAta
