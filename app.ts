@@ -125,24 +125,26 @@ export default class MELCloudApp extends App {
     return []
   }
 
-  async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<Array<ListDevice<T>>> {
+  async listDevices <T extends MELCloudDevice> (deviceType?: T['driver']['deviceType']): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings()
-    const filter: (device: ListDevice<T>) => boolean = (device: ListDevice<T>): boolean => driver.deviceType === device.Device.DeviceType
     const devices: Array<ListDevice<T>> = []
     for (const building of buildings) {
       if (!(building.ID in this.buildings) || this.buildings[building.ID] !== building.Name) {
         this.buildings[building.ID] = building.Name
       }
-      devices.push(...building.Structure.Devices.filter(filter))
+      devices.push(...building.Structure.Devices)
       for (const floor of building.Structure.Floors) {
-        devices.push(...floor.Devices.filter(filter))
+        devices.push(...floor.Devices)
         for (const area of floor.Areas) {
-          devices.push(...area.Devices.filter(filter))
+          devices.push(...area.Devices)
         }
       }
       for (const area of building.Structure.Areas) {
-        devices.push(...area.Devices.filter(filter))
+        devices.push(...area.Devices)
       }
+    }
+    if (deviceType !== undefined) {
+      return devices.filter((device: ListDevice<T>): boolean => deviceType === device.Device.DeviceType)
     }
     return devices
   }

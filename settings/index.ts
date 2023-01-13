@@ -31,9 +31,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const isAuthenticatedElement: HTMLDivElement = document.getElementById('is_authenticated') as HTMLDivElement
 
   const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
+  const tableElement: HTMLTableElement | null = document.querySelector('table')
   const fromElement: HTMLInputElement = document.getElementById('from') as HTMLInputElement
   const seeElement: HTMLButtonElement = document.getElementById('see') as HTMLButtonElement
-  const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
 
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
   const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
@@ -61,8 +61,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     const row: HTMLTableRowElement = thead.insertRow()
     for (const key of keys) {
       const th: HTMLTableCellElement = document.createElement('th')
-      const text: Text = document.createTextNode(key)
-      th.appendChild(text)
+      th.innerText = key
       row.appendChild(th)
     }
     if (!hasLoadedTableHead) {
@@ -71,12 +70,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   }
 
   function generateTable (table: HTMLTableElement, errors: ErrorLog['Errors']): void {
+    const tbody: HTMLTableSectionElement = table.createTBody()
     for (const error of errors) {
-      const row: HTMLTableRowElement = table.insertRow()
+      const row: HTMLTableRowElement = tbody.insertRow()
       for (const value of Object.values(error)) {
         const cell: HTMLTableCellElement = row.insertCell()
-        const text: Text = document.createTextNode(value)
-        cell.appendChild(text)
+        cell.innerText = value
       }
     }
   }
@@ -106,10 +105,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         if (data.Errors.length === 0) {
           return
         }
-        if (!hasLoadedTableHead) {
-          generateTableHead(table, Object.keys(data.Errors[0]))
+        if (tableElement !== null) {
+          if (!hasLoadedTableHead) {
+            generateTableHead(tableElement, Object.keys(data.Errors[0]))
+          }
+          generateTable(tableElement, data.Errors)
         }
-        generateTable(table, data.Errors)
       }
     )
   }

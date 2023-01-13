@@ -165,7 +165,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
-    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(this.driver)
+    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(this.driver.deviceType)
     const devices: Array<ListDevice<T>> = listDevices.filter((device: ListDevice<T>): boolean => device.DeviceID === this.id)
     if (devices.length === 1) {
       return devices[0]

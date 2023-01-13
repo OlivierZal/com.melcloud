@@ -204,11 +204,7 @@ interface ListDeviceDataAta {
   readonly WifiSignalStrength: number
 }
 
-interface ListDeviceDataAtw {
-  readonly CanCool: boolean
-  readonly DeviceType: number
-  readonly HasZone2: boolean
-  readonly WifiSignalStrength: number
+type ListDeviceDataAtw = ListDeviceDataAta & {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -381,15 +377,7 @@ export const listCapabilityMappingAtw: Record<ListCapability<MELCloudDeviceAtw>,
   }
 } as const
 
-interface DeviceInfoAta {
-  readonly name: string
-  readonly data: {
-    readonly id: number
-    readonly buildingid: number
-  }
-}
-
-interface DeviceInfoAtw {
+export interface DeviceInfo {
   readonly name: string
   readonly data: {
     readonly id: number
@@ -399,12 +387,8 @@ interface DeviceInfoAtw {
     readonly canCool: boolean
     readonly hasZone2: boolean
   }
-  readonly capabilities: Array<Capability<MELCloudDeviceAtw>>
+  capabilities?: string[]
 }
-
-export type DeviceInfo<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? DeviceInfoAtw
-  : DeviceInfoAta
 
 export type FlowArgsAta = {
   readonly device: MELCloudDeviceAta

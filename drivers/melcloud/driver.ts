@@ -1,6 +1,6 @@
 import MELCloudDeviceAta from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { DeviceInfo, FlowArgsAta, ListDevice, SetCapability } from '../../types'
+import { FlowArgsAta, SetCapability } from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
 
@@ -29,19 +29,6 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
           await args.device.onCapability(capability, getCapabilityArg(args, capability))
         })
     }
-  }
-
-  async discoverDevices (): Promise<Array<DeviceInfo<MELCloudDeviceAta>>> {
-    const devices: Array<ListDevice<MELCloudDeviceAta>> = await this.app.listDevices(this)
-    return devices.map((device: ListDevice<MELCloudDeviceAta>): DeviceInfo<MELCloudDeviceAta> => (
-      {
-        name: device.DeviceName,
-        data: {
-          id: device.DeviceID,
-          buildingid: device.BuildingID
-        }
-      }
-    ))
   }
 }
 
