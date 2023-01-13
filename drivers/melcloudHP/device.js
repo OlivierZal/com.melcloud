@@ -143,7 +143,7 @@ class MELCloudHPDevice extends Homey.Device {
           .catch((error) => this.error(`\`${this.getName()}\`: capability \`eco_hot_water\` has not been set (${error})`));
 
         // Update capabilities from data only available via `ListDevice`
-        const deviceList = await this.homey.app.listDevices(this.driver);
+        const deviceList = await this.homey.app.listDevices(this.driver.deviceType);
         deviceList.forEach(async (device) => {
           if (device.DeviceID === data.id && device.BuildingID === data.buildingid) {
             const flowTemperature = device.Device.FlowTemperature;

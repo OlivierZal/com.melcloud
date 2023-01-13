@@ -14,7 +14,7 @@ export default class MELCloudDriverMixin extends Driver {
 
   onPair (session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
-    session.setHandler('list_devices', async (): Promise<DeviceInfo[] | DeviceInfo[]> => await this.discoverDevices())
+    session.setHandler('list_devices', async (): Promise<DeviceInfo[]> => await this.discoverDevices())
   }
 
   async discoverDevices <T extends MELCloudDevice> (): Promise<DeviceInfo[]> {
