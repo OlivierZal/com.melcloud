@@ -27,10 +27,10 @@
 
     <div id="is_authenticated">
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Error Log</legend>
+        <legend class="homey-form-legend" id="error-log">Error Log</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" id="period"></label>
-          <table></table>
+          <table aria-describedby="error-log"></table>
         </div>
       </fieldset>
       <button id="see" class="homey-button-secondary">See all errors since</button>
