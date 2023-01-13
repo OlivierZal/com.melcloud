@@ -127,36 +127,22 @@ export default class MELCloudApp extends App {
 
   async listDevices <T extends MELCloudDevice> (driver: T['driver']): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings()
+    const filter: (device: ListDevice<T>) => boolean = (device: ListDevice<T>): boolean => driver.deviceType === device.Device.DeviceType
     const devices: Array<ListDevice<T>> = []
     for (const building of buildings) {
       if (!(building.ID in this.buildings) || this.buildings[building.ID] !== building.Name) {
         this.buildings[building.ID] = building.Name
       }
-      for (const device of building.Structure.Devices) {
-        if (driver.deviceType === device.Device.DeviceType) {
-          devices.push(device)
-        }
-      }
+      devices.concat(building.Structure.Devices.filter(filter))
+      devices.concat(building.Structure.Devices.filter(filter))
       for (const floor of building.Structure.Floors) {
-        for (const device of floor.Devices) {
-          if (driver.deviceType === device.Device.DeviceType) {
-            devices.push(device)
-          }
-        }
+        devices.concat(floor.Devices.filter(filter))
         for (const area of floor.Areas) {
-          for (const device of area.Devices) {
-            if (driver.deviceType === device.Device.DeviceType) {
-              devices.push(device)
-            }
-          }
+          devices.concat(area.Devices.filter(filter))
         }
       }
       for (const area of building.Structure.Areas) {
-        for (const device of area.Devices) {
-          if (driver.deviceType === device.Device.DeviceType) {
-            devices.push(device)
-          }
-        }
+        devices.concat(area.Devices.filter(filter))
       }
     }
     return devices

@@ -6,6 +6,8 @@ import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
+export type CapabilityValue = boolean | number | string
+
 export type Settings = Record<string, any>
 
 export interface SuccessData {

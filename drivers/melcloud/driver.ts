@@ -5,12 +5,10 @@ import { DeviceInfo, FlowArgsAta, ListDevice, SetCapability } from '../../types'
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
 
 function getCapabilityArg (args: FlowArgsAta, capability: SetCapability<MELCloudDeviceAta>): number | string {
-  switch (capability) {
-    case 'fan_power':
-      return Number(args[capability])
-    default:
-      return args[capability]
+  if (capability === 'fan_power') {
+    return Number(args[capability])
   }
+  return args[capability]
 }
 
 export default class MELCloudDriverAta extends MELCloudDriverMixin {

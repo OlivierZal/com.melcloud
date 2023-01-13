@@ -3,6 +3,7 @@ import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
+  CapabilityValue,
   ExtendedSetCapability,
   getCapabilityMappingAta,
   listCapabilityMappingAta,
@@ -85,7 +86,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     })
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: boolean | number | string): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
@@ -121,7 +122,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.applySyncToDevice()
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: boolean | number | string = this.getCapabilityValue(capability)): boolean | number {
+  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') === true ? true : value as boolean
@@ -137,7 +138,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async convertFromDevice (capability: Capability<MELCloudDeviceAta>, value: boolean | number): Promise<void> {
-    let newValue: boolean | number | string = value
+    let newValue: CapabilityValue = value
     switch (capability) {
       case 'operation_mode':
         newValue = operationModeFromDevice[newValue as number]

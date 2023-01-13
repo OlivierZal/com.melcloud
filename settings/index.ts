@@ -36,7 +36,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const table: HTMLTableElement = document.querySelector('table') as HTMLTableElement
 
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
-  const alwaysOnElement: HTMLSelectElement = document.getElementById('always-on') as HTMLSelectElement
+  const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
   const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
 
   const buildingElement: HTMLSelectElement = document.getElementById('building') as HTMLSelectElement
@@ -112,6 +112,14 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         generateTable(table, data.Errors)
       }
     )
+  }
+
+  function buildSettingsBody (settings: Array<HTMLInputElement | HTMLSelectElement>): Settings {
+    const body: Settings = {}
+    for (const setting of settings) {
+      body[setting.id] = ['true', 'false'].includes(setting.value) ? setting.value === 'true' : setting.value
+    }
+    return body
   }
 
   function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
@@ -260,7 +268,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     if (to !== '' && fromElement.value !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
       // @ts-expect-error
-      void Homey.alert(`Choose a date before ${fromDateHuman}.`)
+      Homey.alert(`Choose a date before ${fromDateHuman}.`)
     }
   })
 
@@ -269,26 +277,14 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   applyElement.addEventListener('click', (): void => {
-    const body: Settings = {}
-    if (intervalElement.value !== '') {
-      const interval: number = Number(intervalElement.value)
-      if (!Number.isInteger(interval) || interval < 1 || interval > 60) {
-        // @ts-expect-error
-        void Homey.alert('The frequency must be an integer between 1 and 60.')
-        return
-      }
-      body.interval = interval
-    }
-    if (alwaysOnElement.value !== '') {
-      body.always_on = alwaysOnElement.value === 'true'
-    }
+    const body: Settings = buildSettingsBody([intervalElement, alwaysOnElement])
     if (Object.keys(body).length === 0) {
       // @ts-expect-error
-      void Homey.alert('No change to apply.')
+      Homey.alert('No change to apply.')
       return
     }
     // @ts-expect-error
-    void Homey.confirm(
+    Homey.confirm(
       'Are you sure you want to override these settings on all devices?',
       null,
       async (error: Error, ok: boolean): Promise<void> => {

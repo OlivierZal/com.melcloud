@@ -3,6 +3,7 @@ import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
+  CapabilityValue,
   ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
@@ -43,7 +44,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: boolean | number | string): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
@@ -89,7 +90,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.applySyncToDevice()
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value: boolean | number | string = this.getCapabilityValue(capability)): boolean | number {
+  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') === true ? true : value as boolean
@@ -104,7 +105,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async convertFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
-    let newValue: boolean | number | string = value
+    let newValue: CapabilityValue = value
     switch (capability) {
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]

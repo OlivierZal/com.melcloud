@@ -5,6 +5,7 @@ import MELCloudDeviceAta from '../drivers/melcloud/device'
 import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import {
   Capability,
+  CapabilityValue,
   Data,
   ExtendedSetCapability,
   GetCapability,
@@ -87,7 +88,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
     for (const capability of Object.keys(this.setCapabilityMapping)) {
-      this.registerCapabilityListener(capability, async (value: boolean | number | string): Promise<void> => {
+      this.registerCapabilityListener(capability, async (value: CapabilityValue): Promise<void> => {
         await this.onCapability(capability as SetCapability<T>, value)
       })
     }
@@ -95,7 +96,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async onCapability (
     _capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>,
-    _value: boolean | number | string
+    _value: CapabilityValue
   ): Promise<void> {
     throw new Error('Method not implemented.')
   }
@@ -132,7 +133,7 @@ export default class MELCloudDeviceMixin extends Device {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.convertToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as boolean | number | string)
+          updateData[tag] = this.convertToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as CapabilityValue)
         } else {
           updateData[tag] = this.convertToDevice(capability as SetCapability<T>)
         }
@@ -144,7 +145,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   convertToDevice (
     _capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
-    _value: boolean | number | string = this.getCapabilityValue(_capability)
+    _value: CapabilityValue = this.getCapabilityValue(_capability)
   ): boolean | number {
     throw new Error('Method not implemented.')
   }
@@ -290,7 +291,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: boolean | number | string): Promise<void> {
+  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value).then((): void => {
         this.log('Capability', capability, 'is', value)
