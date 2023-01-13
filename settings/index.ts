@@ -119,9 +119,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     const body: Settings = {}
     for (const setting of settings) {
       if (setting.value !== '') {
-        body[setting.id] = ['true', 'false'].includes(setting.value)
-          ? setting.value === 'true'
-          : !Number.isNaN(Number.parseInt(setting.value)) ? Number.parseInt(setting.value) : setting.value
+        if (['true', 'false'].includes(setting.value)) {
+          body[setting.id] = setting.value === 'true'
+          continue
+        }
+        const settingValue: number = Number.parseInt(setting.value)
+        body[setting.id] = !Number.isNaN(settingValue) ? settingValue : setting.value
       }
     }
     return body
