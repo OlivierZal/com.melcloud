@@ -17,6 +17,8 @@ import {
 } from './types'
 
 const format: string = 'dd LLL yy HH:mm'
+const defaultLimit: number = 1
+const defaultOffset: number = 0
 
 function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   if (utcDate === null) {
@@ -26,30 +28,23 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   return format !== undefined ? localDate.toFormat(format) : localDate.toISO({ includeOffset: false })
 }
 
-function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDate: DateTime, limit: number } {
+function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDate: DateTime, period: number } {
   const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
   const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
-  let limit: number = 0
-  let offset: number = 0
-  if (from === null) {
-    if (query.limit !== undefined) {
-      limit = Number.parseInt(query.limit)
-      if (Number.isNaN(limit)) {
-        limit = 29
-      }
-    }
-    if (query.offset !== undefined) {
-      offset = Number.parseInt(query.offset)
-      if (Number.isNaN(limit)) {
-        offset = 0
-      }
-    }
+  const period: number = Number.parseInt(query.limit ?? String(defaultLimit))
+  let limit: number = period
+  let offset: number = Number.parseInt(query.offset ?? String(defaultOffset))
+  if (from !== null || Number.isNaN(limit)) {
+    limit = defaultLimit
+  }
+  if (from !== null || Number.isNaN(offset)) {
+    offset = defaultOffset
   }
   const days: number = limit * offset + offset
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
     toDate: to.minus({ days }),
-    limit
+    period: !Number.isNaN(period) ? period : defaultLimit
   }
 }
 
@@ -84,7 +79,7 @@ module.exports = {
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const { fromDate, toDate, limit } = handleErrorLogQuery(query)
+    const { fromDate, toDate, period } = handleErrorLogQuery(query)
     const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate) as ErrorLogData[]
 
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
@@ -108,7 +103,7 @@ module.exports = {
           return Number(date2.diff(date1))
         }),
       FromDateHuman: fromDate.toFormat('dd LLL yy'),
-      NextFromDate: NextToDate.minus({ days: limit !== 0 ? limit : 1 }).toISODate(),
+      NextFromDate: NextToDate.minus({ days: period }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }
   },
