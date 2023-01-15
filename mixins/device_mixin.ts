@@ -199,7 +199,9 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  async updateThermostatMode (): Promise<void> {}
+  async updateThermostatMode (): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
 
   async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
     if (deviceFromList === null) {

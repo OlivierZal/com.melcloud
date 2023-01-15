@@ -114,6 +114,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
+  async updateThermostatMode (): Promise<void> {
+    // 'Method not implemented.'
+  }
+
   async runEnergyReports (): Promise<void> {
     const reportMapping: ReportCapabilities<MELCloudDeviceAtw> = {
       'meter_power.daily_cop': 0,
