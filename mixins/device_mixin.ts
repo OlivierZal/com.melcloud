@@ -7,7 +7,6 @@ import {
   Capability,
   CapabilityValue,
   Data,
-  ExtendedCapability,
   ExtendedSetCapability,
   GetCapability,
   GetCapabilityMapping,
@@ -316,7 +315,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue <T extends MELCloudDevice> (capability: ExtendedCapability<T>, value: CapabilityValue): Promise<void> {
+  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T>, value: CapabilityValue): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value).then((): void => {
         this.log('Capability', capability, 'is', value)
