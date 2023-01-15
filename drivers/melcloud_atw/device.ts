@@ -42,8 +42,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async onCapability (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
-    await super.onCapability(capability, value)
+  async specificOnCapability (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
     switch (capability) {
       case 'onoff.forced_hot_water':
         this.diff['onoff.forced_hot_water'] = value as boolean
@@ -81,7 +80,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'target_temperature.tank_water':
         this.diff['target_temperature.tank_water'] = value as number
     }
-    this.applySyncToDevice()
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {

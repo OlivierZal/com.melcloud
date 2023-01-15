@@ -79,8 +79,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
-    await super.onCapability(capability, value)
+  async specificOnCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
     switch (capability) {
       case 'thermostat_mode':
         await this.setAlwaysOnWarning()
@@ -108,7 +107,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'fan_power':
         this.diff.fan_power = value as number
     }
-    this.applySyncToDevice()
   }
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {

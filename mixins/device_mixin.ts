@@ -100,6 +100,12 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setAlwaysOnWarning()
       this.diff.onoff = value as boolean
     }
+    await this.specificOnCapability(capability, value)
+    this.applySyncToDevice()
+  }
+
+  async specificOnCapability (_capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, _value: CapabilityValue): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   async setAlwaysOnWarning (): Promise<void> {
