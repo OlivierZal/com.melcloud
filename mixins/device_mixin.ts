@@ -87,7 +87,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
-    for (const capability of Object.keys(this.setCapabilityMapping)) {
+    for (const capability of [...Object.keys(this.setCapabilityMapping), 'thermostat_mode']) {
       this.registerCapabilityListener(capability, async (value: CapabilityValue): Promise<void> => {
         await this.onCapability(capability as ExtendedSetCapability<T>, value)
       })
