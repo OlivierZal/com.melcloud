@@ -7,6 +7,8 @@ import {
   Capability,
   CapabilityValue,
   Data,
+  ExtendedCapability,
+  ExtendedSetCapability,
   GetCapability,
   GetCapabilityMapping,
   ListCapability,
@@ -88,12 +90,12 @@ export default class MELCloudDeviceMixin extends Device {
   registerCapabilityListeners <T extends MELCloudDevice> (): void {
     for (const capability of Object.keys(this.setCapabilityMapping)) {
       this.registerCapabilityListener(capability, async (value: CapabilityValue): Promise<void> => {
-        await this.onCapability(capability as SetCapability<T>, value)
+        await this.onCapability(capability as ExtendedSetCapability<T>, value)
       })
     }
   }
 
-  async onCapability (capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
@@ -144,10 +146,13 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   convertToDevice (
-    _capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
-    _value: CapabilityValue = this.getCapabilityValue(_capability)
+    capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
+    value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
-    throw new Error('Method not implemented.')
+    if (capability === 'onoff') {
+      return this.getSetting('always_on') === true ? true : value as boolean
+    }
+    return value as boolean | number
   }
 
   async syncFromDevice <T extends MELCloudDevice> (): Promise<void> {
@@ -157,10 +162,11 @@ export default class MELCloudDeviceMixin extends Device {
 
   async sync <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
     await this.updateCapabilities(data)
+    await this.updateThermostatMode()
 
     const deviceFromList: ListDevice<T> | null = await this.getDeviceFromList()
     await this.updateListCapabilities(deviceFromList)
-    await this.customUpdate(deviceFromList)
+    await this.updateStore(deviceFromList)
     this.planSyncFromDevice({ minutes: this.getSetting('interval') })
   }
 
@@ -194,6 +200,10 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
+  async updateThermostatMode (): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
   async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
     if (deviceFromList === null) {
       return
@@ -204,8 +214,23 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async customUpdate (_deviceFromList?: ListDevice<MELCloudDeviceAta> | ListDevice<MELCloudDeviceAtw> | null): Promise<void> {
-    throw new Error('Method not implemented.')
+  async updateStore <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
+    if (deviceFromList === null) {
+      return
+    }
+    const { canCool, hasZone2 } = this.getStore()
+    let hasStoreChanged: boolean = false
+    if (deviceFromList.Device.CanCool !== canCool) {
+      await this.setStoreValue('canCool', deviceFromList.Device.CanCool)
+      hasStoreChanged = true
+    }
+    if (deviceFromList.Device.HasZone2 !== hasZone2) {
+      await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2)
+      hasStoreChanged = true
+    }
+    if (hasStoreChanged) {
+      await this.handleCapabilities()
+    }
   }
 
   planSyncFromDevice (object: object): void {
@@ -291,7 +316,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
+  async setCapabilityValue <T extends MELCloudDevice> (capability: ExtendedCapability<T>, value: CapabilityValue): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value).then((): void => {
         this.log('Capability', capability, 'is', value)

@@ -140,6 +140,10 @@ export type SetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAt
   ? keyof SetCapabilitiesAtw
   : keyof SetCapabilitiesAta
 
+export type ExtendedSetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? keyof SetCapabilitiesAtw | 'thermostat_mode'
+  : keyof SetCapabilitiesAta | 'thermostat_mode'
+
 export type GetCapability<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? keyof GetCapabilitiesAtw
   : keyof GetCapabilitiesAta
@@ -153,6 +157,8 @@ export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDevic
   : keyof ReportCapabilitiesAta
 
 export type Capability<T extends MELCloudDevice> = SetCapability<T> | GetCapability<T> | ListCapability<T> | ReportCapability<T>
+
+export type ExtendedCapability<T extends MELCloudDevice> = Capability<T> | 'thermostat_mode'
 
 interface SetDeviceDataAta {
   readonly EffectiveFlags: number

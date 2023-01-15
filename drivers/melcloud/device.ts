@@ -4,6 +4,7 @@ import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
   CapabilityValue,
+  ExtendedSetCapability,
   getCapabilityMappingAta,
   listCapabilityMappingAta,
   ReportCapabilities,
@@ -78,14 +79,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  registerCapabilityListeners (): void {
-    super.registerCapabilityListeners()
-    this.registerCapabilityListener('thermostat_mode', async (value: 'auto' | 'cool' | 'heat' | 'off'): Promise<void> => {
-      await this.onCapability('thermostat_mode', value)
-    })
-  }
-
-  async onCapability (capability: SetCapability<MELCloudDeviceAta> | 'thermostat_mode', value: CapabilityValue): Promise<void> {
+  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
     await super.onCapability(capability, value)
     switch (capability) {
       case 'thermostat_mode':
@@ -119,8 +113,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
 
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
-      case 'onoff':
-        return this.getSetting('always_on') === true ? true : value as boolean
       case 'operation_mode':
         return operationModeToDevice[value as string]
       case 'vertical':
@@ -128,7 +120,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'horizontal':
         return horizontalToDevice[value as string]
       default:
-        return value as number
+        return super.convertToDevice(capability, value)
     }
   }
 
@@ -147,7 +139,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async customUpdate (): Promise<void> {
+  async updateThermostatMode (): Promise<void> {
     let operationMode: string = this.getCapabilityValue('operation_mode')
     if (this.getCapabilityValue('onoff') === false || ['dry', 'fan'].includes(operationMode)) {
       operationMode = 'off'

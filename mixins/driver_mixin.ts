@@ -20,6 +20,7 @@ export default class MELCloudDriverMixin extends Driver {
   async discoverDevices <T extends MELCloudDevice> (): Promise<DeviceDetails[]> {
     const devices: Array<ListDevice<T>> = await this.app.listDevices(this.deviceType)
     return devices.map((device: ListDevice<T>): DeviceDetails => {
+      const { CanCool, HasZone2 } = device.Device
       const deviceDetails: DeviceDetails = {
         name: device.DeviceName,
         data: {
@@ -27,11 +28,11 @@ export default class MELCloudDriverMixin extends Driver {
           buildingid: device.BuildingID
         },
         store: {
-          canCool: device.Device.CanCool,
-          hasZone2: device.Device.HasZone2
+          canCool: CanCool,
+          hasZone2: HasZone2
         }
       }
-      const capabilities: string[] = this.getRequiredCapabilities(device.Device.CanCool, device.Device.HasZone2)
+      const capabilities: string[] = this.getRequiredCapabilities(CanCool, HasZone2)
       if (capabilities.length > 0) {
         deviceDetails.capabilities = capabilities
       }
@@ -39,7 +40,7 @@ export default class MELCloudDriverMixin extends Driver {
     })
   }
 
-  getRequiredCapabilities (_canCool?: boolean, _hasZone2?: boolean): string[] {
+  getRequiredCapabilities (_canCool: boolean, _hasZone2: boolean): string[] {
     return []
   }
 
