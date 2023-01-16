@@ -15,15 +15,15 @@ import {
   setCapabilityMappingAta
 } from '../../types'
 
-function reverse (mapping: Record<number, string>): Record<string, number> {
-  const reversedMapping: Record<string, number> = {}
+function reverse (mapping: Record<string, string>): Record<string, string> {
+  const reversedMapping: Record<string, string> = {}
   for (const [capabilityValue, deviceValue] of Object.entries(mapping)) {
-    reversedMapping[deviceValue] = Number(capabilityValue)
+    reversedMapping[deviceValue] = capabilityValue
   }
   return reversedMapping
 }
 
-const operationModeFromDevice: Record<number, string> = {
+const operationModeFromDevice: Record<string, string> = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -31,9 +31,9 @@ const operationModeFromDevice: Record<number, string> = {
   8: 'auto'
 } as const
 
-const operationModeToDevice: Record<string, number> = reverse(operationModeFromDevice)
+const operationModeToDevice: Record<string, string> = reverse(operationModeFromDevice)
 
-const verticalFromDevice: Record<number, string> = {
+const verticalFromDevice: Record<string, string> = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -43,9 +43,9 @@ const verticalFromDevice: Record<number, string> = {
   7: 'swing'
 } as const
 
-const verticalToDevice: Record<string, number> = reverse(verticalFromDevice)
+const verticalToDevice: Record<string, string> = reverse(verticalFromDevice)
 
-const horizontalFromDevice: Record<number, string> = {
+const horizontalFromDevice: Record<string, string> = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',
@@ -56,13 +56,22 @@ const horizontalFromDevice: Record<number, string> = {
   12: 'swing'
 } as const
 
-const horizontalToDevice: Record<string, number> = reverse(horizontalFromDevice)
+const horizontalToDevice: Record<string, string> = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
+  declare operationModeCapability: SetCapability<MELCloudDeviceAta>
   declare diff: SetCapabilities<MELCloudDeviceAta>
 
   async onInit (): Promise<void> {
+    this.operationModeCapability = 'operation_mode'
+    this.operationModeToThermostatMode = {
+      auto: 'auto',
+      heat: 'heat',
+      cool: 'cool',
+      dry: 'off',
+      fan: 'off'
+    } as const
     this.requiredCapabilities = [
       ...Object.keys(setCapabilityMappingAta),
       ...Object.keys(getCapabilityMappingAta),
@@ -82,8 +91,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   async specificOnCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
     switch (capability) {
       case 'thermostat_mode':
-        await this.setAlwaysOnWarning()
-        this.diff.onoff = value !== 'off'
         if (value !== 'off') {
           this.diff.operation_mode = value as string
         }
@@ -112,11 +119,11 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
     switch (capability) {
       case 'operation_mode':
-        return operationModeToDevice[value as string]
+        return Number(operationModeToDevice[value as string])
       case 'vertical':
-        return verticalToDevice[value as string]
+        return Number(verticalToDevice[value as string])
       case 'horizontal':
-        return horizontalToDevice[value as string]
+        return Number(horizontalToDevice[value as string])
       default:
         return super.convertToDevice(capability, value)
     }
@@ -135,14 +142,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         newValue = horizontalFromDevice[newValue as number]
     }
     await this.setCapabilityValue(capability, newValue)
-  }
-
-  async updateThermostatMode (): Promise<void> {
-    let operationMode: string = this.getCapabilityValue('operation_mode')
-    if (this.getCapabilityValue('onoff') === false || ['dry', 'fan'].includes(operationMode)) {
-      operationMode = 'off'
-    }
-    await this.setCapabilityValue('thermostat_mode', operationMode)
   }
 
   async runEnergyReports (): Promise<void> {

@@ -2285,14 +2285,11 @@
       "class": "thermostat",
       "capabilities": [
         "fan_power",
-        "measure_temperature",
+        "horizontal",
         "onoff",
         "operation_mode",
-        "target_temperature",
-        "vertical",
-        "horizontal",
-        "thermostat_mode",
         "measure_power.wifi",
+        "measure_temperature",
         "meter_power.hourly_consumed",
         "meter_power.hourly_consumed_auto",
         "meter_power.hourly_consumed_cooling",
@@ -2313,7 +2310,10 @@
         "meter_power.total_consumed_dry",
         "meter_power.total_consumed_fan",
         "meter_power.total_consumed_heating",
-        "meter_power.total_consumed_other"
+        "meter_power.total_consumed_other",
+        "target_temperature",
+        "thermostat_mode",
+        "vertical"
       ],
       "capabilitiesOptions": {
         "measure_power.wifi": {
@@ -2875,7 +2875,8 @@
         "target_temperature.zone1_flow_heat",
         "target_temperature.zone2",
         "target_temperature.zone2_flow_cool",
-        "target_temperature.zone2_flow_heat"
+        "target_temperature.zone2_flow_heat",
+        "thermostat_mode"
       ],
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
@@ -3215,6 +3216,12 @@
           },
           "min": 25,
           "max": 60
+        },
+        "thermostat_mode": {
+          "insights": true,
+          "title": {
+            "en": "HomeKit Thermostat Mode"
+          }
         }
       },
       "pair": [

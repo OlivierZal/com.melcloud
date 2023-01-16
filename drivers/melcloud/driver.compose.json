@@ -9,14 +9,11 @@
   "class": "thermostat",
   "capabilities": [
     "fan_power",
-    "measure_temperature",
+    "horizontal",
     "onoff",
     "operation_mode",
-    "target_temperature",
-    "vertical",
-    "horizontal",
-    "thermostat_mode",
     "measure_power.wifi",
+    "measure_temperature",
     "meter_power.hourly_consumed",
     "meter_power.hourly_consumed_auto",
     "meter_power.hourly_consumed_cooling",
@@ -37,7 +34,10 @@
     "meter_power.total_consumed_dry",
     "meter_power.total_consumed_fan",
     "meter_power.total_consumed_heating",
-    "meter_power.total_consumed_other"
+    "meter_power.total_consumed_other",
+    "target_temperature",
+    "thermostat_mode",
+    "vertical"
   ],
   "capabilitiesOptions": {
     "measure_power.wifi": {

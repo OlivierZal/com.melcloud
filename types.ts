@@ -8,6 +8,8 @@ export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 export type CapabilityValue = boolean | number | string
 
+export type ThermostatMode = 'auto' | 'heat' | 'cool' | 'off'
+
 export interface Settings extends Record<string, any> {
   always_on?: boolean
   interval?: number
@@ -154,7 +156,9 @@ export type ReportCapability<T extends MELCloudDevice> = T extends MELCloudDevic
   ? keyof ReportCapabilitiesAtw
   : keyof ReportCapabilitiesAta
 
-export type Capability<T extends MELCloudDevice> = ExtendedSetCapability<T> | GetCapability<T> | ListCapability<T> | ReportCapability<T>
+export type Capability<T extends MELCloudDevice> = SetCapability<T> | GetCapability<T> | ListCapability<T> | ReportCapability<T>
+
+export type ExtendedCapability<T extends MELCloudDevice> = Capability<T> | 'thermostat_mode'
 
 interface SetDeviceDataAta {
   readonly EffectiveFlags: number

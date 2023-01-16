@@ -7,6 +7,7 @@ import {
   Capability,
   CapabilityValue,
   Data,
+  ExtendedCapability,
   ExtendedSetCapability,
   GetCapability,
   GetCapabilityMapping,
@@ -19,12 +20,15 @@ import {
   SetCapability,
   SetCapabilityMapping,
   Settings,
+  ThermostatMode,
   UpdateData
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
+  operationModeCapability!: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>
+  operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
   setCapabilityMapping!: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>>
@@ -75,7 +79,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async handleCapabilities (dashboardCapabilities: string[] = this.getDashboardCapabilities()): Promise<void> {
-    const requiredCapabilities = [...this.requiredCapabilities, ...dashboardCapabilities]
+    const requiredCapabilities: string[] = [...this.requiredCapabilities, ...dashboardCapabilities]
     for (const capability of requiredCapabilities) {
       await this.addCapability(capability)
     }
@@ -94,11 +98,14 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async onCapability (capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
+  async onCapability <T extends MELCloudDevice> (capability: ExtendedSetCapability<T>, value: CapabilityValue): Promise<void> {
     this.clearSyncPlan()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
       this.diff.onoff = value as boolean
+    } else if (capability === 'thermostat_mode') {
+      await this.setAlwaysOnWarning()
+      this.diff.onoff = value !== 'off'
     }
     await this.specificOnCapability(capability, value)
     this.applySyncToDevice()
@@ -206,7 +213,12 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async updateThermostatMode (): Promise<void> {
-    throw new Error('Method not implemented.')
+    if (!this.hasCapability('thermostat_mode')) {
+      return
+    }
+    const isOn: boolean = this.getCapabilityValue('onoff')
+    const operationMode: string | number = this.getCapabilityValue(this.operationModeCapability)
+    await this.setCapabilityValue('thermostat_mode', isOn ? this.operationModeToThermostatMode[operationMode] : 'off')
   }
 
   async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
@@ -321,11 +333,11 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue <T extends MELCloudDevice> (capability: Capability<T>, value: CapabilityValue): Promise<void> {
+  async setCapabilityValue <T extends MELCloudDevice> (capability: ExtendedCapability<T>, value: CapabilityValue): Promise<void> {
     if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value).then((): void => {
-        this.log('Capability', capability, 'is', value)
-      }).catch(this.error)
+      await super.setCapabilityValue(capability, value)
+        .then((): void => { this.log('Capability', capability, 'is', value) })
+        .catch(this.error)
     }
   }
 

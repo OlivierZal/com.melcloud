@@ -4,6 +4,7 @@ import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import {
   Capability,
   CapabilityValue,
+  ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   ReportCapabilities,
@@ -11,8 +12,15 @@ import {
   ReportData,
   SetCapabilities,
   SetCapability,
-  setCapabilityMappingAtw
+  setCapabilityMappingAtw,
+  ThermostatMode
 } from '../../types'
+
+const thermostatModeToOperationMode: Partial<Record<ThermostatMode, string>> = {
+  auto: '2',
+  heat: '0',
+  cool: '3'
+} as const
 
 const operationModeFromDevice: string[] = [
   'idle',
@@ -26,10 +34,19 @@ const operationModeFromDevice: string[] = [
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
+  declare operationModeCapability: SetCapability<MELCloudDeviceAtw>
   declare diff: SetCapabilities<MELCloudDeviceAtw>
 
   async onInit (): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
+    this.operationModeCapability = 'operation_mode_zone_with_cool.zone1'
+    this.operationModeToThermostatMode = {
+      2: 'auto',
+      1: 'heat',
+      0: 'heat',
+      4: 'cool',
+      3: 'cool'
+    } as const
     this.requiredCapabilities = this.driver.getRequiredCapabilities(canCool, hasZone2)
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
@@ -42,8 +59,13 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async specificOnCapability (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
+  async specificOnCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
     switch (capability) {
+      case 'thermostat_mode':
+        if (value !== 'off') {
+          this.diff['operation_mode_zone.zone1'] = thermostatModeToOperationMode[value as ThermostatMode] as string
+        }
+        break
       case 'onoff.forced_hot_water':
         this.diff['onoff.forced_hot_water'] = value as boolean
         break
@@ -110,10 +132,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         newValue = Boolean(newValue)
     }
     await this.setCapabilityValue(capability, newValue)
-  }
-
-  async updateThermostatMode (): Promise<void> {
-    // 'Method not implemented.'
   }
 
   async runEnergyReports (): Promise<void> {

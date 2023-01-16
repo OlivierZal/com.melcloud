@@ -111,10 +111,16 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   getRequiredCapabilities (canCool: boolean, hasZone2: boolean): string[] {
     return [
       ...this.capabilitiesAtw,
-      ...canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw,
+      ...canCool
+        ? [...this.coolCapabilitiesAtw, 'thermostat_mode']
+        : this.notCoolCapabilitiesAtw,
       ...hasZone2
-        ? [...this.zone2CapabilitiesAtw,
-            ...canCool ? this.coolZone2CapabilitiesAtw : this.notCoolZone2CapabilitiesAtw]
+        ? [
+            ...this.zone2CapabilitiesAtw,
+            ...canCool
+              ? this.coolZone2CapabilitiesAtw
+              : this.notCoolZone2CapabilitiesAtw
+          ]
         : []
     ]
   }

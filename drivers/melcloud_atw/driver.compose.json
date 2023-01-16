@@ -59,7 +59,8 @@
     "target_temperature.zone1_flow_heat",
     "target_temperature.zone2",
     "target_temperature.zone2_flow_cool",
-    "target_temperature.zone2_flow_heat"
+    "target_temperature.zone2_flow_heat",
+    "thermostat_mode"
   ],
   "capabilitiesOptions": {
     "alarm_generic.booster_heater1": {
@@ -399,6 +400,12 @@
       },
       "min": 25,
       "max": 60
+    },
+    "thermostat_mode": {
+      "insights": true,
+      "title": {
+        "en": "HomeKit Thermostat Mode"
+      }
     }
   },
   "pair": [
