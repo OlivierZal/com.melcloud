@@ -12,7 +12,8 @@ import {
   ReportData,
   SetCapabilities,
   SetCapability,
-  setCapabilityMappingAta
+  setCapabilityMappingAta,
+  ThermostatMode
 } from '../../types'
 
 function reverse (mapping: Record<string, string>): Record<string, string> {
@@ -92,7 +93,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     switch (capability) {
       case 'thermostat_mode':
         if (value !== 'off') {
-          this.diff.operation_mode = value as string
+          this.diff.operation_mode = reverse(this.operationModeToThermostatMode)[value as ThermostatMode]
         }
         break
       case 'operation_mode':

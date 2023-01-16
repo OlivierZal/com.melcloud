@@ -63,7 +63,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     switch (capability) {
       case 'thermostat_mode':
         if (value !== 'off') {
-          this.diff['operation_mode_zone.zone1'] = thermostatModeToOperationMode[value as ThermostatMode] as string
+          this.diff['operation_mode_zone.zone1'] = thermostatModeToOperationMode[value as ThermostatMode]
         }
         break
       case 'onoff.forced_hot_water':
