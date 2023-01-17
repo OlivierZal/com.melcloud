@@ -88,12 +88,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       offset: String(offset)
     }
     const queryString: string = new URLSearchParams(query as Record<string, string>).toString()
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('GET', `/report/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
           hasAuthenticated(false)
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
@@ -137,11 +137,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       holidayModeEndDateElement.value = settings.HMEnabled ? (settings.HMEndDate ?? '') : ''
       return
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('GET', `/settings/holiday_mode/buildings/${buildingElement.value}`,
       async (error: Error, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
@@ -159,11 +159,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       frostProtectionMaximumTemperatureElement.value = String(settings.FPMaxTemperature)
       return
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('GET', `/settings/frost_protection/buildings/${buildingElement.value}`,
       async (error: Error, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
@@ -175,11 +175,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   }
 
   function getBuildings (): void {
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('GET', '/buildings',
       async (error: Error, buildings: Array<Building<MELCloudDevice>>): Promise<void> => {
         if (error !== null) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
@@ -212,19 +212,19 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   }
 
-  // @ts-expect-error
+  // @ts-expect-error bug
   Homey.get('username', async (error: Error, username: string): Promise<void> => {
     if (error !== null) {
-      // @ts-expect-error
+      // @ts-expect-error bug
       await Homey.alert(error)
       return
     }
     usernameElement.value = username ?? ''
   })
-  // @ts-expect-error
+  // @ts-expect-error bug
   Homey.get('password', async (error: Error, password: string): Promise<void> => {
     if (error !== null) {
-      // @ts-expect-error
+      // @ts-expect-error bug
       await Homey.alert(error)
       return
     }
@@ -238,35 +238,35 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       username: usernameElement.value,
       password: passwordElement.value
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('POST', '/login', body,
       async (error: Error, login: boolean): Promise<void> => {
         if (error !== null) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!login) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert('Authentication failed.')
           return
         }
         load()
-        // @ts-expect-error
+        // @ts-expect-error bug
         await Homey.set('username', usernameElement.value, async (err: Error): Promise<void> => {
           if (err !== null) {
-            // @ts-expect-error
+            // @ts-expect-error bug
             await Homey.alert(err)
           }
         })
-        // @ts-expect-error
+        // @ts-expect-error bug
         await Homey.set('password', passwordElement.value, async (err: Error): Promise<void> => {
           if (err !== null) {
-            // @ts-expect-error
+            // @ts-expect-error bug
             await Homey.alert(err)
           }
         })
-        // @ts-expect-error
+        // @ts-expect-error bug
         await Homey.alert('Authentication succeeded.')
       }
     )
@@ -275,7 +275,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   fromElement.addEventListener('change', (): void => {
     if (to !== '' && fromElement.value !== '' && Date.parse(fromElement.value) > Date.parse(to)) {
       fromElement.value = to
-      // @ts-expect-error
+      // @ts-expect-error bug
       Homey.alert(`Choose a date before ${fromDateHuman}.`)
     }
   })
@@ -288,7 +288,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     const interval: number = Number.parseInt(intervalElement.value)
     if (Number.isNaN(interval) || interval < 1 || interval > 60) {
       intervalElement.value = ''
-      // @ts-expect-error
+      // @ts-expect-error bug
       Homey.alert('The frequency must be an integer between 1 and 60.')
     }
   })
@@ -296,39 +296,39 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   applyElement.addEventListener('click', (): void => {
     const body: Settings = buildSettingsBody([intervalElement, alwaysOnElement])
     if (Object.keys(body).length === 0) {
-      // @ts-expect-error
+      // @ts-expect-error bug
       Homey.alert('No change to apply.')
       return
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.confirm(
       'Are you sure you want to override these settings on all devices?',
       null,
       async (error: Error, ok: boolean): Promise<void> => {
         if (error !== null) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!ok) {
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert('Change has not been applied.')
           return
         }
-        // @ts-expect-error
+        // @ts-expect-error bug
         Homey.api('POST', '/settings/devices', body,
           async (error: Error, success: boolean): Promise<void> => {
             if (error !== null) {
-              // @ts-expect-error
+              // @ts-expect-error bug
               await Homey.alert(error.message)
               return
             }
             if (!success) {
-              // @ts-expect-error
+              // @ts-expect-error bug
               await Homey.alert('No change to apply.')
               return
             }
-            // @ts-expect-error
+            // @ts-expect-error bug
             await Homey.alert('Change has been applied to all devices.')
           }
         )
@@ -379,23 +379,23 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       StartDate: Enabled ? holidayModeStartDateElement.value : '',
       EndDate: Enabled ? holidayModeEndDateElement.value : ''
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('POST', `/settings/holiday_mode/buildings/${buildingElement.value}`, body,
       async (error: Error, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingHolidayModeSettings()
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!success) {
           getBuildingHolidayModeSettings()
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert('Update failed.')
           return
         }
         getBuildingHolidayModeSettings()
-        // @ts-expect-error
+        // @ts-expect-error bug
         await Homey.alert('Update succeeded.')
       }
     )
@@ -423,22 +423,22 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       MinimumTemperature: Number(frostProtectionMinimumTemperatureElement.value),
       MaximumTemperature: Number(frostProtectionMaximumTemperatureElement.value)
     }
-    // @ts-expect-error
+    // @ts-expect-error bug
     Homey.api('POST', `/settings/frost_protection/buildings/${buildingElement.value}`, body,
       async (error: Error, success: boolean): Promise<void> => {
         if (error !== null) {
           getBuildingFrostProtectionSettings()
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!success) {
           getBuildingFrostProtectionSettings()
-          // @ts-expect-error
+          // @ts-expect-error bug
           await Homey.alert('Update failed.')
           return
         }
-        // @ts-expect-error
+        // @ts-expect-error bug
         await Homey.alert('Update succeeded.')
       }
     )

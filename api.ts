@@ -31,20 +31,19 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
 function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDate: DateTime, period: number } {
   const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
   const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
-  const period: number = Number.parseInt(query.limit ?? String(defaultLimit))
-  let limit: number = period
-  let offset: number = Number.parseInt(query.offset ?? String(defaultOffset))
-  if (from !== null || Number.isNaN(limit)) {
-    limit = defaultLimit
-  }
-  if (from !== null || Number.isNaN(offset)) {
-    offset = defaultOffset
-  }
+
+  let period: number = Number.parseInt(query.limit)
+  period = !Number.isNaN(period) ? period : defaultLimit
+
+  let offset: number = Number.parseInt(query.offset)
+  offset = from === null && !Number.isNaN(offset) ? offset : defaultOffset
+
+  const limit: number = from === null ? period : defaultLimit
   const days: number = limit * offset + offset
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
     toDate: to.minus({ days }),
-    period: !Number.isNaN(period) ? period : defaultLimit
+    period
   }
 }
 
