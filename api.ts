@@ -32,10 +32,10 @@ function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDat
   const from: DateTime | null = query.from !== undefined && query.from !== '' ? DateTime.fromISO(query.from) : null
   const to: DateTime = query.to !== undefined && query.to !== '' ? DateTime.fromISO(query.to) : DateTime.now()
 
-  let period: number = Number.parseInt(query.limit)
+  let period: number = Number.parseInt(String(query.limit))
   period = !Number.isNaN(period) ? period : defaultLimit
 
-  let offset: number = Number.parseInt(query.offset)
+  let offset: number = Number.parseInt(String(query.offset))
   offset = from === null && !Number.isNaN(offset) ? offset : defaultOffset
 
   const limit: number = from === null ? period : defaultLimit

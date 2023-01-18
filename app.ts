@@ -323,7 +323,7 @@ export default class MELCloudApp extends App {
     throw new Error(errorMessage.slice(0, -1))
   }
 
-  setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
+  setTimeout (type: string, callback: () => Promise<boolean>, interval: number | object): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next', type, 'will run in', duration.shiftTo('days').toHuman(),

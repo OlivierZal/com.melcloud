@@ -341,7 +341,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  setInterval (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
+  setInterval (type: string, callback: () => Promise<void>, interval: number | object): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       `${type.charAt(0).toUpperCase()}${type.slice(1)}`, 'will run every', duration.shiftTo('days', 'hours').toHuman(),
@@ -350,7 +350,7 @@ export default class MELCloudDeviceMixin extends Device {
     return this.homey.setInterval(callback, Number(duration))
   }
 
-  setTimeout (type: string, callback: Function, interval: number | object): NodeJS.Timeout {
+  setTimeout (type: string, callback: () => Promise<void>, interval: number | object): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
