@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { DateTime, Duration, Settings } from 'luxon'
-import { App } from 'homey'
+import { App, Driver } from 'homey'
+import { HomeyAPIApp } from 'homey-api'
 import {
   Building,
   Data,
@@ -18,6 +19,7 @@ import {
   LoginData,
   LoginPostData,
   MELCloudDevice,
+  OutdoorTemperatureListenerData,
   PostData,
   ReportData,
   ReportPostData,
@@ -26,16 +28,27 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
+  api!: HomeyAPIApp
   buildings!: Record<Building<MELCloudDevice>['ID'], Building<MELCloudDevice>['Name']>
+  outdoorTemperatureDevice!: any
+  outdoorTemperatureListener!: any
   loginTimeout!: NodeJS.Timeout
 
   async onInit (): Promise<void> {
+    // @ts-expect-error bug
+    this.api = new HomeyAPIApp({ homey: this.homey })
+    // @ts-expect-error bug
+    await this.api.devices.connect()
+
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] = this.homey.settings.get('ContextKey')
 
     this.buildings = {}
+    this.outdoorTemperatureDevice = null
+    this.outdoorTemperatureListener = null
     await this.refreshLogin()
+    await this.listenToOutdoorTemperature().catch(this.error)
   }
 
   async refreshLogin (): Promise<void> {
@@ -72,19 +85,17 @@ export default class MELCloudApp extends App {
         Password: password,
         Persist: true
       }
-      this.log('Login to MELCloud...', postData)
+      this.log('Login to MELCloud...\n', postData)
       const { data } = await axios.post<LoginData>('/Login/ClientLogin', postData)
-      this.log('Login to MELCloud:', data)
+      this.log('Login to MELCloud:\n', data)
       if (data.LoginData?.ContextKey !== undefined) {
-        this.homey.settings.set('ContextKey', data.LoginData.ContextKey)
-        this.homey.settings.set('Expiry', data.LoginData.Expiry)
         axios.defaults.headers.common['X-MitsContextKey'] = data.LoginData.ContextKey
-        if (username !== this.homey.settings.get('username')) {
-          this.homey.settings.set('username', username)
-        }
-        if (password !== this.homey.settings.get('password')) {
-          this.homey.settings.set('password', password)
-        }
+        this.setSettings({
+          ContextKey: data.LoginData.ContextKey,
+          Expiry: data.LoginData.Expiry,
+          username,
+          password
+        })
         await this.refreshLogin()
         return true
       }
@@ -94,20 +105,29 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  getDeviceIds (buildingId?: number): Array<MELCloudDevice['id']> {
-    const devices: MELCloudDevice[] = buildingId !== undefined ? this.getDevices(buildingId) : this.getDevices()
-    return devices.map((device: MELCloudDevice): MELCloudDevice['id'] => device.id)
+  getDeviceIds ({ buildingId, driverId }: { buildingId?: number, driverId?: string } = {}, safe: boolean = true): Array<MELCloudDevice['id']> {
+    return this.getDevices({ buildingId, driverId }, safe).map((device: MELCloudDevice): MELCloudDevice['id'] => device.id)
   }
 
-  getDevices (buildingId?: number): MELCloudDevice[] {
-    const devices: MELCloudDevice[] = []
-    for (const driver of Object.values(this.homey.drivers.getDrivers())) {
+  isThereDevice (driverId: string): boolean {
+    return this.getDevices({ driverId }).length > 0
+  }
+
+  getDevices ({ buildingId, driverId }: { buildingId?: number, driverId?: string } = {}, safe: boolean = true): MELCloudDevice[] {
+    const drivers: Driver[] = driverId !== undefined
+      ? [this.homey.drivers.getDriver(driverId)]
+      : Object.values(this.homey.drivers.getDrivers())
+    let devices: MELCloudDevice[] = []
+    for (const driver of drivers) {
       for (const device of driver.getDevices()) {
         devices.push(device as MELCloudDevice)
       }
     }
     if (buildingId !== undefined) {
-      return devices.filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
+      devices = devices.filter((device: MELCloudDevice): boolean => device.buildingid === buildingId)
+      if (!safe && devices.length === 0) {
+        throw new Error(`Building ${buildingId} has no device.`)
+      }
     }
     return devices
   }
@@ -116,7 +136,7 @@ export default class MELCloudApp extends App {
     try {
       this.log('Searching for buildings...')
       const { data } = await axios.get<Array<Building<MELCloudDevice>>>('/User/ListDevices')
-      this.log('Searching for buildings:', data)
+      this.log('Searching for buildings:\n', data)
       return data
     } catch (error: unknown) {
       this.error('Searching for buildings:', error instanceof Error ? error.message : error)
@@ -126,7 +146,7 @@ export default class MELCloudApp extends App {
 
   async listDevices <T extends MELCloudDevice> (deviceType?: T['driver']['deviceType']): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings()
-    const devices: Array<ListDevice<T>> = []
+    let devices: Array<ListDevice<T>> = []
     for (const building of buildings) {
       if (!(building.ID in this.buildings) || this.buildings[building.ID] !== building.Name) {
         this.buildings[building.ID] = building.Name
@@ -143,7 +163,7 @@ export default class MELCloudApp extends App {
       }
     }
     if (deviceType !== undefined) {
-      return devices.filter((device: ListDevice<T>): boolean => deviceType === device.Device.DeviceType)
+      devices = devices.filter((device: ListDevice<T>): boolean => deviceType === device.Device.DeviceType)
     }
     return devices
   }
@@ -152,7 +172,7 @@ export default class MELCloudApp extends App {
     try {
       device.log('Syncing from device...')
       const { data } = await axios.get<Data<T>>(`/Device/Get?id=${device.id}&buildingID=${device.buildingid}`)
-      device.log('Syncing from device:', data)
+      device.log('Syncing from device:\n', data)
       return data
     } catch (error: unknown) {
       device.error('Syncing from device:', error instanceof Error ? error.message : error)
@@ -167,9 +187,9 @@ export default class MELCloudApp extends App {
         HasPendingCommand: true,
         ...updateData
       }
-      device.log('Syncing with device...', postData)
+      device.log('Syncing with device...\n', postData)
       const { data } = await axios.post<Data<T>>(`/Device/Set${device.driver.heatPumpType}`, postData)
-      device.log('Syncing with device:', data)
+      device.log('Syncing with device:\n', data)
       return data
     } catch (error: unknown) {
       device.error('Syncing with device:', error instanceof Error ? error.message : error)
@@ -185,9 +205,9 @@ export default class MELCloudApp extends App {
         ToDate: toDate.toISODate(),
         UseCurrency: false
       }
-      device.log('Reporting energy cost...', postData)
+      device.log('Reporting energy cost...\n', postData)
       const { data } = await axios.post<ReportData<T>>('/EnergyCost/Report', postData)
-      device.log('Reporting energy cost:', data)
+      device.log('Reporting energy cost:\n', data)
       return data
     } catch (error: unknown) {
       device.error('Reporting energy cost:', error instanceof Error ? error.message : error)
@@ -213,9 +233,9 @@ export default class MELCloudApp extends App {
       FromDate: fromDate.toISODate(),
       ToDate: toDate.toISODate()
     }
-    this.log('Reporting error log...', postData)
+    this.log('Reporting error log...\n', postData)
     const { data } = await axios.post<ErrorLogData[] | FailureData>('/Report/GetUnitErrorLog2', postData)
-    this.log('Reporting error log:', data)
+    this.log('Reporting error log:\n', data)
     if ('Success' in data) {
       return this.handleFailure(data)
     }
@@ -227,13 +247,10 @@ export default class MELCloudApp extends App {
       throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-    this.log(`Getting frost protection settings for building ${buildingName}...`)
-    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
-    if (buildingDeviceIds.length === 0) {
-      throw new Error(`building ${buildingId} has no device.`)
-    }
+    this.log('Getting frost protection settings for building', buildingName, '...')
+    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds({ buildingId }, false)
     const { data } = await axios.get<FrostProtectionData>(`/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
-    this.log(`Getting frost protection settings for building ${buildingName}:`, data)
+    this.log('Getting frost protection settings for building', buildingName, ':\n', data)
     return data
   }
 
@@ -246,9 +263,9 @@ export default class MELCloudApp extends App {
       ...settings,
       BuildingIds: [buildingId]
     }
-    this.log(`Updating frost protection settings for building ${buildingName}...`, postData)
+    this.log('Updating frost protection settings for building', buildingName, '...\n', postData)
     const { data } = await axios.post<SuccessData>('/FrostProtection/Update', postData)
-    this.log(`Updating frost protection settings for building ${buildingName}:`, data)
+    this.log('Updating frost protection settings for building', buildingName, ':\n', data)
     return this.handleFailure(data)
   }
 
@@ -257,13 +274,10 @@ export default class MELCloudApp extends App {
       throw new Error(`Building ${buildingId} does not exist.`)
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
-    this.log(`Getting holiday mode settings for building ${buildingName}...`)
-    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(buildingId)
-    if (buildingDeviceIds.length === 0) {
-      throw new Error(`building ${buildingId} has no device.`)
-    }
+    this.log('Getting holiday mode settings for building', buildingName, '...')
+    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds({ buildingId }, false)
     const { data } = await axios.get<HolidayModeData>(`/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`)
-    this.log(`Getting holiday mode settings for building ${buildingName}:`, data)
+    this.log('Getting holiday mode settings for building', buildingName, ':\n', data)
     return data
   }
 
@@ -302,9 +316,9 @@ export default class MELCloudApp extends App {
         : null,
       HMTimeZones: [{ Buildings: [buildingId] }]
     }
-    this.log(`Updating holiday mode settings for building ${buildingName}...`, postData)
+    this.log('Updating holiday mode settings for building', buildingName, '...\n', postData)
     const { data } = await axios.post<SuccessData>('/HolidayMode/Update', postData)
-    this.log(`Updating holiday mode settings for building ${buildingName}:`, data)
+    this.log('Updating holiday mode settings for building', buildingName, ':\n', data)
     return this.handleFailure(data)
   }
 
@@ -321,6 +335,95 @@ export default class MELCloudApp extends App {
       errorMessage = `${errorMessage.slice(0, -1)}.\n`
     }
     throw new Error(errorMessage.slice(0, -1))
+  }
+
+  async listenToOutdoorTemperature ({ capabilityPath, enabled, threshold }: OutdoorTemperatureListenerData = {
+    capabilityPath: this.homey.settings.get('outdoor_temperature_capability_path') ?? '',
+    enabled: this.homey.settings.get('self_adjust_enabled') ?? false,
+    threshold: this.homey.settings.get('self_adjust_threshold') ?? 0
+  }): Promise<void> {
+    if (enabled && (capabilityPath === '' || threshold === 0)) {
+      throw new Error('Outdoor temperature and/or threshold are missing.')
+    }
+    this.setSettings({ self_adjust_threshold: threshold })
+    const capability: string = await this.getOutdoorTemperatureCapability(capabilityPath, enabled)
+    if (this.homey.settings.get('self_adjust_enabled') === false) {
+      return
+    }
+    this.log('Listening to outdoor temperature: listener has been created for', this.outdoorTemperatureDevice.name, '-', capability, '...')
+    this.outdoorTemperatureListener = this.outdoorTemperatureDevice.makeCapabilityInstance(
+      capability,
+      async (value: number): Promise<void> => {
+        await this.getOutdoorTemperatureCapability()
+        this.log('Listening to outdoor temperature:', value, 'listened from', this.outdoorTemperatureDevice.name, '-', capability)
+        for (const device of this.getDevices({ driverId: 'melcloud' })) {
+          if (device.getCapabilityValue('operation_mode') !== 'cool') {
+            continue
+          }
+          await device.onCapability('target_temperature', Math.max(threshold, Math.round(value - 8), 38))
+        }
+      }
+    )
+  }
+
+  async getOutdoorTemperatureCapability (
+    capabilityPath: string = this.homey.settings.get('outdoor_temperature_capability_path') ?? '',
+    enabled: boolean = this.homey.settings.get('self_adjust_enabled') ?? false
+  ): Promise<string> {
+    try {
+      const splitCapabilityPath: string[] = capabilityPath.split(':')
+      if (splitCapabilityPath.length !== 2) {
+        throw new Error('Invalid outdoor temperature capability.')
+      }
+      const [id, capability]: string[] = splitCapabilityPath
+      // @ts-expect-error bug
+      const device = await this.api.devices.getDevice({ id })
+      if (device.id !== this.outdoorTemperatureDevice?.id) {
+        this.outdoorTemperatureDevice = device
+      }
+      if (!(capability in device.capabilitiesObj)) {
+        throw new Error(`${capability} cannot be found on ${device.name as string}.`)
+      }
+      this.setSettings({
+        outdoor_temperature_capability_path: capabilityPath,
+        self_adjust_enabled: enabled
+      })
+      return capability
+    } catch (error: unknown) {
+      this.error('Listening to outdoor temperature:', error instanceof Error ? error.message : error)
+      this.setSettings({
+        outdoor_temperature_capability_path: '',
+        self_adjust_enabled: false
+      })
+      if (capabilityPath !== '') {
+        throw error
+      }
+      return ''
+    } finally {
+      this.cleanOutdoorTemperatureListener()
+    }
+  }
+
+  cleanOutdoorTemperatureListener (): void {
+    if (this.outdoorTemperatureListener !== null) {
+      this.outdoorTemperatureListener.destroy()
+    }
+    if (this.outdoorTemperatureDevice !== null) {
+      this.outdoorTemperatureDevice.io = null
+    }
+    this.log('Listening to outdoor temperature: listener has been cleaned')
+  }
+
+  async onUninit (): Promise<void> {
+    this.cleanOutdoorTemperatureListener()
+  }
+
+  setSettings (settings: Settings): void {
+    for (const [setting, value] of Object.entries(settings)) {
+      if (value !== this.homey.settings.get(setting)) {
+        this.homey.settings.set(setting, value)
+      }
+    }
   }
 
   setTimeout (type: string, callback: () => Promise<boolean>, interval: number | object): NodeJS.Timeout {

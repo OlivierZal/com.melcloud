@@ -11,7 +11,7 @@
   "category": [
     "climate"
   ],
-  "version": "9.2.1",
+  "version": "10.0.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -59,9 +59,17 @@
       "method": "GET",
       "path": "/settings/holiday_mode/buildings/:buildingId"
     },
+    "getMeasureTemperatureCapabilities": {
+      "method": "GET",
+      "path": "/measure_temperature_capabilities"
+    },
     "getUnitErrorLog": {
       "method": "GET",
       "path": "/report/error_log"
+    },
+    "listenToOutdoorTemperature": {
+      "method": "POST",
+      "path": "/self_adjust_cooling"
     },
     "login": {
       "method": "POST",
@@ -79,5 +87,11 @@
       "method": "POST",
       "path": "/settings/holiday_mode/buildings/:buildingId"
     }
-  }
+  },
+  "platforms": [
+    "local"
+  ],
+  "permissions": [
+    "homey:manager:api"
+  ]
 }
