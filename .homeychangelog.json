@@ -74,7 +74,7 @@
   "9.1.0": {
     "en": "Added device and building settings under app settings."
   },
-  "9.1.1": {
-    "en": "Added types and optimized API use."
+  "10.0.0": {
+    "en": "For air-to-air heat pump owners: it is now possible to auto-adjust cooling temperature to avoid a deviation of more than 8 °C from outdoor temperature."
   }
 }
