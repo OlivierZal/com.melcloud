@@ -9,6 +9,7 @@ import {
   HolidayModeSettings,
   LoginCredentials,
   MELCloudDevice,
+  OutdoorTemperatureListenerData,
   Settings
 } from '../types'
 
@@ -16,19 +17,24 @@ import {
 async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  let to: string = ''
+  const minimumTemperature: number = 10
+  const maximumTemperature: number = 38
   const limit: number = 29
   const offset: number = 0
+
+  let to: string = ''
   let fromDateHuman: string = ''
   let errorCount: number = 0
   let hasLoadedTableHead: boolean = false
   let hasLoadedBuildings: boolean = false
+  let frostProtectionMinimumTemperature: number = 10
+  let frostProtectionMaximumTemperature: number = 12
 
-  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is_not_authenticated') as HTMLDivElement
+  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is-not-authenticated') as HTMLDivElement
   const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
   const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
-  const isAuthenticatedElement: HTMLDivElement = document.getElementById('is_authenticated') as HTMLDivElement
+  const isAuthenticatedElement: HTMLDivElement = document.getElementById('is-authenticated') as HTMLDivElement
 
   const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
   const tableElement: HTMLTableElement | null = document.querySelector('table')
@@ -36,6 +42,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const seeElement: HTMLButtonElement = document.getElementById('see') as HTMLButtonElement
 
   const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
+  intervalElement.min = '1'
+  intervalElement.max = '60'
   const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
   const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
 
@@ -47,9 +55,33 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
   const frostProtectionEnabledElement: HTMLSelectElement = document.getElementById('enabled-frost-protection') as HTMLSelectElement
   const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
+  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
   const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
+  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
+
+  const isThereDeviceAtaElement: HTMLDivElement = document.getElementById('is-there-device-ata') as HTMLDivElement
+  const selfAdjustEnabledElement: HTMLSelectElement = document.getElementById('self_adjust_enabled') as HTMLSelectElement
+  const outdoorTemperatureCapabilityElement: HTMLSelectElement = document.getElementById('outdoor_temperature_capability_path') as HTMLSelectElement
+  const thresholdElement: HTMLInputElement = document.getElementById('self_adjust_threshold') as HTMLInputElement
+  thresholdElement.min = String(minimumTemperature)
+  thresholdElement.max = String(maximumTemperature)
+  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
+
+  function getHomeySetting (element: HTMLInputElement | HTMLSelectElement, defaultValue: any = ''): void {
+    // @ts-expect-error bug
+    Homey.get(element.id, async (error: Error, value: any): Promise<void> => {
+      if (error !== null) {
+      // @ts-expect-error bug
+        await Homey.alert(error.message)
+        return
+      }
+      element.value = String(value ?? defaultValue)
+    })
+  }
 
   function hasAuthenticated (isAuthenticated: boolean = true): void {
     isNotAuthenticatedElement.style.display = !isAuthenticated ? 'block' : 'none'
@@ -64,9 +96,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
       th.innerText = key
       row.appendChild(th)
     }
-    if (!hasLoadedTableHead) {
-      hasLoadedTableHead = true
-    }
+    hasLoadedTableHead = true
   }
 
   function generateTable (table: HTMLTableElement, errors: ErrorLog['Errors']): void {
@@ -115,16 +145,27 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
+  function int (element: HTMLInputElement): number {
+    const value: number = Number.parseInt(element.value)
+    if (Number.isNaN(value) || value < Number(element.min) || value > Number(element.max)) {
+      element.value = ''
+      throw new Error(`${element.name} must be an integer between ${element.min} and ${element.max}.`)
+    }
+    return value
+  }
+
   function buildSettingsBody (settings: Array<HTMLInputElement | HTMLSelectElement>): Settings {
     const body: Settings = {}
     for (const setting of settings) {
       if (setting.value !== '') {
-        if (['true', 'false'].includes(setting.value)) {
-          body[setting.id] = setting.value === 'true'
-          continue
-        }
         const settingValue: number = Number.parseInt(setting.value)
-        body[setting.id] = !Number.isNaN(settingValue) ? settingValue : setting.value
+        if (!Number.isNaN(Number.parseInt(setting.value))) {
+          body[setting.id] = setting instanceof HTMLInputElement ? int(setting) : settingValue
+        } else if (['true', 'false'].includes(setting.value)) {
+          body[setting.id] = setting.value === 'true'
+        } else {
+          body[setting.id] = setting.value
+        }
       }
     }
     return body
@@ -194,12 +235,44 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         if (buildings.length === 0) {
           return
         }
-        if (!hasLoadedBuildings) {
-          hasLoadedBuildings = true
-        }
+        hasLoadedBuildings = true
         const { HMEnabled, HMStartDate, HMEndDate, FPEnabled, FPMinTemperature, FPMaxTemperature } = buildings[0]
         getBuildingHolidayModeSettings({ HMEnabled, HMStartDate, HMEndDate })
         getBuildingFrostProtectionSettings({ FPEnabled, FPMinTemperature, FPMaxTemperature })
+      }
+    )
+  }
+
+  function getHomeySelfAdjustSettings (): void {
+    getHomeySetting(outdoorTemperatureCapabilityElement)
+    getHomeySetting(selfAdjustEnabledElement, false)
+    getHomeySetting(thresholdElement)
+  }
+
+  function getMeasureTemperatureCapabilities (): void {
+    // @ts-expect-error bug
+    Homey.api('GET', '/measure_temperature_capabilities',
+      async (error: Error, devices: any[]): Promise<void> => {
+        if (error !== null) {
+          isThereDeviceAtaElement.style.display = 'none'
+          if (error.message !== 'No air-to-air devices were found.') {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+          }
+          return
+        }
+        isThereDeviceAtaElement.style.display = 'block'
+        for (const device of devices) {
+          const { id, name, capabilities } = device
+          for (const capability of capabilities) {
+            const option: HTMLOptionElement = document.createElement('option')
+            option.setAttribute('value', `${id as string}:${capability.id as string}`)
+            const optionText: Text = document.createTextNode(`${name as string} - ${capability.title as string}`)
+            option.appendChild(optionText)
+            outdoorTemperatureCapabilityElement.appendChild(option)
+          }
+        }
+        getHomeySelfAdjustSettings()
       }
     )
   }
@@ -210,27 +283,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     if (!hasLoadedBuildings) {
       getBuildings()
     }
+    getMeasureTemperatureCapabilities()
   }
 
-  // @ts-expect-error bug
-  Homey.get('username', async (error: Error, username: string): Promise<void> => {
-    if (error !== null) {
-      // @ts-expect-error bug
-      await Homey.alert(error)
-      return
-    }
-    usernameElement.value = username ?? ''
-  })
-  // @ts-expect-error bug
-  Homey.get('password', async (error: Error, password: string): Promise<void> => {
-    if (error !== null) {
-      // @ts-expect-error bug
-      await Homey.alert(error)
-      return
-    }
-    passwordElement.value = password ?? ''
-  })
-
+  getHomeySetting(usernameElement)
+  getHomeySetting(passwordElement)
   load()
 
   authenticateElement.addEventListener('click', (): void => {
@@ -251,23 +308,9 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
           await Homey.alert('Authentication failed.')
           return
         }
-        load()
-        // @ts-expect-error bug
-        await Homey.set('username', usernameElement.value, async (err: Error): Promise<void> => {
-          if (err !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(err)
-          }
-        })
-        // @ts-expect-error bug
-        await Homey.set('password', passwordElement.value, async (err: Error): Promise<void> => {
-          if (err !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(err)
-          }
-        })
         // @ts-expect-error bug
         await Homey.alert('Authentication succeeded.')
+        load()
       }
     )
   })
@@ -284,17 +327,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     generateErrorLog()
   })
 
-  intervalElement.addEventListener('change', (): void => {
-    const interval: number = Number.parseInt(intervalElement.value)
-    if (Number.isNaN(interval) || interval < 1 || interval > 60) {
-      intervalElement.value = ''
-      // @ts-expect-error bug
-      Homey.alert('The frequency must be an integer between 1 and 60.')
-    }
-  })
-
   applyElement.addEventListener('click', (): void => {
-    const body: Settings = buildSettingsBody([intervalElement, alwaysOnElement])
+    let body: Settings = {}
+    try {
+      body = buildSettingsBody([intervalElement, alwaysOnElement])
+    } catch (error: unknown) {
+    // @ts-expect-error bug
+      Homey.alert(error.message)
+      return
+    }
     if (Object.keys(body).length === 0) {
       // @ts-expect-error bug
       Homey.alert('No change to apply.')
@@ -382,19 +423,17 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api('POST', `/settings/holiday_mode/buildings/${buildingElement.value}`, body,
       async (error: Error, success: boolean): Promise<void> => {
+        getBuildingHolidayModeSettings()
         if (error !== null) {
-          getBuildingHolidayModeSettings()
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!success) {
-          getBuildingHolidayModeSettings()
           // @ts-expect-error bug
           await Homey.alert('Update failed.')
           return
         }
-        getBuildingHolidayModeSettings()
         // @ts-expect-error bug
         await Homey.alert('Update succeeded.')
       }
@@ -418,28 +457,76 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
+    try {
+      frostProtectionMinimumTemperature = int(frostProtectionMinimumTemperatureElement)
+      frostProtectionMaximumTemperature = int(frostProtectionMaximumTemperatureElement)
+    } catch (error: unknown) {
+      getBuildingFrostProtectionSettings()
+      // @ts-expect-error bug
+      Homey.alert(error.message)
+      return
+    }
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
-      MinimumTemperature: Number(frostProtectionMinimumTemperatureElement.value),
-      MaximumTemperature: Number(frostProtectionMaximumTemperatureElement.value)
+      MinimumTemperature: Math.min(frostProtectionMinimumTemperature, frostProtectionMaximumTemperature),
+      MaximumTemperature: Math.max(frostProtectionMinimumTemperature, frostProtectionMaximumTemperature)
     }
     // @ts-expect-error bug
     Homey.api('POST', `/settings/frost_protection/buildings/${buildingElement.value}`, body,
       async (error: Error, success: boolean): Promise<void> => {
+        getBuildingFrostProtectionSettings()
         if (error !== null) {
-          getBuildingFrostProtectionSettings()
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!success) {
-          getBuildingFrostProtectionSettings()
           // @ts-expect-error bug
           await Homey.alert('Update failed.')
           return
         }
         // @ts-expect-error bug
         await Homey.alert('Update succeeded.')
+      }
+    )
+  })
+
+  outdoorTemperatureCapabilityElement.addEventListener('change', (): void => {
+    if (selfAdjustEnabledElement.value === 'false') {
+      selfAdjustEnabledElement.value = 'true'
+    }
+  })
+
+  thresholdElement.addEventListener('change', (): void => {
+    if (selfAdjustEnabledElement.value === 'false') {
+      selfAdjustEnabledElement.value = 'true'
+    }
+  })
+
+  saveElement.addEventListener('click', (): void => {
+    let threshold: number = 0
+    try {
+      threshold = int(thresholdElement)
+    } catch (error: unknown) {
+      getHomeySelfAdjustSettings()
+      // @ts-expect-error bug
+      Homey.alert(error.message)
+      return
+    }
+    const enabled: boolean = selfAdjustEnabledElement.value === 'true'
+    const capabilityPath: string = outdoorTemperatureCapabilityElement.value
+    const body: OutdoorTemperatureListenerData = { capabilityPath, enabled, threshold }
+    // @ts-expect-error bug
+    Homey.api('POST', '/self_adjust_cooling', body,
+      async (error: Error): Promise<void> => {
+        getHomeySelfAdjustSettings()
+        if (error !== null) {
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          return
+        }
+        // @ts-expect-error bug
+        await Homey.alert('Settings have been successfully saved.')
       }
     )
   })

@@ -10,7 +10,7 @@
       <h1 class="homey-title" data-i18n="settings.title" />
     </header>
 
-    <div id="is_not_authenticated" style="display: none;">
+    <div id="is-not-authenticated" style="display: none;">
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Credentials</legend>
         <div class="homey-form-group">
@@ -21,52 +21,73 @@
           <label class="homey-form-label" for="password">Password</label>
           <input class="homey-form-input" id="password" type="password" value="" />
         </div>
+        <button id="authenticate" class="homey-button-primary-full">Authenticate</button>
       </fieldset>
-      <button id="authenticate" class="homey-button-primary-full">Authenticate</button>
     </div>
 
-    <div id="is_authenticated">
+    <div id="is-authenticated">
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend" id="error-log">Error Log</legend>
         <div class="homey-form-group">
           <label class="homey-form-label" id="period"></label>
           <table aria-describedby="error-log"></table>
         </div>
+        <button id="see" class="homey-button-secondary">See all Errors since</button>
+        <input id="from" type="date" value="" />
       </fieldset>
-      <button id="see" class="homey-button-secondary">See all errors since</button>
-      <input id="from" type="date" value="" />
 
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Device Settings</legend>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="interval">Device Update Frequency (minutes)</label>
-          <input class="homey-form-input" id="interval" type="number" min="1" max="60" step="1" inputmode="numeric" value="" />
+          <label class="homey-form-label" for="interval"><strong>Device Update Frequency</strong> (minutes)</label>
+          <input class="homey-form-input" name="Interval" id="interval" type="number" inputmode="numeric" value="" />
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="always_on">Disable Power Off from Homey</label>
-          <select class="homey-form-select" name="always-on" id="always_on">
+          <label class="homey-form-label" for="always_on">Disable <strong>Power Off from Homey</strong></label>
+          <select class="homey-form-select" id="always_on">
             <option value="">---</option>
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
         </div>
+        <button id="apply" class="homey-button-primary-full">Apply to all Devices</button>
       </fieldset>
-      <button id="apply" class="homey-button-primary-full">Apply to all devices</button>
+
+      <div id="is-there-device-ata" style="display: none;">
+        <fieldset class="homey-form-fieldset">
+          <legend class="homey-form-legend">Self-Adjust Air-to-Air Cooling</legend>
+          <div class="homey-form-group">
+            <label class="homey-form-label" for="self_adjust_enabled">Enable <strong>Maximum Deviation of 8 °C</strong></label>
+            <select class="homey-form-select" id="self_adjust_enabled">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+          <div class="homey-form-group">
+            <label class="homey-form-label" for="outdoor_temperature_capability_path">Outdoor Temperature</label>
+            <select class="homey-form-select" id="outdoor_temperature_capability_path">
+              <option value="">---</option>
+            </select>
+          </div>
+          <div class="homey-form-group">
+            <label class="homey-form-label" for="self_adjust_threshold">Threshold (°C)</label>
+            <input class="homey-form-input" name="Threshold" id="self_adjust_threshold" type="number" inputmode="numeric" value="22" />
+          </div>
+          <button id="save" class="homey-button-primary-full">Apply to all Air-to-Air Devices</button>
+        </fieldset>
+      </div>
 
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Building Settings</legend>
         <div class="homey-form-group">
-          <select class="homey-form-select" name="building" id="building"></select>
+          <select class="homey-form-select" id="building"></select>
         </div>
-      </fieldset>
 
-      <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Holiday Mode</legend>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="enabled-holiday-mode">Enabled</label>
-          <select class="homey-form-select" name="enabled-holiday-mode" id="enabled-holiday-mode">
-            <option value="false">Off</option>
-            <option value="true">On</option>
+          <label class="homey-form-label" for="enabled-holiday-mode">Enable <strong>Holiday Mode</strong></label>
+          <select class="homey-form-select" id="enabled-holiday-mode">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
         <div class="homey-form-group">
@@ -77,30 +98,27 @@
           <label class="homey-form-label" for="end-date">End Date</label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-      </fieldset>
-      <button id="refresh-holiday-mode" class="homey-button-secondary">Refresh</button>
-      <button id="update-holiday-mode" class="homey-button-primary">Update</button>
+        <button id="refresh-holiday-mode" class="homey-button-secondary">Refresh</button>
+        <button id="update-holiday-mode" class="homey-button-primary">Update</button>
 
-      <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Frost Protection</legend>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="enabled-frost-protection">Enabled</label>
-          <select class="homey-form-select" name="enabled-frost-protection" id="enabled-frost-protection">
-            <option value="false">Off</option>
-            <option value="true">On</option>
+          <label class="homey-form-label" for="enabled-frost-protection">Enable <strong>Frost Protection</strong></label>
+          <select class="homey-form-select" id="enabled-frost-protection">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
         <div class="homey-form-group">
           <label class="homey-form-label" for="min">Minimum Temperature</label>
-          <input class="homey-form-input" id="min" type="number" step="1" inputmode="numeric" value="0" />
+          <input class="homey-form-input" name="Minimum" id="min" type="number" inputmode="numeric" value="10" />
         </div>
         <div class="homey-form-group">
           <label class="homey-form-label" for="max">Maximum Temperature</label>
-          <input class="homey-form-input" id="max" type="number" step="1" inputmode="numeric" value="0" />
+          <input class="homey-form-input" name="Maximum" id="max" type="number" inputmode="numeric" value="12" />
         </div>
+        <button id="refresh-frost-protection" class="homey-button-secondary">Refresh</button>
+        <button id="update-frost-protection" class="homey-button-primary">Update</button>
       </fieldset>
-      <button id="refresh-frost-protection" class="homey-button-secondary">Refresh</button>
-      <button id="update-frost-protection" class="homey-button-primary">Update</button>
     </div>
   </body>
 </html>

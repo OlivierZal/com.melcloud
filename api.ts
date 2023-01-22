@@ -13,6 +13,7 @@ import {
   HolidayModeSettings,
   LoginCredentials,
   MELCloudDevice,
+  OutdoorTemperatureListenerData,
   Settings
 } from './types'
 
@@ -26,6 +27,16 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, { zone: 'utc' }).toLocal()
   return format !== undefined ? localDate.toFormat(format) : localDate.toISO({ includeOffset: false })
+}
+
+function sortByAlphabeticalOrder (value1: string, value2: string): number {
+  if (value1 < value2) {
+    return -1
+  }
+  if (value1 > value2) {
+    return 1
+  }
+  return 0
 }
 
 function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDate: DateTime, period: number } {
@@ -49,14 +60,17 @@ function handleErrorLogQuery (query: ErrorLogQuery): { fromDate: DateTime, toDat
 
 module.exports = {
   async getBuildings ({ homey }: { homey: Homey }): Promise<Array<Building<MELCloudDevice>>> {
-    const buildings: Array<Building<MELCloudDevice>> = await (homey.app as MELCloudApp).getBuildings()
-    return buildings.map((building) => (
-      {
-        ...building,
-        HMStartDate: fromUTCtoLocal(building.HMStartDate),
-        HMEndDate: fromUTCtoLocal(building.HMEndDate)
-      }
-    ))
+    const app: MELCloudApp = homey.app as MELCloudApp
+    const buildings: Array<Building<MELCloudDevice>> = await app.getBuildings()
+    return buildings
+      .filter((building: Building<MELCloudDevice>): boolean => app.getDevices({ buildingId: building.ID }).length > 0)
+      .map((building: Building<MELCloudDevice>): Building<MELCloudDevice> => (
+        {
+          ...building,
+          HMStartDate: fromUTCtoLocal(building.HMStartDate),
+          HMEndDate: fromUTCtoLocal(building.HMEndDate)
+        }
+      ))
   },
 
   async getFrostProtectionSettings (
@@ -74,6 +88,37 @@ module.exports = {
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
       HMEndDate: fromUTCtoLocal(data.HMEndDate)
     }
+  },
+
+  async getMeasureTemperatureCapabilities ({ homey }: { homey: Homey }) {
+    const app: MELCloudApp = homey.app as MELCloudApp
+    if (!app.isThereDevice('melcloud')) {
+      throw new Error('No air-to-air devices were found in Homey.')
+    }
+    // @ts-expect-error bug
+    const devices = await app.api.devices.getDevices()
+    return Object.values(devices)
+      .filter((device: any): boolean => device.capabilities.some((capability: string): boolean => capability.startsWith('measure_temperature')))
+      .map((device: any) => (
+        {
+          id: device.id,
+          name: device.name,
+          capabilities: Object.values(device.capabilitiesObj)
+            .filter((capabilitiesObj: any): boolean => capabilitiesObj.id.startsWith('measure_temperature'))
+            .map((capabilityObj: any) => (
+              {
+                id: capabilityObj.id,
+                title: capabilityObj.title
+              }
+            ))
+            .sort((capabilityObj1: any, capabilityObj2: any): number => {
+              return sortByAlphabeticalOrder(capabilityObj1.title, capabilityObj2.title)
+            })
+        }
+      ))
+      .sort((device1: any, device2: any): number => {
+        return sortByAlphabeticalOrder(device1.name, device2.name)
+      })
   },
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
@@ -105,6 +150,10 @@ module.exports = {
       NextFromDate: NextToDate.minus({ days: period }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }
+  },
+
+  async listenToOutdoorTemperature ({ homey, body }: { homey: Homey, body: OutdoorTemperatureListenerData }): Promise<void> {
+    await (homey.app as MELCloudApp).listenToOutdoorTemperature(body)
   },
 
   async login ({ homey, body }: { homey: Homey, body: LoginCredentials }): Promise<boolean> {
