@@ -345,8 +345,7 @@ export default class MELCloudApp extends App {
     if (enabled && (capabilityPath === '' || threshold === 0)) {
       throw new Error('Outdoor temperature and/or threshold are missing.')
     }
-    this.setSettings({ self_adjust_threshold: threshold })
-    const capability: string = await this.getOutdoorTemperatureCapability(capabilityPath, enabled)
+    const capability: string = await this.handleOutdoorTemperatureListenerData({ capabilityPath, enabled, threshold })
     if (this.homey.settings.get('self_adjust_enabled') === false) {
       return
     }
@@ -354,7 +353,6 @@ export default class MELCloudApp extends App {
     this.outdoorTemperatureListener = this.outdoorTemperatureDevice.makeCapabilityInstance(
       capability,
       async (value: number): Promise<void> => {
-        await this.getOutdoorTemperatureCapability()
         this.log('Listening to outdoor temperature:', value, 'listened from', this.outdoorTemperatureDevice.name, '-', capability)
         for (const device of this.getDevices({ driverId: 'melcloud' })) {
           if (device.getCapabilityValue('operation_mode') !== 'cool') {
@@ -366,10 +364,8 @@ export default class MELCloudApp extends App {
     )
   }
 
-  async getOutdoorTemperatureCapability (
-    capabilityPath: string = this.homey.settings.get('outdoor_temperature_capability_path') ?? '',
-    enabled: boolean = this.homey.settings.get('self_adjust_enabled') ?? false
-  ): Promise<string> {
+  async handleOutdoorTemperatureListenerData ({ capabilityPath, enabled, threshold }: OutdoorTemperatureListenerData): Promise<string> {
+    this.setSettings({ self_adjust_threshold: threshold })
     try {
       const splitCapabilityPath: string[] = capabilityPath.split(':')
       if (splitCapabilityPath.length !== 2) {
