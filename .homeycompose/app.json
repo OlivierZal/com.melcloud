@@ -11,7 +11,7 @@
   "category": [
     "climate"
   ],
-  "version": "10.0.1",
+  "version": "10.0.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -59,7 +59,7 @@
       "method": "GET",
       "path": "/settings/holiday_mode/buildings/:buildingId"
     },
-    "getMeasureTemperatureCapabilities": {
+    "getMeasureTemperatureCapabilitiesForAta": {
       "method": "GET",
       "path": "/measure_temperature_capabilities"
     },

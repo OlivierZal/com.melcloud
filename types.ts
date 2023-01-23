@@ -445,8 +445,8 @@ export interface FrostProtectionData {
 
 export interface HolidayModeSettings {
   readonly Enabled: boolean
-  readonly StartDate: string | null
-  readonly EndDate: string | null
+  readonly StartDate: string
+  readonly EndDate: string
 }
 
 export interface HolidayModePostData {

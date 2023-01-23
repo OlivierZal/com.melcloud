@@ -90,10 +90,10 @@ module.exports = {
     }
   },
 
-  async getMeasureTemperatureCapabilities ({ homey }: { homey: Homey }) {
+  async getMeasureTemperatureCapabilitiesForAta ({ homey }: { homey: Homey }) {
     const app: MELCloudApp = homey.app as MELCloudApp
-    if (!app.isThereDevice('melcloud')) {
-      throw new Error('No air-to-air devices were found in Homey.')
+    if (app.getDevices({ driverId: 'melcloud' }).length === 0) {
+      return []
     }
     // @ts-expect-error bug
     const devices = await app.api.devices.getDevices()

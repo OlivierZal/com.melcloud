@@ -63,7 +63,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
 
-  const isThereDeviceAtaElement: HTMLDivElement = document.getElementById('is-there-device-ata') as HTMLDivElement
+  const isThereMeasureTemperatureCapabilitiesForAtaElement: HTMLDivElement = document.getElementById('is-there-measure-temperature-capabilities-for-ata') as HTMLDivElement
   const selfAdjustEnabledElement: HTMLSelectElement = document.getElementById('self_adjust_enabled') as HTMLSelectElement
   const outdoorTemperatureCapabilityElement: HTMLSelectElement = document.getElementById('outdoor_temperature_capability_path') as HTMLSelectElement
   const thresholdElement: HTMLInputElement = document.getElementById('self_adjust_threshold') as HTMLInputElement
@@ -145,8 +145,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function int (element: HTMLInputElement): number {
-    const value: number = Number.parseInt(element.value)
+  function int (element: HTMLInputElement, value: number = Number.parseInt(element.value)): number {
     if (Number.isNaN(value) || value < Number(element.min) || value > Number(element.max)) {
       element.value = ''
       throw new Error(`${element.name} must be an integer between ${element.min} and ${element.max}.`)
@@ -159,8 +158,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     for (const setting of settings) {
       if (setting.value !== '') {
         const settingValue: number = Number.parseInt(setting.value)
-        if (!Number.isNaN(Number.parseInt(setting.value))) {
-          body[setting.id] = setting instanceof HTMLInputElement ? int(setting) : settingValue
+        if (!Number.isNaN(settingValue)) {
+          body[setting.id] = setting instanceof HTMLInputElement ? int(setting, settingValue) : settingValue
         } else if (['true', 'false'].includes(setting.value)) {
           body[setting.id] = setting.value === 'true'
         } else {
@@ -249,19 +248,20 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     getHomeySetting(thresholdElement)
   }
 
-  function getMeasureTemperatureCapabilities (): void {
+  function getMeasureTemperatureCapabilitiesForAta (): void {
     // @ts-expect-error bug
     Homey.api('GET', '/measure_temperature_capabilities',
       async (error: Error, devices: any[]): Promise<void> => {
-        if (error !== null) {
-          isThereDeviceAtaElement.style.display = 'none'
-          if (error.message !== 'No air-to-air devices were found.') {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
-          }
+        if (devices.length === 0) {
+          isThereMeasureTemperatureCapabilitiesForAtaElement.style.display = 'none'
           return
         }
-        isThereDeviceAtaElement.style.display = 'block'
+        if (error !== null) {
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          return
+        }
+        isThereMeasureTemperatureCapabilitiesForAtaElement.style.display = 'block'
         for (const device of devices) {
           const { id, name, capabilities } = device
           for (const capability of capabilities) {
@@ -283,7 +283,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     if (!hasLoadedBuildings) {
       getBuildings()
     }
-    getMeasureTemperatureCapabilities()
+    getMeasureTemperatureCapabilitiesForAta()
   }
 
   getHomeySetting(usernameElement)
@@ -492,8 +492,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   outdoorTemperatureCapabilityElement.addEventListener('change', (): void => {
-    if (selfAdjustEnabledElement.value === 'false') {
-      selfAdjustEnabledElement.value = 'true'
+    if (outdoorTemperatureCapabilityElement.value !== '') {
+      if (selfAdjustEnabledElement.value === 'false') {
+        selfAdjustEnabledElement.value = 'true'
+      }
+    } else if (outdoorTemperatureCapabilityElement.value === '' && selfAdjustEnabledElement.value === 'true') {
+      selfAdjustEnabledElement.value = 'false'
     }
   })
 

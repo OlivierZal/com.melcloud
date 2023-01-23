@@ -109,10 +109,6 @@ export default class MELCloudApp extends App {
     return this.getDevices({ buildingId, driverId }, safe).map((device: MELCloudDevice): MELCloudDevice['id'] => device.id)
   }
 
-  isThereDevice (driverId: string): boolean {
-    return this.getDevices({ driverId }).length > 0
-  }
-
   getDevices ({ buildingId, driverId }: { buildingId?: number, driverId?: string } = {}, safe: boolean = true): MELCloudDevice[] {
     const drivers: Driver[] = driverId !== undefined
       ? [this.homey.drivers.getDriver(driverId)]
@@ -287,11 +283,11 @@ export default class MELCloudApp extends App {
     }
     const buildingName: Building<MELCloudDevice>['Name'] = this.buildings[buildingId]
     const { Enabled, StartDate, EndDate } = settings
-    if (Enabled && (StartDate === null || EndDate === null)) {
+    if (Enabled && (StartDate === '' || EndDate === '')) {
       throw new Error('Start Date and/or End Date are missing.')
     }
-    const utcStartDate: DateTime | null = StartDate !== null ? DateTime.fromISO(StartDate).toUTC() : null
-    const utcEndDate: DateTime | null = EndDate !== null ? DateTime.fromISO(EndDate).toUTC() : null
+    const utcStartDate: DateTime | null = Enabled ? DateTime.fromISO(StartDate).toUTC() : null
+    const utcEndDate: DateTime | null = Enabled ? DateTime.fromISO(EndDate).toUTC() : null
     const postData: HolidayModePostData = {
       Enabled,
       StartDate: utcStartDate !== null
@@ -332,7 +328,7 @@ export default class MELCloudApp extends App {
       for (const message of messages) {
         errorMessage += `${message} `
       }
-      errorMessage = `${errorMessage.slice(0, -1)}.\n`
+      errorMessage = `${errorMessage.slice(0, -1)}\n`
     }
     throw new Error(errorMessage.slice(0, -1))
   }
@@ -369,7 +365,7 @@ export default class MELCloudApp extends App {
     try {
       const splitCapabilityPath: string[] = capabilityPath.split(':')
       if (splitCapabilityPath.length !== 2) {
-        throw new Error('Invalid outdoor temperature capability.')
+        throw new Error('The selected outdoor temperature is invalid.')
       }
       const [id, capability]: string[] = splitCapabilityPath
       // @ts-expect-error bug
