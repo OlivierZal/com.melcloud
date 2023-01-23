@@ -45,7 +45,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   intervalElement.min = '1'
   intervalElement.max = '60'
   const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
-  const applyElement: HTMLButtonElement = document.getElementById('apply') as HTMLButtonElement
+  const applySettingsElement: HTMLButtonElement = document.getElementById('apply-settings') as HTMLButtonElement
 
   const buildingElement: HTMLSelectElement = document.getElementById('building') as HTMLSelectElement
   const holidayModeEnabledElement: HTMLSelectElement = document.getElementById('enabled-holiday-mode') as HTMLSelectElement
@@ -69,7 +69,8 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const thresholdElement: HTMLInputElement = document.getElementById('self_adjust_threshold') as HTMLInputElement
   thresholdElement.min = String(minimumTemperature)
   thresholdElement.max = String(maximumTemperature)
-  const saveElement: HTMLButtonElement = document.getElementById('save') as HTMLButtonElement
+  const refreshSelfAdjustElement: HTMLButtonElement = document.getElementById('refresh-self-adjust') as HTMLButtonElement
+  const applySelfAdjustElement: HTMLButtonElement = document.getElementById('apply-self-adjust') as HTMLButtonElement
 
   function getHomeySetting (element: HTMLInputElement | HTMLSelectElement, defaultValue: any = ''): void {
     // @ts-expect-error bug
@@ -327,7 +328,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     generateErrorLog()
   })
 
-  applyElement.addEventListener('click', (): void => {
+  applySettingsElement.addEventListener('click', (): void => {
     let body: Settings = {}
     try {
       body = buildSettingsBody([intervalElement, alwaysOnElement])
@@ -507,7 +508,11 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   })
 
-  saveElement.addEventListener('click', (): void => {
+  refreshSelfAdjustElement.addEventListener('click', (): void => {
+    getHomeySelfAdjustSettings()
+  })
+
+  applySelfAdjustElement.addEventListener('click', (): void => {
     let threshold: number = 0
     try {
       threshold = int(thresholdElement)
