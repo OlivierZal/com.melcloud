@@ -111,14 +111,10 @@ module.exports = {
                 title: capabilityObj.title
               }
             ))
-            .sort((capabilityObj1: any, capabilityObj2: any): number => {
-              return sortByAlphabeticalOrder(capabilityObj1.title, capabilityObj2.title)
-            })
+            .sort((capabilityObj1: any, capabilityObj2: any): number => sortByAlphabeticalOrder(capabilityObj1.title, capabilityObj2.title))
         }
       ))
-      .sort((device1: any, device2: any): number => {
-        return sortByAlphabeticalOrder(device1.name, device2.name)
-      })
+      .sort((device1: any, device2: any): number => sortByAlphabeticalOrder(device1.name, device2.name))
   },
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {
