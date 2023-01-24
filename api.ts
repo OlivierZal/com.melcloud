@@ -29,7 +29,7 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   return format !== undefined ? localDate.toFormat(format) : localDate.toISO({ includeOffset: false })
 }
 
-function sortByAlphabeticalOrder (value1: string, value2: string): number {
+function sortByAlphabeticalOrder (value1: string, value2: string): -1 | 0 | 1 {
   if (value1 < value2) {
     return -1
   }
@@ -97,24 +97,21 @@ module.exports = {
     }
     // @ts-expect-error bug
     const devices = await app.api.devices.getDevices()
+    console.log()
     return Object.values(devices)
       .filter((device: any): boolean => device.capabilities.some((capability: string): boolean => capability.startsWith('measure_temperature')))
       .map((device: any) => (
-        {
-          id: device.id,
-          name: device.name,
-          capabilities: Object.values(device.capabilitiesObj)
-            .filter((capabilitiesObj: any): boolean => capabilitiesObj.id.startsWith('measure_temperature'))
-            .map((capabilityObj: any) => (
-              {
-                id: capabilityObj.id,
-                title: capabilityObj.title
-              }
-            ))
-            .sort((capabilityObj1: any, capabilityObj2: any): number => sortByAlphabeticalOrder(capabilityObj1.title, capabilityObj2.title))
-        }
+        Object.values(device.capabilitiesObj)
+          .filter((capabilitiesObj: any): boolean => capabilitiesObj.id.startsWith('measure_temperature'))
+          .map((capabilityObj: any) => (
+            {
+              capabilityPath: `${device.id as string}:${capabilityObj.id as string}`,
+              capabilityName: `${device.name as string} - ${capabilityObj.title as string}`
+            }
+          ))
       ))
-      .sort((device1: any, device2: any): number => sortByAlphabeticalOrder(device1.name, device2.name))
+      .flat()
+      .sort((device1: any, device2: any): -1 | 0 | 1 => sortByAlphabeticalOrder(device1.capabilityName, device2.capabilityName))
   },
 
   async getUnitErrorLog ({ homey, query }: { homey: Homey, query: ErrorLogQuery }): Promise<ErrorLog> {

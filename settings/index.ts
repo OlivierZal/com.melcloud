@@ -258,14 +258,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         }
         isThereMeasureTemperatureCapabilitiesForAtaElement.style.display = 'block'
         for (const device of devices) {
-          const { id, name, capabilities } = device
-          for (const capability of capabilities) {
-            const option: HTMLOptionElement = document.createElement('option')
-            option.setAttribute('value', `${id as string}:${capability.id as string}`)
-            const optionText: Text = document.createTextNode(`${name as string} - ${capability.title as string}`)
-            option.appendChild(optionText)
-            outdoorTemperatureCapabilityElement.appendChild(option)
-          }
+          const { capabilityPath, capabilityName } = device
+          const option: HTMLOptionElement = document.createElement('option')
+          option.setAttribute('value', capabilityPath)
+          const optionText: Text = document.createTextNode(capabilityName)
+          option.appendChild(optionText)
+          outdoorTemperatureCapabilityElement.appendChild(option)
         }
         getHomeySelfAdjustSettings()
       }
