@@ -17,60 +17,54 @@ import {
 async function onHomeyReady (Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  const minimumTemperature: number = 10
-  const maximumTemperature: number = 38
   const limit: number = 29
   const offset: number = 0
+  const minimumTemperature: number = 10
+  const maximumTemperature: number = 38
 
-  let to: string = ''
-  let fromDateHuman: string = ''
-  let errorCount: number = 0
-  let hasLoadedTableHead: boolean = false
-  let hasLoadedBuildings: boolean = false
-  let frostProtectionMinimumTemperature: number = 10
-  let frostProtectionMaximumTemperature: number = 12
-
-  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is-not-authenticated') as HTMLDivElement
-  const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
-  const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
+  const applySelfAdjustElement: HTMLButtonElement = document.getElementById('apply-self-adjust') as HTMLButtonElement
+  const applySettingsElement: HTMLButtonElement = document.getElementById('apply-settings') as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById('authenticate') as HTMLButtonElement
+  const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
+  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
+  const refreshSelfAdjustElement: HTMLButtonElement = document.getElementById('refresh-self-adjust') as HTMLButtonElement
+  const seeElement: HTMLButtonElement = document.getElementById('see') as HTMLButtonElement
+  const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
+  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
+
   const isAuthenticatedElement: HTMLDivElement = document.getElementById('is-authenticated') as HTMLDivElement
+  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById('is-not-authenticated') as HTMLDivElement
+  const isThereMeasureTemperatureCapabilitiesForAtaElement: HTMLDivElement = document.getElementById('is-there-measure-temperature-capabilities-for-ata') as HTMLDivElement
 
   const periodElement: HTMLLabelElement = document.getElementById('period') as HTMLLabelElement
-  const tableElement: HTMLTableElement | null = document.querySelector('table')
+
+  const usernameElement: HTMLInputElement = document.getElementById('username') as HTMLInputElement
+  const passwordElement: HTMLInputElement = document.getElementById('password') as HTMLInputElement
   const fromElement: HTMLInputElement = document.getElementById('from') as HTMLInputElement
-  const seeElement: HTMLButtonElement = document.getElementById('see') as HTMLButtonElement
-
-  const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
-  intervalElement.min = '1'
-  intervalElement.max = '60'
-  const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
-  const applySettingsElement: HTMLButtonElement = document.getElementById('apply-settings') as HTMLButtonElement
-
-  const buildingElement: HTMLSelectElement = document.getElementById('building') as HTMLSelectElement
-  const holidayModeEnabledElement: HTMLSelectElement = document.getElementById('enabled-holiday-mode') as HTMLSelectElement
+  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
+  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
   const holidayModeStartDateElement: HTMLInputElement = document.getElementById('start-date') as HTMLInputElement
   const holidayModeEndDateElement: HTMLInputElement = document.getElementById('end-date') as HTMLInputElement
-  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById('refresh-holiday-mode') as HTMLButtonElement
-  const updateHolidayModeElement: HTMLButtonElement = document.getElementById('update-holiday-mode') as HTMLButtonElement
-  const frostProtectionEnabledElement: HTMLSelectElement = document.getElementById('enabled-frost-protection') as HTMLSelectElement
-  const frostProtectionMinimumTemperatureElement: HTMLInputElement = document.getElementById('min') as HTMLInputElement
-  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
-  const frostProtectionMaximumTemperatureElement: HTMLInputElement = document.getElementById('max') as HTMLInputElement
-  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
-  const refreshFrostProtectionElement: HTMLButtonElement = document.getElementById('refresh-frost-protection') as HTMLButtonElement
-  const updateFrostProtectionElement: HTMLButtonElement = document.getElementById('update-frost-protection') as HTMLButtonElement
-
-  const isThereMeasureTemperatureCapabilitiesForAtaElement: HTMLDivElement = document.getElementById('is-there-measure-temperature-capabilities-for-ata') as HTMLDivElement
-  const selfAdjustEnabledElement: HTMLSelectElement = document.getElementById('self_adjust_enabled') as HTMLSelectElement
-  const outdoorTemperatureCapabilityElement: HTMLSelectElement = document.getElementById('outdoor_temperature_capability_path') as HTMLSelectElement
+  const intervalElement: HTMLInputElement = document.getElementById('interval') as HTMLInputElement
   const thresholdElement: HTMLInputElement = document.getElementById('self_adjust_threshold') as HTMLInputElement
-  thresholdElement.min = String(minimumTemperature)
-  thresholdElement.max = String(maximumTemperature)
-  const refreshSelfAdjustElement: HTMLButtonElement = document.getElementById('refresh-self-adjust') as HTMLButtonElement
-  const applySelfAdjustElement: HTMLButtonElement = document.getElementById('apply-self-adjust') as HTMLButtonElement
+
+  const alwaysOnElement: HTMLSelectElement = document.getElementById('always_on') as HTMLSelectElement
+  const buildingElement: HTMLSelectElement = document.getElementById('building') as HTMLSelectElement
+  const frostProtectionEnabledElement: HTMLSelectElement = document.getElementById('enabled-frost-protection') as HTMLSelectElement
+  const holidayModeEnabledElement: HTMLSelectElement = document.getElementById('enabled-holiday-mode') as HTMLSelectElement
+  const outdoorTemperatureCapabilityElement: HTMLSelectElement = document.getElementById('outdoor_temperature_capability_path') as HTMLSelectElement
+  const selfAdjustEnabledElement: HTMLSelectElement = document.getElementById('self_adjust_enabled') as HTMLSelectElement
+
+  const tableElement: HTMLTableElement | null = document.querySelector('table')
+
+  let errorCount: number = 0
+  let fromDateHuman: string = ''
+  let to: string = ''
+  let frostProtectionMinimumTemperature: number = 10
+  let frostProtectionMaximumTemperature: number = 12
+  let hasLoadedTableHead: boolean = false
+  let hasLoadedBuildings: boolean = false
+  let threshold: number = 0
 
   function getHomeySetting (element: HTMLInputElement | HTMLSelectElement, defaultValue: any = ''): void {
     // @ts-expect-error bug
@@ -286,6 +280,15 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
     getMeasureTemperatureCapabilitiesForAta()
   }
+
+  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
+  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
+  intervalElement.min = '1'
+  intervalElement.max = '60'
+  thresholdElement.min = String(minimumTemperature)
+  thresholdElement.max = String(maximumTemperature)
 
   getHomeySetting(usernameElement)
   getHomeySetting(passwordElement)
@@ -513,7 +516,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   })
 
   applySelfAdjustElement.addEventListener('click', (): void => {
-    let threshold: number = 0
     try {
       threshold = int(thresholdElement)
     } catch (error: unknown) {
