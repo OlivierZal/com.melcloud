@@ -1,20 +1,20 @@
 import { DateTime } from 'luxon'
-import Homey from 'homey/lib/Homey'
-import MELCloudApp from './app'
+import type Homey from 'homey/lib/Homey'
+import type MELCloudApp from './app'
 import {
-  Building,
-  ErrorDetails,
-  ErrorLog,
-  ErrorLogData,
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionSettings,
-  HolidayModeData,
-  HolidayModeSettings,
-  LoginCredentials,
-  MELCloudDevice,
-  OutdoorTemperatureListenerData,
-  Settings
+  type Building,
+  type ErrorDetails,
+  type ErrorLog,
+  type ErrorLogData,
+  type ErrorLogQuery,
+  type FrostProtectionData,
+  type FrostProtectionSettings,
+  type HolidayModeData,
+  type HolidayModeSettings,
+  type LoginCredentials,
+  type MELCloudDevice,
+  type OutdoorTemperatureListenerData,
+  type Settings
 } from './types'
 
 const format: string = 'dd LLL yy HH:mm'

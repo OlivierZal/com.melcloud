@@ -1,6 +1,6 @@
-import MELCloudDeviceAtw from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { GetCapability, ListCapability, SetCapability } from '../../types'
+import type MELCloudDeviceAtw from './device'
+import { type GetCapability, type ListCapability, type SetCapability } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>

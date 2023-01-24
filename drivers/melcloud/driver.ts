@@ -1,6 +1,6 @@
-import MELCloudDeviceAta from './device'
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import { FlowArgsAta, SetCapability } from '../../types'
+import type MELCloudDeviceAta from './device'
+import { type FlowArgsAta, type SetCapability } from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
 

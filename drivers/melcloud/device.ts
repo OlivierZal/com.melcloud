@@ -1,19 +1,19 @@
 import { DateTime } from 'luxon'
-import MELCloudDriverAta from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
+import type MELCloudDriverAta from './driver'
 import {
-  Capability,
-  CapabilityValue,
-  ExtendedSetCapability,
   getCapabilityMappingAta,
   listCapabilityMappingAta,
-  ReportCapabilities,
-  ReportCapability,
-  ReportData,
-  SetCapabilities,
-  SetCapability,
   setCapabilityMappingAta,
-  ThermostatMode
+  type Capability,
+  type CapabilityValue,
+  type ExtendedSetCapability,
+  type ReportCapabilities,
+  type ReportCapability,
+  type ReportData,
+  type SetCapabilities,
+  type SetCapability,
+  type ThermostatMode
 } from '../../types'
 
 function reverse (mapping: Record<string, string>): Record<string, string> {

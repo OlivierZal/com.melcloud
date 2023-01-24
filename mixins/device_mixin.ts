@@ -1,27 +1,27 @@
 import { DateTime, Duration } from 'luxon'
 import { Device } from 'homey'
-import MELCloudApp from '../app'
-import MELCloudDeviceAta from '../drivers/melcloud/device'
-import MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import type MELCloudApp from '../app'
+import type MELCloudDeviceAta from '../drivers/melcloud/device'
+import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import {
-  Capability,
-  CapabilityValue,
-  Data,
-  ExtendedCapability,
-  ExtendedSetCapability,
-  GetCapability,
-  GetCapabilityMapping,
-  ListCapability,
-  ListCapabilityMapping,
-  ListDevice,
-  MELCloudDevice,
-  MELCloudDriver,
-  SetCapabilities,
-  SetCapability,
-  SetCapabilityMapping,
-  Settings,
-  ThermostatMode,
-  UpdateData
+  type Capability,
+  type CapabilityValue,
+  type Data,
+  type ExtendedCapability,
+  type ExtendedSetCapability,
+  type GetCapability,
+  type GetCapabilityMapping,
+  type ListCapability,
+  type ListCapabilityMapping,
+  type ListDevice,
+  type MELCloudDevice,
+  type MELCloudDriver,
+  type SetCapabilities,
+  type SetCapability,
+  type SetCapabilityMapping,
+  type Settings,
+  type ThermostatMode,
+  type UpdateData
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {

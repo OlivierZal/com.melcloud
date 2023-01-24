@@ -1,19 +1,19 @@
 import { DateTime } from 'luxon'
-import MELCloudDriverAtw from './driver'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
+import type MELCloudDriverAtw from './driver'
 import {
-  Capability,
-  CapabilityValue,
-  ExtendedSetCapability,
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
-  ReportCapabilities,
-  ReportCapability,
-  ReportData,
-  SetCapabilities,
-  SetCapability,
   setCapabilityMappingAtw,
-  ThermostatMode
+  type Capability,
+  type CapabilityValue,
+  type ExtendedSetCapability,
+  type ReportCapabilities,
+  type ReportCapability,
+  type ReportData,
+  type SetCapabilities,
+  type SetCapability,
+  type ThermostatMode
 } from '../../types'
 
 const thermostatModeToOperationMode: Partial<Record<ThermostatMode, string>> = {

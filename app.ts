@@ -1,30 +1,30 @@
 import axios from 'axios'
 import { DateTime, Duration, Settings } from 'luxon'
-import { App, Driver } from 'homey'
+import { App, type Driver } from 'homey'
 import { HomeyAPIApp } from 'homey-api'
 import {
-  Building,
-  Data,
-  ErrorLogData,
-  ErrorLogPostData,
-  FailureData,
-  FrostProtectionData,
-  FrostProtectionPostData,
-  FrostProtectionSettings,
-  HolidayModeData,
-  HolidayModePostData,
-  HolidayModeSettings,
-  ListDevice,
-  LoginCredentials,
-  LoginData,
-  LoginPostData,
-  MELCloudDevice,
-  OutdoorTemperatureListenerData,
-  PostData,
-  ReportData,
-  ReportPostData,
-  SuccessData,
-  UpdateData
+  type Building,
+  type Data,
+  type ErrorLogData,
+  type ErrorLogPostData,
+  type FailureData,
+  type FrostProtectionData,
+  type FrostProtectionPostData,
+  type FrostProtectionSettings,
+  type HolidayModeData,
+  type HolidayModePostData,
+  type HolidayModeSettings,
+  type ListDevice,
+  type LoginCredentials,
+  type LoginData,
+  type LoginPostData,
+  type MELCloudDevice,
+  type OutdoorTemperatureListenerData,
+  type PostData,
+  type ReportData,
+  type ReportPostData,
+  type SuccessData,
+  type UpdateData
 } from './types'
 
 export default class MELCloudApp extends App {
@@ -361,8 +361,8 @@ export default class MELCloudApp extends App {
   }
 
   async handleOutdoorTemperatureListenerData ({ capabilityPath, enabled, threshold }: OutdoorTemperatureListenerData): Promise<string> {
-    this.setSettings({ self_adjust_threshold: threshold })
     try {
+      this.setSettings({ self_adjust_threshold: threshold })
       const splitCapabilityPath: string[] = capabilityPath.split(':')
       if (splitCapabilityPath.length !== 2) {
         throw new Error('The selected outdoor temperature is invalid.')

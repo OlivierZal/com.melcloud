@@ -1,7 +1,7 @@
-import MELCloudDeviceAta from './drivers/melcloud/device'
-import MELCloudDriverAta from './drivers/melcloud/driver'
-import MELCloudDeviceAtw from './drivers/melcloud_atw/device'
-import MELCloudDriverAtw from './drivers/melcloud_atw/driver'
+import type MELCloudDeviceAta from './drivers/melcloud/device'
+import type MELCloudDriverAta from './drivers/melcloud/driver'
+import type MELCloudDeviceAtw from './drivers/melcloud_atw/device'
+import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw

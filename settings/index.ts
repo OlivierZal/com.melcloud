@@ -1,16 +1,16 @@
-import Homey from 'homey/lib/Homey'
+import type Homey from 'homey/lib/Homey'
 import {
-  Building,
-  ErrorLog,
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionSettings,
-  HolidayModeData,
-  HolidayModeSettings,
-  LoginCredentials,
-  MELCloudDevice,
-  OutdoorTemperatureListenerData,
-  Settings
+  type Building,
+  type ErrorLog,
+  type ErrorLogQuery,
+  type FrostProtectionData,
+  type FrostProtectionSettings,
+  type HolidayModeData,
+  type HolidayModeSettings,
+  type LoginCredentials,
+  type MELCloudDevice,
+  type OutdoorTemperatureListenerData,
+  type Settings
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
