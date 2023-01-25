@@ -27,22 +27,48 @@ import {
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
-  operationModeCapability!: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>
+  operationModeCapability!:
+  | SetCapability<MELCloudDeviceAta>
+  | SetCapability<MELCloudDeviceAtw>
+
   operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
-  setCapabilityMapping!: Record<SetCapability<MELCloudDeviceAta>, SetCapabilityMapping<MELCloudDeviceAta>>
-  | Record<SetCapability<MELCloudDeviceAtw>, SetCapabilityMapping<MELCloudDeviceAtw>>
+  setCapabilityMapping!:
+  | Record<
+  SetCapability<MELCloudDeviceAta>,
+  SetCapabilityMapping<MELCloudDeviceAta>
+  >
+  | Record<
+  SetCapability<MELCloudDeviceAtw>,
+  SetCapabilityMapping<MELCloudDeviceAtw>
+  >
 
-  getCapabilityMapping!: Record<GetCapability<MELCloudDeviceAta>, GetCapabilityMapping<MELCloudDeviceAta>>
-  | Record<GetCapability<MELCloudDeviceAtw>, GetCapabilityMapping<MELCloudDeviceAtw>>
+  getCapabilityMapping!:
+  | Record<
+  GetCapability<MELCloudDeviceAta>,
+  GetCapabilityMapping<MELCloudDeviceAta>
+  >
+  | Record<
+  GetCapability<MELCloudDeviceAtw>,
+  GetCapabilityMapping<MELCloudDeviceAtw>
+  >
 
-  listCapabilityMapping!: Record<ListCapability<MELCloudDeviceAta>, ListCapabilityMapping<MELCloudDeviceAta>>
-  | Record<ListCapability<MELCloudDeviceAtw>, ListCapabilityMapping<MELCloudDeviceAtw>>
+  listCapabilityMapping!:
+  | Record<
+  ListCapability<MELCloudDeviceAta>,
+  ListCapabilityMapping<MELCloudDeviceAta>
+  >
+  | Record<
+  ListCapability<MELCloudDeviceAtw>,
+  ListCapabilityMapping<MELCloudDeviceAtw>
+  >
 
   id!: number
   buildingid!: number
-  diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
+  diff!:
+  | SetCapabilities<MELCloudDeviceAta>
+  | SetCapabilities<MELCloudDeviceAtw>
 
   syncTimeout!: NodeJS.Timeout
   reportTimeout!: NodeJS.Timeout
@@ -67,19 +93,30 @@ export default class MELCloudDeviceMixin extends Device {
     await this.syncFromDevice()
 
     this.reportInterval = null
-    if (dashboardCapabilities.some((capability: string): boolean => capability.startsWith('meter_power'))) {
+    if (
+      dashboardCapabilities.some((capability: string): boolean =>
+        capability.startsWith('meter_power')
+      )
+    ) {
       await this.runEnergyReports()
     }
   }
 
   getDashboardCapabilities (settings: Settings = this.getSettings()): string[] {
-    return Object.keys(settings).filter((setting: string): boolean => (
-      this.driver.manifest.capabilities.includes(setting) === true && settings[setting] === true
-    ))
+    return Object.keys(settings).filter(
+      (setting: string): boolean =>
+        this.driver.manifest.capabilities.includes(setting) === true &&
+        settings[setting] === true
+    )
   }
 
-  async handleCapabilities (dashboardCapabilities: string[] = this.getDashboardCapabilities()): Promise<void> {
-    const requiredCapabilities: string[] = [...this.requiredCapabilities, ...dashboardCapabilities]
+  async handleCapabilities (
+    dashboardCapabilities: string[] = this.getDashboardCapabilities()
+  ): Promise<void> {
+    const requiredCapabilities: string[] = [
+      ...this.requiredCapabilities,
+      ...dashboardCapabilities
+    ]
     for (const capability of requiredCapabilities) {
       await this.addCapability(capability)
     }
@@ -90,15 +127,27 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  registerCapabilityListeners <T extends MELCloudDevice> (): void {
-    for (const capability of [...Object.keys(this.setCapabilityMapping), 'thermostat_mode']) {
-      this.registerCapabilityListener(capability, async (value: CapabilityValue): Promise<void> => {
-        await this.onCapability(capability as ExtendedSetCapability<T>, value)
-      })
+  registerCapabilityListeners<T extends MELCloudDevice>(): void {
+    for (const capability of [
+      ...Object.keys(this.setCapabilityMapping),
+      'thermostat_mode'
+    ]) {
+      this.registerCapabilityListener(
+        capability,
+        async (value: CapabilityValue): Promise<void> => {
+          await this.onCapability(
+            capability as ExtendedSetCapability<T>,
+            value
+          )
+        }
+      )
     }
   }
 
-  async onCapability <T extends MELCloudDevice> (capability: ExtendedSetCapability<T>, value: CapabilityValue): Promise<void> {
+  async onCapability<T extends MELCloudDevice>(
+    capability: ExtendedSetCapability<T>,
+    value: CapabilityValue
+  ): Promise<void> {
     this.clearSyncPlan()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
@@ -111,7 +160,12 @@ export default class MELCloudDeviceMixin extends Device {
     this.applySyncToDevice()
   }
 
-  async specificOnCapability (_capability: ExtendedSetCapability<MELCloudDeviceAta> | ExtendedSetCapability<MELCloudDeviceAtw>, _value: CapabilityValue): Promise<void> {
+  async specificOnCapability (
+    _capability:
+    | ExtendedSetCapability<MELCloudDeviceAta>
+    | ExtendedSetCapability<MELCloudDeviceAtw>,
+    _value: CapabilityValue
+  ): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -128,28 +182,46 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   applySyncToDevice (): void {
-    this.syncTimeout = this.setTimeout('sync to device', async (): Promise<void> => {
-      await this.syncToDevice(this.diff)
-    }, { seconds: 1 })
+    this.syncTimeout = this.setTimeout(
+      'sync to device',
+      async (): Promise<void> => {
+        await this.syncToDevice(this.diff)
+      },
+      { seconds: 1 }
+    )
   }
 
-  async syncToDevice <T extends MELCloudDevice> (diff: SetCapabilities<T>): Promise<void> {
+  async syncToDevice<T extends MELCloudDevice>(
+    diff: SetCapabilities<T>
+  ): Promise<void> {
     this.diff = {}
     const updateData: UpdateData<T> = this.buildUpdateData(diff)
-    const data: Data<T> | null = await this.app.setDevice(this as unknown as T, updateData)
+    const data: Data<T> | null = await this.app.setDevice(
+      this as unknown as T,
+      updateData
+    )
     await this.sync(data)
   }
 
-  buildUpdateData <T extends MELCloudDevice> (diff: SetCapabilities<T>): UpdateData<T> {
+  buildUpdateData<T extends MELCloudDevice>(
+    diff: SetCapabilities<T>
+  ): UpdateData<T> {
     const updateData: any = {}
     let effectiveFlags: bigint = 0n
-    for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
+    for (const [capability, { tag, effectiveFlag }] of Object.entries(
+      this.setCapabilityMapping
+    )) {
       if (this.hasCapability(capability)) {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
-          updateData[tag] = this.convertToDevice(capability as SetCapability<T>, diff[capability as keyof SetCapabilities<T>] as CapabilityValue)
+          updateData[tag] = this.convertToDevice(
+            capability as SetCapability<T>,
+            diff[capability as keyof SetCapabilities<T>] as CapabilityValue
+          )
         } else {
-          updateData[tag] = this.convertToDevice(capability as SetCapability<T>)
+          updateData[tag] = this.convertToDevice(
+            capability as SetCapability<T>
+          )
         }
       }
     }
@@ -158,21 +230,23 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   convertToDevice (
-    capability: SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
+    capability:
+    | SetCapability<MELCloudDeviceAta>
+    | SetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     if (capability === 'onoff') {
-      return this.getSetting('always_on') === true ? true : value as boolean
+      return this.getSetting('always_on') === true ? true : (value as boolean)
     }
     return value as boolean | number
   }
 
-  async syncFromDevice <T extends MELCloudDevice> (): Promise<void> {
+  async syncFromDevice<T extends MELCloudDevice>(): Promise<void> {
     const data: Data<T> | null = await this.app.getDevice(this as unknown as T)
     await this.sync(data)
   }
 
-  async sync <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
+  async sync<T extends MELCloudDevice>(data: Data<T> | null): Promise<void> {
     await this.updateCapabilities(data)
     await this.updateThermostatMode()
 
@@ -182,33 +256,54 @@ export default class MELCloudDeviceMixin extends Device {
     this.planSyncFromDevice({ minutes: this.getSetting('interval') })
   }
 
-  async getDeviceFromList <T extends MELCloudDevice> (): Promise<ListDevice<T> | null> {
-    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(this.driver.deviceType)
-    const devices: Array<ListDevice<T>> = listDevices.filter((device: ListDevice<T>): boolean => device.DeviceID === this.id)
+  async getDeviceFromList<
+    T extends MELCloudDevice
+  >(): Promise<ListDevice<T> | null> {
+    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(
+      this.driver.deviceType
+    )
+    const devices: Array<ListDevice<T>> = listDevices.filter(
+      (device: ListDevice<T>): boolean => device.DeviceID === this.id
+    )
     if (devices.length === 1) {
       return devices[0]
     }
     return null
   }
 
-  async updateCapabilities <T extends MELCloudDevice> (data: Data<T> | null): Promise<void> {
+  async updateCapabilities<T extends MELCloudDevice>(
+    data: Data<T> | null
+  ): Promise<void> {
     if (data === null) {
       return
     }
     if (data.EffectiveFlags !== undefined) {
-      for (const [capability, { tag, effectiveFlag }] of Object.entries(this.setCapabilityMapping)) {
+      for (const [capability, { tag, effectiveFlag }] of Object.entries(
+        this.setCapabilityMapping
+      )) {
         const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
         if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
-          await this.convertFromDevice(capability as SetCapability<T>, data[tag as SetCapabilityMapping<T>['tag']] as boolean | number)
+          await this.convertFromDevice(
+            capability as SetCapability<T>,
+            data[tag as SetCapabilityMapping<T>['tag']] as boolean | number
+          )
         }
       }
     }
-    for (const [capability, { tag }] of Object.entries(this.getCapabilityMapping)) {
-      await this.convertFromDevice(capability as GetCapability<T>, data[tag as GetCapabilityMapping<T>['tag']] as boolean | number)
+    for (const [capability, { tag }] of Object.entries(
+      this.getCapabilityMapping
+    )) {
+      await this.convertFromDevice(
+        capability as GetCapability<T>,
+        data[tag as GetCapabilityMapping<T>['tag']] as boolean | number
+      )
     }
   }
 
-  async convertFromDevice (_capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>, _value: boolean | number): Promise<void> {
+  async convertFromDevice (
+    _capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>,
+    _value: boolean | number
+  ): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
@@ -217,21 +312,37 @@ export default class MELCloudDeviceMixin extends Device {
       return
     }
     const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: string | number = this.getCapabilityValue(this.operationModeCapability)
-    await this.setCapabilityValue('thermostat_mode', isOn ? this.operationModeToThermostatMode[operationMode] : 'off')
+    const operationMode: string | number = this.getCapabilityValue(
+      this.operationModeCapability
+    )
+    await this.setCapabilityValue(
+      'thermostat_mode',
+      isOn ? this.operationModeToThermostatMode[operationMode] : 'off'
+    )
   }
 
-  async updateListCapabilities <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
+  async updateListCapabilities<T extends MELCloudDevice>(
+    deviceFromList: ListDevice<T> | null
+  ): Promise<void> {
     if (deviceFromList === null) {
       return
     }
     this.log('Syncing from device list:', deviceFromList.Device)
-    for (const [capability, { tag }] of Object.entries(this.listCapabilityMapping)) {
-      await this.convertFromDevice(capability as ListCapability<T>, deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as boolean | number)
+    for (const [capability, { tag }] of Object.entries(
+      this.listCapabilityMapping
+    )) {
+      await this.convertFromDevice(
+        capability as ListCapability<T>,
+        deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as
+          | boolean
+          | number
+      )
     }
   }
 
-  async updateStore <T extends MELCloudDevice> (deviceFromList: ListDevice<T> | null): Promise<void> {
+  async updateStore<T extends MELCloudDevice>(
+    deviceFromList: ListDevice<T> | null
+  ): Promise<void> {
     if (deviceFromList === null) {
       return
     }
@@ -252,9 +363,13 @@ export default class MELCloudDeviceMixin extends Device {
 
   planSyncFromDevice (object: object): void {
     this.clearSyncPlan()
-    this.syncTimeout = this.setTimeout('sync from device', async (): Promise<void> => {
-      await this.syncFromDevice()
-    }, object)
+    this.syncTimeout = this.setTimeout(
+      'sync from device',
+      async (): Promise<void> => {
+        await this.syncFromDevice()
+      },
+      object
+    )
   }
 
   async runEnergyReports (): Promise<void> {
@@ -267,37 +382,76 @@ export default class MELCloudDeviceMixin extends Device {
     }
     const type = 'energy cost report'
     const { interval, duration, values } = this.reportPlanParameters
-    this.reportTimeout = this.setTimeout(type, async (): Promise<void> => {
-      await this.runEnergyReports()
-      this.reportInterval = this.setInterval(type, async (): Promise<void> => {
+    this.reportTimeout = this.setTimeout(
+      type,
+      async (): Promise<void> => {
         await this.runEnergyReports()
-      }, interval)
-    }, DateTime.now().plus(duration).set(values).diffNow())
+        this.reportInterval = this.setInterval(
+          type,
+          async (): Promise<void> => {
+            await this.runEnergyReports()
+          },
+          interval
+        )
+      },
+      DateTime.now().plus(duration).set(values).diffNow()
+    )
   }
 
-  async onSettings ({ newSettings, changedKeys }: { newSettings: Settings, changedKeys: string[] }): Promise<void> {
-    if (changedKeys.some((setting: string): boolean => !['always_on', 'interval'].includes(setting))) {
+  async onSettings ({
+    newSettings,
+    changedKeys
+  }: {
+    newSettings: Settings
+    changedKeys: string[]
+  }): Promise<void> {
+    if (
+      changedKeys.some(
+        (setting: string): boolean =>
+          !['always_on', 'interval'].includes(setting)
+      )
+    ) {
       await this.handleDashboardCapabilities(newSettings, changedKeys)
-      await this.setWarning('Exit device and return to refresh your dashboard.')
+      await this.setWarning(
+        'Exit device and return to refresh your dashboard.'
+      )
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.onCapability('onoff', true)
     }
-    if (changedKeys.some((setting: string): boolean => !setting.startsWith('meter_power') && setting !== 'always_on')) {
+    if (
+      changedKeys.some(
+        (setting: string): boolean =>
+          !setting.startsWith('meter_power') && setting !== 'always_on'
+      )
+    ) {
       this.planSyncFromDevice({ seconds: 1 })
     }
-    const changedEnergyKeys = changedKeys.filter((setting: string): boolean => setting.startsWith('meter_power'))
+    const changedEnergyKeys = changedKeys.filter((setting: string): boolean =>
+      setting.startsWith('meter_power')
+    )
     if (changedEnergyKeys.length !== 0) {
-      if (changedEnergyKeys.some((setting: string): boolean => newSettings[setting] === true)) {
+      if (
+        changedEnergyKeys.some(
+          (setting: string): boolean => newSettings[setting] === true
+        )
+      ) {
         await this.runEnergyReports()
-      } else if (this.getDashboardCapabilities(newSettings).filter((setting: string): boolean => setting.startsWith('meter_power')).length === 0) {
+      } else if (
+        this.getDashboardCapabilities(newSettings).filter(
+          (setting: string): boolean => setting.startsWith('meter_power')
+        ).length === 0
+      ) {
         this.clearReportPlan()
       }
     }
   }
 
-  async handleDashboardCapabilities (newSettings: Settings, changedCapabilities: string[]): Promise<void> {
+  async handleDashboardCapabilities (
+    newSettings: Settings,
+    changedCapabilities: string[]
+  ): Promise<void> {
     for (const capability of changedCapabilities) {
       if (newSettings[capability] === true) {
         await this.addCapability(capability)
@@ -320,7 +474,10 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async addCapability (capability: string): Promise<void> {
-    if (this.driver.manifest.capabilities.includes(capability) === true && !this.hasCapability(capability)) {
+    if (
+      this.driver.manifest.capabilities.includes(capability) === true &&
+      !this.hasCapability(capability)
+    ) {
       await super.addCapability(capability)
       this.log('Capability', capability, 'added')
     }
@@ -333,28 +490,56 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue <T extends MELCloudDevice> (capability: ExtendedCapability<T>, value: CapabilityValue): Promise<void> {
-    if (this.hasCapability(capability) && value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value)
-        .then((): void => { this.log('Capability', capability, 'is', value) })
+  async setCapabilityValue<T extends MELCloudDevice>(
+    capability: ExtendedCapability<T>,
+    value: CapabilityValue
+  ): Promise<void> {
+    if (
+      this.hasCapability(capability) &&
+      value !== this.getCapabilityValue(capability)
+    ) {
+      await super
+        .setCapabilityValue(capability, value)
+        .then((): void => {
+          this.log('Capability', capability, 'is', value)
+        })
         .catch(this.error)
     }
   }
 
-  setInterval (type: string, callback: () => Promise<void>, interval: number | object): NodeJS.Timeout {
+  setInterval (
+    type: string,
+    callback: () => Promise<void>,
+    interval: number | object
+  ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
-      `${type.charAt(0).toUpperCase()}${type.slice(1)}`, 'will run every', duration.shiftTo('days', 'hours').toHuman(),
-      'starting', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+      `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
+      'will run every',
+      duration.shiftTo('days', 'hours').toHuman(),
+      'starting',
+      DateTime.now()
+        .plus(duration)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setInterval(callback, Number(duration))
   }
 
-  setTimeout (type: string, callback: () => Promise<void>, interval: number | object): NodeJS.Timeout {
+  setTimeout (
+    type: string,
+    callback: () => Promise<void>,
+    interval: number | object
+  ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
-      'Next', type, 'will run in', duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
-      'on', DateTime.now().plus(duration).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+      'Next',
+      type,
+      'will run in',
+      duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
+      'on',
+      DateTime.now()
+        .plus(duration)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
   }

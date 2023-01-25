@@ -2,9 +2,17 @@ import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAta from './device'
 import { type FlowArgsAta, type SetCapability } from '../../types'
 
-const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = ['operation_mode', 'fan_power', 'vertical', 'horizontal']
+const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
+  'operation_mode',
+  'fan_power',
+  'vertical',
+  'horizontal'
+]
 
-function getCapabilityArg (args: FlowArgsAta, capability: SetCapability<MELCloudDeviceAta>): number | string {
+function getCapabilityArg (
+  args: FlowArgsAta,
+  capability: SetCapability<MELCloudDeviceAta>
+): number | string {
   if (capability === 'fan_power') {
     return Number(args[capability])
   }
@@ -20,13 +28,18 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     for (const capability of flowCapabilities) {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
-        .registerRunListener((args: FlowArgsAta): boolean => (
-          getCapabilityArg(args, capability) === args.device.getCapabilityValue(capability)
-        ))
+        .registerRunListener(
+          (args: FlowArgsAta): boolean =>
+            getCapabilityArg(args, capability) ===
+            args.device.getCapabilityValue(capability)
+        )
       this.homey.flow
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
-          await args.device.onCapability(capability, getCapabilityArg(args, capability))
+          await args.device.onCapability(
+            capability,
+            getCapabilityArg(args, capability)
+          )
         })
     }
   }

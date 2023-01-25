@@ -32,7 +32,9 @@ const operationModeFromDevice: Record<string, string> = {
   8: 'auto'
 } as const
 
-const operationModeToDevice: Record<string, string> = reverse(operationModeFromDevice)
+const operationModeToDevice: Record<string, string> = reverse(
+  operationModeFromDevice
+)
 
 const verticalFromDevice: Record<string, string> = {
   0: 'auto',
@@ -57,7 +59,8 @@ const horizontalFromDevice: Record<string, string> = {
   12: 'swing'
 } as const
 
-const horizontalToDevice: Record<string, string> = reverse(horizontalFromDevice)
+const horizontalToDevice: Record<string, string> =
+  reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
@@ -89,16 +92,28 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async specificOnCapability (capability: ExtendedSetCapability<MELCloudDeviceAta>, value: CapabilityValue): Promise<void> {
+  async specificOnCapability (
+    capability: ExtendedSetCapability<MELCloudDeviceAta>,
+    value: CapabilityValue
+  ): Promise<void> {
     switch (capability) {
       case 'thermostat_mode':
         if (value !== 'off') {
-          this.diff.operation_mode = reverse(this.operationModeToThermostatMode)[value as ThermostatMode]
+          this.diff.operation_mode = reverse(
+            this.operationModeToThermostatMode
+          )[value as ThermostatMode]
         }
         break
       case 'operation_mode':
-        if (['dry', 'fan'].includes(value as string) && this.getCapabilityValue('thermostat_mode') !== 'off') {
-          await this.setWarning(`"${(value as string).charAt(0).toUpperCase()}${(value as string).slice(1)}" has been saved (even if "Heat" is displayed).`)
+        if (
+          ['dry', 'fan'].includes(value as string) &&
+          this.getCapabilityValue('thermostat_mode') !== 'off'
+        ) {
+          await this.setWarning(
+            `"${(value as string).charAt(0).toUpperCase()}${(
+              value as string
+            ).slice(1)}" has been saved (even if "Heat" is displayed).`
+          )
           await this.setWarning(null)
         }
         this.diff.operation_mode = value as string
@@ -117,7 +132,10 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAta>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
+  convertToDevice (
+    capability: SetCapability<MELCloudDeviceAta>,
+    value: CapabilityValue = this.getCapabilityValue(capability)
+  ): boolean | number {
     switch (capability) {
       case 'operation_mode':
         return Number(operationModeToDevice[value as string])
@@ -130,7 +148,10 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  async convertFromDevice (capability: Capability<MELCloudDeviceAta>, value: boolean | number): Promise<void> {
+  async convertFromDevice (
+    capability: Capability<MELCloudDeviceAta>,
+    value: boolean | number
+  ): Promise<void> {
     let newValue: CapabilityValue = value
     switch (capability) {
       case 'operation_mode':
@@ -170,29 +191,53 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       'meter_power.total_consumed_other': 0
     }
     const toDate: DateTime = DateTime.now().minus({ hours: 1 })
-    const periods: { [period in 'hourly' | 'daily' | 'total']: { fromDate: DateTime, toDate: DateTime } } = {
+    const periods: {
+      [period in 'hourly' | 'daily' | 'total']: {
+        fromDate: DateTime
+        toDate: DateTime
+      };
+    } = {
       hourly: { fromDate: toDate, toDate },
       daily: { fromDate: toDate, toDate },
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAta> | null = await this.app.reportEnergyCost(this, fromDate, toDate)
+      const data: ReportData<MELCloudDeviceAta> | null =
+        await this.app.reportEnergyCost(this, fromDate, toDate)
       if (data !== null) {
-        for (const mode of ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other']) {
-          const modeData: number = period === 'hourly'
-            ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[toDate.hour]
-            : data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>] as number
+        for (const mode of [
+          'Auto',
+          'Cooling',
+          'Dry',
+          'Fan',
+          'Heating',
+          'Other'
+        ]) {
+          const modeData: number =
+            period === 'hourly'
+              ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[
+                  toDate.hour
+                ]
+              : (data[
+                  `Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>
+                ] as number)
           reportMapping[
             `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
           ] = modeData / data.UsageDisclaimerPercentages.split(', ').length
           reportMapping[
             `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>
-          ] += reportMapping[`meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>]
+          ] +=
+            reportMapping[
+              `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
+            ]
         }
       }
     }
     for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAta>, value)
+      await this.convertFromDevice(
+        capability as ReportCapability<MELCloudDeviceAta>,
+        value
+      )
     }
     this.planEnergyReports()
   }
