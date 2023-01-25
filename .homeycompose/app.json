@@ -8,9 +8,7 @@
   "description": {
     "en": "Take control of MELCloud devices"
   },
-  "category": [
-    "climate"
-  ],
+  "category": ["climate"],
   "version": "10.0.4",
   "compatibility": ">=5.0.0",
   "tags": {
@@ -88,10 +86,6 @@
       "path": "/settings/holiday_mode/buildings/:buildingId"
     }
   },
-  "platforms": [
-    "local"
-  ],
-  "permissions": [
-    "homey:manager:api"
-  ]
+  "platforms": ["local"],
+  "permissions": ["homey:manager:api"]
 }

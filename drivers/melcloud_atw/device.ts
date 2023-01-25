@@ -47,7 +47,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       4: 'cool',
       3: 'cool'
     } as const
-    this.requiredCapabilities = this.driver.getRequiredCapabilities(canCool, hasZone2)
+    this.requiredCapabilities = this.driver.getRequiredCapabilities(
+      canCool,
+      hasZone2
+    )
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
@@ -59,11 +62,15 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async specificOnCapability (capability: ExtendedSetCapability<MELCloudDeviceAtw>, value: CapabilityValue): Promise<void> {
+  async specificOnCapability (
+    capability: ExtendedSetCapability<MELCloudDeviceAtw>,
+    value: CapabilityValue
+  ): Promise<void> {
     switch (capability) {
       case 'thermostat_mode':
         if (value !== 'off') {
-          this.diff['operation_mode_zone.zone1'] = thermostatModeToOperationMode[value as ThermostatMode]
+          this.diff['operation_mode_zone.zone1'] =
+            thermostatModeToOperationMode[value as ThermostatMode]
         }
         break
       case 'onoff.forced_hot_water':
@@ -104,7 +111,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  convertToDevice (capability: SetCapability<MELCloudDeviceAtw>, value: CapabilityValue = this.getCapabilityValue(capability)): boolean | number {
+  convertToDevice (
+    capability: SetCapability<MELCloudDeviceAtw>,
+    value: CapabilityValue = this.getCapabilityValue(capability)
+  ): boolean | number {
     switch (capability) {
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
@@ -116,7 +126,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async convertFromDevice (capability: Capability<MELCloudDeviceAtw>, value: boolean | number): Promise<void> {
+  async convertFromDevice (
+    capability: Capability<MELCloudDeviceAtw>,
+    value: boolean | number
+  ): Promise<void> {
     let newValue: CapabilityValue = value
     switch (capability) {
       case 'operation_mode_state':
@@ -162,35 +175,55 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       'meter_power.total_produced_hotwater': 0
     }
     const toDate: DateTime = DateTime.now().minus({ days: 1 })
-    const periods: { [period in 'daily' | 'total']: { fromDate: DateTime, toDate: DateTime } } = {
+    const periods: {
+      [period in 'daily' | 'total']: { fromDate: DateTime, toDate: DateTime };
+    } = {
       daily: { fromDate: toDate, toDate },
       total: { fromDate: DateTime.local(1970), toDate }
     }
     for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAtw> | null = await this.app.reportEnergyCost(this, fromDate, toDate)
+      const data: ReportData<MELCloudDeviceAtw> | null =
+        await this.app.reportEnergyCost(this, fromDate, toDate)
       if (data !== null) {
         for (const mode of ['Cooling', 'Heating', 'HotWater']) {
           for (const type of ['Consumed', 'Produced']) {
             reportMapping[
               `meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-            ] = data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
+            ] =
+              data[
+                `Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>
+              ]
             reportMapping[
               `meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-            ] += reportMapping[`meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>]
+            ] +=
+              reportMapping[
+                `meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
+              ]
           }
           reportMapping[
             `meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-          ] = data[`Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>] /
+          ] =
+            data[
+              `Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>
+            ] /
             data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>]
         }
         reportMapping[
           `meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>
-        ] = reportMapping[`meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>] /
-          reportMapping[`meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>]
+        ] =
+          reportMapping[
+            `meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>
+          ] /
+          reportMapping[
+            `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>
+          ]
       }
     }
     for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.convertFromDevice(capability as ReportCapability<MELCloudDeviceAtw>, value)
+      await this.convertFromDevice(
+        capability as ReportCapability<MELCloudDeviceAtw>,
+        value
+      )
     }
     this.planEnergyReports()
   }

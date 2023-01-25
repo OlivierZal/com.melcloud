@@ -1,12 +1,24 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAtw from './device'
-import { type GetCapability, type ListCapability, type SetCapability } from '../../types'
+import {
+  type GetCapability,
+  type ListCapability,
+  type SetCapability
+} from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  capabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw> | ListCapability<MELCloudDeviceAtw>>
+  capabilitiesAtw!: Array<
+  | SetCapability<MELCloudDeviceAtw>
+  | GetCapability<MELCloudDeviceAtw>
+  | ListCapability<MELCloudDeviceAtw>
+  >
+
   coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
-  zone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>>
+  zone2CapabilitiesAtw!: Array<
+  SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>
+  >
+
   coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
 
@@ -32,9 +44,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'operation_mode_zone_with_cool.zone1',
       'target_temperature.zone1_flow_cool'
     ]
-    this.notCoolCapabilitiesAtw = [
-      'operation_mode_zone.zone1'
-    ]
+    this.notCoolCapabilitiesAtw = ['operation_mode_zone.zone1']
     this.zone2CapabilitiesAtw = [
       'measure_temperature.zone2',
       'target_temperature.zone2',
@@ -44,84 +54,141 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'operation_mode_zone_with_cool.zone2',
       'target_temperature.zone2_flow_cool'
     ]
-    this.notCoolZone2CapabilitiesAtw = [
-      'operation_mode_zone.zone2'
-    ]
+    this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
-    const operationModeZoneCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
-      .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('operation_mode_zone'))
+    const operationModeZoneCapabilities: Array<
+    SetCapability<MELCloudDeviceAtw>
+    > = this.manifest.capabilities.filter(
+      (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
+        capability.startsWith('operation_mode_zone')
+    )
     for (const capability of operationModeZoneCapabilities) {
-      let flowPrefix: string = `operation_mode_zone${capability[capability.length - 1]}`
+      let flowPrefix: string = `operation_mode_zone${
+        capability[capability.length - 1]
+      }`
       if (capability.includes('with_cool')) {
         flowPrefix += '_with_cool'
       }
       this.homey.flow
         .getConditionCard(`${flowPrefix}_condition`)
-        .registerRunListener((args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): boolean => (
-          args.operation_mode_zone === args.device.getCapabilityValue(capability)
-        ))
+        .registerRunListener(
+          (args: {
+            device: MELCloudDeviceAtw
+            operation_mode_zone: string
+          }): boolean =>
+            args.operation_mode_zone ===
+            args.device.getCapabilityValue(capability)
+        )
       this.homey.flow
         .getActionCard(`${flowPrefix}_action`)
-        .registerRunListener(async (args: { device: MELCloudDeviceAtw, operation_mode_zone: string }): Promise<void> => {
-          await args.device.onCapability(capability, args.operation_mode_zone)
-        })
+        .registerRunListener(
+          async (args: {
+            device: MELCloudDeviceAtw
+            operation_mode_zone: string
+          }): Promise<void> => {
+            await args.device.onCapability(
+              capability,
+              args.operation_mode_zone
+            )
+          }
+        )
     }
 
-    const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> = this.manifest.capabilities
-      .filter((capability: SetCapability<MELCloudDeviceAtw>): boolean => capability.startsWith('target_temperature') && capability !== 'target_temperature')
+    const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
+      this.manifest.capabilities.filter(
+        (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
+          capability.startsWith('target_temperature') &&
+          capability !== 'target_temperature'
+      )
     for (const capability of flowTemperatureCapabilities) {
       this.homey.flow
         .getActionCard(`${capability.replace('.', '_')}_action`)
-        .registerRunListener(async (args: { device: MELCloudDeviceAtw, target_temperature: number }): Promise<void> => {
-          await args.device.onCapability(capability, args.target_temperature)
-        })
+        .registerRunListener(
+          async (args: {
+            device: MELCloudDeviceAtw
+            target_temperature: number
+          }): Promise<void> => {
+            await args.device.onCapability(capability, args.target_temperature)
+          }
+        )
     }
 
     this.homey.flow
       .getConditionCard('eco_hot_water_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAtw, eco_hot_water: 'true' | 'false' }): boolean => (
-        args.eco_hot_water === String(args.device.getCapabilityValue('eco_hot_water'))
-      ))
+      .registerRunListener(
+        (args: {
+          device: MELCloudDeviceAtw
+          eco_hot_water: 'true' | 'false'
+        }): boolean =>
+          args.eco_hot_water ===
+          String(args.device.getCapabilityValue('eco_hot_water'))
+      )
 
     this.homey.flow
       .getConditionCard('operation_mode_state_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAtw, operation_mode_state: string }): boolean => (
-        args.operation_mode_state === args.device.getCapabilityValue('operation_mode_state')
-      ))
+      .registerRunListener(
+        (args: {
+          device: MELCloudDeviceAtw
+          operation_mode_state: string
+        }): boolean =>
+          args.operation_mode_state ===
+          args.device.getCapabilityValue('operation_mode_state')
+      )
 
     this.homey.flow
       .getConditionCard('onoff_forced_hot_water_condition')
-      .registerRunListener((args: { device: MELCloudDeviceAtw, onoff_forced_hot_water: 'true' | 'false' }): boolean => (
-        args.onoff_forced_hot_water === String(args.device.getCapabilityValue('onoff.forced_hot_water'))
-      ))
+      .registerRunListener(
+        (args: {
+          device: MELCloudDeviceAtw
+          onoff_forced_hot_water: 'true' | 'false'
+        }): boolean =>
+          args.onoff_forced_hot_water ===
+          String(args.device.getCapabilityValue('onoff.forced_hot_water'))
+      )
     this.homey.flow
       .getActionCard('onoff_forced_hot_water_action')
-      .registerRunListener(async (args: { device: MELCloudDeviceAtw, onoff_forced_hot_water: 'true' | 'false' }): Promise<void> => {
-        await args.device.onCapability('onoff.forced_hot_water', args.onoff_forced_hot_water === 'true')
-      })
+      .registerRunListener(
+        async (args: {
+          device: MELCloudDeviceAtw
+          onoff_forced_hot_water: 'true' | 'false'
+        }): Promise<void> => {
+          await args.device.onCapability(
+            'onoff.forced_hot_water',
+            args.onoff_forced_hot_water === 'true'
+          )
+        }
+      )
 
     // Deprecated
     this.homey.flow
       .getActionCard('target_temperature_tank_water')
-      .registerRunListener(async (args: { device: MELCloudDeviceAtw, target_temperature: number }): Promise<void> => {
-        await args.device.onCapability('target_temperature.tank_water', args.target_temperature)
-      })
+      .registerRunListener(
+        async (args: {
+          device: MELCloudDeviceAtw
+          target_temperature: number
+        }): Promise<void> => {
+          await args.device.onCapability(
+            'target_temperature.tank_water',
+            args.target_temperature
+          )
+        }
+      )
   }
 
   getRequiredCapabilities (canCool: boolean, hasZone2: boolean): string[] {
     return [
       ...this.capabilitiesAtw,
-      ...canCool
+      ...(canCool
         ? [...this.coolCapabilitiesAtw, 'thermostat_mode']
-        : this.notCoolCapabilitiesAtw,
-      ...hasZone2
+        : this.notCoolCapabilitiesAtw),
+      ...(hasZone2
         ? [
             ...this.zone2CapabilitiesAtw,
-            ...canCool
+            ...(canCool
               ? this.coolZone2CapabilitiesAtw
-              : this.notCoolZone2CapabilitiesAtw
+              : this.notCoolZone2CapabilitiesAtw)
           ]
-        : []
+        : [])
     ]
   }
 }

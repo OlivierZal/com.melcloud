@@ -1,7 +1,12 @@
 import { Driver } from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
-import { type DeviceDetails, type ListDevice, type LoginCredentials, type MELCloudDevice } from '../types'
+import {
+  type DeviceDetails,
+  type ListDevice,
+  type LoginCredentials,
+  type MELCloudDevice
+} from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
@@ -13,12 +18,21 @@ export default class MELCloudDriverMixin extends Driver {
   }
 
   onPair (session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
-    session.setHandler('list_devices', async (): Promise<DeviceDetails[]> => await this.discoverDevices())
+    session.setHandler(
+      'login',
+      async (data: LoginCredentials): Promise<boolean> =>
+        await this.app.login(data)
+    )
+    session.setHandler(
+      'list_devices',
+      async (): Promise<DeviceDetails[]> => await this.discoverDevices()
+    )
   }
 
-  async discoverDevices <T extends MELCloudDevice> (): Promise<DeviceDetails[]> {
-    const devices: Array<ListDevice<T>> = await this.app.listDevices(this.deviceType)
+  async discoverDevices<T extends MELCloudDevice>(): Promise<DeviceDetails[]> {
+    const devices: Array<ListDevice<T>> = await this.app.listDevices(
+      this.deviceType
+    )
     return devices.map((device: ListDevice<T>): DeviceDetails => {
       const { CanCool, HasZone2 } = device.Device
       const deviceDetails: DeviceDetails = {
@@ -32,7 +46,10 @@ export default class MELCloudDriverMixin extends Driver {
           hasZone2: HasZone2
         }
       }
-      const capabilities: string[] = this.getRequiredCapabilities(CanCool, HasZone2)
+      const capabilities: string[] = this.getRequiredCapabilities(
+        CanCool,
+        HasZone2
+      )
       if (capabilities.length > 0) {
         deviceDetails.capabilities = capabilities
       }
@@ -45,6 +62,10 @@ export default class MELCloudDriverMixin extends Driver {
   }
 
   onRepair (session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials): Promise<boolean> => await this.app.login(data))
+    session.setHandler(
+      'login',
+      async (data: LoginCredentials): Promise<boolean> =>
+        await this.app.login(data)
+    )
   }
 }

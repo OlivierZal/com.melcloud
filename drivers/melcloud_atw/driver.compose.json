@@ -122,8 +122,8 @@
       "title": {
         "en": "Heat Pump Frequency"
       },
-       "units": {
-         "en": "Hz"
+      "units": {
+        "en": "Hz"
       }
     },
     "measure_power.wifi": {
@@ -138,8 +138,8 @@
       "title": {
         "en": "Last Daily CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -147,8 +147,8 @@
       "title": {
         "en": "Last Daily Cooling CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -156,8 +156,8 @@
       "title": {
         "en": "Last Daily Heating CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -165,8 +165,8 @@
       "title": {
         "en": "Last Daily Hot Water CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -214,8 +214,8 @@
       "title": {
         "en": "Total CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -223,8 +223,8 @@
       "title": {
         "en": "Total Cooling CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -232,8 +232,8 @@
       "title": {
         "en": "Total Heating CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },
@@ -241,8 +241,8 @@
       "title": {
         "en": "Total Hot Water CoP"
       },
-       "units": {
-         "en": ""
+      "units": {
+        "en": ""
       },
       "decimals": 2
     },

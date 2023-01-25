@@ -50,35 +50,40 @@
           "en": "Hourly Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.hourly_consumed_auto",
         "type": "checkbox",
         "label": {
           "en": "Hourly Auto Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.hourly_consumed_cooling",
         "type": "checkbox",
         "label": {
           "en": "Hourly Cooling Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.hourly_consumed_dry",
         "type": "checkbox",
         "label": {
           "en": "Hourly Dry Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.hourly_consumed_fan",
         "type": "checkbox",
         "label": {
           "en": "Hourly Fan Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.hourly_consumed_heating",
         "type": "checkbox",
         "label": {
@@ -101,35 +106,40 @@
           "en": "Daily Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.daily_consumed_auto",
         "type": "checkbox",
         "label": {
           "en": "Daily Auto Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.daily_consumed_cooling",
         "type": "checkbox",
         "label": {
           "en": "Daily Cooling Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.daily_consumed_dry",
         "type": "checkbox",
         "label": {
           "en": "Daily Dry Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.daily_consumed_fan",
         "type": "checkbox",
         "label": {
           "en": "Daily Fan Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.daily_consumed_heating",
         "type": "checkbox",
         "label": {
@@ -152,35 +162,40 @@
           "en": "Total Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.total_consumed_auto",
         "type": "checkbox",
         "label": {
           "en": "Total Auto Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.total_consumed_cooling",
         "type": "checkbox",
         "label": {
           "en": "Total Cooling Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.total_consumed_dry",
         "type": "checkbox",
         "label": {
           "en": "Total Dry Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.total_consumed_fan",
         "type": "checkbox",
         "label": {
           "en": "Total Fan Consumption"
         },
         "value": true
-      },      {
+      },
+      {
         "id": "meter_power.total_consumed_heating",
         "type": "checkbox",
         "label": {
