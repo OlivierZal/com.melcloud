@@ -9,7 +9,7 @@
     "en": "Take control of MELCloud devices"
   },
   "category": ["climate"],
-  "version": "10.0.4",
+  "version": "10.0.5",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
