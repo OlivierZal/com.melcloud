@@ -13,7 +13,6 @@
     <header class="homey-header">
       <h1 class="homey-title" data-i18n="settings.title" />
     </header>
-
     <div id="is-not-authenticated" style="display: none">
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Credentials</legend>
@@ -35,7 +34,6 @@
         </button>
       </fieldset>
     </div>
-
     <div id="is-authenticated">
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend" id="error-log">Error Log</legend>
@@ -48,7 +46,6 @@
         </button>
         <input id="from" type="date" value="" />
       </fieldset>
-
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Device Settings</legend>
         <div class="homey-form-group">
@@ -78,65 +75,11 @@
           Apply to all Devices
         </button>
       </fieldset>
-
-      <div
-        id="is-there-measure-temperature-capabilities-for-ata"
-        style="display: none"
-      >
-        <fieldset class="homey-form-fieldset">
-          <legend class="homey-form-legend">
-            Self-Adjust Air-to-Air Cooling
-          </legend>
-          <div class="homey-form-group">
-            <label class="homey-form-label" for="self_adjust_enabled"
-              >Enable <strong>Maximum Deviation of 8 °C</strong></label
-            >
-            <select class="homey-form-select" id="self_adjust_enabled">
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-          </div>
-          <div class="homey-form-group">
-            <label
-              class="homey-form-label"
-              for="outdoor_temperature_capability_path"
-              >Outdoor Temperature</label
-            >
-            <select
-              class="homey-form-select"
-              id="outdoor_temperature_capability_path"
-            >
-              <option value=""></option>
-            </select>
-          </div>
-          <div class="homey-form-group">
-            <label class="homey-form-label" for="self_adjust_threshold"
-              >Threshold (°C)</label
-            >
-            <input
-              class="homey-form-input"
-              name="Threshold"
-              id="self_adjust_threshold"
-              type="number"
-              inputmode="numeric"
-              value="22"
-            />
-          </div>
-          <button id="refresh-self-adjust" class="homey-button-secondary-full">
-            Refresh
-          </button>
-          <button id="apply-self-adjust" class="homey-button-primary-full">
-            Apply to all Air-to-Air Devices
-          </button>
-        </fieldset>
-      </div>
-
       <fieldset class="homey-form-fieldset">
         <legend class="homey-form-legend">Building Settings</legend>
         <div class="homey-form-group">
           <select class="homey-form-select" id="building"></select>
         </div>
-
         <div class="homey-form-group">
           <label class="homey-form-label" for="enabled-holiday-mode"
             >Enable <strong>Holiday Mode</strong></label
@@ -160,7 +103,6 @@
         <button id="update-holiday-mode" class="homey-button-primary">
           Update
         </button>
-
         <div class="homey-form-group">
           <label class="homey-form-label" for="enabled-frost-protection"
             >Enable <strong>Frost Protection</strong></label

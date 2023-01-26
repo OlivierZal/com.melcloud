@@ -617,9 +617,3 @@ export interface ErrorLog {
   readonly NextFromDate: string
   readonly NextToDate: string
 }
-
-export interface OutdoorTemperatureListenerData {
-  readonly capabilityPath: string
-  readonly enabled: boolean
-  readonly threshold: number
-}

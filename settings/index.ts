@@ -9,7 +9,6 @@ import {
   type HolidayModeSettings,
   type LoginCredentials,
   type MELCloudDevice,
-  type OutdoorTemperatureListenerData,
   type Settings
 } from '../types'
 
@@ -20,9 +19,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
 
-  const applySelfAdjustElement: HTMLButtonElement = document.getElementById(
-    'apply-self-adjust'
-  ) as HTMLButtonElement
   const applySettingsElement: HTMLButtonElement = document.getElementById(
     'apply-settings'
   ) as HTMLButtonElement
@@ -33,9 +29,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     document.getElementById('refresh-frost-protection') as HTMLButtonElement
   const refreshHolidayModeElement: HTMLButtonElement = document.getElementById(
     'refresh-holiday-mode'
-  ) as HTMLButtonElement
-  const refreshSelfAdjustElement: HTMLButtonElement = document.getElementById(
-    'refresh-self-adjust'
   ) as HTMLButtonElement
   const seeElement: HTMLButtonElement = document.getElementById(
     'see'
@@ -52,10 +45,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const isNotAuthenticatedElement: HTMLDivElement = document.getElementById(
     'is-not-authenticated'
   ) as HTMLDivElement
-  const isThereMeasureTemperatureCapabilitiesForAtaElement: HTMLDivElement =
-    document.getElementById(
-      'is-there-measure-temperature-capabilities-for-ata'
-    ) as HTMLDivElement
 
   const periodElement: HTMLLabelElement = document.getElementById(
     'period'
@@ -83,9 +72,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   const intervalElement: HTMLInputElement = document.getElementById(
     'interval'
   ) as HTMLInputElement
-  const thresholdElement: HTMLInputElement = document.getElementById(
-    'self_adjust_threshold'
-  ) as HTMLInputElement
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
     'always_on'
@@ -97,13 +83,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     document.getElementById('enabled-frost-protection') as HTMLSelectElement
   const holidayModeEnabledElement: HTMLSelectElement = document.getElementById(
     'enabled-holiday-mode'
-  ) as HTMLSelectElement
-  const outdoorTemperatureCapabilityElement: HTMLSelectElement =
-    document.getElementById(
-      'outdoor_temperature_capability_path'
-    ) as HTMLSelectElement
-  const selfAdjustEnabledElement: HTMLSelectElement = document.getElementById(
-    'self_adjust_enabled'
   ) as HTMLSelectElement
 
   const tableElement: HTMLTableElement | null = document.querySelector('table')
@@ -351,50 +330,12 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function getHomeySelfAdjustSettings (): void {
-    getHomeySetting(outdoorTemperatureCapabilityElement)
-    getHomeySetting(selfAdjustEnabledElement, false)
-    getHomeySetting(thresholdElement)
-  }
-
-  function getMeasureTemperatureCapabilitiesForAta (): void {
-    // @ts-expect-error bug
-    Homey.api(
-      'GET',
-      '/drivers/melcloud/available_temperatures',
-      async (error: Error, devices: any[]): Promise<void> => {
-        if (devices.length === 0) {
-          isThereMeasureTemperatureCapabilitiesForAtaElement.style.display =
-            'none'
-          return
-        }
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        isThereMeasureTemperatureCapabilitiesForAtaElement.style.display =
-          'block'
-        for (const device of devices) {
-          const { capabilityPath, capabilityName } = device
-          const option: HTMLOptionElement = document.createElement('option')
-          option.setAttribute('value', capabilityPath)
-          const optionText: Text = document.createTextNode(capabilityName)
-          option.appendChild(optionText)
-          outdoorTemperatureCapabilityElement.appendChild(option)
-        }
-        getHomeySelfAdjustSettings()
-      }
-    )
-  }
-
   function load (): void {
     hasAuthenticated()
     generateErrorLog()
     if (!hasLoadedBuildings) {
       getBuildings()
     }
-    getMeasureTemperatureCapabilitiesForAta()
   }
 
   frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
@@ -403,8 +344,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
   intervalElement.min = '1'
   intervalElement.max = '60'
-  thresholdElement.min = String(minimumTemperature)
-  thresholdElement.max = String(maximumTemperature)
 
   getHomeySetting(usernameElement)
   getHomeySetting(passwordElement)
@@ -650,64 +589,6 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         }
         // @ts-expect-error bug
         await Homey.alert('Update succeeded.')
-      }
-    )
-  })
-
-  outdoorTemperatureCapabilityElement.addEventListener('change', (): void => {
-    if (outdoorTemperatureCapabilityElement.value !== '') {
-      if (selfAdjustEnabledElement.value === 'false') {
-        selfAdjustEnabledElement.value = 'true'
-      }
-    } else if (
-      outdoorTemperatureCapabilityElement.value === '' &&
-      selfAdjustEnabledElement.value === 'true'
-    ) {
-      selfAdjustEnabledElement.value = 'false'
-    }
-  })
-
-  thresholdElement.addEventListener('change', (): void => {
-    if (selfAdjustEnabledElement.value === 'false') {
-      selfAdjustEnabledElement.value = 'true'
-    }
-  })
-
-  refreshSelfAdjustElement.addEventListener('click', (): void => {
-    getHomeySelfAdjustSettings()
-  })
-
-  applySelfAdjustElement.addEventListener('click', (): void => {
-    let threshold: number = 0
-    try {
-      threshold = int(thresholdElement)
-    } catch (error: unknown) {
-      getHomeySelfAdjustSettings()
-      // @ts-expect-error bug
-      Homey.alert(error.message)
-      return
-    }
-    const enabled: boolean = selfAdjustEnabledElement.value === 'true'
-    const capabilityPath: string = outdoorTemperatureCapabilityElement.value
-    const body: OutdoorTemperatureListenerData = {
-      capabilityPath,
-      enabled,
-      threshold
-    }
-    // @ts-expect-error bug
-    Homey.api(
-      'POST',
-      '/drivers/melcloud/cooling_self_adjustment',
-      body,
-      async (error: Error): Promise<void> => {
-        getHomeySelfAdjustSettings()
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        // @ts-expect-error bug
-        await Homey.alert('Settings have been successfully saved.')
       }
     )
   })
