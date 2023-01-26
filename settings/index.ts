@@ -174,7 +174,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'GET',
-      `/report/error_log?${queryString}`,
+      `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
           hasAuthenticated(false)
@@ -255,7 +255,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'GET',
-      `/settings/holiday_mode/buildings/${buildingElement.value}`,
+      `/buildings/${buildingElement.value}/settings/holiday_mode`,
       async (error: Error, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
           // @ts-expect-error bug
@@ -289,7 +289,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'GET',
-      `/settings/frost_protection/buildings/${buildingElement.value}`,
+      `/buildings/${buildingElement.value}/settings/frost_protection`,
       async (error: Error, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
           // @ts-expect-error bug
@@ -361,7 +361,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'GET',
-      '/measure_temperature_capabilities',
+      '/drivers/melcloud/available_temperatures',
       async (error: Error, devices: any[]): Promise<void> => {
         if (devices.length === 0) {
           isThereMeasureTemperatureCapabilitiesForAtaElement.style.display =
@@ -486,7 +486,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
         // @ts-expect-error bug
         Homey.api(
           'POST',
-          '/settings/devices',
+          '/settings',
           body,
           async (error: Error, success: boolean): Promise<void> => {
             if (error !== null) {
@@ -562,7 +562,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'POST',
-      `/settings/holiday_mode/buildings/${buildingElement.value}`,
+      `/buildings/${buildingElement.value}/settings/holiday_mode`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
         getBuildingHolidayModeSettings()
@@ -634,7 +634,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'POST',
-      `/settings/frost_protection/buildings/${buildingElement.value}`,
+      `/buildings/${buildingElement.value}/settings/frost_protection`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
         getBuildingFrostProtectionSettings()
@@ -697,7 +697,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     // @ts-expect-error bug
     Homey.api(
       'POST',
-      '/self_adjust_cooling',
+      '/drivers/melcloud/cooling_self_adjustment',
       body,
       async (error: Error): Promise<void> => {
         getHomeySelfAdjustSettings()

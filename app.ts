@@ -28,7 +28,7 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
-  api!: HomeyAPIApp
+  api!: HomeyAPIApp | null
   buildings!: Record<
   Building<MELCloudDevice>['ID'],
   Building<MELCloudDevice>['Name']
@@ -39,11 +39,6 @@ export default class MELCloudApp extends App {
   loginTimeout!: NodeJS.Timeout
 
   async onInit (): Promise<void> {
-    // @ts-expect-error bug
-    this.api = new HomeyAPIApp({ homey: this.homey })
-    // @ts-expect-error bug
-    await this.api.devices.connect()
-
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =
@@ -53,7 +48,15 @@ export default class MELCloudApp extends App {
     this.outdoorTemperatureDevice = null
     this.outdoorTemperatureListener = null
     await this.refreshLogin()
-    await this.listenToOutdoorTemperature().catch(this.error)
+    if (this.manifest.permissions?.includes('homey:manager:api') === true) {
+      // @ts-expect-error bug
+      this.api = new HomeyAPIApp({ homey: this.homey })
+      // @ts-expect-error bug
+      await this.api.devices.connect()
+      await this.listenToOutdoorTemperatureForAta().catch(this.error)
+    } else {
+      this.api = null
+    }
   }
 
   async refreshLogin (): Promise<void> {
@@ -479,7 +482,7 @@ export default class MELCloudApp extends App {
     throw new Error(errorMessage.slice(0, -1))
   }
 
-  async listenToOutdoorTemperature (
+  async listenToOutdoorTemperatureForAta (
     { capabilityPath, enabled, threshold }: OutdoorTemperatureListenerData = {
       capabilityPath:
         this.homey.settings.get('outdoor_temperature_capability_path') ?? '',

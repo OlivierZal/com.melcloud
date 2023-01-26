@@ -126,7 +126,7 @@ module.exports = {
   async getMeasureTemperatureCapabilitiesForAta ({ homey }: { homey: Homey }) {
     const app: MELCloudApp = homey.app as MELCloudApp
     const driverId: string = 'melcloud'
-    if (app.getDevices({ driverId }).length === 0) {
+    if (app.api === null || app.getDevices({ driverId }).length === 0) {
       return []
     }
     // @ts-expect-error bug
@@ -208,14 +208,14 @@ module.exports = {
     }
   },
 
-  async listenToOutdoorTemperature ({
+  async listenToOutdoorTemperatureForAta ({
     homey,
     body
   }: {
     homey: Homey
     body: OutdoorTemperatureListenerData
   }): Promise<void> {
-    await (homey.app as MELCloudApp).listenToOutdoorTemperature(body)
+    await (homey.app as MELCloudApp).listenToOutdoorTemperatureForAta(body)
   },
 
   async login ({

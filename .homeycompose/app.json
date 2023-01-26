@@ -51,23 +51,23 @@
     },
     "getFrostProtectionSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/buildings/:buildingId/settings/frost_protection"
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/holiday_mode/buildings/:buildingId"
+      "path": "/buildings/:buildingId/settings/holiday_mode"
     },
     "getMeasureTemperatureCapabilitiesForAta": {
       "method": "GET",
-      "path": "/measure_temperature_capabilities"
+      "path": "/drivers/melcloud/available_temperatures"
     },
     "getUnitErrorLog": {
       "method": "GET",
-      "path": "/report/error_log"
+      "path": "/error_log"
     },
-    "listenToOutdoorTemperature": {
+    "listenToOutdoorTemperatureForAta": {
       "method": "POST",
-      "path": "/self_adjust_cooling"
+      "path": "/drivers/melcloud/cooling_self_adjustment"
     },
     "login": {
       "method": "POST",
@@ -75,17 +75,16 @@
     },
     "setDeviceSettings": {
       "method": "POST",
-      "path": "/settings/devices"
+      "path": "/settings"
     },
     "updateFrostProtectionSettings": {
       "method": "POST",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/buildings/:buildingId/settings/frost_protection"
     },
     "updateHolidayModeSettings": {
       "method": "POST",
-      "path": "/settings/holiday_mode/buildings/:buildingId"
+      "path": "/buildings/:buildingId/settings/holiday_mode"
     }
   },
-  "platforms": ["local"],
-  "permissions": ["homey:manager:api"]
+  "platforms": ["local"]
 }
