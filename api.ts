@@ -13,7 +13,6 @@ import {
   type HolidayModeSettings,
   type LoginCredentials,
   type MELCloudDevice,
-  type OutdoorTemperatureListenerData,
   type Settings
 } from './types'
 
@@ -29,16 +28,6 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
   return format !== undefined
     ? localDate.toFormat(format)
     : localDate.toISO({ includeOffset: false })
-}
-
-function sortByAlphabeticalOrder (value1: string, value2: string): -1 | 0 | 1 {
-  if (value1 < value2) {
-    return -1
-  }
-  if (value1 > value2) {
-    return 1
-  }
-  return 0
 }
 
 function handleErrorLogQuery (query: ErrorLogQuery): {
@@ -123,42 +112,6 @@ module.exports = {
     }
   },
 
-  async getMeasureTemperatureCapabilitiesForAta ({ homey }: { homey: Homey }) {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const driverId: string = 'melcloud'
-    if (app.api === null || app.getDevices({ driverId }).length === 0) {
-      return []
-    }
-    // @ts-expect-error bug
-    const devices = await app.api.devices.getDevices()
-    return Object.values(devices)
-      .filter(
-        (device: any): boolean =>
-          device.driverId !== driverId &&
-          device.capabilities.some((capability: string): boolean =>
-            capability.startsWith('measure_temperature')
-          )
-      )
-      .map((device: any) =>
-        Object.values(device.capabilitiesObj)
-          .filter((capabilitiesObj: any): boolean =>
-            capabilitiesObj.id.startsWith('measure_temperature')
-          )
-          .map((capabilityObj: any) => ({
-            capabilityPath: `${device.id as string}:${
-              capabilityObj.id as string
-            }`,
-            capabilityName: `${device.name as string} - ${
-              capabilityObj.title as string
-            }`
-          }))
-      )
-      .flat()
-      .sort((device1: any, device2: any): -1 | 0 | 1 =>
-        sortByAlphabeticalOrder(device1.capabilityName, device2.capabilityName)
-      )
-  },
-
   async getUnitErrorLog ({
     homey,
     query
@@ -206,16 +159,6 @@ module.exports = {
       NextFromDate: NextToDate.minus({ days: period }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }
-  },
-
-  async listenToOutdoorTemperatureForAta ({
-    homey,
-    body
-  }: {
-    homey: Homey
-    body: OutdoorTemperatureListenerData
-  }): Promise<void> {
-    await (homey.app as MELCloudApp).listenToOutdoorTemperatureForAta(body)
   },
 
   async login ({

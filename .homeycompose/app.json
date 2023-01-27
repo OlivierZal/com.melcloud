@@ -57,17 +57,9 @@
       "method": "GET",
       "path": "/buildings/:buildingId/settings/holiday_mode"
     },
-    "getMeasureTemperatureCapabilitiesForAta": {
-      "method": "GET",
-      "path": "/drivers/melcloud/available_temperatures"
-    },
     "getUnitErrorLog": {
       "method": "GET",
       "path": "/error_log"
-    },
-    "listenToOutdoorTemperatureForAta": {
-      "method": "POST",
-      "path": "/drivers/melcloud/cooling_self_adjustment"
     },
     "login": {
       "method": "POST",

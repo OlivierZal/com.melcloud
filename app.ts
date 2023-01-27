@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { DateTime, Duration, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
-import { HomeyAPIApp } from 'homey-api'
 import {
   type Building,
   type Data,
@@ -19,7 +18,6 @@ import {
   type LoginData,
   type LoginPostData,
   type MELCloudDevice,
-  type OutdoorTemperatureListenerData,
   type PostData,
   type ReportData,
   type ReportPostData,
@@ -28,14 +26,11 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
-  api!: HomeyAPIApp | null
   buildings!: Record<
   Building<MELCloudDevice>['ID'],
   Building<MELCloudDevice>['Name']
   >
 
-  outdoorTemperatureDevice!: any
-  outdoorTemperatureListener!: any
   loginTimeout!: NodeJS.Timeout
 
   async onInit (): Promise<void> {
@@ -45,18 +40,7 @@ export default class MELCloudApp extends App {
       this.homey.settings.get('ContextKey')
 
     this.buildings = {}
-    this.outdoorTemperatureDevice = null
-    this.outdoorTemperatureListener = null
     await this.refreshLogin()
-    if (this.manifest.permissions?.includes('homey:manager:api') === true) {
-      // @ts-expect-error bug
-      this.api = new HomeyAPIApp({ homey: this.homey })
-      // @ts-expect-error bug
-      await this.api.devices.connect()
-      await this.listenToOutdoorTemperatureForAta().catch(this.error)
-    } else {
-      this.api = null
-    }
   }
 
   async refreshLogin (): Promise<void> {
@@ -480,116 +464,6 @@ export default class MELCloudApp extends App {
       errorMessage = `${errorMessage.slice(0, -1)}\n`
     }
     throw new Error(errorMessage.slice(0, -1))
-  }
-
-  async listenToOutdoorTemperatureForAta (
-    { capabilityPath, enabled, threshold }: OutdoorTemperatureListenerData = {
-      capabilityPath:
-        this.homey.settings.get('outdoor_temperature_capability_path') ?? '',
-      enabled: this.homey.settings.get('self_adjust_enabled') ?? false,
-      threshold: this.homey.settings.get('self_adjust_threshold') ?? 0
-    }
-  ): Promise<void> {
-    if (enabled && (capabilityPath === '' || threshold === 0)) {
-      throw new Error('Outdoor temperature and/or threshold are missing.')
-    }
-    const capability: string = await this.handleOutdoorTemperatureListenerData({
-      capabilityPath,
-      enabled,
-      threshold
-    })
-    if (this.homey.settings.get('self_adjust_enabled') === false) {
-      return
-    }
-    this.log(
-      'Listening to outdoor temperature: listener has been created for',
-      this.outdoorTemperatureDevice.name,
-      '-',
-      capability,
-      '...'
-    )
-    this.outdoorTemperatureListener =
-      this.outdoorTemperatureDevice.makeCapabilityInstance(
-        capability,
-        async (value: number): Promise<void> => {
-          this.log(
-            'Listening to outdoor temperature:',
-            value,
-            'listened from',
-            this.outdoorTemperatureDevice.name,
-            '-',
-            capability
-          )
-          for (const device of this.getDevices({ driverId: 'melcloud' })) {
-            if (device.getCapabilityValue('operation_mode') !== 'cool') {
-              continue
-            }
-            await device.onCapability(
-              'target_temperature',
-              Math.max(threshold, Math.round(value - 8), 38)
-            )
-          }
-        }
-      )
-  }
-
-  async handleOutdoorTemperatureListenerData ({
-    capabilityPath,
-    enabled,
-    threshold
-  }: OutdoorTemperatureListenerData): Promise<string> {
-    try {
-      this.setSettings({ self_adjust_threshold: threshold })
-      const splitCapabilityPath: string[] = capabilityPath.split(':')
-      if (splitCapabilityPath.length !== 2) {
-        throw new Error('The selected outdoor temperature is invalid.')
-      }
-      const [id, capability]: string[] = splitCapabilityPath
-      // @ts-expect-error bug
-      const device = await this.api.devices.getDevice({ id })
-      if (device.id !== this.outdoorTemperatureDevice?.id) {
-        this.outdoorTemperatureDevice = device
-      }
-      if (!(capability in device.capabilitiesObj)) {
-        throw new Error(
-          `${capability} cannot be found on ${device.name as string}.`
-        )
-      }
-      this.setSettings({
-        outdoor_temperature_capability_path: capabilityPath,
-        self_adjust_enabled: enabled
-      })
-      return capability
-    } catch (error: unknown) {
-      this.error(
-        'Listening to outdoor temperature:',
-        error instanceof Error ? error.message : error
-      )
-      this.setSettings({
-        outdoor_temperature_capability_path: '',
-        self_adjust_enabled: false
-      })
-      if (capabilityPath !== '') {
-        throw error
-      }
-      return ''
-    } finally {
-      this.cleanOutdoorTemperatureListener()
-    }
-  }
-
-  cleanOutdoorTemperatureListener (): void {
-    if (this.outdoorTemperatureListener !== null) {
-      this.outdoorTemperatureListener.destroy()
-    }
-    if (this.outdoorTemperatureDevice !== null) {
-      this.outdoorTemperatureDevice.io = null
-    }
-    this.log('Listening to outdoor temperature: listener has been cleaned')
-  }
-
-  async onUninit (): Promise<void> {
-    this.cleanOutdoorTemperatureListener()
   }
 
   setSettings (settings: Settings): void {
