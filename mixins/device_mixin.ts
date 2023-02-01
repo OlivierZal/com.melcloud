@@ -27,15 +27,13 @@ import {
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
-  operationModeCapability!:
-  | SetCapability<MELCloudDeviceAta>
+  operationModeCapability!: SetCapability<MELCloudDeviceAta>
   | SetCapability<MELCloudDeviceAtw>
 
   operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
-  setCapabilityMapping!:
-  | Record<
+  setCapabilityMapping!: Record<
   SetCapability<MELCloudDeviceAta>,
   SetCapabilityMapping<MELCloudDeviceAta>
   >
@@ -44,8 +42,7 @@ export default class MELCloudDeviceMixin extends Device {
   SetCapabilityMapping<MELCloudDeviceAtw>
   >
 
-  getCapabilityMapping!:
-  | Record<
+  getCapabilityMapping!: Record<
   GetCapability<MELCloudDeviceAta>,
   GetCapabilityMapping<MELCloudDeviceAta>
   >
@@ -54,8 +51,7 @@ export default class MELCloudDeviceMixin extends Device {
   GetCapabilityMapping<MELCloudDeviceAtw>
   >
 
-  listCapabilityMapping!:
-  | Record<
+  listCapabilityMapping!: Record<
   ListCapability<MELCloudDeviceAta>,
   ListCapabilityMapping<MELCloudDeviceAta>
   >
@@ -66,8 +62,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   id!: number
   buildingid!: number
-  diff!:
-  | SetCapabilities<MELCloudDeviceAta>
+  diff!: SetCapabilities<MELCloudDeviceAta>
   | SetCapabilities<MELCloudDeviceAtw>
 
   syncTimeout!: NodeJS.Timeout
