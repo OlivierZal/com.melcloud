@@ -144,12 +144,17 @@ export default class MELCloudDeviceMixin extends Device {
     value: CapabilityValue
   ): Promise<void> {
     this.clearSyncPlan()
-    if (capability === 'onoff') {
-      await this.setAlwaysOnWarning()
-      this.diff.onoff = value as boolean
-    } else if (capability === 'thermostat_mode') {
-      await this.setAlwaysOnWarning()
-      this.diff.onoff = value !== 'off'
+    switch (capability) {
+      case 'onoff':
+        await this.setAlwaysOnWarning()
+        this.diff.onoff = value as boolean
+        break
+      case 'thermostat_mode':
+        await this.setAlwaysOnWarning()
+        this.diff.onoff = value !== 'off'
+        break
+      case 'target_temperature':
+        this.diff.target_temperature = value as number
     }
     await this.specificOnCapability(capability, value)
     this.applySyncToDevice()

@@ -124,9 +124,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       case 'horizontal':
         this.diff.horizontal = value as string
         break
-      case 'target_temperature':
-        this.diff.target_temperature = value as number
-        break
       case 'fan_power':
         this.diff.fan_power = value as number
     }

@@ -88,9 +88,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'operation_mode_zone_with_cool.zone2':
         this.diff['operation_mode_zone_with_cool.zone2'] = value as string
         break
-      case 'target_temperature':
-        this.diff.target_temperature = value as number
-        break
       case 'target_temperature.zone2':
         this.diff['target_temperature.zone2'] = value as number
         break
