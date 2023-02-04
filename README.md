@@ -4,11 +4,11 @@
 
 This app integrates MELCloud into Homey to control:
 
--   air-to-air heat pumps;
--   air-to-water heat pumps.
+- air-to-air heat pumps;
+- air-to-water heat pumps.
 
 ## Usage
 
 1.  You need to have a Homey Pro.
-2.  Install the app from the [Homey App Store](https://homey.app/fr-fr/app/com.mecloud/MELCloud/).
+2.  Install the [MELCloud Homey app](https://homey.app/fr-fr/app/com.mecloud/MELCloud/) from the Homey App Store.
 3.  Pair your devices!
