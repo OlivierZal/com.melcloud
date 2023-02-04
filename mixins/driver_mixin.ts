@@ -13,11 +13,11 @@ export default class MELCloudDriverMixin extends Driver {
   deviceType!: number
   heatPumpType!: string
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
   }
 
-  onPair (session: PairSession): void {
+  onPair(session: PairSession): void {
     session.setHandler(
       'login',
       async (data: LoginCredentials): Promise<boolean> =>
@@ -57,11 +57,11 @@ export default class MELCloudDriverMixin extends Driver {
     })
   }
 
-  getRequiredCapabilities (_canCool: boolean, _hasZone2: boolean): string[] {
+  getRequiredCapabilities(_canCool: boolean, _hasZone2: boolean): string[] {
     return []
   }
 
-  onRepair (session: PairSession): void {
+  onRepair(session: PairSession): void {
     session.setHandler(
       'login',
       async (data: LoginCredentials): Promise<boolean> =>

@@ -37,7 +37,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare operationModeCapability: SetCapability<MELCloudDeviceAtw>
   declare diff: SetCapabilities<MELCloudDeviceAtw>
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
     this.operationModeCapability = 'operation_mode_zone_with_cool.zone1'
     this.operationModeToThermostatMode = {
@@ -62,7 +62,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async specificOnCapability (
+  async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue
   ): Promise<void> {
@@ -108,7 +108,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  convertToDevice (
+  convertToDevice(
     capability: SetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
@@ -123,7 +123,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  async convertFromDevice (
+  async convertFromDevice(
     capability: Capability<MELCloudDeviceAtw>,
     value: boolean | number
   ): Promise<void> {
@@ -144,7 +144,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async runEnergyReports (): Promise<void> {
+  async runEnergyReports(): Promise<void> {
     const reportMapping: ReportCapabilities<MELCloudDeviceAtw> = {
       'meter_power.daily_cop': 0,
       'meter_power.daily_cop_cooling': 0,
@@ -173,7 +173,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
     const toDate: DateTime = DateTime.now().minus({ days: 1 })
     const periods: {
-      [period in 'daily' | 'total']: { fromDate: DateTime, toDate: DateTime };
+      [period in 'daily' | 'total']: { fromDate: DateTime; toDate: DateTime }
     } = {
       daily: { fromDate: toDate, toDate },
       total: { fromDate: DateTime.local(1970), toDate }
@@ -187,9 +187,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
             reportMapping[
               `meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
             ] =
-              data[
-                `Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>
-              ]
+              data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
             reportMapping[
               `meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
             ] +=

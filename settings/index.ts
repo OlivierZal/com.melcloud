@@ -13,7 +13,7 @@ import {
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function onHomeyReady (Homey: Homey): Promise<void> {
+async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
   const minimumTemperature: number = 10
@@ -93,7 +93,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
   let fromDateHuman: string = ''
   let to: string = ''
 
-  function getHomeySetting (
+  function getHomeySetting(
     element: HTMLInputElement | HTMLSelectElement,
     defaultValue: any = ''
   ): void {
@@ -108,14 +108,14 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     })
   }
 
-  function hasAuthenticated (isAuthenticated: boolean = true): void {
+  function hasAuthenticated(isAuthenticated: boolean = true): void {
     isAuthenticatedElement.style.display = isAuthenticated ? 'block' : 'none'
     isNotAuthenticatedElement.style.display = !isAuthenticated
       ? 'block'
       : 'none'
   }
 
-  function generateTableHead (table: HTMLTableElement, keys: string[]): void {
+  function generateTableHead(table: HTMLTableElement, keys: string[]): void {
     const thead: HTMLTableSectionElement = table.createTHead()
     const row: HTMLTableRowElement = thead.insertRow()
     for (const key of keys) {
@@ -126,7 +126,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     hasLoadedTableHead = true
   }
 
-  function generateTable (
+  function generateTable(
     table: HTMLTableElement,
     errors: ErrorLog['Errors']
   ): void {
@@ -140,7 +140,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     }
   }
 
-  function generateErrorLog (): void {
+  function generateErrorLog(): void {
     const query: ErrorLogQuery = {
       from: fromElement.value,
       to,
@@ -181,7 +181,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function int (
+  function int(
     element: HTMLInputElement,
     value: number = Number.parseInt(element.value)
   ): number {
@@ -198,7 +198,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     return value
   }
 
-  function buildSettingsBody (
+  function buildSettingsBody(
     settings: Array<HTMLInputElement | HTMLSelectElement>
   ): Settings {
     const body: Settings = {}
@@ -220,7 +220,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     return body
   }
 
-  function getBuildingHolidayModeSettings (settings?: HolidayModeData): void {
+  function getBuildingHolidayModeSettings(settings?: HolidayModeData): void {
     if (settings !== undefined) {
       holidayModeEnabledElement.value = String(settings.HMEnabled)
       holidayModeStartDateElement.value = settings.HMEnabled
@@ -252,7 +252,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function getBuildingFrostProtectionSettings (
+  function getBuildingFrostProtectionSettings(
     settings?: FrostProtectionData
   ): void {
     if (settings !== undefined) {
@@ -286,7 +286,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function getBuildings (): void {
+  function getBuildings(): void {
     // @ts-expect-error bug
     Homey.api(
       'GET',
@@ -330,7 +330,7 @@ async function onHomeyReady (Homey: Homey): Promise<void> {
     )
   }
 
-  function load (): void {
+  function load(): void {
     hasAuthenticated()
     generateErrorLog()
     if (!hasLoadedBuildings) {

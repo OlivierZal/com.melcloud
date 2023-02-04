@@ -16,7 +16,7 @@ import {
   type ThermostatMode
 } from '../../types'
 
-function reverse (mapping: Record<string, string>): Record<string, string> {
+function reverse(mapping: Record<string, string>): Record<string, string> {
   const reversedMapping: Record<string, string> = {}
   for (const [capabilityValue, deviceValue] of Object.entries(mapping)) {
     reversedMapping[deviceValue] = capabilityValue
@@ -59,15 +59,14 @@ const horizontalFromDevice: Record<string, string> = {
   12: 'swing'
 } as const
 
-const horizontalToDevice: Record<string, string> =
-  reverse(horizontalFromDevice)
+const horizontalToDevice: Record<string, string> = reverse(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
   declare operationModeCapability: SetCapability<MELCloudDeviceAta>
   declare diff: SetCapabilities<MELCloudDeviceAta>
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     this.operationModeCapability = 'operation_mode'
     this.operationModeToThermostatMode = {
       auto: 'auto',
@@ -92,7 +91,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await super.onInit()
   }
 
-  async specificOnCapability (
+  async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDeviceAta>,
     value: CapabilityValue
   ): Promise<void> {
@@ -129,7 +128,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  convertToDevice (
+  convertToDevice(
     capability: SetCapability<MELCloudDeviceAta>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
@@ -145,7 +144,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     }
   }
 
-  async convertFromDevice (
+  async convertFromDevice(
     capability: Capability<MELCloudDeviceAta>,
     value: boolean | number
   ): Promise<void> {
@@ -163,7 +162,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async runEnergyReports (): Promise<void> {
+  async runEnergyReports(): Promise<void> {
     const reportMapping: ReportCapabilities<MELCloudDeviceAta> = {
       'meter_power.hourly_consumed': 0,
       'meter_power.hourly_consumed_auto': 0,
@@ -192,7 +191,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       [period in 'hourly' | 'daily' | 'total']: {
         fromDate: DateTime
         toDate: DateTime
-      };
+      }
     } = {
       hourly: { fromDate: toDate, toDate },
       daily: { fromDate: toDate, toDate },

@@ -253,8 +253,8 @@ export interface ListCapabilityMapping<T extends MELCloudDevice> {
 }
 
 export const setCapabilityMappingAta: Record<
-SetCapability<MELCloudDeviceAta>,
-SetCapabilityMapping<MELCloudDeviceAta>
+  SetCapability<MELCloudDeviceAta>,
+  SetCapabilityMapping<MELCloudDeviceAta>
 > = {
   onoff: {
     tag: 'Power',
@@ -283,8 +283,8 @@ SetCapabilityMapping<MELCloudDeviceAta>
 } as const
 
 export const setCapabilityMappingAtw: Record<
-SetCapability<MELCloudDeviceAtw>,
-SetCapabilityMapping<MELCloudDeviceAtw>
+  SetCapability<MELCloudDeviceAtw>,
+  SetCapabilityMapping<MELCloudDeviceAtw>
 > = {
   onoff: {
     tag: 'Power',
@@ -341,8 +341,8 @@ SetCapabilityMapping<MELCloudDeviceAtw>
 } as const
 
 export const getCapabilityMappingAta: Record<
-GetCapability<MELCloudDeviceAta>,
-GetCapabilityMapping<MELCloudDeviceAta>
+  GetCapability<MELCloudDeviceAta>,
+  GetCapabilityMapping<MELCloudDeviceAta>
 > = {
   measure_temperature: {
     tag: 'RoomTemperature'
@@ -350,8 +350,8 @@ GetCapabilityMapping<MELCloudDeviceAta>
 } as const
 
 export const getCapabilityMappingAtw: Record<
-GetCapability<MELCloudDeviceAtw>,
-GetCapabilityMapping<MELCloudDeviceAtw>
+  GetCapability<MELCloudDeviceAtw>,
+  GetCapabilityMapping<MELCloudDeviceAtw>
 > = {
   eco_hot_water: {
     tag: 'EcoHotWater'
@@ -374,8 +374,8 @@ GetCapabilityMapping<MELCloudDeviceAtw>
 } as const
 
 export const listCapabilityMappingAta: Record<
-ListCapability<MELCloudDeviceAta>,
-ListCapabilityMapping<MELCloudDeviceAta>
+  ListCapability<MELCloudDeviceAta>,
+  ListCapabilityMapping<MELCloudDeviceAta>
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength'
@@ -383,8 +383,8 @@ ListCapabilityMapping<MELCloudDeviceAta>
 } as const
 
 export const listCapabilityMappingAtw: Record<
-ListCapability<MELCloudDeviceAtw>,
-ListCapabilityMapping<MELCloudDeviceAtw>
+  ListCapability<MELCloudDeviceAtw>,
+  ListCapabilityMapping<MELCloudDeviceAtw>
 > = {
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
@@ -431,7 +431,7 @@ export interface DeviceDetails {
 export type FlowArgsAta = {
   readonly device: MELCloudDeviceAta
 } & {
-  readonly [capability in SetCapability<MELCloudDeviceAta>]: string;
+  readonly [capability in SetCapability<MELCloudDeviceAta>]: string
 }
 
 export interface LoginCredentials {
@@ -531,14 +531,14 @@ export interface Structure<T extends MELCloudDevice> {
 
 export interface Building<T extends MELCloudDevice>
   extends FrostProtectionData,
-  HolidayModeData {
+    HolidayModeData {
   readonly ID: number
   readonly Name: string
   readonly Structure: Structure<T>
 }
 
 export type UpdateData<T extends MELCloudDevice> = Required<
-Readonly<SetDeviceData<T>>
+  Readonly<SetDeviceData<T>>
 >
 
 export type PostData<T extends MELCloudDevice> = UpdateData<T> & {

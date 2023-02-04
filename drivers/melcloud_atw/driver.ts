@@ -8,21 +8,21 @@ import {
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw!: Array<
-  | SetCapability<MELCloudDeviceAtw>
-  | GetCapability<MELCloudDeviceAtw>
-  | ListCapability<MELCloudDeviceAtw>
+    | SetCapability<MELCloudDeviceAtw>
+    | GetCapability<MELCloudDeviceAtw>
+    | ListCapability<MELCloudDeviceAtw>
   >
 
   coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   zone2CapabilitiesAtw!: Array<
-  SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>
+    SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>
   >
 
   coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
   notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 1
     this.heatPumpType = 'Atw'
@@ -57,7 +57,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
     const operationModeZoneCapabilities: Array<
-    SetCapability<MELCloudDeviceAtw>
+      SetCapability<MELCloudDeviceAtw>
     > = this.manifest.capabilities.filter(
       (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
         capability.startsWith('operation_mode_zone')
@@ -86,10 +86,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
             device: MELCloudDeviceAtw
             operation_mode_zone: string
           }): Promise<void> => {
-            await args.device.onCapability(
-              capability,
-              args.operation_mode_zone
-            )
+            await args.device.onCapability(capability, args.operation_mode_zone)
           }
         )
     }
@@ -175,7 +172,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       )
   }
 
-  getRequiredCapabilities (canCool: boolean, hasZone2: boolean): string[] {
+  getRequiredCapabilities(canCool: boolean, hasZone2: boolean): string[] {
     return [
       ...this.capabilitiesAtw,
       ...(canCool

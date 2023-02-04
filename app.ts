@@ -27,13 +27,13 @@ import {
 
 export default class MELCloudApp extends App {
   buildings!: Record<
-  Building<MELCloudDevice>['ID'],
-  Building<MELCloudDevice>['Name']
+    Building<MELCloudDevice>['ID'],
+    Building<MELCloudDevice>['Name']
   >
 
   loginTimeout!: NodeJS.Timeout
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =
@@ -43,7 +43,7 @@ export default class MELCloudApp extends App {
     await this.refreshLogin()
   }
 
-  async refreshLogin (): Promise<void> {
+  async refreshLogin(): Promise<void> {
     this.clearLoginRefresh()
     const loginCredentials: LoginCredentials = {
       username: this.homey.settings.get('username') ?? '',
@@ -67,12 +67,12 @@ export default class MELCloudApp extends App {
     }
   }
 
-  clearLoginRefresh (): void {
+  clearLoginRefresh(): void {
     this.homey.clearTimeout(this.loginTimeout)
     this.log('Login refresh has been stopped')
   }
 
-  async login (loginCredentials: LoginCredentials): Promise<boolean> {
+  async login(loginCredentials: LoginCredentials): Promise<boolean> {
     try {
       const { username, password } = loginCredentials
       if (username === '' && password === '') {
@@ -111,8 +111,8 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  getDeviceIds (
-    { buildingId, driverId }: { buildingId?: number, driverId?: string } = {},
+  getDeviceIds(
+    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
     safe: boolean = true
   ): Array<MELCloudDevice['id']> {
     return this.getDevices({ buildingId, driverId }, safe).map(
@@ -120,8 +120,8 @@ export default class MELCloudApp extends App {
     )
   }
 
-  getDevices (
-    { buildingId, driverId }: { buildingId?: number, driverId?: string } = {},
+  getDevices(
+    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
     safe: boolean = true
   ): MELCloudDevice[] {
     const drivers: Driver[] =
@@ -145,7 +145,7 @@ export default class MELCloudApp extends App {
     return devices
   }
 
-  async getBuildings (): Promise<Array<Building<MELCloudDevice>>> {
+  async getBuildings(): Promise<Array<Building<MELCloudDevice>>> {
     try {
       this.log('Searching for buildings...')
       const { data } = await axios.get<Array<Building<MELCloudDevice>>>(
@@ -267,7 +267,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setDeviceSettings (settings: Settings): Promise<boolean> {
+  async setDeviceSettings(settings: Settings): Promise<boolean> {
     const changedKeys: string[] = Object.keys(settings)
     if (changedKeys.length === 0) {
       return false
@@ -282,7 +282,7 @@ export default class MELCloudApp extends App {
     return true
   }
 
-  async getUnitErrorLog (
+  async getUnitErrorLog(
     fromDate: DateTime,
     toDate: DateTime
   ): Promise<ErrorLogData[] | boolean> {
@@ -303,7 +303,7 @@ export default class MELCloudApp extends App {
     return data
   }
 
-  async getFrostProtectionSettings (
+  async getFrostProtectionSettings(
     buildingId: number
   ): Promise<FrostProtectionData> {
     if (!(buildingId in this.buildings)) {
@@ -332,7 +332,7 @@ export default class MELCloudApp extends App {
     return data
   }
 
-  async updateFrostProtectionSettings (
+  async updateFrostProtectionSettings(
     buildingId: number,
     settings: FrostProtectionSettings
   ): Promise<boolean> {
@@ -364,7 +364,7 @@ export default class MELCloudApp extends App {
     return this.handleFailure(data)
   }
 
-  async getHolidayModeSettings (buildingId: number): Promise<HolidayModeData> {
+  async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
     if (!(buildingId in this.buildings)) {
       throw new Error(`Building ${buildingId} does not exist.`)
     }
@@ -387,7 +387,7 @@ export default class MELCloudApp extends App {
     return data
   }
 
-  async updateHolidayModeSettings (
+  async updateHolidayModeSettings(
     buildingId: number,
     settings: HolidayModeSettings
   ): Promise<boolean> {
@@ -451,7 +451,7 @@ export default class MELCloudApp extends App {
     return this.handleFailure(data)
   }
 
-  handleFailure (data: SuccessData): boolean {
+  handleFailure(data: SuccessData): boolean {
     if (data.Success || data.AttributeErrors === null) {
       return data.Success
     }
@@ -466,7 +466,7 @@ export default class MELCloudApp extends App {
     throw new Error(errorMessage.slice(0, -1))
   }
 
-  setSettings (settings: Settings): void {
+  setSettings(settings: Settings): void {
     for (const [setting, value] of Object.entries(settings)) {
       if (value !== this.homey.settings.get(setting)) {
         this.homey.settings.set(setting, value)
@@ -474,7 +474,7 @@ export default class MELCloudApp extends App {
     }
   }
 
-  setTimeout (
+  setTimeout(
     type: string,
     callback: () => Promise<boolean>,
     interval: number | object

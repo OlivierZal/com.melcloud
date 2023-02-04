@@ -27,43 +27,50 @@ import {
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
-  operationModeCapability!: SetCapability<MELCloudDeviceAta>
-  | SetCapability<MELCloudDeviceAtw>
+  // eslint-disable-next-line @typescript-eslint/key-spacing
+  operationModeCapability!:
+    | SetCapability<MELCloudDeviceAta>
+    | SetCapability<MELCloudDeviceAtw>
 
   operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
-  setCapabilityMapping!: Record<
-  SetCapability<MELCloudDeviceAta>,
-  SetCapabilityMapping<MELCloudDeviceAta>
-  >
-  | Record<
-  SetCapability<MELCloudDeviceAtw>,
-  SetCapabilityMapping<MELCloudDeviceAtw>
-  >
+  // eslint-disable-next-line @typescript-eslint/key-spacing
+  setCapabilityMapping!:
+    | Record<
+        SetCapability<MELCloudDeviceAta>,
+        SetCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        SetCapability<MELCloudDeviceAtw>,
+        SetCapabilityMapping<MELCloudDeviceAtw>
+      >
 
-  getCapabilityMapping!: Record<
-  GetCapability<MELCloudDeviceAta>,
-  GetCapabilityMapping<MELCloudDeviceAta>
-  >
-  | Record<
-  GetCapability<MELCloudDeviceAtw>,
-  GetCapabilityMapping<MELCloudDeviceAtw>
-  >
+  // eslint-disable-next-line @typescript-eslint/key-spacing
+  getCapabilityMapping!:
+    | Record<
+        GetCapability<MELCloudDeviceAta>,
+        GetCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        GetCapability<MELCloudDeviceAtw>,
+        GetCapabilityMapping<MELCloudDeviceAtw>
+      >
 
-  listCapabilityMapping!: Record<
-  ListCapability<MELCloudDeviceAta>,
-  ListCapabilityMapping<MELCloudDeviceAta>
-  >
-  | Record<
-  ListCapability<MELCloudDeviceAtw>,
-  ListCapabilityMapping<MELCloudDeviceAtw>
-  >
+  // eslint-disable-next-line @typescript-eslint/key-spacing
+  listCapabilityMapping!:
+    | Record<
+        ListCapability<MELCloudDeviceAta>,
+        ListCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        ListCapability<MELCloudDeviceAtw>,
+        ListCapabilityMapping<MELCloudDeviceAtw>
+      >
 
   id!: number
   buildingid!: number
-  diff!: SetCapabilities<MELCloudDeviceAta>
-  | SetCapabilities<MELCloudDeviceAtw>
+  diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
 
   syncTimeout!: NodeJS.Timeout
   reportTimeout!: NodeJS.Timeout
@@ -74,7 +81,7 @@ export default class MELCloudDeviceMixin extends Device {
     values: object
   }
 
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData()
@@ -97,7 +104,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  getDashboardCapabilities (settings: Settings = this.getSettings()): string[] {
+  getDashboardCapabilities(settings: Settings = this.getSettings()): string[] {
     return Object.keys(settings).filter(
       (setting: string): boolean =>
         this.driver.manifest.capabilities.includes(setting) === true &&
@@ -105,7 +112,7 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
-  async handleCapabilities (
+  async handleCapabilities(
     dashboardCapabilities: string[] = this.getDashboardCapabilities()
   ): Promise<void> {
     const requiredCapabilities: string[] = [
@@ -130,10 +137,7 @@ export default class MELCloudDeviceMixin extends Device {
       this.registerCapabilityListener(
         capability,
         async (value: CapabilityValue): Promise<void> => {
-          await this.onCapability(
-            capability as ExtendedSetCapability<T>,
-            value
-          )
+          await this.onCapability(capability as ExtendedSetCapability<T>, value)
         }
       )
     }
@@ -160,28 +164,28 @@ export default class MELCloudDeviceMixin extends Device {
     this.applySyncToDevice()
   }
 
-  async specificOnCapability (
+  async specificOnCapability(
     _capability:
-    | ExtendedSetCapability<MELCloudDeviceAta>
-    | ExtendedSetCapability<MELCloudDeviceAtw>,
+      | ExtendedSetCapability<MELCloudDeviceAta>
+      | ExtendedSetCapability<MELCloudDeviceAtw>,
     _value: CapabilityValue
   ): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  async setAlwaysOnWarning (): Promise<void> {
+  async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on') === true) {
       await this.setWarning('"Power Off" is disabled.')
       await this.setWarning(null)
     }
   }
 
-  clearSyncPlan (): void {
+  clearSyncPlan(): void {
     this.homey.clearTimeout(this.syncTimeout)
     this.log('Sync has been paused')
   }
 
-  applySyncToDevice (): void {
+  applySyncToDevice(): void {
     this.syncTimeout = this.setTimeout(
       'sync to device',
       async (): Promise<void> => {
@@ -219,9 +223,7 @@ export default class MELCloudDeviceMixin extends Device {
             diff[capability as keyof SetCapabilities<T>] as CapabilityValue
           )
         } else {
-          updateData[tag] = this.convertToDevice(
-            capability as SetCapability<T>
-          )
+          updateData[tag] = this.convertToDevice(capability as SetCapability<T>)
         }
       }
     }
@@ -229,10 +231,10 @@ export default class MELCloudDeviceMixin extends Device {
     return updateData
   }
 
-  convertToDevice (
+  convertToDevice(
     capability:
-    | SetCapability<MELCloudDeviceAta>
-    | SetCapability<MELCloudDeviceAtw>,
+      | SetCapability<MELCloudDeviceAta>
+      | SetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     if (capability === 'onoff') {
@@ -300,14 +302,14 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async convertFromDevice (
+  async convertFromDevice(
     _capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>,
     _value: boolean | number
   ): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  async updateThermostatMode (): Promise<void> {
+  async updateThermostatMode(): Promise<void> {
     if (!this.hasCapability('thermostat_mode')) {
       return
     }
@@ -361,7 +363,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  planSyncFromDevice (object: object): void {
+  planSyncFromDevice(object: object): void {
     this.clearSyncPlan()
     this.syncTimeout = this.setTimeout(
       'sync from device',
@@ -372,11 +374,11 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
-  async runEnergyReports (): Promise<void> {
+  async runEnergyReports(): Promise<void> {
     throw new Error('Method not implemented.')
   }
 
-  planEnergyReports (): void {
+  planEnergyReports(): void {
     if (this.reportInterval !== null) {
       return
     }
@@ -398,7 +400,7 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
-  async onSettings ({
+  async onSettings({
     newSettings,
     changedKeys
   }: {
@@ -412,9 +414,7 @@ export default class MELCloudDeviceMixin extends Device {
       )
     ) {
       await this.handleDashboardCapabilities(newSettings, changedKeys)
-      await this.setWarning(
-        'Exit device and return to refresh your dashboard.'
-      )
+      await this.setWarning('Exit device and return to refresh your dashboard.')
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {
@@ -448,7 +448,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async handleDashboardCapabilities (
+  async handleDashboardCapabilities(
     newSettings: Settings,
     changedCapabilities: string[]
   ): Promise<void> {
@@ -461,19 +461,19 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  clearReportPlan (): void {
+  clearReportPlan(): void {
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearInterval(this.reportInterval)
     this.reportInterval = null
     this.log('Energy cost reports have been stopped')
   }
 
-  async onDeleted (): Promise<void> {
+  async onDeleted(): Promise<void> {
     this.clearSyncPlan()
     this.clearReportPlan()
   }
 
-  async addCapability (capability: string): Promise<void> {
+  async addCapability(capability: string): Promise<void> {
     if (
       this.driver.manifest.capabilities.includes(capability) === true &&
       !this.hasCapability(capability)
@@ -483,7 +483,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async removeCapability (capability: string): Promise<void> {
+  async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
       this.log('Capability', capability, 'removed')
@@ -507,7 +507,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  setInterval (
+  setInterval(
     type: string,
     callback: () => Promise<void>,
     interval: number | object
@@ -525,7 +525,7 @@ export default class MELCloudDeviceMixin extends Device {
     return this.homey.setInterval(callback, Number(duration))
   }
 
-  setTimeout (
+  setTimeout(
     type: string,
     callback: () => Promise<void>,
     interval: number | object
@@ -544,11 +544,11 @@ export default class MELCloudDeviceMixin extends Device {
     return this.homey.setTimeout(callback, Number(duration))
   }
 
-  log (...args: any[]): void {
+  log(...args: any[]): void {
     super.log(this.getName(), '-', ...args)
   }
 
-  error (...args: any[]): void {
+  error(...args: any[]): void {
     super.error(this.getName(), '-', ...args)
   }
 }

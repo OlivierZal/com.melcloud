@@ -9,7 +9,7 @@ const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
   'horizontal'
 ]
 
-function getCapabilityArg (
+function getCapabilityArg(
   args: FlowArgsAta,
   capability: SetCapability<MELCloudDeviceAta>
 ): number | string {
@@ -20,7 +20,7 @@ function getCapabilityArg (
 }
 
 export default class MELCloudDriverAta extends MELCloudDriverMixin {
-  async onInit (): Promise<void> {
+  async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 0
     this.heatPumpType = 'Ata'

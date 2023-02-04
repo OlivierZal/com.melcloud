@@ -18,7 +18,7 @@ import {
 
 const format: string = 'dd LLL yy HH:mm'
 
-function fromUTCtoLocal (utcDate: string | null, format?: string): string {
+function fromUTCtoLocal(utcDate: string | null, format?: string): string {
   if (utcDate === null) {
     return ''
   }
@@ -30,7 +30,7 @@ function fromUTCtoLocal (utcDate: string | null, format?: string): string {
     : localDate.toISO({ includeOffset: false })
 }
 
-function handleErrorLogQuery (query: ErrorLogQuery): {
+function handleErrorLogQuery(query: ErrorLogQuery): {
   fromDate: DateTime
   toDate: DateTime
   period: number
@@ -62,7 +62,7 @@ function handleErrorLogQuery (query: ErrorLogQuery): {
 }
 
 module.exports = {
-  async getBuildings ({
+  async getBuildings({
     homey
   }: {
     homey: Homey
@@ -83,7 +83,7 @@ module.exports = {
       )
   },
 
-  async getFrostProtectionSettings ({
+  async getFrostProtectionSettings({
     homey,
     params
   }: {
@@ -95,7 +95,7 @@ module.exports = {
     )
   },
 
-  async getHolidayModeSettings ({
+  async getHolidayModeSettings({
     homey,
     params
   }: {
@@ -112,7 +112,7 @@ module.exports = {
     }
   },
 
-  async getUnitErrorLog ({
+  async getUnitErrorLog({
     homey,
     query
   }: {
@@ -161,7 +161,7 @@ module.exports = {
     }
   },
 
-  async login ({
+  async login({
     homey,
     body
   }: {
@@ -171,7 +171,7 @@ module.exports = {
     return await (homey.app as MELCloudApp).login(body)
   },
 
-  async setDeviceSettings ({
+  async setDeviceSettings({
     homey,
     body
   }: {
@@ -181,7 +181,7 @@ module.exports = {
     return await (homey.app as MELCloudApp).setDeviceSettings(body)
   },
 
-  async updateFrostProtectionSettings ({
+  async updateFrostProtectionSettings({
     homey,
     params,
     body
@@ -196,7 +196,7 @@ module.exports = {
     )
   },
 
-  async updateHolidayModeSettings ({
+  async updateHolidayModeSettings({
     homey,
     params,
     body
