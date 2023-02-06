@@ -430,7 +430,7 @@ class MELCloudHPDevice extends Homey.Device {
           heat_flow_temperature: heatFlowTemperature,
           set_watertank_temperature: response.data.SetTankWaterTemperature
         })
-      })
+      }).catch(this.error)
 
       const interval = this.getSetting('interval')
       this.syncTimeout = this.homey.setTimeout(
@@ -509,7 +509,7 @@ class MELCloudHPDevice extends Homey.Device {
         if (response.data.ErrorMessage) {
           throw new Error(response.data.ErrorMessage)
         }
-      })
+      }).catch(this.error)
 
       this.syncTimeout = this.homey.setTimeout(
         this.syncDataFromDevice.bind(this),
