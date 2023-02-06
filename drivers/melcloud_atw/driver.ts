@@ -99,7 +99,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       )
     for (const capability of flowTemperatureCapabilities) {
       this.homey.flow
-        .getActionCard(`${capability.replace('.', '_')}_action`)
+        .getActionCard(`${capability.replace(/\./g, '_')}_action`)
         .registerRunListener(
           async (args: {
             device: MELCloudDeviceAtw
