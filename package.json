@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "10.0.12",
+  "version": "10.0.13",
   "main": "app.ts",
   "scripts": {
     "build": "tsc"
@@ -9,7 +9,7 @@
     "@tsconfig/node12": "^1.0.11",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.3",
     "@types/luxon": "^3.2.0",
-    "@types/node": "^18.11.19",
+    "@types/node": "^18.13.0",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
