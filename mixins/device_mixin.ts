@@ -106,9 +106,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   getDashboardCapabilities(settings: Settings = this.getSettings()): string[] {
     return Object.keys(settings).filter(
-      (setting: string): boolean =>
-        this.driver.manifest.capabilities.includes(setting) === true &&
-        settings[setting] === true
+      (setting: string): boolean => settings[setting] === true
     )
   }
 
@@ -474,19 +472,24 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async addCapability(capability: string): Promise<void> {
-    if (
-      this.driver.manifest.capabilities.includes(capability) === true &&
-      !this.hasCapability(capability)
-    ) {
-      await super.addCapability(capability)
-      this.log('Capability', capability, 'added')
+    if (!this.hasCapability(capability)) {
+      await super
+        .addCapability(capability)
+        .then((): void => {
+          this.log('Adding capability', capability)
+        })
+        .catch(this.error)
     }
   }
 
   async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
-      await super.removeCapability(capability)
-      this.log('Capability', capability, 'removed')
+      await super
+        .removeCapability(capability)
+        .then((): void => {
+          this.log('Removing capability', capability)
+        })
+        .catch(this.error)
     }
   }
 
