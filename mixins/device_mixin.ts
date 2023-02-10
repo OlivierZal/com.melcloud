@@ -483,12 +483,8 @@ export default class MELCloudDeviceMixin extends Device {
 
   async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
-      await super
-        .removeCapability(capability)
-        .then((): void => {
-          this.log('Removing capability', capability)
-        })
-        .catch(this.error)
+      this.log('Removing capability', capability)
+      await super.removeCapability(capability)
     }
   }
 
