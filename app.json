@@ -2311,6 +2311,65 @@
         "meter_power.total_consumed_heating",
         "meter_power.total_consumed_other"
       ],
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Air Heat Pump"
+      },
       "capabilitiesOptions": {
         "measure_power.wifi": {
           "title": {
@@ -2428,66 +2487,13 @@
         "target_temperature": {
           "min": 10,
           "max": 38
-        }
-      },
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
         },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
+        "thermostat_mode": {
+          "insights": true,
+          "title": {
+            "en": "HomeKit Thermostat Mode"
           }
         }
-      ],
-      "name": {
-        "en": "Air-to-Air Heat Pump"
       },
       "id": "melcloud",
       "settings": [
@@ -2864,6 +2870,65 @@
         "target_temperature.zone2_flow_cool",
         "target_temperature.zone2_flow_heat"
       ],
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Water Heat Pump"
+      },
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
           "title": {
@@ -3209,65 +3274,6 @@
             "en": "HomeKit Thermostat Mode"
           }
         }
-      },
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        }
-      ],
-      "name": {
-        "en": "Air-to-Water Heat Pump"
       },
       "id": "melcloud_atw",
       "settings": [
