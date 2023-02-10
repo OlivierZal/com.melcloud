@@ -8,12 +8,6 @@
   "capabilities": [
     "measure_power.wifi",
     "measure_temperature",
-    "meter_power.daily_consumed",
-    "meter_power.daily_consumed_cooling",
-    "meter_power.daily_consumed_heating",
-    "meter_power.total_consumed",
-    "meter_power.total_consumed_cooling",
-    "meter_power.total_consumed_heating",
     "onoff",
     "target_temperature",
     "thermostat_mode"
