@@ -37,7 +37,7 @@ export default class MELCloudApp extends App {
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =
-      this.homey.settings.get('ContextKey')
+      this.homey.settings.get('ContextKey') ?? ''
 
     this.buildings = {}
     await this.refreshLogin()

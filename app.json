@@ -2278,21 +2278,16 @@
   },
   "drivers": [
     {
-      "name": {
-        "en": "Air-to-Air Heat Pump"
-      },
       "images": {
-        "small": "drivers/melcloud/assets/images/small.png",
-        "large": "drivers/melcloud/assets/images/large.png"
+        "large": "/drivers/melcloud/assets/images/large.png",
+        "small": "/drivers/melcloud/assets/images/small.png"
       },
+      "icon": "/drivers/melcloud/assets/icon.svg",
       "class": "thermostat",
       "capabilities": [
         "fan_power",
         "horizontal",
-        "onoff",
         "operation_mode",
-        "measure_power.wifi",
-        "measure_temperature",
         "meter_power.hourly_consumed",
         "meter_power.hourly_consumed_auto",
         "meter_power.hourly_consumed_cooling",
@@ -2300,24 +2295,75 @@
         "meter_power.hourly_consumed_fan",
         "meter_power.hourly_consumed_heating",
         "meter_power.hourly_consumed_other",
-        "meter_power.daily_consumed",
         "meter_power.daily_consumed_auto",
-        "meter_power.daily_consumed_cooling",
         "meter_power.daily_consumed_dry",
         "meter_power.daily_consumed_fan",
-        "meter_power.daily_consumed_heating",
         "meter_power.daily_consumed_other",
-        "meter_power.total_consumed",
         "meter_power.total_consumed_auto",
-        "meter_power.total_consumed_cooling",
         "meter_power.total_consumed_dry",
         "meter_power.total_consumed_fan",
-        "meter_power.total_consumed_heating",
         "meter_power.total_consumed_other",
-        "target_temperature",
-        "thermostat_mode",
         "vertical"
       ],
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Air Heat Pump"
+      },
       "capabilitiesOptions": {
         "measure_power.wifi": {
           "title": {
@@ -2443,62 +2489,6 @@
           }
         }
       },
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        }
-      ],
       "id": "melcloud",
       "settings": [
         {
@@ -2818,13 +2808,11 @@
       ]
     },
     {
-      "name": {
-        "en": "Air-to-Water Heat Pump"
-      },
       "images": {
-        "small": "drivers/melcloudHP/assets/images/small.png",
-        "large": "drivers/melcloudHP/assets/images/large.png"
+        "large": "/drivers/melcloud_atw/assets/images/large.png",
+        "small": "/drivers/melcloud_atw/assets/images/small.png"
       },
+      "icon": "/drivers/melcloud_atw/assets/icon.svg",
       "class": "thermostat",
       "capabilities": [
         "alarm_generic.booster_heater1",
@@ -2834,8 +2822,6 @@
         "alarm_generic.immersion_heater",
         "eco_hot_water",
         "measure_power.heat_pump_frequency",
-        "measure_power.wifi",
-        "measure_temperature",
         "measure_temperature.flow",
         "measure_temperature.outdoor",
         "measure_temperature.return",
@@ -2845,9 +2831,6 @@
         "meter_power.daily_cop_cooling",
         "meter_power.daily_cop_heating",
         "meter_power.daily_cop_hotwater",
-        "meter_power.daily_consumed",
-        "meter_power.daily_consumed_cooling",
-        "meter_power.daily_consumed_heating",
         "meter_power.daily_consumed_hotwater",
         "meter_power.daily_produced",
         "meter_power.daily_produced_cooling",
@@ -2857,30 +2840,83 @@
         "meter_power.total_cop_cooling",
         "meter_power.total_cop_heating",
         "meter_power.total_cop_hotwater",
-        "meter_power.total_consumed",
-        "meter_power.total_consumed_cooling",
-        "meter_power.total_consumed_heating",
         "meter_power.total_consumed_hotwater",
         "meter_power.total_produced",
         "meter_power.total_produced_cooling",
         "meter_power.total_produced_heating",
         "meter_power.total_produced_hotwater",
-        "onoff",
         "onoff.forced_hot_water",
         "operation_mode_state",
         "operation_mode_zone.zone1",
         "operation_mode_zone.zone2",
         "operation_mode_zone_with_cool.zone1",
         "operation_mode_zone_with_cool.zone2",
-        "target_temperature",
         "target_temperature.tank_water",
         "target_temperature.zone1_flow_cool",
         "target_temperature.zone1_flow_heat",
         "target_temperature.zone2",
         "target_temperature.zone2_flow_cool",
-        "target_temperature.zone2_flow_heat",
-        "thermostat_mode"
+        "target_temperature.zone2_flow_heat"
       ],
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com"
+            },
+            "passwordLabel": {
+              "en": "Password"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Water Heat Pump"
+      },
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
           "title": {
@@ -2951,6 +2987,36 @@
           },
           "units": {
             "en": "dBm"
+          }
+        },
+        "measure_temperature": {
+          "title": {
+            "en": "Room Temperature - Zone 1"
+          }
+        },
+        "measure_temperature.flow": {
+          "title": {
+            "en": "Flow Temperature"
+          }
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "en": "Outdoor Temperature"
+          }
+        },
+        "measure_temperature.return": {
+          "title": {
+            "en": "Return Temperature"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "en": "Water Tank Temperature"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "en": "Room Temperature - Zone 2"
           }
         },
         "meter_power.daily_cop": {
@@ -3105,36 +3171,6 @@
             "en": "Total Hot Water Production"
           }
         },
-        "measure_temperature": {
-          "title": {
-            "en": "Room Temperature - Zone 1"
-          }
-        },
-        "measure_temperature.flow": {
-          "title": {
-            "en": "Flow Temperature"
-          }
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "en": "Outdoor Temperature"
-          }
-        },
-        "measure_temperature.return": {
-          "title": {
-            "en": "Return Temperature"
-          }
-        },
-        "measure_temperature.tank_water": {
-          "title": {
-            "en": "Water Tank Temperature"
-          }
-        },
-        "measure_temperature.zone2": {
-          "title": {
-            "en": "Room Temperature - Zone 2"
-          }
-        },
         "onoff.forced_hot_water": {
           "title": {
             "en": "Forced Hot Water"
@@ -3227,62 +3263,6 @@
           }
         }
       },
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com"
-            },
-            "passwordLabel": {
-              "en": "Password"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd"
-            }
-          }
-        }
-      ],
       "id": "melcloud_atw",
       "settings": [
         {
