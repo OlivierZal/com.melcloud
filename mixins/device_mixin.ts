@@ -153,7 +153,7 @@ export default class MELCloudDeviceMixin extends Device {
         break
       case 'thermostat_mode':
         await this.setAlwaysOnWarning()
-        this.diff.onoff = value !== 'off'
+        this.diff.onoff = String(value) !== 'off'
         break
       case 'target_temperature':
         this.diff.target_temperature = value as number
@@ -171,16 +171,16 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
+  clearSyncPlan(): void {
+    this.homey.clearTimeout(this.syncTimeout)
+    this.log('Sync has been paused')
+  }
+
   async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on') === true) {
       await this.setWarning('"Power Off" is disabled.')
       await this.setWarning(null)
     }
-  }
-
-  clearSyncPlan(): void {
-    this.homey.clearTimeout(this.syncTimeout)
-    this.log('Sync has been paused')
   }
 
   applySyncToDevice(): void {
@@ -417,8 +417,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.onCapability('onoff', true)
-    }
-    if (
+    } else if (
       changedKeys.some(
         (setting: string): boolean =>
           !setting.startsWith('meter_power') && setting !== 'always_on'
