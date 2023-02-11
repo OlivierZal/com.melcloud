@@ -84,12 +84,12 @@ export default class MELCloudApp extends App {
         Password: password,
         Persist: true
       }
-      this.log('Login to MELCloud...\n', postData)
+      this.log('Login...\n', postData)
       const { data } = await axios.post<LoginData>(
         '/Login/ClientLogin',
         postData
       )
-      this.log('Login to MELCloud:\n', data)
+      this.log('Login:\n', data)
       if (data.LoginData?.ContextKey !== undefined) {
         axios.defaults.headers.common['X-MitsContextKey'] =
           data.LoginData.ContextKey
@@ -103,10 +103,7 @@ export default class MELCloudApp extends App {
         return true
       }
     } catch (error: unknown) {
-      this.error(
-        'Login to MELCloud:',
-        error instanceof Error ? error.message : error
-      )
+      this.error('Login:', error instanceof Error ? error.message : error)
     }
     return false
   }
