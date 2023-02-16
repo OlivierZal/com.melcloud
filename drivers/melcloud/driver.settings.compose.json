@@ -9,7 +9,7 @@
         "id": "interval",
         "type": "number",
         "label": {
-          "en": "Device Update Frequency"
+          "en": "Device Refresh Frequency"
         },
         "units": {
           "en": "minutes"
