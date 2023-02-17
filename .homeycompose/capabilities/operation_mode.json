@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Full Thermostat Mode"
+    "en": "Operation Mode",
+    "fr": "Mode opérationnel"
   },
   "getable": true,
   "setable": true,
@@ -12,31 +13,36 @@
     {
       "id": "heat",
       "title": {
-        "en": "Heat"
+        "en": "Heat",
+        "fr": "Chauffer"
       }
     },
     {
       "id": "dry",
       "title": {
-        "en": "Dry"
+        "en": "Dry",
+        "fr": "Sécher"
       }
     },
     {
       "id": "cool",
       "title": {
-        "en": "Cool"
+        "en": "Cool",
+        "fr": "Refroidir"
       }
     },
     {
       "id": "fan",
       "title": {
-        "en": "Fan"
+        "en": "Fan",
+        "fr": "Ventiler"
       }
     },
     {
       "id": "auto",
       "title": {
-        "en": "Auto"
+        "en": "Automatic",
+        "fr": "Automatique"
       }
     }
   ]

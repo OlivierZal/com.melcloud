@@ -22,16 +22,20 @@
       "options": {
         "logo": "logo.png",
         "usernameLabel": {
-          "en": "Username"
+          "en": "Username",
+          "fr": "Nom d'utilisateur"
         },
         "usernamePlaceholder": {
-          "en": "user@domain.com"
+          "en": "user@domain.com",
+          "fr": "utilisateur@domain.fr"
         },
         "passwordLabel": {
-          "en": "Password"
+          "en": "Password",
+          "fr": "Mot de passe"
         },
         "passwordPlaceholder": {
-          "en": "P4ssw0rd"
+          "en": "P4ssw0rd",
+          "fr": "P4ssw0rd"
         }
       }
     },
@@ -54,16 +58,20 @@
       "options": {
         "logo": "logo.png",
         "usernameLabel": {
-          "en": "Username"
+          "en": "Username",
+          "fr": "Nom d'utilisateur"
         },
         "usernamePlaceholder": {
-          "en": "user@domain.com"
+          "en": "user@domain.com",
+          "fr": "utilisateur@domain.fr"
         },
         "passwordLabel": {
-          "en": "Password"
+          "en": "Password",
+          "fr": "Mot de passe"
         },
         "passwordPlaceholder": {
-          "en": "P4ssw0rd"
+          "en": "P4ssw0rd",
+          "fr": "P4ssw0rd"
         }
       }
     }

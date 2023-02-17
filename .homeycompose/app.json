@@ -3,21 +3,36 @@
   "sdk": 3,
   "brandColor": "#ed0c13",
   "name": {
-    "en": "MELCloud"
+    "en": "MELCloud",
+    "fr": "MELCloud"
   },
   "description": {
-    "en": "Take control of MELCloud devices"
+    "en": "Take control of your heat pumps",
+    "fr": "Prenez le contrôle de vos pompes à chaleur"
   },
   "category": ["climate"],
-  "version": "10.0.13",
+  "version": "11.0.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
       "air conditioner",
+      "air conditioning",
       "air-to-air",
       "air-to-water",
+      "conditioned air",
       "ecodan",
       "heat pump",
+      "melcloud",
+      "mitsubishi"
+    ],
+    "fr": [
+      "climatiseur",
+      "climatisation",
+      "air-air",
+      "air-eau",
+      "air conditionné",
+      "ecodan",
+      "pompe à chaleur",
       "melcloud",
       "mitsubishi"
     ]

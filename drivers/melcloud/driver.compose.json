@@ -1,7 +1,8 @@
 {
   "$extends": ["defaults"],
   "name": {
-    "en": "Air-to-Air Heat Pump"
+    "en": "Air-to-Air Heat Pump",
+    "fr": "Pompe à chaleur air-air"
   },
   "capabilities": [
     "fan_power",
@@ -33,115 +34,138 @@
   "capabilitiesOptions": {
     "measure_power.wifi": {
       "title": {
-        "en": "Wifi Signal Strength"
+        "en": "Wifi signal strength",
+        "fr": "Puissance du signal Wifi"
       },
       "units": {
-        "en": "dBm"
+        "en": "dBm",
+        "fr": "dBm"
       }
     },
     "meter_power.hourly_consumed": {
       "title": {
-        "en": "Hourly Consumption"
+        "en": "Hourly consumption",
+        "fr": "Conso horaire"
       }
     },
     "meter_power.hourly_consumed_auto": {
       "title": {
-        "en": "Hourly Auto Consumption"
+        "en": "Hourly auto consumption",
+        "fr": "Conso horaire en mode auto"
       }
     },
     "meter_power.hourly_consumed_cooling": {
       "title": {
-        "en": "Hourly Cooling Consumption"
+        "en": "Hourly cooling consumption",
+        "fr": "Conso horaire en mode refroidissement"
       }
     },
     "meter_power.hourly_consumed_dry": {
       "title": {
-        "en": "Hourly Dry Consumption"
+        "en": "Hourly dry consumption",
+        "fr": "Conso horaire en mode séchage"
       }
     },
     "meter_power.hourly_consumed_fan": {
       "title": {
-        "en": "Hourly Fan Consumption"
+        "en": "Hourly fan consumption",
+        "fr": "Conso horaire en mode ventilation"
       }
     },
     "meter_power.hourly_consumed_heating": {
       "title": {
-        "en": "Hourly Heating Consumption"
+        "en": "Hourly heating consumption",
+        "fr": "Conso horaire en mode chauffage"
       }
     },
     "meter_power.hourly_consumed_other": {
       "title": {
-        "en": "Hourly Other Consumption"
+        "en": "Hourly other consumption",
+        "fr": "Conso horaire autre"
       }
     },
     "meter_power.daily_consumed": {
       "title": {
-        "en": "Daily Consumption"
+        "en": "Daily consumption",
+        "fr": "Conso quotidienne"
       }
     },
     "meter_power.daily_consumed_auto": {
       "title": {
-        "en": "Daily Auto Consumption"
+        "en": "Daily auto consumption",
+        "fr": "Conso quotidienne en mode auto"
       }
     },
     "meter_power.daily_consumed_cooling": {
       "title": {
-        "en": "Daily Cooling Consumption"
+        "en": "Daily cooling consumption",
+        "fr": "Conso quotidienne en mode refroidissement"
       }
     },
     "meter_power.daily_consumed_dry": {
       "title": {
-        "en": "Daily Dry Consumption"
+        "en": "Daily dry consumption",
+        "fr": "Conso quotidienne en mode séchage"
       }
     },
     "meter_power.daily_consumed_fan": {
       "title": {
-        "en": "Daily Fan Consumption"
+        "en": "Daily fan consumption",
+        "fr": "Conso quotidienne en mode ventilation"
       }
     },
     "meter_power.daily_consumed_heating": {
       "title": {
-        "en": "Daily Heating Consumption"
+        "en": "Daily heating consumption",
+        "fr": "Conso quotidienne en mode chauffage"
       }
     },
     "meter_power.daily_consumed_other": {
       "title": {
-        "en": "Daily Other Consumption"
+        "en": "Daily other consumption",
+        "fr": "Conso quotidienne autre"
       }
     },
     "meter_power.total_consumed": {
       "title": {
-        "en": "Total Consumption"
+        "en": "Total consumption",
+        "fr": "Conso totale"
       }
     },
     "meter_power.total_consumed_auto": {
       "title": {
-        "en": "Total Auto Consumption"
+        "en": "Total auto consumption",
+        "fr": "Conso totale en mode auto"
       }
     },
     "meter_power.total_consumed_cooling": {
       "title": {
-        "en": "Total Cooling Consumption"
+        "en": "Total cooling consumption",
+        "fr": "Conso totale en mode refroidissement"
       }
     },
     "meter_power.total_consumed_dry": {
       "title": {
-        "en": "Total Dry Consumption"
+        "en": "Total dry consumption",
+        "fr": "Conso totale en mode séchage"
       }
     },
     "meter_power.total_consumed_fan": {
       "title": {
-        "en": "Total Fan Consumption"
+        "en": "Total fan consumption",
+        "fr": "Conso totale en mode ventilation"
       }
     },
     "meter_power.total_consumed_heating": {
       "title": {
-        "en": "Total Heating Consumption"
+        "en": "Total heating consumption",
+        "fr": "Conso totale en mode chauffage"
       }
     },
     "meter_power.total_consumed_other": {
       "title": {
-        "en": "Total Other Consumption"
+        "en": "Total other consumption",
+        "fr": "Conso totale autre"
       }
     },
     "target_temperature": {
@@ -149,10 +173,7 @@
       "max": 38
     },
     "thermostat_mode": {
-      "insights": true,
-      "title": {
-        "en": "HomeKit Thermostat Mode"
-      }
+      "insights": true
     }
   }
 }

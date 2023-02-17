@@ -15,13 +15,24 @@
     </header>
     <div id="is-not-authenticated" style="display: none">
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Credentials</legend>
+        <legend
+          class="homey-form-legend"
+          data-i18n="settings.credentials"
+        ></legend>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="username">Username</label>
+          <label
+            class="homey-form-label"
+            for="username"
+            data-i18n="settings.username"
+          ></label>
           <input class="homey-form-input" id="username" type="text" value="" />
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="password">Password</label>
+          <label
+            class="homey-form-label"
+            for="password"
+            data-i18n="settings.password"
+          ></label>
           <input
             class="homey-form-input"
             id="password"
@@ -29,32 +40,41 @@
             value=""
           />
         </div>
-        <button id="authenticate" class="homey-button-primary-full">
-          Authenticate
-        </button>
+        <button
+          id="authenticate"
+          class="homey-button-primary-full"
+          data-i18n="settings.authenticate"
+        ></button>
       </fieldset>
     </div>
     <div id="is-authenticated">
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend" id="error-log">Error Log</legend>
+        <legend
+          class="homey-form-legend"
+          id="error-log"
+          data-i18n="settings.error-log"
+        ></legend>
         <div class="homey-form-group">
           <label class="homey-form-label" id="period"></label>
           <table aria-describedby="error-log"></table>
         </div>
-        <button id="see" class="homey-button-secondary">
-          See all Errors since
-        </button>
+        <button
+          id="see"
+          class="homey-button-secondary"
+          data-i18n="settings.see"
+        ></button>
         <input id="from" type="date" value="" />
       </fieldset>
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Device Settings</legend>
+        <legend class="homey-form-legend" data-i18n="settings.devices"></legend>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="interval"
-            ><strong>Device Update Frequency</strong> (minutes)</label
-          >
+          <label
+            class="homey-form-label"
+            for="interval"
+            data-i18n="settings.interval_label"
+          ></label>
           <input
             class="homey-form-input"
-            name="Interval"
             id="interval"
             type="number"
             inputmode="numeric"
@@ -62,61 +82,87 @@
           />
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="always_on"
-            >Disable <strong>Power Off from Homey</strong></label
-          >
+          <label
+            class="homey-form-label"
+            for="always_on"
+            data-i18n="settings.always_on"
+          ></label>
           <select class="homey-form-select" id="always_on">
             <option value=""></option>
-            <option value="false">No</option>
-            <option value="true">Yes</option>
+            <option value="false" data-i18n="settings.no"></option>
+            <option value="true" data-i18n="settings.yes"></option>
           </select>
         </div>
-        <button id="apply-settings" class="homey-button-primary-full">
-          Apply to all Devices
-        </button>
+        <button
+          id="apply-settings"
+          class="homey-button-primary-full"
+          data-i18n="settings.apply"
+        ></button>
       </fieldset>
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend">Building Settings</legend>
+        <legend
+          class="homey-form-legend"
+          data-i18n="settings.building"
+        ></legend>
         <div class="homey-form-group">
           <select class="homey-form-select" id="building"></select>
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="enabled-holiday-mode"
-            >Enable <strong>Holiday Mode</strong></label
-          >
+          <label
+            class="homey-form-label"
+            for="enabled-holiday-mode"
+            data-i18n="settings.holiday-mode"
+          ></label>
           <select class="homey-form-select" id="enabled-holiday-mode">
-            <option value="false">No</option>
-            <option value="true">Yes</option>
+            <option value="false" data-i18n="settings.no"></option>
+            <option value="true" data-i18n="settings.yes"></option>
           </select>
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="start-date">Start Date</label>
+          <label
+            class="homey-form-label"
+            for="start-date"
+            data-i18n="settings.start-date"
+          ></label>
           <input id="start-date" type="datetime-local" value="" />
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="end-date">End Date</label>
+          <label
+            class="homey-form-label"
+            for="end-date"
+            data-i18n="settings.end-date"
+          ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-        <button id="refresh-holiday-mode" class="homey-button-secondary">
-          Refresh
-        </button>
-        <button id="update-holiday-mode" class="homey-button-primary">
-          Update
-        </button>
+        <button
+          id="refresh-holiday-mode"
+          class="homey-button-secondary"
+          data-i18n="settings.refresh"
+        ></button>
+        <button
+          id="update-holiday-mode"
+          class="homey-button-primary"
+          data-i18n="settings.update"
+        ></button>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="enabled-frost-protection"
-            >Enable <strong>Frost Protection</strong></label
-          >
+          <label
+            class="homey-form-label"
+            for="enabled-frost-protection"
+            data-i18n="settings.frost-protection"
+          ></label>
           <select class="homey-form-select" id="enabled-frost-protection">
-            <option value="false">No</option>
-            <option value="true">Yes</option>
+            <option value="false" data-i18n="settings.no"></option>
+            <option value="true" data-i18n="settings.yes"></option>
           </select>
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="min">Minimum Temperature</label>
+          <label
+            class="homey-form-label"
+            for="min"
+            data-i18n="settings.min_label"
+          ></label>
           <input
             class="homey-form-input"
-            name="Minimum"
             id="min"
             type="number"
             inputmode="numeric"
@@ -124,22 +170,29 @@
           />
         </div>
         <div class="homey-form-group">
-          <label class="homey-form-label" for="max">Maximum Temperature</label>
+          <label
+            class="homey-form-label"
+            for="max"
+            data-i18n="settings.max_label"
+          ></label>
           <input
             class="homey-form-input"
-            name="Maximum"
             id="max"
             type="number"
             inputmode="numeric"
             value="12"
           />
         </div>
-        <button id="refresh-frost-protection" class="homey-button-secondary">
-          Refresh
-        </button>
-        <button id="update-frost-protection" class="homey-button-primary">
-          Update
-        </button>
+        <button
+          id="refresh-frost-protection"
+          class="homey-button-secondary"
+          data-i18n="settings.refresh"
+        ></button>
+        <button
+          id="update-frost-protection"
+          class="homey-button-primary"
+          data-i18n="settings.update"
+        ></button>
       </fieldset>
     </div>
   </body>

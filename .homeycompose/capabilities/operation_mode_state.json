@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation Mode"
+    "en": "Operation mode",
+    "fr": "Mode opérationnel"
   },
   "uiComponent": "sensor",
   "insights": true,
@@ -12,43 +13,50 @@
     {
       "id": "idle",
       "title": {
-        "en": "Idle"
+        "en": "Idle",
+        "fr": "Inactif"
       }
     },
     {
       "id": "dhw",
       "title": {
-        "en": "Domestic House Water"
+        "en": "Domestic house water",
+        "fr": "Eau chaude sanitaire"
       }
     },
     {
       "id": "heating",
       "title": {
-        "en": "Heating"
+        "en": "Heating",
+        "fr": "Chauffage"
       }
     },
     {
       "id": "cooling",
       "title": {
-        "en": "Cooling"
+        "en": "Cooling",
+        "fr": "Refroidissement"
       }
     },
     {
       "id": "defrost",
       "title": {
-        "en": "Defrost"
+        "en": "Defrost",
+        "fr": "Dégivrage"
       }
     },
     {
       "id": "standby",
       "title": {
-        "en": "Standby"
+        "en": "Standby",
+        "fr": "Veille"
       }
     },
     {
       "id": "legionella",
       "title": {
-        "en": "Legionella"
+        "en": "Legionella",
+        "fr": "Legionella"
       }
     }
   ],

@@ -1,15 +1,16 @@
 {
   "$extends": ["defaults"],
   "name": {
-    "en": "Air-to-Water Heat Pump"
+    "en": "Air-to-Water Heat Pump",
+    "fr": "Pompe à chaleur air-eau"
   },
   "capabilities": [
     "alarm_generic.booster_heater1",
     "alarm_generic.booster_heater2",
     "alarm_generic.booster_heater2_plus",
     "alarm_generic.defrost_mode",
+    "alarm_generic.eco_hot_water",
     "alarm_generic.immersion_heater",
-    "eco_hot_water",
     "measure_power.heat_pump_frequency",
     "measure_temperature.flow",
     "measure_temperature.outdoor",
@@ -56,347 +57,420 @@
   "capabilitiesOptions": {
     "alarm_generic.booster_heater1": {
       "title": {
-        "en": "Booster Heater 1"
+        "en": "Booster heater 1",
+        "fr": "Chauffage d'appoint 1"
       },
       "insightsTitleTrue": {
-        "en": "Booster Heater 1 On"
+        "en": "Booster heater 1 turned on",
+        "fr": "Le chauffage d'appoint 1 s'est activé"
       },
       "insightsTitleFalse": {
-        "en": "Booster Heater 1 Off"
+        "en": "Booster heater 1 turned off",
+        "fr": "Le chauffage d'appoint 1 s'est désactivé"
       }
     },
     "alarm_generic.booster_heater2": {
       "title": {
-        "en": "Booster Heater 2"
+        "en": "Booster heater 2",
+        "fr": "Chauffage d'appoint 2"
       },
       "insightsTitleTrue": {
-        "en": "Booster Heater 2 On"
+        "en": "Booster heater 2 turned on",
+        "fr": "Le chauffage d'appoint 2 s'est activé"
       },
       "insightsTitleFalse": {
-        "en": "Booster Heater 2 Off"
+        "en": "Booster heater 2 turned off",
+        "fr": "Le chauffage d'appoint 2 s'est désactivé"
       }
     },
     "alarm_generic.booster_heater2_plus": {
       "title": {
-        "en": "Booster Heater 2 Plus"
+        "en": "Booster heater 2+",
+        "fr": "Chauffage d'appoint 2+"
       },
       "insightsTitleTrue": {
-        "en": "Booster Heater 2 Plus On"
+        "en": "Booster heater 2+ turned on",
+        "fr": "Le chauffage d'appoint 2+ s'est activé"
       },
       "insightsTitleFalse": {
-        "en": "Booster Heater 2 Plus Off"
+        "en": "Booster heater 2+ turned off",
+        "fr": "Le chauffage d'appoint 2+ s'est désactivé"
       }
     },
     "alarm_generic.defrost_mode": {
       "title": {
-        "en": "Defrost Mode"
+        "en": "Defrost mode",
+        "fr": "Mode dégivrage"
       },
       "insightsTitleTrue": {
-        "en": "Defrost Mode On"
+        "en": "Defrost mode turned on",
+        "fr": "Le mode dégivrage s'est activé"
       },
       "insightsTitleFalse": {
-        "en": "Defrost Mode Off"
+        "en": "Defrost mode turned off",
+        "fr": "Le mode dégivrage s'est désactivé"
+      }
+    },
+    "alarm_generic.eco_hot_water": {
+      "title": {
+        "en": "Eco hot water",
+        "fr": "Eau chaude éco"
+      },
+      "insightsTitleTrue": {
+        "en": "Eco hot water turned on",
+        "fr": "L'eau chaude éco s'est activée"
+      },
+      "insightsTitleFalse": {
+        "en": "Eco hot water turned off",
+        "fr": "L'eau chaude éco s'est désactivée"
       }
     },
     "alarm_generic.immersion_heater": {
       "title": {
-        "en": "Immersion Heater"
+        "en": "Immersion heater",
+        "fr": "Chauffage par immersion"
       },
       "insightsTitleTrue": {
-        "en": "Immersion Heater On"
+        "en": "Immersion heater turned on",
+        "fr": "Le chauffage par immersion s'est activé"
       },
       "insightsTitleFalse": {
-        "en": "Immersion Heater Off"
+        "en": "Immersion heater turned off",
+        "fr": "Le chauffage par immersion s'est désactivé"
       }
     },
     "measure_power.heat_pump_frequency": {
       "title": {
-        "en": "Heat Pump Frequency"
+        "en": "Heat pump frequency",
+        "fr": "Fréquence de la pompe à chaleur"
       },
       "units": {
-        "en": "Hz"
+        "en": "Hz",
+        "fr": "Hz"
       }
     },
     "measure_power.wifi": {
       "title": {
-        "en": "Wifi Signal Strength"
+        "en": "Wifi signal strength",
+        "fr": "Puissance du signal wifi"
       },
       "units": {
-        "en": "dBm"
-      }
-    },
-    "measure_temperature": {
-      "title": {
-        "en": "Room Temperature - Zone 1"
+        "en": "dBm",
+        "fr": "dBm"
       }
     },
     "measure_temperature.flow": {
       "title": {
-        "en": "Flow Temperature"
+        "en": "Flow temperature",
+        "fr": "Température de départ"
       }
     },
     "measure_temperature.outdoor": {
       "title": {
-        "en": "Outdoor Temperature"
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure"
       }
     },
     "measure_temperature.return": {
       "title": {
-        "en": "Return Temperature"
+        "en": "Return temperature",
+        "fr": "Température de retour"
       }
     },
     "measure_temperature.tank_water": {
       "title": {
-        "en": "Water Tank Temperature"
+        "en": "Water tank temperature",
+        "fr": "Température du réservoir d'eau"
       }
     },
     "measure_temperature.zone2": {
       "title": {
-        "en": "Room Temperature - Zone 2"
+        "en": "Temperature - zone 2",
+        "fr": "Température - zone 2"
       }
     },
     "meter_power.daily_cop": {
       "title": {
-        "en": "Last Daily CoP"
+        "en": "Last daily CoP",
+        "fr": "Dernier CoP quotidien"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.daily_cop_cooling": {
       "title": {
-        "en": "Last Daily Cooling CoP"
+        "en": "Last daily cooling CoP",
+        "fr": "Dernier CoP quotidien en mode refroidissement"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.daily_cop_heating": {
       "title": {
-        "en": "Last Daily Heating CoP"
+        "en": "Last daily heating CoP",
+        "fr": "Dernier CoP quotidien en mode chauffage"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.daily_cop_hotwater": {
       "title": {
-        "en": "Last Daily Hot Water CoP"
+        "en": "Last daily hot water CoP",
+        "fr": "Dernier CoP quotidien en mode eau chaude"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.daily_consumed": {
       "title": {
-        "en": "Last Daily Consumption"
+        "en": "Last daily consumption",
+        "fr": "Dernière conso quotidienne"
       }
     },
     "meter_power.daily_consumed_cooling": {
       "title": {
-        "en": "Last Daily Cooling Consumption"
+        "en": "Last daily cooling consumption",
+        "fr": "Dernière conso quotidienne en mode refroidissement"
       }
     },
     "meter_power.daily_consumed_heating": {
       "title": {
-        "en": "Last Daily Heating Consumption"
+        "en": "Last daily heating consumption",
+        "fr": "Dernière conso quotidienne en mode chauffage"
       }
     },
     "meter_power.daily_consumed_hotwater": {
       "title": {
-        "en": "Last Daily Hot Water Consumption"
+        "en": "Last daily hot water consumption",
+        "fr": "Dernière conso quotidienne en mode eau chaude"
       }
     },
     "meter_power.daily_produced": {
       "title": {
-        "en": "Last Daily Production"
+        "en": "Last daily production",
+        "fr": "Dernière prod quotidienne"
       }
     },
     "meter_power.daily_produced_cooling": {
       "title": {
-        "en": "Last Daily Cooling Production"
+        "en": "Last daily cooling production",
+        "fr": "Dernière prod quotidienne en mode refroidissement"
       }
     },
     "meter_power.daily_produced_heating": {
       "title": {
-        "en": "Last Daily Heating Production"
+        "en": "Last daily heating production",
+        "fr": "Dernière prod quotidienne en mode chauffage"
       }
     },
     "meter_power.daily_produced_hotwater": {
       "title": {
-        "en": "Last Daily Hot Water Production"
+        "en": "Last daily hot water production",
+        "fr": "Dernière prod quotidienne en mode eau chaude"
       }
     },
     "meter_power.total_cop": {
       "title": {
-        "en": "Total CoP"
+        "en": "Total CoP",
+        "fr": "CoP total"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.total_cop_cooling": {
       "title": {
-        "en": "Total Cooling CoP"
+        "en": "Total cooling CoP",
+        "fr": "CoP total en mode refroidissement"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.total_cop_heating": {
       "title": {
-        "en": "Total Heating CoP"
+        "en": "Total heating CoP",
+        "fr": "CoP total en mode chauffage"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.total_cop_hotwater": {
       "title": {
-        "en": "Total Hot Water CoP"
+        "en": "Total hot water CoP",
+        "fr": "CoP total en mode eau chaude"
       },
       "units": {
-        "en": ""
+        "en": "",
+        "fr": ""
       },
       "decimals": 2
     },
     "meter_power.total_consumed": {
       "title": {
-        "en": "Total Consumption"
+        "en": "Total consumption",
+        "fr": "Conso totale"
       }
     },
     "meter_power.total_consumed_cooling": {
       "title": {
-        "en": "Total Cooling Consumption"
+        "en": "Total cooling consumption",
+        "fr": "Conso totale en mode refroidissement"
       }
     },
     "meter_power.total_consumed_heating": {
       "title": {
-        "en": "Total Heating Consumption"
+        "en": "Total heating consumption",
+        "fr": "Conso totale en mode chauffage"
       }
     },
     "meter_power.total_consumed_hotwater": {
       "title": {
-        "en": "Total Hot Water Consumption"
+        "en": "Total hot water consumption",
+        "fr": "Conso totale en mode eau chaude"
       }
     },
     "meter_power.total_produced": {
       "title": {
-        "en": "Total Production"
+        "en": "Total production",
+        "fr": "Prod totale"
       }
     },
     "meter_power.total_produced_cooling": {
       "title": {
-        "en": "Total Cooling Production"
+        "en": "Total cooling production",
+        "fr": "Prod totale en mode refroidissement"
       }
     },
     "meter_power.total_produced_heating": {
       "title": {
-        "en": "Total Heating Production"
+        "en": "Total heating production",
+        "fr": "Prod totale en mode chauffage"
       }
     },
     "meter_power.total_produced_hotwater": {
       "title": {
-        "en": "Total Hot Water Production"
+        "en": "Total hot water production",
+        "fr": "Prod totale en mode eau chaude"
       }
     },
     "onoff.forced_hot_water": {
       "title": {
-        "en": "Forced Hot Water"
+        "en": "Forced hot water",
+        "fr": "Eau chaude forcée"
       },
       "insightsTitleTrue": {
-        "en": "Forced Hot Water On"
+        "en": "Forced hot water turned on",
+        "fr": "L'eau chaude forcée activée"
       },
       "insightsTitleFalse": {
-        "en": "Forced Hot Water Off"
+        "en": "Forced hot water turned off",
+        "fr": "L'eau chaude forcée désactivée"
       }
     },
     "operation_mode_state": {
       "title": {
-        "en": "Operation Mode"
+        "en": "Operation mode",
+        "fr": "Mode opérationnel"
       }
     },
     "operation_mode_zone.zone1": {
       "title": {
-        "en": "Operation Mode - Zone 1"
+        "en": "Operation mode",
+        "fr": "Mode opérationnel"
       }
     },
     "operation_mode_zone.zone2": {
       "title": {
-        "en": "Operation Mode - Zone 2"
+        "en": "Operation mode - zone 2",
+        "fr": "Mode opérationnel - zone 2"
       }
     },
     "operation_mode_zone_with_cool.zone1": {
       "title": {
-        "en": "Operation Mode - Zone 1"
+        "en": "Operation mode",
+        "fr": "Mode opérationnel"
       }
     },
     "operation_mode_zone_with_cool.zone2": {
       "title": {
-        "en": "Operation Mode - Zone 2"
+        "en": "Operation mode - zone 2",
+        "fr": "Mode opérationnel - zone 2"
       }
     },
     "target_temperature": {
-      "title": {
-        "en": "Room Target Temperature - Zone 1"
-      },
       "min": 10,
       "max": 30
     },
     "target_temperature.tank_water": {
       "title": {
-        "en": "Water Tank Target Temperature"
+        "en": "Water tank target temperature",
+        "fr": "Température cible du réservoir d'eau"
       },
       "min": 40,
       "max": 60
     },
     "target_temperature.zone1_flow_cool": {
       "title": {
-        "en": "Cool Flow Target Temperature - Zone 1"
+        "en": "Cool flow target temperature",
+        "fr": "Température cible du flux de refroidissement"
       },
       "min": 10,
       "max": 30
     },
     "target_temperature.zone1_flow_heat": {
       "title": {
-        "en": "Heat Flow Target Temperature - Zone 1"
+        "en": "Heat flow target temperature",
+        "fr": "Température cible du flux de chauffage"
       },
       "min": 25,
       "max": 60
     },
     "target_temperature.zone2": {
       "title": {
-        "en": "Room Target Temperature - Zone 2"
+        "en": "Target temperature - zone 2",
+        "fr": "Température cible - zone 2"
       },
       "min": 10,
       "max": 30
     },
     "target_temperature.zone2_flow_cool": {
       "title": {
-        "en": "Cool Flow Target Temperature - Zone 2"
+        "en": "Cool flow target temperature - zone 2",
+        "fr": "Température cible du flux de refroidissement - zone 2"
       },
       "min": 10,
       "max": 30
     },
     "target_temperature.zone2_flow_heat": {
       "title": {
-        "en": "Heat Flow Target Temperature - Zone 2"
+        "en": "Heat flow target temperature - zone 2",
+        "fr": "Température cible du flux de chauffage - zone 2"
       },
       "min": 25,
       "max": 60
     },
     "thermostat_mode": {
-      "insights": true,
-      "title": {
-        "en": "HomeKit Thermostat Mode"
-      }
+      "insights": true
     }
   }
 }

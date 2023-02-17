@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation Mode"
+    "en": "Operation mode",
+    "fr": "Mode opérationnel"
   },
   "uiComponent": "picker",
   "insights": true,
@@ -12,19 +13,22 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat Room"
+        "en": "Heat room",
+        "fr": "Chauffer la pièce"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat Flow"
+        "en": "Heat flow",
+        "fr": "Flux de chauffage"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Curve"
+        "en": "Curve",
+        "fr": "Courbe"
       }
     }
   ]

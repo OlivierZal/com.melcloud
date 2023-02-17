@@ -2,44 +2,62 @@
   {
     "type": "group",
     "label": {
-      "en": "Device Options"
+      "en": "Configuration",
+      "fr": "Configuration"
     },
     "children": [
       {
         "id": "interval",
         "type": "number",
         "label": {
-          "en": "Device Refresh Frequency"
+          "en": "Refresh frequency",
+          "fr": "Fréquence de rafraîchissement"
         },
         "units": {
-          "en": "minutes"
+          "en": "minutes",
+          "fr": "minutes"
         },
         "value": 5,
         "min": 1,
         "max": 60
-      },
-      {
-        "id": "always_on",
-        "type": "checkbox",
-        "label": {
-          "en": "Disable Power Off from Homey"
-        },
-        "value": false,
-        "hint": "This setting prevents the device from being turned off from Homey, the device can still be turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   },
   {
     "type": "group",
     "label": {
-      "en": "Dashboard Customization"
+      "en": "Options",
+      "fr": "Options"
+    },
+    "children": [
+      {
+        "id": "always_on",
+        "type": "checkbox",
+        "label": {
+          "en": "Disable shutdown from Homey",
+          "fr": "Désactiver l'extinction depuis Homey"
+        },
+        "value": false,
+        "hint": {
+          "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
+          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Dashboard",
+      "fr": "Tableau de bord"
     },
     "children": [
       {
         "id": "alarm_generic.booster_heater1",
         "type": "checkbox",
         "label": {
-          "en": "Booster Heater 1"
+          "en": "Booster heater 1",
+          "fr": "Chauffage d'appoint 1"
         },
         "value": true
       },
@@ -47,7 +65,8 @@
         "id": "alarm_generic.booster_heater2",
         "type": "checkbox",
         "label": {
-          "en": "Booster Heater 2"
+          "en": "Booster heater 2",
+          "fr": "Chauffage d'appoint 2"
         },
         "value": true
       },
@@ -55,7 +74,8 @@
         "id": "alarm_generic.booster_heater2_plus",
         "type": "checkbox",
         "label": {
-          "en": "Booster Heater 2 Plus"
+          "en": "Booster heater 2+",
+          "fr": "Chauffage d'appoint 2+"
         },
         "value": false
       },
@@ -63,23 +83,26 @@
         "id": "alarm_generic.defrost_mode",
         "type": "checkbox",
         "label": {
-          "en": "Defrost Mode"
+          "en": "Defrost mode",
+          "fr": "Mode dégivrage"
         },
         "value": true
+      },
+      {
+        "id": "alarm_generic.eco_hot_water",
+        "type": "checkbox",
+        "label": {
+          "en": "Eco hot water",
+          "fr": "Eau chaude éco"
+        },
+        "value": false
       },
       {
         "id": "alarm_generic.immersion_heater",
         "type": "checkbox",
         "label": {
-          "en": "Immersion Heater"
-        },
-        "value": false
-      },
-      {
-        "id": "eco_hot_water",
-        "type": "checkbox",
-        "label": {
-          "en": "Eco Hot Water"
+          "en": "Immersion heater",
+          "fr": "Chauffage par immersion"
         },
         "value": false
       },
@@ -87,7 +110,8 @@
         "id": "measure_power.heat_pump_frequency",
         "type": "checkbox",
         "label": {
-          "en": "Heat Pump Frequency"
+          "en": "Heat pump frequency",
+          "fr": "Fréquence de la pompe à chaleur"
         },
         "value": true
       },
@@ -95,7 +119,8 @@
         "id": "measure_power.wifi",
         "type": "checkbox",
         "label": {
-          "en": "Wifi Signal Strength"
+          "en": "Wifi signal strength",
+          "fr": "Puissance du signal wifi"
         },
         "value": true
       },
@@ -103,7 +128,8 @@
         "id": "meter_power.daily_cop",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily CoP"
+          "en": "Last daily CoP",
+          "fr": "Dernier CoP quotidien"
         },
         "value": false
       },
@@ -111,7 +137,8 @@
         "id": "meter_power.daily_cop_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Cooling CoP"
+          "en": "Last daily cooling CoP",
+          "fr": "Dernier CoP quotidien refroidissement"
         },
         "value": false
       },
@@ -119,7 +146,8 @@
         "id": "meter_power.daily_cop_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Heating CoP"
+          "en": "Last daily heating CoP",
+          "fr": "Dernier CoP quotidien chauffage"
         },
         "value": true
       },
@@ -127,7 +155,8 @@
         "id": "meter_power.daily_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Hot Water CoP"
+          "en": "Last daily hot water CoP",
+          "fr": "Dernier CoP quotidien eau chaude"
         },
         "value": false
       },
@@ -135,7 +164,8 @@
         "id": "meter_power.daily_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Consumption"
+          "en": "Last daily consumption",
+          "fr": "Dernière conso quotidienne"
         },
         "value": false
       },
@@ -143,7 +173,8 @@
         "id": "meter_power.daily_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Cooling Consumption"
+          "en": "Last daily cooling consumption",
+          "fr": "Dernière conso quotidienne refroidissement"
         },
         "value": false
       },
@@ -151,7 +182,8 @@
         "id": "meter_power.daily_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Heating Consumption"
+          "en": "Last daily heating consumption",
+          "fr": "Dernière conso quotidienne chauffage"
         },
         "value": false
       },
@@ -159,7 +191,8 @@
         "id": "meter_power.daily_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Hot Water Consumption"
+          "en": "Last daily hot water consumption",
+          "fr": "Dernière conso quotidienne eau chaude"
         },
         "value": false
       },
@@ -167,7 +200,8 @@
         "id": "meter_power.daily_produced",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Production"
+          "en": "Last daily production",
+          "fr": "Dernière prod quotidienne"
         },
         "value": false
       },
@@ -175,7 +209,8 @@
         "id": "meter_power.daily_produced_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Cooling Production"
+          "en": "Last daily cooling production",
+          "fr": "Dernière prod quotidienne refroidissement"
         },
         "value": false
       },
@@ -183,7 +218,8 @@
         "id": "meter_power.daily_produced_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Heating Production"
+          "en": "Last daily heating production",
+          "fr": "Dernière prod quotidienne chauffage"
         },
         "value": false
       },
@@ -191,7 +227,8 @@
         "id": "meter_power.daily_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last Daily Hot Water Production"
+          "en": "Last daily hot water production",
+          "fr": "Dernière prod quotidienne eau chaude"
         },
         "value": false
       },
@@ -199,7 +236,8 @@
         "id": "meter_power.total_cop",
         "type": "checkbox",
         "label": {
-          "en": "Total CoP"
+          "en": "Total CoP",
+          "fr": "CoP total"
         },
         "value": false
       },
@@ -207,7 +245,8 @@
         "id": "meter_power.total_cop_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total Cooling CoP"
+          "en": "Total cooling CoP",
+          "fr": "CoP total refroidissement"
         },
         "value": false
       },
@@ -215,7 +254,8 @@
         "id": "meter_power.total_cop_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total Heating CoP"
+          "en": "Total heating CoP",
+          "fr": "CoP total chauffage"
         },
         "value": false
       },
@@ -223,7 +263,8 @@
         "id": "meter_power.total_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total Hot Water CoP"
+          "en": "Total hot water CoP",
+          "fr": "CoP total eau chaude"
         },
         "value": false
       },
@@ -231,7 +272,8 @@
         "id": "meter_power.total_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Total Consumption"
+          "en": "Total consumption",
+          "fr": "Conso totale"
         },
         "value": false
       },
@@ -239,7 +281,8 @@
         "id": "meter_power.total_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total Cooling Consumption"
+          "en": "Total cooling consumption",
+          "fr": "Conso totale refroidissement"
         },
         "value": false
       },
@@ -247,7 +290,8 @@
         "id": "meter_power.total_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total Heating Consumption"
+          "en": "Total heating consumption",
+          "fr": "Conso totale chauffage"
         },
         "value": false
       },
@@ -255,7 +299,8 @@
         "id": "meter_power.total_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total Hot Water Consumption"
+          "en": "Total hot water consumption",
+          "fr": "Conso totale eau chaude"
         },
         "value": false
       },
@@ -263,7 +308,8 @@
         "id": "meter_power.total_produced",
         "type": "checkbox",
         "label": {
-          "en": "Total Production"
+          "en": "Total production",
+          "fr": "Prod totale"
         },
         "value": false
       },
@@ -271,7 +317,8 @@
         "id": "meter_power.total_produced_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total Cooling Production"
+          "en": "Total cooling production",
+          "fr": "Prod totale refroidissement"
         },
         "value": false
       },
@@ -279,7 +326,8 @@
         "id": "meter_power.total_produced_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total Heating Production"
+          "en": "Total heating production",
+          "fr": "Prod totale chauffage"
         },
         "value": false
       },
@@ -287,7 +335,8 @@
         "id": "meter_power.total_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total Hot Water Production"
+          "en": "Total hot water production",
+          "fr": "Prod totale eau chaude"
         },
         "value": false
       }
