@@ -373,15 +373,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!login) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.alert.failure'), {
-            action: Homey.__('settings.alert.actions.authenticate')
-          })
+          await Homey.alert(
+            Homey.__('settings.alert.failure', {
+              action: Homey.__('settings.alert.actions.authenticate')
+            })
+          )
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.alert.success'), {
-          action: Homey.__('settings.alert.actions.authenticate')
-        })
+        await Homey.alert(
+          Homey.__('settings.alert.success', {
+            action: Homey.__('settings.alert.actions.authenticate')
+          })
+        )
         load()
       }
     )
@@ -429,9 +433,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!ok) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.alert.failure'), {
-            action: Homey.__('settings.alert.actions.apply')
-          })
+          await Homey.alert(
+            Homey.__('settings.alert.failure', {
+              action: Homey.__('settings.alert.actions.apply')
+            })
+          )
           return
         }
         // @ts-expect-error bug
@@ -528,15 +534,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!success) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.alert.failure'), {
-            action: Homey.__('settings.alert.actions.update')
-          })
+          await Homey.alert(
+            Homey.__('settings.alert.failure', {
+              action: Homey.__('settings.alert.actions.update')
+            })
+          )
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.alert.success'), {
-          action: Homey.__('settings.alert.actions.update')
-        })
+        await Homey.alert(
+          Homey.__('settings.alert.success', {
+            action: Homey.__('settings.alert.actions.update')
+          })
+        )
       }
     )
   })
@@ -604,15 +614,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!success) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.alert.failure'), {
-            action: Homey.__('settings.alert.actions.update')
-          })
+          await Homey.alert(
+            Homey.__('settings.alert.failure', {
+              action: Homey.__('settings.alert.actions.update')
+            })
+          )
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.alert.success'), {
-          action: Homey.__('settings.alert.actions.update')
-        })
+        await Homey.alert(
+          Homey.__('settings.alert.success', {
+            action: Homey.__('settings.alert.actions.update')
+          })
+        )
       }
     )
   })
