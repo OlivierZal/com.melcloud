@@ -58,7 +58,7 @@ interface GetCapabilitiesAta {
 }
 
 interface GetCapabilitiesAtw {
-  readonly eco_hot_water: boolean
+  readonly 'alarm_generic.eco_hot_water': boolean
   readonly measure_temperature: number
   readonly 'measure_temperature.zone2': number
   readonly 'measure_temperature.outdoor': number
@@ -353,7 +353,7 @@ export const getCapabilityMappingAtw: Record<
   GetCapability<MELCloudDeviceAtw>,
   GetCapabilityMapping<MELCloudDeviceAtw>
 > = {
-  eco_hot_water: {
+  'alarm_generic.eco_hot_water': {
     tag: 'EcoHotWater'
   },
   measure_temperature: {

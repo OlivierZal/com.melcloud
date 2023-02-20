@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation Mode"
+    "en": "Operation Mode",
+    "fr": "Mode opérationnel"
   },
   "uiComponent": "picker",
   "insights": true,
@@ -12,31 +13,36 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat Room"
+        "en": "Heat room",
+        "fr": "Chauffer la pièce"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat Flow"
+        "en": "Heat flow",
+        "fr": "Flux de chauffage"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Curve"
+        "en": "Curve",
+        "fr": "Courbe"
       }
     },
     {
       "id": "3",
       "title": {
-        "en": "Cool Room"
+        "en": "Cool room",
+        "fr": "Refroidir la pièce"
       }
     },
     {
       "id": "4",
       "title": {
-        "en": "Cool Flow"
+        "en": "Cool flow",
+        "fr": "Flux de refroidissement"
       }
     }
   ]

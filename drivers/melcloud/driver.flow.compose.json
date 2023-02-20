@@ -3,14 +3,15 @@
     {
       "id": "fan_power_changed",
       "title": {
-        "en": "Fan Speed changed"
+        "en": "Fan speed has changed",
+        "fr": "La vitesse du ventilateur a changé"
       },
       "tokens": [
         {
           "name": "fan_power",
           "type": "number",
           "title": {
-            "en": "Fan Speed"
+            "en": "Fan speed"
           },
           "example": 5
         }
@@ -19,17 +20,20 @@
     {
       "id": "horizontal_changed",
       "title": {
-        "en": "Horizontal Vane Direction changed"
+        "en": "Horizontal vane direction has changed",
+        "fr": "La direction des ailettes horizontales a changé"
       },
       "tokens": [
         {
           "name": "horizontal",
           "type": "string",
           "title": {
-            "en": "Horizontal Vane Direction"
+            "en": "Horizontal vane direction",
+            "fr": "Direction des ailettes horizontales"
           },
           "example": {
-            "en": "Swing"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         }
       ]
@@ -37,17 +41,20 @@
     {
       "id": "operation_mode_changed",
       "title": {
-        "en": "Full Thermostat Mode changed"
+        "en": "Operation mode has changed",
+        "fr": "Le mode opérationnel a changé"
       },
       "tokens": [
         {
           "name": "operation_mode",
           "type": "string",
           "title": {
-            "en": "Full Thermostat Mode"
+            "en": "Operation mode",
+            "fr": "Mode opérationnel"
           },
           "example": {
-            "en": "Auto"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         }
       ]
@@ -55,17 +62,20 @@
     {
       "id": "vertical_changed",
       "title": {
-        "en": "Vertical Vane Direction changed"
+        "en": "Vertical vane direction has changed",
+        "fr": "La direction des ailettes verticales a changé"
       },
       "tokens": [
         {
           "name": "vertical",
           "type": "string",
           "title": {
-            "en": "Vertical Vane Direction"
+            "en": "Vertical vane direction",
+            "fr": "Direction des ailettes verticales"
           },
           "example": {
-            "en": "Auto"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         }
       ]
@@ -75,10 +85,12 @@
     {
       "id": "fan_power_condition",
       "title": {
-        "en": "Fan Speed !{{is|isn't}}..."
+        "en": "Fan speed !{{is|isn't}}...",
+        "fr": "La vitesse du ventilateur !{{est|n'est pas}}..."
       },
       "titleFormatted": {
-        "en": "Fan Speed !{{is|isn't}} [[fan_power]]"
+        "en": "Fan speed !{{is|isn't}} [[fan_power]]",
+        "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]"
       },
       "args": [
         {
@@ -88,37 +100,43 @@
             {
               "id": "0",
               "label": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "Very Slow"
+                "en": "Very slow",
+                "fr": "Très lente"
               }
             },
             {
               "id": "2",
               "label": {
-                "en": "Slow"
+                "en": "Slow",
+                "fr": "Lente"
               }
             },
             {
               "id": "3",
               "label": {
-                "en": "Medium"
+                "en": "Medium",
+                "fr": "Moyenne"
               }
             },
             {
               "id": "4",
               "label": {
-                "en": "High"
+                "en": "Fast",
+                "fr": "Rapide"
               }
             },
             {
               "id": "5",
               "label": {
-                "en": "Very High"
+                "en": "Very fast",
+                "fr": "Très rapide"
               }
             }
           ]
@@ -128,10 +146,12 @@
     {
       "id": "horizontal_condition",
       "title": {
-        "en": "Horizontal Vane Direction !{{is|isn't}}..."
+        "en": "Horizontal vane direction !{{is|isn't}}...",
+        "fr": "La direction des ailettes horizontales !{{est|n'est pas}}..."
       },
       "titleFormatted": {
-        "en": "Horizontal Vane Direction !{{is|isn't}} [[horizontal]]"
+        "en": "Horizontal vane direction !{{is|isn't}} [[horizontal]]",
+        "fr": "La direction des ailettes horizontales !{{est|n'est pas}} [[horizontal]]"
       },
       "args": [
         {
@@ -141,49 +161,57 @@
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "left",
               "title": {
-                "en": "Left"
+                "en": "Far-left",
+                "fr": "Tout à gauche"
               }
             },
             {
               "id": "middleleft",
               "title": {
-                "en": "Middle Left"
+                "en": "Mid-left",
+                "fr": "Milieu gauche"
               }
             },
             {
               "id": "middle",
               "title": {
-                "en": "Middle"
+                "en": "Center",
+                "fr": "Centre"
               }
             },
             {
               "id": "middleright",
               "title": {
-                "en": "Middle Right"
+                "en": "Mid-right",
+                "fr": "Milieu droit"
               }
             },
             {
               "id": "right",
               "title": {
-                "en": "Right"
+                "en": "Far-right",
+                "fr": "Tout à droite"
               }
             },
             {
               "id": "split",
               "title": {
-                "en": "Split"
+                "en": "Split",
+                "fr": "Dissociée"
               }
             },
             {
               "id": "swing",
               "title": {
-                "en": "Swing"
+                "en": "Swing",
+                "fr": "Balayage"
               }
             }
           ]
@@ -193,10 +221,12 @@
     {
       "id": "operation_mode_condition",
       "title": {
-        "en": "Full Thermostat Mode !{{is|isn't}}..."
+        "en": "Operation mode !{{is|isn't}}...",
+        "fr": "Le mode opérationnel !{{est|n'est pas}}..."
       },
       "titleFormatted": {
-        "en": "Full Thermostat Mode !{{is|isn't}} [[operation_mode]]"
+        "en": "Operation mode !{{is|isn't}} [[operation_mode]]",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]"
       },
       "args": [
         {
@@ -206,31 +236,36 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat"
+                "en": "Heat",
+                "fr": "Chauffage"
               }
             },
             {
               "id": "dry",
               "title": {
-                "en": "Dry"
+                "en": "Dry",
+                "fr": "Séchage"
               }
             },
             {
               "id": "cool",
               "title": {
-                "en": "Cool"
+                "en": "Cool",
+                "fr": "Refroidissement"
               }
             },
             {
               "id": "fan",
               "title": {
-                "en": "Fan"
+                "en": "Fan",
+                "fr": "Ventilation"
               }
             },
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             }
           ]
@@ -240,10 +275,12 @@
     {
       "id": "vertical_condition",
       "title": {
-        "en": "Vertical Vane Direction !{{is|isn't}}..."
+        "en": "Vertical vane direction !{{is|isn't}}...",
+        "fr": "La direction des ailettes verticales !{{est|n'est pas}}..."
       },
       "titleFormatted": {
-        "en": "Vertical Vane Direction !{{is|isn't}} [[vertical]]"
+        "en": "Vertical vane direction !{{is|isn't}} [[vertical]]",
+        "fr": "La direction des ailettes verticales !{{est|n'est pas}} [[vertical]]"
       },
       "args": [
         {
@@ -253,43 +290,50 @@
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "top",
               "title": {
-                "en": "Top"
+                "en": "High",
+                "fr": "Élevée"
               }
             },
             {
               "id": "middletop",
               "title": {
-                "en": "Middle Top"
+                "en": "Upper-mid",
+                "fr": "Milieu supérieur"
               }
             },
             {
               "id": "middle",
               "title": {
-                "en": "Middle"
+                "en": "Middle",
+                "fr": "Milieu"
               }
             },
             {
               "id": "middlebottom",
               "title": {
-                "en": "Middle Bottom"
+                "en": "Lower-mid",
+                "fr": "Milieu inférieur"
               }
             },
             {
               "id": "bottom",
               "title": {
-                "en": "Bottom"
+                "en": "Low",
+                "fr": "Bas"
               }
             },
             {
               "id": "swing",
               "title": {
-                "en": "Swing"
+                "en": "Swing",
+                "fr": "Balayage"
               }
             }
           ]
@@ -301,10 +345,12 @@
     {
       "id": "fan_power_action",
       "title": {
-        "en": "Set Fan Speed to..."
+        "en": "Set fan speed to...",
+        "fr": "Définir la vitesse du ventilateur à..."
       },
       "titleFormatted": {
-        "en": "Set Fan Speed to [[fan_power]]"
+        "en": "Set fan speed to [[fan_power]]",
+        "fr": "Définir la vitesse du ventilateur à [[fan_power]]"
       },
       "args": [
         {
@@ -314,37 +360,43 @@
             {
               "id": "0",
               "label": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "1",
               "label": {
-                "en": "Very Slow"
+                "en": "Very slow",
+                "fr": "Très lent"
               }
             },
             {
               "id": "2",
               "label": {
-                "en": "Slow"
+                "en": "Slow",
+                "fr": "Lent"
               }
             },
             {
               "id": "3",
               "label": {
-                "en": "Medium"
+                "en": "Medium",
+                "fr": "Moyen"
               }
             },
             {
               "id": "4",
               "label": {
-                "en": "High"
+                "en": "Fast",
+                "fr": "Rapide"
               }
             },
             {
               "id": "5",
               "label": {
-                "en": "Very High"
+                "en": "Very fast",
+                "fr": "Très rapide"
               }
             }
           ]
@@ -354,10 +406,12 @@
     {
       "id": "horizontal_action",
       "title": {
-        "en": "Set Horizontal Vane Direction to..."
+        "en": "Set horizontal vane direction to...",
+        "fr": "Définir la direction des ailettes horizontales à..."
       },
       "titleFormatted": {
-        "en": "Set Horizontal Vane Direction to [[horizontal]]"
+        "en": "Set horizontal vane direction to [[horizontal]]",
+        "fr": "Définir la direction des ailettes horizontales à [[horizontal]]"
       },
       "args": [
         {
@@ -367,49 +421,57 @@
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "left",
               "title": {
-                "en": "Left"
+                "en": "Far-left",
+                "fr": "Tout à gauche"
               }
             },
             {
               "id": "middleleft",
               "title": {
-                "en": "Middle Left"
+                "en": "Mid-left",
+                "fr": "Milieu gauche"
               }
             },
             {
               "id": "middle",
               "title": {
-                "en": "Middle"
+                "en": "Center",
+                "fr": "Centre"
               }
             },
             {
               "id": "middleright",
               "title": {
-                "en": "Middle Right"
+                "en": "Mid-right",
+                "fr": "Milieu droit"
               }
             },
             {
               "id": "right",
               "title": {
-                "en": "Right"
+                "en": "Far-right",
+                "fr": "Tout à droite"
               }
             },
             {
               "id": "split",
               "title": {
-                "en": "Split"
+                "en": "Split",
+                "fr": "Dissociée"
               }
             },
             {
               "id": "swing",
               "title": {
-                "en": "Swing"
+                "en": "Swing",
+                "fr": "Balayage"
               }
             }
           ]
@@ -419,10 +481,12 @@
     {
       "id": "operation_mode_action",
       "title": {
-        "en": "Set Full Thermostat Mode to..."
+        "en": "Set operation mode to...",
+        "fr": "Définir le mode opérationnel à..."
       },
       "titleFormatted": {
-        "en": "Set Full Thermostat Mode to [[operation_mode]]"
+        "en": "Set operation mode to [[operation_mode]]",
+        "fr": "Définir le mode opérationnel à [[operation_mode]]"
       },
       "args": [
         {
@@ -432,31 +496,36 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat"
+                "en": "Heat",
+                "fr": "Chauffage"
               }
             },
             {
               "id": "dry",
               "title": {
-                "en": "Dry"
+                "en": "Dry",
+                "fr": "Séchage"
               }
             },
             {
               "id": "cool",
               "title": {
-                "en": "Cool"
+                "en": "Cool",
+                "fr": "Refroidissement"
               }
             },
             {
               "id": "fan",
               "title": {
-                "en": "Fan"
+                "en": "Fan",
+                "fr": "Ventilateur"
               }
             },
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Auto",
+                "fr": "Automatique"
               }
             }
           ]
@@ -466,10 +535,12 @@
     {
       "id": "vertical_action",
       "title": {
-        "en": "Set Vertical Vane Direction to..."
+        "en": "Set vertical vane direction to...",
+        "fr": "Définir la direction des ailettes verticales à..."
       },
       "titleFormatted": {
-        "en": "Set Vertical Vane Direction to [[vertical]]"
+        "en": "Set vertical vane direction to [[vertical]]",
+        "fr": "Définir la direction des ailettes verticales à [[vertical]]"
       },
       "args": [
         {
@@ -479,43 +550,50 @@
             {
               "id": "auto",
               "title": {
-                "en": "Auto"
+                "en": "Automatic",
+                "fr": "Automatique"
               }
             },
             {
               "id": "top",
               "title": {
-                "en": "Top"
+                "en": "High",
+                "fr": "Élevée"
               }
             },
             {
               "id": "middletop",
               "title": {
-                "en": "Middle Top"
+                "en": "Upper-mid",
+                "fr": "Milieu supérieur"
               }
             },
             {
               "id": "middle",
               "title": {
-                "en": "Middle"
+                "en": "Mid",
+                "fr": "Milieu"
               }
             },
             {
               "id": "middlebottom",
               "title": {
-                "en": "Middle Bottom"
+                "en": "Lower-mid",
+                "fr": "Milieu inférieur"
               }
             },
             {
               "id": "bottom",
               "title": {
-                "en": "Bottom"
+                "en": "Low",
+                "fr": "Bas"
               }
             },
             {
               "id": "swing",
               "title": {
-                "en": "Swing"
+                "en": "Swing",
+                "fr": "Balayage"
               }
             }
           ]

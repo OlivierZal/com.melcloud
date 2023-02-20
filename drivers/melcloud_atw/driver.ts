@@ -56,6 +56,43 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     ]
     this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
+    this.homey.flow
+      .getConditionCard('operation_mode_state_condition')
+      .registerRunListener(
+        (args: {
+          device: MELCloudDeviceAtw
+          operation_mode_state: string
+        }): boolean =>
+          args.operation_mode_state ===
+          args.device.getCapabilityValue('operation_mode_state')
+      )
+
+    const booleanCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
+      this.manifest.capabilities.filter(
+        (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
+          capability.startsWith('alarm_generic.') ||
+          capability.startsWith('onoff.')
+      )
+    for (const capability of booleanCapabilities) {
+      this.homey.flow
+        .getConditionCard(`${capability}_condition`)
+        .registerRunListener((args: { device: MELCloudDeviceAtw }): boolean =>
+          args.device.getCapabilityValue(capability)
+        )
+      if (capability.startsWith('onoff')) {
+        this.homey.flow
+          .getActionCard(`${capability}_action`)
+          .registerRunListener(
+            async (args: {
+              device: MELCloudDeviceAtw
+              onoff: 'true' | 'false'
+            }): Promise<void> => {
+              await args.device.onCapability(capability, args.onoff === 'true')
+            }
+          )
+      }
+    }
+
     const operationModeZoneCapabilities: Array<
       SetCapability<MELCloudDeviceAtw>
     > = this.manifest.capabilities.filter(
@@ -110,28 +147,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         )
     }
 
-    this.homey.flow
-      .getConditionCard('eco_hot_water_condition')
-      .registerRunListener(
-        (args: {
-          device: MELCloudDeviceAtw
-          eco_hot_water: 'true' | 'false'
-        }): boolean =>
-          args.eco_hot_water ===
-          String(args.device.getCapabilityValue('eco_hot_water'))
-      )
-
-    this.homey.flow
-      .getConditionCard('operation_mode_state_condition')
-      .registerRunListener(
-        (args: {
-          device: MELCloudDeviceAtw
-          operation_mode_state: string
-        }): boolean =>
-          args.operation_mode_state ===
-          args.device.getCapabilityValue('operation_mode_state')
-      )
-
+    // Deprecated
     this.homey.flow
       .getConditionCard('onoff_forced_hot_water_condition')
       .registerRunListener(
@@ -156,7 +172,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
         }
       )
 
-    // Deprecated
     this.homey.flow
       .getActionCard('target_temperature_tank_water')
       .registerRunListener(

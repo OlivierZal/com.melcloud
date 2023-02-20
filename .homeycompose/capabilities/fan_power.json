@@ -1,7 +1,8 @@
 {
   "type": "number",
   "title": {
-    "en": "Fan Speed"
+    "en": "Fan speed",
+    "fr": "Vitesse du ventilateur"
   },
   "uiComponent": "slider",
   "insights": true,

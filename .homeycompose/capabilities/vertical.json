@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Vertical Vane Direction"
+    "en": "Vertical vane direction",
+    "fr": "Direction des ailettes verticales"
   },
   "getable": true,
   "setable": true,
@@ -11,43 +12,50 @@
     {
       "id": "auto",
       "title": {
-        "en": "Auto"
+        "en": "Automatic",
+        "fr": "Automatique"
       }
     },
     {
       "id": "top",
       "title": {
-        "en": "Top"
+        "en": "High",
+        "fr": "Élevée"
       }
     },
     {
       "id": "middletop",
       "title": {
-        "en": "Middle Top"
+        "en": "Upper-mid",
+        "fr": "Milieu supérieur"
       }
     },
     {
       "id": "middle",
       "title": {
-        "en": "Middle"
+        "en": "Mid",
+        "fr": "Milieu"
       }
     },
     {
       "id": "middlebottom",
       "title": {
-        "en": "Middle Bottom"
+        "en": "Lower-mid",
+        "fr": "Milieu inférieur"
       }
     },
     {
       "id": "bottom",
       "title": {
-        "en": "Bottom"
+        "en": "Low",
+        "fr": "Bas"
       }
     },
     {
       "id": "swing",
       "title": {
-        "en": "Swing"
+        "en": "Swing",
+        "fr": "Balayage"
       }
     }
   ]

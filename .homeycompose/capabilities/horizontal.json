@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Horizontal Vane Direction"
+    "en": "Horizontal vane direction",
+    "fr": "Direction des ailettes horizontales"
   },
   "getable": true,
   "setable": true,
@@ -11,49 +12,57 @@
     {
       "id": "auto",
       "title": {
-        "en": "Auto"
+        "en": "Automatic",
+        "fr": "Automatique"
       }
     },
     {
       "id": "left",
       "title": {
-        "en": "Left"
+        "en": "Far-left",
+        "fr": "Tout à gauche"
       }
     },
     {
       "id": "middleleft",
       "title": {
-        "en": "Middle Left"
+        "en": "Mid-left",
+        "fr": "Milieu gauche"
       }
     },
     {
       "id": "middle",
       "title": {
-        "en": "Middle"
+        "en": "Center",
+        "fr": "Centre"
       }
     },
     {
       "id": "middleright",
       "title": {
-        "en": "Middle Right"
+        "en": "Mid-right",
+        "fr": "Milieu droit"
       }
     },
     {
       "id": "right",
       "title": {
-        "en": "Right"
+        "en": "Far-right",
+        "fr": "Tout à droite"
       }
     },
     {
       "id": "split",
       "title": {
-        "en": "Split"
+        "en": "Split",
+        "fr": "Dissociée"
       }
     },
     {
       "id": "swing",
       "title": {
-        "en": "Swing"
+        "en": "Swing",
+        "fr": "Balayage"
       }
     }
   ]

@@ -136,7 +136,7 @@ export default class MELCloudApp extends App {
         (device: MELCloudDevice): boolean => device.buildingid === buildingId
       )
       if (!safe && devices.length === 0) {
-        throw new Error(`Building ${buildingId} has no device.`)
+        throw new Error(this.homey.__('building_no_device', { buildingId }))
       }
     }
     return devices
@@ -304,7 +304,7 @@ export default class MELCloudApp extends App {
     buildingId: number
   ): Promise<FrostProtectionData> {
     if (!(buildingId in this.buildings)) {
-      throw new Error(`Building ${buildingId} does not exist.`)
+      throw new Error(this.homey.__('building_not_found', { buildingId }))
     }
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
@@ -334,7 +334,7 @@ export default class MELCloudApp extends App {
     settings: FrostProtectionSettings
   ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
-      throw new Error(`Building ${buildingId} does not exist.`)
+      throw new Error(this.homey.__('building_not_found', { buildingId }))
     }
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
@@ -363,7 +363,7 @@ export default class MELCloudApp extends App {
 
   async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
     if (!(buildingId in this.buildings)) {
-      throw new Error(`Building ${buildingId} does not exist.`)
+      throw new Error(this.homey.__('building_not_found', { buildingId }))
     }
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
@@ -389,13 +389,13 @@ export default class MELCloudApp extends App {
     settings: HolidayModeSettings
   ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
-      throw new Error(`Building ${buildingId} does not exist.`)
+      throw new Error(this.homey.__('building_not_found', { buildingId }))
     }
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
     const { Enabled, StartDate, EndDate } = settings
     if (Enabled && (StartDate === '' || EndDate === '')) {
-      throw new Error('Start Date and/or End Date are missing.')
+      throw new Error(this.homey.__('date_missing'))
     }
     const utcStartDate: DateTime | null = Enabled
       ? DateTime.fromISO(StartDate).toUTC()

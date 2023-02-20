@@ -4,23 +4,38 @@
   "sdk": 3,
   "brandColor": "#ed0c13",
   "name": {
-    "en": "MELCloud"
+    "en": "MELCloud",
+    "fr": "MELCloud"
   },
   "description": {
-    "en": "Take control of MELCloud devices"
+    "en": "Take control of your heat pumps",
+    "fr": "Prenez le contrôle de vos pompes à chaleur"
   },
   "category": [
     "climate"
   ],
-  "version": "10.0.13",
+  "version": "11.0.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
       "air conditioner",
+      "air conditioning",
       "air-to-air",
       "air-to-water",
+      "conditioned air",
       "ecodan",
       "heat pump",
+      "melcloud",
+      "mitsubishi"
+    ],
+    "fr": [
+      "climatiseur",
+      "climatisation",
+      "air-air",
+      "air-eau",
+      "air conditionné",
+      "ecodan",
+      "pompe à chaleur",
       "melcloud",
       "mitsubishi"
     ]
@@ -89,14 +104,15 @@
       {
         "id": "fan_power_changed",
         "title": {
-          "en": "Fan Speed changed"
+          "en": "Fan speed has changed",
+          "fr": "La vitesse du ventilateur a changé"
         },
         "tokens": [
           {
             "name": "fan_power",
             "type": "number",
             "title": {
-              "en": "Fan Speed"
+              "en": "Fan speed"
             },
             "example": 5
           }
@@ -112,17 +128,20 @@
       {
         "id": "horizontal_changed",
         "title": {
-          "en": "Horizontal Vane Direction changed"
+          "en": "Horizontal vane direction has changed",
+          "fr": "La direction des ailettes horizontales a changé"
         },
         "tokens": [
           {
             "name": "horizontal",
             "type": "string",
             "title": {
-              "en": "Horizontal Vane Direction"
+              "en": "Horizontal vane direction",
+              "fr": "Direction des ailettes horizontales"
             },
             "example": {
-              "en": "Swing"
+              "en": "Automatic",
+              "fr": "Automatique"
             }
           }
         ],
@@ -137,17 +156,20 @@
       {
         "id": "operation_mode_changed",
         "title": {
-          "en": "Full Thermostat Mode changed"
+          "en": "Operation mode has changed",
+          "fr": "Le mode opérationnel a changé"
         },
         "tokens": [
           {
             "name": "operation_mode",
             "type": "string",
             "title": {
-              "en": "Full Thermostat Mode"
+              "en": "Operation mode",
+              "fr": "Mode opérationnel"
             },
             "example": {
-              "en": "Auto"
+              "en": "Automatic",
+              "fr": "Automatique"
             }
           }
         ],
@@ -162,17 +184,20 @@
       {
         "id": "vertical_changed",
         "title": {
-          "en": "Vertical Vane Direction changed"
+          "en": "Vertical vane direction has changed",
+          "fr": "La direction des ailettes verticales a changé"
         },
         "tokens": [
           {
             "name": "vertical",
             "type": "string",
             "title": {
-              "en": "Vertical Vane Direction"
+              "en": "Vertical vane direction",
+              "fr": "Direction des ailettes verticales"
             },
             "example": {
-              "en": "Auto"
+              "en": "Automatic",
+              "fr": "Automatique"
             }
           }
         ],
@@ -363,7 +388,8 @@
       {
         "id": "alarm_generic.booster_heater1_false",
         "title": {
-          "en": "Booster Heater 1 turned Off"
+          "en": "Booster heater 1 turned off",
+          "fr": "Le chauffage d'appoint 1 s'est désactivé"
         },
         "args": [
           {
@@ -376,7 +402,8 @@
       {
         "id": "alarm_generic.booster_heater1_true",
         "title": {
-          "en": "Booster Heater 1 turned On"
+          "en": "Booster heater 1 turned on",
+          "fr": "Le chauffage d'appoint 1 s'est activé"
         },
         "args": [
           {
@@ -389,7 +416,8 @@
       {
         "id": "alarm_generic.booster_heater2_false",
         "title": {
-          "en": "Booster Heater 2 turned Off"
+          "en": "Booster heater 2 turned off",
+          "fr": "Le chauffage d'appoint 2 s'est désactivé"
         },
         "args": [
           {
@@ -402,7 +430,8 @@
       {
         "id": "alarm_generic.booster_heater2_true",
         "title": {
-          "en": "Booster Heater 2 turned On"
+          "en": "Booster heater 2 turned on",
+          "fr": "Le chauffage d'appoint 2 s'est activé"
         },
         "args": [
           {
@@ -415,7 +444,8 @@
       {
         "id": "alarm_generic.booster_heater2_plus_false",
         "title": {
-          "en": "Booster Heater 2 Plus turned Off"
+          "en": "Booster heater 2+ turned off",
+          "fr": "Le chauffage d'appoint 2+ s'est désactivé"
         },
         "args": [
           {
@@ -428,7 +458,8 @@
       {
         "id": "alarm_generic.booster_heater2_plus_true",
         "title": {
-          "en": "Booster Heater 2 Plus turned On"
+          "en": "Booster heater 2+ turned on",
+          "fr": "Le chauffage d'appoint 2+ s'est activé"
         },
         "args": [
           {
@@ -441,7 +472,8 @@
       {
         "id": "alarm_generic.defrost_mode_false",
         "title": {
-          "en": "Defrost Mode turned Off"
+          "en": "Defrost mode turned off",
+          "fr": "Le mode dégivrage s'est désactivé"
         },
         "args": [
           {
@@ -454,7 +486,36 @@
       {
         "id": "alarm_generic.defrost_mode_true",
         "title": {
-          "en": "Defrost Mode turned On"
+          "en": "Defrost mode turned on",
+          "fr": "Le mode dégivrage s'est activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.eco_hot_water_false",
+        "title": {
+          "en": "Eco hot water turned off",
+          "fr": "L'eau chaude éco s'est désactivée"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.eco_hot_water_true",
+        "title": {
+          "en": "Eco hot water turned on",
+          "fr": "L'eau chaude éco s'est activée"
         },
         "args": [
           {
@@ -467,7 +528,8 @@
       {
         "id": "alarm_generic.immersion_heater_false",
         "title": {
-          "en": "Immersion Heater turned Off"
+          "en": "Immersion heater turned off",
+          "fr": "Le chauffage par immersion s'est désactivé"
         },
         "args": [
           {
@@ -480,33 +542,8 @@
       {
         "id": "alarm_generic.immersion_heater_true",
         "title": {
-          "en": "Immersion Heater turned On"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
-      },
-      {
-        "id": "eco_hot_water_false",
-        "title": {
-          "en": "Eco Hot Water turned Off"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
-      },
-      {
-        "id": "eco_hot_water_true",
-        "title": {
-          "en": "Eco Hot Water turned On"
+          "en": "Immersion heater turned on",
+          "fr": "Le chauffage par immersion s'est activé"
         },
         "args": [
           {
@@ -519,7 +556,8 @@
       {
         "id": "onoff.forced_hot_water_false",
         "title": {
-          "en": "Forced Hot Water turned Off"
+          "en": "Forced hot water turned off",
+          "fr": "Eau chaude forcée désactivée"
         },
         "args": [
           {
@@ -532,7 +570,8 @@
       {
         "id": "onoff.forced_hot_water_true",
         "title": {
-          "en": "Forced Hot Water turned On"
+          "en": "Forced hot water turned on",
+          "fr": "Eau chaude forcée activée"
         },
         "args": [
           {
@@ -545,17 +584,20 @@
       {
         "id": "operation_mode_state_changed",
         "title": {
-          "en": "Operation Mode changed"
+          "en": "Operation mode has changed",
+          "fr": "Le mode opérationnel a changé"
         },
         "tokens": [
           {
             "name": "operation_mode_state",
             "type": "string",
             "title": {
-              "en": "Operation Mode"
+              "en": "Operation mode",
+              "fr": "Mode opérationnel"
             },
             "example": {
-              "en": "Heating"
+              "en": "Heating",
+              "fr": "Chauffage"
             }
           }
         ],
@@ -570,17 +612,20 @@
       {
         "id": "operation_mode_zone.zone1_changed",
         "title": {
-          "en": "Zone 1 Operation Mode changed"
+          "en": "Operation mode has changed",
+          "fr": "Le mode opérationnel a changé"
         },
         "tokens": [
           {
             "name": "operation_mode_zone.zone1",
             "type": "string",
             "title": {
-              "en": "Zone 1 Operation Mode"
+              "en": "Operation mode",
+              "fr": "Mode opérationnel"
             },
             "example": {
-              "en": "Heat Room"
+              "en": "Heat room",
+              "fr": "Chauffer la pièce"
             }
           }
         ],
@@ -595,17 +640,20 @@
       {
         "id": "operation_mode_zone.zone2_changed",
         "title": {
-          "en": "Zone 2 Operation Mode changed"
+          "en": "Operation mode - zone 2 has changed",
+          "fr": "Le mode opérationnel - zone 2 a changé"
         },
         "tokens": [
           {
             "name": "operation_mode_zone.zone2",
             "type": "string",
             "title": {
-              "en": "Zone 2 Operation Mode"
+              "en": "Operation mode - zone 2",
+              "fr": "Mode opérationnel - zone 2"
             },
             "example": {
-              "en": "Heat Room"
+              "en": "Heat room",
+              "fr": "Chauffer la pièce"
             }
           }
         ],
@@ -620,17 +668,20 @@
       {
         "id": "operation_mode_zone_with_cool.zone1_changed",
         "title": {
-          "en": "Zone 1 Operation Mode changed"
+          "en": "Operation mode has changed",
+          "fr": "Le mode opérationnel a changé"
         },
         "tokens": [
           {
             "name": "operation_mode_zone_with_cool.zone1",
             "type": "string",
             "title": {
-              "en": "Zone 1 Operation Mode"
+              "en": "Operation mode",
+              "fr": "Mode opérationnel"
             },
             "example": {
-              "en": "Heat Room"
+              "en": "Heat room",
+              "fr": "Chauffer la pièce"
             }
           }
         ],
@@ -645,17 +696,20 @@
       {
         "id": "operation_mode_zone_with_cool.zone2_changed",
         "title": {
-          "en": "Zone 2 Operation Mode changed"
+          "en": "Operation mode - zone 2 has changed",
+          "fr": "Le mode opérationnel - zone 2 a changé"
         },
         "tokens": [
           {
             "name": "operation_mode_zone_with_cool.zone2",
             "type": "string",
             "title": {
-              "en": "Zone 2 Operation Mode"
+              "en": "Operation mode - zone 2",
+              "fr": "Mode opérationnel - zone 2"
             },
             "example": {
-              "en": "Heat Room"
+              "en": "Heat room",
+              "fr": "Chauffer la pièce"
             }
           }
         ],
@@ -672,10 +726,12 @@
       {
         "id": "fan_power_condition",
         "title": {
-          "en": "Fan Speed !{{is|isn't}}..."
+          "en": "Fan speed !{{is|isn't}}...",
+          "fr": "La vitesse du ventilateur !{{est|n'est pas}}..."
         },
         "titleFormatted": {
-          "en": "Fan Speed !{{is|isn't}} [[fan_power]]"
+          "en": "Fan speed !{{is|isn't}} [[fan_power]]",
+          "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]"
         },
         "args": [
           {
@@ -690,37 +746,43 @@
               {
                 "id": "0",
                 "label": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Very Slow"
+                  "en": "Very slow",
+                  "fr": "Très lente"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Slow"
+                  "en": "Slow",
+                  "fr": "Lente"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Medium"
+                  "en": "Medium",
+                  "fr": "Moyenne"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "High"
+                  "en": "Fast",
+                  "fr": "Rapide"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Very High"
+                  "en": "Very fast",
+                  "fr": "Très rapide"
                 }
               }
             ]
@@ -730,10 +792,12 @@
       {
         "id": "horizontal_condition",
         "title": {
-          "en": "Horizontal Vane Direction !{{is|isn't}}..."
+          "en": "Horizontal vane direction !{{is|isn't}}...",
+          "fr": "La direction des ailettes horizontales !{{est|n'est pas}}..."
         },
         "titleFormatted": {
-          "en": "Horizontal Vane Direction !{{is|isn't}} [[horizontal]]"
+          "en": "Horizontal vane direction !{{is|isn't}} [[horizontal]]",
+          "fr": "La direction des ailettes horizontales !{{est|n'est pas}} [[horizontal]]"
         },
         "args": [
           {
@@ -748,49 +812,57 @@
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "left",
                 "title": {
-                  "en": "Left"
+                  "en": "Far-left",
+                  "fr": "Tout à gauche"
                 }
               },
               {
                 "id": "middleleft",
                 "title": {
-                  "en": "Middle Left"
+                  "en": "Mid-left",
+                  "fr": "Milieu gauche"
                 }
               },
               {
                 "id": "middle",
                 "title": {
-                  "en": "Middle"
+                  "en": "Center",
+                  "fr": "Centre"
                 }
               },
               {
                 "id": "middleright",
                 "title": {
-                  "en": "Middle Right"
+                  "en": "Mid-right",
+                  "fr": "Milieu droit"
                 }
               },
               {
                 "id": "right",
                 "title": {
-                  "en": "Right"
+                  "en": "Far-right",
+                  "fr": "Tout à droite"
                 }
               },
               {
                 "id": "split",
                 "title": {
-                  "en": "Split"
+                  "en": "Split",
+                  "fr": "Dissociée"
                 }
               },
               {
                 "id": "swing",
                 "title": {
-                  "en": "Swing"
+                  "en": "Swing",
+                  "fr": "Balayage"
                 }
               }
             ]
@@ -800,10 +872,12 @@
       {
         "id": "operation_mode_condition",
         "title": {
-          "en": "Full Thermostat Mode !{{is|isn't}}..."
+          "en": "Operation mode !{{is|isn't}}...",
+          "fr": "Le mode opérationnel !{{est|n'est pas}}..."
         },
         "titleFormatted": {
-          "en": "Full Thermostat Mode !{{is|isn't}} [[operation_mode]]"
+          "en": "Operation mode !{{is|isn't}} [[operation_mode]]",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]"
         },
         "args": [
           {
@@ -818,31 +892,36 @@
               {
                 "id": "heat",
                 "title": {
-                  "en": "Heat"
+                  "en": "Heat",
+                  "fr": "Chauffage"
                 }
               },
               {
                 "id": "dry",
                 "title": {
-                  "en": "Dry"
+                  "en": "Dry",
+                  "fr": "Séchage"
                 }
               },
               {
                 "id": "cool",
                 "title": {
-                  "en": "Cool"
+                  "en": "Cool",
+                  "fr": "Refroidissement"
                 }
               },
               {
                 "id": "fan",
                 "title": {
-                  "en": "Fan"
+                  "en": "Fan",
+                  "fr": "Ventilation"
                 }
               },
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               }
             ]
@@ -852,10 +931,12 @@
       {
         "id": "vertical_condition",
         "title": {
-          "en": "Vertical Vane Direction !{{is|isn't}}..."
+          "en": "Vertical vane direction !{{is|isn't}}...",
+          "fr": "La direction des ailettes verticales !{{est|n'est pas}}..."
         },
         "titleFormatted": {
-          "en": "Vertical Vane Direction !{{is|isn't}} [[vertical]]"
+          "en": "Vertical vane direction !{{is|isn't}} [[vertical]]",
+          "fr": "La direction des ailettes verticales !{{est|n'est pas}} [[vertical]]"
         },
         "args": [
           {
@@ -870,43 +951,50 @@
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "top",
                 "title": {
-                  "en": "Top"
+                  "en": "High",
+                  "fr": "Élevée"
                 }
               },
               {
                 "id": "middletop",
                 "title": {
-                  "en": "Middle Top"
+                  "en": "Upper-mid",
+                  "fr": "Milieu supérieur"
                 }
               },
               {
                 "id": "middle",
                 "title": {
-                  "en": "Middle"
+                  "en": "Middle",
+                  "fr": "Milieu"
                 }
               },
               {
                 "id": "middlebottom",
                 "title": {
-                  "en": "Middle Bottom"
+                  "en": "Lower-mid",
+                  "fr": "Milieu inférieur"
                 }
               },
               {
                 "id": "bottom",
                 "title": {
-                  "en": "Bottom"
+                  "en": "Low",
+                  "fr": "Bas"
                 }
               },
               {
                 "id": "swing",
                 "title": {
-                  "en": "Swing"
+                  "en": "Swing",
+                  "fr": "Balayage"
                 }
               }
             ]
@@ -1179,12 +1267,112 @@
         ]
       },
       {
-        "id": "eco_hot_water_condition",
+        "id": "alarm_generic.booster_heater1_condition",
         "title": {
-          "en": "Eco Hot Water !{{is|isn't}}..."
+          "en": "Booster heater 1 !{{is|is not}} turned on",
+          "fr": "Le chauffage d'appoint 1 !{{est|n'est pas}} activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_condition",
+        "title": {
+          "en": "Booster heater 2 !{{is|is not}} turned on",
+          "fr": "Le chauffage d'appoint 2 !{{est|n'est pas}} activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.booster_heater2_plus_condition",
+        "title": {
+          "en": "Booster heater 2+ !{{is|is not}} turned on",
+          "fr": "Le chauffage d'appoint 2+ !{{est|n'est pas}} activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.defrost_mode_condition",
+        "title": {
+          "en": "Defrost mode !{{is|is not}} turned on",
+          "fr": "Le mode dégivrage !{{est|n'est pas}} activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.eco_hot_water_condition",
+        "title": {
+          "en": "Eco hot water !{{is|is not}} turned on",
+          "fr": "L'eau chaude forcée !{{est|n'est pas}} activée"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "alarm_generic.immersion_heater_condition",
+        "title": {
+          "en": "Immersion heater !{{is|is not}} turned on",
+          "fr": "Le chauffage par immersion !{{est|n'est pas}} activé"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "onoff.forced_hot_water_condition",
+        "title": {
+          "en": "Forced hot water !{{is|is not}} turned on",
+          "fr": "L'eau chaude forcée !{{est|n'est pas}} activée"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_state_condition",
+        "title": {
+          "en": "Operation mode !{{is|is not}}...",
+          "fr": "Le mode opérationnel !{{est|n'est pas}}..."
         },
         "titleFormatted": {
-          "en": "Eco Hot Water !{{is|isn't}} [[eco_hot_water]]"
+          "en": "Operation mode !{{is|is not}} [[operation_mode_state]]",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_state]]"
         },
         "args": [
           {
@@ -1193,19 +1381,264 @@
             "filter": "driver_id=melcloud_atw"
           },
           {
-            "name": "eco_hot_water",
+            "name": "operation_mode_state",
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
+                "id": "idle",
                 "label": {
-                  "en": "On"
+                  "en": "Idle",
+                  "fr": "Inactif"
                 }
               },
               {
-                "id": "false",
+                "id": "dhw",
                 "label": {
-                  "en": "Off"
+                  "en": "Domestic hot water",
+                  "fr": "Eau chaude sanitaire"
+                }
+              },
+              {
+                "id": "heating",
+                "label": {
+                  "en": "Heating",
+                  "fr": "Chauffage"
+                }
+              },
+              {
+                "id": "cooling",
+                "label": {
+                  "en": "Cooling",
+                  "fr": "Refroidissement"
+                }
+              },
+              {
+                "id": "defrost",
+                "label": {
+                  "en": "Defrost",
+                  "fr": "Dégivrage"
+                }
+              },
+              {
+                "id": "standby",
+                "label": {
+                  "en": "Standby",
+                  "fr": "Veille"
+                }
+              },
+              {
+                "id": "legionella",
+                "label": {
+                  "en": "Legionella",
+                  "fr": "Legionella"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_condition",
+        "title": {
+          "en": "Operation mode !{{is|is not}}...",
+          "fr": "Le mode opérationnel !{{est|n'est pas}}..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode !{{is|is not}} [[operation_mode_zone]]",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_condition",
+        "title": {
+          "en": "Operation mode - zone 2 !{{is|is not}}...",
+          "fr": "Le mode opérationnel - zone 2 !{{est|n'est pas}}..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode - zone 2 !{{is|is not}} [[operation_mode_zone]]",
+          "fr": "Le mode opérationnel - zone 2 !{{est|n'est pas}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_with_cool_condition",
+        "title": {
+          "en": "Operation mode !{{is|is not}}...",
+          "fr": "Le mode opérationnel !{{est|n'est pas}}..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode !{{is|is not}} [[operation_mode_zone]]",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool room",
+                  "fr": "Refroidir la pièce"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool flow",
+                  "fr": "Flux de refroidissement"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_with_cool_condition",
+        "title": {
+          "en": "Operation mode - zone 2 !{{is|is not}}...",
+          "fr": "Le mode opérationnel - zone 2 !{{est|n'est pas}}..."
+        },
+        "titleFormatted": {
+          "en": "Operation mode - zone 2 !{{is|is not}} [[operation_mode_zone]]",
+          "fr": "Le mode opérationnel - zone 2 !{{est|n'est pas}} [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool room",
+                  "fr": "Refroidir la pièce"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool flow",
+                  "fr": "Flux de refroidissement"
                 }
               }
             ]
@@ -1214,6 +1647,7 @@
       },
       {
         "id": "onoff_forced_hot_water_condition",
+        "deprecated": true,
         "title": {
           "en": "Forced Hot Water !{{is|isn't}}..."
         },
@@ -1245,264 +1679,18 @@
             ]
           }
         ]
-      },
-      {
-        "id": "operation_mode_state_condition",
-        "title": {
-          "en": "Operation Mode !{{is|isn't}}..."
-        },
-        "titleFormatted": {
-          "en": "Operation Mode !{{is|isn't}} [[operation_mode_state]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "operation_mode_state",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "idle",
-                "label": {
-                  "en": "Idle"
-                }
-              },
-              {
-                "id": "dhw",
-                "label": {
-                  "en": "DHW"
-                }
-              },
-              {
-                "id": "heating",
-                "label": {
-                  "en": "Heating"
-                }
-              },
-              {
-                "id": "cooling",
-                "label": {
-                  "en": "Cooling"
-                }
-              },
-              {
-                "id": "defrost",
-                "label": {
-                  "en": "Defrost"
-                }
-              },
-              {
-                "id": "standby",
-                "label": {
-                  "en": "Standby"
-                }
-              },
-              {
-                "id": "legionella",
-                "label": {
-                  "en": "Legionella"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone1_condition",
-        "title": {
-          "en": "Zone 1 Operation Mode !{{is|isn't}}..."
-        },
-        "titleFormatted": {
-          "en": "Zone 1 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone2_condition",
-        "title": {
-          "en": "Zone 2 Operation Mode !{{is|isn't}}..."
-        },
-        "titleFormatted": {
-          "en": "Zone 2 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone1_with_cool_condition",
-        "title": {
-          "en": "Zone 1 Operation Mode !{{is|isn't}}..."
-        },
-        "titleFormatted": {
-          "en": "Zone 1 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Room"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone2_with_cool_condition",
-        "title": {
-          "en": "Zone 2 Operation Mode !{{is|isn't}}..."
-        },
-        "titleFormatted": {
-          "en": "Zone 2 Operation Mode !{{is|isn't}} [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Room"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
       }
     ],
     "actions": [
       {
         "id": "fan_power_action",
         "title": {
-          "en": "Set Fan Speed to..."
+          "en": "Set fan speed to...",
+          "fr": "Définir la vitesse du ventilateur à..."
         },
         "titleFormatted": {
-          "en": "Set Fan Speed to [[fan_power]]"
+          "en": "Set fan speed to [[fan_power]]",
+          "fr": "Définir la vitesse du ventilateur à [[fan_power]]"
         },
         "args": [
           {
@@ -1517,37 +1705,43 @@
               {
                 "id": "0",
                 "label": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "1",
                 "label": {
-                  "en": "Very Slow"
+                  "en": "Very slow",
+                  "fr": "Très lent"
                 }
               },
               {
                 "id": "2",
                 "label": {
-                  "en": "Slow"
+                  "en": "Slow",
+                  "fr": "Lent"
                 }
               },
               {
                 "id": "3",
                 "label": {
-                  "en": "Medium"
+                  "en": "Medium",
+                  "fr": "Moyen"
                 }
               },
               {
                 "id": "4",
                 "label": {
-                  "en": "High"
+                  "en": "Fast",
+                  "fr": "Rapide"
                 }
               },
               {
                 "id": "5",
                 "label": {
-                  "en": "Very High"
+                  "en": "Very fast",
+                  "fr": "Très rapide"
                 }
               }
             ]
@@ -1557,10 +1751,12 @@
       {
         "id": "horizontal_action",
         "title": {
-          "en": "Set Horizontal Vane Direction to..."
+          "en": "Set horizontal vane direction to...",
+          "fr": "Définir la direction des ailettes horizontales à..."
         },
         "titleFormatted": {
-          "en": "Set Horizontal Vane Direction to [[horizontal]]"
+          "en": "Set horizontal vane direction to [[horizontal]]",
+          "fr": "Définir la direction des ailettes horizontales à [[horizontal]]"
         },
         "args": [
           {
@@ -1575,49 +1771,57 @@
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "left",
                 "title": {
-                  "en": "Left"
+                  "en": "Far-left",
+                  "fr": "Tout à gauche"
                 }
               },
               {
                 "id": "middleleft",
                 "title": {
-                  "en": "Middle Left"
+                  "en": "Mid-left",
+                  "fr": "Milieu gauche"
                 }
               },
               {
                 "id": "middle",
                 "title": {
-                  "en": "Middle"
+                  "en": "Center",
+                  "fr": "Centre"
                 }
               },
               {
                 "id": "middleright",
                 "title": {
-                  "en": "Middle Right"
+                  "en": "Mid-right",
+                  "fr": "Milieu droit"
                 }
               },
               {
                 "id": "right",
                 "title": {
-                  "en": "Right"
+                  "en": "Far-right",
+                  "fr": "Tout à droite"
                 }
               },
               {
                 "id": "split",
                 "title": {
-                  "en": "Split"
+                  "en": "Split",
+                  "fr": "Dissociée"
                 }
               },
               {
                 "id": "swing",
                 "title": {
-                  "en": "Swing"
+                  "en": "Swing",
+                  "fr": "Balayage"
                 }
               }
             ]
@@ -1627,10 +1831,12 @@
       {
         "id": "operation_mode_action",
         "title": {
-          "en": "Set Full Thermostat Mode to..."
+          "en": "Set operation mode to...",
+          "fr": "Définir le mode opérationnel à..."
         },
         "titleFormatted": {
-          "en": "Set Full Thermostat Mode to [[operation_mode]]"
+          "en": "Set operation mode to [[operation_mode]]",
+          "fr": "Définir le mode opérationnel à [[operation_mode]]"
         },
         "args": [
           {
@@ -1645,31 +1851,36 @@
               {
                 "id": "heat",
                 "title": {
-                  "en": "Heat"
+                  "en": "Heat",
+                  "fr": "Chauffage"
                 }
               },
               {
                 "id": "dry",
                 "title": {
-                  "en": "Dry"
+                  "en": "Dry",
+                  "fr": "Séchage"
                 }
               },
               {
                 "id": "cool",
                 "title": {
-                  "en": "Cool"
+                  "en": "Cool",
+                  "fr": "Refroidissement"
                 }
               },
               {
                 "id": "fan",
                 "title": {
-                  "en": "Fan"
+                  "en": "Fan",
+                  "fr": "Ventilateur"
                 }
               },
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Auto",
+                  "fr": "Automatique"
                 }
               }
             ]
@@ -1679,10 +1890,12 @@
       {
         "id": "vertical_action",
         "title": {
-          "en": "Set Vertical Vane Direction to..."
+          "en": "Set vertical vane direction to...",
+          "fr": "Définir la direction des ailettes verticales à..."
         },
         "titleFormatted": {
-          "en": "Set Vertical Vane Direction to [[vertical]]"
+          "en": "Set vertical vane direction to [[vertical]]",
+          "fr": "Définir la direction des ailettes verticales à [[vertical]]"
         },
         "args": [
           {
@@ -1697,43 +1910,50 @@
               {
                 "id": "auto",
                 "title": {
-                  "en": "Auto"
+                  "en": "Automatic",
+                  "fr": "Automatique"
                 }
               },
               {
                 "id": "top",
                 "title": {
-                  "en": "Top"
+                  "en": "High",
+                  "fr": "Élevée"
                 }
               },
               {
                 "id": "middletop",
                 "title": {
-                  "en": "Middle Top"
+                  "en": "Upper-mid",
+                  "fr": "Milieu supérieur"
                 }
               },
               {
                 "id": "middle",
                 "title": {
-                  "en": "Middle"
+                  "en": "Mid",
+                  "fr": "Milieu"
                 }
               },
               {
                 "id": "middlebottom",
                 "title": {
-                  "en": "Middle Bottom"
+                  "en": "Lower-mid",
+                  "fr": "Milieu inférieur"
                 }
               },
               {
                 "id": "bottom",
                 "title": {
-                  "en": "Bottom"
+                  "en": "Low",
+                  "fr": "Bas"
                 }
               },
               {
                 "id": "swing",
                 "title": {
-                  "en": "Swing"
+                  "en": "Swing",
+                  "fr": "Balayage"
                 }
               }
             ]
@@ -1902,7 +2122,398 @@
         ]
       },
       {
+        "id": "onoff.forced_hot_water_action",
+        "title": {
+          "en": "Force hot water or not",
+          "fr": "Forcer ou non l'eau chaude"
+        },
+        "titleFormatted": {
+          "en": "Turn forced hot water [[onoff]]",
+          "fr": "[[onoff]] l'eau chaude forcée"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          },
+          {
+            "name": "onoff",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "on",
+                  "fr": "Activer"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "off",
+                  "fr": "Désactiver"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_action",
+        "title": {
+          "en": "Set operation mode to...",
+          "fr": "Définir le mode opérationnel à..."
+        },
+        "titleFormatted": {
+          "en": "Set operation mode to [[operation_mode_zone]]",
+          "fr": "Définir le mode opérationnel à [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_action",
+        "title": {
+          "en": "Set operation mode - zone 2 to...",
+          "fr": "Définir le mode opérationnel - zone 2 à..."
+        },
+        "titleFormatted": {
+          "en": "Set operation mode - zone 2 to [[operation_mode_zone]]",
+          "fr": "Définir le mode opérationnel - zone 2 à [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone1_with_cool_action",
+        "title": {
+          "en": "Set operation mode to...",
+          "fr": "Définir le mode opérationnel à..."
+        },
+        "titleFormatted": {
+          "en": "Set operation mode to [[operation_mode_zone]]",
+          "fr": "Définir le mode opérationnel à [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool room",
+                  "fr": "Refroidir la pièce"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool flow",
+                  "fr": "Flux de refroidissement"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "operation_mode_zone2_with_cool_action",
+        "title": {
+          "en": "Set operation mode - zone 2 to...",
+          "fr": "Définir le mode opérationnel - zone 2 à..."
+        },
+        "titleFormatted": {
+          "en": "Set operation mode - zone 2 to [[operation_mode_zone]]",
+          "fr": "Définir le mode opérationnel - zone 2 à [[operation_mode_zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+          },
+          {
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Heat room",
+                  "fr": "Chauffer la pièce"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Heat flow",
+                  "fr": "Flux de chauffage"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Curve",
+                  "fr": "Courbe"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Cool room",
+                  "fr": "Refroidir la pièce"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Cool flow",
+                  "fr": "Flux de refroidissement"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_tank_water_action",
+        "title": {
+          "en": "Set the water tank temperature to...",
+          "fr": "Définir la température du réservoir d'eau à..."
+        },
+        "titleFormatted": {
+          "en": "Set the water tank temperature to [[target_temperature]]",
+          "fr": "Définir la température du réservoir d'eau à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 40,
+            "max": 60
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_zone2_action",
+        "title": {
+          "en": "Set the temperature - zone 2 to...",
+          "fr": "Définir la température - zone 2 à..."
+        },
+        "titleFormatted": {
+          "en": "Set the temperature - zone 2 to [[target_temperature]]",
+          "fr": "Définir la température - zone 2 à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 10,
+            "max": 30
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_zone1_flow_cool_action",
+        "title": {
+          "en": "Set the cool flow temperature to...",
+          "fr": "Définir la température du flux de refroidissement à..."
+        },
+        "titleFormatted": {
+          "en": "Set the cool flow temperature to [[target_temperature]]",
+          "fr": "Définir la température du flux de refroidissement à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone1_flow_cool"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 10,
+            "max": 30
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_zone1_flow_heat_action",
+        "title": {
+          "en": "Set the heat flow temperature to...",
+          "fr": "Définir la température du flux de chauffage à..."
+        },
+        "titleFormatted": {
+          "en": "Set the heat flow temperature to [[target_temperature]]",
+          "fr": "Définir la température du flux de chauffage à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 25,
+            "max": 60
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_zone2_flow_cool_action",
+        "title": {
+          "en": "Set the cool flow temperature - zone 2 to...",
+          "fr": "Définir la température du flux de refroidissement - zone 2 à..."
+        },
+        "titleFormatted": {
+          "en": "Set the cool flow temperature - zone 2 to [[target_temperature]]",
+          "fr": "Définir la température du flux de refroidissement - zone 2 à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_cool"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 10,
+            "max": 30
+          }
+        ]
+      },
+      {
+        "id": "target_temperature_zone2_flow_heat_action",
+        "title": {
+          "en": "Set the heat flow temperature - zone 2 to...",
+          "fr": "Définir la température du flux de chauffage - zone 2 à..."
+        },
+        "titleFormatted": {
+          "en": "Set the heat flow temperature - zone 2 to [[target_temperature]]",
+          "fr": "Définir la température du flux de chauffage - zone 2 à [[target_temperature]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_heat"
+          },
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 25,
+            "max": 60
+          }
+        ]
+      },
+      {
         "id": "onoff_forced_hot_water_action",
+        "deprecated": true,
         "title": {
           "en": "Turn Forced Hot Water..."
         },
@@ -1936,190 +2547,6 @@
         ]
       },
       {
-        "id": "operation_mode_zone1_action",
-        "title": {
-          "en": "Set Zone 1 Operation Mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone2_action",
-        "title": {
-          "en": "Set Zone 2 Operation Mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone1_with_cool_action",
-        "title": {
-          "en": "Set Zone 1 Operation Mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 1 Operation Mode to [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Room"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone2_with_cool_action",
-        "title": {
-          "en": "Set Zone 2 Operation Mode to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 2 Operation Mode to [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Heat Room"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Heat Flow"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Curve"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Cool Room"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Cool Flow"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "target_temperature_tank_water",
         "deprecated": true,
         "title": {
@@ -2138,138 +2565,6 @@
             "name": "target_temperature",
             "type": "number",
             "min": 40,
-            "max": 60
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_tank_water_action",
-        "title": {
-          "en": "Set Water Tank Target Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Water Tank Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 40,
-            "max": 60
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone2_action",
-        "title": {
-          "en": "Set Zone 2 Target Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 2 Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 10,
-            "max": 30
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone1_flow_cool_action",
-        "title": {
-          "en": "Set Zone 1 Cool Flow Target Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 1 Cool Flow Target  Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone1_flow_cool"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 10,
-            "max": 30
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone1_flow_heat_action",
-        "title": {
-          "en": "Set Zone 1 Heat Flow Target Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 1 Heat Flow Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 25,
-            "max": 60
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone2_flow_cool_action",
-        "title": {
-          "en": "Set Zone 2 Cool Flow Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 2 Cool Flow Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_cool"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 10,
-            "max": 30
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone2_flow_heat_action",
-        "title": {
-          "en": "Set Zone 2 Heat Flow Target Temperature to..."
-        },
-        "titleFormatted": {
-          "en": "Set Zone 2 Heat Flow Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_heat"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 25,
             "max": 60
           }
         ]
@@ -2321,16 +2616,20 @@
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
-              "en": "Username"
+              "en": "Username",
+              "fr": "Nom d'utilisateur"
             },
             "usernamePlaceholder": {
-              "en": "user@domain.com"
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr"
             },
             "passwordLabel": {
-              "en": "Password"
+              "en": "Password",
+              "fr": "Mot de passe"
             },
             "passwordPlaceholder": {
-              "en": "P4ssw0rd"
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd"
             }
           }
         },
@@ -2353,135 +2652,163 @@
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
-              "en": "Username"
+              "en": "Username",
+              "fr": "Nom d'utilisateur"
             },
             "usernamePlaceholder": {
-              "en": "user@domain.com"
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr"
             },
             "passwordLabel": {
-              "en": "Password"
+              "en": "Password",
+              "fr": "Mot de passe"
             },
             "passwordPlaceholder": {
-              "en": "P4ssw0rd"
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd"
             }
           }
         }
       ],
       "name": {
-        "en": "Air-to-Air Heat Pump"
+        "en": "Air-to-Air Heat Pump",
+        "fr": "Pompe à chaleur air-air"
       },
       "capabilitiesOptions": {
         "measure_power.wifi": {
           "title": {
-            "en": "Wifi Signal Strength"
+            "en": "Wifi signal strength",
+            "fr": "Puissance du signal Wifi"
           },
           "units": {
-            "en": "dBm"
+            "en": "dBm",
+            "fr": "dBm"
           }
         },
         "meter_power.hourly_consumed": {
           "title": {
-            "en": "Hourly Consumption"
+            "en": "Hourly consumption",
+            "fr": "Conso horaire"
           }
         },
         "meter_power.hourly_consumed_auto": {
           "title": {
-            "en": "Hourly Auto Consumption"
+            "en": "Hourly auto consumption",
+            "fr": "Conso horaire en mode auto"
           }
         },
         "meter_power.hourly_consumed_cooling": {
           "title": {
-            "en": "Hourly Cooling Consumption"
+            "en": "Hourly cooling consumption",
+            "fr": "Conso horaire en mode refroidissement"
           }
         },
         "meter_power.hourly_consumed_dry": {
           "title": {
-            "en": "Hourly Dry Consumption"
+            "en": "Hourly dry consumption",
+            "fr": "Conso horaire en mode séchage"
           }
         },
         "meter_power.hourly_consumed_fan": {
           "title": {
-            "en": "Hourly Fan Consumption"
+            "en": "Hourly fan consumption",
+            "fr": "Conso horaire en mode ventilation"
           }
         },
         "meter_power.hourly_consumed_heating": {
           "title": {
-            "en": "Hourly Heating Consumption"
+            "en": "Hourly heating consumption",
+            "fr": "Conso horaire en mode chauffage"
           }
         },
         "meter_power.hourly_consumed_other": {
           "title": {
-            "en": "Hourly Other Consumption"
+            "en": "Hourly other consumption",
+            "fr": "Conso horaire autre"
           }
         },
         "meter_power.daily_consumed": {
           "title": {
-            "en": "Daily Consumption"
+            "en": "Daily consumption",
+            "fr": "Conso quotidienne"
           }
         },
         "meter_power.daily_consumed_auto": {
           "title": {
-            "en": "Daily Auto Consumption"
+            "en": "Daily auto consumption",
+            "fr": "Conso quotidienne en mode auto"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Daily Cooling Consumption"
+            "en": "Daily cooling consumption",
+            "fr": "Conso quotidienne en mode refroidissement"
           }
         },
         "meter_power.daily_consumed_dry": {
           "title": {
-            "en": "Daily Dry Consumption"
+            "en": "Daily dry consumption",
+            "fr": "Conso quotidienne en mode séchage"
           }
         },
         "meter_power.daily_consumed_fan": {
           "title": {
-            "en": "Daily Fan Consumption"
+            "en": "Daily fan consumption",
+            "fr": "Conso quotidienne en mode ventilation"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Daily Heating Consumption"
+            "en": "Daily heating consumption",
+            "fr": "Conso quotidienne en mode chauffage"
           }
         },
         "meter_power.daily_consumed_other": {
           "title": {
-            "en": "Daily Other Consumption"
+            "en": "Daily other consumption",
+            "fr": "Conso quotidienne autre"
           }
         },
         "meter_power.total_consumed": {
           "title": {
-            "en": "Total Consumption"
+            "en": "Total consumption",
+            "fr": "Conso totale"
           }
         },
         "meter_power.total_consumed_auto": {
           "title": {
-            "en": "Total Auto Consumption"
+            "en": "Total auto consumption",
+            "fr": "Conso totale en mode auto"
           }
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total Cooling Consumption"
+            "en": "Total cooling consumption",
+            "fr": "Conso totale en mode refroidissement"
           }
         },
         "meter_power.total_consumed_dry": {
           "title": {
-            "en": "Total Dry Consumption"
+            "en": "Total dry consumption",
+            "fr": "Conso totale en mode séchage"
           }
         },
         "meter_power.total_consumed_fan": {
           "title": {
-            "en": "Total Fan Consumption"
+            "en": "Total fan consumption",
+            "fr": "Conso totale en mode ventilation"
           }
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total Heating Consumption"
+            "en": "Total heating consumption",
+            "fr": "Conso totale en mode chauffage"
           }
         },
         "meter_power.total_consumed_other": {
           "title": {
-            "en": "Total Other Consumption"
+            "en": "Total other consumption",
+            "fr": "Conso totale autre"
           }
         },
         "target_temperature": {
@@ -2489,10 +2816,7 @@
           "max": 38
         },
         "thermostat_mode": {
-          "insights": true,
-          "title": {
-            "en": "HomeKit Thermostat Mode"
-          }
+          "insights": true
         }
       },
       "id": "melcloud",
@@ -2500,44 +2824,62 @@
         {
           "type": "group",
           "label": {
-            "en": "Device Options"
+            "en": "Configuration",
+            "fr": "Configuration"
           },
           "children": [
             {
               "id": "interval",
               "type": "number",
               "label": {
-                "en": "Device Update Frequency"
+                "en": "Refresh frequency",
+                "fr": "Fréquence de rafraîchissement"
               },
               "units": {
-                "en": "minutes"
+                "en": "minutes",
+                "fr": "minutes"
               },
               "value": 5,
               "min": 1,
               "max": 60
-            },
-            {
-              "id": "always_on",
-              "type": "checkbox",
-              "label": {
-                "en": "Disable Power Off from Homey"
-              },
-              "value": false,
-              "hint": "This setting prevents the device from being turned off from Homey, the device can still be turned off manually (from a remote control or directly from the physical device)"
             }
           ]
         },
         {
           "type": "group",
           "label": {
-            "en": "Dashboard Customization"
+            "en": "Options",
+            "fr": "Options"
+          },
+          "children": [
+            {
+              "id": "always_on",
+              "type": "checkbox",
+              "label": {
+                "en": "Disable shutdown from Homey",
+                "fr": "Désactiver l'extinction depuis Homey"
+              },
+              "value": false,
+              "hint": {
+                "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Dashboard",
+            "fr": "Tableau de bord"
           },
           "children": [
             {
               "id": "measure_power.wifi",
               "type": "checkbox",
               "label": {
-                "en": "Wifi Signal Strength"
+                "en": "Wifi signal strength",
+                "fr": "Puissance du signal wifi"
               },
               "value": true
             },
@@ -2545,7 +2887,8 @@
               "id": "meter_power.hourly_consumed",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Consumption"
+                "en": "Hourly consumption",
+                "fr": "Conso horaire"
               },
               "value": true
             },
@@ -2553,7 +2896,8 @@
               "id": "meter_power.hourly_consumed_auto",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Auto Consumption"
+                "en": "Hourly auto consumption",
+                "fr": "Conso horaire mode auto"
               },
               "value": true
             },
@@ -2561,7 +2905,8 @@
               "id": "meter_power.hourly_consumed_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Cooling Consumption"
+                "en": "Hourly cooling consumption",
+                "fr": "Conso horaire refroidissement"
               },
               "value": true
             },
@@ -2569,7 +2914,8 @@
               "id": "meter_power.hourly_consumed_dry",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Dry Consumption"
+                "en": "Hourly dry consumption",
+                "fr": "Conso horaire séchage"
               },
               "value": true
             },
@@ -2577,7 +2923,8 @@
               "id": "meter_power.hourly_consumed_fan",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Fan Consumption"
+                "en": "Hourly fan consumption",
+                "fr": "Conso horaire ventilation"
               },
               "value": true
             },
@@ -2585,7 +2932,8 @@
               "id": "meter_power.hourly_consumed_heating",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Heating Consumption"
+                "en": "Hourly heating consumption",
+                "fr": "Conso horaire chauffage"
               },
               "value": true
             },
@@ -2593,7 +2941,8 @@
               "id": "meter_power.hourly_consumed_other",
               "type": "checkbox",
               "label": {
-                "en": "Hourly Other Consumption"
+                "en": "Hourly other consumption",
+                "fr": "Conso horaire autre"
               },
               "value": true
             },
@@ -2601,7 +2950,8 @@
               "id": "meter_power.daily_consumed",
               "type": "checkbox",
               "label": {
-                "en": "Daily Consumption"
+                "en": "Daily consumption",
+                "fr": "Conso quotidienne"
               },
               "value": true
             },
@@ -2609,7 +2959,8 @@
               "id": "meter_power.daily_consumed_auto",
               "type": "checkbox",
               "label": {
-                "en": "Daily Auto Consumption"
+                "en": "Daily auto consumption",
+                "fr": "Conso quotidienne mode auto"
               },
               "value": true
             },
@@ -2617,7 +2968,8 @@
               "id": "meter_power.daily_consumed_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Daily Cooling Consumption"
+                "en": "Daily cooling consumption",
+                "fr": "Conso quotidienne refroidissement"
               },
               "value": true
             },
@@ -2625,7 +2977,8 @@
               "id": "meter_power.daily_consumed_dry",
               "type": "checkbox",
               "label": {
-                "en": "Daily Dry Consumption"
+                "en": "Daily dry consumption",
+                "fr": "Conso quotidienne séchage"
               },
               "value": true
             },
@@ -2633,7 +2986,8 @@
               "id": "meter_power.daily_consumed_fan",
               "type": "checkbox",
               "label": {
-                "en": "Daily Fan Consumption"
+                "en": "Daily fan consumption",
+                "fr": "Conso quotidienne ventilation"
               },
               "value": true
             },
@@ -2641,7 +2995,8 @@
               "id": "meter_power.daily_consumed_heating",
               "type": "checkbox",
               "label": {
-                "en": "Daily Heating Consumption"
+                "en": "Daily heating consumption",
+                "fr": "Conso quotidienne chauffage"
               },
               "value": true
             },
@@ -2649,7 +3004,8 @@
               "id": "meter_power.daily_consumed_other",
               "type": "checkbox",
               "label": {
-                "en": "Daily Other Consumption"
+                "en": "Daily other consumption",
+                "fr": "Conso quotidienne autre"
               },
               "value": true
             },
@@ -2657,7 +3013,8 @@
               "id": "meter_power.total_consumed",
               "type": "checkbox",
               "label": {
-                "en": "Total Consumption"
+                "en": "Total consumption",
+                "fr": "Conso totale"
               },
               "value": true
             },
@@ -2665,7 +3022,8 @@
               "id": "meter_power.total_consumed_auto",
               "type": "checkbox",
               "label": {
-                "en": "Total Auto Consumption"
+                "en": "Total auto consumption",
+                "fr": "Conso totale mode auto"
               },
               "value": true
             },
@@ -2673,7 +3031,8 @@
               "id": "meter_power.total_consumed_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Total Cooling Consumption"
+                "en": "Total cooling consumption",
+                "fr": "Conso totale refroidissement"
               },
               "value": true
             },
@@ -2681,7 +3040,8 @@
               "id": "meter_power.total_consumed_dry",
               "type": "checkbox",
               "label": {
-                "en": "Total Dry Consumption"
+                "en": "Total dry consumption",
+                "fr": "Conso totale séchage"
               },
               "value": true
             },
@@ -2689,7 +3049,8 @@
               "id": "meter_power.total_consumed_fan",
               "type": "checkbox",
               "label": {
-                "en": "Total Fan Consumption"
+                "en": "Total fan consumption",
+                "fr": "Conso totale ventilation"
               },
               "value": true
             },
@@ -2697,7 +3058,8 @@
               "id": "meter_power.total_consumed_heating",
               "type": "checkbox",
               "label": {
-                "en": "Total Heating Consumption"
+                "en": "Total heating consumption",
+                "fr": "Conso totale chauffage"
               },
               "value": true
             },
@@ -2705,7 +3067,8 @@
               "id": "meter_power.total_consumed_other",
               "type": "checkbox",
               "label": {
-                "en": "Total Other Consumption"
+                "en": "Total other consumption",
+                "fr": "Conso totale autre"
               },
               "value": true
             }
@@ -2825,8 +3188,8 @@
         "alarm_generic.booster_heater2",
         "alarm_generic.booster_heater2_plus",
         "alarm_generic.defrost_mode",
+        "alarm_generic.eco_hot_water",
         "alarm_generic.immersion_heater",
-        "eco_hot_water",
         "measure_power.heat_pump_frequency",
         "measure_temperature.flow",
         "measure_temperature.outdoor",
@@ -2880,16 +3243,20 @@
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
-              "en": "Username"
+              "en": "Username",
+              "fr": "Nom d'utilisateur"
             },
             "usernamePlaceholder": {
-              "en": "user@domain.com"
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr"
             },
             "passwordLabel": {
-              "en": "Password"
+              "en": "Password",
+              "fr": "Mot de passe"
             },
             "passwordPlaceholder": {
-              "en": "P4ssw0rd"
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd"
             }
           }
         },
@@ -2912,367 +3279,445 @@
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
-              "en": "Username"
+              "en": "Username",
+              "fr": "Nom d'utilisateur"
             },
             "usernamePlaceholder": {
-              "en": "user@domain.com"
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr"
             },
             "passwordLabel": {
-              "en": "Password"
+              "en": "Password",
+              "fr": "Mot de passe"
             },
             "passwordPlaceholder": {
-              "en": "P4ssw0rd"
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd"
             }
           }
         }
       ],
       "name": {
-        "en": "Air-to-Water Heat Pump"
+        "en": "Air-to-Water Heat Pump",
+        "fr": "Pompe à chaleur air-eau"
       },
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
           "title": {
-            "en": "Booster Heater 1"
+            "en": "Booster heater 1",
+            "fr": "Chauffage d'appoint 1"
           },
           "insightsTitleTrue": {
-            "en": "Booster Heater 1 On"
+            "en": "Booster heater 1 turned on",
+            "fr": "Le chauffage d'appoint 1 s'est activé"
           },
           "insightsTitleFalse": {
-            "en": "Booster Heater 1 Off"
+            "en": "Booster heater 1 turned off",
+            "fr": "Le chauffage d'appoint 1 s'est désactivé"
           }
         },
         "alarm_generic.booster_heater2": {
           "title": {
-            "en": "Booster Heater 2"
+            "en": "Booster heater 2",
+            "fr": "Chauffage d'appoint 2"
           },
           "insightsTitleTrue": {
-            "en": "Booster Heater 2 On"
+            "en": "Booster heater 2 turned on",
+            "fr": "Le chauffage d'appoint 2 s'est activé"
           },
           "insightsTitleFalse": {
-            "en": "Booster Heater 2 Off"
+            "en": "Booster heater 2 turned off",
+            "fr": "Le chauffage d'appoint 2 s'est désactivé"
           }
         },
         "alarm_generic.booster_heater2_plus": {
           "title": {
-            "en": "Booster Heater 2 Plus"
+            "en": "Booster heater 2+",
+            "fr": "Chauffage d'appoint 2+"
           },
           "insightsTitleTrue": {
-            "en": "Booster Heater 2 Plus On"
+            "en": "Booster heater 2+ turned on",
+            "fr": "Le chauffage d'appoint 2+ s'est activé"
           },
           "insightsTitleFalse": {
-            "en": "Booster Heater 2 Plus Off"
+            "en": "Booster heater 2+ turned off",
+            "fr": "Le chauffage d'appoint 2+ s'est désactivé"
           }
         },
         "alarm_generic.defrost_mode": {
           "title": {
-            "en": "Defrost Mode"
+            "en": "Defrost mode",
+            "fr": "Mode dégivrage"
           },
           "insightsTitleTrue": {
-            "en": "Defrost Mode On"
+            "en": "Defrost mode turned on",
+            "fr": "Le mode dégivrage s'est activé"
           },
           "insightsTitleFalse": {
-            "en": "Defrost Mode Off"
+            "en": "Defrost mode turned off",
+            "fr": "Le mode dégivrage s'est désactivé"
+          }
+        },
+        "alarm_generic.eco_hot_water": {
+          "title": {
+            "en": "Eco hot water",
+            "fr": "Eau chaude éco"
+          },
+          "insightsTitleTrue": {
+            "en": "Eco hot water turned on",
+            "fr": "L'eau chaude éco s'est activée"
+          },
+          "insightsTitleFalse": {
+            "en": "Eco hot water turned off",
+            "fr": "L'eau chaude éco s'est désactivée"
           }
         },
         "alarm_generic.immersion_heater": {
           "title": {
-            "en": "Immersion Heater"
+            "en": "Immersion heater",
+            "fr": "Chauffage par immersion"
           },
           "insightsTitleTrue": {
-            "en": "Immersion Heater On"
+            "en": "Immersion heater turned on",
+            "fr": "Le chauffage par immersion s'est activé"
           },
           "insightsTitleFalse": {
-            "en": "Immersion Heater Off"
+            "en": "Immersion heater turned off",
+            "fr": "Le chauffage par immersion s'est désactivé"
           }
         },
         "measure_power.heat_pump_frequency": {
           "title": {
-            "en": "Heat Pump Frequency"
+            "en": "Heat pump frequency",
+            "fr": "Fréquence de la pompe à chaleur"
           },
           "units": {
-            "en": "Hz"
+            "en": "Hz",
+            "fr": "Hz"
           }
         },
         "measure_power.wifi": {
           "title": {
-            "en": "Wifi Signal Strength"
+            "en": "Wifi signal strength",
+            "fr": "Puissance du signal wifi"
           },
           "units": {
-            "en": "dBm"
-          }
-        },
-        "measure_temperature": {
-          "title": {
-            "en": "Room Temperature - Zone 1"
+            "en": "dBm",
+            "fr": "dBm"
           }
         },
         "measure_temperature.flow": {
           "title": {
-            "en": "Flow Temperature"
+            "en": "Flow temperature",
+            "fr": "Température de départ"
           }
         },
         "measure_temperature.outdoor": {
           "title": {
-            "en": "Outdoor Temperature"
+            "en": "Outdoor temperature",
+            "fr": "Température extérieure"
           }
         },
         "measure_temperature.return": {
           "title": {
-            "en": "Return Temperature"
+            "en": "Return temperature",
+            "fr": "Température de retour"
           }
         },
         "measure_temperature.tank_water": {
           "title": {
-            "en": "Water Tank Temperature"
+            "en": "Water tank temperature",
+            "fr": "Température du réservoir d'eau"
           }
         },
         "measure_temperature.zone2": {
           "title": {
-            "en": "Room Temperature - Zone 2"
+            "en": "Temperature - zone 2",
+            "fr": "Température - zone 2"
           }
         },
         "meter_power.daily_cop": {
           "title": {
-            "en": "Last Daily CoP"
+            "en": "Last daily CoP",
+            "fr": "Dernier CoP quotidien"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.daily_cop_cooling": {
           "title": {
-            "en": "Last Daily Cooling CoP"
+            "en": "Last daily cooling CoP",
+            "fr": "Dernier CoP quotidien en mode refroidissement"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.daily_cop_heating": {
           "title": {
-            "en": "Last Daily Heating CoP"
+            "en": "Last daily heating CoP",
+            "fr": "Dernier CoP quotidien en mode chauffage"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.daily_cop_hotwater": {
           "title": {
-            "en": "Last Daily Hot Water CoP"
+            "en": "Last daily hot water CoP",
+            "fr": "Dernier CoP quotidien en mode eau chaude"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.daily_consumed": {
           "title": {
-            "en": "Last Daily Consumption"
+            "en": "Last daily consumption",
+            "fr": "Dernière conso quotidienne"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Last Daily Cooling Consumption"
+            "en": "Last daily cooling consumption",
+            "fr": "Dernière conso quotidienne en mode refroidissement"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Last Daily Heating Consumption"
+            "en": "Last daily heating consumption",
+            "fr": "Dernière conso quotidienne en mode chauffage"
           }
         },
         "meter_power.daily_consumed_hotwater": {
           "title": {
-            "en": "Last Daily Hot Water Consumption"
+            "en": "Last daily hot water consumption",
+            "fr": "Dernière conso quotidienne en mode eau chaude"
           }
         },
         "meter_power.daily_produced": {
           "title": {
-            "en": "Last Daily Production"
+            "en": "Last daily production",
+            "fr": "Dernière prod quotidienne"
           }
         },
         "meter_power.daily_produced_cooling": {
           "title": {
-            "en": "Last Daily Cooling Production"
+            "en": "Last daily cooling production",
+            "fr": "Dernière prod quotidienne en mode refroidissement"
           }
         },
         "meter_power.daily_produced_heating": {
           "title": {
-            "en": "Last Daily Heating Production"
+            "en": "Last daily heating production",
+            "fr": "Dernière prod quotidienne en mode chauffage"
           }
         },
         "meter_power.daily_produced_hotwater": {
           "title": {
-            "en": "Last Daily Hot Water Production"
+            "en": "Last daily hot water production",
+            "fr": "Dernière prod quotidienne en mode eau chaude"
           }
         },
         "meter_power.total_cop": {
           "title": {
-            "en": "Total CoP"
+            "en": "Total CoP",
+            "fr": "CoP total"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.total_cop_cooling": {
           "title": {
-            "en": "Total Cooling CoP"
+            "en": "Total cooling CoP",
+            "fr": "CoP total en mode refroidissement"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.total_cop_heating": {
           "title": {
-            "en": "Total Heating CoP"
+            "en": "Total heating CoP",
+            "fr": "CoP total en mode chauffage"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.total_cop_hotwater": {
           "title": {
-            "en": "Total Hot Water CoP"
+            "en": "Total hot water CoP",
+            "fr": "CoP total en mode eau chaude"
           },
           "units": {
-            "en": ""
+            "en": "",
+            "fr": ""
           },
           "decimals": 2
         },
         "meter_power.total_consumed": {
           "title": {
-            "en": "Total Consumption"
+            "en": "Total consumption",
+            "fr": "Conso totale"
           }
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total Cooling Consumption"
+            "en": "Total cooling consumption",
+            "fr": "Conso totale en mode refroidissement"
           }
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total Heating Consumption"
+            "en": "Total heating consumption",
+            "fr": "Conso totale en mode chauffage"
           }
         },
         "meter_power.total_consumed_hotwater": {
           "title": {
-            "en": "Total Hot Water Consumption"
+            "en": "Total hot water consumption",
+            "fr": "Conso totale en mode eau chaude"
           }
         },
         "meter_power.total_produced": {
           "title": {
-            "en": "Total Production"
+            "en": "Total production",
+            "fr": "Prod totale"
           }
         },
         "meter_power.total_produced_cooling": {
           "title": {
-            "en": "Total Cooling Production"
+            "en": "Total cooling production",
+            "fr": "Prod totale en mode refroidissement"
           }
         },
         "meter_power.total_produced_heating": {
           "title": {
-            "en": "Total Heating Production"
+            "en": "Total heating production",
+            "fr": "Prod totale en mode chauffage"
           }
         },
         "meter_power.total_produced_hotwater": {
           "title": {
-            "en": "Total Hot Water Production"
+            "en": "Total hot water production",
+            "fr": "Prod totale en mode eau chaude"
           }
         },
         "onoff.forced_hot_water": {
           "title": {
-            "en": "Forced Hot Water"
+            "en": "Forced hot water",
+            "fr": "Eau chaude forcée"
           },
           "insightsTitleTrue": {
-            "en": "Forced Hot Water On"
+            "en": "Forced hot water turned on",
+            "fr": "L'eau chaude forcée activée"
           },
           "insightsTitleFalse": {
-            "en": "Forced Hot Water Off"
+            "en": "Forced hot water turned off",
+            "fr": "L'eau chaude forcée désactivée"
           }
         },
         "operation_mode_state": {
           "title": {
-            "en": "Operation Mode"
+            "en": "Operation mode",
+            "fr": "Mode opérationnel"
           }
         },
         "operation_mode_zone.zone1": {
           "title": {
-            "en": "Operation Mode - Zone 1"
+            "en": "Operation mode",
+            "fr": "Mode opérationnel"
           }
         },
         "operation_mode_zone.zone2": {
           "title": {
-            "en": "Operation Mode - Zone 2"
+            "en": "Operation mode - zone 2",
+            "fr": "Mode opérationnel - zone 2"
           }
         },
         "operation_mode_zone_with_cool.zone1": {
           "title": {
-            "en": "Operation Mode - Zone 1"
+            "en": "Operation mode",
+            "fr": "Mode opérationnel"
           }
         },
         "operation_mode_zone_with_cool.zone2": {
           "title": {
-            "en": "Operation Mode - Zone 2"
+            "en": "Operation mode - zone 2",
+            "fr": "Mode opérationnel - zone 2"
           }
         },
         "target_temperature": {
-          "title": {
-            "en": "Room Target Temperature - Zone 1"
-          },
           "min": 10,
           "max": 30
         },
         "target_temperature.tank_water": {
           "title": {
-            "en": "Water Tank Target Temperature"
+            "en": "Water tank target temperature",
+            "fr": "Température cible du réservoir d'eau"
           },
           "min": 40,
           "max": 60
         },
         "target_temperature.zone1_flow_cool": {
           "title": {
-            "en": "Cool Flow Target Temperature - Zone 1"
+            "en": "Cool flow target temperature",
+            "fr": "Température cible du flux de refroidissement"
           },
           "min": 10,
           "max": 30
         },
         "target_temperature.zone1_flow_heat": {
           "title": {
-            "en": "Heat Flow Target Temperature - Zone 1"
+            "en": "Heat flow target temperature",
+            "fr": "Température cible du flux de chauffage"
           },
           "min": 25,
           "max": 60
         },
         "target_temperature.zone2": {
           "title": {
-            "en": "Room Target Temperature - Zone 2"
+            "en": "Target temperature - zone 2",
+            "fr": "Température cible - zone 2"
           },
           "min": 10,
           "max": 30
         },
         "target_temperature.zone2_flow_cool": {
           "title": {
-            "en": "Cool Flow Target Temperature - Zone 2"
+            "en": "Cool flow target temperature - zone 2",
+            "fr": "Température cible du flux de refroidissement - zone 2"
           },
           "min": 10,
           "max": 30
         },
         "target_temperature.zone2_flow_heat": {
           "title": {
-            "en": "Heat Flow Target Temperature - Zone 2"
+            "en": "Heat flow target temperature - zone 2",
+            "fr": "Température cible du flux de chauffage - zone 2"
           },
           "min": 25,
           "max": 60
         },
         "thermostat_mode": {
-          "insights": true,
-          "title": {
-            "en": "HomeKit Thermostat Mode"
-          }
+          "insights": true
         }
       },
       "id": "melcloud_atw",
@@ -3280,44 +3725,62 @@
         {
           "type": "group",
           "label": {
-            "en": "Device Options"
+            "en": "Configuration",
+            "fr": "Configuration"
           },
           "children": [
             {
               "id": "interval",
               "type": "number",
               "label": {
-                "en": "Device Update Frequency"
+                "en": "Refresh frequency",
+                "fr": "Fréquence de rafraîchissement"
               },
               "units": {
-                "en": "minutes"
+                "en": "minutes",
+                "fr": "minutes"
               },
               "value": 5,
               "min": 1,
               "max": 60
-            },
-            {
-              "id": "always_on",
-              "type": "checkbox",
-              "label": {
-                "en": "Disable Power Off from Homey"
-              },
-              "value": false,
-              "hint": "This setting prevents the device from being turned off from Homey, the device can still be turned off manually (from a remote control or directly from the physical device)"
             }
           ]
         },
         {
           "type": "group",
           "label": {
-            "en": "Dashboard Customization"
+            "en": "Options",
+            "fr": "Options"
+          },
+          "children": [
+            {
+              "id": "always_on",
+              "type": "checkbox",
+              "label": {
+                "en": "Disable shutdown from Homey",
+                "fr": "Désactiver l'extinction depuis Homey"
+              },
+              "value": false,
+              "hint": {
+                "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Dashboard",
+            "fr": "Tableau de bord"
           },
           "children": [
             {
               "id": "alarm_generic.booster_heater1",
               "type": "checkbox",
               "label": {
-                "en": "Booster Heater 1"
+                "en": "Booster heater 1",
+                "fr": "Chauffage d'appoint 1"
               },
               "value": true
             },
@@ -3325,7 +3788,8 @@
               "id": "alarm_generic.booster_heater2",
               "type": "checkbox",
               "label": {
-                "en": "Booster Heater 2"
+                "en": "Booster heater 2",
+                "fr": "Chauffage d'appoint 2"
               },
               "value": true
             },
@@ -3333,7 +3797,8 @@
               "id": "alarm_generic.booster_heater2_plus",
               "type": "checkbox",
               "label": {
-                "en": "Booster Heater 2 Plus"
+                "en": "Booster heater 2+",
+                "fr": "Chauffage d'appoint 2+"
               },
               "value": false
             },
@@ -3341,23 +3806,26 @@
               "id": "alarm_generic.defrost_mode",
               "type": "checkbox",
               "label": {
-                "en": "Defrost Mode"
+                "en": "Defrost mode",
+                "fr": "Mode dégivrage"
               },
               "value": true
+            },
+            {
+              "id": "alarm_generic.eco_hot_water",
+              "type": "checkbox",
+              "label": {
+                "en": "Eco hot water",
+                "fr": "Eau chaude éco"
+              },
+              "value": false
             },
             {
               "id": "alarm_generic.immersion_heater",
               "type": "checkbox",
               "label": {
-                "en": "Immersion Heater"
-              },
-              "value": false
-            },
-            {
-              "id": "eco_hot_water",
-              "type": "checkbox",
-              "label": {
-                "en": "Eco Hot Water"
+                "en": "Immersion heater",
+                "fr": "Chauffage par immersion"
               },
               "value": false
             },
@@ -3365,7 +3833,8 @@
               "id": "measure_power.heat_pump_frequency",
               "type": "checkbox",
               "label": {
-                "en": "Heat Pump Frequency"
+                "en": "Heat pump frequency",
+                "fr": "Fréquence de la pompe à chaleur"
               },
               "value": true
             },
@@ -3373,7 +3842,8 @@
               "id": "measure_power.wifi",
               "type": "checkbox",
               "label": {
-                "en": "Wifi Signal Strength"
+                "en": "Wifi signal strength",
+                "fr": "Puissance du signal wifi"
               },
               "value": true
             },
@@ -3381,7 +3851,8 @@
               "id": "meter_power.daily_cop",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily CoP"
+                "en": "Last daily CoP",
+                "fr": "Dernier CoP quotidien"
               },
               "value": false
             },
@@ -3389,7 +3860,8 @@
               "id": "meter_power.daily_cop_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Cooling CoP"
+                "en": "Last daily cooling CoP",
+                "fr": "Dernier CoP quotidien refroidissement"
               },
               "value": false
             },
@@ -3397,7 +3869,8 @@
               "id": "meter_power.daily_cop_heating",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Heating CoP"
+                "en": "Last daily heating CoP",
+                "fr": "Dernier CoP quotidien chauffage"
               },
               "value": true
             },
@@ -3405,7 +3878,8 @@
               "id": "meter_power.daily_cop_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Hot Water CoP"
+                "en": "Last daily hot water CoP",
+                "fr": "Dernier CoP quotidien eau chaude"
               },
               "value": false
             },
@@ -3413,7 +3887,8 @@
               "id": "meter_power.daily_consumed",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Consumption"
+                "en": "Last daily consumption",
+                "fr": "Dernière conso quotidienne"
               },
               "value": false
             },
@@ -3421,7 +3896,8 @@
               "id": "meter_power.daily_consumed_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Cooling Consumption"
+                "en": "Last daily cooling consumption",
+                "fr": "Dernière conso quotidienne refroidissement"
               },
               "value": false
             },
@@ -3429,7 +3905,8 @@
               "id": "meter_power.daily_consumed_heating",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Heating Consumption"
+                "en": "Last daily heating consumption",
+                "fr": "Dernière conso quotidienne chauffage"
               },
               "value": false
             },
@@ -3437,7 +3914,8 @@
               "id": "meter_power.daily_consumed_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Hot Water Consumption"
+                "en": "Last daily hot water consumption",
+                "fr": "Dernière conso quotidienne eau chaude"
               },
               "value": false
             },
@@ -3445,7 +3923,8 @@
               "id": "meter_power.daily_produced",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Production"
+                "en": "Last daily production",
+                "fr": "Dernière prod quotidienne"
               },
               "value": false
             },
@@ -3453,7 +3932,8 @@
               "id": "meter_power.daily_produced_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Cooling Production"
+                "en": "Last daily cooling production",
+                "fr": "Dernière prod quotidienne refroidissement"
               },
               "value": false
             },
@@ -3461,7 +3941,8 @@
               "id": "meter_power.daily_produced_heating",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Heating Production"
+                "en": "Last daily heating production",
+                "fr": "Dernière prod quotidienne chauffage"
               },
               "value": false
             },
@@ -3469,7 +3950,8 @@
               "id": "meter_power.daily_produced_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Last Daily Hot Water Production"
+                "en": "Last daily hot water production",
+                "fr": "Dernière prod quotidienne eau chaude"
               },
               "value": false
             },
@@ -3477,7 +3959,8 @@
               "id": "meter_power.total_cop",
               "type": "checkbox",
               "label": {
-                "en": "Total CoP"
+                "en": "Total CoP",
+                "fr": "CoP total"
               },
               "value": false
             },
@@ -3485,7 +3968,8 @@
               "id": "meter_power.total_cop_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Total Cooling CoP"
+                "en": "Total cooling CoP",
+                "fr": "CoP total refroidissement"
               },
               "value": false
             },
@@ -3493,7 +3977,8 @@
               "id": "meter_power.total_cop_heating",
               "type": "checkbox",
               "label": {
-                "en": "Total Heating CoP"
+                "en": "Total heating CoP",
+                "fr": "CoP total chauffage"
               },
               "value": false
             },
@@ -3501,7 +3986,8 @@
               "id": "meter_power.total_cop_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Total Hot Water CoP"
+                "en": "Total hot water CoP",
+                "fr": "CoP total eau chaude"
               },
               "value": false
             },
@@ -3509,7 +3995,8 @@
               "id": "meter_power.total_consumed",
               "type": "checkbox",
               "label": {
-                "en": "Total Consumption"
+                "en": "Total consumption",
+                "fr": "Conso totale"
               },
               "value": false
             },
@@ -3517,7 +4004,8 @@
               "id": "meter_power.total_consumed_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Total Cooling Consumption"
+                "en": "Total cooling consumption",
+                "fr": "Conso totale refroidissement"
               },
               "value": false
             },
@@ -3525,7 +4013,8 @@
               "id": "meter_power.total_consumed_heating",
               "type": "checkbox",
               "label": {
-                "en": "Total Heating Consumption"
+                "en": "Total heating consumption",
+                "fr": "Conso totale chauffage"
               },
               "value": false
             },
@@ -3533,7 +4022,8 @@
               "id": "meter_power.total_consumed_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Total Hot Water Consumption"
+                "en": "Total hot water consumption",
+                "fr": "Conso totale eau chaude"
               },
               "value": false
             },
@@ -3541,7 +4031,8 @@
               "id": "meter_power.total_produced",
               "type": "checkbox",
               "label": {
-                "en": "Total Production"
+                "en": "Total production",
+                "fr": "Prod totale"
               },
               "value": false
             },
@@ -3549,7 +4040,8 @@
               "id": "meter_power.total_produced_cooling",
               "type": "checkbox",
               "label": {
-                "en": "Total Cooling Production"
+                "en": "Total cooling production",
+                "fr": "Prod totale refroidissement"
               },
               "value": false
             },
@@ -3557,7 +4049,8 @@
               "id": "meter_power.total_produced_heating",
               "type": "checkbox",
               "label": {
-                "en": "Total Heating Production"
+                "en": "Total heating production",
+                "fr": "Prod totale chauffage"
               },
               "value": false
             },
@@ -3565,7 +4058,8 @@
               "id": "meter_power.total_produced_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Total Hot Water Production"
+                "en": "Total hot water production",
+                "fr": "Prod totale eau chaude"
               },
               "value": false
             }
@@ -3668,7 +4162,8 @@
     "fan_power": {
       "type": "number",
       "title": {
-        "en": "Fan Speed"
+        "en": "Fan speed",
+        "fr": "Vitesse du ventilateur"
       },
       "uiComponent": "slider",
       "insights": true,
@@ -3736,7 +4231,8 @@
     "horizontal": {
       "type": "enum",
       "title": {
-        "en": "Horizontal Vane Direction"
+        "en": "Horizontal vane direction",
+        "fr": "Direction des ailettes horizontales"
       },
       "getable": true,
       "setable": true,
@@ -3746,49 +4242,57 @@
         {
           "id": "auto",
           "title": {
-            "en": "Auto"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         },
         {
           "id": "left",
           "title": {
-            "en": "Left"
+            "en": "Far-left",
+            "fr": "Tout à gauche"
           }
         },
         {
           "id": "middleleft",
           "title": {
-            "en": "Middle Left"
+            "en": "Mid-left",
+            "fr": "Milieu gauche"
           }
         },
         {
           "id": "middle",
           "title": {
-            "en": "Middle"
+            "en": "Center",
+            "fr": "Centre"
           }
         },
         {
           "id": "middleright",
           "title": {
-            "en": "Middle Right"
+            "en": "Mid-right",
+            "fr": "Milieu droit"
           }
         },
         {
           "id": "right",
           "title": {
-            "en": "Right"
+            "en": "Far-right",
+            "fr": "Tout à droite"
           }
         },
         {
           "id": "split",
           "title": {
-            "en": "Split"
+            "en": "Split",
+            "fr": "Dissociée"
           }
         },
         {
           "id": "swing",
           "title": {
-            "en": "Swing"
+            "en": "Swing",
+            "fr": "Balayage"
           }
         }
       ]
@@ -3814,7 +4318,8 @@
     "operation_mode": {
       "type": "enum",
       "title": {
-        "en": "Full Thermostat Mode"
+        "en": "Operation Mode",
+        "fr": "Mode opérationnel"
       },
       "getable": true,
       "setable": true,
@@ -3825,31 +4330,36 @@
         {
           "id": "heat",
           "title": {
-            "en": "Heat"
+            "en": "Heat",
+            "fr": "Chauffer"
           }
         },
         {
           "id": "dry",
           "title": {
-            "en": "Dry"
+            "en": "Dry",
+            "fr": "Sécher"
           }
         },
         {
           "id": "cool",
           "title": {
-            "en": "Cool"
+            "en": "Cool",
+            "fr": "Refroidir"
           }
         },
         {
           "id": "fan",
           "title": {
-            "en": "Fan"
+            "en": "Fan",
+            "fr": "Ventiler"
           }
         },
         {
           "id": "auto",
           "title": {
-            "en": "Auto"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         }
       ]
@@ -3857,7 +4367,8 @@
     "operation_mode_state": {
       "type": "enum",
       "title": {
-        "en": "Operation Mode"
+        "en": "Operation mode",
+        "fr": "Mode opérationnel"
       },
       "uiComponent": "sensor",
       "insights": true,
@@ -3868,43 +4379,50 @@
         {
           "id": "idle",
           "title": {
-            "en": "Idle"
+            "en": "Idle",
+            "fr": "Inactif"
           }
         },
         {
           "id": "dhw",
           "title": {
-            "en": "Domestic House Water"
+            "en": "Domestic house water",
+            "fr": "Eau chaude sanitaire"
           }
         },
         {
           "id": "heating",
           "title": {
-            "en": "Heating"
+            "en": "Heating",
+            "fr": "Chauffage"
           }
         },
         {
           "id": "cooling",
           "title": {
-            "en": "Cooling"
+            "en": "Cooling",
+            "fr": "Refroidissement"
           }
         },
         {
           "id": "defrost",
           "title": {
-            "en": "Defrost"
+            "en": "Defrost",
+            "fr": "Dégivrage"
           }
         },
         {
           "id": "standby",
           "title": {
-            "en": "Standby"
+            "en": "Standby",
+            "fr": "Veille"
           }
         },
         {
           "id": "legionella",
           "title": {
-            "en": "Legionella"
+            "en": "Legionella",
+            "fr": "Legionella"
           }
         }
       ],
@@ -3913,7 +4431,8 @@
     "operation_mode_zone": {
       "type": "enum",
       "title": {
-        "en": "Operation Mode"
+        "en": "Operation mode",
+        "fr": "Mode opérationnel"
       },
       "uiComponent": "picker",
       "insights": true,
@@ -3924,19 +4443,22 @@
         {
           "id": "0",
           "title": {
-            "en": "Heat Room"
+            "en": "Heat room",
+            "fr": "Chauffer la pièce"
           }
         },
         {
           "id": "1",
           "title": {
-            "en": "Heat Flow"
+            "en": "Heat flow",
+            "fr": "Flux de chauffage"
           }
         },
         {
           "id": "2",
           "title": {
-            "en": "Curve"
+            "en": "Curve",
+            "fr": "Courbe"
           }
         }
       ]
@@ -3944,7 +4466,8 @@
     "operation_mode_zone_with_cool": {
       "type": "enum",
       "title": {
-        "en": "Operation Mode"
+        "en": "Operation Mode",
+        "fr": "Mode opérationnel"
       },
       "uiComponent": "picker",
       "insights": true,
@@ -3955,31 +4478,36 @@
         {
           "id": "0",
           "title": {
-            "en": "Heat Room"
+            "en": "Heat room",
+            "fr": "Chauffer la pièce"
           }
         },
         {
           "id": "1",
           "title": {
-            "en": "Heat Flow"
+            "en": "Heat flow",
+            "fr": "Flux de chauffage"
           }
         },
         {
           "id": "2",
           "title": {
-            "en": "Curve"
+            "en": "Curve",
+            "fr": "Courbe"
           }
         },
         {
           "id": "3",
           "title": {
-            "en": "Cool Room"
+            "en": "Cool room",
+            "fr": "Refroidir la pièce"
           }
         },
         {
           "id": "4",
           "title": {
-            "en": "Cool Flow"
+            "en": "Cool flow",
+            "fr": "Flux de refroidissement"
           }
         }
       ]
@@ -4023,7 +4551,8 @@
     "vertical": {
       "type": "enum",
       "title": {
-        "en": "Vertical Vane Direction"
+        "en": "Vertical vane direction",
+        "fr": "Direction des ailettes verticales"
       },
       "getable": true,
       "setable": true,
@@ -4033,43 +4562,50 @@
         {
           "id": "auto",
           "title": {
-            "en": "Auto"
+            "en": "Automatic",
+            "fr": "Automatique"
           }
         },
         {
           "id": "top",
           "title": {
-            "en": "Top"
+            "en": "High",
+            "fr": "Élevée"
           }
         },
         {
           "id": "middletop",
           "title": {
-            "en": "Middle Top"
+            "en": "Upper-mid",
+            "fr": "Milieu supérieur"
           }
         },
         {
           "id": "middle",
           "title": {
-            "en": "Middle"
+            "en": "Mid",
+            "fr": "Milieu"
           }
         },
         {
           "id": "middlebottom",
           "title": {
-            "en": "Middle Bottom"
+            "en": "Lower-mid",
+            "fr": "Milieu inférieur"
           }
         },
         {
           "id": "bottom",
           "title": {
-            "en": "Bottom"
+            "en": "Low",
+            "fr": "Bas"
           }
         },
         {
           "id": "swing",
           "title": {
-            "en": "Swing"
+            "en": "Swing",
+            "fr": "Balayage"
           }
         }
       ]

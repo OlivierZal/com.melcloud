@@ -109,9 +109,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           this.getCapabilityValue('thermostat_mode') !== 'off'
         ) {
           await this.setWarning(
-            `"${(value as string).charAt(0).toUpperCase()}${(
-              value as string
-            ).slice(1)}" has been saved (even if "Heat" is displayed).`
+            this.homey.__('not_heat_saved', { value: this.homey.__(value) })
           )
           await this.setWarning(null)
         }

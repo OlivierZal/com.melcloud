@@ -2,44 +2,62 @@
   {
     "type": "group",
     "label": {
-      "en": "Device Options"
+      "en": "Configuration",
+      "fr": "Configuration"
     },
     "children": [
       {
         "id": "interval",
         "type": "number",
         "label": {
-          "en": "Device Refresh Frequency"
+          "en": "Refresh frequency",
+          "fr": "Fréquence de rafraîchissement"
         },
         "units": {
-          "en": "minutes"
+          "en": "minutes",
+          "fr": "minutes"
         },
         "value": 5,
         "min": 1,
         "max": 60
-      },
-      {
-        "id": "always_on",
-        "type": "checkbox",
-        "label": {
-          "en": "Disable Power Off from Homey"
-        },
-        "value": false,
-        "hint": "This setting prevents the device from being turned off from Homey, the device can still be turned off manually (from a remote control or directly from the physical device)"
       }
     ]
   },
   {
     "type": "group",
     "label": {
-      "en": "Dashboard Customization"
+      "en": "Options",
+      "fr": "Options"
+    },
+    "children": [
+      {
+        "id": "always_on",
+        "type": "checkbox",
+        "label": {
+          "en": "Disable shutdown from Homey",
+          "fr": "Désactiver l'extinction depuis Homey"
+        },
+        "value": false,
+        "hint": {
+          "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
+          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Dashboard",
+      "fr": "Tableau de bord"
     },
     "children": [
       {
         "id": "measure_power.wifi",
         "type": "checkbox",
         "label": {
-          "en": "Wifi Signal Strength"
+          "en": "Wifi signal strength",
+          "fr": "Puissance du signal wifi"
         },
         "value": true
       },
@@ -47,7 +65,8 @@
         "id": "meter_power.hourly_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Consumption"
+          "en": "Hourly consumption",
+          "fr": "Conso horaire"
         },
         "value": true
       },
@@ -55,7 +74,8 @@
         "id": "meter_power.hourly_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Auto Consumption"
+          "en": "Hourly auto consumption",
+          "fr": "Conso horaire mode auto"
         },
         "value": true
       },
@@ -63,7 +83,8 @@
         "id": "meter_power.hourly_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Cooling Consumption"
+          "en": "Hourly cooling consumption",
+          "fr": "Conso horaire refroidissement"
         },
         "value": true
       },
@@ -71,7 +92,8 @@
         "id": "meter_power.hourly_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Dry Consumption"
+          "en": "Hourly dry consumption",
+          "fr": "Conso horaire séchage"
         },
         "value": true
       },
@@ -79,7 +101,8 @@
         "id": "meter_power.hourly_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Fan Consumption"
+          "en": "Hourly fan consumption",
+          "fr": "Conso horaire ventilation"
         },
         "value": true
       },
@@ -87,7 +110,8 @@
         "id": "meter_power.hourly_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Heating Consumption"
+          "en": "Hourly heating consumption",
+          "fr": "Conso horaire chauffage"
         },
         "value": true
       },
@@ -95,7 +119,8 @@
         "id": "meter_power.hourly_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Hourly Other Consumption"
+          "en": "Hourly other consumption",
+          "fr": "Conso horaire autre"
         },
         "value": true
       },
@@ -103,7 +128,8 @@
         "id": "meter_power.daily_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Daily Consumption"
+          "en": "Daily consumption",
+          "fr": "Conso quotidienne"
         },
         "value": true
       },
@@ -111,7 +137,8 @@
         "id": "meter_power.daily_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Daily Auto Consumption"
+          "en": "Daily auto consumption",
+          "fr": "Conso quotidienne mode auto"
         },
         "value": true
       },
@@ -119,7 +146,8 @@
         "id": "meter_power.daily_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Daily Cooling Consumption"
+          "en": "Daily cooling consumption",
+          "fr": "Conso quotidienne refroidissement"
         },
         "value": true
       },
@@ -127,7 +155,8 @@
         "id": "meter_power.daily_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Daily Dry Consumption"
+          "en": "Daily dry consumption",
+          "fr": "Conso quotidienne séchage"
         },
         "value": true
       },
@@ -135,7 +164,8 @@
         "id": "meter_power.daily_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Daily Fan Consumption"
+          "en": "Daily fan consumption",
+          "fr": "Conso quotidienne ventilation"
         },
         "value": true
       },
@@ -143,7 +173,8 @@
         "id": "meter_power.daily_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Daily Heating Consumption"
+          "en": "Daily heating consumption",
+          "fr": "Conso quotidienne chauffage"
         },
         "value": true
       },
@@ -151,7 +182,8 @@
         "id": "meter_power.daily_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Daily Other Consumption"
+          "en": "Daily other consumption",
+          "fr": "Conso quotidienne autre"
         },
         "value": true
       },
@@ -159,7 +191,8 @@
         "id": "meter_power.total_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Total Consumption"
+          "en": "Total consumption",
+          "fr": "Conso totale"
         },
         "value": true
       },
@@ -167,7 +200,8 @@
         "id": "meter_power.total_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Total Auto Consumption"
+          "en": "Total auto consumption",
+          "fr": "Conso totale mode auto"
         },
         "value": true
       },
@@ -175,7 +209,8 @@
         "id": "meter_power.total_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total Cooling Consumption"
+          "en": "Total cooling consumption",
+          "fr": "Conso totale refroidissement"
         },
         "value": true
       },
@@ -183,7 +218,8 @@
         "id": "meter_power.total_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Total Dry Consumption"
+          "en": "Total dry consumption",
+          "fr": "Conso totale séchage"
         },
         "value": true
       },
@@ -191,7 +227,8 @@
         "id": "meter_power.total_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Total Fan Consumption"
+          "en": "Total fan consumption",
+          "fr": "Conso totale ventilation"
         },
         "value": true
       },
@@ -199,7 +236,8 @@
         "id": "meter_power.total_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total Heating Consumption"
+          "en": "Total heating consumption",
+          "fr": "Conso totale chauffage"
         },
         "value": true
       },
@@ -207,7 +245,8 @@
         "id": "meter_power.total_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Total Other Consumption"
+          "en": "Total other consumption",
+          "fr": "Conso totale autre"
         },
         "value": true
       }
