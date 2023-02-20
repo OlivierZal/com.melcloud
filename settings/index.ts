@@ -453,15 +453,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             }
             if (!success) {
               // @ts-expect-error bug
-              await Homey.alert(Homey.__('settings.alert.failure'), {
-                action: Homey.__('settings.alert.actions.apply')
-              })
+              await Homey.alert(
+                Homey.__('settings.alert.failure', {
+                  action: Homey.__('settings.alert.actions.apply')
+                })
+              )
               return
             }
             // @ts-expect-error bug
-            await Homey.alert(Homey.__('settings.alert.success'), {
-              action: Homey.__('settings.alert.actions.apply')
-            })
+            await Homey.alert(
+              Homey.__('settings.alert.success', {
+                action: Homey.__('settings.alert.actions.apply')
+              })
+            )
           }
         )
       }
