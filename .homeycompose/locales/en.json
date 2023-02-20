@@ -1,51 +1,88 @@
 {
-  "settings": {
-    "title": "MELCloud Settings",
-    "credentials": "Credentials",
-    "username": "Username",
-    "password": "Password",
-    "authenticate": "Authenticate",
-    "authenticate_success": "Authentication succeeded.",
-    "authenticate_failure": "Authentication failed.",
-    "error-log": "Error Log",
-    "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
-    "Device": "Device",
-    "Date": "Date",
-    "Error": "Error",
-    "see": "See all errors since",
-    "devices": "Device Settings",
-    "interval_label": "Refresh frequency (minutes)",
-    "always_on": "Disable shutdown from Homey",
-    "no": "No",
-    "yes": "Yes",
-    "apply": "Apply to all devices",
-    "apply_confirm": "Are you sure you want to apply these settings to all devices?",
-    "apply_nothing": "No change to apply.",
-    "apply_success": "Change has been applied to all devices.",
-    "apply_failure": "Change has not been applied.",
-    "building": "Building Settings",
-    "holiday-mode": "Enable <strong>holiday mode</strong>",
-    "start-date": "Start date",
-    "end-date": "End date",
-    "refresh": "Refresh",
-    "update": "Update",
-    "update_success": "Update succeeded.",
-    "update_failure": "Update failed.",
-    "frost-protection": "Enable <strong>frost protection</strong>",
-    "min_label": "Minimum temperature",
-    "max_label": "Maximum temperature",
-    "int_error": "__name__ must be an integer between __min__ and __max__.",
-    "interval": "The refresh frequency",
-    "min": "The minimum temperature",
-    "max": "The maximum temperature",
-    "choose_date": "Choose a date before __fromDateHuman__."
+  "app": {
+    "building": {
+      "no_device": "Building __buildingId__ has no device.",
+      "not_found": "Building __buildingId__ cannot be found."
+    },
+    "holiday_mode": {
+      "date_missing": "Start Date and/or End Date are missing."
+    }
   },
-  "always_on_warning": "Shutdown from Homey has been disabled.",
-  "exit_device": "Exit device and return to refresh your dashboard.",
-  "not_heat_registered": "`__value__` has been saved (even if `Heat` is displayed).",
-  "dry": "Dry",
-  "fan": "Fan",
-  "building_no_device": "Building __buildingId__ has no device.",
-  "building_not_found": "Building __buildingId__ cannot be found.",
-  "date_missing": "Start Date and/or End Date are missing."
+  "settings": {
+    "alert": {
+      "actions": {
+        "authenticate": "Authentication",
+        "apply": "Modification",
+        "update": "Update"
+      },
+      "failure": "__action__ failed.",
+      "success": "__action__ succeeded."
+    },
+    "authenticate": {
+      "button": "Authenticate",
+      "label": "Credentials",
+      "password": "Password",
+      "username": "Username"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Yes"
+    },
+    "buildings": {
+      "label": "Building Settings",
+      "frost_protection": {
+        "enabled": "Enable <strong>frost protection</strong>",
+        "max": "Maximum temperature",
+        "min": "Minimum temperature"
+      },
+      "holiday_mode": {
+        "enabled": "Enable <strong>holiday mode</strong>",
+        "end_date": "End date",
+        "start_date": "Start date"
+      },
+      "refresh": "Refresh",
+      "update": "Update"
+    },
+    "devices": {
+      "always_on": "Disable shutdown from Homey",
+      "apply": {
+        "button": "Apply to all devices",
+        "confirm": "Are you sure you want to apply these settings to all devices?",
+        "nothing": "No change to apply."
+      },
+      "interval": "Refresh frequency (minutes)",
+      "label": "Device Settings"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Date",
+        "Device": "Device",
+        "Error": "Error"
+      },
+      "error": "Choose a date before __fromDateHuman__.",
+      "label": "Error Log",
+      "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
+      "see": "See all errors since"
+    },
+    "int_error": {
+      "message": "__name__ must be an integer between __min__ and __max__.",
+      "values": {
+        "interval": "The refresh frequency",
+        "max": "The maximum temperature",
+        "min": "The minimum temperature"
+      }
+    },
+    "title": "MELCloud Settings"
+  },
+  "warnings": {
+    "always_on": "Shutdown from Homey has been disabled.",
+    "dashboard": "Exit device and return to refresh your dashboard.",
+    "operation_mode": {
+      "message": "`__value__` has been saved (even if `Heat` is displayed).",
+      "values": {
+        "dry": "Dry",
+        "fan": "Fan"
+      }
+    }
+  }
 }

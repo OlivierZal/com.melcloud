@@ -77,7 +77,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'always_on'
   ) as HTMLSelectElement
   const buildingElement: HTMLSelectElement = document.getElementById(
-    'building'
+    'buildings'
   ) as HTMLSelectElement
   const frostProtectionEnabledElement: HTMLSelectElement =
     document.getElementById('enabled-frost-protection') as HTMLSelectElement
@@ -120,7 +120,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const row: HTMLTableRowElement = thead.insertRow()
     for (const key of keys) {
       const th: HTMLTableCellElement = document.createElement('th')
-      th.innerText = Homey.__(`settings.${key}`)
+      th.innerText = Homey.__(`settings.error_log.columns.${key}`)
       row.appendChild(th)
     }
     hasLoadedTableHead = true
@@ -165,7 +165,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         fromElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
-        periodElement.innerText = Homey.__('settings.period', {
+        periodElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman,
           errorCount,
           errorCountText: [0, 1].includes(errorCount) ? 'error' : 'errors'
@@ -194,8 +194,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     ) {
       element.value = ''
       throw new Error(
-        Homey.__('settings.int_error', {
-          name: Homey.__(`settings.${element.id}`),
+        Homey.__('settings.int_error.message', {
+          name: Homey.__(`settings.int_error.values.${element.id}`),
           min: element.min,
           max: element.max
         })
@@ -373,11 +373,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!login) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.authenticate_failure'))
+          await Homey.alert(Homey.__('settings.alert.failure'), {
+            action: Homey.__('settings.alert.actions.authenticate')
+          })
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.authenticate_success'))
+        await Homey.alert(Homey.__('settings.alert.success'), {
+          action: Homey.__('settings.alert.actions.authenticate')
+        })
         load()
       }
     )
@@ -391,7 +395,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     ) {
       fromElement.value = to
       // @ts-expect-error bug
-      Homey.alert(Homey.__('settings.choose_date', { fromDateHuman }))
+      Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
     }
   })
 
@@ -410,12 +414,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
     if (Object.keys(body).length === 0) {
       // @ts-expect-error bug
-      Homey.alert(Homey.__('settings.apply_nothing'))
+      Homey.alert(Homey.__('settings.devices.apply.nothing'))
       return
     }
     // @ts-expect-error bug
     Homey.confirm(
-      Homey.__('settings.apply_confirm'),
+      Homey.__('settings.devices.apply.confirm'),
       null,
       async (error: Error, ok: boolean): Promise<void> => {
         if (error !== null) {
@@ -425,7 +429,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!ok) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.apply_failure'))
+          await Homey.alert(Homey.__('settings.alert.failure'), {
+            action: Homey.__('settings.alert.actions.apply')
+          })
           return
         }
         // @ts-expect-error bug
@@ -441,11 +447,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             }
             if (!success) {
               // @ts-expect-error bug
-              await Homey.alert(Homey.__('settings.apply_failure'))
+              await Homey.alert(Homey.__('settings.alert.failure'), {
+                action: Homey.__('settings.alert.actions.apply')
+              })
               return
             }
             // @ts-expect-error bug
-            await Homey.alert(Homey.__('settings.apply_success'))
+            await Homey.alert(Homey.__('settings.alert.success'), {
+              action: Homey.__('settings.alert.actions.apply')
+            })
           }
         )
       }
@@ -518,11 +528,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!success) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.update_failure'))
+          await Homey.alert(Homey.__('settings.alert.failure'), {
+            action: Homey.__('settings.alert.actions.update')
+          })
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.update_success'))
+        await Homey.alert(Homey.__('settings.alert.success'), {
+          action: Homey.__('settings.alert.actions.update')
+        })
       }
     )
   })
@@ -590,11 +604,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         if (!success) {
           // @ts-expect-error bug
-          await Homey.alert(Homey.__('settings.update_failure'))
+          await Homey.alert(Homey.__('settings.alert.failure'), {
+            action: Homey.__('settings.alert.actions.update')
+          })
           return
         }
         // @ts-expect-error bug
-        await Homey.alert(Homey.__('settings.update_success'))
+        await Homey.alert(Homey.__('settings.alert.success'), {
+          action: Homey.__('settings.alert.actions.update')
+        })
       }
     )
   })

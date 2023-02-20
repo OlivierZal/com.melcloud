@@ -178,7 +178,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on') === true) {
-      await this.setWarning(this.homey.__('always_on_warning'))
+      await this.setWarning(this.homey.__('warnings.always_on'))
       await this.setWarning(null)
     }
   }
@@ -412,7 +412,7 @@ export default class MELCloudDeviceMixin extends Device {
       )
     ) {
       await this.handleDashboardCapabilities(newSettings, changedKeys)
-      await this.setWarning(this.homey.__('exit_device'))
+      await this.setWarning(this.homey.__('warnings.dashboard'))
       await this.setWarning(null)
     }
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {

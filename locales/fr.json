@@ -4,14 +4,29 @@
     "credentials": "Identifiants",
     "username": "Nom d'utilisateur",
     "password": "Mot de passe",
-    "authenticate": "S'authentifier",
+    "authenticate": {
+      "button": "S'authentifier",
+      "password": "Mot de passe",
+      "label": "Identifiants",
+      "username": "Nom d'utilisateur"
+    },
     "device": "Appareil",
     "interval": "La fréquence de rafraîchissement",
     "always_on": "Désactiver l'extinction depuis Homey",
     "no": "Non",
     "yes": "Oui",
     "apply": "Appliquer à tous les appareils",
-    "error_log": "Journal des erreurs",
+    "error_log": {
+      "columns": {
+        "Date": "Date",
+        "Device": "Appareil",
+        "Error": "Erreur"
+      },
+      "error": "Choisissez une date antérieure au __fromDateHuman__.",
+      "label": "Journal des erreurs",
+      "period": "Depuis le __fromDateHuman__ : __errorCount__ __errorCountText__",
+      "see": "Voir les erreurs depuis"
+    },
     "see": "Voir les erreurs depuis",
     "building": "Paramètres des bâtiments",
     "holiday-mode": "Activer le <strong>mode vacances</strong>",
@@ -26,14 +41,30 @@
     "authenticate_success": "Authentification réussie.",
     "authenticate_failure": "Échec d'authentification.",
     "period": "Depuis le __fromDateHuman__ : __errorCount__ __errorCountText__",
-    "devices": "Paramètres des appareils",
+    "devices": {
+      "always_on": "Désactiver l'extinction depuis Homey",
+      "apply": {
+        "button": "Appliquer à tous les appareils",
+        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?",
+        "nothing": "Aucun changement à appliquer."
+      },
+      "interval": "Fréquence de rafraîchissement (en minutes)",
+      "label": "Paramètres des appareils"
+    },
     "apply_confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?",
     "apply_nothing": "Aucun changement à appliquer.",
     "apply_success": "Le changement a été appliqué à tous les appareils.",
     "apply_failure": "Le changement n'a pas été appliqué.",
     "update_success": "Mise à jour réussie.",
     "update_failure": "Échec de mise à jour.",
-    "int_error": "__name__ doit être un entier compris entre __min__ et __max__.",
+    "int_error": {
+      "message": "__name__ doit être un entier compris entre __min__ et __max__.",
+      "values": {
+        "interval": "La fréquence de rafraîchissement",
+        "max": "La température maximale",
+        "min": "La température minimale"
+      }
+    },
     "choose_date": "Choisissez une date antérieure au __fromDateHuman__.",
     "date": "Date",
     "error": "Erreur",
@@ -42,7 +73,35 @@
     "max_label": "Température maximale",
     "Device": "Appareil",
     "Date": "Date",
-    "Error": "Erreur"
+    "Error": "Erreur",
+    "alert": {
+      "actions": {
+        "authenticate": "Authentification",
+        "apply": "Modification",
+        "update": "Mise à jour"
+      },
+      "failure": "__action__ échouée.",
+      "success": "__action__ réussie."
+    },
+    "boolean": {
+      "false": "Non",
+      "true": "Oui"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "Activer la <strong>protection contre le gel</strong>",
+        "max": "Température maximale",
+        "min": "Température minimale"
+      },
+      "holiday_mode": {
+        "enabled": "Activer le <strong>mode vacances</strong>",
+        "end_date": "Date de fin",
+        "start_date": "Date de début"
+      },
+      "label": "Paramètres des bâtiments",
+      "refresh": "Rafraîchir",
+      "update": "Mettre à jour"
+    }
   },
   "always_on_warning": "L'extinction depuis Homey a été désactivée.",
   "exit_device": "Sortez de l'appareil et revenez pour rafraîchir votre tableau de bord.",
@@ -55,5 +114,25 @@
   "not_heat_saved": "`__value__` a été enregistré (même si `Chauffer` est affiché).",
   "interval": "L'intervalle",
   "min": "Le minimum",
-  "max": "Le maximum"
+  "max": "Le maximum",
+  "app": {
+    "building": {
+      "no_device": "Le bâtiment __buildingId__ n'a pas d'appareil.",
+      "not_found": "Le bâtiment __buildingId__ est introuvable."
+    },
+    "holiday_mode": {
+      "date_missing": "La date de début et/ou la date de fin sont manquantes."
+    }
+  },
+  "warnings": {
+    "always_on": "L'extinction depuis Homey a été désactivée.",
+    "dashboard": "Sortez de l'appareil et revenez pour rafraîchir votre tableau de bord.",
+    "operation_mode": {
+      "message": "`__value__` a été enregistré (même si `Chauffer` est affiché).",
+      "values": {
+        "dry": "Sécher",
+        "fan": "Ventiler"
+      }
+    }
+  }
 }

@@ -17,13 +17,13 @@
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
-          data-i18n="settings.credentials"
+          data-i18n="settings.authenticate.label"
         ></legend>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="username"
-            data-i18n="settings.username"
+            data-i18n="settings.authenticate.username"
           ></label>
           <input class="homey-form-input" id="username" type="text" value="" />
         </div>
@@ -31,7 +31,7 @@
           <label
             class="homey-form-label"
             for="password"
-            data-i18n="settings.password"
+            data-i18n="settings.authenticate.password"
           ></label>
           <input
             class="homey-form-input"
@@ -43,7 +43,7 @@
         <button
           id="authenticate"
           class="homey-button-primary-full"
-          data-i18n="settings.authenticate"
+          data-i18n="settings.authenticate.button"
         ></button>
       </fieldset>
     </div>
@@ -52,7 +52,7 @@
         <legend
           class="homey-form-legend"
           id="error-log"
-          data-i18n="settings.error-log"
+          data-i18n="settings.error_log.label"
         ></legend>
         <div class="homey-form-group">
           <label class="homey-form-label" id="period"></label>
@@ -61,17 +61,20 @@
         <button
           id="see"
           class="homey-button-secondary"
-          data-i18n="settings.see"
+          data-i18n="settings.error_log.see"
         ></button>
         <input id="from" type="date" value="" />
       </fieldset>
       <fieldset class="homey-form-fieldset">
-        <legend class="homey-form-legend" data-i18n="settings.devices"></legend>
+        <legend
+          class="homey-form-legend"
+          data-i18n="settings.devices.label"
+        ></legend>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="interval"
-            data-i18n="settings.interval_label"
+            data-i18n="settings.devices.interval"
           ></label>
           <input
             class="homey-form-input"
@@ -85,44 +88,44 @@
           <label
             class="homey-form-label"
             for="always_on"
-            data-i18n="settings.always_on"
+            data-i18n="settings.devices.always_on"
           ></label>
           <select class="homey-form-select" id="always_on">
             <option value=""></option>
-            <option value="false" data-i18n="settings.no"></option>
-            <option value="true" data-i18n="settings.yes"></option>
+            <option value="false" data-i18n="settings.boolean.false"></option>
+            <option value="true" data-i18n="settings.boolean.true"></option>
           </select>
         </div>
         <button
           id="apply-settings"
           class="homey-button-primary-full"
-          data-i18n="settings.apply"
+          data-i18n="settings.devices.apply.button"
         ></button>
       </fieldset>
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
-          data-i18n="settings.building"
+          data-i18n="settings.buildings.label"
         ></legend>
         <div class="homey-form-group">
-          <select class="homey-form-select" id="building"></select>
+          <select class="homey-form-select" id="buildings"></select>
         </div>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="enabled-holiday-mode"
-            data-i18n="settings.holiday-mode"
+            data-i18n="settings.buildings.holiday_mode.enabled"
           ></label>
           <select class="homey-form-select" id="enabled-holiday-mode">
-            <option value="false" data-i18n="settings.no"></option>
-            <option value="true" data-i18n="settings.yes"></option>
+            <option value="false" data-i18n="settings.boolean.false"></option>
+            <option value="true" data-i18n="settings.boolean.true"></option>
           </select>
         </div>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="start-date"
-            data-i18n="settings.start-date"
+            data-i18n="settings.buildings.holiday_mode.start_date"
           ></label>
           <input id="start-date" type="datetime-local" value="" />
         </div>
@@ -130,36 +133,36 @@
           <label
             class="homey-form-label"
             for="end-date"
-            data-i18n="settings.end-date"
+            data-i18n="settings.buildings.holiday_mode.end_date"
           ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
         <button
           id="refresh-holiday-mode"
           class="homey-button-secondary"
-          data-i18n="settings.refresh"
+          data-i18n="settings.buildings.refresh"
         ></button>
         <button
           id="update-holiday-mode"
           class="homey-button-primary"
-          data-i18n="settings.update"
+          data-i18n="settings.buildings.update"
         ></button>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="enabled-frost-protection"
-            data-i18n="settings.frost-protection"
+            data-i18n="settings.buildings.frost-protection.enabled"
           ></label>
           <select class="homey-form-select" id="enabled-frost-protection">
-            <option value="false" data-i18n="settings.no"></option>
-            <option value="true" data-i18n="settings.yes"></option>
+            <option value="false" data-i18n="settings.boolean.false"></option>
+            <option value="true" data-i18n="settings.boolean.true"></option>
           </select>
         </div>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="min"
-            data-i18n="settings.min_label"
+            data-i18n="settings.buildings.frost-protection.min"
           ></label>
           <input
             class="homey-form-input"
@@ -173,7 +176,7 @@
           <label
             class="homey-form-label"
             for="max"
-            data-i18n="settings.max_label"
+            data-i18n="settings.buildings.frost-protection.max"
           ></label>
           <input
             class="homey-form-input"
@@ -186,12 +189,12 @@
         <button
           id="refresh-frost-protection"
           class="homey-button-secondary"
-          data-i18n="settings.refresh"
+          data-i18n="settings.buildings.refresh"
         ></button>
         <button
           id="update-frost-protection"
           class="homey-button-primary"
-          data-i18n="settings.update"
+          data-i18n="settings.buildings.update"
         ></button>
       </fieldset>
     </div>
