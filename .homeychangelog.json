@@ -73,5 +73,8 @@
   },
   "9.1.0": {
     "en": "Added device and building settings under app settings."
+  },
+  "11.0.0": {
+    "en": "Translated into French."
   }
 }
