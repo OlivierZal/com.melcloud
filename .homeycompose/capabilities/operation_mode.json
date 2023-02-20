@@ -1,7 +1,7 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation Mode",
+    "en": "Operation mode",
     "fr": "Mode opérationnel"
   },
   "getable": true,
