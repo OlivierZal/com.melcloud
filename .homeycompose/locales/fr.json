@@ -12,7 +12,6 @@
     "alert": {
       "actions": {
         "authenticate": "Authentification",
-        "apply": "Modification",
         "update": "Mise à jour"
       },
       "failure": "__action__ échouée.",

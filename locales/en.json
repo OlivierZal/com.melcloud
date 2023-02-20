@@ -1,76 +1,27 @@
 {
+  "app": {
+    "building": {
+      "no_device": "Building __buildingId__ has no device.",
+      "not_found": "Building __buildingId__ cannot be found."
+    },
+    "holiday_mode": {
+      "date_missing": "Start Date and/or End Date are missing."
+    }
+  },
   "settings": {
-    "title": "MELCloud Settings",
-    "credentials": "Credentials",
-    "username": "Username",
-    "password": "Password",
+    "alert": {
+      "actions": {
+        "authenticate": "Authentication",
+        "update": "Update"
+      },
+      "failure": "__action__ failed.",
+      "success": "__action__ succeeded."
+    },
     "authenticate": {
       "button": "Authenticate",
       "label": "Credentials",
       "password": "Password",
       "username": "Username"
-    },
-    "device": "Device",
-    "interval": "The refresh frequency",
-    "always_on": "Disable shutdown from Homey",
-    "no": "No",
-    "yes": "Yes",
-    "apply": "Apply to all devices",
-    "error-log": "Error Log",
-    "see": "See all errors since",
-    "building": "Building Settings",
-    "holiday-mode": "Enable <strong>holiday mode</strong>",
-    "start-date": "Start date",
-    "end-date": "End date",
-    "refresh": "Refresh",
-    "update": "Update",
-    "frost-protection": "Enable <strong>frost protection</strong>",
-    "min": "The minimum temperature",
-    "max": "The maximum temperature",
-    "authenticate_success": "Authentication succeeded.",
-    "authenticate_failure": "Authentication failed.",
-    "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
-    "date": "Date",
-    "error": "Error",
-    "devices": {
-      "always_on": "Disable shutdown from Homey",
-      "apply": {
-        "button": "Apply to all devices",
-        "confirm": "Are you sure you want to apply these settings to all devices?",
-        "nothing": "No change to apply."
-      },
-      "interval": "Refresh frequency (minutes)",
-      "label": "Device Settings"
-    },
-    "apply_confirm": "Are you sure you want to apply these settings to all devices?",
-    "apply_nothing": "No change to apply.",
-    "apply_success": "Change has been applied to all devices.",
-    "apply_failure": "Change has not been applied.",
-    "update_success": "Update succeeded.",
-    "update_failure": "Update failed.",
-    "int_error": {
-      "message": "__name__ must be an integer between __min__ and __max__.",
-      "values": {
-        "interval": "The refresh frequency",
-        "max": "The maximum temperature",
-        "min": "The minimum temperature"
-      }
-    },
-    "choose_date": "Choose a date before __fromDateHuman__.",
-    "interval_label": "Refresh frequency (minutes)",
-    "min_label": "Minimum temperature",
-    "max_label": "Maximum temperature",
-    "Device": "Device",
-    "Date": "Date",
-    "Error": "Error",
-    "alert": {
-      "actions": {
-        "authenticate": "Authentication",
-        "apply": "Modification",
-        "update": "Update"
-      },
-      "failure": "__action__ failed.",
-      "success": "__action__ succeeded."
     },
     "boolean": {
       "false": "No",
@@ -91,6 +42,16 @@
       "refresh": "Refresh",
       "update": "Update"
     },
+    "devices": {
+      "always_on": "Disable shutdown from Homey",
+      "apply": {
+        "button": "Apply to all devices",
+        "confirm": "Are you sure you want to apply these settings to all devices?",
+        "nothing": "No change to apply."
+      },
+      "interval": "Refresh frequency (minutes)",
+      "label": "Device Settings"
+    },
     "error_log": {
       "columns": {
         "Date": "Date",
@@ -101,27 +62,16 @@
       "label": "Error Log",
       "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "See all errors since"
-    }
-  },
-  "always_on_warning": "Shutdown from Homey has been disabled.",
-  "exit_device": "Exit device and return to refresh your dashboard.",
-  "not_heat_registered": "`__value__` has been saved (even if `Heat` is displayed).",
-  "building_no_device": "Building __buildingId__ has no device.",
-  "building_not_found": "Building __buildingId__ cannot be found.",
-  "date_missing": "Start Date and/or End Date are missing.",
-  "dry": "Dry",
-  "fan": "Fan",
-  "interval": "Interval",
-  "min": "Minimum",
-  "max": "Maximum",
-  "app": {
-    "building": {
-      "no_device": "Building __buildingId__ has no device.",
-      "not_found": "Building __buildingId__ cannot be found."
     },
-    "holiday_mode": {
-      "date_missing": "Start Date and/or End Date are missing."
-    }
+    "int_error": {
+      "message": "__name__ must be an integer between __min__ and __max__.",
+      "values": {
+        "interval": "The refresh frequency",
+        "max": "The maximum temperature",
+        "min": "The minimum temperature"
+      }
+    },
+    "title": "MELCloud Settings"
   },
   "warnings": {
     "always_on": "Shutdown from Homey has been disabled.",
