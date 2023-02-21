@@ -34,6 +34,7 @@ export default class MELCloudApp extends App {
   loginTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
+    Settings.defaultLocale = this.homey.i18n.getLanguage()
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =

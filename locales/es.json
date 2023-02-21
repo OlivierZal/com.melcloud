@@ -1,0 +1,91 @@
+{
+  "app": {
+    "building": {
+      "no_device": "El edificio __buildingId__ no tiene dispositivos.",
+      "not_found": "No se puede encontrar el edificio __buildingId__."
+    },
+    "holiday_mode": {
+      "date_missing": "Falta la fecha de inicio y/o de finalización."
+    }
+  },
+  "settings": {
+    "alert": {
+      "actions": {
+        "authenticate": "Autenticación",
+        "update": "Actualizar"
+      },
+      "failure": "__action__ falló.",
+      "success": "__action__ se ha completado con éxito."
+    },
+    "authenticate": {
+      "button": "Autenticar",
+      "label": "Credenciales",
+      "password": "Contraseña",
+      "username": "Nombre de usuario"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Sí"
+    },
+    "buildings": {
+      "label": "Configuración del edificio",
+      "frost_protection": {
+        "enabled": "Activar <strong>protección contra heladas</strong>",
+        "max": "Temperatura máxima",
+        "min": "Temperatura mínima"
+      },
+      "holiday_mode": {
+        "enabled": "Activar <strong>modo vacaciones</strong>",
+        "end_date": "Fecha de finalización",
+        "start_date": "Fecha de inicio"
+      },
+      "refresh": "Actualizar",
+      "update": "Actualizar"
+    },
+    "devices": {
+      "always_on": "Desactivar apagado desde Homey",
+      "apply": {
+        "button": "Aplicar a todos los dispositivos",
+        "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?",
+        "nothing": "No hay cambios que aplicar."
+      },
+      "interval": "Frecuencia de actualización (minutos)",
+      "label": "Configuración del dispositivo"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Fecha",
+        "Device": "Dispositivo",
+        "Error": "Error"
+      },
+      "error": "Elija una fecha anterior a __fromDateHuman__.",
+      "error_count_text_0": "error",
+      "error_count_text_1": "error",
+      "error_count_text_234": "errores",
+      "error_count_text_plural": "errores",
+      "label": "Registro de errores",
+      "period": "Desde __fromDateHuman__: __errorCount__ __errorCountText__",
+      "see": "Ver todos los errores desde"
+    },
+    "int_error": {
+      "message": "__name__ debe ser un número entero entre __min__ y __max__.",
+      "values": {
+        "interval": "La frecuencia de actualización",
+        "max": "La temperatura máxima",
+        "min": "La temperatura mínima"
+      }
+    },
+    "title": "Configuración de MELCloud"
+  },
+  "warnings": {
+    "always_on": "Se ha desactivado el apagado desde Homey.",
+    "dashboard": "Salga del dispositivo y vuelva para actualizar su panel.",
+    "operation_mode": {
+      "message": "Se ha guardado `__value__` (incluso si se muestra `Calefacción`).",
+      "values": {
+        "dry": "Secar",
+        "fan": "Ventilar"
+      }
+    }
+  }
+}

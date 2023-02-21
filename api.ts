@@ -16,7 +16,7 @@ import {
   type Settings
 } from './types'
 
-const format: string = 'dd LLL yy HH:mm'
+const format: string = 'd LLL yy HH:mm'
 
 function fromUTCtoLocal(utcDate: string | null, format?: string): string {
   if (utcDate === null) {
@@ -112,6 +112,10 @@ module.exports = {
     }
   },
 
+  async getLocale({ homey }: { homey: Homey }): Promise<string> {
+    return homey.i18n.getLanguage()
+  },
+
   async getUnitErrorLog({
     homey,
     query
@@ -155,7 +159,7 @@ module.exports = {
           const date2 = DateTime.fromFormat(error2.Date, format)
           return Number(date2.diff(date1))
         }),
-      FromDateHuman: fromDate.toFormat('dd LLL yy'),
+      FromDateHuman: fromDate.toFormat('d LLLL yyyy'),
       NextFromDate: NextToDate.minus({ days: period }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }

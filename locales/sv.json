@@ -1,0 +1,91 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Byggnaden __buildingId__ har ingen enhet.",
+      "not_found": "Byggnaden __buildingId__ kan inte hittas."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdatum och/eller slutdatum saknas."
+    }
+  },
+  "settings": {
+    "alert": {
+      "actions": {
+        "authenticate": "Autentisering",
+        "update": "Uppdatering"
+      },
+      "failure": "__action__ misslyckades.",
+      "success": "__action__ lyckades."
+    },
+    "authenticate": {
+      "button": "Autentisera",
+      "label": "Inloggningsuppgifter",
+      "password": "Lösenord",
+      "username": "Användarnamn"
+    },
+    "boolean": {
+      "false": "Nej",
+      "true": "Ja"
+    },
+    "buildings": {
+      "label": "Byggnadsinställningar",
+      "frost_protection": {
+        "enabled": "Aktivera <strong>frostskydd</strong>",
+        "max": "Maximal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktivera <strong>semesterläge</strong>",
+        "end_date": "Slutdatum",
+        "start_date": "Startdatum"
+      },
+      "refresh": "Uppdatera",
+      "update": "Uppdatera"
+    },
+    "devices": {
+      "always_on": "Inaktivera avstängning från Homey",
+      "apply": {
+        "button": "Tillämpa på alla enheter",
+        "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?",
+        "nothing": "Ingen ändring att tillämpa."
+      },
+      "interval": "Uppdateringsfrekvens (minuter)",
+      "label": "Enhetsinställningar"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Datum",
+        "Device": "Enhet",
+        "Error": "Fel"
+      },
+      "error": "Välj ett datum före __fromDateHuman__.",
+      "error_count_text_0": "fel",
+      "error_count_text_1": "fel",
+      "error_count_text_234": "fel",
+      "error_count_text_plural": "fel",
+      "label": "Fellogg",
+      "period": "Sedan __fromDateHuman__: __errorCount__ __errorCountText__",
+      "see": "Se alla fel sedan"
+    },
+    "int_error": {
+      "message": "__name__ måste vara ett heltal mellan __min__ och __max__.",
+      "values": {
+        "interval": "Uppdateringsfrekvens",
+        "max": "Maximal temperatur",
+        "min": "Minimal temperatur"
+      }
+    },
+    "title": "MELCloud-inställningar"
+  },
+  "warnings": {
+    "always_on": "Avstängning från Homey har inaktiverats.",
+    "dashboard": "Avsluta enhet och återvänd för att uppdatera din instrumentpanel.",
+    "operation_mode": {
+      "message": "`__value__` har sparats (även om `Värme` visas).",
+      "values": {
+        "dry": "Torka",
+        "fan": "Ventilera"
+      }
+    }
+  }
+}

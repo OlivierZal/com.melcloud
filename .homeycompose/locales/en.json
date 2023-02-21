@@ -59,6 +59,10 @@
         "Error": "Error"
       },
       "error": "Choose a date before __fromDateHuman__.",
+      "error_count_text_0": "error",
+      "error_count_text_1": "error",
+      "error_count_text_234": "errors",
+      "error_count_text_plural": "errors",
       "label": "Error Log",
       "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "See all errors since"

@@ -3,7 +3,10 @@
     "type": "group",
     "label": {
       "en": "Configuration",
-      "fr": "Configuration"
+      "fr": "Configuration",
+      "nl": "Configuratie",
+      "sv": "Konfiguration",
+      "es": "Configuración"
     },
     "children": [
       {
@@ -11,11 +14,17 @@
         "type": "number",
         "label": {
           "en": "Refresh frequency",
-          "fr": "Fréquence de rafraîchissement"
+          "fr": "Fréquence de rafraîchissement",
+          "nl": "Verversfrequentie",
+          "sv": "Uppdateringsfrekvens",
+          "es": "Frecuencia de actualización"
         },
         "units": {
           "en": "minutes",
-          "fr": "minutes"
+          "fr": "minutes",
+          "nl": "minuten",
+          "sv": "minuter",
+          "es": "minutos"
         },
         "value": 5,
         "min": 1,
@@ -27,7 +36,10 @@
     "type": "group",
     "label": {
       "en": "Options",
-      "fr": "Options"
+      "fr": "Options",
+      "nl": "Opties",
+      "sv": "Alternativ",
+      "es": "Opciones"
     },
     "children": [
       {
@@ -35,12 +47,18 @@
         "type": "checkbox",
         "label": {
           "en": "Disable shutdown from Homey",
-          "fr": "Désactiver l'extinction depuis Homey"
+          "fr": "Désactiver l'extinction depuis Homey",
+          "nl": "Schakel uitschakelen van Homey uit",
+          "sv": "Inaktivera avstängning från Homey",
+          "es": "Desactivar apagado desde Homey"
         },
         "value": false,
         "hint": {
           "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
-          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
+          "nl": "Deze instelling voorkomt dat het apparaat wordt uitgeschakeld vanuit Homey, het kan nog steeds handmatig worden uitgeschakeld (vanaf een afstandsbediening of vanaf het fysieke apparaat)",
+          "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
+          "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
       }
     ]
@@ -48,8 +66,83 @@
   {
     "type": "group",
     "label": {
-      "en": "Dashboard",
-      "fr": "Tableau de bord"
+      "en": "Using external sensors",
+      "fr": "Utilisation de capteurs externes",
+      "nl": "Gebruik van externe sensoren",
+      "sv": "Användning av externa sensorer",
+      "es": "Uso de sensores externos"
+    },
+    "children": [
+      {
+        "id": "measure_temperature.flow_zone1",
+        "type": "checkbox",
+        "label": {
+          "en": "Flow temperature",
+          "fr": "Température de flux",
+          "nl": "Doorstroomtemperatuur",
+          "sv": "Flödestemperatur",
+          "es": "Temperatura de flujo"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW6"
+        }
+      },
+      {
+        "id": "measure_temperature.return_zone1",
+        "type": "checkbox",
+        "label": {
+          "en": "Return temperature",
+          "fr": "Température de retour",
+          "nl": "Retourtemperatuur",
+          "sv": "Returtemperatur",
+          "es": "Temperatura de retorno"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW7"
+        }
+      },
+      {
+        "id": "measure_temperature.flow_zone2",
+        "type": "checkbox",
+        "label": {
+          "en": "Flow temperature - zone 2",
+          "fr": "Température de flux - zone 2",
+          "nl": "Doorstroomtemperatuur - zone 2",
+          "sv": "Flödestemperatur - zone 2",
+          "es": "Temperatura de flujo - zone 2"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW8"
+        }
+      },
+      {
+        "id": "measure_temperature.return_zone2",
+        "type": "checkbox",
+        "label": {
+          "en": "Return temperature - zone 2",
+          "fr": "Température de retour - zone 2",
+          "nl": "Retourtemperatuur - zone 2",
+          "sv": "Returtemperatur - zone 2",
+          "es": "Temperatura de retorno - zone 2"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW9"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Dashboard display",
+      "fr": "Affichage sur le tableau de bord",
+      "nl": "Dashboard weergave",
+      "sv": "Instrumentpanelens visning",
+      "es": "Visualización en el tablero de instrumentos"
     },
     "children": [
       {
@@ -57,7 +150,10 @@
         "type": "checkbox",
         "label": {
           "en": "Booster heater 1",
-          "fr": "Chauffage d'appoint 1"
+          "fr": "Chauffage d'appoint 1",
+          "nl": "Boosterverwarmingselement 1",
+          "sv": "Tilläggsuppvärmare 1",
+          "es": "Calentador de refuerzo 1"
         },
         "value": true
       },
@@ -66,7 +162,10 @@
         "type": "checkbox",
         "label": {
           "en": "Booster heater 2",
-          "fr": "Chauffage d'appoint 2"
+          "fr": "Chauffage d'appoint 2",
+          "nl": "Boosterverwarmingselement 2",
+          "sv": "Tilläggsuppvärmare 2",
+          "es": "Calentador de refuerzo 2"
         },
         "value": true
       },
@@ -75,7 +174,10 @@
         "type": "checkbox",
         "label": {
           "en": "Booster heater 2+",
-          "fr": "Chauffage d'appoint 2+"
+          "fr": "Chauffage d'appoint 2+",
+          "nl": "Boosterverwarmingselement 2+",
+          "sv": "Tilläggsuppvärmare 2+",
+          "es": "Calentador de refuerzo 2+"
         },
         "value": false
       },
@@ -84,7 +186,10 @@
         "type": "checkbox",
         "label": {
           "en": "Defrost mode",
-          "fr": "Mode dégivrage"
+          "fr": "Le mode dégivrage",
+          "nl": "Ontdooimodus",
+          "sv": "Avfrostningsläge",
+          "es": "Modo de descongelación"
         },
         "value": true
       },
@@ -93,7 +198,10 @@
         "type": "checkbox",
         "label": {
           "en": "Eco hot water",
-          "fr": "Eau chaude éco"
+          "fr": "Eau chaude éco",
+          "nl": "Eco warm water",
+          "sv": "Eko-varmtvatten",
+          "es": "Agua caliente eco"
         },
         "value": false
       },
@@ -102,34 +210,46 @@
         "type": "checkbox",
         "label": {
           "en": "Immersion heater",
-          "fr": "Chauffage par immersion"
+          "fr": "Chauffe-eau électrique",
+          "nl": "Dompelelement",
+          "sv": "Elpatron",
+          "es": "Calentador eléctrico sumergible"
         },
         "value": false
-      },
-      {
-        "id": "measure_power.heat_pump_frequency",
-        "type": "checkbox",
-        "label": {
-          "en": "Heat pump frequency",
-          "fr": "Fréquence de la pompe à chaleur"
-        },
-        "value": true
       },
       {
         "id": "measure_power.wifi",
         "type": "checkbox",
         "label": {
           "en": "Wifi signal strength",
-          "fr": "Puissance du signal wifi"
+          "fr": "Puissance du signal wifi",
+          "nl": "Wifi signaalsterkte",
+          "sv": "Wifi signalstyrka",
+          "es": "Fuerza de la señal wifi"
         },
         "value": true
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Last daily CoP display",
+      "fr": "Affichage du dernier CoP quotidien",
+      "nl": "Laatste dagelijkse CoP weergeven",
+      "sv": "Visa senaste dagliga CoP",
+      "es": "Mostrar el último CoP diario"
+    },
+    "children": [
       {
         "id": "meter_power.daily_cop",
         "type": "checkbox",
         "label": {
-          "en": "Last daily CoP",
-          "fr": "Dernier CoP quotidien"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -137,8 +257,11 @@
         "id": "meter_power.daily_cop_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last daily cooling CoP",
-          "fr": "Dernier CoP quotidien refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -146,8 +269,11 @@
         "id": "meter_power.daily_cop_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last daily heating CoP",
-          "fr": "Dernier CoP quotidien chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": true
       },
@@ -155,17 +281,35 @@
         "id": "meter_power.daily_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last daily hot water CoP",
-          "fr": "Dernier CoP quotidien eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Last daily consumption display",
+      "fr": "Affichage de la dernière consommation quotidienne",
+      "nl": "Laatste dagelijkse consumptie weergeven",
+      "sv": "Visa senaste dagliga förbrukning",
+      "es": "Mostrar el último consumo diario"
+    },
+    "children": [
       {
         "id": "meter_power.daily_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Last daily consumption",
-          "fr": "Dernière conso quotidienne"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -173,8 +317,11 @@
         "id": "meter_power.daily_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last daily cooling consumption",
-          "fr": "Dernière conso quotidienne refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -182,8 +329,11 @@
         "id": "meter_power.daily_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last daily heating consumption",
-          "fr": "Dernière conso quotidienne chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": false
       },
@@ -191,17 +341,35 @@
         "id": "meter_power.daily_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last daily hot water consumption",
-          "fr": "Dernière conso quotidienne eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Last daily production display",
+      "fr": "Affichage de la dernière production quotidienne",
+      "nl": "Laatste dagelijkse productie weergeven",
+      "sv": "Visa senaste dagliga produktion",
+      "es": "Mostrar el última producción diaria"
+    },
+    "children": [
       {
         "id": "meter_power.daily_produced",
         "type": "checkbox",
         "label": {
-          "en": "Last daily production",
-          "fr": "Dernière prod quotidienne"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -209,8 +377,11 @@
         "id": "meter_power.daily_produced_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Last daily cooling production",
-          "fr": "Dernière prod quotidienne refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -218,8 +389,11 @@
         "id": "meter_power.daily_produced_heating",
         "type": "checkbox",
         "label": {
-          "en": "Last daily heating production",
-          "fr": "Dernière prod quotidienne chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": false
       },
@@ -227,17 +401,35 @@
         "id": "meter_power.daily_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Last daily hot water production",
-          "fr": "Dernière prod quotidienne eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total CoP display",
+      "fr": "Affichage du CoP total",
+      "nl": "Totaal CoP weergeven",
+      "sv": "Visa total CoP",
+      "es": "Mostrar el CoP total"
+    },
+    "children": [
       {
         "id": "meter_power.total_cop",
         "type": "checkbox",
         "label": {
-          "en": "Total CoP",
-          "fr": "CoP total"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -245,8 +437,11 @@
         "id": "meter_power.total_cop_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total cooling CoP",
-          "fr": "CoP total refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -254,8 +449,11 @@
         "id": "meter_power.total_cop_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total heating CoP",
-          "fr": "CoP total chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": false
       },
@@ -263,17 +461,35 @@
         "id": "meter_power.total_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total hot water CoP",
-          "fr": "CoP total eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total consumption display",
+      "fr": "Affichage de la consommation totale",
+      "nl": "Totaalverbruik weergeven",
+      "sv": "Visa total förbrukning",
+      "es": "Mostrar el consumo total"
+    },
+    "children": [
       {
         "id": "meter_power.total_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Total consumption",
-          "fr": "Conso totale"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -281,8 +497,11 @@
         "id": "meter_power.total_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total cooling consumption",
-          "fr": "Conso totale refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -290,8 +509,11 @@
         "id": "meter_power.total_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total heating consumption",
-          "fr": "Conso totale chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": false
       },
@@ -299,17 +521,35 @@
         "id": "meter_power.total_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total hot water consumption",
-          "fr": "Conso totale eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total production display",
+      "fr": "Affichage de la production totale",
+      "nl": "Totale productie weergeven",
+      "sv": "Visa total produktion",
+      "es": "Mostrar el producción total"
+    },
+    "children": [
       {
         "id": "meter_power.total_produced",
         "type": "checkbox",
         "label": {
-          "en": "Total production",
-          "fr": "Prod totale"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": false
       },
@@ -317,8 +557,11 @@
         "id": "meter_power.total_produced_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total cooling production",
-          "fr": "Prod totale refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": false
       },
@@ -326,8 +569,11 @@
         "id": "meter_power.total_produced_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total heating production",
-          "fr": "Prod totale chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": false
       },
@@ -335,8 +581,11 @@
         "id": "meter_power.total_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Total hot water production",
-          "fr": "Prod totale eau chaude"
+          "en": "Hot water",
+          "fr": "Eau chaude",
+          "nl": "Warm water",
+          "sv": "Varmtvatten",
+          "es": "Agua caliente"
         },
         "value": false
       }

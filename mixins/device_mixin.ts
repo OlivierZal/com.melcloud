@@ -27,7 +27,6 @@ import {
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
-  // eslint-disable-next-line @typescript-eslint/key-spacing
   operationModeCapability!:
     | SetCapability<MELCloudDeviceAta>
     | SetCapability<MELCloudDeviceAtw>
@@ -35,7 +34,6 @@ export default class MELCloudDeviceMixin extends Device {
   operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
-  // eslint-disable-next-line @typescript-eslint/key-spacing
   setCapabilityMapping!:
     | Record<
         SetCapability<MELCloudDeviceAta>,
@@ -46,7 +44,6 @@ export default class MELCloudDeviceMixin extends Device {
         SetCapabilityMapping<MELCloudDeviceAtw>
       >
 
-  // eslint-disable-next-line @typescript-eslint/key-spacing
   getCapabilityMapping!:
     | Record<
         GetCapability<MELCloudDeviceAta>,
@@ -57,7 +54,6 @@ export default class MELCloudDeviceMixin extends Device {
         GetCapabilityMapping<MELCloudDeviceAtw>
       >
 
-  // eslint-disable-next-line @typescript-eslint/key-spacing
   listCapabilityMapping!:
     | Record<
         ListCapability<MELCloudDeviceAta>,

@@ -2,7 +2,10 @@
   "type": "enum",
   "title": {
     "en": "Operation mode",
-    "fr": "Mode opérationnel"
+    "fr": "Mode opérationnel",
+    "nl": "Bedrijfsmodus",
+    "sv": "Driftläge",
+    "es": "Modo de operación"
   },
   "uiComponent": "picker",
   "insights": true,
@@ -13,22 +16,31 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat room",
-        "fr": "Chauffer la pièce"
+        "en": "Heat the room",
+        "fr": "Chauffer la pièce",
+        "nl": "Verwarm de ruimte",
+        "sv": "Värma upp rummet",
+        "es": "Calentar la habitación"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat flow",
-        "fr": "Flux de chauffage"
+        "en": "Heat the flow",
+        "fr": "Chauffer l'écoulement",
+        "nl": "Verwarm de doorstroming",
+        "sv": "Värma upp flödet",
+        "es": "Calentar el flujo"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Curve",
-        "fr": "Courbe"
+        "en": "Use the heating curve",
+        "fr": "Utiliser la courbe de chauffage",
+        "nl": "Gebruik de verwarmingscurve",
+        "sv": "Använd uppvärmningskurvan",
+        "es": "Usar la curva de calefacción"
       }
     }
   ]

@@ -2,7 +2,10 @@
   "type": "number",
   "title": {
     "en": "Fan speed",
-    "fr": "Vitesse du ventilateur"
+    "fr": "Vitesse de ventilation",
+    "nl": "Ventilatiesnelheid",
+    "sv": "Fläkthastighet",
+    "es": "Velocidad del ventilador"
   },
   "uiComponent": "slider",
   "insights": true,

@@ -23,19 +23,31 @@
         "logo": "logo.png",
         "usernameLabel": {
           "en": "Username",
-          "fr": "Nom d'utilisateur"
+          "fr": "Nom d'utilisateur",
+          "nl": "Gebruikersnaam",
+          "sv": "Användarnamn",
+          "es": "Nombre de usuario"
         },
         "usernamePlaceholder": {
           "en": "user@domain.com",
-          "fr": "utilisateur@domain.fr"
+          "fr": "utilisateur@domain.fr",
+          "nl": "gebruiker@domain.nl",
+          "sv": "anvandare@domain.se",
+          "es": "usuario@domain.es"
         },
         "passwordLabel": {
           "en": "Password",
-          "fr": "Mot de passe"
+          "fr": "Mot de passe",
+          "nl": "Wachtwoord",
+          "sv": "Lösenord",
+          "es": "Contraseña"
         },
         "passwordPlaceholder": {
           "en": "P4ssw0rd",
-          "fr": "P4ssw0rd"
+          "fr": "P4ssw0rd",
+          "nl": "P4ssw0rd",
+          "sv": "P4ssw0rd",
+          "es": "P4ssw0rd"
         }
       }
     },
@@ -59,19 +71,31 @@
         "logo": "logo.png",
         "usernameLabel": {
           "en": "Username",
-          "fr": "Nom d'utilisateur"
+          "fr": "Nom d'utilisateur",
+          "nl": "Gebruikersnaam",
+          "sv": "Användarnamn",
+          "es": "Nombre de usuario"
         },
         "usernamePlaceholder": {
           "en": "user@domain.com",
-          "fr": "utilisateur@domain.fr"
+          "fr": "utilisateur@domain.fr",
+          "nl": "gebruiker@domain.nl",
+          "sv": "anvandare@domain.se",
+          "es": "usuario@domain.es"
         },
         "passwordLabel": {
           "en": "Password",
-          "fr": "Mot de passe"
+          "fr": "Mot de passe",
+          "nl": "Wachtwoord",
+          "sv": "Lösenord",
+          "es": "Contraseña"
         },
         "passwordPlaceholder": {
           "en": "P4ssw0rd",
-          "fr": "P4ssw0rd"
+          "fr": "P4ssw0rd",
+          "nl": "P4ssw0rd",
+          "sv": "P4ssw0rd",
+          "es": "P4ssw0rd"
         }
       }
     }

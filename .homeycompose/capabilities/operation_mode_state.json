@@ -1,8 +1,11 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation mode",
-    "fr": "Mode opérationnel"
+    "en": "Operation mode state",
+    "fr": "État du mode opérationnel",
+    "nl": "Bedrijfsmodus status",
+    "sv": "Driftläge status",
+    "es": "Estado del modo de operación"
   },
   "uiComponent": "sensor",
   "insights": true,
@@ -14,49 +17,70 @@
       "id": "idle",
       "title": {
         "en": "Idle",
-        "fr": "Inactif"
+        "fr": "Inactif",
+        "nl": "Inactief",
+        "sv": "Inaktiv",
+        "es": "Inactivo"
       }
     },
     {
       "id": "dhw",
       "title": {
-        "en": "Domestic house water",
-        "fr": "Eau chaude sanitaire"
+        "en": "Domestic hot water",
+        "fr": "Eau chaude sanitaire",
+        "nl": "Sanitair warm water",
+        "sv": "Hushållsvatten",
+        "es": "Agua caliente sanitaria"
       }
     },
     {
       "id": "heating",
       "title": {
         "en": "Heating",
-        "fr": "Chauffage"
+        "fr": "Chauffage",
+        "nl": "Verwarming",
+        "sv": "Uppvärmning",
+        "es": "Calefacción"
       }
     },
     {
       "id": "cooling",
       "title": {
         "en": "Cooling",
-        "fr": "Refroidissement"
+        "fr": "Refroidissement",
+        "nl": "Koeling",
+        "sv": "Kylning",
+        "es": "Enfriamiento"
       }
     },
     {
       "id": "defrost",
       "title": {
         "en": "Defrost",
-        "fr": "Dégivrage"
+        "fr": "Dégivrage",
+        "nl": "Ontdooien",
+        "sv": "Avfrostning",
+        "es": "Descongelación"
       }
     },
     {
       "id": "standby",
       "title": {
         "en": "Standby",
-        "fr": "Veille"
+        "fr": "Veille",
+        "nl": "Stand-by",
+        "sv": "Standby",
+        "es": "En espera"
       }
     },
     {
       "id": "legionella",
       "title": {
         "en": "Legionella",
-        "fr": "Legionella"
+        "fr": "Legionella",
+        "nl": "Legionella",
+        "sv": "Legionella",
+        "es": "Legionella"
       }
     }
   ],
