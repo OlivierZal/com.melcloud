@@ -4,7 +4,7 @@
     "en": "Vertical air discharge",
     "fr": "Sortie d'air verticale",
     "nl": "Uitblaasrichting verticaal",
-    "sv": "Vertikalt utblåsningsläge",
+    "sv": "Vertikal luftflödesriktning",
     "es": "Descarga de aire vertical"
   },
   "getable": true,
@@ -75,11 +75,11 @@
     {
       "id": "swing",
       "title": {
-        "en": "Swing mode",
-        "fr": "Mode balayage",
-        "nl": "Swing-modus",
-        "sv": "Svingläge",
-        "es": "Modo oscilación"
+        "en": "Swing",
+        "fr": "Balayage",
+        "nl": "Swing",
+        "sv": "Svängning",
+        "es": "Oscilación"
       }
     }
   ]

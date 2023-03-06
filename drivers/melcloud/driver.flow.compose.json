@@ -6,7 +6,7 @@
         "en": "The fan speed has changed",
         "fr": "La vitesse de ventilation a été modifiée",
         "nl": "De ventilatiesnelheid is veranderd",
-        "sv": "Fläkthastighet ändrades",
+        "sv": "Fläkthastigheten ändrades",
         "es": "La velocidad del ventilador ha cambiado"
       },
       "tokens": [
@@ -30,7 +30,7 @@
         "en": "The operation mode has changed",
         "fr": "Le mode opérationnel a été modifié",
         "nl": "De bedrijfsmodus is veranderd",
-        "sv": "Driftläge ändrades",
+        "sv": "Driftläget ändrades",
         "es": "El modo de operación ha cambiado"
       },
       "tokens": [
@@ -59,8 +59,8 @@
       "title": {
         "en": "The vertical air discharge has changed",
         "fr": "La sortie d'air verticale a été modifiée",
-        "nl": "Verticale vane richting is veranderd",
-        "sv": "Vertikal vane riktning ändrades",
+        "nl": "De uitblaasrichting verticaal is veranderd",
+        "sv": "Vertikal luftflödesriktning ändrades",
         "es": "La descarga de aire vertical ha cambiado"
       },
       "tokens": [
@@ -71,7 +71,7 @@
             "en": "Vertical air discharge",
             "fr": "Sortie d'air verticale",
             "nl": "Uitblaasrichting verticaal",
-            "sv": "Vertikalt utblåsningsläge",
+            "sv": "Vertikal luftflödesriktning",
             "es": "Descarga de aire vertical"
           },
           "example": {
@@ -89,8 +89,8 @@
       "title": {
         "en": "The horizontal air discharge has changed",
         "fr": "La sortie d'air horizontale a été modifiée",
-        "nl": "Horizontale vane richting is veranderd",
-        "sv": "Horisontell vane riktning ändrades",
+        "nl": "De uitblaasrichting horizontaal is veranderd",
+        "sv": "Horisontell luftflödesriktning ändrades",
         "es": "La descarga de aire horizontal ha cambiado"
       },
       "tokens": [
@@ -101,7 +101,7 @@
             "en": "Horizontal air discharge",
             "fr": "Sortie d'air horizontale",
             "nl": "Uitblaasrichting horizontaal",
-            "sv": "Horisontellt utblåsningsläge",
+            "sv": "Horisontellt luftflödesriktning",
             "es": "Descarga de aire horizontal"
           },
           "example": {
@@ -122,14 +122,14 @@
         "en": "The fan speed !{{is|is not}}",
         "fr": "La vitesse de ventilation !{{est|n'est pas}}",
         "nl": "De ventilatiesnelheid !{{is|is niet}}",
-        "sv": "Fläkthastighet !{{är|är inte}}",
+        "sv": "Fläkthastigheten !{{är|är inte}}",
         "es": "La elocidad del ventilador !{{está|no está}}"
       },
       "titleFormatted": {
         "en": "The fan speed !{{is|is not}} [[fan_power]]",
         "fr": "La vitesse de ventilation !{{est|n'est pas}} [[fan_power]]",
         "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
-        "sv": "Fläkthastighet !{{är|är inte}} [[fan_power]]",
+        "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
         "es": "La velocidad del ventilador !{{está|no está}} [[fan_power]]"
       },
       "args": [
@@ -207,14 +207,14 @@
         "en": "The operation mode !{{is|is not}}",
         "fr": "Le mode opérationnel !{{est|n'est pas}}",
         "nl": "De bedrijfsmodus !{{is|is niet}}",
-        "sv": "Driftläge !{{är|är inte}}",
+        "sv": "Driftläget !{{är|är inte}}",
         "es": "El modo de operación !{{está|no está}}"
       },
       "titleFormatted": {
         "en": "The operation mode !{{is|is not}} [[operation_mode]]",
         "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]",
         "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode]]",
-        "sv": "Driftläge !{{är|är inte}} [[operation_mode]]",
+        "sv": "Driftläget !{{är|är inte}} [[operation_mode]]",
         "es": "El modo de operación !{{está|no está}} [[operation_mode]]"
       },
       "args": [
@@ -225,41 +225,41 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat",
-                "fr": "Chauffer",
-                "nl": "Verhitten",
-                "sv": "Värme",
-                "es": "Calentar"
+                "en": "Heating",
+                "fr": "Chauffage",
+                "nl": "Verwarming",
+                "sv": "Uppvärmning",
+                "es": "Calefacción"
               }
             },
             {
               "id": "dry",
               "title": {
                 "en": "Dry",
-                "fr": "Sécher",
-                "nl": "Drogen",
-                "sv": "Torka",
-                "es": "Secar"
+                "fr": "Déshumidification",
+                "nl": "Droging",
+                "sv": "Avfuktning",
+                "es": "Secado"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Refroidir",
-                "nl": "Koelen",
-                "sv": "Kyla",
-                "es": "Enfriar"
+                "fr": "Refroidissement",
+                "nl": "Koeling",
+                "sv": "Kylning",
+                "es": "Enfriamiento"
               }
             },
             {
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventiler",
-                "nl": "Ventileren",
-                "sv": "Ventilera",
-                "es": "Ventilar"
+                "fr": "Ventilation",
+                "nl": "Ventilator",
+                "sv": "Fläkt",
+                "es": "Ventilador"
               }
             },
             {
@@ -282,14 +282,14 @@
         "en": "The vertical air discharge !{{is|is not}}",
         "fr": "La sortie d'air verticale !{{est|n'est pas}}",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
-        "sv": "Vertikalt utblåsningsläge !{{är|är inte}}",
+        "sv": "Vertikal luftflödesriktning !{{är|är inte}}",
         "es": "La descarga de aire vertical !{{está|no está}}"
       },
       "titleFormatted": {
         "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
         "fr": "La sortie d'air verticale !{{est|n'est pas}} [[vertical]]",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
-        "sv": "Vertikalt utblåsningsläge !{{är|är inte}} [[vertical]]",
+        "sv": "Vertikal luftflödesriktning !{{är|är inte}} [[vertical]]",
         "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
       },
       "args": [
@@ -360,11 +360,11 @@
             {
               "id": "swing",
               "title": {
-                "en": "Swing mode",
-                "fr": "Mode balayage",
-                "nl": "Swing-modus",
-                "sv": "Svingläge",
-                "es": "Modo oscilación"
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]
@@ -377,14 +377,14 @@
         "en": "The horizontal air discharge !{{is|is not}}",
         "fr": "La sortie d'air horizontale !{{est|n'est pas}}",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
-        "sv": "Horisontellt utblåsningsläge !{{är|är inte}}",
+        "sv": "Horisontell luftflödesriktning !{{är|är inte}}",
         "es": "La descarga de aire horizontal !{{está|no está}}"
       },
       "titleFormatted": {
         "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
         "fr": "La sortie d'air horizontale !{{est|n'est pas}} [[horizontal]]",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
-        "sv": "Horisontellt utblåsningsläge !{{är|är inte}} [[horizontal]]",
+        "sv": "Horisontell luftflödesriktning !{{är|är inte}} [[horizontal]]",
         "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]"
       },
       "args": [
@@ -417,7 +417,7 @@
               "title": {
                 "en": "Center-left",
                 "fr": "Centre-gauche",
-                "nl": "Centrum-links",
+                "nl": "Midden-links",
                 "sv": "Mitten-vänster",
                 "es": "Centro-izquierda"
               }
@@ -427,7 +427,7 @@
               "title": {
                 "en": "Center",
                 "fr": "Centre",
-                "nl": "Centrum",
+                "nl": "Midden",
                 "sv": "Mitten",
                 "es": "Centro"
               }
@@ -437,7 +437,7 @@
               "title": {
                 "en": "Center-right",
                 "fr": "Centre-droite",
-                "nl": "Centrum-rechts",
+                "nl": "Midden-rechts",
                 "sv": "Mitten-höger",
                 "es": "Centro-derecha"
               }
@@ -457,7 +457,7 @@
               "title": {
                 "en": "Split",
                 "fr": "Double",
-                "nl": "Gesplitste",
+                "nl": "Gesplitst",
                 "sv": "Delad",
                 "es": "Doble"
               }
@@ -465,11 +465,11 @@
             {
               "id": "swing",
               "title": {
-                "en": "Swing mode",
-                "fr": "Mode balayage",
-                "nl": "Swing-modus",
-                "sv": "Svingläge",
-                "es": "Modo oscilación"
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]
@@ -484,14 +484,14 @@
         "en": "Set the fan speed",
         "fr": "Définir la vitesse de ventilation",
         "nl": "Stel de ventilatiesnelheid in",
-        "sv": "Ställ in fläkthastighet",
+        "sv": "Ställ in fläkthastigheten",
         "es": "Configurar la velocidad del ventilador"
       },
       "titleFormatted": {
         "en": "Set the fan speed to [[fan_power]]",
         "fr": "Définir la vitesse de ventilation à [[fan_power]]",
         "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
-        "sv": "Ställ in fläktens hastighet till [[fan_power]]",
+        "sv": "Ställ in fläkthastigheten till [[fan_power]]",
         "es": "Configurar la velocidad del ventilador a [[fan_power]]"
       },
       "args": [
@@ -569,14 +569,14 @@
         "en": "Set the operation mode",
         "fr": "Définir le mode opérationnel",
         "nl": "Stel de bedrijfsmodus in",
-        "sv": "Ställ in driftläge",
+        "sv": "Ställ in driftläget",
         "es": "Configurar el modo de operación"
       },
       "titleFormatted": {
         "en": "Set the operation mode to [[operation_mode]]",
         "fr": "Définir le mode opérationnel à [[operation_mode]]",
         "nl": "Stel de bedrijfsmodus in op [[operation_mode]]",
-        "sv": "Ställ in driftläge till [[operation_mode]]",
+        "sv": "Ställ in driftläget till [[operation_mode]]",
         "es": "Configurar el modo de operación a [[operation_mode]]"
       },
       "args": [
@@ -587,41 +587,41 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat",
-                "fr": "Chauffer",
-                "nl": "Verhitten",
-                "sv": "Värme",
-                "es": "Calentar"
+                "en": "Heating",
+                "fr": "Chauffage",
+                "nl": "Verwarming",
+                "sv": "Uppvärmning",
+                "es": "Calefacción"
               }
             },
             {
               "id": "dry",
               "title": {
                 "en": "Dry",
-                "fr": "Sécher",
-                "nl": "Drogen",
-                "sv": "Torka",
-                "es": "Secar"
+                "fr": "Déshumidification",
+                "nl": "Droging",
+                "sv": "Avfuktning",
+                "es": "Secado"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Refroidir",
-                "nl": "Koelen",
-                "sv": "Kyla",
-                "es": "Enfriar"
+                "fr": "Refroidissement",
+                "nl": "Koeling",
+                "sv": "Kylning",
+                "es": "Enfriamiento"
               }
             },
             {
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventiler",
-                "nl": "Ventileren",
-                "sv": "Ventilera",
-                "es": "Ventilar"
+                "fr": "Ventilation",
+                "nl": "Ventilator",
+                "sv": "Fläkt",
+                "es": "Ventilador"
               }
             },
             {
@@ -644,15 +644,15 @@
         "en": "Set the vertical air discharge",
         "fr": "Définir la sortie d'air verticale",
         "nl": "Stel de uitblaasrichting verticaal in",
-        "sv": "Ställ in vertikalt utblåsningsläge",
-        "es": "Configurar la orientación de las alas vertical"
+        "sv": "Ställ in vertikal luftflödesriktning",
+        "es": "Configurar la discarga de aire vertical"
       },
       "titleFormatted": {
         "en": "Set the vertical air discharge to [[vertical]]",
         "fr": "Définir la sortie d'air verticale à [[vertical]]",
         "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
-        "sv": "Ställ in vertikalt utblåsningsläge till [[vertical]]",
-        "es": "Configurar la orientación de las alas vertical a [[vertical]]"
+        "sv": "Ställ in vertikal luftflödesriktning till [[vertical]]",
+        "es": "Configurar la discarga de aire vertical a [[vertical]]"
       },
       "args": [
         {
@@ -722,11 +722,11 @@
             {
               "id": "swing",
               "title": {
-                "en": "Swing mode",
-                "fr": "Mode balayage",
-                "nl": "Swing-modus",
-                "sv": "Svingläge",
-                "es": "Modo oscilación"
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]
@@ -739,14 +739,14 @@
         "en": "Set the horizontal air discharge",
         "fr": "Définir la sortie d'air horizontale",
         "nl": "Stel de uitblaasrichting horizontaal in",
-        "sv": "Ställ in horisontellt utblåsningsläge",
+        "sv": "Ställ in horisontell luftflödesriktning",
         "es": "Configurar la descarga de aire horizontal"
       },
       "titleFormatted": {
         "en": "Set the horizontal air discharge to [[horizontal]]",
         "fr": "Définir la sortie d'air horizontale à [[horizontal]]",
         "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
-        "sv": "Ställ in horisontellt utblåsningsläge till [[horizontal]]",
+        "sv": "Ställ in horisontell luftflödesriktning till [[horizontal]]",
         "es": "Configurar la descarga de aire horizontal a [[horizontal]]"
       },
       "args": [
@@ -779,7 +779,7 @@
               "title": {
                 "en": "Center-left",
                 "fr": "Centre-gauche",
-                "nl": "Centrum-links",
+                "nl": "Midden-links",
                 "sv": "Mitten-vänster",
                 "es": "Centro-izquierda"
               }
@@ -789,7 +789,7 @@
               "title": {
                 "en": "Center",
                 "fr": "Centre",
-                "nl": "Centrum",
+                "nl": "Midden",
                 "sv": "Mitten",
                 "es": "Centro"
               }
@@ -799,7 +799,7 @@
               "title": {
                 "en": "Center-right",
                 "fr": "Centre-droite",
-                "nl": "Centrum-rechts",
+                "nl": "Midden-rechts",
                 "sv": "Mitten-höger",
                 "es": "Centro-derecha"
               }
@@ -819,7 +819,7 @@
               "title": {
                 "en": "Split",
                 "fr": "Double",
-                "nl": "Gesplitste",
+                "nl": "Gesplitst",
                 "sv": "Delad",
                 "es": "Doble"
               }
@@ -827,11 +827,11 @@
             {
               "id": "swing",
               "title": {
-                "en": "Swing mode",
-                "fr": "Mode balayage",
-                "nl": "Swing-modus",
-                "sv": "Svingläge",
-                "es": "Modo oscilación"
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]

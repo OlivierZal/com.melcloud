@@ -56,7 +56,7 @@
         "hint": {
           "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
           "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
-          "nl": "Deze instelling voorkomt dat het apparaat wordt uitgeschakeld vanuit Homey, het kan nog steeds handmatig worden uitgeschakeld (vanaf een afstandsbediening of vanaf het fysieke apparaat)",
+          "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
           "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
           "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
@@ -138,9 +138,9 @@
         "type": "checkbox",
         "label": {
           "en": "Dry",
-          "fr": "Séchage",
+          "fr": "Déshumidification",
           "nl": "Droging",
-          "sv": "Torkning",
+          "sv": "Avfuktning",
           "es": "Secado"
         },
         "value": true
@@ -150,7 +150,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilateur",
+          "fr": "Ventilation",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "es": "Ventilador"
@@ -176,7 +176,7 @@
           "en": "Other",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Annat",
+          "sv": "Övrigt",
           "es": "Otro"
         },
         "value": true
@@ -234,9 +234,9 @@
         "type": "checkbox",
         "label": {
           "en": "Dry",
-          "fr": "Séchage",
+          "fr": "Déshumidification",
           "nl": "Droging",
-          "sv": "Torkning",
+          "sv": "Avfuktning",
           "es": "Secado"
         },
         "value": true
@@ -246,7 +246,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilateur",
+          "fr": "Ventilation",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "es": "Ventilador"
@@ -272,7 +272,7 @@
           "en": "Other",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Annat",
+          "sv": "Övrigt",
           "es": "Otro"
         },
         "value": true
@@ -330,9 +330,9 @@
         "type": "checkbox",
         "label": {
           "en": "Dry",
-          "fr": "Séchage",
+          "fr": "Déshumidification",
           "nl": "Droging",
-          "sv": "Torkning",
+          "sv": "Avfuktning",
           "es": "Secado"
         },
         "value": true
@@ -342,7 +342,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilateur",
+          "fr": "Ventilation",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "es": "Ventilador"
@@ -368,7 +368,7 @@
           "en": "Other",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Annat",
+          "sv": "Övrigt",
           "es": "Otro"
         },
         "value": true

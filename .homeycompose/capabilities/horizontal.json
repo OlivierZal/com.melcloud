@@ -4,7 +4,7 @@
     "en": "Horizontal air discharge",
     "fr": "Sortie d'air horizontale",
     "nl": "Uitblaasrichting horizontaal",
-    "sv": "Horisontellt utblåsningsläge",
+    "sv": "Horisontell luftflödesriktning",
     "es": "Descarga de aire horizontal"
   },
   "getable": true,
@@ -37,7 +37,7 @@
       "title": {
         "en": "Center-left",
         "fr": "Centre-gauche",
-        "nl": "Centrum-links",
+        "nl": "Midden-links",
         "sv": "Mitten-vänster",
         "es": "Centro-izquierda"
       }
@@ -47,7 +47,7 @@
       "title": {
         "en": "Center",
         "fr": "Centre",
-        "nl": "Centrum",
+        "nl": "Midden",
         "sv": "Mitten",
         "es": "Centro"
       }
@@ -57,7 +57,7 @@
       "title": {
         "en": "Center-right",
         "fr": "Centre-droite",
-        "nl": "Centrum-rechts",
+        "nl": "Midden-rechts",
         "sv": "Mitten-höger",
         "es": "Centro-derecha"
       }
@@ -77,7 +77,7 @@
       "title": {
         "en": "Split",
         "fr": "Double",
-        "nl": "Gesplitste",
+        "nl": "Gesplitst",
         "sv": "Delad",
         "es": "Doble"
       }
@@ -85,11 +85,11 @@
     {
       "id": "swing",
       "title": {
-        "en": "Swing mode",
-        "fr": "Mode balayage",
-        "nl": "Swing-modus",
-        "sv": "Svingläge",
-        "es": "Modo oscilación"
+        "en": "Swing",
+        "fr": "Balayage",
+        "nl": "Swing",
+        "sv": "Svängning",
+        "es": "Oscilación"
       }
     }
   ]

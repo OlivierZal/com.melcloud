@@ -16,31 +16,31 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat the room",
-        "fr": "Chauffer la pièce",
-        "nl": "Verwarm de ruimte",
-        "sv": "Värma upp rummet",
-        "es": "Calentar la habitación"
+        "en": "Indoor temperature",
+        "fr": "Température intérieure",
+        "nl": "Binnentemperatuur",
+        "sv": "Inomhusgivare",
+        "es": "Temperatura interior"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat the flow",
-        "fr": "Chauffer l'écoulement",
+        "en": "Fixed flow temperature",
+        "fr": "Température de flux fixe",
         "nl": "Verwarm de doorstroming",
-        "sv": "Värma upp flödet",
-        "es": "Calentar el flujo"
+        "sv": "Fast framledningstemperatur",
+        "es": "Temperatura de flujo fija"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Use the heating curve",
-        "fr": "Utiliser la courbe de chauffage",
-        "nl": "Gebruik de verwarmingscurve",
-        "sv": "Använd uppvärmningskurvan",
-        "es": "Usar la curva de calefacción"
+        "en": "Weather compensation curve",
+        "fr": "Courbe de compensation météo",
+        "nl": "Weerscompensatiecurve",
+        "sv": "Värmekurva",
+        "es": "Curva de compensación climática"
       }
     }
   ]

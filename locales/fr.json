@@ -81,10 +81,10 @@
     "always_on": "L'extinction depuis Homey a été désactivée.",
     "dashboard": "Sortez de l'appareil et revenez pour rafraîchir votre tableau de bord.",
     "operation_mode": {
-      "message": "`__value__` a été enregistré (même si `Chauffer` est affiché).",
+      "message": "`__value__` a été enregistré (même si `Chauffage` est affiché).",
       "values": {
-        "dry": "Sécher",
-        "fan": "Ventiler"
+        "dry": "Déshumidification",
+        "fan": "Ventilation"
       }
     }
   }

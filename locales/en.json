@@ -81,7 +81,7 @@
     "always_on": "Shutdown from Homey has been disabled.",
     "dashboard": "Exit device and return to refresh your dashboard.",
     "operation_mode": {
-      "message": "`__value__` has been saved (even if `Heat` is displayed).",
+      "message": "`__value__` has been saved (even if `Heating` is displayed).",
       "values": {
         "dry": "Dry",
         "fan": "Fan"

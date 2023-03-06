@@ -65,7 +65,7 @@
         "en": "Hourly consumption - automatic mode",
         "fr": "Conso horaire - mode automatique",
         "nl": "Uurlijkse verbruik - automatische modus",
-        "sv": "Timvis förbrukning - automatisktläge",
+        "sv": "Timvis förbrukning - automatläge",
         "es": "Consumo horario - modo automático"
       }
     },
@@ -81,9 +81,9 @@
     "meter_power.hourly_consumed_dry": {
       "title": {
         "en": "Hourly consumption - dry mode",
-        "fr": "Conso horaire - mode séchage",
+        "fr": "Conso horaire - mode déshumidification",
         "nl": "Uurlijkse verbruik - drogingsmodus",
-        "sv": "Timvis förbrukning - torkningsläge",
+        "sv": "Timvis förbrukning - avfuktningsläge",
         "es": "Consumo horario - modo secado"
       }
     },
@@ -92,7 +92,7 @@
         "en": "Hourly consumption - fan mode",
         "fr": "Conso horaire - mode ventilateur",
         "nl": "Uurlijkse verbruik - ventilatormodus",
-        "sv": "Timvis förbrukning - fläktsläge",
+        "sv": "Timvis förbrukning - fläktläge",
         "es": "Consumo horario - modo ventilador"
       }
     },
@@ -110,7 +110,7 @@
         "en": "Hourly consumption - other",
         "fr": "Conso horaire - autre",
         "nl": "Uurlijkse verbruik - andere",
-        "sv": "Timvis förbrukning - annat",
+        "sv": "Timvis förbrukning - övrigt",
         "es": "Consumo por hora - otro"
       }
     },
@@ -128,7 +128,7 @@
         "en": "Daily consumption - automatic mode",
         "fr": "Conso quotidienne - mode automatique",
         "nl": "Dagelijkse verbruik - automatische modus",
-        "sv": "Daglig förbrukning - automatisktsläge",
+        "sv": "Daglig förbrukning - automatläge",
         "es": "Consumo diario - modo automático"
       }
     },
@@ -144,9 +144,9 @@
     "meter_power.daily_consumed_dry": {
       "title": {
         "en": "Daily consumption - dry mode",
-        "fr": "Conso quotidienne - mode séchage",
+        "fr": "Conso quotidienne - mode déshumidification",
         "nl": "Dagelijkse verbruik - drogingsmodus",
-        "sv": "Daglig förbrukning - torkningsläge",
+        "sv": "Daglig förbrukning - avfuktningsläge",
         "es": "Consumo diario - modo secado"
       }
     },
@@ -155,7 +155,7 @@
         "en": "Daily consumption - fan mode",
         "fr": "Conso quotidienne - mode ventilateur",
         "nl": "Dagelijkse verbruik - ventilatormodus",
-        "sv": "Daglig förbrukning - fläktsläge",
+        "sv": "Daglig förbrukning - fläktläge",
         "es": "Consumo diario - modo ventilación"
       }
     },
@@ -173,7 +173,7 @@
         "en": "Daily consumption - other",
         "fr": "Conso quotidienne - autre",
         "nl": "Dagelijkse verbruik - andere",
-        "sv": "Daglig förbrukning - annat",
+        "sv": "Daglig förbrukning - övrigt",
         "es": "Consumo diario - otro"
       }
     },
@@ -191,7 +191,7 @@
         "en": "Total consumption - automatic mode",
         "fr": "Conso totale - mode automatique",
         "nl": "Totaalverbruik - automatische modus",
-        "sv": "Total förbrukning - automatisktsläge",
+        "sv": "Total förbrukning - automatläge",
         "es": "Consumo total - modo automático"
       }
     },
@@ -207,9 +207,9 @@
     "meter_power.total_consumed_dry": {
       "title": {
         "en": "Total consumption - dry mode",
-        "fr": "Conso totale - mode séchage",
+        "fr": "Conso totale - mode déshumidification",
         "nl": "Totaalverbruik - drogingsmodus",
-        "sv": "Total förbrukning - torkningsläge",
+        "sv": "Total förbrukning - avfuktningsläge",
         "es": "Consumo total - modo secado"
       }
     },
@@ -218,7 +218,7 @@
         "en": "Total consumption - fan mode",
         "fr": "Conso totale - mode ventilateur",
         "nl": "Totaalverbruik - ventilatormodus",
-        "sv": "Total förbrukning - fläktsläge",
+        "sv": "Total förbrukning - fläktläge",
         "es": "Consumo total - modo ventilador"
       }
     },
@@ -236,7 +236,7 @@
         "en": "Total consumption - other",
         "fr": "Conso totale - autre",
         "nl": "Totaalverbruik - andere",
-        "sv": "Total förbrukning - annat",
+        "sv": "Total förbrukning - övrigt",
         "es": "Consumo total - otro"
       }
     },

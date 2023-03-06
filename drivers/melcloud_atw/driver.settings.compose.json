@@ -56,7 +56,7 @@
         "hint": {
           "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
           "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
-          "nl": "Deze instelling voorkomt dat het apparaat wordt uitgeschakeld vanuit Homey, het kan nog steeds handmatig worden uitgeschakeld (vanaf een afstandsbediening of vanaf het fysieke apparaat)",
+          "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
           "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
           "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
@@ -80,7 +80,7 @@
           "en": "Flow temperature",
           "fr": "Température de flux",
           "nl": "Doorstroomtemperatuur",
-          "sv": "Flödestemperatur",
+          "sv": "Framledningstemperatur",
           "es": "Temperatura de flujo"
         },
         "value": false,
@@ -110,7 +110,7 @@
           "en": "Flow temperature - zone 2",
           "fr": "Température de flux - zone 2",
           "nl": "Doorstroomtemperatuur - zone 2",
-          "sv": "Flödestemperatur - zone 2",
+          "sv": "Framledningstemperatur - zon 2",
           "es": "Temperatura de flujo - zone 2"
         },
         "value": false,
@@ -125,7 +125,7 @@
           "en": "Return temperature - zone 2",
           "fr": "Température de retour - zone 2",
           "nl": "Retourtemperatuur - zone 2",
-          "sv": "Returtemperatur - zone 2",
+          "sv": "Returtemperatur - zon 2",
           "es": "Temperatura de retorno - zone 2"
         },
         "value": false,
@@ -152,7 +152,7 @@
           "en": "Booster heater 1",
           "fr": "Chauffage d'appoint 1",
           "nl": "Boosterverwarmingselement 1",
-          "sv": "Tilläggsuppvärmare 1",
+          "sv": "Tillskottsvärmare 1",
           "es": "Calentador de refuerzo 1"
         },
         "value": true
@@ -164,7 +164,7 @@
           "en": "Booster heater 2",
           "fr": "Chauffage d'appoint 2",
           "nl": "Boosterverwarmingselement 2",
-          "sv": "Tilläggsuppvärmare 2",
+          "sv": "Tillskottsvärmare 2",
           "es": "Calentador de refuerzo 2"
         },
         "value": true
@@ -176,7 +176,7 @@
           "en": "Booster heater 2+",
           "fr": "Chauffage d'appoint 2+",
           "nl": "Boosterverwarmingselement 2+",
-          "sv": "Tilläggsuppvärmare 2+",
+          "sv": "Tillskottsvärmare 2+",
           "es": "Calentador de refuerzo 2+"
         },
         "value": false
@@ -200,7 +200,7 @@
           "en": "Eco hot water",
           "fr": "Eau chaude éco",
           "nl": "Eco warm water",
-          "sv": "Eko-varmtvatten",
+          "sv": "Eco-låge för varmvatten",
           "es": "Agua caliente eco"
         },
         "value": false
@@ -212,7 +212,7 @@
           "en": "Immersion heater",
           "fr": "Chauffe-eau électrique",
           "nl": "Dompelelement",
-          "sv": "Elpatron",
+          "sv": "Doppvärmaren",
           "es": "Calentador eléctrico sumergible"
         },
         "value": false
@@ -284,7 +284,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false
@@ -344,7 +344,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false
@@ -404,7 +404,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false
@@ -417,7 +417,7 @@
       "en": "Total CoP display",
       "fr": "Affichage du CoP total",
       "nl": "Totaal CoP weergeven",
-      "sv": "Visa total CoP",
+      "sv": "Visa totale CoP",
       "es": "Mostrar el CoP total"
     },
     "children": [
@@ -464,7 +464,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false
@@ -476,7 +476,7 @@
     "label": {
       "en": "Total consumption display",
       "fr": "Affichage de la consommation totale",
-      "nl": "Totaalverbruik weergeven",
+      "nl": "Totaal verbruik weergeven",
       "sv": "Visa total förbrukning",
       "es": "Mostrar el consumo total"
     },
@@ -524,7 +524,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false
@@ -584,7 +584,7 @@
           "en": "Hot water",
           "fr": "Eau chaude",
           "nl": "Warm water",
-          "sv": "Varmtvatten",
+          "sv": "Varmvattenladdning",
           "es": "Agua caliente"
         },
         "value": false

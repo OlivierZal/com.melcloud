@@ -39,7 +39,7 @@
         "end_date": "Slutdatum",
         "start_date": "Startdatum"
       },
-      "refresh": "Uppdatera",
+      "refresh": "Ladda om",
       "update": "Uppdatera"
     },
     "devices": {
@@ -81,10 +81,10 @@
     "always_on": "Avstängning från Homey har inaktiverats.",
     "dashboard": "Avsluta enhet och återvänd för att uppdatera din instrumentpanel.",
     "operation_mode": {
-      "message": "`__value__` har sparats (även om `Värme` visas).",
+      "message": "`__value__` har sparats (även om `Uppvärmning` visas).",
       "values": {
-        "dry": "Torka",
-        "fan": "Ventilera"
+        "dry": "Avfuktning",
+        "fan": "Fläkt"
       }
     }
   }

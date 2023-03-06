@@ -1,11 +1,11 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation mode state",
-    "fr": "État du mode opérationnel",
-    "nl": "Bedrijfsmodus status",
-    "sv": "Driftläge status",
-    "es": "Estado del modo de operación"
+    "en": "Current operation",
+    "fr": "Opération en cours",
+    "nl": "Huidige bedrijf",
+    "sv": "Aktuell drift",
+    "es": "Operación actual"
   },
   "uiComponent": "sensor",
   "insights": true,
@@ -29,7 +29,7 @@
         "en": "Domestic hot water",
         "fr": "Eau chaude sanitaire",
         "nl": "Sanitair warm water",
-        "sv": "Hushållsvatten",
+        "sv": "Varmvattenladdning",
         "es": "Agua caliente sanitaria"
       }
     },

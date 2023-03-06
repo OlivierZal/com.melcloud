@@ -83,8 +83,8 @@
     "operation_mode": {
       "message": "Se ha guardado `__value__` (incluso si se muestra `Calefacción`).",
       "values": {
-        "dry": "Secar",
-        "fan": "Ventilar"
+        "dry": "Secado",
+        "fan": "Ventilador"
       }
     }
   }
