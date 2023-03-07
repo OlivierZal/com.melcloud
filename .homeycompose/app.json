@@ -4,21 +4,27 @@
   "brandColor": "#ed0c13",
   "name": {
     "en": "MELCloud",
-    "fr": "MELCloud"
+    "fr": "MELCloud",
+    "nl": "MELCloud",
+    "sv": "MELCloud",
+    "es": "MELCloud"
   },
   "description": {
     "en": "Take control of your heat pumps",
-    "fr": "Prenez le contrôle de vos pompes à chaleur"
+    "fr": "Prenez le contrôle de vos pompes à chaleur",
+    "nl": "Neem de controle over uw warmtepompen",
+    "sv": "Ta kontroll över dina värmepumpar",
+    "es": "Tome el control de sus bombas de calor."
   },
   "category": ["climate"],
-  "version": "11.0.0",
+  "version": "11.1.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
       "air conditioner",
       "air conditioning",
-      "air-to-air",
-      "air-to-water",
+      "air to air",
+      "air to water",
       "conditioned air",
       "ecodan",
       "heat pump",
@@ -26,13 +32,43 @@
       "mitsubishi"
     ],
     "fr": [
-      "climatiseur",
-      "climatisation",
-      "air-air",
-      "air-eau",
+      "air air",
       "air conditionné",
+      "air eau",
+      "climatisation",
+      "climatiseur",
       "ecodan",
-      "pompe à chaleur",
+      "melcloud",
+      "mitsubishi",
+      "pompe à chaleur"
+    ],
+    "nl": [
+      "airco",
+      "airconditioner",
+      "airconditioning",
+      "ecodan",
+      "geconditioneerde lucht",
+      "lucht lucht",
+      "lucht water",
+      "melcloud",
+      "mitsubishi",
+      "warmtepomp"
+    ],
+    "sv": [
+      "ecodan",
+      "luft luft",
+      "luft vatten",
+      "luftkonditionering",
+      "melcloud",
+      "mitsubishi",
+      "värmepump"
+    ],
+    "es": [
+      "aire acondicionado",
+      "aire agua",
+      "aire aire",
+      "bomba de calor",
+      "ecodan",
       "melcloud",
       "mitsubishi"
     ]
@@ -71,6 +107,10 @@
     "getHolidayModeSettings": {
       "method": "GET",
       "path": "/buildings/:buildingId/settings/holiday_mode"
+    },
+    "getLocale": {
+      "method": "GET",
+      "path": "/locale"
     },
     "getUnitErrorLog": {
       "method": "GET",

@@ -1,8 +1,11 @@
 {
   "type": "enum",
   "title": {
-    "en": "Vertical vane direction",
-    "fr": "Direction des ailettes verticales"
+    "en": "Vertical air discharge",
+    "fr": "Sortie d'air verticale",
+    "nl": "Uitblaasrichting verticaal",
+    "sv": "Vertikal luftflödesriktning",
+    "es": "Descarga de aire vertical"
   },
   "getable": true,
   "setable": true,
@@ -13,49 +16,70 @@
       "id": "auto",
       "title": {
         "en": "Automatic",
-        "fr": "Automatique"
+        "fr": "Automatique",
+        "nl": "Automatisch",
+        "sv": "Automatisk",
+        "es": "Automático"
       }
     },
     {
       "id": "top",
       "title": {
-        "en": "High",
-        "fr": "Élevée"
+        "en": "Upwards",
+        "fr": "Haut",
+        "nl": "Omhoog",
+        "sv": "Uppåt",
+        "es": "Arriba"
       }
     },
     {
       "id": "middletop",
       "title": {
-        "en": "Upper-mid",
-        "fr": "Milieu supérieur"
+        "en": "Mid-high",
+        "fr": "Milieu haut",
+        "nl": "Midden-hoog",
+        "sv": "Mellanhög",
+        "es": "Medio alto"
       }
     },
     {
       "id": "middle",
       "title": {
-        "en": "Mid",
-        "fr": "Milieu"
+        "en": "Middle",
+        "fr": "Milieu",
+        "nl": "Midden",
+        "sv": "Mitten",
+        "es": "Medio"
       }
     },
     {
       "id": "middlebottom",
       "title": {
-        "en": "Lower-mid",
-        "fr": "Milieu inférieur"
+        "en": "Mid-low",
+        "fr": "Milieu bas",
+        "nl": "Midden-laag",
+        "sv": "Mellanlåg",
+        "es": "Medio bajo"
       }
     },
     {
       "id": "bottom",
       "title": {
-        "en": "Low",
-        "fr": "Bas"
+        "en": "Downwards",
+        "fr": "Bas",
+        "nl": "Omlaag",
+        "sv": "Nedåt",
+        "es": "Abajo"
       }
     },
     {
       "id": "swing",
       "title": {
         "en": "Swing",
-        "fr": "Balayage"
+        "fr": "Balayage",
+        "nl": "Swing",
+        "sv": "Svängning",
+        "es": "Oscilación"
       }
     }
   ]

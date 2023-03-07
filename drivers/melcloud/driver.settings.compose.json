@@ -3,7 +3,10 @@
     "type": "group",
     "label": {
       "en": "Configuration",
-      "fr": "Configuration"
+      "fr": "Configuration",
+      "nl": "Configuratie",
+      "sv": "Konfiguration",
+      "es": "Configuración"
     },
     "children": [
       {
@@ -11,11 +14,17 @@
         "type": "number",
         "label": {
           "en": "Refresh frequency",
-          "fr": "Fréquence de rafraîchissement"
+          "fr": "Fréquence de rafraîchissement",
+          "nl": "Verversingsfrequentie",
+          "sv": "Uppdateringsfrekvens",
+          "es": "Frecuencia de actualización"
         },
         "units": {
           "en": "minutes",
-          "fr": "minutes"
+          "fr": "minutes",
+          "nl": "minuten",
+          "sv": "minuter",
+          "es": "minutos"
         },
         "value": 5,
         "min": 1,
@@ -27,7 +36,10 @@
     "type": "group",
     "label": {
       "en": "Options",
-      "fr": "Options"
+      "fr": "Options",
+      "nl": "Opties",
+      "sv": "Alternativ",
+      "es": "Opciones"
     },
     "children": [
       {
@@ -35,12 +47,18 @@
         "type": "checkbox",
         "label": {
           "en": "Disable shutdown from Homey",
-          "fr": "Désactiver l'extinction depuis Homey"
+          "fr": "Désactiver l'extinction depuis Homey",
+          "nl": "Schakel uitschakelen van Homey uit",
+          "sv": "Inaktivera avstängning från Homey",
+          "es": "Desactivar apagado desde Homey"
         },
         "value": false,
         "hint": {
           "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
-          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)"
+          "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
+          "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
+          "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
+          "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
       }
     ]
@@ -48,8 +66,11 @@
   {
     "type": "group",
     "label": {
-      "en": "Dashboard",
-      "fr": "Tableau de bord"
+      "en": "Dashboard display",
+      "fr": "Affichage sur le tableau de bord",
+      "nl": "Dashboard weergave",
+      "sv": "Instrumentpanelens visning",
+      "es": "Visualización en el tablero de instrumentos"
     },
     "children": [
       {
@@ -57,16 +78,34 @@
         "type": "checkbox",
         "label": {
           "en": "Wifi signal strength",
-          "fr": "Puissance du signal wifi"
+          "fr": "Puissance du signal wifi",
+          "nl": "Wifi signaalsterkte",
+          "sv": "Wifi signalstyrka",
+          "es": "Fuerza de la señal wifi"
         },
         "value": true
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Hourly consumption display",
+      "fr": "Affichage de la consommation horaire",
+      "nl": "Uurlijkse verbruik weergeven",
+      "sv": "Visa timvis förbrukning",
+      "es": "Mostrar el consumo horario"
+    },
+    "children": [
       {
         "id": "meter_power.hourly_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Hourly consumption",
-          "fr": "Conso horaire"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": true
       },
@@ -74,8 +113,11 @@
         "id": "meter_power.hourly_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Hourly auto consumption",
-          "fr": "Conso horaire mode auto"
+          "en": "Automatic",
+          "fr": "Automatique",
+          "nl": "Automatisch",
+          "sv": "Automatisk",
+          "es": "Automático"
         },
         "value": true
       },
@@ -83,8 +125,11 @@
         "id": "meter_power.hourly_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Hourly cooling consumption",
-          "fr": "Conso horaire refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": true
       },
@@ -92,8 +137,11 @@
         "id": "meter_power.hourly_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Hourly dry consumption",
-          "fr": "Conso horaire séchage"
+          "en": "Dry",
+          "fr": "Déshumidification",
+          "nl": "Droging",
+          "sv": "Avfuktning",
+          "es": "Secado"
         },
         "value": true
       },
@@ -101,8 +149,11 @@
         "id": "meter_power.hourly_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Hourly fan consumption",
-          "fr": "Conso horaire ventilation"
+          "en": "Fan",
+          "fr": "Ventilation",
+          "nl": "Ventilator",
+          "sv": "Fläkt",
+          "es": "Ventilador"
         },
         "value": true
       },
@@ -110,8 +161,11 @@
         "id": "meter_power.hourly_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Hourly heating consumption",
-          "fr": "Conso horaire chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": true
       },
@@ -119,17 +173,35 @@
         "id": "meter_power.hourly_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Hourly other consumption",
-          "fr": "Conso horaire autre"
+          "en": "Other",
+          "fr": "Autre",
+          "nl": "Andere",
+          "sv": "Övrigt",
+          "es": "Otro"
         },
         "value": true
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Daily consumption display",
+      "fr": "Affichage de la consommation quotidienne",
+      "nl": "Dagelijkse verbruik weergeven",
+      "sv": "Visa daglig förbrukning",
+      "es": "Mostrar el consumo diario"
+    },
+    "children": [
       {
         "id": "meter_power.daily_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Daily consumption",
-          "fr": "Conso quotidienne"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": true
       },
@@ -137,8 +209,11 @@
         "id": "meter_power.daily_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Daily auto consumption",
-          "fr": "Conso quotidienne mode auto"
+          "en": "Automatic",
+          "fr": "Automatique",
+          "nl": "Automatisch",
+          "sv": "Automatisk",
+          "es": "Automático"
         },
         "value": true
       },
@@ -146,8 +221,11 @@
         "id": "meter_power.daily_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Daily cooling consumption",
-          "fr": "Conso quotidienne refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": true
       },
@@ -155,8 +233,11 @@
         "id": "meter_power.daily_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Daily dry consumption",
-          "fr": "Conso quotidienne séchage"
+          "en": "Dry",
+          "fr": "Déshumidification",
+          "nl": "Droging",
+          "sv": "Avfuktning",
+          "es": "Secado"
         },
         "value": true
       },
@@ -164,8 +245,11 @@
         "id": "meter_power.daily_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Daily fan consumption",
-          "fr": "Conso quotidienne ventilation"
+          "en": "Fan",
+          "fr": "Ventilation",
+          "nl": "Ventilator",
+          "sv": "Fläkt",
+          "es": "Ventilador"
         },
         "value": true
       },
@@ -173,8 +257,11 @@
         "id": "meter_power.daily_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Daily heating consumption",
-          "fr": "Conso quotidienne chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": true
       },
@@ -182,17 +269,35 @@
         "id": "meter_power.daily_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Daily other consumption",
-          "fr": "Conso quotidienne autre"
+          "en": "Other",
+          "fr": "Autre",
+          "nl": "Andere",
+          "sv": "Övrigt",
+          "es": "Otro"
         },
         "value": true
-      },
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total consumption display",
+      "fr": "Affichage de la consommation totale",
+      "nl": "Totaalverbruik weergeven",
+      "sv": "Visa total förbrukning",
+      "es": "Mostrar el consumo total"
+    },
+    "children": [
       {
         "id": "meter_power.total_consumed",
         "type": "checkbox",
         "label": {
-          "en": "Total consumption",
-          "fr": "Conso totale"
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "es": "Todos los modos"
         },
         "value": true
       },
@@ -200,8 +305,11 @@
         "id": "meter_power.total_consumed_auto",
         "type": "checkbox",
         "label": {
-          "en": "Total auto consumption",
-          "fr": "Conso totale mode auto"
+          "en": "Automatic",
+          "fr": "Automatique",
+          "nl": "Automatisch",
+          "sv": "Automatisk",
+          "es": "Automático"
         },
         "value": true
       },
@@ -209,8 +317,11 @@
         "id": "meter_power.total_consumed_cooling",
         "type": "checkbox",
         "label": {
-          "en": "Total cooling consumption",
-          "fr": "Conso totale refroidissement"
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "es": "Enfriamiento"
         },
         "value": true
       },
@@ -218,8 +329,11 @@
         "id": "meter_power.total_consumed_dry",
         "type": "checkbox",
         "label": {
-          "en": "Total dry consumption",
-          "fr": "Conso totale séchage"
+          "en": "Dry",
+          "fr": "Déshumidification",
+          "nl": "Droging",
+          "sv": "Avfuktning",
+          "es": "Secado"
         },
         "value": true
       },
@@ -227,8 +341,11 @@
         "id": "meter_power.total_consumed_fan",
         "type": "checkbox",
         "label": {
-          "en": "Total fan consumption",
-          "fr": "Conso totale ventilation"
+          "en": "Fan",
+          "fr": "Ventilation",
+          "nl": "Ventilator",
+          "sv": "Fläkt",
+          "es": "Ventilador"
         },
         "value": true
       },
@@ -236,8 +353,11 @@
         "id": "meter_power.total_consumed_heating",
         "type": "checkbox",
         "label": {
-          "en": "Total heating consumption",
-          "fr": "Conso totale chauffage"
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "es": "Calefacción"
         },
         "value": true
       },
@@ -245,8 +365,11 @@
         "id": "meter_power.total_consumed_other",
         "type": "checkbox",
         "label": {
-          "en": "Total other consumption",
-          "fr": "Conso totale autre"
+          "en": "Other",
+          "fr": "Autre",
+          "nl": "Andere",
+          "sv": "Övrigt",
+          "es": "Otro"
         },
         "value": true
       }

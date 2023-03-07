@@ -79,7 +79,11 @@ interface ListCapabilitiesAtw {
   readonly 'measure_power.heat_pump_frequency': boolean
   readonly 'measure_power.wifi': number
   readonly 'measure_temperature.flow': boolean
+  readonly 'measure_temperature.flow_zone1': boolean
+  readonly 'measure_temperature.flow_zone2': boolean
   readonly 'measure_temperature.return': boolean
+  readonly 'measure_temperature.return_zone1': boolean
+  readonly 'measure_temperature.return_zone2': boolean
 }
 
 interface ReportCapabilitiesAta {
@@ -230,9 +234,13 @@ interface ListDeviceDataAtw extends ListDeviceDataAta {
   readonly BoosterHeater2PlusStatus: boolean
   readonly DefrostMode: number
   readonly FlowTemperature: number
+  readonly FlowTemperatureZone1: number
+  readonly FlowTemperatureZone2: number
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
   readonly ReturnTemperature: number
+  readonly ReturnTemperatureZone1: number
+  readonly ReturnTemperatureZone2: number
 }
 
 type ListDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
@@ -410,8 +418,20 @@ export const listCapabilityMappingAtw: Record<
   'measure_temperature.flow': {
     tag: 'FlowTemperature'
   },
+  'measure_temperature.flow_zone1': {
+    tag: 'FlowTemperatureZone1'
+  },
+  'measure_temperature.flow_zone2': {
+    tag: 'FlowTemperatureZone2'
+  },
   'measure_temperature.return': {
     tag: 'ReturnTemperature'
+  },
+  'measure_temperature.return_zone1': {
+    tag: 'ReturnTemperatureZone1'
+  },
+  'measure_temperature.return_zone2': {
+    tag: 'ReturnTemperatureZone2'
   }
 } as const
 

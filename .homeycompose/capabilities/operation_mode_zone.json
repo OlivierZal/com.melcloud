@@ -2,7 +2,10 @@
   "type": "enum",
   "title": {
     "en": "Operation mode",
-    "fr": "Mode opérationnel"
+    "fr": "Mode opérationnel",
+    "nl": "Bedrijfsmodus",
+    "sv": "Driftläge",
+    "es": "Modo de operación"
   },
   "uiComponent": "picker",
   "insights": true,
@@ -13,22 +16,31 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat room",
-        "fr": "Chauffer la pièce"
+        "en": "Indoor temperature",
+        "fr": "Température intérieure",
+        "nl": "Binnentemperatuur",
+        "sv": "Inomhusgivare",
+        "es": "Temperatura interior"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat flow",
-        "fr": "Flux de chauffage"
+        "en": "Fixed flow temperature",
+        "fr": "Température de flux fixe",
+        "nl": "Verwarm de doorstroming",
+        "sv": "Fast framledningstemperatur",
+        "es": "Temperatura de flujo fija"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Curve",
-        "fr": "Courbe"
+        "en": "Weather compensation curve",
+        "fr": "Courbe de compensation météo",
+        "nl": "Weerscompensatiecurve",
+        "sv": "Värmekurva",
+        "es": "Curva de compensación climática"
       }
     }
   ]

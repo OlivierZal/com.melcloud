@@ -2,7 +2,10 @@
   "type": "enum",
   "title": {
     "en": "Operation mode",
-    "fr": "Mode opérationnel"
+    "fr": "Mode opérationnel",
+    "nl": "Bedrijfsmodus",
+    "sv": "Driftläge",
+    "es": "Modo de operación"
   },
   "getable": true,
   "setable": true,
@@ -13,36 +16,51 @@
     {
       "id": "heat",
       "title": {
-        "en": "Heat",
-        "fr": "Chauffer"
+        "en": "Heating",
+        "fr": "Chauffage",
+        "nl": "Verwarming",
+        "sv": "Uppvärmning",
+        "es": "Calefacción"
       }
     },
     {
       "id": "dry",
       "title": {
         "en": "Dry",
-        "fr": "Sécher"
+        "fr": "Déshumidification",
+        "nl": "Droging",
+        "sv": "Avfuktning",
+        "es": "Secado"
       }
     },
     {
       "id": "cool",
       "title": {
         "en": "Cool",
-        "fr": "Refroidir"
+        "fr": "Refroidissement",
+        "nl": "Koeling",
+        "sv": "Kylning",
+        "es": "Enfriamiento"
       }
     },
     {
       "id": "fan",
       "title": {
         "en": "Fan",
-        "fr": "Ventiler"
+        "fr": "Ventilation",
+        "nl": "Ventilator",
+        "sv": "Fläkt",
+        "es": "Ventilador"
       }
     },
     {
       "id": "auto",
       "title": {
         "en": "Automatic",
-        "fr": "Automatique"
+        "fr": "Automatique",
+        "nl": "Automatisch",
+        "sv": "Automatisk",
+        "es": "Automático"
       }
     }
   ]

@@ -3,46 +3,35 @@
     {
       "id": "fan_power_changed",
       "title": {
-        "en": "Fan speed has changed",
-        "fr": "La vitesse du ventilateur a changé"
+        "en": "The fan speed has changed",
+        "fr": "La vitesse de ventilation a été modifiée",
+        "nl": "De ventilatiesnelheid is veranderd",
+        "sv": "Fläkthastigheten ändrades",
+        "es": "La velocidad del ventilador ha cambiado"
       },
       "tokens": [
         {
           "name": "fan_power",
           "type": "number",
           "title": {
-            "en": "Fan speed"
+            "en": "Fan speed",
+            "fr": "Vitesse de ventilation",
+            "nl": "Ventilatiesnelheid",
+            "sv": "Fläkthastighet",
+            "es": "Velocidad del ventilador"
           },
           "example": 5
         }
       ]
     },
     {
-      "id": "horizontal_changed",
-      "title": {
-        "en": "Horizontal vane direction has changed",
-        "fr": "La direction des ailettes horizontales a changé"
-      },
-      "tokens": [
-        {
-          "name": "horizontal",
-          "type": "string",
-          "title": {
-            "en": "Horizontal vane direction",
-            "fr": "Direction des ailettes horizontales"
-          },
-          "example": {
-            "en": "Automatic",
-            "fr": "Automatique"
-          }
-        }
-      ]
-    },
-    {
       "id": "operation_mode_changed",
       "title": {
-        "en": "Operation mode has changed",
-        "fr": "Le mode opérationnel a changé"
+        "en": "The operation mode has changed",
+        "fr": "Le mode opérationnel a été modifié",
+        "nl": "De bedrijfsmodus is veranderd",
+        "sv": "Driftläget ändrades",
+        "es": "El modo de operación ha cambiado"
       },
       "tokens": [
         {
@@ -50,11 +39,17 @@
           "type": "string",
           "title": {
             "en": "Operation mode",
-            "fr": "Mode opérationnel"
+            "fr": "Mode opérationnel",
+            "nl": "Bedrijfsmodus",
+            "sv": "Driftläge",
+            "es": "Modo de operación"
           },
           "example": {
             "en": "Automatic",
-            "fr": "Automatique"
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatisk",
+            "es": "Automático"
           }
         }
       ]
@@ -62,20 +57,59 @@
     {
       "id": "vertical_changed",
       "title": {
-        "en": "Vertical vane direction has changed",
-        "fr": "La direction des ailettes verticales a changé"
+        "en": "The vertical air discharge has changed",
+        "fr": "La sortie d'air verticale a été modifiée",
+        "nl": "De uitblaasrichting verticaal is veranderd",
+        "sv": "Vertikal luftflödesriktning ändrades",
+        "es": "La descarga de aire vertical ha cambiado"
       },
       "tokens": [
         {
           "name": "vertical",
           "type": "string",
           "title": {
-            "en": "Vertical vane direction",
-            "fr": "Direction des ailettes verticales"
+            "en": "Vertical air discharge",
+            "fr": "Sortie d'air verticale",
+            "nl": "Uitblaasrichting verticaal",
+            "sv": "Vertikal luftflödesriktning",
+            "es": "Descarga de aire vertical"
           },
           "example": {
             "en": "Automatic",
-            "fr": "Automatique"
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatisk",
+            "es": "Automático"
+          }
+        }
+      ]
+    },
+    {
+      "id": "horizontal_changed",
+      "title": {
+        "en": "The horizontal air discharge has changed",
+        "fr": "La sortie d'air horizontale a été modifiée",
+        "nl": "De uitblaasrichting horizontaal is veranderd",
+        "sv": "Horisontell luftflödesriktning ändrades",
+        "es": "La descarga de aire horizontal ha cambiado"
+      },
+      "tokens": [
+        {
+          "name": "horizontal",
+          "type": "string",
+          "title": {
+            "en": "Horizontal air discharge",
+            "fr": "Sortie d'air horizontale",
+            "nl": "Uitblaasrichting horizontaal",
+            "sv": "Horisontellt luftflödesriktning",
+            "es": "Descarga de aire horizontal"
+          },
+          "example": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatisk",
+            "es": "Automático"
           }
         }
       ]
@@ -85,12 +119,18 @@
     {
       "id": "fan_power_condition",
       "title": {
-        "en": "Fan speed !{{is|isn't}}...",
-        "fr": "La vitesse du ventilateur !{{est|n'est pas}}..."
+        "en": "The fan speed !{{is|is not}}",
+        "fr": "La vitesse de ventilation !{{est|n'est pas}}",
+        "nl": "De ventilatiesnelheid !{{is|is niet}}",
+        "sv": "Fläkthastigheten !{{är|är inte}}",
+        "es": "La elocidad del ventilador !{{está|no está}}"
       },
       "titleFormatted": {
-        "en": "Fan speed !{{is|isn't}} [[fan_power]]",
-        "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]"
+        "en": "The fan speed !{{is|is not}} [[fan_power]]",
+        "fr": "La vitesse de ventilation !{{est|n'est pas}} [[fan_power]]",
+        "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
+        "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
+        "es": "La velocidad del ventilador !{{está|no está}} [[fan_power]]"
       },
       "args": [
         {
@@ -99,119 +139,62 @@
           "values": [
             {
               "id": "0",
-              "label": {
+              "title": {
                 "en": "Automatic",
-                "fr": "Automatique"
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             },
             {
               "id": "1",
-              "label": {
+              "title": {
                 "en": "Very slow",
-                "fr": "Très lente"
+                "fr": "Très lente",
+                "nl": "Zeer langzaam",
+                "sv": "Mycket långsam",
+                "es": "Muy lento"
               }
             },
             {
               "id": "2",
-              "label": {
+              "title": {
                 "en": "Slow",
-                "fr": "Lente"
+                "fr": "Lente",
+                "nl": "Langzaam",
+                "sv": "Långsam",
+                "es": "Lento"
               }
             },
             {
               "id": "3",
-              "label": {
+              "title": {
                 "en": "Medium",
-                "fr": "Moyenne"
+                "fr": "Moyenne",
+                "nl": "Medium",
+                "sv": "Medium",
+                "es": "Medio"
               }
             },
             {
               "id": "4",
-              "label": {
+              "title": {
                 "en": "Fast",
-                "fr": "Rapide"
+                "fr": "Rapide",
+                "nl": "Snel",
+                "sv": "Snabb",
+                "es": "Rápido"
               }
             },
             {
               "id": "5",
-              "label": {
+              "title": {
                 "en": "Very fast",
-                "fr": "Très rapide"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "horizontal_condition",
-      "title": {
-        "en": "Horizontal vane direction !{{is|isn't}}...",
-        "fr": "La direction des ailettes horizontales !{{est|n'est pas}}..."
-      },
-      "titleFormatted": {
-        "en": "Horizontal vane direction !{{is|isn't}} [[horizontal]]",
-        "fr": "La direction des ailettes horizontales !{{est|n'est pas}} [[horizontal]]"
-      },
-      "args": [
-        {
-          "name": "horizontal",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "en": "Automatic",
-                "fr": "Automatique"
-              }
-            },
-            {
-              "id": "left",
-              "title": {
-                "en": "Far-left",
-                "fr": "Tout à gauche"
-              }
-            },
-            {
-              "id": "middleleft",
-              "title": {
-                "en": "Mid-left",
-                "fr": "Milieu gauche"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Center",
-                "fr": "Centre"
-              }
-            },
-            {
-              "id": "middleright",
-              "title": {
-                "en": "Mid-right",
-                "fr": "Milieu droit"
-              }
-            },
-            {
-              "id": "right",
-              "title": {
-                "en": "Far-right",
-                "fr": "Tout à droite"
-              }
-            },
-            {
-              "id": "split",
-              "title": {
-                "en": "Split",
-                "fr": "Dissociée"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing",
-                "fr": "Balayage"
+                "fr": "Très rapide",
+                "nl": "Zeer snel",
+                "sv": "Mycket snabb",
+                "es": "Muy rápido"
               }
             }
           ]
@@ -221,12 +204,18 @@
     {
       "id": "operation_mode_condition",
       "title": {
-        "en": "Operation mode !{{is|isn't}}...",
-        "fr": "Le mode opérationnel !{{est|n'est pas}}..."
+        "en": "The operation mode !{{is|is not}}",
+        "fr": "Le mode opérationnel !{{est|n'est pas}}",
+        "nl": "De bedrijfsmodus !{{is|is niet}}",
+        "sv": "Driftläget !{{är|är inte}}",
+        "es": "El modo de operación !{{está|no está}}"
       },
       "titleFormatted": {
-        "en": "Operation mode !{{is|isn't}} [[operation_mode]]",
-        "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]"
+        "en": "The operation mode !{{is|is not}} [[operation_mode]]",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]",
+        "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode]]",
+        "sv": "Driftläget !{{är|är inte}} [[operation_mode]]",
+        "es": "El modo de operación !{{está|no está}} [[operation_mode]]"
       },
       "args": [
         {
@@ -236,36 +225,51 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat",
-                "fr": "Chauffage"
+                "en": "Heating",
+                "fr": "Chauffage",
+                "nl": "Verwarming",
+                "sv": "Uppvärmning",
+                "es": "Calefacción"
               }
             },
             {
               "id": "dry",
               "title": {
                 "en": "Dry",
-                "fr": "Séchage"
+                "fr": "Déshumidification",
+                "nl": "Droging",
+                "sv": "Avfuktning",
+                "es": "Secado"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Refroidissement"
+                "fr": "Refroidissement",
+                "nl": "Koeling",
+                "sv": "Kylning",
+                "es": "Enfriamiento"
               }
             },
             {
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventilation"
+                "fr": "Ventilation",
+                "nl": "Ventilator",
+                "sv": "Fläkt",
+                "es": "Ventilador"
               }
             },
             {
               "id": "auto",
               "title": {
                 "en": "Automatic",
-                "fr": "Automatique"
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             }
           ]
@@ -275,12 +279,18 @@
     {
       "id": "vertical_condition",
       "title": {
-        "en": "Vertical vane direction !{{is|isn't}}...",
-        "fr": "La direction des ailettes verticales !{{est|n'est pas}}..."
+        "en": "The vertical air discharge !{{is|is not}}",
+        "fr": "La sortie d'air verticale !{{est|n'est pas}}",
+        "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
+        "sv": "Vertikal luftflödesriktning !{{är|är inte}}",
+        "es": "La descarga de aire vertical !{{está|no está}}"
       },
       "titleFormatted": {
-        "en": "Vertical vane direction !{{is|isn't}} [[vertical]]",
-        "fr": "La direction des ailettes verticales !{{est|n'est pas}} [[vertical]]"
+        "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
+        "fr": "La sortie d'air verticale !{{est|n'est pas}} [[vertical]]",
+        "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
+        "sv": "Vertikal luftflödesriktning !{{är|är inte}} [[vertical]]",
+        "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
       },
       "args": [
         {
@@ -291,49 +301,175 @@
               "id": "auto",
               "title": {
                 "en": "Automatic",
-                "fr": "Automatique"
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             },
             {
               "id": "top",
               "title": {
-                "en": "High",
-                "fr": "Élevée"
+                "en": "Upwards",
+                "fr": "Haut",
+                "nl": "Omhoog",
+                "sv": "Uppåt",
+                "es": "Arriba"
               }
             },
             {
               "id": "middletop",
               "title": {
-                "en": "Upper-mid",
-                "fr": "Milieu supérieur"
+                "en": "Mid-high",
+                "fr": "Milieu haut",
+                "nl": "Midden-hoog",
+                "sv": "Mellanhög",
+                "es": "Medio alto"
               }
             },
             {
               "id": "middle",
               "title": {
                 "en": "Middle",
-                "fr": "Milieu"
+                "fr": "Milieu",
+                "nl": "Midden",
+                "sv": "Mitten",
+                "es": "Medio"
               }
             },
             {
               "id": "middlebottom",
               "title": {
-                "en": "Lower-mid",
-                "fr": "Milieu inférieur"
+                "en": "Mid-low",
+                "fr": "Milieu bas",
+                "nl": "Midden-laag",
+                "sv": "Mellanlåg",
+                "es": "Medio bajo"
               }
             },
             {
               "id": "bottom",
               "title": {
-                "en": "Low",
-                "fr": "Bas"
+                "en": "Downwards",
+                "fr": "Bas",
+                "nl": "Omlaag",
+                "sv": "Nedåt",
+                "es": "Abajo"
               }
             },
             {
               "id": "swing",
               "title": {
                 "en": "Swing",
-                "fr": "Balayage"
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "horizontal_condition",
+      "title": {
+        "en": "The horizontal air discharge !{{is|is not}}",
+        "fr": "La sortie d'air horizontale !{{est|n'est pas}}",
+        "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
+        "sv": "Horisontell luftflödesriktning !{{är|är inte}}",
+        "es": "La descarga de aire horizontal !{{está|no está}}"
+      },
+      "titleFormatted": {
+        "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
+        "fr": "La sortie d'air horizontale !{{est|n'est pas}} [[horizontal]]",
+        "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
+        "sv": "Horisontell luftflödesriktning !{{är|är inte}} [[horizontal]]",
+        "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]"
+      },
+      "args": [
+        {
+          "name": "horizontal",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
+              }
+            },
+            {
+              "id": "left",
+              "title": {
+                "en": "Leftward",
+                "fr": "Gauche",
+                "nl": "Links",
+                "sv": "Vänster",
+                "es": "Izquierda"
+              }
+            },
+            {
+              "id": "middleleft",
+              "title": {
+                "en": "Center-left",
+                "fr": "Centre-gauche",
+                "nl": "Midden-links",
+                "sv": "Mitten-vänster",
+                "es": "Centro-izquierda"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Center",
+                "fr": "Centre",
+                "nl": "Midden",
+                "sv": "Mitten",
+                "es": "Centro"
+              }
+            },
+            {
+              "id": "middleright",
+              "title": {
+                "en": "Center-right",
+                "fr": "Centre-droite",
+                "nl": "Midden-rechts",
+                "sv": "Mitten-höger",
+                "es": "Centro-derecha"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Rightwards",
+                "fr": "Droite",
+                "nl": "Rechts",
+                "sv": "Höger",
+                "es": "Hacia la derecha"
+              }
+            },
+            {
+              "id": "split",
+              "title": {
+                "en": "Split",
+                "fr": "Double",
+                "nl": "Gesplitst",
+                "sv": "Delad",
+                "es": "Doble"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]
@@ -345,12 +481,18 @@
     {
       "id": "fan_power_action",
       "title": {
-        "en": "Set fan speed to...",
-        "fr": "Définir la vitesse du ventilateur à..."
+        "en": "Set the fan speed",
+        "fr": "Définir la vitesse de ventilation",
+        "nl": "Stel de ventilatiesnelheid in",
+        "sv": "Ställ in fläkthastigheten",
+        "es": "Configurar la velocidad del ventilador"
       },
       "titleFormatted": {
-        "en": "Set fan speed to [[fan_power]]",
-        "fr": "Définir la vitesse du ventilateur à [[fan_power]]"
+        "en": "Set the fan speed to [[fan_power]]",
+        "fr": "Définir la vitesse de ventilation à [[fan_power]]",
+        "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
+        "sv": "Ställ in fläkthastigheten till [[fan_power]]",
+        "es": "Configurar la velocidad del ventilador a [[fan_power]]"
       },
       "args": [
         {
@@ -359,119 +501,62 @@
           "values": [
             {
               "id": "0",
-              "label": {
+              "title": {
                 "en": "Automatic",
-                "fr": "Automatique"
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             },
             {
               "id": "1",
-              "label": {
+              "title": {
                 "en": "Very slow",
-                "fr": "Très lent"
+                "fr": "Très lent",
+                "nl": "Zeer langzaam",
+                "sv": "Mycket långsam",
+                "es": "Muy lento"
               }
             },
             {
               "id": "2",
-              "label": {
+              "title": {
                 "en": "Slow",
-                "fr": "Lent"
+                "fr": "Lent",
+                "nl": "Langzaam",
+                "sv": "Långsam",
+                "es": "Lento"
               }
             },
             {
               "id": "3",
-              "label": {
+              "title": {
                 "en": "Medium",
-                "fr": "Moyen"
+                "fr": "Moyen",
+                "nl": "Medium",
+                "sv": "Medium",
+                "es": "Medio"
               }
             },
             {
               "id": "4",
-              "label": {
+              "title": {
                 "en": "Fast",
-                "fr": "Rapide"
+                "fr": "Rapide",
+                "nl": "Snel",
+                "sv": "Snabb",
+                "es": "Rápido"
               }
             },
             {
               "id": "5",
-              "label": {
+              "title": {
                 "en": "Very fast",
-                "fr": "Très rapide"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "horizontal_action",
-      "title": {
-        "en": "Set horizontal vane direction to...",
-        "fr": "Définir la direction des ailettes horizontales à..."
-      },
-      "titleFormatted": {
-        "en": "Set horizontal vane direction to [[horizontal]]",
-        "fr": "Définir la direction des ailettes horizontales à [[horizontal]]"
-      },
-      "args": [
-        {
-          "name": "horizontal",
-          "type": "dropdown",
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "en": "Automatic",
-                "fr": "Automatique"
-              }
-            },
-            {
-              "id": "left",
-              "title": {
-                "en": "Far-left",
-                "fr": "Tout à gauche"
-              }
-            },
-            {
-              "id": "middleleft",
-              "title": {
-                "en": "Mid-left",
-                "fr": "Milieu gauche"
-              }
-            },
-            {
-              "id": "middle",
-              "title": {
-                "en": "Center",
-                "fr": "Centre"
-              }
-            },
-            {
-              "id": "middleright",
-              "title": {
-                "en": "Mid-right",
-                "fr": "Milieu droit"
-              }
-            },
-            {
-              "id": "right",
-              "title": {
-                "en": "Far-right",
-                "fr": "Tout à droite"
-              }
-            },
-            {
-              "id": "split",
-              "title": {
-                "en": "Split",
-                "fr": "Dissociée"
-              }
-            },
-            {
-              "id": "swing",
-              "title": {
-                "en": "Swing",
-                "fr": "Balayage"
+                "fr": "Très rapide",
+                "nl": "Zeer snel",
+                "sv": "Mycket snabb",
+                "es": "Muy rápido"
               }
             }
           ]
@@ -481,12 +566,18 @@
     {
       "id": "operation_mode_action",
       "title": {
-        "en": "Set operation mode to...",
-        "fr": "Définir le mode opérationnel à..."
+        "en": "Set the operation mode",
+        "fr": "Définir le mode opérationnel",
+        "nl": "Stel de bedrijfsmodus in",
+        "sv": "Ställ in driftläget",
+        "es": "Configurar el modo de operación"
       },
       "titleFormatted": {
-        "en": "Set operation mode to [[operation_mode]]",
-        "fr": "Définir le mode opérationnel à [[operation_mode]]"
+        "en": "Set the operation mode to [[operation_mode]]",
+        "fr": "Définir le mode opérationnel à [[operation_mode]]",
+        "nl": "Stel de bedrijfsmodus in op [[operation_mode]]",
+        "sv": "Ställ in driftläget till [[operation_mode]]",
+        "es": "Configurar el modo de operación a [[operation_mode]]"
       },
       "args": [
         {
@@ -496,36 +587,51 @@
             {
               "id": "heat",
               "title": {
-                "en": "Heat",
-                "fr": "Chauffage"
+                "en": "Heating",
+                "fr": "Chauffage",
+                "nl": "Verwarming",
+                "sv": "Uppvärmning",
+                "es": "Calefacción"
               }
             },
             {
               "id": "dry",
               "title": {
                 "en": "Dry",
-                "fr": "Séchage"
+                "fr": "Déshumidification",
+                "nl": "Droging",
+                "sv": "Avfuktning",
+                "es": "Secado"
               }
             },
             {
               "id": "cool",
               "title": {
                 "en": "Cool",
-                "fr": "Refroidissement"
+                "fr": "Refroidissement",
+                "nl": "Koeling",
+                "sv": "Kylning",
+                "es": "Enfriamiento"
               }
             },
             {
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventilateur"
+                "fr": "Ventilation",
+                "nl": "Ventilator",
+                "sv": "Fläkt",
+                "es": "Ventilador"
               }
             },
             {
               "id": "auto",
               "title": {
-                "en": "Auto",
-                "fr": "Automatique"
+                "en": "Automatic",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             }
           ]
@@ -535,12 +641,18 @@
     {
       "id": "vertical_action",
       "title": {
-        "en": "Set vertical vane direction to...",
-        "fr": "Définir la direction des ailettes verticales à..."
+        "en": "Set the vertical air discharge",
+        "fr": "Définir la sortie d'air verticale",
+        "nl": "Stel de uitblaasrichting verticaal in",
+        "sv": "Ställ in vertikal luftflödesriktning",
+        "es": "Configurar la discarga de aire vertical"
       },
       "titleFormatted": {
-        "en": "Set vertical vane direction to [[vertical]]",
-        "fr": "Définir la direction des ailettes verticales à [[vertical]]"
+        "en": "Set the vertical air discharge to [[vertical]]",
+        "fr": "Définir la sortie d'air verticale à [[vertical]]",
+        "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
+        "sv": "Ställ in vertikal luftflödesriktning till [[vertical]]",
+        "es": "Configurar la discarga de aire vertical a [[vertical]]"
       },
       "args": [
         {
@@ -551,49 +663,175 @@
               "id": "auto",
               "title": {
                 "en": "Automatic",
-                "fr": "Automatique"
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
               }
             },
             {
               "id": "top",
               "title": {
-                "en": "High",
-                "fr": "Élevée"
+                "en": "Upwards",
+                "fr": "Haut",
+                "nl": "Omhoog",
+                "sv": "Uppåt",
+                "es": "Arriba"
               }
             },
             {
               "id": "middletop",
               "title": {
-                "en": "Upper-mid",
-                "fr": "Milieu supérieur"
+                "en": "Mid-high",
+                "fr": "Milieu haut",
+                "nl": "Midden-hoog",
+                "sv": "Mellanhög",
+                "es": "Medio alto"
               }
             },
             {
               "id": "middle",
               "title": {
-                "en": "Mid",
-                "fr": "Milieu"
+                "en": "Middle",
+                "fr": "Milieu",
+                "nl": "Midden",
+                "sv": "Mitten",
+                "es": "Medio"
               }
             },
             {
               "id": "middlebottom",
               "title": {
-                "en": "Lower-mid",
-                "fr": "Milieu inférieur"
+                "en": "Mid-low",
+                "fr": "Milieu bas",
+                "nl": "Midden-laag",
+                "sv": "Mellanlåg",
+                "es": "Medio bajo"
               }
             },
             {
               "id": "bottom",
               "title": {
-                "en": "Low",
-                "fr": "Bas"
+                "en": "Downwards",
+                "fr": "Bas",
+                "nl": "Omlaag",
+                "sv": "Nedåt",
+                "es": "Abajo"
               }
             },
             {
               "id": "swing",
               "title": {
                 "en": "Swing",
-                "fr": "Balayage"
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "horizontal_action",
+      "title": {
+        "en": "Set the horizontal air discharge",
+        "fr": "Définir la sortie d'air horizontale",
+        "nl": "Stel de uitblaasrichting horizontaal in",
+        "sv": "Ställ in horisontell luftflödesriktning",
+        "es": "Configurar la descarga de aire horizontal"
+      },
+      "titleFormatted": {
+        "en": "Set the horizontal air discharge to [[horizontal]]",
+        "fr": "Définir la sortie d'air horizontale à [[horizontal]]",
+        "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
+        "sv": "Ställ in horisontell luftflödesriktning till [[horizontal]]",
+        "es": "Configurar la descarga de aire horizontal a [[horizontal]]"
+      },
+      "args": [
+        {
+          "name": "horizontal",
+          "type": "dropdown",
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatisk",
+                "es": "Automático"
+              }
+            },
+            {
+              "id": "left",
+              "title": {
+                "en": "Leftward",
+                "fr": "Gauche",
+                "nl": "Links",
+                "sv": "Vänster",
+                "es": "Izquierda"
+              }
+            },
+            {
+              "id": "middleleft",
+              "title": {
+                "en": "Center-left",
+                "fr": "Centre-gauche",
+                "nl": "Midden-links",
+                "sv": "Mitten-vänster",
+                "es": "Centro-izquierda"
+              }
+            },
+            {
+              "id": "middle",
+              "title": {
+                "en": "Center",
+                "fr": "Centre",
+                "nl": "Midden",
+                "sv": "Mitten",
+                "es": "Centro"
+              }
+            },
+            {
+              "id": "middleright",
+              "title": {
+                "en": "Center-right",
+                "fr": "Centre-droite",
+                "nl": "Midden-rechts",
+                "sv": "Mitten-höger",
+                "es": "Centro-derecha"
+              }
+            },
+            {
+              "id": "right",
+              "title": {
+                "en": "Rightwards",
+                "fr": "Droite",
+                "nl": "Rechts",
+                "sv": "Höger",
+                "es": "Hacia la derecha"
+              }
+            },
+            {
+              "id": "split",
+              "title": {
+                "en": "Split",
+                "fr": "Double",
+                "nl": "Gesplitst",
+                "sv": "Delad",
+                "es": "Doble"
+              }
+            },
+            {
+              "id": "swing",
+              "title": {
+                "en": "Swing",
+                "fr": "Balayage",
+                "nl": "Swing",
+                "sv": "Svängning",
+                "es": "Oscilación"
               }
             }
           ]

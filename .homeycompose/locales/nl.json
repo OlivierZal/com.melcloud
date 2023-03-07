@@ -1,0 +1,91 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Gebouw __buildingId__ heeft geen apparaat.",
+      "not_found": "Gebouw __buildingId__ kan niet worden gevonden."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdatum en/of einddatum ontbreekt."
+    }
+  },
+  "settings": {
+    "alert": {
+      "actions": {
+        "authenticate": "Authenticatie",
+        "update": "Bijwerken"
+      },
+      "failure": "__action__ is mislukt.",
+      "success": "__action__ is gelukt."
+    },
+    "authenticate": {
+      "button": "Authenticeren",
+      "label": "Referenties",
+      "password": "Wachtwoord",
+      "username": "Gebruikersnaam"
+    },
+    "boolean": {
+      "false": "Nee",
+      "true": "Ja"
+    },
+    "buildings": {
+      "label": "Gebouwinstellingen",
+      "frost_protection": {
+        "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
+        "max": "Maximale temperatuur",
+        "min": "Minimale temperatuur"
+      },
+      "holiday_mode": {
+        "enabled": "<strong>Vakantiemodus</strong> inschakelen",
+        "end_date": "Einddatum",
+        "start_date": "Begindatum"
+      },
+      "refresh": "Verversen",
+      "update": "Bijwerken"
+    },
+    "devices": {
+      "always_on": "Uitschakelen vanuit Homey uitschakelen",
+      "apply": {
+        "button": "Toepassen op alle apparaten",
+        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
+        "nothing": "Geen wijziging om toe te passen."
+      },
+      "interval": "Verversingsfrequentie (minuten)",
+      "label": "Apparaatinstellingen"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Datum",
+        "Device": "Apparaat",
+        "Error": "Fout"
+      },
+      "error": "Kies een datum voor __fromDateHuman__.",
+      "error_count_text_0": "fout",
+      "error_count_text_1": "fout",
+      "error_count_text_234": "fouten",
+      "error_count_text_plural": "fouten",
+      "label": "Foutenlogboek",
+      "period": "Sinds __fromDateHuman__: __errorCount__ __errorCountText__",
+      "see": "Zie alle fouten sinds"
+    },
+    "int_error": {
+      "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",
+      "values": {
+        "interval": "De verversingsfrequentie",
+        "max": "De maximale temperatuur",
+        "min": "De minimale temperatuur"
+      }
+    },
+    "title": "MELCloud-instellingen"
+  },
+  "warnings": {
+    "always_on": "Uitschakeling vanuit Homey is uitgeschakeld.",
+    "dashboard": "Verlaat apparaat en keer terug om uw dashboard te vernieuwen.",
+    "operation_mode": {
+      "message": "`__value__` is opgeslagen (zelfs als `Verwarming` wordt weergegeven).",
+      "values": {
+        "dry": "Droging",
+        "fan": "Ventilator"
+      }
+    }
+  }
+}

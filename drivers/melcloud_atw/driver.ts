@@ -28,6 +28,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.heatPumpType = 'Atw'
 
     this.capabilitiesAtw = [
+      'measure_power.heat_pump_frequency',
       'measure_temperature',
       'measure_temperature.outdoor',
       'measure_temperature.flow',

@@ -15,6 +15,16 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
+  // @ts-expect-error bug
+  Homey.api(
+    'GET',
+    '/locale',
+    async (error: Error, data: string): Promise<void> => {
+      if (error === null) {
+        document.documentElement.setAttribute('lang', data)
+      }
+    }
+  )
 
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
@@ -140,6 +150,22 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
   }
 
+  function getErrorCountText(errorCount: number): string {
+    if (errorCount === 0) {
+      return Homey.__('settings.error_log.error_count_text_0')
+    }
+    if (errorCount === 1) {
+      return Homey.__('settings.error_log.error_count_text_1')
+    }
+    if (
+      [2, 3, 4].includes(errorCount % 10) &&
+      ![12, 13, 14].includes(errorCount % 100)
+    ) {
+      return Homey.__('settings.error_log.error_count_text_234')
+    }
+    return Homey.__('settings.error_log.error_count_text_plural')
+  }
+
   function generateErrorLog(): void {
     const query: ErrorLogQuery = {
       from: fromElement.value,
@@ -168,7 +194,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         periodElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman,
           errorCount,
-          errorCountText: [0, 1].includes(errorCount) ? 'error' : 'errors'
+          errorCountText: getErrorCountText(errorCount)
         })
         if (data.Errors.length === 0) {
           return

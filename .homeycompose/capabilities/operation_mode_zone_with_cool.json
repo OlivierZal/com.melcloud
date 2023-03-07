@@ -1,8 +1,11 @@
 {
   "type": "enum",
   "title": {
-    "en": "Operation Mode",
-    "fr": "Mode opérationnel"
+    "en": "Operation mode",
+    "fr": "Mode opérationnel",
+    "nl": "Bedrijfsmodus",
+    "sv": "Driftläge",
+    "es": "Modo de operación"
   },
   "uiComponent": "picker",
   "insights": true,
@@ -13,36 +16,51 @@
     {
       "id": "0",
       "title": {
-        "en": "Heat room",
-        "fr": "Chauffer la pièce"
+        "en": "Heating - Indoor temperature",
+        "fr": "Chauffage - Température intérieure",
+        "nl": "Verwarming - Binnentemperatuur",
+        "sv": "Uppvärmning - Inomhusgivare",
+        "es": "Calefacción - Temperatura interior"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heat flow",
-        "fr": "Flux de chauffage"
+        "en": "Heating - Fixed flow temperature",
+        "fr": "Chauffage - Température de flux fixe",
+        "nl": "Verwarming - Verwarm de doorstroming",
+        "sv": "Uppvärmning - Fast framledningstemperatur",
+        "es": "Calefacción - Temperatura de flujo fija"
       }
     },
     {
       "id": "2",
       "title": {
-        "en": "Curve",
-        "fr": "Courbe"
+        "en": "Weather compensation curve",
+        "fr": "Courbe de compensation météo",
+        "nl": "Weerscompensatiecurve",
+        "sv": "Värmekurva",
+        "es": "Curva de compensación climática"
       }
     },
     {
       "id": "3",
       "title": {
-        "en": "Cool room",
-        "fr": "Refroidir la pièce"
+        "en": "Cooling - Indoor temperature",
+        "fr": "Refroidissement - Température intérieure",
+        "nl": "Koeling - Binnentemperatuur",
+        "sv": "Kylning - Inomhusgivare",
+        "es": "Enfriamiento - Temperatura interior"
       }
     },
     {
       "id": "4",
       "title": {
-        "en": "Cool flow",
-        "fr": "Flux de refroidissement"
+        "en": "Cooling - Fixed flow temperature",
+        "fr": "Refroidissement - Température de flux fixe",
+        "nl": "Koeling - Verwarm de doorstroming",
+        "sv": "Kylning - Fast framledningstemperatur",
+        "es": "Enfriamiento - Temperatura de flujo fija"
       }
     }
   ]
