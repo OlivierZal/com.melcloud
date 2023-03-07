@@ -65,7 +65,7 @@
       "error_count_text_plural": "erreurs",
       "label": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ : __errorCount__ __errorCountText__",
-      "see": "Voir les erreurs depuis"
+      "see": "Voir les erreurs depuis le"
     },
     "int_error": {
       "message": "__name__ doit être un entier compris entre __min__ et __max__.",

@@ -65,7 +65,7 @@
       "error_count_text_plural": "errores",
       "label": "Registro de errores",
       "period": "Desde __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Ver todos los errores desde"
+      "see": "Ver los errores desde el"
     },
     "int_error": {
       "message": "__name__ debe ser un número entero entre __min__ y __max__.",
