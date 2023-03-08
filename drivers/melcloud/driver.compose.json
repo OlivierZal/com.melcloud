@@ -5,6 +5,7 @@
     "fr": "Pompe à chaleur air-air",
     "nl": "Lucht-lucht warmtepomp",
     "sv": "Luft-luft värmepump",
+    "no": "Luft-til-luft varmepumpe",
     "es": "Bombas de calor de aire a aire"
   },
   "capabilities": [
@@ -41,6 +42,7 @@
         "fr": "Puissance du signal wifi",
         "nl": "Wifi signaalsterkte",
         "sv": "Wifi signalstyrka",
+        "no": "Wifi signalstyrke",
         "es": "Fuerza de la señal wifi"
       },
       "units": {
@@ -48,6 +50,7 @@
         "fr": "dBm",
         "nl": "dBm",
         "sv": "dBm",
+        "no": "dBm",
         "es": "dBm"
       }
     },
@@ -57,6 +60,7 @@
         "fr": "Conso horaire",
         "nl": "Uurlijkse verbruik",
         "sv": "Timvis förbrukning",
+        "no": "Timevis forbruk",
         "es": "Consumo horaire"
       }
     },
@@ -66,6 +70,7 @@
         "fr": "Conso horaire - mode automatique",
         "nl": "Uurlijkse verbruik - automatische modus",
         "sv": "Timvis förbrukning - automatläge",
+        "no": "Timevis forbruk - automatisk modus",
         "es": "Consumo horario - modo automático"
       }
     },
@@ -75,6 +80,7 @@
         "fr": "Conso horaire - mode refroidissement",
         "nl": "Uurlijkse verbruik - koelingsmodus",
         "sv": "Timvis förbrukning - kylningsläge",
+        "no": "Timevis forbruk - kjølingsmodus",
         "es": "Consumo horario - modo enfriamiento"
       }
     },
@@ -84,7 +90,8 @@
         "fr": "Conso horaire - mode déshumidification",
         "nl": "Uurlijkse verbruik - drogingsmodus",
         "sv": "Timvis förbrukning - avfuktningsläge",
-        "es": "Consumo horario - modo secado"
+        "no": "Timevis forbruk - avfuktingsmodus",
+        "es": "Consumo horario - modo desumidificación"
       }
     },
     "meter_power.hourly_consumed_fan": {
@@ -93,6 +100,7 @@
         "fr": "Conso horaire - mode ventilateur",
         "nl": "Uurlijkse verbruik - ventilatormodus",
         "sv": "Timvis förbrukning - fläktläge",
+        "no": "Timevis forbruk - viftetilstand",
         "es": "Consumo horario - modo ventilador"
       }
     },
@@ -102,6 +110,7 @@
         "fr": "Conso horaire - mode chauffage",
         "nl": "Uurlijkse verbruik - verwarmingsmodus",
         "sv": "Timvis förbrukning - uppvärmningsläge",
+        "no": "Timevis forbruk - oppvarmingsmodus",
         "es": "Consumo horario - modo calefacción"
       }
     },
@@ -111,6 +120,7 @@
         "fr": "Conso horaire - autre",
         "nl": "Uurlijkse verbruik - andere",
         "sv": "Timvis förbrukning - övrigt",
+        "no": "Timevis forbruk - annet",
         "es": "Consumo por hora - otro"
       }
     },
@@ -120,6 +130,7 @@
         "fr": "Conso quotidienne",
         "nl": "Dagelijkse verbruik",
         "sv": "Daglig förbrukning",
+        "no": "Daglige forbruk",
         "es": "Consumo diario"
       }
     },
@@ -129,6 +140,7 @@
         "fr": "Conso quotidienne - mode automatique",
         "nl": "Dagelijkse verbruik - automatische modus",
         "sv": "Daglig förbrukning - automatläge",
+        "no": "Daglige forbruk - automatisk modus",
         "es": "Consumo diario - modo automático"
       }
     },
@@ -138,6 +150,7 @@
         "fr": "Conso quotidienne - mode refroidissement",
         "nl": "Dagelijkse verbruik - koelingsmodus",
         "sv": "Daglig förbrukning - kylningsläge",
+        "no": "Daglige forbruk - kjølingsmodus",
         "es": "Consumo diario - modo enfriamiento"
       }
     },
@@ -147,7 +160,8 @@
         "fr": "Conso quotidienne - mode déshumidification",
         "nl": "Dagelijkse verbruik - drogingsmodus",
         "sv": "Daglig förbrukning - avfuktningsläge",
-        "es": "Consumo diario - modo secado"
+        "no": "Daglige forbruk - avfuktingsmodus",
+        "es": "Consumo diario - modo desumidificación"
       }
     },
     "meter_power.daily_consumed_fan": {
@@ -156,6 +170,7 @@
         "fr": "Conso quotidienne - mode ventilateur",
         "nl": "Dagelijkse verbruik - ventilatormodus",
         "sv": "Daglig förbrukning - fläktläge",
+        "no": "Daglige forbruk - viftetilstand",
         "es": "Consumo diario - modo ventilación"
       }
     },
@@ -165,6 +180,7 @@
         "fr": "Conso quotidienne - mode chauffage",
         "nl": "Dagelijkse verbruik - verwarmingsmodus",
         "sv": "Daglig förbrukning - uppvärmningsläge",
+        "no": "Daglige forbruk - oppvarmingsmodus",
         "es": "Consumo diario - modo calefacción"
       }
     },
@@ -174,6 +190,7 @@
         "fr": "Conso quotidienne - autre",
         "nl": "Dagelijkse verbruik - andere",
         "sv": "Daglig förbrukning - övrigt",
+        "no": "Daglige forbruk - annet",
         "es": "Consumo diario - otro"
       }
     },
@@ -183,6 +200,7 @@
         "fr": "Conso totale",
         "nl": "Totaalverbruik",
         "sv": "Total förbrukning",
+        "no": "Total forbruk",
         "es": "Consumo total"
       }
     },
@@ -192,6 +210,7 @@
         "fr": "Conso totale - mode automatique",
         "nl": "Totaalverbruik - automatische modus",
         "sv": "Total förbrukning - automatläge",
+        "no": "Total forbruk - automatisk modus",
         "es": "Consumo total - modo automático"
       }
     },
@@ -201,6 +220,7 @@
         "fr": "Conso totale - mode refroidissement",
         "nl": "Totaalverbruik - koelingsmodus",
         "sv": "Total förbrukning - kylningsläge",
+        "no": "Total forbruk - kjølingsmodus",
         "es": "Consumo total - modo enfriamiento"
       }
     },
@@ -210,7 +230,8 @@
         "fr": "Conso totale - mode déshumidification",
         "nl": "Totaalverbruik - drogingsmodus",
         "sv": "Total förbrukning - avfuktningsläge",
-        "es": "Consumo total - modo secado"
+        "no": "Total forbruk - avfuktingsmodus",
+        "es": "Consumo total - modo desumidificación"
       }
     },
     "meter_power.total_consumed_fan": {
@@ -219,6 +240,7 @@
         "fr": "Conso totale - mode ventilateur",
         "nl": "Totaalverbruik - ventilatormodus",
         "sv": "Total förbrukning - fläktläge",
+        "no": "Total forbruk - viftetilstand",
         "es": "Consumo total - modo ventilador"
       }
     },
@@ -228,6 +250,7 @@
         "fr": "Conso totale - mode chauffage",
         "nl": "Totaalverbruik - verwarmingsmodus",
         "sv": "Total förbrukning - uppvärmningsläge",
+        "no": "Total forbruk - oppvarmingsmodus",
         "es": "Consumo total - modo calefacción"
       }
     },
@@ -237,6 +260,7 @@
         "fr": "Conso totale - autre",
         "nl": "Totaalverbruik - andere",
         "sv": "Total förbrukning - övrigt",
+        "no": "Total forbruk - annet",
         "es": "Consumo total - otro"
       }
     },

@@ -12,10 +12,10 @@
     "alert": {
       "actions": {
         "authenticate": "Autenticación",
-        "update": "Actualizar"
+        "update": "Actualización"
       },
-      "failure": "__action__ falló.",
-      "success": "__action__ se ha completado con éxito."
+      "failure": "__action__ fallida.",
+      "success": "__action__ exitosa."
     },
     "authenticate": {
       "button": "Autenticar",
@@ -28,9 +28,9 @@
       "true": "Sí"
     },
     "buildings": {
-      "label": "Configuración del edificio",
+      "label": "Configuración de los edificios",
       "frost_protection": {
-        "enabled": "Activar <strong>protección contra heladas</strong>",
+        "enabled": "Activar <strong>protección contra el hielo</strong>",
         "max": "Temperatura máxima",
         "min": "Temperatura mínima"
       },
@@ -39,7 +39,7 @@
         "end_date": "Fecha de finalización",
         "start_date": "Fecha de inicio"
       },
-      "refresh": "Actualizar",
+      "refresh": "Refrescar",
       "update": "Actualizar"
     },
     "devices": {
@@ -50,7 +50,7 @@
         "nothing": "No hay cambios que aplicar."
       },
       "interval": "Frecuencia de actualización (minutos)",
-      "label": "Configuración del dispositivo"
+      "label": "Configuración de los dispositivos"
     },
     "error_log": {
       "columns": {
@@ -83,7 +83,7 @@
     "operation_mode": {
       "message": "Se ha guardado `__value__` (incluso si se muestra `Calefacción`).",
       "values": {
-        "dry": "Secado",
+        "dry": "Desumidificación",
         "fan": "Ventilador"
       }
     }

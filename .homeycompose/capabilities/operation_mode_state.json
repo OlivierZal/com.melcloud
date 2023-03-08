@@ -5,6 +5,7 @@
     "fr": "Opération en cours",
     "nl": "Huidige bedrijf",
     "sv": "Aktuell drift",
+    "no": "Gjeldende drift",
     "es": "Operación actual"
   },
   "uiComponent": "sensor",
@@ -20,6 +21,7 @@
         "fr": "Inactif",
         "nl": "Inactief",
         "sv": "Inaktiv",
+        "no": "Inaktiv",
         "es": "Inactivo"
       }
     },
@@ -30,6 +32,7 @@
         "fr": "Eau chaude sanitaire",
         "nl": "Sanitair warm water",
         "sv": "Varmvattenladdning",
+        "no": "Varmvannslastning",
         "es": "Agua caliente sanitaria"
       }
     },
@@ -40,6 +43,7 @@
         "fr": "Chauffage",
         "nl": "Verwarming",
         "sv": "Uppvärmning",
+        "no": "Oppvarming",
         "es": "Calefacción"
       }
     },
@@ -50,6 +54,7 @@
         "fr": "Refroidissement",
         "nl": "Koeling",
         "sv": "Kylning",
+        "no": "Kjøling",
         "es": "Enfriamiento"
       }
     },
@@ -60,6 +65,7 @@
         "fr": "Dégivrage",
         "nl": "Ontdooien",
         "sv": "Avfrostning",
+        "no": "Avfrosting",
         "es": "Descongelación"
       }
     },
@@ -68,8 +74,9 @@
       "title": {
         "en": "Standby",
         "fr": "Veille",
-        "nl": "Stand-by",
-        "sv": "Standby",
+        "nl": "Standby",
+        "sv": "Vänteläge",
+        "no": "Ventemodus",
         "es": "En espera"
       }
     },
@@ -80,6 +87,7 @@
         "fr": "Legionella",
         "nl": "Legionella",
         "sv": "Legionella",
+        "no": "Legionella",
         "es": "Legionella"
       }
     }

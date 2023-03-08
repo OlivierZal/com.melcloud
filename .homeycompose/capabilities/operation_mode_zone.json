@@ -5,6 +5,7 @@
     "fr": "Mode opérationnel",
     "nl": "Bedrijfsmodus",
     "sv": "Driftläge",
+    "no": "Driftsmodus",
     "es": "Modo de operación"
   },
   "uiComponent": "picker",
@@ -20,6 +21,7 @@
         "fr": "Température intérieure",
         "nl": "Binnentemperatuur",
         "sv": "Inomhusgivare",
+        "no": "Innendørs føler",
         "es": "Temperatura interior"
       }
     },
@@ -28,8 +30,9 @@
       "title": {
         "en": "Fixed flow temperature",
         "fr": "Température de flux fixe",
-        "nl": "Verwarm de doorstroming",
+        "nl": "Vaste stroomtemperatuur",
         "sv": "Fast framledningstemperatur",
+        "no": "Fast fremløpstemperatur",
         "es": "Temperatura de flujo fija"
       }
     },
@@ -40,6 +43,7 @@
         "fr": "Courbe de compensation météo",
         "nl": "Weerscompensatiecurve",
         "sv": "Värmekurva",
+        "no": "Varmekurve",
         "es": "Curva de compensación climática"
       }
     }

@@ -79,5 +79,8 @@
   },
   "11.1.0": {
     "en": "Translated into Dutch, Swedish and Spanish."
+  },
+  "11.2.0": {
+    "en": "Added Norwegian and improved other languages."
   }
 }

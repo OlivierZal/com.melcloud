@@ -49,7 +49,7 @@
         "confirm": "Are you sure you want to apply these settings to all devices?",
         "nothing": "No change to apply."
       },
-      "interval": "Refresh frequency (minutes)",
+      "interval": "Update frequency (minutes)",
       "label": "Device Settings"
     },
     "error_log": {
@@ -70,7 +70,7 @@
     "int_error": {
       "message": "__name__ must be an integer between __min__ and __max__.",
       "values": {
-        "interval": "The refresh frequency",
+        "interval": "The update frequency",
         "max": "The maximum temperature",
         "min": "The minimum temperature"
       }

@@ -1,0 +1,91 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Bygning __buildingId__ har ingen enhet.",
+      "not_found": "Bygning __buildingId__ kan ikke bli funnet."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdato og/eller sluttdato mangler."
+    }
+  },
+  "settings": {
+    "alert": {
+      "actions": {
+        "authenticate": "Autentisering",
+        "update": "Oppdatering"
+      },
+      "failure": "__action__ feilet.",
+      "success": "__action__ vellykket."
+    },
+    "authenticate": {
+      "button": "Autentiser",
+      "label": "Innloggingsinformasjon",
+      "password": "Passord",
+      "username": "Brukernavn"
+    },
+    "boolean": {
+      "false": "Nei",
+      "true": "Ja"
+    },
+    "buildings": {
+      "label": "Byggingsinnstillinger",
+      "frost_protection": {
+        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+        "max": "Maksimal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktiver <strong>feriemodus</strong>",
+        "end_date": "Sluttdato",
+        "start_date": "Startdato"
+      },
+      "refresh": "Oppfrisk",
+      "update": "Oppdater"
+    },
+    "devices": {
+      "always_on": "Deaktiver avslåing fra Homey",
+      "apply": {
+        "button": "Bruk på alle enheter",
+        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
+        "nothing": "Ingen endring å bruke."
+      },
+      "interval": "Oppdateringsfrekvens (minutter)",
+      "label": "Enhetsinnstillinger"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Dato",
+        "Device": "Enhet",
+        "Error": "Feil"
+      },
+      "error": "Velg en dato før __fromDateHuman__.",
+      "error_count_text_0": "feil",
+      "error_count_text_1": "feil",
+      "error_count_text_234": "feil",
+      "error_count_text_plural": "feil",
+      "label": "Feillogg",
+      "period": "Siden __fromDateHuman__: __errorCount__ __errorCountText__",
+      "see": "Se alle feil siden"
+    },
+    "int_error": {
+      "message": "__name__ må være et heltall mellom __min__ og __max__.",
+      "values": {
+        "interval": "Oppdateringsfrekvensen",
+        "max": "Maksimal temperaturen",
+        "min": "Minimal temperaturen"
+      }
+    },
+    "title": "MELCloud-innstillinger"
+  },
+  "warnings": {
+    "always_on": "Avslåing fra Homey er deaktivert.",
+    "dashboard": "Avslutt enhet og gå tilbake for å oppdatere instrumentpanelet ditt.",
+    "operation_mode": {
+      "message": "`__value__` har blitt lagret (selv om `Oppvarming` vises).",
+      "values": {
+        "dry": "Avfukting",
+        "fan": "Vifte"
+      }
+    }
+  }
+}

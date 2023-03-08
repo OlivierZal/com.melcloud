@@ -5,6 +5,7 @@
     "fr": "Mode opérationnel",
     "nl": "Bedrijfsmodus",
     "sv": "Driftläge",
+    "no": "Driftsmodus",
     "es": "Modo de operación"
   },
   "getable": true,
@@ -20,6 +21,7 @@
         "fr": "Chauffage",
         "nl": "Verwarming",
         "sv": "Uppvärmning",
+        "no": "Oppvarming",
         "es": "Calefacción"
       }
     },
@@ -30,7 +32,8 @@
         "fr": "Déshumidification",
         "nl": "Droging",
         "sv": "Avfuktning",
-        "es": "Secado"
+        "no": "Avfukting",
+        "es": "Desumidificación"
       }
     },
     {
@@ -40,6 +43,7 @@
         "fr": "Refroidissement",
         "nl": "Koeling",
         "sv": "Kylning",
+        "no": "Kjøling",
         "es": "Enfriamiento"
       }
     },
@@ -50,6 +54,7 @@
         "fr": "Ventilation",
         "nl": "Ventilator",
         "sv": "Fläkt",
+        "no": "Vifte",
         "es": "Ventilador"
       }
     },
@@ -59,7 +64,8 @@
         "en": "Automatic",
         "fr": "Automatique",
         "nl": "Automatisch",
-        "sv": "Automatisk",
+        "sv": "Automatiskt",
+        "no": "Automatisk",
         "es": "Automático"
       }
     }
