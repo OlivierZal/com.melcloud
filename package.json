@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "11.1.4",
+  "version": "11.1.5",
   "main": "app.ts",
   "scripts": {
     "build": "tsc"
