@@ -5,6 +5,7 @@
     "fr": "Mode opérationnel",
     "nl": "Bedrijfsmodus",
     "sv": "Driftläge",
+    "no": "Driftsmodus",
     "es": "Modo de operación"
   },
   "uiComponent": "picker",
@@ -16,21 +17,23 @@
     {
       "id": "0",
       "title": {
-        "en": "Heating - Indoor temperature",
-        "fr": "Chauffage - Température intérieure",
-        "nl": "Verwarming - Binnentemperatuur",
-        "sv": "Uppvärmning - Inomhusgivare",
-        "es": "Calefacción - Temperatura interior"
+        "en": "Indoor temperature",
+        "fr": "Température intérieure",
+        "nl": "Binnentemperatuur",
+        "sv": "Inomhusgivare",
+        "no": "Innendørs føler",
+        "es": "Temperatura interior"
       }
     },
     {
       "id": "1",
       "title": {
-        "en": "Heating - Fixed flow temperature",
-        "fr": "Chauffage - Température de flux fixe",
-        "nl": "Verwarming - Verwarm de doorstroming",
-        "sv": "Uppvärmning - Fast framledningstemperatur",
-        "es": "Calefacción - Temperatura de flujo fija"
+        "en": "Fixed flow temperature",
+        "fr": "Température de flux fixe",
+        "nl": "Vaste stroomtemperatuur",
+        "sv": "Fast framledningstemperatur",
+        "no": "Fast fremløpstemperatur",
+        "es": "Temperatura de flujo fija"
       }
     },
     {
@@ -40,27 +43,30 @@
         "fr": "Courbe de compensation météo",
         "nl": "Weerscompensatiecurve",
         "sv": "Värmekurva",
+        "no": "Varmekurve",
         "es": "Curva de compensación climática"
       }
     },
     {
       "id": "3",
       "title": {
-        "en": "Cooling - Indoor temperature",
-        "fr": "Refroidissement - Température intérieure",
-        "nl": "Koeling - Binnentemperatuur",
-        "sv": "Kylning - Inomhusgivare",
-        "es": "Enfriamiento - Temperatura interior"
+        "en": "Indoor temperature - cooling",
+        "fr": "Température intérieure - refroidissement",
+        "nl": "Binnentemperatuur - koeling",
+        "sv": "Inomhusgivare - kylning",
+        "no": "Innendørs føler - kjøling",
+        "es": "Temperatura interior - enfriamiento"
       }
     },
     {
       "id": "4",
       "title": {
-        "en": "Cooling - Fixed flow temperature",
-        "fr": "Refroidissement - Température de flux fixe",
-        "nl": "Koeling - Verwarm de doorstroming",
-        "sv": "Kylning - Fast framledningstemperatur",
-        "es": "Enfriamiento - Temperatura de flujo fija"
+        "en": "Fixed flow temperature - cooling",
+        "fr": "Température du flux fixe - refroidissement",
+        "nl": "Vaste stroomtemperatuur - koeling",
+        "sv": "Fast framledningstemperatur - kylning",
+        "no": "Fast fremløpstemperatur - kjøling",
+        "es": "Temperatura de flujo fija - enfriamiento"
       }
     }
   ]

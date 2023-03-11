@@ -12,10 +12,10 @@
     "alert": {
       "actions": {
         "authenticate": "Authenticatie",
-        "update": "Bijwerken"
+        "update": "Update"
       },
-      "failure": "__action__ is mislukt.",
-      "success": "__action__ is gelukt."
+      "failure": "__action__ mislukt.",
+      "success": "__action__ geslaagd."
     },
     "authenticate": {
       "button": "Authenticeren",
@@ -40,7 +40,7 @@
         "start_date": "Begindatum"
       },
       "refresh": "Verversen",
-      "update": "Bijwerken"
+      "update": "Update"
     },
     "devices": {
       "always_on": "Uitschakelen vanuit Homey uitschakelen",
@@ -49,7 +49,7 @@
         "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
         "nothing": "Geen wijziging om toe te passen."
       },
-      "interval": "Verversingsfrequentie (minuten)",
+      "interval": "Updatefrequentie (minuten)",
       "label": "Apparaatinstellingen"
     },
     "error_log": {
@@ -70,7 +70,7 @@
     "int_error": {
       "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",
       "values": {
-        "interval": "De verversingsfrequentie",
+        "interval": "De updatefrequentie",
         "max": "De maximale temperatuur",
         "min": "De minimale temperatuur"
       }

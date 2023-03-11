@@ -5,6 +5,7 @@
     "fr": "Vitesse de ventilation",
     "nl": "Ventilatiesnelheid",
     "sv": "Fläkthastighet",
+    "no": "Viftehastighet",
     "es": "Velocidad del ventilador"
   },
   "uiComponent": "slider",

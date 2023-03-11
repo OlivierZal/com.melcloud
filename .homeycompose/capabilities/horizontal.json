@@ -5,6 +5,7 @@
     "fr": "Sortie d'air horizontale",
     "nl": "Uitblaasrichting horizontaal",
     "sv": "Horisontell luftflödesriktning",
+    "no": "Horisontal luftflødesretning",
     "es": "Descarga de aire horizontal"
   },
   "getable": true,
@@ -18,7 +19,8 @@
         "en": "Automatic",
         "fr": "Automatique",
         "nl": "Automatisch",
-        "sv": "Automatisk",
+        "sv": "Automatiskt",
+        "no": "Automatisk",
         "es": "Automático"
       }
     },
@@ -29,6 +31,7 @@
         "fr": "Gauche",
         "nl": "Links",
         "sv": "Vänster",
+        "no": "Venstre",
         "es": "Izquierda"
       }
     },
@@ -39,6 +42,7 @@
         "fr": "Centre-gauche",
         "nl": "Midden-links",
         "sv": "Mitten-vänster",
+        "no": "Middelvenstre",
         "es": "Centro-izquierda"
       }
     },
@@ -49,6 +53,7 @@
         "fr": "Centre",
         "nl": "Midden",
         "sv": "Mitten",
+        "no": "Midten",
         "es": "Centro"
       }
     },
@@ -59,6 +64,7 @@
         "fr": "Centre-droite",
         "nl": "Midden-rechts",
         "sv": "Mitten-höger",
+        "no": "Middelhøyre",
         "es": "Centro-derecha"
       }
     },
@@ -69,6 +75,7 @@
         "fr": "Droite",
         "nl": "Rechts",
         "sv": "Höger",
+        "no": "Høyre",
         "es": "Hacia la derecha"
       }
     },
@@ -76,10 +83,11 @@
       "id": "split",
       "title": {
         "en": "Split",
-        "fr": "Double",
+        "fr": "Divisé",
         "nl": "Gesplitst",
         "sv": "Delad",
-        "es": "Doble"
+        "no": "Delt",
+        "es": "Dividido"
       }
     },
     {
@@ -89,6 +97,7 @@
         "fr": "Balayage",
         "nl": "Swing",
         "sv": "Svängning",
+        "no": "Sving",
         "es": "Oscilación"
       }
     }
