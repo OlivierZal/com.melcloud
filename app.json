@@ -22,7 +22,7 @@
   "category": [
     "climate"
   ],
-  "version": "11.2.4",
+  "version": "11.2.5",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -159,7 +159,7 @@
           "fr": "La vitesse de ventilation a été modifiée",
           "nl": "De ventilatiesnelheid is veranderd",
           "sv": "Fläkthastigheten ändrades",
-          "no": "Viftehastighet ble endret",
+          "no": "Viftehastigheten ble endret",
           "es": "La velocidad del ventilador ha cambiado"
         },
         "tokens": [
@@ -231,8 +231,8 @@
           "en": "The vertical air discharge has changed",
           "fr": "La sortie d'air verticale a été modifiée",
           "nl": "De uitblaasrichting verticaal is veranderd",
-          "sv": "Vertikal luftflödesriktning ändrades",
-          "no": "Vertikal luftflødesretning ble endret",
+          "sv": "Vertikal luftflödesriktningen ändrades",
+          "no": "Vertikal luftflødesretningen ble endret",
           "es": "La descarga de aire vertical ha cambiado"
         },
         "tokens": [
@@ -271,8 +271,8 @@
           "en": "The horizontal air discharge has changed",
           "fr": "La sortie d'air horizontale a été modifiée",
           "nl": "De uitblaasrichting horizontaal is veranderd",
-          "sv": "Horisontell luftflödesriktning ändrades",
-          "no": "Horisontell luftflødesretning ble endret",
+          "sv": "Horisontell luftflödesriktningen ändrades",
+          "no": "Horisontell luftflødesretningen ble endret",
           "es": "La descarga de aire horizontal ha cambiado"
         },
         "tokens": [
@@ -487,8 +487,8 @@
           "en": "The booster heater 1 turned on",
           "fr": "Le chauffage d'appoint 1 s'est activé",
           "nl": "De boosterverwarmingselement 1 gaat aan",
-          "sv": "Tillskottsvärmare 1 är aktiverat",
-          "no": "Tilleggsvarmen 1 er aktivert",
+          "sv": "Tillskottsvärmaren 1 är aktiverat",
+          "no": "Tilleggsvarmeren 1 er aktivert",
           "es": "El calentador de refuerzo 1 se ha activado"
         },
         "args": [
@@ -505,8 +505,8 @@
           "en": "The booster heater 1 turned off",
           "fr": "Le chauffage d'appoint 1 s'est désactivé",
           "nl": "De boosterverwarmingselement 1 ging uit",
-          "sv": "Tillskottsvärmare 1 är inaktiverat",
-          "no": "Tilleggsvarmen 1 er deaktivert",
+          "sv": "Tillskottsvärmaren 1 är inaktiverat",
+          "no": "Tilleggsvarmeren 1 er deaktivert",
           "es": "El calentador de refuerzo 1 se ha desactivado"
         },
         "args": [
@@ -523,8 +523,8 @@
           "en": "The booster heater 2 turned on",
           "fr": "Le chauffage d'appoint 2 s'est activé",
           "nl": "De boosterverwarmingselement 2 gaat aan",
-          "sv": "Tillskottsvärmare 2 är aktiverat",
-          "no": "Tilleggsvarmen 2 er aktivert",
+          "sv": "Tillskottsvärmaren 2 är aktiverat",
+          "no": "Tilleggsvarmeren 2 er aktivert",
           "es": "El calentador de refuerzo 2 se ha activado"
         },
         "args": [
@@ -541,8 +541,8 @@
           "en": "The booster heater 2 turned off",
           "fr": "Le chauffage d'appoint 2 s'est désactivé",
           "nl": "De boosterverwarmingselement 2 ging uit",
-          "sv": "Tillskottsvärmare 2 är inaktiverat",
-          "no": "Tilleggsvarmen 2 er deaktivert",
+          "sv": "Tillskottsvärmaren 2 är inaktiverat",
+          "no": "Tilleggsvarmeren 2 er deaktivert",
           "es": "El calentador de refuerzo 2 se ha desactivado"
         },
         "args": [
@@ -559,8 +559,8 @@
           "en": "The booster heater 2+ turned on",
           "fr": "Le chauffage d'appoint 2+ s'est activé",
           "nl": "De boosterverwarmingselement 2+ gaat aan",
-          "sv": "Tillskottsvärmare 2+ är aktiverat",
-          "no": "Tilleggsvarmen 2+ er aktivert",
+          "sv": "Tillskottsvärmaren 2+ är aktiverat",
+          "no": "Tilleggsvarmeren 2+ er aktivert",
           "es": "El calentador de refuerzo 2+ se ha activado"
         },
         "args": [
@@ -577,8 +577,8 @@
           "en": "The booster heater 2+ turned off",
           "fr": "Le chauffage d'appoint 2+ s'est désactivé",
           "nl": "De boosterverwarmingselement 2+ ging uit",
-          "sv": "Tillskottsvärmare 2+ är inaktiverat",
-          "no": "Tilleggsvarmen 2+ er deaktivert",
+          "sv": "Tillskottsvärmaren 2+ är inaktiverat",
+          "no": "Tilleggsvarmeren 2+ er deaktivert",
           "es": "El calentador de refuerzo 2+ se ha desactivado"
         },
         "args": [
@@ -631,8 +631,8 @@
           "en": "The eco hot water turned on",
           "fr": "L'eau chaude éco s'est activée",
           "nl": "De eco warm water gaat aan",
-          "sv": "Eco-läget för varmvatten är aktiverat",
-          "no": "Eco-modusen for varmtvann er aktivert",
+          "sv": "Eco-läge för varmvatten är aktiverat",
+          "no": "Eco-modus for varmtvann er aktivert",
           "es": "La agua caliente eco se ha activado"
         },
         "args": [
@@ -649,8 +649,8 @@
           "en": "The eco hot water turned off",
           "fr": "L'eau chaude éco s'est désactivée",
           "nl": "De eco warm water ging uit",
-          "sv": "Eco-läget för varmvatten är inaktiverat",
-          "no": "Eco-modusen for varmtvann er deaktivert",
+          "sv": "Eco-läge för varmvatten är inaktiverat",
+          "no": "Eco-modus for varmtvann er deaktivert",
           "es": "La agua caliente eco se ha desactivado"
         },
         "args": [
@@ -704,7 +704,7 @@
           "fr": "Eau chaude forcée activée",
           "nl": "Gedwongen warm water aangezet",
           "sv": "Tvingad varmvatten aktiverad",
-          "no": "Tvungen varmtvann slått av",
+          "no": "Tvungen varmtvann slått på",
           "es": "Agua caliente forzada encendida"
         },
         "args": [
@@ -942,8 +942,8 @@
           "fr": "La vitesse de ventilation !{{est|n'est pas}}",
           "nl": "De ventilatiesnelheid !{{is|is niet}}",
           "sv": "Fläkthastigheten !{{är|är inte}}",
-          "no": "Viftehastighet !{{er|er ikke}}",
-          "es": "La elocidad del ventilador !{{está|no está}}"
+          "no": "Viftehastigheten !{{er|er ikke}}",
+          "es": "La velocidad del ventilador !{{está|no está}}"
         },
         "titleFormatted": {
           "en": "The fan speed !{{is|is not}} [[fan_power]]",
@@ -1126,16 +1126,16 @@
           "en": "The vertical air discharge !{{is|is not}}",
           "fr": "La sortie d'air verticale !{{est|n'est pas}}",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
-          "sv": "Vertikal luftflödesriktning !{{är|är inte}}",
-          "no": "Vertikal luftflødesretning !{{er|er ikke}}",
+          "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
+          "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
           "es": "La descarga de aire vertical !{{está|no está}}"
         },
         "titleFormatted": {
           "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
           "fr": "La sortie d'air verticale !{{est|n'est pas}} [[vertical]]",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
-          "sv": "Vertikal luftflödesriktning !{{är|är inte}} [[vertical]]",
-          "no": "Vertikal luftflødesretning !{{er|er ikke}} [[vertical]]",
+          "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
+          "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
           "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
         },
         "args": [
@@ -1235,16 +1235,16 @@
           "en": "The horizontal air discharge !{{is|is not}}",
           "fr": "La sortie d'air horizontale !{{est|n'est pas}}",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
-          "sv": "Horisontell luftflödesriktning !{{är|är inte}}",
-          "no": "Horisontal luftflødesretning !{{er|er ikke}}",
+          "sv": "Horisontell luftflödesriktningen !{{är|är inte}}",
+          "no": "Horisontal luftflødesretningen !{{er|er ikke}}",
           "es": "La descarga de aire horizontal !{{está|no está}}"
         },
         "titleFormatted": {
           "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
           "fr": "La sortie d'air horizontale !{{est|n'est pas}} [[horizontal]]",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
-          "sv": "Horisontell luftflödesriktning !{{är|är inte}} [[horizontal]]",
-          "no": "Horisontal luftflødesretning !{{er|er ikke}} [[horizontal]]",
+          "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]",
+          "no": "Horisontal luftflødesretningen !{{er|er ikke}} [[horizontal]]",
           "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]"
         },
         "args": [
@@ -1620,8 +1620,8 @@
           "en": "The booster heater 1 is !{{on|off}}",
           "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
           "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
-          "sv": "Tillskottsvärmare 1 är !{{på|av}}",
-          "no": "Tilleggsvarmen 1 er !{{på|av}}",
+          "sv": "Tillskottsvärmaren 1 är !{{på|av}}",
+          "no": "Tilleggsvarmeren 1 er !{{på|av}}",
           "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}"
         },
         "args": [
@@ -1638,8 +1638,8 @@
           "en": "The booster heater 2 is !{{on|off}}",
           "fr": "Le chauffage d'appoint 2 est !{{en marche|arrêté}}",
           "nl": "De boosterverwarmingselement 2 is !{{aan|uit}}",
-          "sv": "Tillskottsvärmare 2 är !{{på|av}}",
-          "no": "Tilleggsvarmen 2 er !{{på|av}}",
+          "sv": "Tillskottsvärmaren 2 är !{{på|av}}",
+          "no": "Tilleggsvarmeren 2 er !{{på|av}}",
           "es": "El calentador de refuerzo 2 está !{{activada|desactivada}}"
         },
         "args": [
@@ -1656,8 +1656,8 @@
           "en": "The booster heater 2+ is !{{on|off}}",
           "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
           "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
-          "sv": "Tillskottsvärmare 2+ är !{{på|av}}",
-          "no": "Tilleggsvarmen 2+ er !{{på|av}}",
+          "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
+          "no": "Tilleggsvarmeren 2+ er !{{på|av}}",
           "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
         },
         "args": [
@@ -1692,7 +1692,7 @@
           "en": "The eco hot water is !{{on|off}}",
           "fr": "L'eau chaude forcée est !{{en marche|arrêté}}",
           "nl": "De eco warm water is !{{aan|uit}}",
-          "sv": "Eco-läget för varmvatten är !{{på|av}}",
+          "sv": "Eco-läge för varmvatten är !{{på|av}}",
           "no": "Eco-modus for varmtvann er !{{på|av}}",
           "es": "La agua caliente eco está !{{activada|desactivada}}"
         },
@@ -2046,7 +2046,7 @@
                   "en": "Indoor temperature - cooling",
                   "fr": "Température intérieure - refroidissement",
                   "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare- kylning",
+                  "sv": "Inomhusgivare - kylning",
                   "no": "Innendørs føler - kjøling",
                   "es": "Temperatura interior - enfriamiento"
                 }
@@ -2057,7 +2057,7 @@
                   "en": "Fixed flow temperature - cooling",
                   "fr": "Température de flux fixe - refroidissement",
                   "nl": "Vaste stroomtemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur- kylning",
+                  "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
@@ -2133,7 +2133,7 @@
                   "en": "Indoor temperature - cooling",
                   "fr": "Température intérieure - refroidissement",
                   "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare- kylning",
+                  "sv": "Inomhusgivare - kylning",
                   "no": "Innendørs føler - kjøling",
                   "es": "Temperatura interior - enfriamiento"
                 }
@@ -2144,7 +2144,7 @@
                   "en": "Fixed flow temperature - cooling",
                   "fr": "Température de flux fixe - refroidissement",
                   "nl": "Vaste stroomtemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur- kylning",
+                  "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
@@ -2197,7 +2197,7 @@
           "fr": "Définir la vitesse de ventilation",
           "nl": "Stel de ventilatiesnelheid in",
           "sv": "Ställ in fläkthastigheten",
-          "no": "Innstill viftehastighet",
+          "no": "Innstill viftehastigheten",
           "es": "Configurar la velocidad del ventilador"
         },
         "titleFormatted": {
@@ -2205,7 +2205,7 @@
           "fr": "Définir la vitesse de ventilation à [[fan_power]]",
           "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
           "sv": "Ställ in fläkthastigheten till [[fan_power]]",
-          "no": "Innstill viftehastighet til [[fan_power]]",
+          "no": "Innstill viftehastigheten til [[fan_power]]",
           "es": "Configurar la velocidad del ventilador a [[fan_power]]"
         },
         "args": [
@@ -2381,16 +2381,16 @@
           "en": "Set the vertical air discharge",
           "fr": "Définir la sortie d'air verticale",
           "nl": "Stel de uitblaasrichting verticaal in",
-          "sv": "Ställ in vertikal luftflödesriktning",
-          "no": "Innstill vertikal luftflødesretning",
+          "sv": "Ställ in vertikal luftflödesriktningen",
+          "no": "Innstill vertikal luftflødesretningen",
           "es": "Configurar la discarga de aire vertical"
         },
         "titleFormatted": {
           "en": "Set the vertical air discharge to [[vertical]]",
           "fr": "Définir la sortie d'air verticale à [[vertical]]",
           "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
-          "sv": "Ställ in vertikal luftflödesriktning till [[vertical]]",
-          "no": "Innstill vertikal luftflødesretning til [[vertical]]",
+          "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
+          "no": "Innstill vertikal luftflødesretningen til [[vertical]]",
           "es": "Configurar la discarga de aire vertical a [[vertical]]"
         },
         "args": [
@@ -2490,16 +2490,16 @@
           "en": "Set the horizontal air discharge",
           "fr": "Définir la sortie d'air horizontale",
           "nl": "Stel de uitblaasrichting horizontaal in",
-          "sv": "Ställ in horisontell luftflödesriktning",
-          "no": "Innstill horisontal luftflødesretning",
+          "sv": "Ställ in horisontell luftflödesriktningen",
+          "no": "Innstill horisontal luftflødesretningen",
           "es": "Configurar la descarga de aire horizontal"
         },
         "titleFormatted": {
           "en": "Set the horizontal air discharge to [[horizontal]]",
           "fr": "Définir la sortie d'air horizontale à [[horizontal]]",
           "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
-          "sv": "Ställ in horisontell luftflödesriktning till [[horizontal]]",
-          "no": "Innstill horisontal luftflødesretning til [[horizontal]]",
+          "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]",
+          "no": "Innstill horisontal luftflødesretningen til [[horizontal]]",
           "es": "Configurar la descarga de aire horizontal a [[horizontal]]"
         },
         "args": [
@@ -3016,7 +3016,7 @@
                   "en": "Indoor temperature - cooling",
                   "fr": "Température intérieure - refroidissement",
                   "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare- kylning",
+                  "sv": "Inomhusgivare - kylning",
                   "no": "Innendørs føler - kjøling",
                   "es": "Temperatura interior - enfriamiento"
                 }
@@ -3027,7 +3027,7 @@
                   "en": "Fixed flow temperature - cooling",
                   "fr": "Température de flux fixe - refroidissement",
                   "nl": "Vaste stroomtemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur- kylning",
+                  "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
@@ -3103,7 +3103,7 @@
                   "en": "Indoor temperature - cooling",
                   "fr": "Température intérieure - refroidissement",
                   "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare- kylning",
+                  "sv": "Inomhusgivare - kylning",
                   "no": "Innendørs føler - kjøling",
                   "es": "Temperatura interior - enfriamiento"
                 }
@@ -3114,7 +3114,7 @@
                   "en": "Fixed flow temperature - cooling",
                   "fr": "Température de flux fixe - refroidissement",
                   "nl": "Vaste stroomtemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur- kylning",
+                  "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
@@ -3193,16 +3193,16 @@
           "en": "Set the cool flow temperature",
           "fr": "Définir la température du flux de refroidissement",
           "nl": "Stel de koude stroomtemperatuur in",
-          "sv": "Ställ in fast framledningstemperatur för kyla",
-          "no": "Innstill fast fremløpstemperatur for kjølevann",
+          "sv": "Ställ in framledningstemperaturen för kyla",
+          "no": "Innstill fremløpstemperatur for kjølevann",
           "es": "Configurar la temperatura del flujo de enfriamiento"
         },
         "titleFormatted": {
           "en": "Set the cool flow temperature to [[target_temperature]]",
           "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
           "nl": "Stel de koude stroomtemperatuur in op [[target_temperature]]",
-          "sv": "Ställ in fast framledningstemperatur för kyla till [[target_temperature]]",
-          "no": "Innstill fast fremløpstemperatur for kjølevann til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen för kyla till [[target_temperature]]",
+          "no": "Innstill fremløpstemperatur for kjølevann til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
         },
         "args": [
@@ -3225,16 +3225,16 @@
           "en": "Set the flow temperature",
           "fr": "Définir la température du flux",
           "nl": "Stel de stroomtemperatuur in",
-          "sv": "Ställ in fast framledningstemperatur",
-          "no": "Innstill fast fremløpstemperatur",
+          "sv": "Ställ in framledningstemperaturen",
+          "no": "Innstill fremløpstemperatur",
           "es": "Configurar la temperatura del flujo"
         },
         "titleFormatted": {
           "en": "Set the flow temperature to [[target_temperature]]",
           "fr": "Définir la température du flux à [[target_temperature]]",
           "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
-          "sv": "Ställ in fast framledningstemperatur till [[target_temperature]]",
-          "no": "Innstill fast fremløpstemperatur til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
+          "no": "Innstill fremløpstemperatur til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo a [[target_temperature]]"
         },
         "args": [
@@ -3257,16 +3257,16 @@
           "en": "Set the cool flow temperature for zone 2",
           "fr": "Définir la température du flux de refroidissement pour la zone 2",
           "nl": "Stel de koude stroomtemperatuur in voor zone 2",
-          "sv": "Ställ in fast framledningstemperatur för kyla för zon 2",
-          "no": "Innstill fast fremløpstemperatur for kjølevann for sone 2",
+          "sv": "Ställ in framledningstemperaturen för kyla för zon 2",
+          "no": "Innstill fremløpstemperatur for kjølevann for sone 2",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
         },
         "titleFormatted": {
           "en": "Set the cool flow temperature for zone 2 to [[target_temperature]]",
           "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
           "nl": "Stel de koude stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-          "sv": "Ställ in fast framledningstemperatur för kyla för zon 2 till [[target_temperature]]",
-          "no": "Innstill fast fremløpstemperatur for kjølevann for sone 2 til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen för kyla för zon 2 till [[target_temperature]]",
+          "no": "Innstill fremløpstemperatur for kjølevann for sone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
         },
         "args": [
@@ -3289,16 +3289,16 @@
           "en": "Set the flow temperature for zone 2",
           "fr": "Définir la température du flux pour la zone 2",
           "nl": "Stel de stroomtemperatuur in voor zone 2",
-          "sv": "Ställ in fast framledningstemperatur för zon 2",
-          "no": "Innstill fast fremløpstemperatur for sone 2",
+          "sv": "Ställ in framledningstemperaturen för zon 2",
+          "no": "Innstill fremløpstemperatur for sone 2",
           "es": "Configurar la temperatura del flujo para la zona 2"
         },
         "titleFormatted": {
           "en": "Set the flow temperature for zone 2 to [[target_temperature]]",
           "fr": "Définir la température du flux pour la zone 2 à [[target_temperature]]",
           "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-          "sv": "Ställ in fast framledningstemperatur för zon 2 till [[target_temperature]]",
-          "no": "Innstill fast fremløpstemperatur for sone 2 til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
+          "no": "Innstill fremløpstemperatur for sone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
         },
         "args": [
@@ -4435,7 +4435,7 @@
             "fr": "Chauffage d'appoint 1",
             "nl": "Boosterverwarmingselement 1",
             "sv": "Tillskottsvärmare 1",
-            "no": "Tilleggsvarme 1",
+            "no": "Tilleggsvarmer 1",
             "es": "Calentador de refuerzo 1"
           },
           "insightsTitleTrue": {
@@ -4443,7 +4443,7 @@
             "fr": "Chauffage d'appoint 1 s'est activé",
             "nl": "Boosterverwarmingselement 1 ging af",
             "sv": "Tillskottsvärmare 1 aktiverat",
-            "no": "Tilleggsvarme 1 aktivert",
+            "no": "Tilleggsvarmer 1 aktivert",
             "es": "Calentador de refuerzo 1 activado"
           },
           "insightsTitleFalse": {
@@ -4451,7 +4451,7 @@
             "fr": "Chauffage d'appoint 1 s'est désactivé",
             "nl": "Boosterverwarmingselement 1 ging uit",
             "sv": "Tillskottsvärmare 1 inaktiverat",
-            "no": "Tilleggsvarme 1 deaktivert",
+            "no": "Tilleggsvarmer 1 deaktivert",
             "es": "Calentador de refuerzo 1 desactivado"
           }
         },
@@ -4461,7 +4461,7 @@
             "fr": "Chauffage d'appoint 2",
             "nl": "Boosterverwarmingselement 2",
             "sv": "Tillskottsvärmare 2",
-            "no": "Tilleggsvarme 2",
+            "no": "Tilleggsvarmer 2",
             "es": "Calentador de refuerzo 2"
           },
           "insightsTitleTrue": {
@@ -4469,7 +4469,7 @@
             "fr": "Chauffage d'appoint 2 s'est activé",
             "nl": "Boosterverwarmingselement 2 ging af",
             "sv": "Tillskottsvärmare 2 aktiverat",
-            "no": "Tilleggsvarme 2 aktivert",
+            "no": "Tilleggsvarmer 2 aktivert",
             "es": "Calentador de refuerzo 2 activado"
           },
           "insightsTitleFalse": {
@@ -4477,7 +4477,7 @@
             "fr": "Chauffage d'appoint 2 s'est désactivé",
             "nl": "Boosterverwarmingselement 2 ging uit",
             "sv": "Tillskottsvärmare 2 inaktiverat",
-            "no": "Tilleggsvarme 2 deaktivert",
+            "no": "Tilleggsvarmer 2 deaktivert",
             "es": "Calentador de refuerzo 2 desactivado"
           }
         },
@@ -4487,7 +4487,7 @@
             "fr": "Chauffage d'appoint 2+",
             "nl": "Boosterverwarmingselement 2+",
             "sv": "Tillskottsvärmare 2+",
-            "no": "Tilleggsvarme 2+",
+            "no": "Tilleggsvarmer 2+",
             "es": "Calentador de refuerzo 2+"
           },
           "insightsTitleTrue": {
@@ -4495,7 +4495,7 @@
             "fr": "Chauffage d'appoint 2+ s'est activé",
             "nl": "Boosterverwarmingselement 2+ ging af",
             "sv": "Tillskottsvärmare 2+ aktiverat",
-            "no": "Tilleggsvarme 2+ aktivert",
+            "no": "Tilleggsvarmer 2+ aktivert",
             "es": "Calentador de refuerzo 2+ activado"
           },
           "insightsTitleFalse": {
@@ -4503,7 +4503,7 @@
             "fr": "Chauffage d'appoint 2+ s'est désactivé",
             "nl": "Boosterverwarmingselement 2+ ging uit",
             "sv": "Tillskottsvärmare 2+ inaktiverat",
-            "no": "Tilleggsvarme 2+ deaktivert",
+            "no": "Tilleggsvarmer 2+ deaktivert",
             "es": "Calentador de refuerzo 2+ desactivado"
           }
         },

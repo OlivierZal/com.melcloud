@@ -69,7 +69,7 @@
         "fr": "Chauffage d'appoint 1",
         "nl": "Boosterverwarmingselement 1",
         "sv": "Tillskottsvärmare 1",
-        "no": "Tilleggsvarme 1",
+        "no": "Tilleggsvarmer 1",
         "es": "Calentador de refuerzo 1"
       },
       "insightsTitleTrue": {
@@ -77,7 +77,7 @@
         "fr": "Chauffage d'appoint 1 s'est activé",
         "nl": "Boosterverwarmingselement 1 ging af",
         "sv": "Tillskottsvärmare 1 aktiverat",
-        "no": "Tilleggsvarme 1 aktivert",
+        "no": "Tilleggsvarmer 1 aktivert",
         "es": "Calentador de refuerzo 1 activado"
       },
       "insightsTitleFalse": {
@@ -85,7 +85,7 @@
         "fr": "Chauffage d'appoint 1 s'est désactivé",
         "nl": "Boosterverwarmingselement 1 ging uit",
         "sv": "Tillskottsvärmare 1 inaktiverat",
-        "no": "Tilleggsvarme 1 deaktivert",
+        "no": "Tilleggsvarmer 1 deaktivert",
         "es": "Calentador de refuerzo 1 desactivado"
       }
     },
@@ -95,7 +95,7 @@
         "fr": "Chauffage d'appoint 2",
         "nl": "Boosterverwarmingselement 2",
         "sv": "Tillskottsvärmare 2",
-        "no": "Tilleggsvarme 2",
+        "no": "Tilleggsvarmer 2",
         "es": "Calentador de refuerzo 2"
       },
       "insightsTitleTrue": {
@@ -103,7 +103,7 @@
         "fr": "Chauffage d'appoint 2 s'est activé",
         "nl": "Boosterverwarmingselement 2 ging af",
         "sv": "Tillskottsvärmare 2 aktiverat",
-        "no": "Tilleggsvarme 2 aktivert",
+        "no": "Tilleggsvarmer 2 aktivert",
         "es": "Calentador de refuerzo 2 activado"
       },
       "insightsTitleFalse": {
@@ -111,7 +111,7 @@
         "fr": "Chauffage d'appoint 2 s'est désactivé",
         "nl": "Boosterverwarmingselement 2 ging uit",
         "sv": "Tillskottsvärmare 2 inaktiverat",
-        "no": "Tilleggsvarme 2 deaktivert",
+        "no": "Tilleggsvarmer 2 deaktivert",
         "es": "Calentador de refuerzo 2 desactivado"
       }
     },
@@ -121,7 +121,7 @@
         "fr": "Chauffage d'appoint 2+",
         "nl": "Boosterverwarmingselement 2+",
         "sv": "Tillskottsvärmare 2+",
-        "no": "Tilleggsvarme 2+",
+        "no": "Tilleggsvarmer 2+",
         "es": "Calentador de refuerzo 2+"
       },
       "insightsTitleTrue": {
@@ -129,7 +129,7 @@
         "fr": "Chauffage d'appoint 2+ s'est activé",
         "nl": "Boosterverwarmingselement 2+ ging af",
         "sv": "Tillskottsvärmare 2+ aktiverat",
-        "no": "Tilleggsvarme 2+ aktivert",
+        "no": "Tilleggsvarmer 2+ aktivert",
         "es": "Calentador de refuerzo 2+ activado"
       },
       "insightsTitleFalse": {
@@ -137,7 +137,7 @@
         "fr": "Chauffage d'appoint 2+ s'est désactivé",
         "nl": "Boosterverwarmingselement 2+ ging uit",
         "sv": "Tillskottsvärmare 2+ inaktiverat",
-        "no": "Tilleggsvarme 2+ deaktivert",
+        "no": "Tilleggsvarmer 2+ deaktivert",
         "es": "Calentador de refuerzo 2+ desactivado"
       }
     },

@@ -6,8 +6,8 @@
         "en": "The booster heater 1 turned on",
         "fr": "Le chauffage d'appoint 1 s'est activé",
         "nl": "De boosterverwarmingselement 1 gaat aan",
-        "sv": "Tillskottsvärmare 1 är aktiverat",
-        "no": "Tilleggsvarmen 1 er aktivert",
+        "sv": "Tillskottsvärmaren 1 är aktiverat",
+        "no": "Tilleggsvarmeren 1 er aktivert",
         "es": "El calentador de refuerzo 1 se ha activado"
       }
     },
@@ -17,8 +17,8 @@
         "en": "The booster heater 1 turned off",
         "fr": "Le chauffage d'appoint 1 s'est désactivé",
         "nl": "De boosterverwarmingselement 1 ging uit",
-        "sv": "Tillskottsvärmare 1 är inaktiverat",
-        "no": "Tilleggsvarmen 1 er deaktivert",
+        "sv": "Tillskottsvärmaren 1 är inaktiverat",
+        "no": "Tilleggsvarmeren 1 er deaktivert",
         "es": "El calentador de refuerzo 1 se ha desactivado"
       }
     },
@@ -28,8 +28,8 @@
         "en": "The booster heater 2 turned on",
         "fr": "Le chauffage d'appoint 2 s'est activé",
         "nl": "De boosterverwarmingselement 2 gaat aan",
-        "sv": "Tillskottsvärmare 2 är aktiverat",
-        "no": "Tilleggsvarmen 2 er aktivert",
+        "sv": "Tillskottsvärmaren 2 är aktiverat",
+        "no": "Tilleggsvarmeren 2 er aktivert",
         "es": "El calentador de refuerzo 2 se ha activado"
       }
     },
@@ -39,8 +39,8 @@
         "en": "The booster heater 2 turned off",
         "fr": "Le chauffage d'appoint 2 s'est désactivé",
         "nl": "De boosterverwarmingselement 2 ging uit",
-        "sv": "Tillskottsvärmare 2 är inaktiverat",
-        "no": "Tilleggsvarmen 2 er deaktivert",
+        "sv": "Tillskottsvärmaren 2 är inaktiverat",
+        "no": "Tilleggsvarmeren 2 er deaktivert",
         "es": "El calentador de refuerzo 2 se ha desactivado"
       }
     },
@@ -50,8 +50,8 @@
         "en": "The booster heater 2+ turned on",
         "fr": "Le chauffage d'appoint 2+ s'est activé",
         "nl": "De boosterverwarmingselement 2+ gaat aan",
-        "sv": "Tillskottsvärmare 2+ är aktiverat",
-        "no": "Tilleggsvarmen 2+ er aktivert",
+        "sv": "Tillskottsvärmaren 2+ är aktiverat",
+        "no": "Tilleggsvarmeren 2+ er aktivert",
         "es": "El calentador de refuerzo 2+ se ha activado"
       }
     },
@@ -61,8 +61,8 @@
         "en": "The booster heater 2+ turned off",
         "fr": "Le chauffage d'appoint 2+ s'est désactivé",
         "nl": "De boosterverwarmingselement 2+ ging uit",
-        "sv": "Tillskottsvärmare 2+ är inaktiverat",
-        "no": "Tilleggsvarmen 2+ er deaktivert",
+        "sv": "Tillskottsvärmaren 2+ är inaktiverat",
+        "no": "Tilleggsvarmeren 2+ er deaktivert",
         "es": "El calentador de refuerzo 2+ se ha desactivado"
       }
     },
@@ -94,8 +94,8 @@
         "en": "The eco hot water turned on",
         "fr": "L'eau chaude éco s'est activée",
         "nl": "De eco warm water gaat aan",
-        "sv": "Eco-läget för varmvatten är aktiverat",
-        "no": "Eco-modusen for varmtvann er aktivert",
+        "sv": "Eco-läge för varmvatten är aktiverat",
+        "no": "Eco-modus for varmtvann er aktivert",
         "es": "La agua caliente eco se ha activado"
       }
     },
@@ -105,8 +105,8 @@
         "en": "The eco hot water turned off",
         "fr": "L'eau chaude éco s'est désactivée",
         "nl": "De eco warm water ging uit",
-        "sv": "Eco-läget för varmvatten är inaktiverat",
-        "no": "Eco-modusen for varmtvann er deaktivert",
+        "sv": "Eco-läge för varmvatten är inaktiverat",
+        "no": "Eco-modus for varmtvann er deaktivert",
         "es": "La agua caliente eco se ha desactivado"
       }
     },
@@ -139,7 +139,7 @@
         "fr": "Eau chaude forcée activée",
         "nl": "Gedwongen warm water aangezet",
         "sv": "Tvingad varmvatten aktiverad",
-        "no": "Tvungen varmtvann slått av",
+        "no": "Tvungen varmtvann slått på",
         "es": "Agua caliente forzada encendida"
       }
     },
@@ -331,8 +331,8 @@
         "en": "The booster heater 1 is !{{on|off}}",
         "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
-        "sv": "Tillskottsvärmare 1 är !{{på|av}}",
-        "no": "Tilleggsvarmen 1 er !{{på|av}}",
+        "sv": "Tillskottsvärmaren 1 är !{{på|av}}",
+        "no": "Tilleggsvarmeren 1 er !{{på|av}}",
         "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}"
       }
     },
@@ -342,8 +342,8 @@
         "en": "The booster heater 2 is !{{on|off}}",
         "fr": "Le chauffage d'appoint 2 est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 2 is !{{aan|uit}}",
-        "sv": "Tillskottsvärmare 2 är !{{på|av}}",
-        "no": "Tilleggsvarmen 2 er !{{på|av}}",
+        "sv": "Tillskottsvärmaren 2 är !{{på|av}}",
+        "no": "Tilleggsvarmeren 2 er !{{på|av}}",
         "es": "El calentador de refuerzo 2 está !{{activada|desactivada}}"
       }
     },
@@ -353,8 +353,8 @@
         "en": "The booster heater 2+ is !{{on|off}}",
         "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
-        "sv": "Tillskottsvärmare 2+ är !{{på|av}}",
-        "no": "Tilleggsvarmen 2+ er !{{på|av}}",
+        "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
+        "no": "Tilleggsvarmeren 2+ er !{{på|av}}",
         "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
       }
     },
@@ -375,7 +375,7 @@
         "en": "The eco hot water is !{{on|off}}",
         "fr": "L'eau chaude forcée est !{{en marche|arrêté}}",
         "nl": "De eco warm water is !{{aan|uit}}",
-        "sv": "Eco-läget för varmvatten är !{{på|av}}",
+        "sv": "Eco-läge för varmvatten är !{{på|av}}",
         "no": "Eco-modus for varmtvann er !{{på|av}}",
         "es": "La agua caliente eco está !{{activada|desactivada}}"
       }
@@ -691,7 +691,7 @@
                 "en": "Indoor temperature - cooling",
                 "fr": "Température intérieure - refroidissement",
                 "nl": "Binnentemperatuur - koeling",
-                "sv": "Inomhusgivare- kylning",
+                "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
                 "es": "Temperatura interior - enfriamiento"
               }
@@ -702,7 +702,7 @@
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
                 "nl": "Vaste stroomtemperatuur - koeling",
-                "sv": "Fast framledningstemperatur- kylning",
+                "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
@@ -774,7 +774,7 @@
                 "en": "Indoor temperature - cooling",
                 "fr": "Température intérieure - refroidissement",
                 "nl": "Binnentemperatuur - koeling",
-                "sv": "Inomhusgivare- kylning",
+                "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
                 "es": "Temperatura interior - enfriamiento"
               }
@@ -785,7 +785,7 @@
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
                 "nl": "Vaste stroomtemperatuur - koeling",
-                "sv": "Fast framledningstemperatur- kylning",
+                "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
@@ -1060,7 +1060,7 @@
                 "en": "Indoor temperature - cooling",
                 "fr": "Température intérieure - refroidissement",
                 "nl": "Binnentemperatuur - koeling",
-                "sv": "Inomhusgivare- kylning",
+                "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
                 "es": "Temperatura interior - enfriamiento"
               }
@@ -1071,7 +1071,7 @@
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
                 "nl": "Vaste stroomtemperatuur - koeling",
-                "sv": "Fast framledningstemperatur- kylning",
+                "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
@@ -1143,7 +1143,7 @@
                 "en": "Indoor temperature - cooling",
                 "fr": "Température intérieure - refroidissement",
                 "nl": "Binnentemperatuur - koeling",
-                "sv": "Inomhusgivare- kylning",
+                "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
                 "es": "Temperatura interior - enfriamiento"
               }
@@ -1154,7 +1154,7 @@
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
                 "nl": "Vaste stroomtemperatuur - koeling",
-                "sv": "Fast framledningstemperatur- kylning",
+                "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
@@ -1225,16 +1225,16 @@
         "en": "Set the cool flow temperature",
         "fr": "Définir la température du flux de refroidissement",
         "nl": "Stel de koude stroomtemperatuur in",
-        "sv": "Ställ in fast framledningstemperatur för kyla",
-        "no": "Innstill fast fremløpstemperatur for kjølevann",
+        "sv": "Ställ in framledningstemperaturen för kyla",
+        "no": "Innstill fremløpstemperatur for kjølevann",
         "es": "Configurar la temperatura del flujo de enfriamiento"
       },
       "titleFormatted": {
         "en": "Set the cool flow temperature to [[target_temperature]]",
         "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
         "nl": "Stel de koude stroomtemperatuur in op [[target_temperature]]",
-        "sv": "Ställ in fast framledningstemperatur för kyla till [[target_temperature]]",
-        "no": "Innstill fast fremløpstemperatur for kjølevann til [[target_temperature]]",
+        "sv": "Ställ in framledningstemperaturen för kyla till [[target_temperature]]",
+        "no": "Innstill fremløpstemperatur for kjølevann til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
       },
       "args": [
@@ -1252,16 +1252,16 @@
         "en": "Set the flow temperature",
         "fr": "Définir la température du flux",
         "nl": "Stel de stroomtemperatuur in",
-        "sv": "Ställ in fast framledningstemperatur",
-        "no": "Innstill fast fremløpstemperatur",
+        "sv": "Ställ in framledningstemperaturen",
+        "no": "Innstill fremløpstemperatur",
         "es": "Configurar la temperatura del flujo"
       },
       "titleFormatted": {
         "en": "Set the flow temperature to [[target_temperature]]",
         "fr": "Définir la température du flux à [[target_temperature]]",
         "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
-        "sv": "Ställ in fast framledningstemperatur till [[target_temperature]]",
-        "no": "Innstill fast fremløpstemperatur til [[target_temperature]]",
+        "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
+        "no": "Innstill fremløpstemperatur til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo a [[target_temperature]]"
       },
       "args": [
@@ -1280,16 +1280,16 @@
         "en": "Set the cool flow temperature for zone 2",
         "fr": "Définir la température du flux de refroidissement pour la zone 2",
         "nl": "Stel de koude stroomtemperatuur in voor zone 2",
-        "sv": "Ställ in fast framledningstemperatur för kyla för zon 2",
-        "no": "Innstill fast fremløpstemperatur for kjølevann for sone 2",
+        "sv": "Ställ in framledningstemperaturen för kyla för zon 2",
+        "no": "Innstill fremløpstemperatur for kjølevann for sone 2",
         "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
       },
       "titleFormatted": {
         "en": "Set the cool flow temperature for zone 2 to [[target_temperature]]",
         "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
         "nl": "Stel de koude stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in fast framledningstemperatur för kyla för zon 2 till [[target_temperature]]",
-        "no": "Innstill fast fremløpstemperatur for kjølevann for sone 2 til [[target_temperature]]",
+        "sv": "Ställ in framledningstemperaturen för kyla för zon 2 till [[target_temperature]]",
+        "no": "Innstill fremløpstemperatur for kjølevann for sone 2 til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
       },
       "args": [
@@ -1308,16 +1308,16 @@
         "en": "Set the flow temperature for zone 2",
         "fr": "Définir la température du flux pour la zone 2",
         "nl": "Stel de stroomtemperatuur in voor zone 2",
-        "sv": "Ställ in fast framledningstemperatur för zon 2",
-        "no": "Innstill fast fremløpstemperatur for sone 2",
+        "sv": "Ställ in framledningstemperaturen för zon 2",
+        "no": "Innstill fremløpstemperatur for sone 2",
         "es": "Configurar la temperatura del flujo para la zona 2"
       },
       "titleFormatted": {
         "en": "Set the flow temperature for zone 2 to [[target_temperature]]",
         "fr": "Définir la température du flux pour la zone 2 à [[target_temperature]]",
         "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in fast framledningstemperatur för zon 2 till [[target_temperature]]",
-        "no": "Innstill fast fremløpstemperatur for sone 2 til [[target_temperature]]",
+        "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
+        "no": "Innstill fremløpstemperatur for sone 2 til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
       },
       "args": [
