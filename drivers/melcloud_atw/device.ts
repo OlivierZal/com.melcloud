@@ -8,19 +8,13 @@ import {
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
+  type OperationModeZoneCapbility,
   type ReportCapabilities,
   type ReportCapability,
   type ReportData,
   type SetCapabilities,
-  type SetCapability,
-  type ThermostatMode
+  type SetCapability
 } from '../../types'
-
-const thermostatModeToOperationMode: Partial<Record<ThermostatMode, string>> = {
-  auto: '2',
-  heat: '0',
-  cool: '3'
-} as const
 
 const operationModeFromDevice: string[] = [
   'idle',
@@ -34,19 +28,10 @@ const operationModeFromDevice: string[] = [
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
-  declare operationModeCapability: SetCapability<MELCloudDeviceAtw>
   declare diff: SetCapabilities<MELCloudDeviceAtw>
 
   async onInit(): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
-    this.operationModeCapability = 'operation_mode_zone_with_cool.zone1'
-    this.operationModeToThermostatMode = {
-      2: 'auto',
-      1: 'heat',
-      0: 'heat',
-      4: 'cool',
-      3: 'cool'
-    } as const
     this.requiredCapabilities = this.driver.getRequiredCapabilities(
       canCool,
       hasZone2
@@ -67,45 +52,66 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     value: CapabilityValue
   ): Promise<void> {
     switch (capability) {
-      case 'thermostat_mode':
-        if (value !== 'off') {
-          this.diff['operation_mode_zone.zone1'] =
-            thermostatModeToOperationMode[value as ThermostatMode]
-        }
-        break
       case 'onoff.forced_hot_water':
-        this.diff['onoff.forced_hot_water'] = value as boolean
+        this.diff[capability] = value as boolean
         break
       case 'operation_mode_zone.zone1':
-        this.diff['operation_mode_zone.zone1'] = value as string
-        break
-      case 'operation_mode_zone_with_cool.zone1':
-        this.diff['operation_mode_zone_with_cool.zone1'] = value as string
-        break
       case 'operation_mode_zone.zone2':
-        this.diff['operation_mode_zone.zone2'] = value as string
-        break
+      case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        this.diff['operation_mode_zone_with_cool.zone2'] = value as string
+        this.diff[capability] = value as string
+        this.handleOtherOperationModeZone(capability, value)
         break
       case 'target_temperature.zone2':
-        this.diff['target_temperature.zone2'] = value as number
-        break
       case 'target_temperature.zone1_flow_cool':
-        this.diff['target_temperature.zone1_flow_cool'] = value as number
-        break
       case 'target_temperature.zone1_flow_heat':
-        this.diff['target_temperature.zone1_flow_heat'] = value as number
-        break
       case 'target_temperature.zone2_flow_cool':
-        this.diff['target_temperature.zone2_flow_cool'] = value as number
-        break
       case 'target_temperature.zone2_flow_heat':
-        this.diff['target_temperature.zone2_flow_heat'] = value as number
-        break
       case 'target_temperature.tank_water':
-        this.diff['target_temperature.tank_water'] = value as number
+        this.diff[capability] = value as number
     }
+  }
+
+  handleOtherOperationModeZone(
+    capability: OperationModeZoneCapbility,
+    value: CapabilityValue
+  ): void {
+    const { canCool, hasZone2 } = this.getStore()
+    if (hasZone2 === true) {
+      const operationModeZoneValue: number = Number(value)
+      const otherOperationModeZone: OperationModeZoneCapbility =
+        this.getOtherCapabilityZone(capability) as OperationModeZoneCapbility
+      const otherOperationModeZoneValue: number = Number(
+        this.getCapabilityValue(otherOperationModeZone)
+      )
+      if (canCool === true) {
+        if (operationModeZoneValue > 2) {
+          if (otherOperationModeZoneValue < 3) {
+            this.diff[otherOperationModeZone] = String(
+              Math.min(otherOperationModeZoneValue + 3, 4)
+            )
+          }
+        } else if (otherOperationModeZoneValue > 2) {
+          this.diff[otherOperationModeZone] = String(
+            otherOperationModeZoneValue - 3
+          )
+        }
+      }
+      if (
+        [0, 3].includes(operationModeZoneValue) &&
+        otherOperationModeZoneValue === operationModeZoneValue
+      ) {
+        this.diff[otherOperationModeZone] = String(
+          otherOperationModeZoneValue + 1
+        )
+      }
+    }
+  }
+
+  getOtherCapabilityZone(capability: string): string {
+    return capability.endsWith('.zone1')
+      ? capability.replace(/.zone1$/, '.zone2')
+      : capability.replace(/.zone2$/, '.zone1')
   }
 
   convertToDevice(
@@ -131,6 +137,13 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     switch (capability) {
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]
+        break
+      case 'operation_mode_state.zone1':
+      case 'operation_mode_state.zone2':
+        newValue =
+          newValue === true
+            ? 'idle'
+            : this.getCapabilityValue('operation_mode_state')
         break
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':

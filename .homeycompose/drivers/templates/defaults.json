@@ -9,8 +9,7 @@
     "measure_power.wifi",
     "measure_temperature",
     "onoff",
-    "target_temperature",
-    "thermostat_mode"
+    "target_temperature"
   ],
   "pair": [
     {
