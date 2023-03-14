@@ -80,7 +80,7 @@ export default class MELCloudApp extends App {
         return false
       }
       const postData: LoginPostData = {
-        AppVersion: '1.9.3.0',
+        AppVersion: '1.26.2.0',
         Email: username,
         Password: password,
         Persist: true

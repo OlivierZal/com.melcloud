@@ -13,6 +13,7 @@
     "vertical",
     "horizontal",
     "operation_mode",
+    "thermostat_mode",
     "meter_power.hourly_consumed",
     "meter_power.hourly_consumed_auto",
     "meter_power.hourly_consumed_cooling",

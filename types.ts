@@ -64,6 +64,8 @@ interface GetCapabilitiesAtw {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly operation_mode_state: number
+  readonly 'operation_mode_state.zone1': number
+  readonly 'operation_mode_state.zone2': number
 }
 
 interface ListCapabilitiesAta {
@@ -174,6 +176,12 @@ export type ExtendedCapability<T extends MELCloudDevice> =
   | Capability<T>
   | 'thermostat_mode'
 
+export type OperationModeZoneCapbility =
+  | 'operation_mode_zone.zone1'
+  | 'operation_mode_zone.zone2'
+  | 'operation_mode_zone_with_cool.zone1'
+  | 'operation_mode_zone_with_cool.zone2'
+
 interface SetDeviceDataAta {
   readonly EffectiveFlags: number
   readonly OperationMode?: number
@@ -210,6 +218,8 @@ interface GetDeviceDataAta {
 
 interface GetDeviceDataAtw {
   readonly EcoHotWater: boolean
+  readonly IdleZone1: boolean
+  readonly IdleZone2: boolean
   readonly OperationMode: number
   readonly OutdoorTemperature: number
   readonly RoomTemperatureZone1: number
@@ -378,6 +388,13 @@ export const getCapabilityMappingAtw: Record<
   },
   operation_mode_state: {
     tag: 'OperationMode'
+  },
+  // Must follow `operation_mode_state`
+  'operation_mode_state.zone1': {
+    tag: 'IdleZone1'
+  },
+  'operation_mode_state.zone2': {
+    tag: 'IdleZone2'
   }
 } as const
 
@@ -460,7 +477,7 @@ export interface LoginCredentials {
 }
 
 export interface LoginPostData {
-  readonly AppVersion: '1.9.3.0'
+  readonly AppVersion: '1.26.2.0'
   readonly Email: string
   readonly Password: string
   readonly Persist: true

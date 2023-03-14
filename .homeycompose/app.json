@@ -19,7 +19,7 @@
     "es": "Tome el control de sus bombas de calor"
   },
   "category": ["climate"],
-  "version": "11.2.5",
+  "version": "12.0.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [

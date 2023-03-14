@@ -48,6 +48,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.notCoolCapabilitiesAtw = ['operation_mode_zone.zone1']
     this.zone2CapabilitiesAtw = [
       'measure_temperature.zone2',
+      'operation_mode_state.zone1',
+      'operation_mode_state.zone2',
       'target_temperature.zone2',
       'target_temperature.zone2_flow_heat'
     ]
@@ -57,21 +59,29 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     ]
     this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
-    this.homey.flow
-      .getConditionCard('operation_mode_state_condition')
-      .registerRunListener(
-        (args: {
-          device: MELCloudDeviceAtw
-          operation_mode_state: string
-        }): boolean =>
-          args.operation_mode_state ===
-          args.device.getCapabilityValue('operation_mode_state')
-      )
+    const operationModeStateCapabilities: Array<
+      SetCapability<MELCloudDeviceAtw>
+    > = this.manifest.capabilities.filter(
+      (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
+        capability.startsWith('operation_mode_state')
+    )
+    for (const capability of operationModeStateCapabilities) {
+      this.homey.flow
+        .getConditionCard(`${capability}_condition`)
+        .registerRunListener(
+          (args: {
+            device: MELCloudDeviceAtw
+            operation_mode_state: string
+          }): boolean =>
+            args.operation_mode_state ===
+            args.device.getCapabilityValue('operation_mode_state')
+        )
+    }
 
     const booleanCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
       this.manifest.capabilities.filter(
         (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
-          capability.startsWith('alarm_generic.') ||
+          capability.startsWith('alarm_generic') ||
           capability.startsWith('onoff.')
       )
     for (const capability of booleanCapabilities) {
@@ -132,8 +142,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
       this.manifest.capabilities.filter(
         (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
-          capability.startsWith('target_temperature') &&
-          capability !== 'target_temperature'
+          capability.startsWith('target_temperature.')
       )
     for (const capability of flowTemperatureCapabilities) {
       this.homey.flow
@@ -191,9 +200,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   getRequiredCapabilities(canCool: boolean, hasZone2: boolean): string[] {
     return [
       ...this.capabilitiesAtw,
-      ...(canCool
-        ? [...this.coolCapabilitiesAtw, 'thermostat_mode']
-        : this.notCoolCapabilitiesAtw),
+      ...(canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
       ...(hasZone2
         ? [
             ...this.zone2CapabilitiesAtw,

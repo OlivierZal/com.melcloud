@@ -117,16 +117,14 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           )
           await this.setWarning(null)
         }
-        this.diff.operation_mode = value as string
-        break
-      case 'vertical':
-        this.diff.vertical = value as string
-        break
-      case 'horizontal':
-        this.diff.horizontal = value as string
+        this.diff[capability] = value as string
         break
       case 'fan_power':
-        this.diff.fan_power = value as number
+        this.diff[capability] = value as number
+        break
+      case 'vertical':
+      case 'horizontal':
+        this.diff[capability] = value as string
     }
   }
 

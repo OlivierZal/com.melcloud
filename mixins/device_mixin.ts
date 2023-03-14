@@ -206,7 +206,7 @@ export default class MELCloudDeviceMixin extends Device {
   ): UpdateData<T> {
     const updateData: any = {}
     let effectiveFlags: bigint = 0n
-    for (const [capability, { tag, effectiveFlag }] of Object.entries(
+    for (const [capability, { effectiveFlag, tag }] of Object.entries(
       this.setCapabilityMapping
     )) {
       if (this.hasCapability(capability)) {
@@ -274,7 +274,7 @@ export default class MELCloudDeviceMixin extends Device {
       return
     }
     if (data.EffectiveFlags !== undefined) {
-      for (const [capability, { tag, effectiveFlag }] of Object.entries(
+      for (const [capability, { effectiveFlag, tag }] of Object.entries(
         this.setCapabilityMapping
       )) {
         const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
@@ -304,7 +304,11 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async updateThermostatMode(): Promise<void> {
-    if (!this.hasCapability('thermostat_mode')) {
+    if (
+      !this.hasCapability('thermostat_mode') ||
+      this.operationModeCapability === undefined ||
+      this.operationModeToThermostatMode === undefined
+    ) {
       return
     }
     const isOn: boolean = this.getCapabilityValue('onoff')
@@ -343,13 +347,14 @@ export default class MELCloudDeviceMixin extends Device {
       return
     }
     const { canCool, hasZone2 } = this.getStore()
+    const { CanCool, HasZone2 } = deviceFromList.Device
     let hasStoreChanged: boolean = false
-    if (deviceFromList.Device.CanCool !== canCool) {
-      await this.setStoreValue('canCool', deviceFromList.Device.CanCool)
+    if (canCool !== CanCool) {
+      await this.setStoreValue('canCool', CanCool)
       hasStoreChanged = true
     }
-    if (deviceFromList.Device.HasZone2 !== hasZone2) {
-      await this.setStoreValue('hasZone2', deviceFromList.Device.HasZone2)
+    if (hasZone2 !== HasZone2) {
+      await this.setStoreValue('hasZone2', HasZone2)
       hasStoreChanged = true
     }
     if (hasStoreChanged) {
