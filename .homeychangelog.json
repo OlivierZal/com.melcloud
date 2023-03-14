@@ -82,5 +82,8 @@
   },
   "11.2.0": {
     "en": "Added Norwegian and improved other languages."
+  },
+  "12.0.0": {
+    "en": "Improved 2-zone and/or cooling devices."
   }
 }
