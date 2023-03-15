@@ -22,7 +22,7 @@
   "category": [
     "climate"
   ],
-  "version": "12.0.1",
+  "version": "12.0.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -495,7 +495,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
           }
         ]
       },
@@ -513,7 +513,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
           }
         ]
       },
@@ -531,7 +531,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
           }
         ]
       },
@@ -549,7 +549,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
           }
         ]
       },
@@ -567,7 +567,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
           }
         ]
       },
@@ -585,7 +585,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
           }
         ]
       },
@@ -603,7 +603,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
           }
         ]
       },
@@ -621,7 +621,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
           }
         ]
       },
@@ -639,7 +639,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
           }
         ]
       },
@@ -657,7 +657,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
           }
         ]
       },
@@ -675,7 +675,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
           }
         ]
       },
@@ -693,7 +693,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
           }
         ]
       },
@@ -809,7 +809,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
           }
         ]
       },
@@ -849,7 +849,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2"
           }
         ]
       },
@@ -1708,7 +1708,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
           }
         ]
       },
@@ -1726,7 +1726,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
           }
         ]
       },
@@ -1744,7 +1744,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
           }
         ]
       },
@@ -1762,7 +1762,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
           }
         ]
       },
@@ -1780,7 +1780,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
           }
         ]
       },
@@ -1798,7 +1798,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
           }
         ]
       },
@@ -1951,7 +1951,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
           },
           {
             "name": "operation_mode_state",
@@ -2060,7 +2060,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2"
           },
           {
             "name": "operation_mode_state",
