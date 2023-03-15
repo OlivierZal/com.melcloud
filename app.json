@@ -22,7 +22,7 @@
   "category": [
     "climate"
   ],
-  "version": "12.0.2",
+  "version": "12.0.4",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -3492,7 +3492,7 @@
           "fr": "Définir la température du flux de refroidissement",
           "nl": "Stel de koude stroomtemperatuur in",
           "sv": "Ställ in framledningstemperaturen för kyla",
-          "no": "Innstill fremløpstemperatur for kjølevann",
+          "no": "Innstill fremløpstemperaturen for kjølevann",
           "es": "Configurar la temperatura del flujo de enfriamiento"
         },
         "titleFormatted": {
@@ -3500,7 +3500,7 @@
           "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
           "nl": "Stel de koude stroomtemperatuur in op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen för kyla till [[target_temperature]]",
-          "no": "Innstill fremløpstemperatur for kjølevann til [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen for kjølevann til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
         },
         "args": [
@@ -3524,7 +3524,7 @@
           "fr": "Définir la température du flux",
           "nl": "Stel de stroomtemperatuur in",
           "sv": "Ställ in framledningstemperaturen",
-          "no": "Innstill fremløpstemperatur",
+          "no": "Innstill fremløpstemperaturen",
           "es": "Configurar la temperatura del flujo"
         },
         "titleFormatted": {
@@ -3532,7 +3532,7 @@
           "fr": "Définir la température du flux à [[target_temperature]]",
           "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
-          "no": "Innstill fremløpstemperatur til [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo a [[target_temperature]]"
         },
         "args": [
@@ -3556,7 +3556,7 @@
           "fr": "Définir la température du flux de refroidissement pour la zone 2",
           "nl": "Stel de koude stroomtemperatuur in voor zone 2",
           "sv": "Ställ in framledningstemperaturen för kyla för zon 2",
-          "no": "Innstill fremløpstemperatur for kjølevann for sone 2",
+          "no": "Innstill fremløpstemperaturen for kjølevann for sone 2",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
         },
         "titleFormatted": {
@@ -3564,7 +3564,7 @@
           "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
           "nl": "Stel de koude stroomtemperatuur in voor zone 2 op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen för kyla för zon 2 till [[target_temperature]]",
-          "no": "Innstill fremløpstemperatur for kjølevann for sone 2 til [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen for kjølevann for sone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
         },
         "args": [
@@ -3588,7 +3588,7 @@
           "fr": "Définir la température du flux pour la zone 2",
           "nl": "Stel de stroomtemperatuur in voor zone 2",
           "sv": "Ställ in framledningstemperaturen för zon 2",
-          "no": "Innstill fremløpstemperatur for sone 2",
+          "no": "Innstill fremløpstemperaturen for sone 2",
           "es": "Configurar la temperatura del flujo para la zona 2"
         },
         "titleFormatted": {
@@ -3596,7 +3596,7 @@
           "fr": "Définir la température du flux pour la zone 2 à [[target_temperature]]",
           "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
-          "no": "Innstill fremløpstemperatur for sone 2 til [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen for sone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
         },
         "args": [
