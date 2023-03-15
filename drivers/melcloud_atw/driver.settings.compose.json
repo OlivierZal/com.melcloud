@@ -221,7 +221,7 @@
         "type": "checkbox",
         "label": {
           "en": "Defrost mode",
-          "fr": "Le mode dégivrage",
+          "fr": "Mode dégivrage",
           "nl": "Ontdooimodus",
           "sv": "Avfrostningsläge",
           "no": "Avfrostingsmodus",
