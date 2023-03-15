@@ -63,7 +63,7 @@
       "id": "vertical_changed",
       "title": {
         "en": "The vertical air discharge has changed",
-        "fr": "La sortie d'air verticale a été modifiée",
+        "fr": "Le soufflage d'air vertical a été modifié",
         "nl": "De uitblaasrichting verticaal is veranderd",
         "sv": "Vertikal luftflödesriktningen ändrades",
         "no": "Vertikal luftflødesretningen ble endret",
@@ -75,7 +75,7 @@
           "type": "string",
           "title": {
             "en": "Vertical air discharge",
-            "fr": "Sortie d'air verticale",
+            "fr": "Soufflage d'air vertical",
             "nl": "Uitblaasrichting verticaal",
             "sv": "Vertikal luftflödesriktning",
             "no": "Vertikal luftflødesretning",
@@ -96,7 +96,7 @@
       "id": "horizontal_changed",
       "title": {
         "en": "The horizontal air discharge has changed",
-        "fr": "La sortie d'air horizontale a été modifiée",
+        "fr": "Le soufflage d'air horizontal a été modifié",
         "nl": "De uitblaasrichting horizontaal is veranderd",
         "sv": "Horisontell luftflödesriktningen ändrades",
         "no": "Horisontell luftflødesretningen ble endret",
@@ -108,7 +108,7 @@
           "type": "string",
           "title": {
             "en": "Horizontal air discharge",
-            "fr": "Sortie d'air horizontale",
+            "fr": "Soufflage d'air horizontal",
             "nl": "Uitblaasrichting horizontaal",
             "sv": "Horisontell luftflödesriktning",
             "no": "Horisontell luftflødesretning",
@@ -306,7 +306,7 @@
       "id": "vertical_condition",
       "title": {
         "en": "The vertical air discharge !{{is|is not}}",
-        "fr": "La sortie d'air verticale !{{est|n'est pas}}",
+        "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
         "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
         "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
@@ -314,7 +314,7 @@
       },
       "titleFormatted": {
         "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
-        "fr": "La sortie d'air verticale !{{est|n'est pas}} [[vertical]]",
+        "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
         "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
         "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
@@ -410,7 +410,7 @@
       "id": "horizontal_condition",
       "title": {
         "en": "The horizontal air discharge !{{is|is not}}",
-        "fr": "La sortie d'air horizontale !{{est|n'est pas}}",
+        "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
         "sv": "Horisontell luftflödesriktningen !{{är|är inte}}",
         "no": "Horisontal luftflødesretningen !{{er|er ikke}}",
@@ -418,7 +418,7 @@
       },
       "titleFormatted": {
         "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
-        "fr": "La sortie d'air horizontale !{{est|n'est pas}} [[horizontal]]",
+        "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
         "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]",
         "no": "Horisontal luftflødesretningen !{{er|er ikke}} [[horizontal]]",
@@ -702,7 +702,7 @@
       "id": "vertical_action",
       "title": {
         "en": "Set the vertical air discharge",
-        "fr": "Définir la sortie d'air verticale",
+        "fr": "Définir le soufflage d'air vertical",
         "nl": "Stel de uitblaasrichting verticaal in",
         "sv": "Ställ in vertikal luftflödesriktningen",
         "no": "Innstill vertikal luftflødesretningen",
@@ -710,7 +710,7 @@
       },
       "titleFormatted": {
         "en": "Set the vertical air discharge to [[vertical]]",
-        "fr": "Définir la sortie d'air verticale à [[vertical]]",
+        "fr": "Définir le soufflage d'air vertical à [[vertical]]",
         "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
         "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
         "no": "Innstill vertikal luftflødesretningen til [[vertical]]",
@@ -806,7 +806,7 @@
       "id": "horizontal_action",
       "title": {
         "en": "Set the horizontal air discharge",
-        "fr": "Définir la sortie d'air horizontale",
+        "fr": "Définir le soufflage d'air horizontal",
         "nl": "Stel de uitblaasrichting horizontaal in",
         "sv": "Ställ in horisontell luftflödesriktningen",
         "no": "Innstill horisontal luftflødesretningen",
@@ -814,7 +814,7 @@
       },
       "titleFormatted": {
         "en": "Set the horizontal air discharge to [[horizontal]]",
-        "fr": "Définir la sortie d'air horizontale à [[horizontal]]",
+        "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
         "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
         "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]",
         "no": "Innstill horisontal luftflødesretningen til [[horizontal]]",
