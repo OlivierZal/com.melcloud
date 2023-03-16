@@ -59,8 +59,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        this.diff[capability] = value as string
-        this.handleOtherOperationModeZone(capability, value)
+        this.handleOperationModeZones(capability, value)
         break
       case 'target_temperature.zone2':
       case 'target_temperature.zone1_flow_cool':
@@ -72,39 +71,31 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  handleOtherOperationModeZone(
+  handleOperationModeZones(
     capability: OperationModeZoneCapbility,
     value: CapabilityValue
   ): void {
+    this.diff[capability] = value as string
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
-      const operationModeZoneValue: number = Number(value)
-      const otherOperationModeZone: OperationModeZoneCapbility =
-        this.getOtherCapabilityZone(capability) as OperationModeZoneCapbility
-      const otherOperationModeZoneValue: number = Number(
-        this.getCapabilityValue(otherOperationModeZone)
-      )
+      const zoneValue: number = Number(value)
+      const otherZone: OperationModeZoneCapbility = this.getOtherCapabilityZone(
+        capability
+      ) as OperationModeZoneCapbility
+      let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
-        if (operationModeZoneValue > 2) {
-          if (otherOperationModeZoneValue < 3) {
-            this.diff[otherOperationModeZone] = String(
-              Math.min(otherOperationModeZoneValue + 3, 4)
-            )
+        if (zoneValue > 2) {
+          if (otherZoneValue < 3) {
+            otherZoneValue = Math.min(otherZoneValue + 3, 4)
           }
-        } else if (otherOperationModeZoneValue > 2) {
-          this.diff[otherOperationModeZone] = String(
-            otherOperationModeZoneValue - 3
-          )
+        } else if (otherZoneValue > 2) {
+          otherZoneValue -= 3
         }
       }
-      if (
-        [0, 3].includes(operationModeZoneValue) &&
-        otherOperationModeZoneValue === operationModeZoneValue
-      ) {
-        this.diff[otherOperationModeZone] = String(
-          otherOperationModeZoneValue + 1
-        )
+      if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
+        otherZoneValue += 1
       }
+      this.diff[otherZone] = String(otherZoneValue)
     }
   }
 
