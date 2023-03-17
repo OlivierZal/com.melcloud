@@ -103,26 +103,23 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   let fromDateHuman: string = ''
   let to: string = ''
 
-  function getHomeySetting(
+  async function getHomeySetting(
     element: HTMLInputElement | HTMLSelectElement,
     defaultValue: any = ''
-  ): void {
-    // @ts-expect-error bug
-    Homey.get(element.id, async (error: Error, value: any): Promise<void> => {
-      if (error !== null) {
-        // @ts-expect-error bug
-        await Homey.alert(error.message)
-        return
-      }
-      element.value = String(value ?? defaultValue)
+  ): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      // @ts-expect-error bug
+      Homey.get(element.id, async (error: Error, value: any): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          reject(error)
+          return
+        }
+        element.value = String(value ?? defaultValue)
+        resolve()
+      })
     })
-  }
-
-  function hasAuthenticated(isAuthenticated: boolean = true): void {
-    isAuthenticatedElement.style.display = isAuthenticated ? 'block' : 'none'
-    isNotAuthenticatedElement.style.display = !isAuthenticated
-      ? 'block'
-      : 'none'
   }
 
   function generateTableHead(table: HTMLTableElement, keys: string[]): void {
@@ -182,7 +179,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
-          hasAuthenticated(false)
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -362,26 +358,16 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
   }
 
-  function load(): void {
-    hasAuthenticated()
+  function hasAuthenticated(): void {
+    isNotAuthenticatedElement.style.display = 'none'
+    isAuthenticatedElement.style.display = 'block'
     generateErrorLog()
     if (!hasLoadedBuildings) {
       getBuildings()
     }
   }
 
-  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
-  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
-  intervalElement.min = '1'
-  intervalElement.max = '60'
-
-  getHomeySetting(usernameElement)
-  getHomeySetting(passwordElement)
-  load()
-
-  authenticateElement.addEventListener('click', (): void => {
+  function login(): void {
     const body: LoginCredentials = {
       username: usernameElement.value,
       password: passwordElement.value
@@ -406,15 +392,24 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           )
           return
         }
-        // @ts-expect-error bug
-        await Homey.alert(
-          Homey.__('settings.alert.success', {
-            action: Homey.__('settings.alert.actions.authenticate')
-          })
-        )
-        load()
+        hasAuthenticated()
       }
     )
+  }
+
+  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
+  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
+  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
+  intervalElement.min = '1'
+  intervalElement.max = '60'
+
+  await getHomeySetting(usernameElement)
+  await getHomeySetting(passwordElement)
+  login()
+
+  authenticateElement.addEventListener('click', (): void => {
+    login()
   })
 
   fromElement.addEventListener('change', (): void => {
