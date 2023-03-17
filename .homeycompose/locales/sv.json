@@ -63,6 +63,7 @@
       "error_count_text_1": "fel",
       "error_count_text_234": "fel",
       "error_count_text_plural": "fel",
+      "failure": "Minst en av dina enheter är inte längre associerad med ditt MELCloud-konto.\nTa bort den för att se felloggen.",
       "label": "Fellogg",
       "period": "Sedan __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Se alla fel sedan"

@@ -63,6 +63,7 @@
       "error_count_text_1": "feil",
       "error_count_text_234": "feil",
       "error_count_text_plural": "feil",
+      "failure": "Minst en av enhetene dine er ikke lenger tilknyttet din MELCloud-konto.\nFjern den for å se feilloggen.",
       "label": "Feillogg",
       "period": "Siden __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Se alle feil siden"

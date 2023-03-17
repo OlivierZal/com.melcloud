@@ -63,6 +63,7 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errors",
       "error_count_text_plural": "errors",
+      "failure": "At least one of your devices is no longer associated with your MELCloud account.\nPlease remove it to view the error log.",
       "label": "Error Log",
       "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "See all errors since"

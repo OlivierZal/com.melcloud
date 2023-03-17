@@ -63,6 +63,7 @@
       "error_count_text_1": "fout",
       "error_count_text_234": "fouten",
       "error_count_text_plural": "fouten",
+      "failure": "Minstens één van uw apparaten is niet langer geassocieerd met uw MELCloud-account.\nVerwijder het om het foutenlogboek te bekijken.",
       "label": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Zie alle fouten sinds"

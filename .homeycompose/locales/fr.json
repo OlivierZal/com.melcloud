@@ -19,8 +19,8 @@
     },
     "authenticate": {
       "button": "S'authentifier",
-      "label": "Identifiants",
       "password": "Mot de passe",
+      "label": "Identifiants",
       "username": "Nom d'utilisateur"
     },
     "boolean": {
@@ -63,6 +63,7 @@
       "error_count_text_1": "erreur",
       "error_count_text_234": "erreurs",
       "error_count_text_plural": "erreurs",
+      "failure": "Au moins l'un de vos appareils n'est plus associé à votre compte MELCloud.\nVeuillez le supprimer pour afficher le journal des erreurs.",
       "label": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ : __errorCount__ __errorCountText__",
       "see": "Voir les erreurs depuis le"

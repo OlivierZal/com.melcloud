@@ -179,6 +179,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
+          if (error.message.includes('403')) {
+            // @ts-expect-error bug
+            await Homey.alert(Homey.__('settings.error_log.failure'))
+            return
+          }
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
