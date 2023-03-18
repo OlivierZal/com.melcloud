@@ -596,7 +596,7 @@
           "fr": "Le mode dégivrage s'est activé",
           "nl": "De ontdooimodus gaat aan",
           "sv": "Avfrostningsläget är aktiverat",
-          "no": "Avfrostingsmodusen  er aktivert",
+          "no": "Avfrostingsmodusen er aktivert",
           "es": "El modo de descongelación se ha activado"
         },
         "args": [
@@ -614,7 +614,7 @@
           "fr": "Le mode dégivrage s'est désactivé",
           "nl": "De ontdooimodus ging uit",
           "sv": "Avfrostningsläget är inaktiverat",
-          "no": "Avfrostingsmodusen  er deaktivert",
+          "no": "Avfrostingsmodusen er deaktivert",
           "es": "El modo de descongelación se ha desactivado"
         },
         "args": [
@@ -628,12 +628,12 @@
       {
         "id": "alarm_generic.eco_hot_water_true",
         "title": {
-          "en": "The eco hot water turned on",
-          "fr": "L'eau chaude éco s'est activée",
-          "nl": "De eco warm water gaat aan",
-          "sv": "Eco-läge för varmvatten är aktiverat",
-          "no": "Eco-modus for varmtvann er aktivert",
-          "es": "La agua caliente eco se ha activado"
+          "en": "The eco domestic hot water turned on",
+          "fr": "L'eau chaude sanitaire éco s'est activée",
+          "nl": "De eco sanitair warm water gaat aan",
+          "sv": "Eco-läge för varmvattenladdning är aktiverat",
+          "no": "Eco-modus for varmvannslastning er aktivert",
+          "es": "La agua caliente sanitaria eco se ha activado"
         },
         "args": [
           {
@@ -646,12 +646,12 @@
       {
         "id": "alarm_generic.eco_hot_water_false",
         "title": {
-          "en": "The eco hot water turned off",
-          "fr": "L'eau chaude éco s'est désactivée",
-          "nl": "De eco warm water ging uit",
-          "sv": "Eco-läge för varmvatten är inaktiverat",
-          "no": "Eco-modus for varmtvann er deaktivert",
-          "es": "La agua caliente eco se ha desactivado"
+          "en": "The eco domestic hot water turned off",
+          "fr": "L'eau chaude sanitaire éco s'est désactivée",
+          "nl": "De eco sanitair warm water ging uit",
+          "sv": "Eco-läge för varmvattenladdning är inaktiverat",
+          "no": "Eco-modus for varmvannslastning er deaktivert",
+          "es": "La agua caliente sanitaria eco se ha desactivado"
         },
         "args": [
           {
@@ -700,12 +700,12 @@
       {
         "id": "onoff.forced_hot_water_true",
         "title": {
-          "en": "Forced hot water turned on",
-          "fr": "Eau chaude forcée activée",
-          "nl": "Gedwongen warm water aangezet",
-          "sv": "Tvingad varmvatten aktiverad",
-          "no": "Tvungen varmtvann slått på",
-          "es": "Agua caliente forzada encendida"
+          "en": "Forced domestic hot water turned on",
+          "fr": "Eau chaude sanitaire forcée activée",
+          "nl": "Gedwongen sanitair warm water aangezet",
+          "sv": "Tvingad varmvattenladdning aktiverad",
+          "no": "Tvungen varmvannslastning slått på",
+          "es": "Agua caliente sanitaria forzada encendida"
         },
         "args": [
           {
@@ -718,12 +718,12 @@
       {
         "id": "onoff.forced_hot_water_false",
         "title": {
-          "en": "Forced hot water turned off",
-          "fr": "Eau chaude forcée désactivée",
-          "nl": "Gedwongen warm water uitgezet",
-          "sv": "Tvingad varmvatten inaktiverad",
-          "no": "Tvungen varmtvann slått av",
-          "es": "Agua caliente forzada apagada"
+          "en": "Forced domestic hot water turned off",
+          "fr": "Eau chaude sanitaire forcée désactivée",
+          "nl": "Gedwongen sanitair warm water uitgezet",
+          "sv": "Tvingad varmvattenladdning inaktiverad",
+          "no": "Tvungen varmvannslastning slått av",
+          "es": "Agua caliente sanitaria forzada apagada"
         },
         "args": [
           {
@@ -1755,7 +1755,7 @@
           "fr": "Le mode dégivrage est !{{en marche|arrêté}}",
           "nl": "De ontdooimodus is !{{aan|uit}}",
           "sv": "Avfrostningsläget är !{{på|av}}",
-          "no": "Avfrostingsmodusen  er !{{på|av}}",
+          "no": "Avfrostingsmodusen er !{{på|av}}",
           "es": "El modo de descongelación está !{{activada|desactivada}}"
         },
         "args": [
@@ -1769,12 +1769,12 @@
       {
         "id": "alarm_generic.eco_hot_water_condition",
         "title": {
-          "en": "The eco hot water is !{{on|off}}",
-          "fr": "L'eau chaude forcée est !{{en marche|arrêté}}",
-          "nl": "De eco warm water is !{{aan|uit}}",
-          "sv": "Eco-läge för varmvatten är !{{på|av}}",
-          "no": "Eco-modus for varmtvann er !{{på|av}}",
-          "es": "La agua caliente eco está !{{activada|desactivada}}"
+          "en": "The eco domestic hot water is !{{on|off}}",
+          "fr": "L'eau chaude sanitaire forcée est !{{en marche|arrêté}}",
+          "nl": "De eco sanitair warm water is !{{aan|uit}}",
+          "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
+          "no": "Eco-modus for varmvannslastning er !{{på|av}}",
+          "es": "La agua caliente sanitaria eco está !{{activada|desactivada}}"
         },
         "args": [
           {
@@ -1805,12 +1805,12 @@
       {
         "id": "onoff.forced_hot_water_condition",
         "title": {
-          "en": "The forced hot water is turned !{{on|off}}",
-          "fr": "L'eau chaude forcée est !{{activée|désactivée}}",
-          "nl": "De gedwongen warm water is !{{aan|uit}}",
-          "sv": "Tvingad varmvatten är !{{på|av}}",
-          "no": "Tvunget varmtvann er !{{på|av}}",
-          "es": "La agua caliente forzada está !{{encendida|apagada}}"
+          "en": "The forced domestic hot water is turned !{{on|off}}",
+          "fr": "L'eau chaude sanitaire forcée est !{{activée|désactivée}}",
+          "nl": "De gedwongen sanitair warm water is !{{aan|uit}}",
+          "sv": "Tvingad varmvattenladdning är !{{på|av}}",
+          "no": "Tvunget varmvannslastning er !{{på|av}}",
+          "es": "La agua caliente sanitaria forzada está !{{encendida|apagada}}"
         },
         "args": [
           {
@@ -3066,20 +3066,20 @@
       {
         "id": "onoff.forced_hot_water_action",
         "title": {
-          "en": "Turn on / off the forced hot water",
-          "fr": "Activer / désactiver l'eau chaude forcée",
-          "nl": "Zet aan / uit de gedwongen warm water",
-          "sv": "Aktivera / stäng av tvingad varmvatten",
-          "no": "Slå på / av tvunget varmtvann",
-          "es": "Encender / apagar la agua caliente forzada"
+          "en": "Turn on / off the forced domestic hot water",
+          "fr": "Activer / désactiver l'eau chaude sanitaire forcée",
+          "nl": "Zet aan / uit de gedwongen sanitair warm water",
+          "sv": "Aktivera / stäng av tvingad varmvattenladdning",
+          "no": "Slå på / av tvunget varmvannslastning",
+          "es": "Encender / apagar la agua caliente sanitaria forzada"
         },
         "titleFormatted": {
-          "en": "Turn [[onoff]] the forced hot water",
-          "fr": "[[onoff]] l'eau chaude forcée",
-          "nl": "Zet [[onoff]] de gedwongen warm water",
-          "sv": "[[onoff]] tvingad varmvatten",
-          "no": "Slå [[onoff]] tvunget varmtvann",
-          "es": "[[onoff]] la agua caliente forzada"
+          "en": "Turn [[onoff]] the forced domestic hot water",
+          "fr": "[[onoff]] l'eau chaude sanitaire forcée",
+          "nl": "Zet [[onoff]] de gedwongen sanitair warm water",
+          "sv": "[[onoff]] tvingad varmvattenladdning",
+          "no": "Slå [[onoff]] tvunget varmvannslastning",
+          "es": "[[onoff]] la agua caliente sanitaria forzada"
         },
         "args": [
           {
@@ -4836,12 +4836,12 @@
         },
         "alarm_generic.eco_hot_water": {
           "title": {
-            "en": "Eco hot water",
-            "fr": "Eau chaude éco",
-            "nl": "Eco warm water",
-            "sv": "Eco-läge för varmvatten",
-            "no": "Eco-modus for varmtvann",
-            "es": "Agua caliente eco"
+            "en": "Eco domestic hot water",
+            "fr": "Eau chaude sanitaire éco",
+            "nl": "Eco sanitair warm water",
+            "sv": "Eco-läge för varmvattenladdning",
+            "no": "Eco-modus for varmvannslastning",
+            "es": "Agua caliente sanitaria eco"
           },
           "insightsTitleTrue": {
             "en": "Eco hot water turned on",
@@ -5321,33 +5321,33 @@
             "nl": "Totale productie - sanitair warm water",
             "sv": "Total produktion - varmvattenladdning",
             "no": "Total produksjon - varmvannslastning",
-            "es": "Producción total - modo de agua caliente"
+            "es": "Producción total - agua caliente sanitaria"
           }
         },
         "onoff.forced_hot_water": {
           "title": {
-            "en": "Forced hot water",
-            "fr": "Eau chaude forcée",
-            "nl": "Gedwongen warm water",
-            "sv": "Tvingad varmvatten",
-            "no": "Tvungen varmtvann",
-            "es": "Agua caliente forzada"
+            "en": "Forced domestic hot water",
+            "fr": "Eau chaude sanitaire forcée",
+            "nl": "Gedwongen sanitair warm water",
+            "sv": "Tvingad varmvattenladdning",
+            "no": "Tvungen varmvannslastning",
+            "es": "Agua caliente sanitaria forzada"
           },
           "insightsTitleTrue": {
-            "en": "Forced hot water turned on",
-            "fr": "Eau chaude forcée activée",
-            "nl": "Gedwongen warm water aangezet",
-            "sv": "Tvingad varmvatten aktiverad",
-            "no": "Tvunget varmtvann slått på",
-            "es": "Agua caliente forzada encendida"
+            "en": "Forced domestic hot water turned on",
+            "fr": "Eau chaude sanitaire forcée activée",
+            "nl": "Gedwongen sanitair warm water aangezet",
+            "sv": "Tvingad varmvattenladdning aktiverad",
+            "no": "Tvunget varmvannslastning slått på",
+            "es": "Agua caliente sanitaria forzada encendida"
           },
           "insightsTitleFalse": {
-            "en": "Forced hot water turned off",
-            "fr": "Eau chaude forcée désactivée",
-            "nl": "Gedwongen warm water uitgezet",
-            "sv": "Tvingad varmvatten inaktiverad",
-            "no": "Tvunget varmtvann slått av",
-            "es": "Agua caliente forzada apagada"
+            "en": "Forced domestic hot water turned off",
+            "fr": "Eau chaude sanitaire forcée désactivée",
+            "nl": "Gedwongen sanitair warm water uitgezet",
+            "sv": "Tvingad varmvattenladdning inaktiverad",
+            "no": "Tvunget varmvannslastning slått av",
+            "es": "Agua caliente sanitaria forzada apagada"
           }
         },
         "operation_mode_state.zone1": {
@@ -5703,12 +5703,12 @@
               "id": "alarm_generic.eco_hot_water",
               "type": "checkbox",
               "label": {
-                "en": "Eco hot water",
-                "fr": "Eau chaude éco",
-                "nl": "Eco warm water",
-                "sv": "Eco-låge för varmvatten",
-                "no": "Eco-modus for varmtvann",
-                "es": "Agua caliente eco"
+                "en": "Eco domestic hot water",
+                "fr": "Eau chaude sanitaire éco",
+                "nl": "Sanitair eco warm water",
+                "sv": "Eco-låge för varmvattenladdning",
+                "no": "Eco-modus for varmvannslastning",
+                "es": "Agua caliente sanitaria eco"
               },
               "value": false
             },
