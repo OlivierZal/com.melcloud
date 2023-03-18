@@ -315,7 +315,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": true
@@ -324,12 +324,12 @@
         "id": "meter_power.daily_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }
@@ -380,7 +380,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": false
@@ -389,12 +389,12 @@
         "id": "meter_power.daily_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }
@@ -445,7 +445,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": false
@@ -454,12 +454,12 @@
         "id": "meter_power.daily_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }
@@ -510,7 +510,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": false
@@ -519,12 +519,12 @@
         "id": "meter_power.total_cop_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }
@@ -575,7 +575,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": false
@@ -584,12 +584,12 @@
         "id": "meter_power.total_consumed_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }
@@ -640,7 +640,7 @@
           "fr": "Chauffage",
           "nl": "Verwarming",
           "sv": "Uppvärmning",
-          "no": "Varme",
+          "no": "Oppvarming",
           "es": "Calefacción"
         },
         "value": false
@@ -649,12 +649,12 @@
         "id": "meter_power.total_produced_hotwater",
         "type": "checkbox",
         "label": {
-          "en": "Hot water",
-          "fr": "Eau chaude",
-          "nl": "Warm water",
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
-          "no": "Varmt vann",
-          "es": "Agua caliente"
+          "no": "Varmvannslastning",
+          "es": "Agua caliente sanitaria"
         },
         "value": false
       }

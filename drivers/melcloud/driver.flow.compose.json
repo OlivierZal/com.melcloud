@@ -4,7 +4,7 @@
       "id": "fan_power_changed",
       "title": {
         "en": "The fan speed has changed",
-        "fr": "La vitesse de ventilation a été modifiée",
+        "fr": "La vitesse du ventilateur a été modifiée",
         "nl": "De ventilatiesnelheid is veranderd",
         "sv": "Fläkthastigheten ändrades",
         "no": "Viftehastigheten ble endret",
@@ -16,7 +16,7 @@
           "type": "number",
           "title": {
             "en": "Fan speed",
-            "fr": "Vitesse de ventilation",
+            "fr": "Vitesse du ventilateur",
             "nl": "Ventilatiesnelheid",
             "sv": "Fläkthastighet",
             "no": "Viftehastighet",
@@ -62,7 +62,7 @@
     {
       "id": "vertical_changed",
       "title": {
-        "en": "The vertical air discharge has changed",
+        "en": "The vertical vane has changed",
         "fr": "Le soufflage d'air vertical a été modifié",
         "nl": "De uitblaasrichting verticaal is veranderd",
         "sv": "Vertikal luftflödesriktningen ändrades",
@@ -74,7 +74,7 @@
           "name": "vertical",
           "type": "string",
           "title": {
-            "en": "Vertical air discharge",
+            "en": "Vertical vane",
             "fr": "Soufflage d'air vertical",
             "nl": "Uitblaasrichting verticaal",
             "sv": "Vertikal luftflödesriktning",
@@ -95,7 +95,7 @@
     {
       "id": "horizontal_changed",
       "title": {
-        "en": "The horizontal air discharge has changed",
+        "en": "The horizontal vane has changed",
         "fr": "Le soufflage d'air horizontal a été modifié",
         "nl": "De uitblaasrichting horizontaal is veranderd",
         "sv": "Horisontell luftflödesriktningen ändrades",
@@ -107,7 +107,7 @@
           "name": "horizontal",
           "type": "string",
           "title": {
-            "en": "Horizontal air discharge",
+            "en": "Horizontal vane",
             "fr": "Soufflage d'air horizontal",
             "nl": "Uitblaasrichting horizontaal",
             "sv": "Horisontell luftflödesriktning",
@@ -131,7 +131,7 @@
       "id": "fan_power_condition",
       "title": {
         "en": "The fan speed !{{is|is not}}",
-        "fr": "La vitesse de ventilation !{{est|n'est pas}}",
+        "fr": "La vitesse du ventilateur !{{est|n'est pas}}",
         "nl": "De ventilatiesnelheid !{{is|is niet}}",
         "sv": "Fläkthastigheten !{{är|är inte}}",
         "no": "Viftehastigheten !{{er|er ikke}}",
@@ -139,7 +139,7 @@
       },
       "titleFormatted": {
         "en": "The fan speed !{{is|is not}} [[fan_power]]",
-        "fr": "La vitesse de ventilation !{{est|n'est pas}} [[fan_power]]",
+        "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]",
         "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
         "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
         "no": "Viftehastighet !{{er|er ikke}} [[fan_power]]",
@@ -268,7 +268,7 @@
             {
               "id": "cool",
               "title": {
-                "en": "Cool",
+                "en": "Cooling",
                 "fr": "Refroidissement",
                 "nl": "Koeling",
                 "sv": "Kylning",
@@ -280,7 +280,7 @@
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventilation",
+                "fr": "Ventilateur",
                 "nl": "Ventilator",
                 "sv": "Fläkt",
                 "no": "Vifte",
@@ -305,7 +305,7 @@
     {
       "id": "vertical_condition",
       "title": {
-        "en": "The vertical air discharge !{{is|is not}}",
+        "en": "The vertical vane !{{is|is not}}",
         "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
         "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
@@ -313,7 +313,7 @@
         "es": "La descarga de aire vertical !{{está|no está}}"
       },
       "titleFormatted": {
-        "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
+        "en": "The vertical vane !{{is|is not}} [[vertical]]",
         "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
         "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
         "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
@@ -409,7 +409,7 @@
     {
       "id": "horizontal_condition",
       "title": {
-        "en": "The horizontal air discharge !{{is|is not}}",
+        "en": "The horizontal vane !{{is|is not}}",
         "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
         "sv": "Horisontell luftflödesriktningen !{{är|är inte}}",
@@ -417,7 +417,7 @@
         "es": "La descarga de aire horizontal !{{está|no está}}"
       },
       "titleFormatted": {
-        "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
+        "en": "The horizontal vane !{{is|is not}} [[horizontal]]",
         "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
         "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
         "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]",
@@ -492,7 +492,7 @@
                 "nl": "Rechts",
                 "sv": "Höger",
                 "no": "Høyre",
-                "es": "Hacia la derecha"
+                "es": "Derecha"
               }
             },
             {
@@ -503,7 +503,7 @@
                 "nl": "Gesplitst",
                 "sv": "Delad",
                 "no": "Delt",
-                "es": "Dividido"
+                "es": "Dividida"
               }
             },
             {
@@ -527,7 +527,7 @@
       "id": "fan_power_action",
       "title": {
         "en": "Set the fan speed",
-        "fr": "Définir la vitesse de ventilation",
+        "fr": "Définir la vitesse du ventilateur",
         "nl": "Stel de ventilatiesnelheid in",
         "sv": "Ställ in fläkthastigheten",
         "no": "Innstill viftehastigheten",
@@ -535,7 +535,7 @@
       },
       "titleFormatted": {
         "en": "Set the fan speed to [[fan_power]]",
-        "fr": "Définir la vitesse de ventilation à [[fan_power]]",
+        "fr": "Définir la vitesse du ventilateur à [[fan_power]]",
         "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
         "sv": "Ställ in fläkthastigheten till [[fan_power]]",
         "no": "Innstill viftehastigheten til [[fan_power]]",
@@ -664,7 +664,7 @@
             {
               "id": "cool",
               "title": {
-                "en": "Cool",
+                "en": "Cooling",
                 "fr": "Refroidissement",
                 "nl": "Koeling",
                 "sv": "Kylning",
@@ -676,7 +676,7 @@
               "id": "fan",
               "title": {
                 "en": "Fan",
-                "fr": "Ventilation",
+                "fr": "Ventilateur",
                 "nl": "Ventilator",
                 "sv": "Fläkt",
                 "no": "Vifte",
@@ -701,7 +701,7 @@
     {
       "id": "vertical_action",
       "title": {
-        "en": "Set the vertical air discharge",
+        "en": "Set the vertical vane",
         "fr": "Définir le soufflage d'air vertical",
         "nl": "Stel de uitblaasrichting verticaal in",
         "sv": "Ställ in vertikal luftflödesriktningen",
@@ -709,7 +709,7 @@
         "es": "Configurar la discarga de aire vertical"
       },
       "titleFormatted": {
-        "en": "Set the vertical air discharge to [[vertical]]",
+        "en": "Set the vertical vane to [[vertical]]",
         "fr": "Définir le soufflage d'air vertical à [[vertical]]",
         "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
         "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
@@ -805,7 +805,7 @@
     {
       "id": "horizontal_action",
       "title": {
-        "en": "Set the horizontal air discharge",
+        "en": "Set the horizontal vane",
         "fr": "Définir le soufflage d'air horizontal",
         "nl": "Stel de uitblaasrichting horizontaal in",
         "sv": "Ställ in horisontell luftflödesriktningen",
@@ -813,7 +813,7 @@
         "es": "Configurar la descarga de aire horizontal"
       },
       "titleFormatted": {
-        "en": "Set the horizontal air discharge to [[horizontal]]",
+        "en": "Set the horizontal vane to [[horizontal]]",
         "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
         "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
         "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]",
@@ -888,7 +888,7 @@
                 "nl": "Rechts",
                 "sv": "Höger",
                 "no": "Høyre",
-                "es": "Hacia la derecha"
+                "es": "Derecha"
               }
             },
             {
@@ -899,7 +899,7 @@
                 "nl": "Gesplitst",
                 "sv": "Delad",
                 "no": "Delt",
-                "es": "Dividido"
+                "es": "Dividida"
               }
             },
             {

@@ -67,52 +67,52 @@
     },
     "meter_power.hourly_consumed_auto": {
       "title": {
-        "en": "Hourly consumption - automatic mode",
-        "fr": "Conso horaire - mode automatique",
-        "nl": "Uurlijkse verbruik - automatische modus",
-        "sv": "Timvis förbrukning - automatläge",
-        "no": "Timevis forbruk - automatisk modus",
-        "es": "Consumo horario - modo automático"
+        "en": "Hourly consumption - automatic",
+        "fr": "Conso horaire - automatique",
+        "nl": "Uurlijkse verbruik - automatische",
+        "sv": "Timvis förbrukning - automatiskt",
+        "no": "Timevis forbruk - automatisk",
+        "es": "Consumo horario - automático"
       }
     },
     "meter_power.hourly_consumed_cooling": {
       "title": {
-        "en": "Hourly consumption - cooling mode",
-        "fr": "Conso horaire - mode refroidissement",
-        "nl": "Uurlijkse verbruik - koelingsmodus",
-        "sv": "Timvis förbrukning - kylningsläge",
-        "no": "Timevis forbruk - kjølingsmodus",
-        "es": "Consumo horario - modo enfriamiento"
+        "en": "Hourly consumption - cooling",
+        "fr": "Conso horaire - refroidissement",
+        "nl": "Uurlijkse verbruik - koeling",
+        "sv": "Timvis förbrukning - kylning",
+        "no": "Timevis forbruk - kjøling",
+        "es": "Consumo horario - enfriamiento"
       }
     },
     "meter_power.hourly_consumed_dry": {
       "title": {
-        "en": "Hourly consumption - dry mode",
-        "fr": "Conso horaire - mode déshumidification",
-        "nl": "Uurlijkse verbruik - drogingsmodus",
-        "sv": "Timvis förbrukning - avfuktningsläge",
-        "no": "Timevis forbruk - avfuktingsmodus",
-        "es": "Consumo horario - modo desumidificación"
+        "en": "Hourly consumption - dry",
+        "fr": "Conso horaire - déshumidification",
+        "nl": "Uurlijkse verbruik - droging",
+        "sv": "Timvis förbrukning - avfuktning",
+        "no": "Timevis forbruk - avfukting",
+        "es": "Consumo horario - desumidificación"
       }
     },
     "meter_power.hourly_consumed_fan": {
       "title": {
-        "en": "Hourly consumption - fan mode",
-        "fr": "Conso horaire - mode ventilateur",
+        "en": "Hourly consumption - fan",
+        "fr": "Conso horaire - ventilateur",
         "nl": "Uurlijkse verbruik - ventilatormodus",
         "sv": "Timvis förbrukning - fläktläge",
         "no": "Timevis forbruk - viftetilstand",
-        "es": "Consumo horario - modo ventilador"
+        "es": "Consumo horario - ventilador"
       }
     },
     "meter_power.hourly_consumed_heating": {
       "title": {
-        "en": "Hourly consumption - heating mode",
-        "fr": "Conso horaire - mode chauffage",
-        "nl": "Uurlijkse verbruik - verwarmingsmodus",
-        "sv": "Timvis förbrukning - uppvärmningsläge",
-        "no": "Timevis forbruk - oppvarmingsmodus",
-        "es": "Consumo horario - modo calefacción"
+        "en": "Hourly consumption - heating",
+        "fr": "Conso horaire - chauffage",
+        "nl": "Uurlijkse verbruik - verwarming",
+        "sv": "Timvis förbrukning - uppvärmning",
+        "no": "Timevis forbruk - oppvarming",
+        "es": "Consumo horario - calefacción"
       }
     },
     "meter_power.hourly_consumed_other": {
@@ -137,52 +137,52 @@
     },
     "meter_power.daily_consumed_auto": {
       "title": {
-        "en": "Daily consumption - automatic mode",
-        "fr": "Conso quotidienne - mode automatique",
-        "nl": "Dagelijkse verbruik - automatische modus",
-        "sv": "Daglig förbrukning - automatläge",
-        "no": "Daglige forbruk - automatisk modus",
-        "es": "Consumo diario - modo automático"
+        "en": "Daily consumption - automatic",
+        "fr": "Conso quotidienne - automatique",
+        "nl": "Dagelijkse verbruik - automatische",
+        "sv": "Daglig förbrukning - automatiskt",
+        "no": "Daglige forbruk - automatisk",
+        "es": "Consumo diario - automático"
       }
     },
     "meter_power.daily_consumed_cooling": {
       "title": {
-        "en": "Daily consumption - cooling mode",
-        "fr": "Conso quotidienne - mode refroidissement",
-        "nl": "Dagelijkse verbruik - koelingsmodus",
-        "sv": "Daglig förbrukning - kylningsläge",
-        "no": "Daglige forbruk - kjølingsmodus",
-        "es": "Consumo diario - modo enfriamiento"
+        "en": "Daily consumption - cooling",
+        "fr": "Conso quotidienne - refroidissement",
+        "nl": "Dagelijkse verbruik - koeling",
+        "sv": "Daglig förbrukning - kylning",
+        "no": "Daglige forbruk - kjøling",
+        "es": "Consumo diario - enfriamiento"
       }
     },
     "meter_power.daily_consumed_dry": {
       "title": {
-        "en": "Daily consumption - dry mode",
-        "fr": "Conso quotidienne - mode déshumidification",
-        "nl": "Dagelijkse verbruik - drogingsmodus",
-        "sv": "Daglig förbrukning - avfuktningsläge",
-        "no": "Daglige forbruk - avfuktingsmodus",
-        "es": "Consumo diario - modo desumidificación"
+        "en": "Daily consumption - dry",
+        "fr": "Conso quotidienne - déshumidification",
+        "nl": "Dagelijkse verbruik - droging",
+        "sv": "Daglig förbrukning - avfuktning",
+        "no": "Daglige forbruk - avfukting",
+        "es": "Consumo diario - desumidificación"
       }
     },
     "meter_power.daily_consumed_fan": {
       "title": {
-        "en": "Daily consumption - fan mode",
-        "fr": "Conso quotidienne - mode ventilateur",
+        "en": "Daily consumption - fan",
+        "fr": "Conso quotidienne - ventilateur",
         "nl": "Dagelijkse verbruik - ventilatormodus",
         "sv": "Daglig förbrukning - fläktläge",
         "no": "Daglige forbruk - viftetilstand",
-        "es": "Consumo diario - modo ventilación"
+        "es": "Consumo diario - ventilación"
       }
     },
     "meter_power.daily_consumed_heating": {
       "title": {
-        "en": "Daily consumption - heating mode",
-        "fr": "Conso quotidienne - mode chauffage",
-        "nl": "Dagelijkse verbruik - verwarmingsmodus",
-        "sv": "Daglig förbrukning - uppvärmningsläge",
-        "no": "Daglige forbruk - oppvarmingsmodus",
-        "es": "Consumo diario - modo calefacción"
+        "en": "Daily consumption - heating",
+        "fr": "Conso quotidienne - chauffage",
+        "nl": "Dagelijkse verbruik - verwarming",
+        "sv": "Daglig förbrukning - uppvärmning",
+        "no": "Daglige forbruk - oppvarming",
+        "es": "Consumo diario - calefacción"
       }
     },
     "meter_power.daily_consumed_other": {
@@ -207,52 +207,52 @@
     },
     "meter_power.total_consumed_auto": {
       "title": {
-        "en": "Total consumption - automatic mode",
-        "fr": "Conso totale - mode automatique",
-        "nl": "Totaalverbruik - automatische modus",
-        "sv": "Total förbrukning - automatläge",
-        "no": "Total forbruk - automatisk modus",
-        "es": "Consumo total - modo automático"
+        "en": "Total consumption - automatic",
+        "fr": "Conso totale - automatique",
+        "nl": "Totaalverbruik - automatische",
+        "sv": "Total förbrukning - automatiskt",
+        "no": "Total forbruk - automatisk",
+        "es": "Consumo total - automático"
       }
     },
     "meter_power.total_consumed_cooling": {
       "title": {
-        "en": "Total consumption - cooling mode",
-        "fr": "Conso totale - mode refroidissement",
-        "nl": "Totaalverbruik - koelingsmodus",
-        "sv": "Total förbrukning - kylningsläge",
-        "no": "Total forbruk - kjølingsmodus",
-        "es": "Consumo total - modo enfriamiento"
+        "en": "Total consumption - cooling",
+        "fr": "Conso totale - refroidissement",
+        "nl": "Totaalverbruik - koeling",
+        "sv": "Total förbrukning - kylning",
+        "no": "Total forbruk - kjøling",
+        "es": "Consumo total - enfriamiento"
       }
     },
     "meter_power.total_consumed_dry": {
       "title": {
-        "en": "Total consumption - dry mode",
-        "fr": "Conso totale - mode déshumidification",
-        "nl": "Totaalverbruik - drogingsmodus",
-        "sv": "Total förbrukning - avfuktningsläge",
-        "no": "Total forbruk - avfuktingsmodus",
-        "es": "Consumo total - modo desumidificación"
+        "en": "Total consumption - dry",
+        "fr": "Conso totale - déshumidification",
+        "nl": "Totaalverbruik - droging",
+        "sv": "Total förbrukning - avfuktning",
+        "no": "Total forbruk - avfukting",
+        "es": "Consumo total - desumidificación"
       }
     },
     "meter_power.total_consumed_fan": {
       "title": {
-        "en": "Total consumption - fan mode",
-        "fr": "Conso totale - mode ventilateur",
+        "en": "Total consumption - fan",
+        "fr": "Conso totale - ventilateur",
         "nl": "Totaalverbruik - ventilatormodus",
         "sv": "Total förbrukning - fläktläge",
         "no": "Total forbruk - viftetilstand",
-        "es": "Consumo total - modo ventilador"
+        "es": "Consumo total - ventilador"
       }
     },
     "meter_power.total_consumed_heating": {
       "title": {
-        "en": "Total consumption - heating mode",
-        "fr": "Conso totale - mode chauffage",
-        "nl": "Totaalverbruik - verwarmingsmodus",
-        "sv": "Total förbrukning - uppvärmningsläge",
-        "no": "Total forbruk - oppvarmingsmodus",
-        "es": "Consumo total - modo calefacción"
+        "en": "Total consumption - heating",
+        "fr": "Conso totale - chauffage",
+        "nl": "Totaalverbruik - verwarming",
+        "sv": "Total förbrukning - uppvärmning",
+        "no": "Total forbruk - oppvarming",
+        "es": "Consumo total - calefacción"
       }
     },
     "meter_power.total_consumed_other": {

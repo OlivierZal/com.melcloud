@@ -1,7 +1,7 @@
 {
   "type": "enum",
   "title": {
-    "en": "Horizontal air discharge",
+    "en": "Horizontal vane",
     "fr": "Soufflage d'air horizontal",
     "nl": "Uitblaasrichting horizontaal",
     "sv": "Horisontell luftflödesriktning",
@@ -76,7 +76,7 @@
         "nl": "Rechts",
         "sv": "Höger",
         "no": "Høyre",
-        "es": "Hacia la derecha"
+        "es": "Derecha"
       }
     },
     {
@@ -87,7 +87,7 @@
         "nl": "Gesplitst",
         "sv": "Delad",
         "no": "Delt",
-        "es": "Dividido"
+        "es": "Dividida"
       }
     },
     {

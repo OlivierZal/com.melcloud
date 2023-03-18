@@ -163,7 +163,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilation",
+          "fr": "Ventilateur",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",
@@ -267,7 +267,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilation",
+          "fr": "Ventilateur",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",
@@ -371,7 +371,7 @@
         "type": "checkbox",
         "label": {
           "en": "Fan",
-          "fr": "Ventilation",
+          "fr": "Ventilateur",
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",

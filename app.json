@@ -156,7 +156,7 @@
         "id": "fan_power_changed",
         "title": {
           "en": "The fan speed has changed",
-          "fr": "La vitesse de ventilation a été modifiée",
+          "fr": "La vitesse du ventilateur a été modifiée",
           "nl": "De ventilatiesnelheid is veranderd",
           "sv": "Fläkthastigheten ändrades",
           "no": "Viftehastigheten ble endret",
@@ -168,7 +168,7 @@
             "type": "number",
             "title": {
               "en": "Fan speed",
-              "fr": "Vitesse de ventilation",
+              "fr": "Vitesse du ventilateur",
               "nl": "Ventilatiesnelheid",
               "sv": "Fläkthastighet",
               "no": "Viftehastighet",
@@ -1019,7 +1019,7 @@
         "id": "fan_power_condition",
         "title": {
           "en": "The fan speed !{{is|is not}}",
-          "fr": "La vitesse de ventilation !{{est|n'est pas}}",
+          "fr": "La vitesse du ventilateur !{{est|n'est pas}}",
           "nl": "De ventilatiesnelheid !{{is|is niet}}",
           "sv": "Fläkthastigheten !{{är|är inte}}",
           "no": "Viftehastigheten !{{er|er ikke}}",
@@ -1027,7 +1027,7 @@
         },
         "titleFormatted": {
           "en": "The fan speed !{{is|is not}} [[fan_power]]",
-          "fr": "La vitesse de ventilation !{{est|n'est pas}} [[fan_power]]",
+          "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]",
           "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
           "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
           "no": "Viftehastighet !{{er|er ikke}} [[fan_power]]",
@@ -1178,7 +1178,7 @@
                 "id": "fan",
                 "title": {
                   "en": "Fan",
-                  "fr": "Ventilation",
+                  "fr": "Ventilateur",
                   "nl": "Ventilator",
                   "sv": "Fläkt",
                   "no": "Vifte",
@@ -2492,7 +2492,7 @@
         "id": "fan_power_action",
         "title": {
           "en": "Set the fan speed",
-          "fr": "Définir la vitesse de ventilation",
+          "fr": "Définir la vitesse du ventilateur",
           "nl": "Stel de ventilatiesnelheid in",
           "sv": "Ställ in fläkthastigheten",
           "no": "Innstill viftehastigheten",
@@ -2500,7 +2500,7 @@
         },
         "titleFormatted": {
           "en": "Set the fan speed to [[fan_power]]",
-          "fr": "Définir la vitesse de ventilation à [[fan_power]]",
+          "fr": "Définir la vitesse du ventilateur à [[fan_power]]",
           "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
           "sv": "Ställ in fläkthastigheten till [[fan_power]]",
           "no": "Innstill viftehastigheten til [[fan_power]]",
@@ -2651,7 +2651,7 @@
                 "id": "fan",
                 "title": {
                   "en": "Fan",
-                  "fr": "Ventilation",
+                  "fr": "Ventilateur",
                   "nl": "Ventilator",
                   "sv": "Fläkt",
                   "no": "Vifte",
@@ -4216,7 +4216,7 @@
               "type": "checkbox",
               "label": {
                 "en": "Fan",
-                "fr": "Ventilation",
+                "fr": "Ventilateur",
                 "nl": "Ventilator",
                 "sv": "Fläkt",
                 "no": "Vifte",
@@ -4320,7 +4320,7 @@
               "type": "checkbox",
               "label": {
                 "en": "Fan",
-                "fr": "Ventilation",
+                "fr": "Ventilateur",
                 "nl": "Ventilator",
                 "sv": "Fläkt",
                 "no": "Vifte",
@@ -4424,7 +4424,7 @@
               "type": "checkbox",
               "label": {
                 "en": "Fan",
-                "fr": "Ventilation",
+                "fr": "Ventilateur",
                 "nl": "Ventilator",
                 "sv": "Fläkt",
                 "no": "Vifte",
@@ -5797,7 +5797,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -5862,7 +5862,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -5927,7 +5927,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -5992,7 +5992,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -6057,7 +6057,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -6122,7 +6122,7 @@
                 "en": "Hot water",
                 "fr": "Eau chaude",
                 "nl": "Warm water",
-                "sv": "Varmvattenladdning",
+                "sv": "Varm vatten",
                 "no": "Varmt vann",
                 "es": "Agua caliente"
               },
@@ -6228,7 +6228,7 @@
       "type": "number",
       "title": {
         "en": "Fan speed",
-        "fr": "Vitesse de ventilation",
+        "fr": "Vitesse du ventilateur",
         "nl": "Ventilatiesnelheid",
         "sv": "Fläkthastighet",
         "no": "Viftehastighet",
@@ -6473,7 +6473,7 @@
           "id": "fan",
           "title": {
             "en": "Fan",
-            "fr": "Ventilation",
+            "fr": "Ventilateur",
             "nl": "Ventilator",
             "sv": "Fläkt",
             "no": "Vifte",

@@ -368,12 +368,12 @@
     },
     "meter_power.daily_cop_cooling": {
       "title": {
-        "en": "Last daily CoP - cooling mode",
-        "fr": "Dernier CoP quotidien - mode refroidissement",
-        "nl": "Laatste dagelijkse CoP - koelingsmodus",
-        "sv": "Senaste dagliga CoP - kylningsläge",
-        "no": "Siste daglige CoP - kjølingsmodus",
-        "es": "Último CoP diario - modo de enfriamiento"
+        "en": "Last daily CoP - cooling",
+        "fr": "Dernier CoP quotidien - refroidissement",
+        "nl": "Laatste dagelijkse CoP - koeling",
+        "sv": "Senaste dagliga CoP - kylning",
+        "no": "Siste daglige CoP - kjøling",
+        "es": "Último CoP diario - enfriamiento"
       },
       "units": {
         "en": "",
@@ -387,12 +387,12 @@
     },
     "meter_power.daily_cop_heating": {
       "title": {
-        "en": "Last daily CoP - heating mode",
-        "fr": "Dernier CoP quotidien - mode chauffage",
-        "nl": "Laatste dagelijkse CoP - verwarmingsmodus",
-        "sv": "Senaste dagliga CoP - uppvärmningsläge",
-        "no": "Siste daglige CoP - oppvarmingsmodus",
-        "es": "Último CoP diario - modo de calefacción"
+        "en": "Last daily CoP - heating",
+        "fr": "Dernier CoP quotidien - chauffage",
+        "nl": "Laatste dagelijkse CoP - verwarming",
+        "sv": "Senaste dagliga CoP - uppvärmning",
+        "no": "Siste daglige CoP - oppvarming",
+        "es": "Último CoP diario - calefacción"
       },
       "units": {
         "en": "",
@@ -406,12 +406,12 @@
     },
     "meter_power.daily_cop_hotwater": {
       "title": {
-        "en": "Last daily CoP - hot water mode",
-        "fr": "Dernier CoP quotidien - mode eau chaude",
-        "nl": "Laatste dagelijkse CoP - warm water modus",
-        "sv": "Senaste dagliga CoP - varmvattenläge",
-        "no": "Siste daglige CoP - varmtvannsmodus",
-        "es": "Último CoP diario - modo agua caliente"
+        "en": "Last daily CoP - domestic hot water",
+        "fr": "Dernier CoP quotidien - eau chaude sanitaire",
+        "nl": "Laatste dagelijkse CoP - sanitair warm water",
+        "sv": "Senaste dagliga CoP - varmvattenladdning",
+        "no": "Siste daglige CoP - varmvannslastning",
+        "es": "Último CoP diario - agua caliente sanitaria"
       },
       "units": {
         "en": "",
@@ -435,32 +435,32 @@
     },
     "meter_power.daily_consumed_cooling": {
       "title": {
-        "en": "Last daily consumption - cooling mode",
-        "fr": "Dernière conso quotidienne - mode refroidissement",
-        "nl": "Laatste dagelijkse verbruik - koelingsmodus",
-        "sv": "Senaste daglig förbrukning - kylningsläge",
-        "no": "Siste daglige forbruk - kjølingsmodus",
-        "es": "Último consumo diario - modo de enfriamiento"
+        "en": "Last daily consumption - cooling",
+        "fr": "Dernière conso quotidienne - refroidissement",
+        "nl": "Laatste dagelijkse verbruik - koeling",
+        "sv": "Senaste daglig förbrukning - kylning",
+        "no": "Siste daglige forbruk - kjøling",
+        "es": "Último consumo diario - enfriamiento"
       }
     },
     "meter_power.daily_consumed_heating": {
       "title": {
-        "en": "Last daily consumption - heating mode",
-        "fr": "Dernière conso quotidienne - mode chauffage",
-        "nl": "Laatste dagelijkse verbruik - verwarmingsmodus",
-        "sv": "Senaste daglig förbrukning - uppvärmningsläge",
-        "no": "Siste daglige forbruk - oppvarmingsmodus",
-        "es": "Último consumo diario - modo de calefacción"
+        "en": "Last daily consumption - heating",
+        "fr": "Dernière conso quotidienne - chauffage",
+        "nl": "Laatste dagelijkse verbruik - verwarming",
+        "sv": "Senaste daglig förbrukning - uppvärmning",
+        "no": "Siste daglige forbruk - oppvarming",
+        "es": "Último consumo diario - calefacción"
       }
     },
     "meter_power.daily_consumed_hotwater": {
       "title": {
-        "en": "Last daily consumption - hot water mode",
-        "fr": "Dernière conso quotidienne - mode eau chaude",
-        "nl": "Laatste dagelijkse verbruik - warm water modus",
-        "sv": "Senaste daglig förbrukning - varmvattenläge",
-        "no": "Siste daglige forbruk - varmtvannsmodus",
-        "es": "Último consumo diario - modo agua caliente"
+        "en": "Last daily consumption - domestic hot water",
+        "fr": "Dernière conso quotidienne - eau chaude sanitaire",
+        "nl": "Laatste dagelijkse verbruik - sanitair warm water",
+        "sv": "Senaste daglig förbrukning - varmvattenladdning",
+        "no": "Siste daglige forbruk - varmvannslastning",
+        "es": "Último consumo diario - agua caliente sanitaria"
       }
     },
     "meter_power.daily_produced": {
@@ -475,32 +475,32 @@
     },
     "meter_power.daily_produced_cooling": {
       "title": {
-        "en": "Last daily production - cooling mode",
-        "fr": "Dernière production quotidienne - mode refroidissement",
-        "nl": "Laatste dagelijkse productie - koelingsmodus",
-        "sv": "Senaste daglig produktion - kylningsläge",
-        "no": "Siste daglige produksjon - kjølingsmodus",
-        "es": "Último producción diario - modo de enfriamiento"
+        "en": "Last daily production - cooling",
+        "fr": "Dernière production quotidienne - refroidissement",
+        "nl": "Laatste dagelijkse productie - koeling",
+        "sv": "Senaste daglig produktion - kylning",
+        "no": "Siste daglige produksjon - kjøling",
+        "es": "Último producción diario - enfriamiento"
       }
     },
     "meter_power.daily_produced_heating": {
       "title": {
-        "en": "Last daily production - heating mode",
-        "fr": "Dernière production quotidienne - mode chauffage",
-        "nl": "Laatste dagelijkse productie - verwarmingsmodus",
-        "sv": "Senaste daglig produktion - uppvärmningsläge",
-        "no": "Siste daglige produksjon - oppvarmingsmodus",
-        "es": "Último producción diario - modo de calefacción"
+        "en": "Last daily production - heating",
+        "fr": "Dernière production quotidienne - chauffage",
+        "nl": "Laatste dagelijkse productie - verwarming",
+        "sv": "Senaste daglig produktion - uppvärmning",
+        "no": "Siste daglige produksjon - oppvarming",
+        "es": "Último producción diario - calefacción"
       }
     },
     "meter_power.daily_produced_hotwater": {
       "title": {
-        "en": "Last daily production - hot water mode",
-        "fr": "Dernière production quotidienne - mode eau chaude",
-        "nl": "Laatste dagelijkse productie - warm water modus",
-        "sv": "Senaste daglig produktion - varmvattenläge",
-        "no": "Siste daglige produksjon - varmtvannsmodus",
-        "es": "Último producción diario - modo agua caliente"
+        "en": "Last daily production - domestic hot water",
+        "fr": "Dernière production quotidienne - eau chaude sanitaire",
+        "nl": "Laatste dagelijkse productie - sanitair warm water",
+        "sv": "Senaste daglig produktion - varmvattenladdning",
+        "no": "Siste daglige produksjon - varmvannslastning",
+        "es": "Último producción diario - agua caliente sanitaria"
       }
     },
     "meter_power.total_cop": {
@@ -524,12 +524,12 @@
     },
     "meter_power.total_cop_cooling": {
       "title": {
-        "en": "Total CoP - cooling mode",
-        "fr": "CoP total - mode refroidissement",
-        "nl": "Totale CoP - koelingsmodus",
-        "sv": "Total CoP - kylningsläge",
-        "no": "Total CoP - kjølingsmodus",
-        "es": "CoP total - modo de enfriamiento"
+        "en": "Total CoP - cooling",
+        "fr": "CoP total - refroidissement",
+        "nl": "Totale CoP - koeling",
+        "sv": "Total CoP - kylning",
+        "no": "Total CoP - kjøling",
+        "es": "CoP total - enfriamiento"
       },
       "units": {
         "en": "",
@@ -543,12 +543,12 @@
     },
     "meter_power.total_cop_heating": {
       "title": {
-        "en": "Total CoP - heating mode",
-        "fr": "CoP total - mode chauffage",
-        "nl": "Totale CoP - verwarmingsmodus",
-        "sv": "Total CoP - uppvärmningsläge",
-        "no": "Total CoP - oppvarmingsmodus",
-        "es": "CoP total - modo de calefacción"
+        "en": "Total CoP - heating",
+        "fr": "CoP total - chauffage",
+        "nl": "Totale CoP - verwarming",
+        "sv": "Total CoP - uppvärmning",
+        "no": "Total CoP - oppvarming",
+        "es": "CoP total - calefacción"
       },
       "units": {
         "en": "",
@@ -562,12 +562,12 @@
     },
     "meter_power.total_cop_hotwater": {
       "title": {
-        "en": "Total hot water CoP - hot water mode",
-        "fr": "CoP total - mode eau chaude",
-        "nl": "Totale CoP - warm water modus",
-        "sv": "Total CoP - varmvattenläge",
-        "no": "Total CoP - varmtvannsmodus",
-        "es": "CoP total - modo agua caliente"
+        "en": "Total hot water CoP - domestic hot water",
+        "fr": "CoP total - eau chaude sanitaire",
+        "nl": "Totale CoP - sanitair warm water",
+        "sv": "Total CoP - varmvattenladdning",
+        "no": "Total CoP - varmvannslastning",
+        "es": "CoP total - agua caliente sanitaria"
       },
       "units": {
         "en": "",
@@ -591,32 +591,32 @@
     },
     "meter_power.total_consumed_cooling": {
       "title": {
-        "en": "Total consumption - cooling mode",
-        "fr": "Conso totale - mode refroidissement",
-        "nl": "Totaalverbruik - koelingsmodus",
-        "sv": "Total förbrukning - kylningsläge",
-        "no": "Total forbruk - kjølingsmodus",
-        "es": "Consumo total - modo de enfriamiento"
+        "en": "Total consumption - cooling",
+        "fr": "Conso totale - refroidissement",
+        "nl": "Totaalverbruik - koeling",
+        "sv": "Total förbrukning - kylning",
+        "no": "Total forbruk - kjøling",
+        "es": "Consumo total - enfriamiento"
       }
     },
     "meter_power.total_consumed_heating": {
       "title": {
-        "en": "Total consumption - heating mode",
-        "fr": "Conso totale - mode chauffage",
-        "nl": "Totaalverbruik - verwarmingsmodus",
-        "sv": "Total förbrukning - uppvärmningsläge",
-        "no": "Total forbruk - oppvarmingsmodus",
-        "es": "Consumo total - modo de calefacción"
+        "en": "Total consumption - heating",
+        "fr": "Conso totale - chauffage",
+        "nl": "Totaalverbruik - verwarming",
+        "sv": "Total förbrukning - uppvärmning",
+        "no": "Total forbruk - oppvarming",
+        "es": "Consumo total - calefacción"
       }
     },
     "meter_power.total_consumed_hotwater": {
       "title": {
-        "en": "Total consumption - hot water mode",
-        "fr": "Conso totale - mode eau chaude",
-        "nl": "Totaalverbruik - warm water modus",
-        "sv": "Total förbrukning - varmvattenläge",
-        "no": "Total forbruk - varmtvannsmodus",
-        "es": "Consumo total - modo agua caliente"
+        "en": "Total consumption - domestic hot water",
+        "fr": "Conso totale - eau chaude sanitaire",
+        "nl": "Totaalverbruik - sanitair warm water",
+        "sv": "Total förbrukning - varmvattenladdning",
+        "no": "Total forbruk - varmvannslastning",
+        "es": "Consumo total - agua caliente sanitaria"
       }
     },
     "meter_power.total_produced": {
@@ -631,31 +631,31 @@
     },
     "meter_power.total_produced_cooling": {
       "title": {
-        "en": "Total production - cooling mode",
-        "fr": "Production totale - mode refroidissement",
-        "nl": "Totale productie - koelingsmodus",
-        "sv": "Total produktion - kylningsläge",
-        "no": "Total produksjon - kjølingsmodus",
-        "es": "Producción total - modo de enfriamiento"
+        "en": "Total production - cooling",
+        "fr": "Production totale - refroidissement",
+        "nl": "Totale productie - koeling",
+        "sv": "Total produktion - kylning",
+        "no": "Total produksjon - kjøling",
+        "es": "Producción total - enfriamiento"
       }
     },
     "meter_power.total_produced_heating": {
       "title": {
-        "en": "Total production - heating mode",
-        "fr": "Production totale - mode chauffage",
-        "nl": "Totale productie - verwarmingsmodus",
-        "sv": "Total produktion - uppvärmningsläge",
-        "no": "Total produksjon - oppvarmingsmodus",
-        "es": "Producción total - modo de calefacción"
+        "en": "Total production - heating",
+        "fr": "Production totale - chauffage",
+        "nl": "Totale productie - verwarming",
+        "sv": "Total produktion - uppvärmning",
+        "no": "Total produksjon - oppvarming",
+        "es": "Producción total - calefacción"
       }
     },
     "meter_power.total_produced_hotwater": {
       "title": {
-        "en": "Total production - hot water mode",
-        "fr": "Production totale - mode eau chaude",
-        "nl": "Totale productie - warm water modus",
-        "sv": "Total produktion - varmvattenläge",
-        "no": "Total produksjon - varmtvannsmodus",
+        "en": "Total production - domestic hot water",
+        "fr": "Production totale - eau chaude sanitaire",
+        "nl": "Totale productie - sanitair warm water",
+        "sv": "Total produktion - varmvattenladdning",
+        "no": "Total produksjon - varmvannslastning",
         "es": "Producción total - modo de agua caliente"
       }
     },

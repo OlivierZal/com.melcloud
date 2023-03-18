@@ -39,7 +39,7 @@
     {
       "id": "cool",
       "title": {
-        "en": "Cool",
+        "en": "Cooling",
         "fr": "Refroidissement",
         "nl": "Koeling",
         "sv": "Kylning",
@@ -51,7 +51,7 @@
       "id": "fan",
       "title": {
         "en": "Fan",
-        "fr": "Ventilation",
+        "fr": "Ventilateur",
         "nl": "Ventilator",
         "sv": "Fläkt",
         "no": "Vifte",
