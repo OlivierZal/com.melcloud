@@ -228,7 +228,7 @@
       {
         "id": "vertical_changed",
         "title": {
-          "en": "The vertical air discharge has changed",
+          "en": "The vertical vane has changed",
           "fr": "Le soufflage d'air vertical a été modifié",
           "nl": "De uitblaasrichting verticaal is veranderd",
           "sv": "Vertikal luftflödesriktningen ändrades",
@@ -240,7 +240,7 @@
             "name": "vertical",
             "type": "string",
             "title": {
-              "en": "Vertical air discharge",
+              "en": "Vertical vane",
               "fr": "Soufflage d'air vertical",
               "nl": "Uitblaasrichting verticaal",
               "sv": "Vertikal luftflödesriktning",
@@ -268,7 +268,7 @@
       {
         "id": "horizontal_changed",
         "title": {
-          "en": "The horizontal air discharge has changed",
+          "en": "The horizontal vane has changed",
           "fr": "Le soufflage d'air horizontal a été modifié",
           "nl": "De uitblaasrichting horizontaal is veranderd",
           "sv": "Horisontell luftflödesriktningen ändrades",
@@ -280,7 +280,7 @@
             "name": "horizontal",
             "type": "string",
             "title": {
-              "en": "Horizontal air discharge",
+              "en": "Horizontal vane",
               "fr": "Soufflage d'air horizontal",
               "nl": "Uitblaasrichting horizontaal",
               "sv": "Horisontell luftflödesriktning",
@@ -1166,7 +1166,7 @@
               {
                 "id": "cool",
                 "title": {
-                  "en": "Cool",
+                  "en": "Cooling",
                   "fr": "Refroidissement",
                   "nl": "Koeling",
                   "sv": "Kylning",
@@ -1203,7 +1203,7 @@
       {
         "id": "vertical_condition",
         "title": {
-          "en": "The vertical air discharge !{{is|is not}}",
+          "en": "The vertical vane !{{is|is not}}",
           "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
           "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
@@ -1211,7 +1211,7 @@
           "es": "La descarga de aire vertical !{{está|no está}}"
         },
         "titleFormatted": {
-          "en": "The vertical air discharge !{{is|is not}} [[vertical]]",
+          "en": "The vertical vane !{{is|is not}} [[vertical]]",
           "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
           "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
@@ -1312,7 +1312,7 @@
       {
         "id": "horizontal_condition",
         "title": {
-          "en": "The horizontal air discharge !{{is|is not}}",
+          "en": "The horizontal vane !{{is|is not}}",
           "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
           "sv": "Horisontell luftflödesriktningen !{{är|är inte}}",
@@ -1320,7 +1320,7 @@
           "es": "La descarga de aire horizontal !{{está|no está}}"
         },
         "titleFormatted": {
-          "en": "The horizontal air discharge !{{is|is not}} [[horizontal]]",
+          "en": "The horizontal vane !{{is|is not}} [[horizontal]]",
           "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
           "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]",
@@ -1400,7 +1400,7 @@
                   "nl": "Rechts",
                   "sv": "Höger",
                   "no": "Høyre",
-                  "es": "Hacia la derecha"
+                  "es": "Derecha"
                 }
               },
               {
@@ -1411,7 +1411,7 @@
                   "nl": "Gesplitst",
                   "sv": "Delad",
                   "no": "Delt",
-                  "es": "Dividido"
+                  "es": "Dividida"
                 }
               },
               {
@@ -2639,7 +2639,7 @@
               {
                 "id": "cool",
                 "title": {
-                  "en": "Cool",
+                  "en": "Cooling",
                   "fr": "Refroidissement",
                   "nl": "Koeling",
                   "sv": "Kylning",
@@ -2676,7 +2676,7 @@
       {
         "id": "vertical_action",
         "title": {
-          "en": "Set the vertical air discharge",
+          "en": "Set the vertical vane",
           "fr": "Définir le soufflage d'air vertical",
           "nl": "Stel de uitblaasrichting verticaal in",
           "sv": "Ställ in vertikal luftflödesriktningen",
@@ -2684,7 +2684,7 @@
           "es": "Configurar la discarga de aire vertical"
         },
         "titleFormatted": {
-          "en": "Set the vertical air discharge to [[vertical]]",
+          "en": "Set the vertical vane to [[vertical]]",
           "fr": "Définir le soufflage d'air vertical à [[vertical]]",
           "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
           "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
@@ -2785,7 +2785,7 @@
       {
         "id": "horizontal_action",
         "title": {
-          "en": "Set the horizontal air discharge",
+          "en": "Set the horizontal vane",
           "fr": "Définir le soufflage d'air horizontal",
           "nl": "Stel de uitblaasrichting horizontaal in",
           "sv": "Ställ in horisontell luftflödesriktningen",
@@ -2793,7 +2793,7 @@
           "es": "Configurar la descarga de aire horizontal"
         },
         "titleFormatted": {
-          "en": "Set the horizontal air discharge to [[horizontal]]",
+          "en": "Set the horizontal vane to [[horizontal]]",
           "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
           "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
           "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]",
@@ -2873,7 +2873,7 @@
                   "nl": "Rechts",
                   "sv": "Höger",
                   "no": "Høyre",
-                  "es": "Hacia la derecha"
+                  "es": "Derecha"
                 }
               },
               {
@@ -2884,7 +2884,7 @@
                   "nl": "Gesplitst",
                   "sv": "Delad",
                   "no": "Delt",
-                  "es": "Dividido"
+                  "es": "Dividida"
                 }
               },
               {
@@ -3844,52 +3844,52 @@
         },
         "meter_power.hourly_consumed_auto": {
           "title": {
-            "en": "Hourly consumption - automatic mode",
-            "fr": "Conso horaire - mode automatique",
-            "nl": "Uurlijkse verbruik - automatische modus",
-            "sv": "Timvis förbrukning - automatläge",
-            "no": "Timevis forbruk - automatisk modus",
-            "es": "Consumo horario - modo automático"
+            "en": "Hourly consumption - automatic",
+            "fr": "Conso horaire - automatique",
+            "nl": "Uurlijkse verbruik - automatische",
+            "sv": "Timvis förbrukning - automatiskt",
+            "no": "Timevis forbruk - automatisk",
+            "es": "Consumo horario - automático"
           }
         },
         "meter_power.hourly_consumed_cooling": {
           "title": {
-            "en": "Hourly consumption - cooling mode",
-            "fr": "Conso horaire - mode refroidissement",
-            "nl": "Uurlijkse verbruik - koelingsmodus",
-            "sv": "Timvis förbrukning - kylningsläge",
-            "no": "Timevis forbruk - kjølingsmodus",
-            "es": "Consumo horario - modo enfriamiento"
+            "en": "Hourly consumption - cooling",
+            "fr": "Conso horaire - refroidissement",
+            "nl": "Uurlijkse verbruik - koeling",
+            "sv": "Timvis förbrukning - kylning",
+            "no": "Timevis forbruk - kjøling",
+            "es": "Consumo horario - enfriamiento"
           }
         },
         "meter_power.hourly_consumed_dry": {
           "title": {
-            "en": "Hourly consumption - dry mode",
-            "fr": "Conso horaire - mode déshumidification",
-            "nl": "Uurlijkse verbruik - drogingsmodus",
-            "sv": "Timvis förbrukning - avfuktningsläge",
-            "no": "Timevis forbruk - avfuktingsmodus",
-            "es": "Consumo horario - modo desumidificación"
+            "en": "Hourly consumption - dry",
+            "fr": "Conso horaire - déshumidification",
+            "nl": "Uurlijkse verbruik - droging",
+            "sv": "Timvis förbrukning - avfuktning",
+            "no": "Timevis forbruk - avfukting",
+            "es": "Consumo horario - desumidificación"
           }
         },
         "meter_power.hourly_consumed_fan": {
           "title": {
-            "en": "Hourly consumption - fan mode",
-            "fr": "Conso horaire - mode ventilateur",
+            "en": "Hourly consumption - fan",
+            "fr": "Conso horaire - ventilateur",
             "nl": "Uurlijkse verbruik - ventilatormodus",
             "sv": "Timvis förbrukning - fläktläge",
             "no": "Timevis forbruk - viftetilstand",
-            "es": "Consumo horario - modo ventilador"
+            "es": "Consumo horario - ventilador"
           }
         },
         "meter_power.hourly_consumed_heating": {
           "title": {
-            "en": "Hourly consumption - heating mode",
-            "fr": "Conso horaire - mode chauffage",
-            "nl": "Uurlijkse verbruik - verwarmingsmodus",
-            "sv": "Timvis förbrukning - uppvärmningsläge",
-            "no": "Timevis forbruk - oppvarmingsmodus",
-            "es": "Consumo horario - modo calefacción"
+            "en": "Hourly consumption - heating",
+            "fr": "Conso horaire - chauffage",
+            "nl": "Uurlijkse verbruik - verwarming",
+            "sv": "Timvis förbrukning - uppvärmning",
+            "no": "Timevis forbruk - oppvarming",
+            "es": "Consumo horario - calefacción"
           }
         },
         "meter_power.hourly_consumed_other": {
@@ -3914,52 +3914,52 @@
         },
         "meter_power.daily_consumed_auto": {
           "title": {
-            "en": "Daily consumption - automatic mode",
-            "fr": "Conso quotidienne - mode automatique",
-            "nl": "Dagelijkse verbruik - automatische modus",
-            "sv": "Daglig förbrukning - automatläge",
-            "no": "Daglige forbruk - automatisk modus",
-            "es": "Consumo diario - modo automático"
+            "en": "Daily consumption - automatic",
+            "fr": "Conso quotidienne - automatique",
+            "nl": "Dagelijkse verbruik - automatische",
+            "sv": "Daglig förbrukning - automatiskt",
+            "no": "Daglige forbruk - automatisk",
+            "es": "Consumo diario - automático"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Daily consumption - cooling mode",
-            "fr": "Conso quotidienne - mode refroidissement",
-            "nl": "Dagelijkse verbruik - koelingsmodus",
-            "sv": "Daglig förbrukning - kylningsläge",
-            "no": "Daglige forbruk - kjølingsmodus",
-            "es": "Consumo diario - modo enfriamiento"
+            "en": "Daily consumption - cooling",
+            "fr": "Conso quotidienne - refroidissement",
+            "nl": "Dagelijkse verbruik - koeling",
+            "sv": "Daglig förbrukning - kylning",
+            "no": "Daglige forbruk - kjøling",
+            "es": "Consumo diario - enfriamiento"
           }
         },
         "meter_power.daily_consumed_dry": {
           "title": {
-            "en": "Daily consumption - dry mode",
-            "fr": "Conso quotidienne - mode déshumidification",
-            "nl": "Dagelijkse verbruik - drogingsmodus",
-            "sv": "Daglig förbrukning - avfuktningsläge",
-            "no": "Daglige forbruk - avfuktingsmodus",
-            "es": "Consumo diario - modo desumidificación"
+            "en": "Daily consumption - dry",
+            "fr": "Conso quotidienne - déshumidification",
+            "nl": "Dagelijkse verbruik - droging",
+            "sv": "Daglig förbrukning - avfuktning",
+            "no": "Daglige forbruk - avfukting",
+            "es": "Consumo diario - desumidificación"
           }
         },
         "meter_power.daily_consumed_fan": {
           "title": {
-            "en": "Daily consumption - fan mode",
-            "fr": "Conso quotidienne - mode ventilateur",
+            "en": "Daily consumption - fan",
+            "fr": "Conso quotidienne - ventilateur",
             "nl": "Dagelijkse verbruik - ventilatormodus",
             "sv": "Daglig förbrukning - fläktläge",
             "no": "Daglige forbruk - viftetilstand",
-            "es": "Consumo diario - modo ventilación"
+            "es": "Consumo diario - ventilación"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Daily consumption - heating mode",
-            "fr": "Conso quotidienne - mode chauffage",
-            "nl": "Dagelijkse verbruik - verwarmingsmodus",
-            "sv": "Daglig förbrukning - uppvärmningsläge",
-            "no": "Daglige forbruk - oppvarmingsmodus",
-            "es": "Consumo diario - modo calefacción"
+            "en": "Daily consumption - heating",
+            "fr": "Conso quotidienne - chauffage",
+            "nl": "Dagelijkse verbruik - verwarming",
+            "sv": "Daglig förbrukning - uppvärmning",
+            "no": "Daglige forbruk - oppvarming",
+            "es": "Consumo diario - calefacción"
           }
         },
         "meter_power.daily_consumed_other": {
@@ -3984,52 +3984,52 @@
         },
         "meter_power.total_consumed_auto": {
           "title": {
-            "en": "Total consumption - automatic mode",
-            "fr": "Conso totale - mode automatique",
-            "nl": "Totaalverbruik - automatische modus",
-            "sv": "Total förbrukning - automatläge",
-            "no": "Total forbruk - automatisk modus",
-            "es": "Consumo total - modo automático"
+            "en": "Total consumption - automatic",
+            "fr": "Conso totale - automatique",
+            "nl": "Totaalverbruik - automatische",
+            "sv": "Total förbrukning - automatiskt",
+            "no": "Total forbruk - automatisk",
+            "es": "Consumo total - automático"
           }
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total consumption - cooling mode",
-            "fr": "Conso totale - mode refroidissement",
-            "nl": "Totaalverbruik - koelingsmodus",
-            "sv": "Total förbrukning - kylningsläge",
-            "no": "Total forbruk - kjølingsmodus",
-            "es": "Consumo total - modo enfriamiento"
+            "en": "Total consumption - cooling",
+            "fr": "Conso totale - refroidissement",
+            "nl": "Totaalverbruik - koeling",
+            "sv": "Total förbrukning - kylning",
+            "no": "Total forbruk - kjøling",
+            "es": "Consumo total - enfriamiento"
           }
         },
         "meter_power.total_consumed_dry": {
           "title": {
-            "en": "Total consumption - dry mode",
-            "fr": "Conso totale - mode déshumidification",
-            "nl": "Totaalverbruik - drogingsmodus",
-            "sv": "Total förbrukning - avfuktningsläge",
-            "no": "Total forbruk - avfuktingsmodus",
-            "es": "Consumo total - modo desumidificación"
+            "en": "Total consumption - dry",
+            "fr": "Conso totale - déshumidification",
+            "nl": "Totaalverbruik - droging",
+            "sv": "Total förbrukning - avfuktning",
+            "no": "Total forbruk - avfukting",
+            "es": "Consumo total - desumidificación"
           }
         },
         "meter_power.total_consumed_fan": {
           "title": {
-            "en": "Total consumption - fan mode",
-            "fr": "Conso totale - mode ventilateur",
+            "en": "Total consumption - fan",
+            "fr": "Conso totale - ventilateur",
             "nl": "Totaalverbruik - ventilatormodus",
             "sv": "Total förbrukning - fläktläge",
             "no": "Total forbruk - viftetilstand",
-            "es": "Consumo total - modo ventilador"
+            "es": "Consumo total - ventilador"
           }
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total consumption - heating mode",
-            "fr": "Conso totale - mode chauffage",
-            "nl": "Totaalverbruik - verwarmingsmodus",
-            "sv": "Total förbrukning - uppvärmningsläge",
-            "no": "Total forbruk - oppvarmingsmodus",
-            "es": "Consumo total - modo calefacción"
+            "en": "Total consumption - heating",
+            "fr": "Conso totale - chauffage",
+            "nl": "Totaalverbruik - verwarming",
+            "sv": "Total förbrukning - uppvärmning",
+            "no": "Total forbruk - oppvarming",
+            "es": "Consumo total - calefacción"
           }
         },
         "meter_power.total_consumed_other": {
@@ -5033,12 +5033,12 @@
         },
         "meter_power.daily_cop_cooling": {
           "title": {
-            "en": "Last daily CoP - cooling mode",
-            "fr": "Dernier CoP quotidien - mode refroidissement",
-            "nl": "Laatste dagelijkse CoP - koelingsmodus",
-            "sv": "Senaste dagliga CoP - kylningsläge",
-            "no": "Siste daglige CoP - kjølingsmodus",
-            "es": "Último CoP diario - modo de enfriamiento"
+            "en": "Last daily CoP - cooling",
+            "fr": "Dernier CoP quotidien - refroidissement",
+            "nl": "Laatste dagelijkse CoP - koeling",
+            "sv": "Senaste dagliga CoP - kylning",
+            "no": "Siste daglige CoP - kjøling",
+            "es": "Último CoP diario - enfriamiento"
           },
           "units": {
             "en": "",
@@ -5052,12 +5052,12 @@
         },
         "meter_power.daily_cop_heating": {
           "title": {
-            "en": "Last daily CoP - heating mode",
-            "fr": "Dernier CoP quotidien - mode chauffage",
-            "nl": "Laatste dagelijkse CoP - verwarmingsmodus",
-            "sv": "Senaste dagliga CoP - uppvärmningsläge",
-            "no": "Siste daglige CoP - oppvarmingsmodus",
-            "es": "Último CoP diario - modo de calefacción"
+            "en": "Last daily CoP - heating",
+            "fr": "Dernier CoP quotidien - chauffage",
+            "nl": "Laatste dagelijkse CoP - verwarming",
+            "sv": "Senaste dagliga CoP - uppvärmning",
+            "no": "Siste daglige CoP - oppvarming",
+            "es": "Último CoP diario - calefacción"
           },
           "units": {
             "en": "",
@@ -5071,12 +5071,12 @@
         },
         "meter_power.daily_cop_hotwater": {
           "title": {
-            "en": "Last daily CoP - hot water mode",
-            "fr": "Dernier CoP quotidien - mode eau chaude",
-            "nl": "Laatste dagelijkse CoP - warm water modus",
-            "sv": "Senaste dagliga CoP - varmvattenläge",
-            "no": "Siste daglige CoP - varmtvannsmodus",
-            "es": "Último CoP diario - modo agua caliente"
+            "en": "Last daily CoP - domestic hot water",
+            "fr": "Dernier CoP quotidien - eau chaude sanitaire",
+            "nl": "Laatste dagelijkse CoP - sanitair warm water",
+            "sv": "Senaste dagliga CoP - varmvattenladdning",
+            "no": "Siste daglige CoP - varmvannslastning",
+            "es": "Último CoP diario - agua caliente sanitaria"
           },
           "units": {
             "en": "",
@@ -5100,32 +5100,32 @@
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Last daily consumption - cooling mode",
-            "fr": "Dernière conso quotidienne - mode refroidissement",
-            "nl": "Laatste dagelijkse verbruik - koelingsmodus",
-            "sv": "Senaste daglig förbrukning - kylningsläge",
-            "no": "Siste daglige forbruk - kjølingsmodus",
-            "es": "Último consumo diario - modo de enfriamiento"
+            "en": "Last daily consumption - cooling",
+            "fr": "Dernière conso quotidienne - refroidissement",
+            "nl": "Laatste dagelijkse verbruik - koeling",
+            "sv": "Senaste daglig förbrukning - kylning",
+            "no": "Siste daglige forbruk - kjøling",
+            "es": "Último consumo diario - enfriamiento"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Last daily consumption - heating mode",
-            "fr": "Dernière conso quotidienne - mode chauffage",
-            "nl": "Laatste dagelijkse verbruik - verwarmingsmodus",
-            "sv": "Senaste daglig förbrukning - uppvärmningsläge",
-            "no": "Siste daglige forbruk - oppvarmingsmodus",
-            "es": "Último consumo diario - modo de calefacción"
+            "en": "Last daily consumption - heating",
+            "fr": "Dernière conso quotidienne - chauffage",
+            "nl": "Laatste dagelijkse verbruik - verwarming",
+            "sv": "Senaste daglig förbrukning - uppvärmning",
+            "no": "Siste daglige forbruk - oppvarming",
+            "es": "Último consumo diario - calefacción"
           }
         },
         "meter_power.daily_consumed_hotwater": {
           "title": {
-            "en": "Last daily consumption - hot water mode",
-            "fr": "Dernière conso quotidienne - mode eau chaude",
-            "nl": "Laatste dagelijkse verbruik - warm water modus",
-            "sv": "Senaste daglig förbrukning - varmvattenläge",
-            "no": "Siste daglige forbruk - varmtvannsmodus",
-            "es": "Último consumo diario - modo agua caliente"
+            "en": "Last daily consumption - domestic hot water",
+            "fr": "Dernière conso quotidienne - eau chaude sanitaire",
+            "nl": "Laatste dagelijkse verbruik - sanitair warm water",
+            "sv": "Senaste daglig förbrukning - varmvattenladdning",
+            "no": "Siste daglige forbruk - varmvannslastning",
+            "es": "Último consumo diario - agua caliente sanitaria"
           }
         },
         "meter_power.daily_produced": {
@@ -5140,32 +5140,32 @@
         },
         "meter_power.daily_produced_cooling": {
           "title": {
-            "en": "Last daily production - cooling mode",
-            "fr": "Dernière production quotidienne - mode refroidissement",
-            "nl": "Laatste dagelijkse productie - koelingsmodus",
-            "sv": "Senaste daglig produktion - kylningsläge",
-            "no": "Siste daglige produksjon - kjølingsmodus",
-            "es": "Último producción diario - modo de enfriamiento"
+            "en": "Last daily production - cooling",
+            "fr": "Dernière production quotidienne - refroidissement",
+            "nl": "Laatste dagelijkse productie - koeling",
+            "sv": "Senaste daglig produktion - kylning",
+            "no": "Siste daglige produksjon - kjøling",
+            "es": "Último producción diario - enfriamiento"
           }
         },
         "meter_power.daily_produced_heating": {
           "title": {
-            "en": "Last daily production - heating mode",
-            "fr": "Dernière production quotidienne - mode chauffage",
-            "nl": "Laatste dagelijkse productie - verwarmingsmodus",
-            "sv": "Senaste daglig produktion - uppvärmningsläge",
-            "no": "Siste daglige produksjon - oppvarmingsmodus",
-            "es": "Último producción diario - modo de calefacción"
+            "en": "Last daily production - heating",
+            "fr": "Dernière production quotidienne - chauffage",
+            "nl": "Laatste dagelijkse productie - verwarming",
+            "sv": "Senaste daglig produktion - uppvärmning",
+            "no": "Siste daglige produksjon - oppvarming",
+            "es": "Último producción diario - calefacción"
           }
         },
         "meter_power.daily_produced_hotwater": {
           "title": {
-            "en": "Last daily production - hot water mode",
-            "fr": "Dernière production quotidienne - mode eau chaude",
-            "nl": "Laatste dagelijkse productie - warm water modus",
-            "sv": "Senaste daglig produktion - varmvattenläge",
-            "no": "Siste daglige produksjon - varmtvannsmodus",
-            "es": "Último producción diario - modo agua caliente"
+            "en": "Last daily production - domestic hot water",
+            "fr": "Dernière production quotidienne - eau chaude sanitaire",
+            "nl": "Laatste dagelijkse productie - sanitair warm water",
+            "sv": "Senaste daglig produktion - varmvattenladdning",
+            "no": "Siste daglige produksjon - varmvannslastning",
+            "es": "Último producción diario - agua caliente sanitaria"
           }
         },
         "meter_power.total_cop": {
@@ -5189,12 +5189,12 @@
         },
         "meter_power.total_cop_cooling": {
           "title": {
-            "en": "Total CoP - cooling mode",
-            "fr": "CoP total - mode refroidissement",
-            "nl": "Totale CoP - koelingsmodus",
-            "sv": "Total CoP - kylningsläge",
-            "no": "Total CoP - kjølingsmodus",
-            "es": "CoP total - modo de enfriamiento"
+            "en": "Total CoP - cooling",
+            "fr": "CoP total - refroidissement",
+            "nl": "Totale CoP - koeling",
+            "sv": "Total CoP - kylning",
+            "no": "Total CoP - kjøling",
+            "es": "CoP total - enfriamiento"
           },
           "units": {
             "en": "",
@@ -5208,12 +5208,12 @@
         },
         "meter_power.total_cop_heating": {
           "title": {
-            "en": "Total CoP - heating mode",
-            "fr": "CoP total - mode chauffage",
-            "nl": "Totale CoP - verwarmingsmodus",
-            "sv": "Total CoP - uppvärmningsläge",
-            "no": "Total CoP - oppvarmingsmodus",
-            "es": "CoP total - modo de calefacción"
+            "en": "Total CoP - heating",
+            "fr": "CoP total - chauffage",
+            "nl": "Totale CoP - verwarming",
+            "sv": "Total CoP - uppvärmning",
+            "no": "Total CoP - oppvarming",
+            "es": "CoP total - calefacción"
           },
           "units": {
             "en": "",
@@ -5227,12 +5227,12 @@
         },
         "meter_power.total_cop_hotwater": {
           "title": {
-            "en": "Total hot water CoP - hot water mode",
-            "fr": "CoP total - mode eau chaude",
-            "nl": "Totale CoP - warm water modus",
-            "sv": "Total CoP - varmvattenläge",
-            "no": "Total CoP - varmtvannsmodus",
-            "es": "CoP total - modo agua caliente"
+            "en": "Total hot water CoP - domestic hot water",
+            "fr": "CoP total - eau chaude sanitaire",
+            "nl": "Totale CoP - sanitair warm water",
+            "sv": "Total CoP - varmvattenladdning",
+            "no": "Total CoP - varmvannslastning",
+            "es": "CoP total - agua caliente sanitaria"
           },
           "units": {
             "en": "",
@@ -5256,32 +5256,32 @@
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total consumption - cooling mode",
-            "fr": "Conso totale - mode refroidissement",
-            "nl": "Totaalverbruik - koelingsmodus",
-            "sv": "Total förbrukning - kylningsläge",
-            "no": "Total forbruk - kjølingsmodus",
-            "es": "Consumo total - modo de enfriamiento"
+            "en": "Total consumption - cooling",
+            "fr": "Conso totale - refroidissement",
+            "nl": "Totaalverbruik - koeling",
+            "sv": "Total förbrukning - kylning",
+            "no": "Total forbruk - kjøling",
+            "es": "Consumo total - enfriamiento"
           }
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total consumption - heating mode",
-            "fr": "Conso totale - mode chauffage",
-            "nl": "Totaalverbruik - verwarmingsmodus",
-            "sv": "Total förbrukning - uppvärmningsläge",
-            "no": "Total forbruk - oppvarmingsmodus",
-            "es": "Consumo total - modo de calefacción"
+            "en": "Total consumption - heating",
+            "fr": "Conso totale - chauffage",
+            "nl": "Totaalverbruik - verwarming",
+            "sv": "Total förbrukning - uppvärmning",
+            "no": "Total forbruk - oppvarming",
+            "es": "Consumo total - calefacción"
           }
         },
         "meter_power.total_consumed_hotwater": {
           "title": {
-            "en": "Total consumption - hot water mode",
-            "fr": "Conso totale - mode eau chaude",
-            "nl": "Totaalverbruik - warm water modus",
-            "sv": "Total förbrukning - varmvattenläge",
-            "no": "Total forbruk - varmtvannsmodus",
-            "es": "Consumo total - modo agua caliente"
+            "en": "Total consumption - domestic hot water",
+            "fr": "Conso totale - eau chaude sanitaire",
+            "nl": "Totaalverbruik - sanitair warm water",
+            "sv": "Total förbrukning - varmvattenladdning",
+            "no": "Total forbruk - varmvannslastning",
+            "es": "Consumo total - agua caliente sanitaria"
           }
         },
         "meter_power.total_produced": {
@@ -5296,31 +5296,31 @@
         },
         "meter_power.total_produced_cooling": {
           "title": {
-            "en": "Total production - cooling mode",
-            "fr": "Production totale - mode refroidissement",
-            "nl": "Totale productie - koelingsmodus",
-            "sv": "Total produktion - kylningsläge",
-            "no": "Total produksjon - kjølingsmodus",
-            "es": "Producción total - modo de enfriamiento"
+            "en": "Total production - cooling",
+            "fr": "Production totale - refroidissement",
+            "nl": "Totale productie - koeling",
+            "sv": "Total produktion - kylning",
+            "no": "Total produksjon - kjøling",
+            "es": "Producción total - enfriamiento"
           }
         },
         "meter_power.total_produced_heating": {
           "title": {
-            "en": "Total production - heating mode",
-            "fr": "Production totale - mode chauffage",
-            "nl": "Totale productie - verwarmingsmodus",
-            "sv": "Total produktion - uppvärmningsläge",
-            "no": "Total produksjon - oppvarmingsmodus",
-            "es": "Producción total - modo de calefacción"
+            "en": "Total production - heating",
+            "fr": "Production totale - chauffage",
+            "nl": "Totale productie - verwarming",
+            "sv": "Total produktion - uppvärmning",
+            "no": "Total produksjon - oppvarming",
+            "es": "Producción total - calefacción"
           }
         },
         "meter_power.total_produced_hotwater": {
           "title": {
-            "en": "Total production - hot water mode",
-            "fr": "Production totale - mode eau chaude",
-            "nl": "Totale productie - warm water modus",
-            "sv": "Total produktion - varmvattenläge",
-            "no": "Total produksjon - varmtvannsmodus",
+            "en": "Total production - domestic hot water",
+            "fr": "Production totale - eau chaude sanitaire",
+            "nl": "Totale productie - sanitair warm water",
+            "sv": "Total produktion - varmvattenladdning",
+            "no": "Total produksjon - varmvannslastning",
             "es": "Producción total - modo de agua caliente"
           }
         },
@@ -5785,7 +5785,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": true
@@ -5794,12 +5794,12 @@
               "id": "meter_power.daily_cop_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -5850,7 +5850,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": false
@@ -5859,12 +5859,12 @@
               "id": "meter_power.daily_consumed_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -5915,7 +5915,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": false
@@ -5924,12 +5924,12 @@
               "id": "meter_power.daily_produced_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -5980,7 +5980,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": false
@@ -5989,12 +5989,12 @@
               "id": "meter_power.total_cop_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -6045,7 +6045,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": false
@@ -6054,12 +6054,12 @@
               "id": "meter_power.total_consumed_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -6110,7 +6110,7 @@
                 "fr": "Chauffage",
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
-                "no": "Varme",
+                "no": "Oppvarming",
                 "es": "Calefacción"
               },
               "value": false
@@ -6119,12 +6119,12 @@
               "id": "meter_power.total_produced_hotwater",
               "type": "checkbox",
               "label": {
-                "en": "Hot water",
-                "fr": "Eau chaude",
-                "nl": "Warm water",
-                "sv": "Varm vatten",
-                "no": "Varmt vann",
-                "es": "Agua caliente"
+                "en": "Domestic hot water",
+                "fr": "Eau chaude sanitaire",
+                "nl": "Sanitair warm water",
+                "sv": "Varmvattenladdning",
+                "no": "Varmvannslastning",
+                "es": "Agua caliente sanitaria"
               },
               "value": false
             }
@@ -6300,7 +6300,7 @@
     "horizontal": {
       "type": "enum",
       "title": {
-        "en": "Horizontal air discharge",
+        "en": "Horizontal vane",
         "fr": "Soufflage d'air horizontal",
         "nl": "Uitblaasrichting horizontaal",
         "sv": "Horisontell luftflödesriktning",
@@ -6375,7 +6375,7 @@
             "nl": "Rechts",
             "sv": "Höger",
             "no": "Høyre",
-            "es": "Hacia la derecha"
+            "es": "Derecha"
           }
         },
         {
@@ -6386,7 +6386,7 @@
             "nl": "Gesplitst",
             "sv": "Delad",
             "no": "Delt",
-            "es": "Dividido"
+            "es": "Dividida"
           }
         },
         {
@@ -6461,7 +6461,7 @@
         {
           "id": "cool",
           "title": {
-            "en": "Cool",
+            "en": "Cooling",
             "fr": "Refroidissement",
             "nl": "Koeling",
             "sv": "Kylning",
@@ -6752,7 +6752,7 @@
     "vertical": {
       "type": "enum",
       "title": {
-        "en": "Vertical air discharge",
+        "en": "Vertical vane",
         "fr": "Soufflage d'air vertical",
         "nl": "Uitblaasrichting verticaal",
         "sv": "Vertikal luftflödesriktning",
