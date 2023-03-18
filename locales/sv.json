@@ -28,6 +28,7 @@
       "true": "Ja"
     },
     "buildings": {
+      "error": "Autentisering lyckades.\nLägg till en enhet i Homey för att komma åt appinställningarna.",
       "label": "Byggnadsinställningar",
       "frost_protection": {
         "enabled": "Aktivera <strong>frostskydd</strong>",
@@ -80,13 +81,7 @@
   },
   "warnings": {
     "always_on": "Avstängning från Homey har inaktiverats.",
-    "dashboard": "Avsluta enhet och återvänd för att uppdatera din instrumentpanel.",
-    "operation_mode": {
-      "message": "`__value__` har sparats (även om `Uppvärmning` visas).",
-      "values": {
-        "dry": "Avfuktning",
-        "fan": "Fläkt"
-      }
-    }
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
+    "display_error": "Uppdatering lyckades (även om ett annat värde visas)."
   }
 }

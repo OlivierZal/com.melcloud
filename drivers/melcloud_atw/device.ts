@@ -59,7 +59,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        this.handleOperationModeZones(capability, value)
+        await this.handleOperationModeZones(capability, value)
         break
       case 'target_temperature.zone2':
       case 'target_temperature.zone1_flow_cool':
@@ -71,10 +71,10 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  handleOperationModeZones(
+  async handleOperationModeZones(
     capability: OperationModeZoneCapbility,
     value: CapabilityValue
-  ): void {
+  ): Promise<void> {
     this.diff[capability] = value as string
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
@@ -96,6 +96,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         otherZoneValue += 1
       }
       this.diff[otherZone] = String(otherZoneValue)
+      await this.setDisplayErrorWarning()
     }
   }
 

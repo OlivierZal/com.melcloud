@@ -28,6 +28,7 @@
       "true": "Yes"
     },
     "buildings": {
+      "error": "Authentication succeeded.\nAdd a device in Homey to access the app settings.",
       "label": "Building Settings",
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
@@ -63,7 +64,7 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errors",
       "error_count_text_plural": "errors",
-      "failure": "At least one of your devices is no longer associated with your MELCloud account.\nPlease remove it to view the error log.",
+      "failure": "At least one of your devices is no longer associated with your MELCloud account.\nRemove it to view the error log.",
       "label": "Error Log",
       "period": "Since __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "See all errors since"
@@ -80,13 +81,7 @@
   },
   "warnings": {
     "always_on": "Shutdown from Homey has been disabled.",
-    "dashboard": "Exit device and return to refresh your dashboard.",
-    "operation_mode": {
-      "message": "`__value__` has been saved (even if `Heating` is displayed).",
-      "values": {
-        "dry": "Dry",
-        "fan": "Fan"
-      }
-    }
+    "dashboard": "Exit the device and return to update your dashboard.",
+    "display_error": "Update successful (even if another value is displayed)."
   }
 }

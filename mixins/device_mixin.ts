@@ -144,12 +144,12 @@ export default class MELCloudDeviceMixin extends Device {
     this.clearSyncPlan()
     switch (capability) {
       case 'onoff':
-        await this.setAlwaysOnWarning()
         this.diff.onoff = value as boolean
+        await this.setAlwaysOnWarning()
         break
       case 'thermostat_mode':
-        await this.setAlwaysOnWarning()
         this.diff.onoff = String(value) !== 'off'
+        await this.setAlwaysOnWarning()
         break
       case 'target_temperature':
         this.diff.target_temperature = value as number
@@ -177,6 +177,11 @@ export default class MELCloudDeviceMixin extends Device {
       await this.setWarning(this.homey.__('warnings.always_on'))
       await this.setWarning(null)
     }
+  }
+
+  async setDisplayErrorWarning(): Promise<void> {
+    await this.setWarning(this.homey.__('warnings.display_error'))
+    await this.setWarning(null)
   }
 
   applySyncToDevice(): void {

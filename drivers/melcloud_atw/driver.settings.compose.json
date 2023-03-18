@@ -171,10 +171,10 @@
     "label": {
       "en": "Dashboard display",
       "fr": "Affichage sur le tableau de bord",
-      "nl": "Dashboard weergave",
+      "nl": "Dashboardweergave",
       "sv": "Instrumentpanelens visning",
-      "no": "Instrumentpanelets visning",
-      "es": "Visualización en el tablero de instrumentos"
+      "no": "Dashbordvisning",
+      "es": "Visualización del panel de control"
     },
     "children": [
       {

@@ -28,6 +28,7 @@
       "true": "Sí"
     },
     "buildings": {
+      "error": "Autenticación exitosa.\nAñade un dispositivo en Homey para acceder a la configuración de la aplicación.",
       "label": "Configuración de los edificios",
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
@@ -80,13 +81,7 @@
   },
   "warnings": {
     "always_on": "Se ha desactivado el apagado desde Homey.",
-    "dashboard": "Salga del dispositivo y vuelva para actualizar su panel.",
-    "operation_mode": {
-      "message": "Se ha guardado `__value__` (incluso si se muestra `Calefacción`).",
-      "values": {
-        "dry": "Desumidificación",
-        "fan": "Ventilador"
-      }
-    }
+    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
+    "display_error": "Actualización exitosa (aunque se muestre otro valor)."
   }
 }

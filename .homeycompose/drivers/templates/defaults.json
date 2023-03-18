@@ -33,7 +33,7 @@
           "fr": "utilisateur@domain.fr",
           "nl": "gebruiker@domain.nl",
           "sv": "anvandare@domain.se",
-          "no": "brukernavn@domain.no",
+          "no": "bruker@domain.no",
           "es": "usuario@domain.es"
         },
         "passwordLabel": {
@@ -85,7 +85,7 @@
           "fr": "utilisateur@domain.fr",
           "nl": "gebruiker@domain.nl",
           "sv": "anvandare@domain.se",
-          "no": "brukernavn@domain.no",
+          "no": "bruker@domain.no",
           "es": "usuario@domain.es"
         },
         "passwordLabel": {

@@ -28,6 +28,7 @@
       "true": "Ja"
     },
     "buildings": {
+      "error": "Authenticatie geslaagd.\nVoeg een apparaat toe in Homey om toegang te krijgen tot de app-instellingen.",
       "label": "Gebouwinstellingen",
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
@@ -40,7 +41,7 @@
         "start_date": "Begindatum"
       },
       "refresh": "Verversen",
-      "update": "Update"
+      "update": "Updaten"
     },
     "devices": {
       "always_on": "Uitschakelen vanuit Homey uitschakelen",
@@ -80,13 +81,7 @@
   },
   "warnings": {
     "always_on": "Uitschakeling vanuit Homey is uitgeschakeld.",
-    "dashboard": "Verlaat apparaat en keer terug om uw dashboard te vernieuwen.",
-    "operation_mode": {
-      "message": "`__value__` is opgeslagen (zelfs als `Verwarming` wordt weergegeven).",
-      "values": {
-        "dry": "Droging",
-        "fan": "Ventilator"
-      }
-    }
+    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
+    "display_error": "Update geslaagd (zelfs als er een andere waarde wordt weergegeven)."
   }
 }

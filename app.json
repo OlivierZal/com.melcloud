@@ -22,7 +22,7 @@
   "category": [
     "climate"
   ],
-  "version": "12.0.5",
+  "version": "12.0.7",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -3731,7 +3731,7 @@
               "fr": "utilisateur@domain.fr",
               "nl": "gebruiker@domain.nl",
               "sv": "anvandare@domain.se",
-              "no": "brukernavn@domain.no",
+              "no": "bruker@domain.no",
               "es": "usuario@domain.es"
             },
             "passwordLabel": {
@@ -3783,7 +3783,7 @@
               "fr": "utilisateur@domain.fr",
               "nl": "gebruiker@domain.nl",
               "sv": "anvandare@domain.se",
-              "no": "brukernavn@domain.no",
+              "no": "bruker@domain.no",
               "es": "usuario@domain.es"
             },
             "passwordLabel": {
@@ -4127,10 +4127,10 @@
           "label": {
             "en": "Dashboard display",
             "fr": "Affichage sur le tableau de bord",
-            "nl": "Dashboard weergave",
+            "nl": "Dashboardweergave",
             "sv": "Instrumentpanelens visning",
-            "no": "Instrumentpanelets visning",
-            "es": "Visualización en el tablero de instrumentos"
+            "no": "Dashbordvisning",
+            "es": "Visualización del panel de control"
           },
           "children": [
             {
@@ -4647,7 +4647,7 @@
               "fr": "utilisateur@domain.fr",
               "nl": "gebruiker@domain.nl",
               "sv": "anvandare@domain.se",
-              "no": "brukernavn@domain.no",
+              "no": "bruker@domain.no",
               "es": "usuario@domain.es"
             },
             "passwordLabel": {
@@ -4699,7 +4699,7 @@
               "fr": "utilisateur@domain.fr",
               "nl": "gebruiker@domain.nl",
               "sv": "anvandare@domain.se",
-              "no": "brukernavn@domain.no",
+              "no": "bruker@domain.no",
               "es": "usuario@domain.es"
             },
             "passwordLabel": {
@@ -5641,10 +5641,10 @@
           "label": {
             "en": "Dashboard display",
             "fr": "Affichage sur le tableau de bord",
-            "nl": "Dashboard weergave",
+            "nl": "Dashboardweergave",
             "sv": "Instrumentpanelens visning",
-            "no": "Instrumentpanelets visning",
-            "es": "Visualización en el tablero de instrumentos"
+            "no": "Dashbordvisning",
+            "es": "Visualización del panel de control"
           },
           "children": [
             {

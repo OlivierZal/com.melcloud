@@ -103,28 +103,20 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
           )[value as ThermostatMode]
         }
         break
-      case 'operation_mode':
-        if (
-          ['dry', 'fan'].includes(value as string) &&
-          this.getCapabilityValue('thermostat_mode') !== 'off'
-        ) {
-          await this.setWarning(
-            this.homey.__('warnings.operation_mode.message', {
-              value: this.homey.__(
-                `warnings.operation_mode.values.${value as string}`
-              )
-            })
-          )
-          await this.setWarning(null)
-        }
-        this.diff[capability] = value as string
-        break
       case 'fan_power':
         this.diff[capability] = value as number
         break
+      case 'operation_mode':
       case 'vertical':
       case 'horizontal':
         this.diff[capability] = value as string
+        if (
+          capability === 'operation_mode' &&
+          ['dry', 'fan'].includes(value as string) &&
+          this.getCapabilityValue('thermostat_mode') !== 'off'
+        ) {
+          await this.setDisplayErrorWarning()
+        }
     }
   }
 
