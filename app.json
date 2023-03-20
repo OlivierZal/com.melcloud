@@ -3709,110 +3709,6 @@
         "meter_power.total_consumed_heating",
         "meter_power.total_consumed_other"
       ],
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "sv": "Användarnamn",
-              "no": "Brukernavn",
-              "es": "Nombre de usuario"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "sv": "anvandare@domain.se",
-              "no": "bruker@domain.no",
-              "es": "usuario@domain.es"
-            },
-            "passwordLabel": {
-              "en": "Password",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "sv": "Lösenord",
-              "no": "Passord",
-              "es": "Contraseña"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "sv": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "es": "P4ssw0rd"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "sv": "Användarnamn",
-              "no": "Brukernavn",
-              "es": "Nombre de usuario"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "sv": "anvandare@domain.se",
-              "no": "bruker@domain.no",
-              "es": "usuario@domain.es"
-            },
-            "passwordLabel": {
-              "en": "Password",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "sv": "Lösenord",
-              "no": "Passord",
-              "es": "Contraseña"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "sv": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "es": "P4ssw0rd"
-            }
-          }
-        }
-      ],
-      "name": {
-        "en": "Air-to-Air Heat Pump",
-        "fr": "Pompe à chaleur air-air",
-        "nl": "Lucht-lucht warmtepomp",
-        "sv": "Luft-luft värmepump",
-        "no": "Luft-til-luft varmepumpe",
-        "es": "Bombas de calor de aire a aire"
-      },
       "capabilitiesOptions": {
         "measure_power.wifi": {
           "title": {
@@ -4042,13 +3938,113 @@
             "es": "Consumo total - otro"
           }
         },
-        "target_temperature": {
-          "min": 10,
-          "max": 38
-        },
         "thermostat_mode": {
           "insights": true
         }
+      },
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "sv": "Användarnamn",
+              "no": "Brukernavn",
+              "es": "Nombre de usuario"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "sv": "anvandare@domain.se",
+              "no": "bruker@domain.no",
+              "es": "usuario@domain.es"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "sv": "Lösenord",
+              "no": "Passord",
+              "es": "Contraseña"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "sv": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "es": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "sv": "Användarnamn",
+              "no": "Brukernavn",
+              "es": "Nombre de usuario"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "sv": "anvandare@domain.se",
+              "no": "bruker@domain.no",
+              "es": "usuario@domain.es"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "sv": "Lösenord",
+              "no": "Passord",
+              "es": "Contraseña"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "sv": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "es": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Air Heat Pump",
+        "fr": "Pompe à chaleur air-air",
+        "nl": "Lucht-lucht warmtepomp",
+        "sv": "Luft-luft värmepump",
+        "no": "Luft-til-luft varmepumpe",
+        "es": "Bombas de calor de aire a aire"
       },
       "id": "melcloud",
       "settings": [
@@ -4625,110 +4621,6 @@
         "target_temperature.zone2_flow_cool",
         "target_temperature.zone2_flow_heat"
       ],
-      "pair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "sv": "Användarnamn",
-              "no": "Brukernavn",
-              "es": "Nombre de usuario"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "sv": "anvandare@domain.se",
-              "no": "bruker@domain.no",
-              "es": "usuario@domain.es"
-            },
-            "passwordLabel": {
-              "en": "Password",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "sv": "Lösenord",
-              "no": "Passord",
-              "es": "Contraseña"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "sv": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "es": "P4ssw0rd"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "template": "login_credentials",
-          "options": {
-            "logo": "logo.png",
-            "usernameLabel": {
-              "en": "Username",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "sv": "Användarnamn",
-              "no": "Brukernavn",
-              "es": "Nombre de usuario"
-            },
-            "usernamePlaceholder": {
-              "en": "user@domain.com",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "sv": "anvandare@domain.se",
-              "no": "bruker@domain.no",
-              "es": "usuario@domain.es"
-            },
-            "passwordLabel": {
-              "en": "Password",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "sv": "Lösenord",
-              "no": "Passord",
-              "es": "Contraseña"
-            },
-            "passwordPlaceholder": {
-              "en": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "sv": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "es": "P4ssw0rd"
-            }
-          }
-        }
-      ],
-      "name": {
-        "en": "Air-to-Water Heat Pump",
-        "fr": "Pompe à chaleur air-eau",
-        "nl": "Lucht-water warmtepomp",
-        "sv": "Luft-vatten värmepump",
-        "no": "Luft-til-vann varmepumpe",
-        "es": "Bombas de calor de aire-agua"
-      },
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
           "title": {
@@ -5390,10 +5282,6 @@
             "es": "Modo de operación - zona 2"
           }
         },
-        "target_temperature": {
-          "min": 10,
-          "max": 30
-        },
         "target_temperature.tank_water": {
           "title": {
             "en": "Hot water target temperature",
@@ -5466,6 +5354,110 @@
           "min": 25,
           "max": 60
         }
+      },
+      "pair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "navigation": {
+            "next": "list_devices"
+          },
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "sv": "Användarnamn",
+              "no": "Brukernavn",
+              "es": "Nombre de usuario"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "sv": "anvandare@domain.se",
+              "no": "bruker@domain.no",
+              "es": "usuario@domain.es"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "sv": "Lösenord",
+              "no": "Passord",
+              "es": "Contraseña"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "sv": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "es": "P4ssw0rd"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "template": "login_credentials",
+          "options": {
+            "logo": "logo.png",
+            "usernameLabel": {
+              "en": "Username",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "sv": "Användarnamn",
+              "no": "Brukernavn",
+              "es": "Nombre de usuario"
+            },
+            "usernamePlaceholder": {
+              "en": "user@domain.com",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "sv": "anvandare@domain.se",
+              "no": "bruker@domain.no",
+              "es": "usuario@domain.es"
+            },
+            "passwordLabel": {
+              "en": "Password",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "sv": "Lösenord",
+              "no": "Passord",
+              "es": "Contraseña"
+            },
+            "passwordPlaceholder": {
+              "en": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "sv": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "es": "P4ssw0rd"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Air-to-Water Heat Pump",
+        "fr": "Pompe à chaleur air-eau",
+        "nl": "Lucht-water warmtepomp",
+        "sv": "Luft-vatten värmepump",
+        "no": "Luft-til-vann varmepumpe",
+        "es": "Bombas de calor de aire-agua"
       },
       "id": "melcloud_atw",
       "settings": [

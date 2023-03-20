@@ -725,10 +725,6 @@
         "es": "Modo de operación - zona 2"
       }
     },
-    "target_temperature": {
-      "min": 10,
-      "max": 30
-    },
     "target_temperature.tank_water": {
       "title": {
         "en": "Hot water target temperature",

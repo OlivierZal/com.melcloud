@@ -11,6 +11,16 @@
     "onoff",
     "target_temperature"
   ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "title": {
+        "en": "Test template",
+        "fr": "Test template"
+      },
+      "min": 10,
+      "max": 38
+    }
+  },
   "pair": [
     {
       "id": "login",
