@@ -8,6 +8,7 @@
     "nl": "MELCloud",
     "sv": "MELCloud",
     "no": "MELCloud",
+    "da": "MELCloud",
     "es": "MELCloud"
   },
   "description": {
@@ -16,10 +17,11 @@
     "nl": "Neem de controle over uw warmtepompen",
     "sv": "Ta kontroll över dina värmepumpar",
     "no": "Ta kontroll over varmepumpene dine",
+    "da": "Tag kontrol over dine varmepumper",
     "es": "Tome el control de sus bombas de calor"
   },
   "category": ["climate"],
-  "version": "12.0.7",
+  "version": "12.1.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -67,9 +69,19 @@
     ],
     "no": [
       "ecodan",
-      "luft til luft",
-      "luft til vann",
+      "luft luft",
+      "luft vann",
       "luftkondisjonering",
+      "melcloud",
+      "mitsubishi",
+      "varmepumpe"
+    ],
+    "da": [
+      "aircondition",
+      "ecodan",
+      "klimaanlæg",
+      "luft luft",
+      "luft vand",
       "melcloud",
       "mitsubishi",
       "varmepumpe"

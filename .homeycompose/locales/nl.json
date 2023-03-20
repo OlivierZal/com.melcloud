@@ -44,7 +44,7 @@
       "update": "Updaten"
     },
     "devices": {
-      "always_on": "Uitschakelen vanuit Homey uitschakelen",
+      "always_on": "Schakel uitschakeling van Homey uit",
       "apply": {
         "button": "Toepassen op alle apparaten",
         "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
@@ -67,7 +67,7 @@
       "failure": "Minstens één van uw apparaten is niet langer geassocieerd met uw MELCloud-account.\nVerwijder het om het foutenlogboek te bekijken.",
       "label": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Zie alle fouten sinds"
+      "see": "Bekijk alle fouten sinds"
     },
     "int_error": {
       "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",
@@ -80,7 +80,7 @@
     "title": "MELCloud-instellingen"
   },
   "warnings": {
-    "always_on": "Uitschakeling vanuit Homey is uitgeschakeld.",
+    "always_on": "De uitschakeling vanuit Homey is uitgeschakeld.",
     "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
     "display_error": "Update geslaagd (zelfs als er een andere waarde wordt weergegeven)."
   }

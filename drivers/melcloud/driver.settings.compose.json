@@ -7,6 +7,7 @@
       "nl": "Configuratie",
       "sv": "Konfiguration",
       "no": "Konfigurasjon",
+      "da": "Konfiguration",
       "es": "Configuración"
     },
     "children": [
@@ -19,6 +20,7 @@
           "nl": "Apparaatupdatefrequentie",
           "sv": "Enhetsuppdateringsfrekvens",
           "no": "Enhetsoppdateringsfrekvens",
+          "da": "Enhedsopdateringsfrekvens",
           "es": "Frecuencia de actualización del dispositivo"
         },
         "units": {
@@ -27,6 +29,7 @@
           "nl": "minuten",
           "sv": "minuter",
           "no": "minutter",
+          "da": "minutter",
           "es": "minutos"
         },
         "value": 5,
@@ -43,6 +46,7 @@
       "nl": "Opties",
       "sv": "Alternativ",
       "no": "Alternativer",
+      "da": "Indstillinger",
       "es": "Opciones"
     },
     "children": [
@@ -52,9 +56,10 @@
         "label": {
           "en": "Disable shutdown from Homey",
           "fr": "Désactiver l'extinction depuis Homey",
-          "nl": "Schakel uitschakelen van Homey uit",
+          "nl": "Schakel uitschakeling van Homey uit",
           "sv": "Inaktivera avstängning från Homey",
           "no": "Deaktiver avstenging fra Homey",
+          "da": "Deaktiver slukning fra Homey",
           "es": "Desactivar apagado desde Homey"
         },
         "value": false,
@@ -64,6 +69,7 @@
           "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
           "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
           "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey, den kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
+          "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
           "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
       }
@@ -77,6 +83,7 @@
       "nl": "Dashboardweergave",
       "sv": "Instrumentpanelens visning",
       "no": "Dashbordvisning",
+      "da": "Instrumentbrætvisning",
       "es": "Visualización del panel de control"
     },
     "children": [
@@ -89,6 +96,7 @@
           "nl": "Wifi signaalsterkte",
           "sv": "Wifi signalstyrka",
           "no": "Wifi signalstyrke",
+          "da": "Wifi signalstyrke",
           "es": "Fuerza de la señal wifi"
         },
         "value": true
@@ -103,6 +111,7 @@
       "nl": "Uurlijkse verbruik weergeven",
       "sv": "Timvis förbrukning visning",
       "no": "Timevis forbruk visning",
+      "da": "Timevis forbrug visning",
       "es": "Visualización del consumo horario"
     },
     "children": [
@@ -115,6 +124,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": true
@@ -128,6 +138,7 @@
           "nl": "Automatisch",
           "sv": "Automatiskt",
           "no": "Automatisk",
+          "da": "Automatisk",
           "es": "Automático"
         },
         "value": true
@@ -141,6 +152,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": true
@@ -154,6 +166,7 @@
           "nl": "Droging",
           "sv": "Avfuktning",
           "no": "Avfukting",
+          "da": "Affugtning",
           "es": "Desumidificación"
         },
         "value": true
@@ -167,6 +180,7 @@
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",
+          "da": "Blæser",
           "es": "Ventilador"
         },
         "value": true
@@ -180,6 +194,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": true
@@ -193,6 +208,7 @@
           "nl": "Andere",
           "sv": "Övrigt",
           "no": "Annet",
+          "da": "Andet",
           "es": "Otro"
         },
         "value": true
@@ -207,6 +223,7 @@
       "nl": "Dagelijkse verbruik weergeven",
       "sv": "Daglig förbrukning visning",
       "no": "Daglig forbruk visning",
+      "da": "Daglig forbrug visning",
       "es": "Visualización del consumo diario"
     },
     "children": [
@@ -219,6 +236,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": true
@@ -232,6 +250,7 @@
           "nl": "Automatisch",
           "sv": "Automatiskt",
           "no": "Automatisk",
+          "da": "Automatisk",
           "es": "Automático"
         },
         "value": true
@@ -245,6 +264,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": true
@@ -258,6 +278,7 @@
           "nl": "Droging",
           "sv": "Avfuktning",
           "no": "Avfukting",
+          "da": "Affugtning",
           "es": "Desumidificación"
         },
         "value": true
@@ -271,6 +292,7 @@
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",
+          "da": "Blæser",
           "es": "Ventilador"
         },
         "value": true
@@ -284,6 +306,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": true
@@ -297,6 +320,7 @@
           "nl": "Andere",
           "sv": "Övrigt",
           "no": "Annet",
+          "da": "Andet",
           "es": "Otro"
         },
         "value": true
@@ -311,6 +335,7 @@
       "nl": "Totaalverbruik weergeven",
       "sv": "Total förbrukning visning",
       "no": "Total forbruk visning",
+      "da": "Total forbrug visning",
       "es": "Visualización del consumo total"
     },
     "children": [
@@ -323,6 +348,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": true
@@ -336,6 +362,7 @@
           "nl": "Automatisch",
           "sv": "Automatiskt",
           "no": "Automatisk",
+          "da": "Automatisk",
           "es": "Automático"
         },
         "value": true
@@ -349,6 +376,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": true
@@ -362,6 +390,7 @@
           "nl": "Droging",
           "sv": "Avfuktning",
           "no": "Avfukting",
+          "da": "Affugtning",
           "es": "Desumidificación"
         },
         "value": true
@@ -375,6 +404,7 @@
           "nl": "Ventilator",
           "sv": "Fläkt",
           "no": "Vifte",
+          "da": "Blæser",
           "es": "Ventilador"
         },
         "value": true
@@ -388,6 +418,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": true
@@ -401,6 +432,7 @@
           "nl": "Andere",
           "sv": "Övrigt",
           "no": "Annet",
+          "da": "Andet",
           "es": "Otro"
         },
         "value": true

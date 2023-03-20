@@ -7,6 +7,7 @@
       "nl": "Configuratie",
       "sv": "Konfiguration",
       "no": "Konfigurasjon",
+      "da": "Konfiguration",
       "es": "Configuración"
     },
     "children": [
@@ -19,6 +20,7 @@
           "nl": "Apparaatupdatefrequentie",
           "sv": "Enhetsuppdateringsfrekvens",
           "no": "Enhetsoppdateringsfrekvens",
+          "da": "Enhedsopdateringsfrekvens",
           "es": "Frecuencia de actualización del dispositivo"
         },
         "units": {
@@ -27,6 +29,7 @@
           "nl": "minuten",
           "sv": "minuter",
           "no": "minutter",
+          "da": "minutter",
           "es": "minutos"
         },
         "value": 5,
@@ -43,6 +46,7 @@
       "nl": "Opties",
       "sv": "Alternativ",
       "no": "Alternativer",
+      "da": "Indstillinger",
       "es": "Opciones"
     },
     "children": [
@@ -52,9 +56,10 @@
         "label": {
           "en": "Disable shutdown from Homey",
           "fr": "Désactiver l'extinction depuis Homey",
-          "nl": "Schakel uitschakelen van Homey uit",
+          "nl": "Schakel uitschakeling van Homey uit",
           "sv": "Inaktivera avstängning från Homey",
           "no": "Deaktiver avstenging fra Homey",
+          "da": "Deaktiver slukning fra Homey",
           "es": "Desactivar apagado desde Homey"
         },
         "value": false,
@@ -64,6 +69,7 @@
           "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
           "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
           "no": "Denne innstillingen forhindrer at enheten slås av fra Homey, den kan fortsatt slås av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
+          "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
           "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
         }
       }
@@ -77,6 +83,7 @@
       "nl": "Gebruik van externe sensoren",
       "sv": "Användning av externa sensorer",
       "no": "Bruk av eksterne sensorer",
+      "da": "Brug af eksterne sensorer",
       "es": "Uso de sensores externos"
     },
     "children": [
@@ -89,6 +96,7 @@
           "nl": "Doorstroomtemperatuur",
           "sv": "Framledningstemperatur",
           "no": "Fremløpstemperatur ",
+          "da": "Fremløbstemperatur",
           "es": "Temperatura de flujo"
         },
         "value": false,
@@ -98,6 +106,7 @@
           "nl": "THW6",
           "sv": "THW6",
           "no": "THW6",
+          "da": "THW6",
           "es": "THW6"
         }
       },
@@ -110,6 +119,7 @@
           "nl": "Retourtemperatuur",
           "sv": "Returtemperatur",
           "no": "Returtemperatur",
+          "da": "Returtemperatur",
           "es": "Temperatura de retorno"
         },
         "value": false,
@@ -119,6 +129,7 @@
           "nl": "THW7",
           "sv": "THW7",
           "no": "THW7",
+          "da": "THW7",
           "es": "THW7"
         }
       },
@@ -131,6 +142,7 @@
           "nl": "Doorstroomtemperatuur - zone 2",
           "sv": "Framledningstemperatur - zon 2",
           "no": "Fremløpstemperatur  - sone 2",
+          "da": "Fremløbstemperatur - zone 2",
           "es": "Temperatura de flujo - zona 2"
         },
         "value": false,
@@ -140,6 +152,7 @@
           "nl": "THW8",
           "sv": "THW8",
           "no": "THW8",
+          "da": "THW8",
           "es": "THW8"
         }
       },
@@ -152,6 +165,7 @@
           "nl": "Retourtemperatuur - zone 2",
           "sv": "Returtemperatur - zon 2",
           "no": "Returtemperatur - sone 2",
+          "da": "Returtemperatur - zone 2",
           "es": "Temperatura de retorno - zona 2"
         },
         "value": false,
@@ -161,6 +175,7 @@
           "nl": "THW9",
           "sv": "THW9",
           "no": "THW9",
+          "da": "THW9",
           "es": "THW9"
         }
       },
@@ -173,6 +188,7 @@
           "nl": "Watertemperatuur voor mengtank",
           "sv": "Vattentemperatur för blandningstank",
           "no": "Vanntemperatur for blandingstank",
+          "da": "Vandtemperatur for blandingstank",
           "es": "Temperatura del agua del tanque de mezcla"
         },
         "value": false,
@@ -182,6 +198,7 @@
           "nl": "THW10",
           "sv": "THW10",
           "no": "THW10",
+          "da": "THW10",
           "es": "THW10"
         }
       }
@@ -195,6 +212,7 @@
       "nl": "Dashboardweergave",
       "sv": "Instrumentpanelens visning",
       "no": "Dashbordvisning",
+      "da": "Instrumentbrætvisning",
       "es": "Visualización del panel de control"
     },
     "children": [
@@ -206,7 +224,8 @@
           "fr": "Chauffage d'appoint 1",
           "nl": "Boosterverwarmingselement 1",
           "sv": "Tillskottsvärmare 1",
-          "no": "Tilleggsvarmer 1",
+          "no": "Tilleggsvarme 1",
+          "da": "Tilførselsvarme 1",
           "es": "Calentador de refuerzo 1"
         },
         "value": true
@@ -219,7 +238,8 @@
           "fr": "Chauffage d'appoint 2",
           "nl": "Boosterverwarmingselement 2",
           "sv": "Tillskottsvärmare 2",
-          "no": "Tilleggsvarmer 2",
+          "no": "Tilleggsvarme 2",
+          "da": "Tilførselsvarme 2",
           "es": "Calentador de refuerzo 2"
         },
         "value": true
@@ -232,7 +252,8 @@
           "fr": "Chauffage d'appoint 2+",
           "nl": "Boosterverwarmingselement 2+",
           "sv": "Tillskottsvärmare 2+",
-          "no": "Tilleggsvarmer 2+",
+          "no": "Tilleggsvarme 2+",
+          "da": "Tilførselsvarme 2+",
           "es": "Calentador de refuerzo 2+"
         },
         "value": false
@@ -246,6 +267,7 @@
           "nl": "Ontdooimodus",
           "sv": "Avfrostningsläge",
           "no": "Avfrostingsmodus",
+          "da": "Afrimningsfunktion",
           "es": "Modo de descongelación"
         },
         "value": true
@@ -259,6 +281,7 @@
           "nl": "Sanitair eco warm water",
           "sv": "Eco-låge för varmvattenladdning",
           "no": "Eco-modus for varmvannslastning",
+          "da": "Eco-tilstand for varmtvandsindlæsning",
           "es": "Agua caliente sanitaria eco"
         },
         "value": false
@@ -270,8 +293,9 @@
           "en": "Immersion heater",
           "fr": "Chauffe-eau électrique",
           "nl": "Dompelelement",
-          "sv": "Doppvärmaren",
+          "sv": "Doppvärmare",
           "no": "Nedsenkbar varmekolbe",
+          "da": "Dyppvarmer",
           "es": "Calentador eléctrico sumergible"
         },
         "value": false
@@ -285,6 +309,7 @@
           "nl": "Wifi signaalsterkte",
           "sv": "Wifi signalstyrka",
           "no": "Wifi signalstyrke",
+          "da": "Wifi signalstyrke",
           "es": "Fuerza de la señal wifi"
         },
         "value": true
@@ -299,6 +324,7 @@
       "nl": "Laatste dagelijkse CoP weergeven",
       "sv": "Senaste dagliga CoP visning",
       "no": "Siste daglige CoP visning",
+      "da": "Seneste daglige CoP visning",
       "es": "Visualización del último CoP diario"
     },
     "children": [
@@ -311,6 +337,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -324,6 +351,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -337,6 +365,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": true
@@ -350,6 +379,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false
@@ -364,6 +394,7 @@
       "nl": "Laatste dagelijkse verbruik weergeven",
       "sv": "Senaste dagliga förbrukning visning",
       "no": "Siste daglige forbruk visning",
+      "da": "Seneste daglige forbrug visning",
       "es": "Visualización del último consumo diario"
     },
     "children": [
@@ -376,6 +407,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -389,6 +421,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -402,6 +435,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": false
@@ -415,6 +449,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false
@@ -429,6 +464,7 @@
       "nl": "Laatste dagelijkse productie weergeven",
       "sv": "Senaste dagliga produktion visning",
       "no": "Siste daglige produksjon visning",
+      "da": "Seneste daglige produktion visning",
       "es": "Visualización de la última producción diaria"
     },
     "children": [
@@ -441,6 +477,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -454,6 +491,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -467,6 +505,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": false
@@ -480,6 +519,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false
@@ -494,6 +534,7 @@
       "nl": "Totale CoP weergeven",
       "sv": "Total CoP visning",
       "no": "Total CoP visning",
+      "da": "Total CoP visning",
       "es": "Visualización del CoP total"
     },
     "children": [
@@ -506,6 +547,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -519,6 +561,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -532,6 +575,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": false
@@ -545,6 +589,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false
@@ -559,6 +604,7 @@
       "nl": "Totaalverbruik weergeven",
       "sv": "Total förbrukning visning",
       "no": "Total forbruk visning",
+      "da": "Total forbrug visning",
       "es": "Visualización del consumo total"
     },
     "children": [
@@ -571,6 +617,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -584,6 +631,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -597,6 +645,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": false
@@ -610,6 +659,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false
@@ -624,6 +674,7 @@
       "nl": "Totale productie weergeven",
       "sv": "Total produktion visning",
       "no": "Total produksjon visning",
+      "da": "Total produktion visning",
       "es": "Visualización de la producción total"
     },
     "children": [
@@ -636,6 +687,7 @@
           "nl": "Alle modi",
           "sv": "Alla lägen",
           "no": "Alle moduser",
+          "da": "Alle tilstande",
           "es": "Todos los modos"
         },
         "value": false
@@ -649,6 +701,7 @@
           "nl": "Koeling",
           "sv": "Kylning",
           "no": "Kjøling",
+          "da": "Køling",
           "es": "Enfriamiento"
         },
         "value": false
@@ -662,6 +715,7 @@
           "nl": "Verwarming",
           "sv": "Uppvärmning",
           "no": "Oppvarming",
+          "da": "Opvarmning",
           "es": "Calefacción"
         },
         "value": false
@@ -675,6 +729,7 @@
           "nl": "Sanitair warm water",
           "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
           "es": "Agua caliente sanitaria"
         },
         "value": false

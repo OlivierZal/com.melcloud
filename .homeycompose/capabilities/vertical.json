@@ -6,6 +6,7 @@
     "nl": "Uitblaasrichting verticaal",
     "sv": "Vertikal luftflödesriktning",
     "no": "Vertikal luftflødesretning",
+    "da": "Vertikal luftflødesretning",
     "es": "Descarga de aire vertical"
   },
   "getable": true,
@@ -21,6 +22,7 @@
         "nl": "Automatisch",
         "sv": "Automatiskt",
         "no": "Automatisk",
+        "da": "Automatisk",
         "es": "Automático"
       }
     },
@@ -32,6 +34,7 @@
         "nl": "Omhoog",
         "sv": "Uppåt",
         "no": "Oppover",
+        "da": "Opad",
         "es": "Arriba"
       }
     },
@@ -43,6 +46,7 @@
         "nl": "Midden-hoog",
         "sv": "Mellanhög",
         "no": "Mellomhøy",
+        "da": "Mellemhøj",
         "es": "Medio alto"
       }
     },
@@ -54,6 +58,7 @@
         "nl": "Midden",
         "sv": "Mitten",
         "no": "Midten",
+        "da": "Midten",
         "es": "Medio"
       }
     },
@@ -65,6 +70,7 @@
         "nl": "Midden-laag",
         "sv": "Mellanlåg",
         "no": "Mellomlav",
+        "da": "Mellemlav",
         "es": "Medio bajo"
       }
     },
@@ -76,6 +82,7 @@
         "nl": "Omlaag",
         "sv": "Nedåt",
         "no": "Nedover",
+        "da": "Nedad",
         "es": "Abajo"
       }
     },
@@ -87,6 +94,7 @@
         "nl": "Swing",
         "sv": "Svängning",
         "no": "Sving",
+        "da": "Sving",
         "es": "Oscilación"
       }
     }
