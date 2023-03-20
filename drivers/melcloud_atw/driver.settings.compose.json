@@ -163,6 +163,27 @@
           "no": "THW9",
           "es": "THW9"
         }
+      },
+      {
+        "id": "measure_temperature.tank_water_mixing",
+        "type": "checkbox",
+        "label": {
+          "en": "Mixing tank water temperature",
+          "fr": "Température de l'eau du réservoir de mélange",
+          "nl": "Watertemperatuur voor mengtank",
+          "sv": "Vattentemperatur för blandningstank",
+          "no": "Vanntemperatur for blandingstank",
+          "es": "Temperatura del agua del tanque de mezcla"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW10",
+          "fr": "THW10",
+          "nl": "THW10",
+          "sv": "THW10",
+          "no": "THW10",
+          "es": "THW10"
+        }
       }
     ]
   },

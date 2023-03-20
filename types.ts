@@ -86,6 +86,7 @@ interface ListCapabilitiesAtw {
   readonly 'measure_temperature.return': boolean
   readonly 'measure_temperature.return_zone1': boolean
   readonly 'measure_temperature.return_zone2': boolean
+  readonly 'measure_temperature.tank_water_mixing': boolean
 }
 
 interface ReportCapabilitiesAta {
@@ -248,6 +249,7 @@ interface ListDeviceDataAtw extends ListDeviceDataAta {
   readonly FlowTemperatureZone2: number
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
+  readonly MixingTankWaterTemperature: number
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number
   readonly ReturnTemperatureZone2: number
@@ -449,6 +451,9 @@ export const listCapabilityMappingAtw: Record<
   },
   'measure_temperature.return_zone2': {
     tag: 'ReturnTemperatureZone2'
+  },
+  'measure_temperature.tank_water_mixing': {
+    tag: 'MixingTankWaterTemperature'
   }
 } as const
 

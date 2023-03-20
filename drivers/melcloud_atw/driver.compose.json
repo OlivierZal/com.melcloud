@@ -24,6 +24,7 @@
     "measure_temperature.return_zone1",
     "measure_temperature.return_zone2",
     "measure_temperature.tank_water",
+    "measure_temperature.tank_water_mixing",
     "measure_temperature.zone2",
     "meter_power.daily_cop",
     "meter_power.daily_cop_cooling",
@@ -334,7 +335,17 @@
         "nl": "Warmwatertemperatuur",
         "sv": "Varmvattentemperatur",
         "no": "Varmtvanntemperatur",
-        "es": "Temperatura de la agua caliente"
+        "es": "Temperatura del agua caliente"
+      }
+    },
+    "measure_temperature.tank_water_mixing": {
+      "title": {
+        "en": "Mixing tank water temperature",
+        "fr": "Température de l'eau du réservoir de mélange",
+        "nl": "Watertemperatuur voor mengtank",
+        "sv": "Vattentemperatur för blandningstank",
+        "no": "Vanntemperatur for blandingstank",
+        "es": "Temperatura del agua del tanque de mezcla"
       }
     },
     "measure_temperature.zone2": {
@@ -736,7 +747,7 @@
         "nl": "Ingestelde warmwatertemperatuur",
         "sv": "Måltemperatur för varmvatten",
         "no": "Ønsket temperatur for varmtvann",
-        "es": "Temperatura configurada de la agua caliente"
+        "es": "Temperatura configurada del agua caliente"
       },
       "min": 40,
       "max": 60

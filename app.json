@@ -633,7 +633,7 @@
           "nl": "De eco sanitair warm water gaat aan",
           "sv": "Eco-läge för varmvattenladdning är aktiverat",
           "no": "Eco-modus for varmvannslastning er aktivert",
-          "es": "La agua caliente sanitaria eco se ha activado"
+          "es": "El agua caliente sanitaria eco se ha activado"
         },
         "args": [
           {
@@ -651,7 +651,7 @@
           "nl": "De eco sanitair warm water ging uit",
           "sv": "Eco-läge för varmvattenladdning är inaktiverat",
           "no": "Eco-modus for varmvannslastning er deaktivert",
-          "es": "La agua caliente sanitaria eco se ha desactivado"
+          "es": "El agua caliente sanitaria eco se ha desactivado"
         },
         "args": [
           {
@@ -1774,7 +1774,7 @@
           "nl": "De eco sanitair warm water is !{{aan|uit}}",
           "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
           "no": "Eco-modus for varmvannslastning er !{{på|av}}",
-          "es": "La agua caliente sanitaria eco está !{{activada|desactivada}}"
+          "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}"
         },
         "args": [
           {
@@ -1810,7 +1810,7 @@
           "nl": "De gedwongen sanitair warm water is !{{aan|uit}}",
           "sv": "Tvingad varmvattenladdning är !{{på|av}}",
           "no": "Tvunget varmvannslastning er !{{på|av}}",
-          "es": "La agua caliente sanitaria forzada está !{{encendida|apagada}}"
+          "es": "El agua caliente sanitaria forzada está !{{encendida|apagada}}"
         },
         "args": [
           {
@@ -3071,7 +3071,7 @@
           "nl": "Zet aan / uit de gedwongen sanitair warm water",
           "sv": "Aktivera / stäng av tvingad varmvattenladdning",
           "no": "Slå på / av tvunget varmvannslastning",
-          "es": "Encender / apagar la agua caliente sanitaria forzada"
+          "es": "Encender / apagar el agua caliente sanitaria forzada"
         },
         "titleFormatted": {
           "en": "Turn [[onoff]] the forced domestic hot water",
@@ -3079,7 +3079,7 @@
           "nl": "Zet [[onoff]] de gedwongen sanitair warm water",
           "sv": "[[onoff]] tvingad varmvattenladdning",
           "no": "Slå [[onoff]] tvunget varmvannslastning",
-          "es": "[[onoff]] la agua caliente sanitaria forzada"
+          "es": "[[onoff]] el agua caliente sanitaria forzada"
         },
         "args": [
           {
@@ -3429,7 +3429,7 @@
           "nl": "Stel de warmwatertemperatuur in",
           "sv": "Ställ in varmvattentemperaturen",
           "no": "Innstill varmtvanntemperaturen",
-          "es": "Configurar la temperatura de la agua caliente"
+          "es": "Configurar la temperatura del agua caliente"
         },
         "titleFormatted": {
           "en": "Set the tank water temperature to [[target_temperature]]",
@@ -3437,7 +3437,7 @@
           "nl": "Stel de warmwatertemperatuur in op [[target_temperature]]",
           "sv": "Ställ in varmvattentemperaturen till [[target_temperature]]",
           "no": "Innstill varmtvanntemperaturen til [[target_temperature]]",
-          "es": "Configurar la temperatura de la agua caliente a [[target_temperature]]"
+          "es": "Configurar la temperatura del agua caliente a [[target_temperature]]"
         },
         "args": [
           {
@@ -4585,6 +4585,7 @@
         "measure_temperature.return_zone1",
         "measure_temperature.return_zone2",
         "measure_temperature.tank_water",
+        "measure_temperature.tank_water_mixing",
         "measure_temperature.zone2",
         "meter_power.daily_cop",
         "meter_power.daily_cop_cooling",
@@ -4999,7 +5000,17 @@
             "nl": "Warmwatertemperatuur",
             "sv": "Varmvattentemperatur",
             "no": "Varmtvanntemperatur",
-            "es": "Temperatura de la agua caliente"
+            "es": "Temperatura del agua caliente"
+          }
+        },
+        "measure_temperature.tank_water_mixing": {
+          "title": {
+            "en": "Mixing tank water temperature",
+            "fr": "Température de l'eau du réservoir de mélange",
+            "nl": "Watertemperatuur voor mengtank",
+            "sv": "Vattentemperatur för blandningstank",
+            "no": "Vanntemperatur for blandingstank",
+            "es": "Temperatura del agua del tanque de mezcla"
           }
         },
         "measure_temperature.zone2": {
@@ -5401,7 +5412,7 @@
             "nl": "Ingestelde warmwatertemperatuur",
             "sv": "Måltemperatur för varmvatten",
             "no": "Ønsket temperatur for varmtvann",
-            "es": "Temperatura configurada de la agua caliente"
+            "es": "Temperatura configurada del agua caliente"
           },
           "min": 40,
           "max": 60
@@ -5632,6 +5643,27 @@
                 "sv": "THW9",
                 "no": "THW9",
                 "es": "THW9"
+              }
+            },
+            {
+              "id": "measure_temperature.tank_water_mixing",
+              "type": "checkbox",
+              "label": {
+                "en": "Mixing tank water temperature",
+                "fr": "Température de l'eau du réservoir de mélange",
+                "nl": "Watertemperatuur voor mengtank",
+                "sv": "Vattentemperatur för blandningstank",
+                "no": "Vanntemperatur for blandingstank",
+                "es": "Temperatura del agua del tanque de mezcla"
+              },
+              "value": false,
+              "hint": {
+                "en": "THW10",
+                "fr": "THW10",
+                "nl": "THW10",
+                "sv": "THW10",
+                "no": "THW10",
+                "es": "THW10"
               }
             }
           ]
