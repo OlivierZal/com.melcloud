@@ -18,7 +18,7 @@
       "success": "__action__ geslaagd."
     },
     "authenticate": {
-      "button": "Authenticeren",
+      "button": "Inloggen",
       "label": "Referenties",
       "password": "Wachtwoord",
       "username": "Gebruikersnaam"

@@ -18,7 +18,7 @@
       "success": "__action__ lykkedes."
     },
     "authenticate": {
-      "button": "Godkend",
+      "button": "Log ind",
       "label": "Brugernavn og adgangskode",
       "password": "Adgangskode",
       "username": "Brugernavn"

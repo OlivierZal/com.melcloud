@@ -15,10 +15,10 @@
         "update": "Update"
       },
       "failure": "__action__ failed.",
-      "success": "__action__ succeeded."
+      "success": "__action__ successful."
     },
     "authenticate": {
-      "button": "Authenticate",
+      "button": "Log in",
       "label": "Credentials",
       "password": "Password",
       "username": "Username"

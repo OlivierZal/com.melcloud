@@ -18,7 +18,7 @@
       "success": "__action__ lyckades."
     },
     "authenticate": {
-      "button": "Autentisera",
+      "button": "Logga in",
       "label": "Inloggningsuppgifter",
       "password": "Lösenord",
       "username": "Användarnamn"

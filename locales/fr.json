@@ -11,11 +11,11 @@
   "settings": {
     "alert": {
       "actions": {
-        "authenticate": "Authentification",
-        "update": "Mise à jour"
+        "authenticate": "L'authentification",
+        "update": "La mise à jour"
       },
-      "failure": "__action__ échouée.",
-      "success": "__action__ réussie."
+      "failure": "__action__ a échoué.",
+      "success": "__action__ a réussi."
     },
     "authenticate": {
       "button": "S'authentifier",

@@ -14,11 +14,11 @@
         "authenticate": "Autentisering",
         "update": "Oppdatering"
       },
-      "failure": "__action__ feilet.",
+      "failure": "__action__ mislyktes.",
       "success": "__action__ vellykket."
     },
     "authenticate": {
-      "button": "Autentiser",
+      "button": "Logg inn",
       "label": "Innloggingsinformasjon",
       "password": "Passord",
       "username": "Brukernavn"
