@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "12.0.7",
+  "version": "12.1.0",
   "main": "app.ts",
   "scripts": {
     "build": "tsc"
@@ -17,7 +17,7 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
-    "prettier": "^2.8.5",
+    "prettier": "^2.8.6",
     "typescript": "^5.0.2"
   },
   "dependencies": {

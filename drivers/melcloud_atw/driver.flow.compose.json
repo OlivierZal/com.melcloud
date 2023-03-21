@@ -7,8 +7,9 @@
         "en": "The booster heater 1 turned on",
         "fr": "Le chauffage d'appoint 1 s'est activé",
         "nl": "De boosterverwarmingselement 1 gaat aan",
-        "sv": "Tillskottsvärmaren 1 är aktiverat",
-        "no": "Tilleggsvarmeren 1 er aktivert",
+        "sv": "Tillskottsvärmaren 1 är aktiverad",
+        "no": "Tilleggsvarmen 1 er aktivert",
+        "da": "Tilførselsvarme 1 blev aktiveret",
         "es": "El calentador de refuerzo 1 se ha activado"
       }
     },
@@ -19,8 +20,9 @@
         "en": "The booster heater 1 turned off",
         "fr": "Le chauffage d'appoint 1 s'est désactivé",
         "nl": "De boosterverwarmingselement 1 ging uit",
-        "sv": "Tillskottsvärmaren 1 är inaktiverat",
-        "no": "Tilleggsvarmeren 1 er deaktivert",
+        "sv": "Tillskottsvärmaren 1 är inaktiverad",
+        "no": "Tilleggsvarmen 1 er deaktivert",
+        "da": "Tilførselsvarme 1 blev deaktiveret",
         "es": "El calentador de refuerzo 1 se ha desactivado"
       }
     },
@@ -31,8 +33,9 @@
         "en": "The booster heater 2 turned on",
         "fr": "Le chauffage d'appoint 2 s'est activé",
         "nl": "De boosterverwarmingselement 2 gaat aan",
-        "sv": "Tillskottsvärmaren 2 är aktiverat",
-        "no": "Tilleggsvarmeren 2 er aktivert",
+        "sv": "Tillskottsvärmaren 2 är aktiverad",
+        "no": "Tilleggsvarmen 2 er aktivert",
+        "da": "Tilførselsvarme 2 blev aktiveret",
         "es": "El calentador de refuerzo 2 se ha activado"
       }
     },
@@ -43,8 +46,9 @@
         "en": "The booster heater 2 turned off",
         "fr": "Le chauffage d'appoint 2 s'est désactivé",
         "nl": "De boosterverwarmingselement 2 ging uit",
-        "sv": "Tillskottsvärmaren 2 är inaktiverat",
-        "no": "Tilleggsvarmeren 2 er deaktivert",
+        "sv": "Tillskottsvärmaren 2 är inaktiverad",
+        "no": "Tilleggsvarmen 2 er deaktivert",
+        "da": "Tilførselsvarme 2 blev deaktiveret",
         "es": "El calentador de refuerzo 2 se ha desactivado"
       }
     },
@@ -55,8 +59,9 @@
         "en": "The booster heater 2+ turned on",
         "fr": "Le chauffage d'appoint 2+ s'est activé",
         "nl": "De boosterverwarmingselement 2+ gaat aan",
-        "sv": "Tillskottsvärmaren 2+ är aktiverat",
-        "no": "Tilleggsvarmeren 2+ er aktivert",
+        "sv": "Tillskottsvärmaren 2+ är aktiverad",
+        "no": "Tilleggsvarmen 2+ er aktivert",
+        "da": "Tilførselsvarme 2+ blev aktiveret",
         "es": "El calentador de refuerzo 2+ se ha activado"
       }
     },
@@ -67,8 +72,9 @@
         "en": "The booster heater 2+ turned off",
         "fr": "Le chauffage d'appoint 2+ s'est désactivé",
         "nl": "De boosterverwarmingselement 2+ ging uit",
-        "sv": "Tillskottsvärmaren 2+ är inaktiverat",
-        "no": "Tilleggsvarmeren 2+ er deaktivert",
+        "sv": "Tillskottsvärmaren 2+ är inaktiverad",
+        "no": "Tilleggsvarmen 2+ er deaktivert",
+        "da": "Tilførselsvarme 2+ blev deaktiveret",
         "es": "El calentador de refuerzo 2+ se ha desactivado"
       }
     },
@@ -81,6 +87,7 @@
         "nl": "De ontdooimodus gaat aan",
         "sv": "Avfrostningsläget är aktiverat",
         "no": "Avfrostingsmodusen er aktivert",
+        "da": "Afrimningsfunktionen blev aktiveret",
         "es": "El modo de descongelación se ha activado"
       }
     },
@@ -93,6 +100,7 @@
         "nl": "De ontdooimodus ging uit",
         "sv": "Avfrostningsläget är inaktiverat",
         "no": "Avfrostingsmodusen er deaktivert",
+        "da": "Afrimningsfunktionen blev deaktiveret",
         "es": "El modo de descongelación se ha desactivado"
       }
     },
@@ -105,6 +113,7 @@
         "nl": "De eco sanitair warm water gaat aan",
         "sv": "Eco-läge för varmvattenladdning är aktiverat",
         "no": "Eco-modus for varmvannslastning er aktivert",
+        "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
         "es": "El agua caliente sanitaria eco se ha activado"
       }
     },
@@ -117,6 +126,7 @@
         "nl": "De eco sanitair warm water ging uit",
         "sv": "Eco-läge för varmvattenladdning är inaktiverat",
         "no": "Eco-modus for varmvannslastning er deaktivert",
+        "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
         "es": "El agua caliente sanitaria eco se ha desactivado"
       }
     },
@@ -127,8 +137,9 @@
         "en": "The immersion heater turned on",
         "fr": "Le chauffe-eau électrique s'est activé",
         "nl": "De dompelelement gaat aan",
-        "sv": "Doppvärmaren är aktiverat",
-        "no": "Dompvarmen er aktivert",
+        "sv": "Doppvärmaren är aktiverad",
+        "no": "Nedsenkbar varmekolbe er aktivert",
+        "da": "Dyppvarmeren blev aktiveret",
         "es": "El calentador eléctrico sumergible se ha activado"
       }
     },
@@ -139,8 +150,9 @@
         "en": "The immersion heater turned off",
         "fr": "Le chauffe-eau électrique s'est désactivé",
         "nl": "De dompelelement ging uit",
-        "sv": "Doppvärmaren är inaktiverat",
+        "sv": "Doppvärmaren är inaktiverad",
         "no": "Nedsenkbar varmekolbe er deaktivert",
+        "da": "Dyppvarmeren blev deaktiveret",
         "es": "El calentador eléctrico sumergible se ha desactivado"
       }
     },
@@ -152,6 +164,7 @@
         "nl": "Gedwongen sanitair warm water aangezet",
         "sv": "Tvingad varmvattenladdning aktiverad",
         "no": "Tvungen varmvannslastning slått på",
+        "da": "Tvungen varmtvandsindlæsning tændt",
         "es": "Agua caliente sanitaria forzada encendida"
       }
     },
@@ -163,6 +176,7 @@
         "nl": "Gedwongen sanitair warm water uitgezet",
         "sv": "Tvingad varmvattenladdning inaktiverad",
         "no": "Tvungen varmvannslastning slått av",
+        "da": "Tvungen varmtvandsindlæsning slukket",
         "es": "Agua caliente sanitaria forzada apagada"
       }
     },
@@ -174,6 +188,7 @@
         "nl": "De huidige bedrijf is veranderd",
         "sv": "Aktuell drift ändrades",
         "no": "Gjeldende drift ble endret",
+        "da": "Den aktuelle drift er blevet ændret",
         "es": "La operación actual ha cambiado"
       },
       "tokens": [
@@ -186,6 +201,7 @@
             "nl": "Huidige bedrijf",
             "sv": "Aktuell drift",
             "no": "Gjeldende drift",
+            "da": "Aktuel drift",
             "es": "Operación actual"
           },
           "example": {
@@ -194,6 +210,7 @@
             "nl": "Verwarming",
             "sv": "Uppvärmning",
             "no": "Oppvarming",
+            "da": "Opvarmning",
             "es": "Calefacción"
           }
         }
@@ -208,6 +225,7 @@
         "nl": "De huidige bedrijf voor zone 1 is veranderd",
         "sv": "Aktuell drift för zon 1 ändrades",
         "no": "Gjeldende drift for sone 1 ble endret",
+        "da": "Den aktuelle drift for zone 1 er blevet ændret",
         "es": "La operación actual para la zona 1 ha cambiado"
       },
       "tokens": [
@@ -220,6 +238,7 @@
             "nl": "Huidige bedrijf",
             "sv": "Aktuell drift",
             "no": "Gjeldende drift",
+            "da": "Aktuel drift",
             "es": "Operación actual"
           },
           "example": {
@@ -228,6 +247,7 @@
             "nl": "Verwarming",
             "sv": "Uppvärmning",
             "no": "Oppvarming",
+            "da": "Opvarmning",
             "es": "Calefacción"
           }
         }
@@ -242,6 +262,7 @@
         "nl": "De huidige bedrijf voor zone 2 is veranderd",
         "sv": "Aktuell drift för zon 2 ändrades",
         "no": "Gjeldende drift for sone 2 ble endret",
+        "da": "Den aktuelle drift for zone 2 er blevet ændret",
         "es": "La operación actual para la zona 2 ha cambiado"
       },
       "tokens": [
@@ -254,6 +275,7 @@
             "nl": "Huidige bedrijf",
             "sv": "Aktuell drift",
             "no": "Gjeldende drift",
+            "da": "Aktuel drift",
             "es": "Operación actual"
           },
           "example": {
@@ -262,6 +284,7 @@
             "nl": "Verwarming",
             "sv": "Uppvärmning",
             "no": "Oppvarming",
+            "da": "Opvarmning",
             "es": "Calefacción"
           }
         }
@@ -276,6 +299,7 @@
         "nl": "De bedrijfsmodus is veranderd",
         "sv": "Driftläget ändrades",
         "no": "Driftsmodusen ble endret",
+        "da": "Driftstilstanden er blevet ændret",
         "es": "El modo de operación ha cambiado"
       },
       "tokens": [
@@ -288,6 +312,7 @@
             "nl": "Bedrijfsmodus",
             "sv": "Driftläge",
             "no": "Driftsmodus",
+            "da": "Driftstilstand",
             "es": "Modo de operación"
           },
           "example": {
@@ -296,6 +321,7 @@
             "nl": "Weerscompensatiecurve",
             "sv": "Värmekurva",
             "no": "Varmekurve",
+            "da": "Varmekurve",
             "es": "Curva de compensación climática"
           }
         }
@@ -310,6 +336,7 @@
         "nl": "De bedrijfsmodus voor zone 2 is veranderd",
         "sv": "Driftläget för zon 2 ändrades",
         "no": "Driftsmodusen for sone 2 ble endret",
+        "da": "Driftstilstanden for zone 2 er blevet ændret",
         "es": "El modo de operación para la zona 2 ha cambiado"
       },
       "tokens": [
@@ -322,6 +349,7 @@
             "nl": "Bedrijfsmodus voor zone 2",
             "sv": "Driftläge för zon 2",
             "no": "Driftsmodus for sone 2",
+            "da": "Driftstilstand for zone 2",
             "es": "Modo de operación para la zona 2"
           },
           "example": {
@@ -330,6 +358,7 @@
             "nl": "Weerscompensatiecurve",
             "sv": "Värmekurva",
             "no": "Varmekurve",
+            "da": "Varmekurve",
             "es": "Curva de compensación climática"
           }
         }
@@ -344,6 +373,7 @@
         "nl": "De bedrijfsmodus is veranderd",
         "sv": "Driftläget ändrades",
         "no": "Driftsmodusen ble endret",
+        "da": "Driftstilstanden er blevet ændret",
         "es": "El modo de operación ha cambiado"
       },
       "tokens": [
@@ -356,6 +386,7 @@
             "nl": "Bedrijfsmodus",
             "sv": "Driftläge",
             "no": "Driftsmodus",
+            "da": "Driftstilstand",
             "es": "Modo de operación"
           },
           "example": {
@@ -364,6 +395,7 @@
             "nl": "Weerscompensatiecurve",
             "sv": "Värmekurva",
             "no": "Varmekurve",
+            "da": "Varmekurve",
             "es": "Curva de compensación climática"
           }
         }
@@ -378,6 +410,7 @@
         "nl": "De bedrijfsmodus voor zone 2 is veranderd",
         "sv": "Driftläget för zon 2 ändrades",
         "no": "Driftsmodusen for sone 2 ble endret",
+        "da": "Driftstilstanden for zone 2 er blevet ændret",
         "es": "El modo de operación para la zona 2 ha cambiado"
       },
       "tokens": [
@@ -390,6 +423,7 @@
             "nl": "Bedrijfsmodus voor zone 2",
             "sv": "Driftläge för zon 2",
             "no": "Driftsmodus for sone 2",
+            "da": "Driftstilstand for zone 2",
             "es": "Modo de operación para la zona 2"
           },
           "example": {
@@ -398,6 +432,7 @@
             "nl": "Weerscompensatiecurve",
             "sv": "Värmekurva",
             "no": "Varmekurve",
+            "da": "Varmekurve",
             "es": "Curva de compensación climática"
           }
         }
@@ -413,7 +448,8 @@
         "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
         "sv": "Tillskottsvärmaren 1 är !{{på|av}}",
-        "no": "Tilleggsvarmeren 1 er !{{på|av}}",
+        "no": "Tilleggsvarmen 1 er !{{på|av}}",
+        "da": "Tilførselsvarmen 1 er !{{tændt|slukket}}",
         "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}"
       }
     },
@@ -425,7 +461,8 @@
         "fr": "Le chauffage d'appoint 2 est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 2 is !{{aan|uit}}",
         "sv": "Tillskottsvärmaren 2 är !{{på|av}}",
-        "no": "Tilleggsvarmeren 2 er !{{på|av}}",
+        "no": "Tilleggsvarmen 2 er !{{på|av}}",
+        "da": "Tilførselsvarmen 2 er !{{tændt|slukket}}",
         "es": "El calentador de refuerzo 2 está !{{activada|desactivada}}"
       }
     },
@@ -437,7 +474,8 @@
         "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
         "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
         "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
-        "no": "Tilleggsvarmeren 2+ er !{{på|av}}",
+        "no": "Tilleggsvarmen 2+ er !{{på|av}}",
+        "da": "Tilførselsvarmen 2+ er !{{tændt|slukket}}",
         "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
       }
     },
@@ -450,6 +488,7 @@
         "nl": "De ontdooimodus is !{{aan|uit}}",
         "sv": "Avfrostningsläget är !{{på|av}}",
         "no": "Avfrostingsmodusen er !{{på|av}}",
+        "da": "Afrimningsfunktionen er !{{tændt|slukket}}",
         "es": "El modo de descongelación está !{{activada|desactivada}}"
       }
     },
@@ -462,6 +501,7 @@
         "nl": "De eco sanitair warm water is !{{aan|uit}}",
         "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
         "no": "Eco-modus for varmvannslastning er !{{på|av}}",
+        "da": "Eco-tilstand for varmtvandsindlæsning er !{{tændt|slukket}}",
         "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}"
       }
     },
@@ -474,6 +514,7 @@
         "nl": "De dompelelement is !{{aan|uit}}",
         "sv": "Doppvärmaren är !{{på|av}}",
         "no": "Nedsenkbar varmekolbe er !{{på|av}}",
+        "da": "Dyppvarmeren er !{{tændt|slukket}}",
         "es": "El calentador eléctrico sumergible está !{{activado|desactivado}}"
       }
     },
@@ -484,7 +525,8 @@
         "fr": "L'eau chaude sanitaire forcée est !{{activée|désactivée}}",
         "nl": "De gedwongen sanitair warm water is !{{aan|uit}}",
         "sv": "Tvingad varmvattenladdning är !{{på|av}}",
-        "no": "Tvunget varmvannslastning er !{{på|av}}",
+        "no": "Tvungen varmvannslastning er !{{på|av}}",
+        "da": "Tvungen varmtvandsindlæsning er !{{tændt|slukket}}",
         "es": "El agua caliente sanitaria forzada está !{{encendida|apagada}}"
       }
     },
@@ -496,6 +538,7 @@
         "nl": "De huidige bedrijf !{{is|is niet}}",
         "sv": "Aktuell drift !{{är|är inte}}",
         "no": "Gjeldende drift !{{er|er ikke}}",
+        "da": "Aktuel drift !{{er|er ikke}}",
         "es": "La operación actual !{{está|no está}}"
       },
       "titleFormatted": {
@@ -504,6 +547,7 @@
         "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]]",
         "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]]",
         "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]]",
+        "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]]",
         "es": "La operación actual !{{está|no está}} [[operation_mode_state]]"
       },
       "args": [
@@ -519,6 +563,7 @@
                 "nl": "Inactief",
                 "sv": "Inaktiv",
                 "no": "Inaktiv",
+                "da": "Inaktiv",
                 "es": "Inactivo"
               }
             },
@@ -530,6 +575,7 @@
                 "nl": "Sanitair warm water",
                 "sv": "Varmvattenladdning",
                 "no": "Varmvannslastning",
+                "da": "Varmtvandsindlæsning",
                 "es": "Agua caliente sanitaria"
               }
             },
@@ -541,6 +587,7 @@
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
                 "no": "Oppvarming",
+                "da": "Opvarmning",
                 "es": "Calefacción"
               }
             },
@@ -552,6 +599,7 @@
                 "nl": "Koeling",
                 "sv": "Kylning",
                 "no": "Kjøling",
+                "da": "Køling",
                 "es": "Enfriamiento"
               }
             },
@@ -563,6 +611,7 @@
                 "nl": "Ontdooien",
                 "sv": "Avfrostning",
                 "no": "Avfrosting",
+                "da": "Afrimning",
                 "es": "Descongelación"
               }
             },
@@ -574,6 +623,7 @@
                 "nl": "Standby",
                 "sv": "Vänteläge",
                 "no": "Ventemodus",
+                "da": "Ventetilstand",
                 "es": "En espera"
               }
             },
@@ -585,6 +635,7 @@
                 "nl": "Legionella",
                 "sv": "Legionella",
                 "no": "Legionella",
+                "da": "Legionella",
                 "es": "Legionella"
               }
             }
@@ -601,6 +652,7 @@
         "nl": "De huidige bedrijf voor zone 1 !{{is|is niet}}",
         "sv": "Aktuell drift för zon 1 !{{är|är inte}}",
         "no": "Gjeldende drift for sone 1 !{{er|er ikke}}",
+        "da": "Aktuel drift for zone 1 !{{er|er ikke}}",
         "es": "La operación actual para la zona 1 !{{está|no está}}"
       },
       "titleFormatted": {
@@ -609,6 +661,7 @@
         "nl": "De huidige bedrijf voor zone 1 !{{is|is niet}} [[operation_mode_state]]",
         "sv": "Aktuell drift för zon 1 !{{är|är inte}} [[operation_mode_state]]",
         "no": "Gjeldende drift for sone 1 !{{er|er ikke}} [[operation_mode_state]]",
+        "da": "Aktuel drift for zone 1 !{{er|er ikke}} [[operation_mode_state]]",
         "es": "La operación actual para la zona 1 !{{está|no está}} [[operation_mode_state]]"
       },
       "args": [
@@ -624,6 +677,7 @@
                 "nl": "Inactief",
                 "sv": "Inaktiv",
                 "no": "Inaktiv",
+                "da": "Inaktiv",
                 "es": "Inactivo"
               }
             },
@@ -635,6 +689,7 @@
                 "nl": "Sanitair warm water",
                 "sv": "Varmvattenladdning",
                 "no": "Varmvannslastning",
+                "da": "Varmtvandsindlæsning",
                 "es": "Agua caliente sanitaria"
               }
             },
@@ -646,6 +701,7 @@
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
                 "no": "Oppvarming",
+                "da": "Opvarmning",
                 "es": "Calefacción"
               }
             },
@@ -657,6 +713,7 @@
                 "nl": "Koeling",
                 "sv": "Kylning",
                 "no": "Kjøling",
+                "da": "Køling",
                 "es": "Enfriamiento"
               }
             },
@@ -668,6 +725,7 @@
                 "nl": "Ontdooien",
                 "sv": "Avfrostning",
                 "no": "Avfrosting",
+                "da": "Afrimning",
                 "es": "Descongelación"
               }
             },
@@ -679,6 +737,7 @@
                 "nl": "Standby",
                 "sv": "Vänteläge",
                 "no": "Ventemodus",
+                "da": "Ventetilstand",
                 "es": "En espera"
               }
             },
@@ -690,6 +749,7 @@
                 "nl": "Legionella",
                 "sv": "Legionella",
                 "no": "Legionella",
+                "da": "Legionella",
                 "es": "Legionella"
               }
             }
@@ -706,6 +766,7 @@
         "nl": "De huidige bedrijf voor zone 2 !{{is|is niet}}",
         "sv": "Aktuell drift för zon 2 !{{är|är inte}}",
         "no": "Gjeldende drift for sone 2 !{{er|er ikke}}",
+        "da": "Aktuel drift for zone 2 !{{er|er ikke}}",
         "es": "La operación actual para la zona 2 !{{está|no está}}"
       },
       "titleFormatted": {
@@ -714,6 +775,7 @@
         "nl": "De huidige bedrijf voor zone 2 !{{is|is niet}} [[operation_mode_state]]",
         "sv": "Aktuell drift för zon 2 !{{är|är inte}} [[operation_mode_state]]",
         "no": "Gjeldende drift for sone 2 !{{er|er ikke}} [[operation_mode_state]]",
+        "da": "Aktuel drift for zone 2 !{{er|er ikke}} [[operation_mode_state]]",
         "es": "La operación actual para la zona 2 !{{está|no está}} [[operation_mode_state]]"
       },
       "args": [
@@ -729,6 +791,7 @@
                 "nl": "Inactief",
                 "sv": "Inaktiv",
                 "no": "Inaktiv",
+                "da": "Inaktiv",
                 "es": "Inactivo"
               }
             },
@@ -740,6 +803,7 @@
                 "nl": "Sanitair warm water",
                 "sv": "Varmvattenladdning",
                 "no": "Varmvannslastning",
+                "da": "Varmtvandsindlæsning",
                 "es": "Agua caliente sanitaria"
               }
             },
@@ -751,6 +815,7 @@
                 "nl": "Verwarming",
                 "sv": "Uppvärmning",
                 "no": "Oppvarming",
+                "da": "Opvarmning",
                 "es": "Calefacción"
               }
             },
@@ -762,6 +827,7 @@
                 "nl": "Koeling",
                 "sv": "Kylning",
                 "no": "Kjøling",
+                "da": "Køling",
                 "es": "Enfriamiento"
               }
             },
@@ -773,6 +839,7 @@
                 "nl": "Ontdooien",
                 "sv": "Avfrostning",
                 "no": "Avfrosting",
+                "da": "Afrimning",
                 "es": "Descongelación"
               }
             },
@@ -784,6 +851,7 @@
                 "nl": "Standby",
                 "sv": "Vänteläge",
                 "no": "Ventemodus",
+                "da": "Ventetilstand",
                 "es": "En espera"
               }
             },
@@ -795,6 +863,7 @@
                 "nl": "Legionella",
                 "sv": "Legionella",
                 "no": "Legionella",
+                "da": "Legionella",
                 "es": "Legionella"
               }
             }
@@ -811,6 +880,7 @@
         "nl": "De bedrijfsmodus !{{is|is niet}}",
         "sv": "Driftläget !{{är|är inte}}",
         "no": "Driftsmodusen !{{er|er ikke}}",
+        "da": "Driftstilstanden !{{er|er ikke}}",
         "es": "El modo de operación !{{está|no está}}"
       },
       "titleFormatted": {
@@ -819,6 +889,7 @@
         "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]]",
         "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]]",
         "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]]",
+        "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]]",
         "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
       },
       "args": [
@@ -834,6 +905,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -845,6 +917,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -856,6 +929,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             }
@@ -872,6 +946,7 @@
         "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}}",
         "sv": "Driftläget för zon 2 !{{är|är inte}}",
         "no": "Driftsmodusen for sone 2 !{{er|er ikke}}",
+        "da": "Driftstilstanden for zone 2 !{{er|er ikke}}",
         "es": "El modo de operación para la zona 2 !{{está|no está}}"
       },
       "titleFormatted": {
@@ -880,6 +955,7 @@
         "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}} [[operation_mode_zone]]",
         "sv": "Driftläget för zon 2 !{{är|är inte}} [[operation_mode_zone]]",
         "no": "Driftsmodusen for sone 2 !{{er|er ikke}} [[operation_mode_zone]]",
+        "da": "Driftstilstanden for zone 2 !{{er|er ikke}} [[operation_mode_zone]]",
         "es": "El modo de operación para la zone 2 !{{está|no está}} [[operation_mode_zone]]"
       },
       "args": [
@@ -895,6 +971,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -906,6 +983,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -917,6 +995,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             }
@@ -933,6 +1012,7 @@
         "nl": "De bedrijfsmodus !{{is|is niet}}",
         "sv": "Driftläget !{{är|är inte}}",
         "no": "Driftsmodusen !{{er|er ikke}}",
+        "da": "Driftstilstanden !{{er|er ikke}}",
         "es": "El modo de operación !{{está|no está}}"
       },
       "titleFormatted": {
@@ -941,6 +1021,7 @@
         "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]]",
         "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]]",
         "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]]",
+        "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]]",
         "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
       },
       "args": [
@@ -956,6 +1037,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -967,6 +1049,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -978,6 +1061,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             },
@@ -989,6 +1073,7 @@
                 "nl": "Binnentemperatuur - koeling",
                 "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
+                "da": "Indendørs føler - køling",
                 "es": "Temperatura interior - enfriamiento"
               }
             },
@@ -1000,6 +1085,7 @@
                 "nl": "Vaste stroomtemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
+                "da": "Fast fremløbstemperatur - køling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
             }
@@ -1015,7 +1101,8 @@
         "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}}",
         "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}}",
         "sv": "Driftläget för zon 2 !{{är|är inte}}",
-        "no": "Drifttilstanden for sone 2 !{{er|er ikke}}",
+        "no": "Driftsmodusen for sone 2 !{{er|er ikke}}",
+        "da": "Driftstilstanden for zone 2 !{{er|er ikke}}",
         "es": "El modo de operación para la zona 2 !{{está|no está}}"
       },
       "titleFormatted": {
@@ -1023,7 +1110,8 @@
         "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}} [[operation_mode_zone]]",
         "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}} [[operation_mode_zone]]",
         "sv": "Driftläget för zon 2 !{{är|är inte}} [[operation_mode_zone]]",
-        "no": "Drifttilstanden for sone 2 !{{er|er ikke}} [[operation_mode_zone]]",
+        "no": "Driftsmodusen for sone 2 !{{er|er ikke}} [[operation_mode_zone]]",
+        "da": "Driftstilstanden for zone 2 !{{er|er ikke}} [[operation_mode_zone]]",
         "es": "El modo de operación para la zone 2 !{{está|no está}} [[operation_mode_zone]]"
       },
       "args": [
@@ -1039,6 +1127,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -1050,6 +1139,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -1061,6 +1151,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             },
@@ -1072,6 +1163,7 @@
                 "nl": "Binnentemperatuur - koeling",
                 "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
+                "da": "Indendørs føler - køling",
                 "es": "Temperatura interior - enfriamiento"
               }
             },
@@ -1083,6 +1175,7 @@
                 "nl": "Vaste stroomtemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
+                "da": "Fast fremløbstemperatur - køling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
             }
@@ -1129,7 +1222,8 @@
         "fr": "Activer / désactiver l'eau chaude sanitaire forcée",
         "nl": "Zet aan / uit de gedwongen sanitair warm water",
         "sv": "Aktivera / stäng av tvingad varmvattenladdning",
-        "no": "Slå på / av tvunget varmvannslastning",
+        "no": "Slå på / av tvungen varmvannslastning",
+        "da": "Tændt / slukket tvungen varmtvandsindlæsning",
         "es": "Encender / apagar el agua caliente sanitaria forzada"
       },
       "titleFormatted": {
@@ -1137,7 +1231,8 @@
         "fr": "[[onoff]] l'eau chaude sanitaire forcée",
         "nl": "Zet [[onoff]] de gedwongen sanitair warm water",
         "sv": "[[onoff]] tvingad varmvattenladdning",
-        "no": "Slå [[onoff]] tvunget varmvannslastning",
+        "no": "[[onoff]] tvungen varmvannslastning",
+        "da": "[[onoff]] tvungen varmtvandsindlæsning",
         "es": "[[onoff]] el agua caliente sanitaria forzada"
       },
       "args": [
@@ -1153,6 +1248,7 @@
                 "nl": "aan",
                 "sv": "Aktivera",
                 "no": "på",
+                "da": "Tændt",
                 "es": "Encender"
               }
             },
@@ -1164,6 +1260,7 @@
                 "nl": "uit",
                 "sv": "Stäng av",
                 "no": "av",
+                "da": "Slukket",
                 "es": "Apagar"
               }
             }
@@ -1180,6 +1277,7 @@
         "nl": "Stel de bedrijfsmodus in",
         "sv": "Ställ in driftläget",
         "no": "Innstill driftsmodusen",
+        "da": "Indstil driftstilstanden",
         "es": "Configurar el modo de operación"
       },
       "titleFormatted": {
@@ -1188,6 +1286,7 @@
         "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]]",
         "sv": "Ställ in driftläget till [[operation_mode_zone]]",
         "no": "Innstill driftsmodusen til [[operation_mode_zone]]",
+        "da": "Indstil driftstilstanden til [[operation_mode_zone]]",
         "es": "Configurar el modo de operación a [[operation_mode_zone]]"
       },
       "args": [
@@ -1203,6 +1302,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -1214,6 +1314,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -1225,6 +1326,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             }
@@ -1241,6 +1343,7 @@
         "nl": "Stel de bedrijfsmodus in voor zone 2",
         "sv": "Ställ in driftläget för zon 2",
         "no": "Innstill driftsmodusen for sone 2",
+        "da": "Indstil driftstilstanden for zone 2",
         "es": "Configurar el modo de operación para la zona 2"
       },
       "titleFormatted": {
@@ -1249,6 +1352,7 @@
         "nl": "Stel de bedrijfsmodus in voor zone 2 op [[operation_mode_zone]]",
         "sv": "Ställ in driftläget för zon 2 till [[operation_mode_zone]]",
         "no": "Innstill driftsmodusen for sone 2 til [[operation_mode_zone]]",
+        "da": "Indstil driftstilstanden for zone 2 til [[operation_mode_zone]]",
         "es": "Configurar el modo de operación para la zona 2 a [[operation_mode_zone]]"
       },
       "args": [
@@ -1264,6 +1368,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -1275,6 +1380,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -1286,6 +1392,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             }
@@ -1302,6 +1409,7 @@
         "nl": "Stel de bedrijfsmodus in",
         "sv": "Ställ in driftläget",
         "no": "Innstill driftsmodusen",
+        "da": "Indstil driftstilstanden",
         "es": "Configurar el modo de operación"
       },
       "titleFormatted": {
@@ -1310,6 +1418,7 @@
         "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]]",
         "sv": "Ställ in driftläget till [[operation_mode_zone]]",
         "no": "Innstill driftsmodusen til [[operation_mode_zone]]",
+        "da": "Indstil driftstilstanden til [[operation_mode_zone]]",
         "es": "Configurar el modo de operación a [[operation_mode_zone]]"
       },
       "args": [
@@ -1325,6 +1434,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -1336,6 +1446,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -1347,6 +1458,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             },
@@ -1358,6 +1470,7 @@
                 "nl": "Binnentemperatuur - koeling",
                 "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
+                "da": "Indendørs føler - køling",
                 "es": "Temperatura interior - enfriamiento"
               }
             },
@@ -1369,6 +1482,7 @@
                 "nl": "Vaste stroomtemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
+                "da": "Fast fremløbstemperatur - køling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
             }
@@ -1385,6 +1499,7 @@
         "nl": "Stel de bedrijfsmodus in voor zone 2",
         "sv": "Ställ in driftläget för zon 2",
         "no": "Innstill driftsmodusen for sone 2",
+        "da": "Indstil driftstilstanden for zone 2",
         "es": "Configurar el modo de operación para la zona 2"
       },
       "titleFormatted": {
@@ -1393,6 +1508,7 @@
         "nl": "Stel de bedrijfsmodus in voor zone 2 op [[operation_mode_zone]]",
         "sv": "Ställ in driftläget för zon 2 till [[operation_mode_zone]]",
         "no": "Innstill driftsmodusen for sone 2 til [[operation_mode_zone]]",
+        "da": "Indstil driftstilstanden for zone 2 til [[operation_mode_zone]]",
         "es": "Configurar el modo de operación para la zona 2 a [[operation_mode_zone]]"
       },
       "args": [
@@ -1408,6 +1524,7 @@
                 "nl": "Binnentemperatuur",
                 "sv": "Inomhusgivare",
                 "no": "Innendørs føler",
+                "da": "Indendørs føler",
                 "es": "Temperatura interior"
               }
             },
@@ -1419,6 +1536,7 @@
                 "nl": "Vaste stroomtemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
+                "da": "Fast fremløbstemperatur",
                 "es": "Temperatura de flujo fija"
               }
             },
@@ -1430,6 +1548,7 @@
                 "nl": "Weerscompensatiecurve",
                 "sv": "Värmekurva",
                 "no": "Varmekurve",
+                "da": "Varmekurve",
                 "es": "Curva de compensación climática"
               }
             },
@@ -1441,6 +1560,7 @@
                 "nl": "Binnentemperatuur - koeling",
                 "sv": "Inomhusgivare - kylning",
                 "no": "Innendørs føler - kjøling",
+                "da": "Indendørs føler - køling",
                 "es": "Temperatura interior - enfriamiento"
               }
             },
@@ -1452,6 +1572,7 @@
                 "nl": "Vaste stroomtemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
+                "da": "Fast fremløbstemperatur - køling",
                 "es": "Temperatura de flujo fija - enfriamiento"
               }
             }
@@ -1467,6 +1588,7 @@
         "nl": "Stel de warmwatertemperatuur in",
         "sv": "Ställ in varmvattentemperaturen",
         "no": "Innstill varmtvanntemperaturen",
+        "da": "Indstil varmtvandstemperaturen",
         "es": "Configurar la temperatura del agua caliente"
       },
       "titleFormatted": {
@@ -1475,6 +1597,7 @@
         "nl": "Stel de warmwatertemperatuur in op [[target_temperature]]",
         "sv": "Ställ in varmvattentemperaturen till [[target_temperature]]",
         "no": "Innstill varmtvanntemperaturen til [[target_temperature]]",
+        "da": "Indstil varmtvandstemperaturen til [[target_temperature]]",
         "es": "Configurar la temperatura del agua caliente a [[target_temperature]]"
       },
       "args": [
@@ -1495,6 +1618,7 @@
         "nl": "Stel de temperatuur in voor zone 2",
         "sv": "Ställ in temperaturen för zon 2",
         "no": "Innstill temperaturen for sone 2",
+        "da": "Indstil temperaturen for zone 2",
         "es": "Configurar la temperatura para la zona 2"
       },
       "titleFormatted": {
@@ -1503,6 +1627,7 @@
         "nl": "Stel de temperatuur in voor zone 2 op [[target_temperature]]",
         "sv": "Ställ in temperaturen för zon 2 till [[target_temperature]]",
         "no": "Innstill temperaturen for sone 2 til [[target_temperature]]",
+        "da": "Indstil temperaturen for zone 2 til [[target_temperature]]",
         "es": "Configurar la temperatura para la zona 2 a [[target_temperature]]"
       },
       "args": [
@@ -1520,17 +1645,19 @@
       "title": {
         "en": "Set the cool flow temperature",
         "fr": "Définir la température du flux de refroidissement",
-        "nl": "Stel de koude stroomtemperatuur in",
-        "sv": "Ställ in framledningstemperaturen för kyla",
-        "no": "Innstill fremløpstemperaturen for kjølevann",
+        "nl": "Stel de koelstroomtemperatuur in",
+        "sv": "Ställ in kylframledningstemperaturen",
+        "no": "Innstill kjølfremløpstemperaturen",
+        "da": "Indstil kølfremløbstemperaturen",
         "es": "Configurar la temperatura del flujo de enfriamiento"
       },
       "titleFormatted": {
         "en": "Set the cool flow temperature to [[target_temperature]]",
         "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
-        "nl": "Stel de koude stroomtemperatuur in op [[target_temperature]]",
-        "sv": "Ställ in framledningstemperaturen för kyla till [[target_temperature]]",
-        "no": "Innstill fremløpstemperaturen for kjølevann til [[target_temperature]]",
+        "nl": "Stel de koelstroomtemperatuur in op [[target_temperature]]",
+        "sv": "Ställ in kylframledningstemperaturen till [[target_temperature]]",
+        "no": "Innstill kjølfremløpstemperaturen til [[target_temperature]]",
+        "da": "Indstil kølfremløbstemperaturen til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
       },
       "args": [
@@ -1550,6 +1677,7 @@
         "nl": "Stel de stroomtemperatuur in",
         "sv": "Ställ in framledningstemperaturen",
         "no": "Innstill fremløpstemperaturen",
+        "da": "Indstil fremløbstemperaturen",
         "es": "Configurar la temperatura del flujo"
       },
       "titleFormatted": {
@@ -1558,6 +1686,7 @@
         "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
         "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
         "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
+        "da": "Indstil fremløbstemperaturen til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo a [[target_temperature]]"
       },
       "args": [
@@ -1575,17 +1704,19 @@
       "title": {
         "en": "Set the cool flow temperature for zone 2",
         "fr": "Définir la température du flux de refroidissement pour la zone 2",
-        "nl": "Stel de koude stroomtemperatuur in voor zone 2",
-        "sv": "Ställ in framledningstemperaturen för kyla för zon 2",
-        "no": "Innstill fremløpstemperaturen for kjølevann for sone 2",
+        "nl": "Stel de koelstroomtemperatuur in voor zone 2",
+        "sv": "Ställ in kylframledningstemperaturen för zon 2",
+        "no": "Innstill kjølfremløpstemperaturen for sone 2",
+        "da": "Indstil kølfremløbstemperaturen for zone 2",
         "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
       },
       "titleFormatted": {
         "en": "Set the cool flow temperature for zone 2 to [[target_temperature]]",
         "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
-        "nl": "Stel de koude stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in framledningstemperaturen för kyla för zon 2 till [[target_temperature]]",
-        "no": "Innstill fremløpstemperaturen for kjølevann for sone 2 til [[target_temperature]]",
+        "nl": "Stel de koelstroomtemperatuur in voor zone 2 op [[target_temperature]]",
+        "sv": "Ställ in kylframledningstemperaturen för zon 2 till [[target_temperature]]",
+        "no": "Innstill kjølfremløpstemperaturen for sone 2 til [[target_temperature]]",
+        "da": "Indstil kølfremløbstemperaturen for zone 2 til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
       },
       "args": [
@@ -1606,6 +1737,7 @@
         "nl": "Stel de stroomtemperatuur in voor zone 2",
         "sv": "Ställ in framledningstemperaturen för zon 2",
         "no": "Innstill fremløpstemperaturen for sone 2",
+        "da": "Indstil fremløbstemperaturen for zone 2",
         "es": "Configurar la temperatura del flujo para la zona 2"
       },
       "titleFormatted": {
@@ -1614,6 +1746,7 @@
         "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
         "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
         "no": "Innstill fremløpstemperaturen for sone 2 til [[target_temperature]]",
+        "da": "Indstil fremløbstemperaturen for zone 2 til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
       },
       "args": [

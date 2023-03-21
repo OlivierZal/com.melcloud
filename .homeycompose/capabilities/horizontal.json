@@ -6,6 +6,7 @@
     "nl": "Uitblaasrichting horizontaal",
     "sv": "Horisontell luftflödesriktning",
     "no": "Horisontal luftflødesretning",
+    "da": "Horisontal luftflødesretning",
     "es": "Descarga de aire horizontal"
   },
   "getable": true,
@@ -21,6 +22,7 @@
         "nl": "Automatisch",
         "sv": "Automatiskt",
         "no": "Automatisk",
+        "da": "Automatisk",
         "es": "Automático"
       }
     },
@@ -32,6 +34,7 @@
         "nl": "Links",
         "sv": "Vänster",
         "no": "Venstre",
+        "da": "Venstre",
         "es": "Izquierda"
       }
     },
@@ -43,6 +46,7 @@
         "nl": "Midden-links",
         "sv": "Mitten-vänster",
         "no": "Middelvenstre",
+        "da": "Midt-venstre",
         "es": "Centro-izquierda"
       }
     },
@@ -54,6 +58,7 @@
         "nl": "Midden",
         "sv": "Mitten",
         "no": "Midten",
+        "da": "Midten",
         "es": "Centro"
       }
     },
@@ -65,6 +70,7 @@
         "nl": "Midden-rechts",
         "sv": "Mitten-höger",
         "no": "Middelhøyre",
+        "da": "Midt-højre",
         "es": "Centro-derecha"
       }
     },
@@ -76,6 +82,7 @@
         "nl": "Rechts",
         "sv": "Höger",
         "no": "Høyre",
+        "da": "Højre",
         "es": "Derecha"
       }
     },
@@ -87,6 +94,7 @@
         "nl": "Gesplitst",
         "sv": "Delad",
         "no": "Delt",
+        "da": "Delt",
         "es": "Dividida"
       }
     },
@@ -98,6 +106,7 @@
         "nl": "Swing",
         "sv": "Svängning",
         "no": "Sving",
+        "da": "Sving",
         "es": "Oscilación"
       }
     }

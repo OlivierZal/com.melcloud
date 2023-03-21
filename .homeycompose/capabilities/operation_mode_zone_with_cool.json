@@ -6,6 +6,7 @@
     "nl": "Bedrijfsmodus",
     "sv": "Driftläge",
     "no": "Driftsmodus",
+    "da": "Driftstilstand",
     "es": "Modo de operación"
   },
   "uiComponent": "picker",
@@ -22,6 +23,7 @@
         "nl": "Binnentemperatuur",
         "sv": "Inomhusgivare",
         "no": "Innendørs føler",
+        "da": "Indendørs føler",
         "es": "Temperatura interior"
       }
     },
@@ -33,6 +35,7 @@
         "nl": "Vaste stroomtemperatuur",
         "sv": "Fast framledningstemperatur",
         "no": "Fast fremløpstemperatur",
+        "da": "Fast fremløbstemperatur",
         "es": "Temperatura de flujo fija"
       }
     },
@@ -44,6 +47,7 @@
         "nl": "Weerscompensatiecurve",
         "sv": "Värmekurva",
         "no": "Varmekurve",
+        "da": "Varmekurve",
         "es": "Curva de compensación climática"
       }
     },
@@ -55,6 +59,7 @@
         "nl": "Binnentemperatuur - koeling",
         "sv": "Inomhusgivare - kylning",
         "no": "Innendørs føler - kjøling",
+        "da": "Indendørs føler - køling",
         "es": "Temperatura interior - enfriamiento"
       }
     },
@@ -66,6 +71,7 @@
         "nl": "Vaste stroomtemperatuur - koeling",
         "sv": "Fast framledningstemperatur - kylning",
         "no": "Fast fremløpstemperatur - kjøling",
+        "da": "Fast fremløbstemperatur - køling",
         "es": "Temperatura de flujo fija - enfriamiento"
       }
     }

@@ -26,6 +26,7 @@
           "nl": "Gebruikersnaam",
           "sv": "Användarnamn",
           "no": "Brukernavn",
+          "da": "Brugernavn",
           "es": "Nombre de usuario"
         },
         "usernamePlaceholder": {
@@ -34,6 +35,7 @@
           "nl": "gebruiker@domain.nl",
           "sv": "anvandare@domain.se",
           "no": "bruker@domain.no",
+          "da": "bruger@domain.dk",
           "es": "usuario@domain.es"
         },
         "passwordLabel": {
@@ -42,6 +44,7 @@
           "nl": "Wachtwoord",
           "sv": "Lösenord",
           "no": "Passord",
+          "da": "Adgangskode",
           "es": "Contraseña"
         },
         "passwordPlaceholder": {
@@ -50,6 +53,7 @@
           "nl": "P4ssw0rd",
           "sv": "P4ssw0rd",
           "no": "P4ssw0rd",
+          "da": "P4ssw0rd",
           "es": "P4ssw0rd"
         }
       }
@@ -78,6 +82,7 @@
           "nl": "Gebruikersnaam",
           "sv": "Användarnamn",
           "no": "Brukernavn",
+          "da": "Brugernavn",
           "es": "Nombre de usuario"
         },
         "usernamePlaceholder": {
@@ -86,6 +91,7 @@
           "nl": "gebruiker@domain.nl",
           "sv": "anvandare@domain.se",
           "no": "bruker@domain.no",
+          "da": "bruger@domain.dk",
           "es": "usuario@domain.es"
         },
         "passwordLabel": {
@@ -94,6 +100,7 @@
           "nl": "Wachtwoord",
           "sv": "Lösenord",
           "no": "Passord",
+          "da": "Adgangskode",
           "es": "Contraseña"
         },
         "passwordPlaceholder": {
@@ -102,6 +109,7 @@
           "nl": "P4ssw0rd",
           "sv": "P4ssw0rd",
           "no": "P4ssw0rd",
+          "da": "P4ssw0rd",
           "es": "P4ssw0rd"
         }
       }

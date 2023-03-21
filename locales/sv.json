@@ -2,7 +2,7 @@
   "app": {
     "building": {
       "no_device": "Byggnaden __buildingId__ har ingen enhet.",
-      "not_found": "Byggnaden __buildingId__ kan inte hittas."
+      "not_found": "Byggnaden __buildingId__ kunde inte hittas."
     },
     "holiday_mode": {
       "date_missing": "Startdatum och/eller slutdatum saknas."

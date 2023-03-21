@@ -19,8 +19,8 @@
     },
     "authenticate": {
       "button": "S'authentifier",
-      "password": "Mot de passe",
       "label": "Identifiants",
+      "password": "Mot de passe",
       "username": "Nom d'utilisateur"
     },
     "boolean": {

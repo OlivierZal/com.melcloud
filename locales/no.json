@@ -1,8 +1,8 @@
 {
   "app": {
     "building": {
-      "no_device": "Bygning __buildingId__ har ingen enhet.",
-      "not_found": "Bygning __buildingId__ kan ikke bli funnet."
+      "no_device": "Bygningen __buildingId__ har ingen enhet.",
+      "not_found": "Bygningen __buildingId__ ble ikke funnet."
     },
     "holiday_mode": {
       "date_missing": "Startdato og/eller sluttdato mangler."
@@ -44,7 +44,7 @@
       "update": "Oppdater"
     },
     "devices": {
-      "always_on": "Deaktiver avslåing fra Homey",
+      "always_on": "Deaktiver avstenging fra Homey",
       "apply": {
         "button": "Bruk på alle enheter",
         "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
@@ -80,7 +80,7 @@
     "title": "MELCloud-innstillinger"
   },
   "warnings": {
-    "always_on": "Avslåing fra Homey er deaktivert.",
+    "always_on": "Avstenging fra Homey er deaktivert.",
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
     "display_error": "Oppdatering vellykket (selv om en annen verdi vises)."
   }
