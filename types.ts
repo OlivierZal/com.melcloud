@@ -25,23 +25,24 @@ export interface FailureData extends SuccessData {
   readonly AttributeErrors: Record<string, string[]>
 }
 
-interface SetCapabilitiesAta {
+interface SetCapabilitiesMixin {
   onoff?: boolean
-  operation_mode?: string
   target_temperature?: number
+}
+
+interface SetCapabilitiesAta extends SetCapabilitiesMixin {
+  operation_mode?: string
   fan_power?: number
   vertical?: string
   horizontal?: string
 }
 
-interface SetCapabilitiesAtw {
-  onoff?: boolean
+interface SetCapabilitiesAtw extends SetCapabilitiesMixin {
   'operation_mode_zone.zone1'?: string
   'operation_mode_zone_with_cool.zone1'?: string
   'operation_mode_zone.zone2'?: string
   'operation_mode_zone_with_cool.zone2'?: string
   'onoff.forced_hot_water'?: boolean
-  target_temperature?: number
   'target_temperature.zone2'?: number
   'target_temperature.zone1_flow_cool'?: number
   'target_temperature.zone1_flow_heat'?: number
@@ -53,13 +54,14 @@ interface SetCapabilitiesAtw {
 export type SetCapabilities<T extends MELCloudDevice> =
   T extends MELCloudDeviceAtw ? SetCapabilitiesAtw : SetCapabilitiesAta
 
-interface GetCapabilitiesAta {
+interface GetCapabilitiesMixin {
   readonly measure_temperature: number
 }
 
-interface GetCapabilitiesAtw {
+interface GetCapabilitiesAta extends GetCapabilitiesMixin {}
+
+interface GetCapabilitiesAtw extends GetCapabilitiesMixin {
   readonly 'alarm_generic.eco_hot_water': boolean
-  readonly measure_temperature: number
   readonly 'measure_temperature.zone2': number
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
@@ -68,25 +70,26 @@ interface GetCapabilitiesAtw {
   readonly 'operation_mode_state.zone2': number
 }
 
-interface ListCapabilitiesAta {
+interface ListCapabilitiesMixin {
   readonly 'measure_power.wifi': number
 }
 
-interface ListCapabilitiesAtw {
+interface ListCapabilitiesAta extends ListCapabilitiesMixin {}
+
+interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
   readonly 'alarm_generic.defrost_mode': boolean
   readonly 'alarm_generic.immersion_heater': boolean
-  readonly 'measure_power.heat_pump_frequency': boolean
-  readonly 'measure_power.wifi': number
-  readonly 'measure_temperature.flow': boolean
-  readonly 'measure_temperature.flow_zone1': boolean
-  readonly 'measure_temperature.flow_zone2': boolean
-  readonly 'measure_temperature.return': boolean
-  readonly 'measure_temperature.return_zone1': boolean
-  readonly 'measure_temperature.return_zone2': boolean
-  readonly 'measure_temperature.tank_water_mixing': boolean
+  readonly 'measure_power.heat_pump_frequency': number
+  readonly 'measure_temperature.flow': number
+  readonly 'measure_temperature.flow_zone1': number
+  readonly 'measure_temperature.flow_zone2': number
+  readonly 'measure_temperature.return': number
+  readonly 'measure_temperature.return_zone1': number
+  readonly 'measure_temperature.return_zone2': number
+  readonly 'measure_temperature.tank_water_mixing': number
 }
 
 interface ReportCapabilitiesAta {
@@ -183,23 +186,24 @@ export type OperationModeZoneCapbility =
   | 'operation_mode_zone_with_cool.zone1'
   | 'operation_mode_zone_with_cool.zone2'
 
-interface SetDeviceDataAta {
+interface SetDeviceDataMixin {
   readonly EffectiveFlags: number
+  readonly Power?: number
+}
+
+interface SetDeviceDataAta extends SetDeviceDataMixin {
   readonly OperationMode?: number
-  readonly Power?: boolean
   readonly SetTemperature?: number
   readonly SetFanSpeed?: number
   readonly VaneVertical?: number
   readonly VaneHorizontal?: number
 }
 
-interface SetDeviceDataAtw {
-  readonly EffectiveFlags: number
+interface SetDeviceDataAtw extends SetDeviceDataMixin {
   readonly ForcedHotWaterMode?: boolean
   readonly OperationModeZone1?: number
   readonly OperationModeZone2?: number
   readonly OutdoorTemperature?: number
-  readonly Power?: boolean
   readonly SetCoolFlowTemperatureZone1?: number
   readonly SetCoolFlowTemperatureZone2?: number
   readonly SetHeatFlowTemperatureZone1?: number
@@ -232,14 +236,16 @@ type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? GetDeviceDataAtw
   : GetDeviceDataAta
 
-interface ListDeviceDataAta {
+interface ListDeviceDataMixin {
   readonly CanCool: boolean
   readonly DeviceType: number
   readonly HasZone2: boolean
   readonly WifiSignalStrength: number
 }
 
-interface ListDeviceDataAtw extends ListDeviceDataAta {
+interface ListDeviceDataAta extends ListDeviceDataMixin {}
+
+interface ListDeviceDataAtw extends ListDeviceDataMixin {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
