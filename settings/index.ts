@@ -199,13 +199,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           errorCount,
           errorCountText: getErrorCountText(errorCount)
         })
+        if (hasErrorLogElement.style.display !== 'block') {
+          hasErrorLogElement.style.display = 'block'
+        }
         if (data.Errors.length === 0) {
           return
         }
         if (tableElement !== null) {
           if (!hasLoadedTableHead) {
             generateTableHead(tableElement, Object.keys(data.Errors[0]))
-            hasErrorLogElement.style.display = 'block'
           }
           generateTable(tableElement, data.Errors)
         }
