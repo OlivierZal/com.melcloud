@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "12.2.1",
+  "version": "12.2.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -2323,7 +2323,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -2393,7 +2393,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -2463,7 +2463,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -2499,7 +2499,7 @@
                   "nl": "Vaste stroomtemperatuur - koeling",
                   "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremløbstemperatur - køling",
+                  "da": "Fast fremledningstemperatur - køling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
               }
@@ -2557,7 +2557,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -2593,7 +2593,7 @@
                   "nl": "Vaste stroomtemperatuur - koeling",
                   "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremløbstemperatur - køling",
+                  "da": "Fast fremledningstemperatur - køling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
               }
@@ -3354,7 +3354,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -3424,7 +3424,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -3494,7 +3494,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -3530,7 +3530,7 @@
                   "nl": "Vaste stroomtemperatuur - koeling",
                   "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremløbstemperatur - køling",
+                  "da": "Fast fremledningstemperatur - køling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
               }
@@ -3588,7 +3588,7 @@
                   "nl": "Vaste stroomtemperatuur",
                   "sv": "Fast framledningstemperatur",
                   "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremløbstemperatur",
+                  "da": "Fast fremledningstemperatur",
                   "es": "Temperatura de flujo fija"
                 }
               },
@@ -3624,7 +3624,7 @@
                   "nl": "Vaste stroomtemperatuur - koeling",
                   "sv": "Fast framledningstemperatur - kylning",
                   "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremløbstemperatur - køling",
+                  "da": "Fast fremledningstemperatur - køling",
                   "es": "Temperatura de flujo fija - enfriamiento"
                 }
               }
@@ -3707,8 +3707,8 @@
           "fr": "Définir la température du flux de refroidissement",
           "nl": "Stel de koelstroomtemperatuur in",
           "sv": "Ställ in kylframledningstemperaturen",
-          "no": "Innstill kjølfremløpstemperaturen",
-          "da": "Indstil kølfremløbstemperaturen",
+          "no": "Innstill kjølefremløpstemperaturen",
+          "da": "Indstil kølefremledningstemperaturen",
           "es": "Configurar la temperatura del flujo de enfriamiento"
         },
         "titleFormatted": {
@@ -3716,8 +3716,8 @@
           "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
           "nl": "Stel de koelstroomtemperatuur in op [[target_temperature]]",
           "sv": "Ställ in kylframledningstemperaturen till [[target_temperature]]",
-          "no": "Innstill kjølfremløpstemperaturen til [[target_temperature]]",
-          "da": "Indstil kølfremløbstemperaturen til [[target_temperature]]",
+          "no": "Innstill kjølefremløpstemperaturen til [[target_temperature]]",
+          "da": "Indstil kølefremledningstemperaturen til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
         },
         "args": [
@@ -3742,7 +3742,7 @@
           "nl": "Stel de stroomtemperatuur in",
           "sv": "Ställ in framledningstemperaturen",
           "no": "Innstill fremløpstemperaturen",
-          "da": "Indstil fremløbstemperaturen",
+          "da": "Indstil fremledningstemperaturen",
           "es": "Configurar la temperatura del flujo"
         },
         "titleFormatted": {
@@ -3751,7 +3751,7 @@
           "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
           "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
-          "da": "Indstil fremløbstemperaturen til [[target_temperature]]",
+          "da": "Indstil fremledningstemperaturen til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo a [[target_temperature]]"
         },
         "args": [
@@ -3775,8 +3775,8 @@
           "fr": "Définir la température du flux de refroidissement pour la zone 2",
           "nl": "Stel de koelstroomtemperatuur in voor zone 2",
           "sv": "Ställ in kylframledningstemperaturen för zon 2",
-          "no": "Innstill kjølfremløpstemperaturen for sone 2",
-          "da": "Indstil kølfremløbstemperaturen for zone 2",
+          "no": "Innstill kjølefremløpstemperaturen for sone 2",
+          "da": "Indstil kølefremledningstemperaturen for zone 2",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
         },
         "titleFormatted": {
@@ -3784,8 +3784,8 @@
           "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
           "nl": "Stel de koelstroomtemperatuur in voor zone 2 op [[target_temperature]]",
           "sv": "Ställ in kylframledningstemperaturen för zon 2 till [[target_temperature]]",
-          "no": "Innstill kjølfremløpstemperaturen for sone 2 til [[target_temperature]]",
-          "da": "Indstil kølfremløbstemperaturen for zone 2 til [[target_temperature]]",
+          "no": "Innstill kjølefremløpstemperaturen for sone 2 til [[target_temperature]]",
+          "da": "Indstil kølefremledningstemperaturen for zone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
         },
         "args": [
@@ -3810,7 +3810,7 @@
           "nl": "Stel de stroomtemperatuur in voor zone 2",
           "sv": "Ställ in framledningstemperaturen för zon 2",
           "no": "Innstill fremløpstemperaturen for sone 2",
-          "da": "Indstil fremløbstemperaturen for zone 2",
+          "da": "Indstil fremledningstemperaturen for zone 2",
           "es": "Configurar la temperatura del flujo para la zona 2"
         },
         "titleFormatted": {
@@ -3819,7 +3819,7 @@
           "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
           "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
           "no": "Innstill fremløpstemperaturen for sone 2 til [[target_temperature]]",
-          "da": "Indstil fremløbstemperaturen for zone 2 til [[target_temperature]]",
+          "da": "Indstil fremledningstemperaturen for zone 2 til [[target_temperature]]",
           "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
         },
         "args": [
@@ -5247,7 +5247,7 @@
             "nl": "Doorstroomtemperatuur",
             "sv": "Framledningstemperatur",
             "no": "Fremløpstemperatur",
-            "da": "Fremløbstemperatur",
+            "da": "Fremledningstemperatur",
             "es": "Temperatura de flujo"
           }
         },
@@ -5258,7 +5258,7 @@
             "nl": "Doorstroomtemperatuur (externe sensor)",
             "sv": "Framledningstemperatur (extern sensor)",
             "no": "Fremløpstemperatur (ekstern sensor)",
-            "da": "Fremløbstemperatur (ekstern sensor)",
+            "da": "Fremledningstemperatur (ekstern sensor)",
             "es": "Temperatura de flujo (sensor externo)"
           }
         },
@@ -5269,7 +5269,7 @@
             "nl": "Doorstroomtemperatuur - zone 2 (externe sensor)",
             "sv": "Framledningstemperatur - zon 2 (extern sensor)",
             "no": "Fremløpstemperatur - sone 2 (ekstern sensor)",
-            "da": "Fremløbstemperatur - zone 2 (ekstern sensor)",
+            "da": "Fremledningstemperatur - zone 2 (ekstern sensor)",
             "es": "Temperatura de flujo - zona 2 (sensor externo)"
           }
         },
@@ -5789,9 +5789,9 @@
             "en": "Cool flow target temperature",
             "fr": "Température cible du flux de refroidissement",
             "nl": "Ingestelde koelstroomtemperatuur",
-            "sv": "Måltemperatur för kylframledningen",
-            "no": "Ønsket temperatur for kjølfremløp",
-            "da": "Måltemperatur for kølfremløb",
+            "sv": "Måltemperatur för kylframledning",
+            "no": "Ønsket temperatur for kjølefremløp",
+            "da": "Måltemperatur for kølefremledning",
             "es": "Temperatura configurada del flujo de enfriamiento"
           },
           "min": 10,
@@ -5804,7 +5804,7 @@
             "nl": "Ingestelde stroomtemperatuur",
             "sv": "Måltemperatur för framledning",
             "no": "Ønsket temperatur for fremløp",
-            "da": "Måltemperatur for fremløb",
+            "da": "Måltemperatur for fremledning",
             "es": "Temperatura configurada del flujo"
           },
           "min": 25,
@@ -5828,9 +5828,9 @@
             "en": "Cool flow target temperature - zone 2",
             "fr": "Température cible du flux de refroidissement - zone 2",
             "nl": "Ingestelde koelstroomtemperatuur - zone 2",
-            "sv": "Måltemperatur för kylframledningen - zon 2",
-            "no": "Ønsket temperatur for kjølfremløp - sone 2",
-            "da": "Måltemperatur for kølfremløb - zone 2",
+            "sv": "Måltemperatur för kylframledning - zon 2",
+            "no": "Ønsket temperatur for kjølefremløp - sone 2",
+            "da": "Måltemperatur for kølefremledning - zone 2",
             "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
           },
           "min": 10,
@@ -5843,7 +5843,7 @@
             "nl": "Ingestelde stroomtemperatuur - zone 2",
             "sv": "Måltemperatur för framledning - zon 2",
             "no": "Ønsket temperatur for fremløp - sone 2",
-            "da": "Måltemperatur for fremløb - zone 2",
+            "da": "Måltemperatur for fremledning - zone 2",
             "es": "Temperatura configurada del flujo - zona 2"
           },
           "min": 25,
@@ -7109,7 +7109,7 @@
             "nl": "Vaste stroomtemperatuur",
             "sv": "Fast framledningstemperatur",
             "no": "Fast fremløpstemperatur",
-            "da": "Fast fremløbstemperatur",
+            "da": "Fast fremledningstemperatur",
             "es": "Temperatura de flujo fija"
           }
         },
@@ -7164,7 +7164,7 @@
             "nl": "Vaste stroomtemperatuur",
             "sv": "Fast framledningstemperatur",
             "no": "Fast fremløpstemperatur",
-            "da": "Fast fremløbstemperatur",
+            "da": "Fast fremledningstemperatur",
             "es": "Temperatura de flujo fija"
           }
         },
@@ -7200,7 +7200,7 @@
             "nl": "Vaste stroomtemperatuur - koeling",
             "sv": "Fast framledningstemperatur - kylning",
             "no": "Fast fremløpstemperatur - kjøling",
-            "da": "Fast fremløbstemperatur - køling",
+            "da": "Fast fremledningstemperatur - køling",
             "es": "Temperatura de flujo fija - enfriamiento"
           }
         }

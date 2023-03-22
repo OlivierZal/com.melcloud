@@ -40,7 +40,7 @@
         "end_date": "Sluttdato",
         "start_date": "Startdato"
       },
-      "refresh": "Oppfrisk",
+      "refresh": "Gjenta",
       "update": "Oppdater"
     },
     "devices": {

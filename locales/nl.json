@@ -40,7 +40,7 @@
         "end_date": "Einddatum",
         "start_date": "Begindatum"
       },
-      "refresh": "Verversen",
+      "refresh": "Herladen",
       "update": "Updaten"
     },
     "devices": {

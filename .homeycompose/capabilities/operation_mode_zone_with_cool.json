@@ -35,7 +35,7 @@
         "nl": "Vaste stroomtemperatuur",
         "sv": "Fast framledningstemperatur",
         "no": "Fast fremløpstemperatur",
-        "da": "Fast fremløbstemperatur",
+        "da": "Fast fremledningstemperatur",
         "es": "Temperatura de flujo fija"
       }
     },
@@ -71,7 +71,7 @@
         "nl": "Vaste stroomtemperatuur - koeling",
         "sv": "Fast framledningstemperatur - kylning",
         "no": "Fast fremløpstemperatur - kjøling",
-        "da": "Fast fremløbstemperatur - køling",
+        "da": "Fast fremledningstemperatur - køling",
         "es": "Temperatura de flujo fija - enfriamiento"
       }
     }
