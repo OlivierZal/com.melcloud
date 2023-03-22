@@ -55,17 +55,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const isNotAuthenticatedElement: HTMLDivElement = document.getElementById(
     'is-not-authenticated'
   ) as HTMLDivElement
+  const hasErrorLogElement: HTMLDivElement = document.getElementById(
+    'has-error-log'
+  ) as HTMLDivElement
 
   const periodElement: HTMLLabelElement = document.getElementById(
     'period'
   ) as HTMLLabelElement
 
-  const usernameElement: HTMLInputElement = document.getElementById(
-    'username'
-  ) as HTMLInputElement
-  const passwordElement: HTMLInputElement = document.getElementById(
-    'password'
-  ) as HTMLInputElement
   const fromElement: HTMLInputElement = document.getElementById(
     'from'
   ) as HTMLInputElement
@@ -81,6 +78,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   ) as HTMLInputElement
   const intervalElement: HTMLInputElement = document.getElementById(
     'interval'
+  ) as HTMLInputElement
+  const passwordElement: HTMLInputElement = document.getElementById(
+    'password'
+  ) as HTMLInputElement
+  const usernameElement: HTMLInputElement = document.getElementById(
+    'username'
   ) as HTMLInputElement
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
@@ -202,6 +205,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         if (tableElement !== null) {
           if (!hasLoadedTableHead) {
             generateTableHead(tableElement, Object.keys(data.Errors[0]))
+            hasErrorLogElement.style.display = 'block'
           }
           generateTable(tableElement, data.Errors)
         }
@@ -369,9 +373,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   async function hasAuthenticated(): Promise<void> {
     const isBuilding: boolean = await getBuildings()
     if (isBuilding) {
+      generateErrorLog()
       isNotAuthenticatedElement.style.display = 'none'
       isAuthenticatedElement.style.display = 'block'
-      generateErrorLog()
     } else {
       // @ts-expect-error bug
       await Homey.alert(Homey.__('settings.buildings.error'))

@@ -48,23 +48,25 @@
       </fieldset>
     </div>
     <div id="is-authenticated" style="display: none">
-      <fieldset class="homey-form-fieldset">
-        <legend
-          class="homey-form-legend"
-          id="error-log"
-          data-i18n="settings.error_log.label"
-        ></legend>
-        <div class="homey-form-group">
-          <label class="homey-form-label" id="period"></label>
-          <table aria-describedby="error-log"></table>
-        </div>
-        <button
-          id="see"
-          class="homey-button-secondary"
-          data-i18n="settings.error_log.see"
-        ></button>
-        <input id="from" type="date" value="" />
-      </fieldset>
+      <div id="has-error-log" style="display: none">
+        <fieldset class="homey-form-fieldset">
+          <legend
+            class="homey-form-legend"
+            id="error-log"
+            data-i18n="settings.error_log.label"
+          ></legend>
+          <div class="homey-form-group">
+            <label class="homey-form-label" id="period"></label>
+            <table aria-describedby="error-log"></table>
+          </div>
+          <button
+            id="see"
+            class="homey-button-secondary"
+            data-i18n="settings.error_log.see"
+          ></button>
+          <input id="from" type="date" value="" />
+        </fieldset>
+      </div>
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
