@@ -18,7 +18,7 @@
       "success": "__action__ a réussi."
     },
     "authenticate": {
-      "button": "S'authentifier",
+      "button": "Se connecter",
       "label": "Identifiants",
       "password": "Mot de passe",
       "username": "Nom d'utilisateur"
