@@ -220,13 +220,13 @@
       "id": "operation_mode_state.zone1_changed",
       "$filter": "capabilities=operation_mode_state.zone1",
       "title": {
-        "en": "The current operation for zone 1 has changed",
-        "fr": "L'opération en cours pour la zone 1 a été modifiée",
-        "nl": "De huidige bedrijf voor zone 1 is veranderd",
-        "sv": "Aktuell drift för zon 1 ändrades",
-        "no": "Gjeldende drift for sone 1 ble endret",
-        "da": "Den aktuelle drift for zone 1 er blevet ændret",
-        "es": "La operación actual para la zona 1 ha cambiado"
+        "en": "The current operation has changed in zone 1",
+        "fr": "L'opération en cours a été modifiée dans la zone 2",
+        "nl": "De huidige bedrijf is veranderd in zone 1",
+        "sv": "Aktuell drift ändrades i zon 1",
+        "no": "Gjeldende drift ble endret i sone 1",
+        "da": "Den aktuelle drift er blevet ændret i zone 1",
+        "es": "La operación actual ha cambiado en zona 1"
       },
       "tokens": [
         {
@@ -257,13 +257,13 @@
       "id": "operation_mode_state.zone2_changed",
       "$filter": "capabilities=operation_mode_state.zone2",
       "title": {
-        "en": "The current operation for zone 2 has changed",
-        "fr": "L'opération en cours pour la zone 2 a été modifiée",
-        "nl": "De huidige bedrijf voor zone 2 is veranderd",
-        "sv": "Aktuell drift för zon 2 ändrades",
-        "no": "Gjeldende drift for sone 2 ble endret",
-        "da": "Den aktuelle drift for zone 2 er blevet ændret",
-        "es": "La operación actual para la zona 2 ha cambiado"
+        "en": "The current operation has changed in zone 2",
+        "fr": "L'opération en cours a été modifiée dans la zone 2",
+        "nl": "De huidige bedrijf is veranderd in zone 2",
+        "sv": "Aktuell drift ändrades i zon 2",
+        "no": "Gjeldende drift ble endret i sone 2",
+        "da": "Den aktuelle drift er blevet ændret i zone 2",
+        "es": "La operación actual ha cambiado en zona 2"
       },
       "tokens": [
         {
@@ -331,26 +331,26 @@
       "id": "operation_mode_zone.zone2_changed",
       "$filter": "capabilities=operation_mode_zone.zone2",
       "title": {
-        "en": "The operation mode for zone 2 has changed",
-        "fr": "Le mode opérationnel pour la zone 2 a été modifié",
-        "nl": "De bedrijfsmodus voor zone 2 is veranderd",
-        "sv": "Driftläget för zon 2 ändrades",
-        "no": "Driftsmodusen for sone 2 ble endret",
-        "da": "Driftstilstanden for zone 2 er blevet ændret",
-        "es": "El modo de operación para la zona 2 ha cambiado"
+        "en": "The operation mode has changed in zone 2",
+        "fr": "Le mode opérationnel a été modifié dans la zone 2",
+        "nl": "De bedrijfsmodus is veranderd in zone 2",
+        "sv": "Driftläget ändrades i zon 2",
+        "no": "Driftsmodusen ble endret i sone 2",
+        "da": "Driftstilstanden er blevet ændret i zone 2",
+        "es": "El modo de operación ha cambiado en zona 2"
       },
       "tokens": [
         {
           "name": "operation_mode_zone.zone2",
           "type": "string",
           "title": {
-            "en": "Operation mode for zone 2",
-            "fr": "Mode opérationnel pour la zone 2",
-            "nl": "Bedrijfsmodus voor zone 2",
-            "sv": "Driftläge för zon 2",
-            "no": "Driftsmodus for sone 2",
-            "da": "Driftstilstand for zone 2",
-            "es": "Modo de operación para la zona 2"
+            "en": "Operation mode in zone 2",
+            "fr": "Mode opérationnel dans la zone 2",
+            "nl": "Bedrijfsmodus in zone 2",
+            "sv": "Driftläge i zon 2",
+            "no": "Driftsmodus i sone 2",
+            "da": "Driftstilstand i zone 2",
+            "es": "Modo de operación en zona 2"
           },
           "example": {
             "en": "Weather compensation curve",
@@ -405,26 +405,26 @@
       "id": "operation_mode_zone_with_cool.zone2_changed",
       "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
       "title": {
-        "en": "The operation mode for zone 2 has changed",
-        "fr": "Le mode opérationnel pour la zone 2 a été modifié",
-        "nl": "De bedrijfsmodus voor zone 2 is veranderd",
-        "sv": "Driftläget för zon 2 ändrades",
-        "no": "Driftsmodusen for sone 2 ble endret",
-        "da": "Driftstilstanden for zone 2 er blevet ændret",
-        "es": "El modo de operación para la zona 2 ha cambiado"
+        "en": "The operation mode has changed in zone 2",
+        "fr": "Le mode opérationnel a été modifié dans la zone 2",
+        "nl": "De bedrijfsmodus is veranderd in zone 2",
+        "sv": "Driftläget ändrades i zon 2",
+        "no": "Driftsmodusen ble endret i sone 2",
+        "da": "Driftstilstanden er blevet ændret i zone 2",
+        "es": "El modo de operación ha cambiado en zona 2"
       },
       "tokens": [
         {
           "name": "operation_mode_zone_with_cool.zone2",
           "type": "string",
           "title": {
-            "en": "Operation mode for zone 2",
-            "fr": "Mode opérationnel pour la zone 2",
-            "nl": "Bedrijfsmodus voor zone 2",
-            "sv": "Driftläge för zon 2",
-            "no": "Driftsmodus for sone 2",
-            "da": "Driftstilstand for zone 2",
-            "es": "Modo de operación para la zona 2"
+            "en": "Operation mode in zone 2",
+            "fr": "Mode opérationnel dans la zone 2",
+            "nl": "Bedrijfsmodus in zone 2",
+            "sv": "Driftläge i zon 2",
+            "no": "Driftsmodus i sone 2",
+            "da": "Driftstilstand i zone 2",
+            "es": "Modo de operación en zona 2"
           },
           "example": {
             "en": "Weather compensation curve",
@@ -647,22 +647,22 @@
       "id": "operation_mode_state.zone1_condition",
       "$filter": "capabilities=operation_mode_state.zone1",
       "title": {
-        "en": "The current operation for zone 1 !{{is|is not}}",
-        "fr": "L'opération en cours pour la zone 1 !{{est|n'est pas}}",
-        "nl": "De huidige bedrijf voor zone 1 !{{is|is niet}}",
-        "sv": "Aktuell drift för zon 1 !{{är|är inte}}",
-        "no": "Gjeldende drift for sone 1 !{{er|er ikke}}",
-        "da": "Aktuel drift for zone 1 !{{er|er ikke}}",
-        "es": "La operación actual para la zona 1 !{{está|no está}}"
+        "en": "The current operation !{{is|is not}} in zone 1",
+        "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 2",
+        "nl": "De huidige bedrijf !{{is|is niet}} in zone 1",
+        "sv": "Aktuell drift !{{är|är inte}} i zon 1",
+        "no": "Gjeldende drift !{{er|er ikke}} i sone 1",
+        "da": "Aktuel drift !{{er|er ikke}} i zone 1",
+        "es": "La operación actual !{{está|no está}} en zona 1"
       },
       "titleFormatted": {
-        "en": "The current operation for zone 1 !{{is|is not}} [[operation_mode_state]]",
-        "fr": "L'opération en cours pour la zone 1 !{{est|n'est pas}} [[operation_mode_state]]",
-        "nl": "De huidige bedrijf voor zone 1 !{{is|is niet}} [[operation_mode_state]]",
-        "sv": "Aktuell drift för zon 1 !{{är|är inte}} [[operation_mode_state]]",
-        "no": "Gjeldende drift for sone 1 !{{er|er ikke}} [[operation_mode_state]]",
-        "da": "Aktuel drift for zone 1 !{{er|er ikke}} [[operation_mode_state]]",
-        "es": "La operación actual para la zona 1 !{{está|no está}} [[operation_mode_state]]"
+        "en": "The current operation !{{is|is not}} [[operation_mode_state]] in zone 1",
+        "fr": "L'opération en cours !{{est|n'est pas}} [[operation_mode_state]] dans la zone 2",
+        "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] in zone 1",
+        "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] i zon 1",
+        "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] i sone 1",
+        "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] i zone 1",
+        "es": "La operación actual !{{está|no está}} [[operation_mode_state]] en zona 1"
       },
       "args": [
         {
@@ -761,22 +761,22 @@
       "id": "operation_mode_state.zone2_condition",
       "$filter": "capabilities=operation_mode_state.zone2",
       "title": {
-        "en": "The current operation for zone 2 !{{is|is not}}",
-        "fr": "L'opération en cours pour la zone 2 !{{est|n'est pas}}",
-        "nl": "De huidige bedrijf voor zone 2 !{{is|is niet}}",
-        "sv": "Aktuell drift för zon 2 !{{är|är inte}}",
-        "no": "Gjeldende drift for sone 2 !{{er|er ikke}}",
-        "da": "Aktuel drift for zone 2 !{{er|er ikke}}",
-        "es": "La operación actual para la zona 2 !{{está|no está}}"
+        "en": "The current operation !{{is|is not}} i zone 2",
+        "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 2",
+        "nl": "De huidige bedrijf !{{is|is niet}} in zone 2",
+        "sv": "Aktuell drift !{{är|är inte}} i zon 2",
+        "no": "Gjeldende drift !{{er|er ikke}} i sone 2",
+        "da": "Aktuel drift !{{er|er ikke}} in zone 2",
+        "es": "La operación actual !{{está|no está}} en zona 2"
       },
       "titleFormatted": {
-        "en": "The current operation for zone 2 !{{is|is not}} [[operation_mode_state]]",
-        "fr": "L'opération en cours pour la zone 2 !{{est|n'est pas}} [[operation_mode_state]]",
-        "nl": "De huidige bedrijf voor zone 2 !{{is|is niet}} [[operation_mode_state]]",
-        "sv": "Aktuell drift för zon 2 !{{är|är inte}} [[operation_mode_state]]",
-        "no": "Gjeldende drift for sone 2 !{{er|er ikke}} [[operation_mode_state]]",
-        "da": "Aktuel drift for zone 2 !{{er|er ikke}} [[operation_mode_state]]",
-        "es": "La operación actual para la zona 2 !{{está|no está}} [[operation_mode_state]]"
+        "en": "The current operation !{{is|is not}} [[operation_mode_state]] i zone 2",
+        "fr": "L'opération en cours !{{est|n'est pas}} [[operation_mode_state]] dans la zone 2",
+        "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] in zone 2",
+        "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] i zon 2",
+        "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] i sone 2",
+        "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] in zone 2",
+        "es": "La operación actual !{{está|no está}} [[operation_mode_state]] en zona 2"
       },
       "args": [
         {
@@ -914,7 +914,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -941,22 +941,22 @@
       "id": "operation_mode_zone2_condition",
       "$filter": "capabilities=operation_mode_zone.zone2",
       "title": {
-        "en": "The operation mode for zone 2 !{{is|is not}}",
-        "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}}",
-        "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}}",
-        "sv": "Driftläget för zon 2 !{{är|är inte}}",
-        "no": "Driftsmodusen for sone 2 !{{er|er ikke}}",
-        "da": "Driftstilstanden for zone 2 !{{er|er ikke}}",
-        "es": "El modo de operación para la zona 2 !{{está|no está}}"
+        "en": "The operation mode !{{is|is not}} in zone 2",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
+        "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
+        "sv": "Driftläget !{{är|är inte}} i zon 2",
+        "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
+        "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
+        "es": "El modo de operación !{{está|no está}} en zona 2"
       },
       "titleFormatted": {
-        "en": "The operation mode for zone 2 !{{is|is not}} [[operation_mode_zone]]",
-        "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}} [[operation_mode_zone]]",
-        "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}} [[operation_mode_zone]]",
-        "sv": "Driftläget för zon 2 !{{är|är inte}} [[operation_mode_zone]]",
-        "no": "Driftsmodusen for sone 2 !{{er|er ikke}} [[operation_mode_zone]]",
-        "da": "Driftstilstanden for zone 2 !{{er|er ikke}} [[operation_mode_zone]]",
-        "es": "El modo de operación para la zone 2 !{{está|no está}} [[operation_mode_zone]]"
+        "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
+        "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
+        "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
+        "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
+        "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
+        "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
       },
       "args": [
         {
@@ -980,7 +980,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1046,7 +1046,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1082,7 +1082,7 @@
               "title": {
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
-                "nl": "Vaste stroomtemperatuur - koeling",
+                "nl": "Vaste aanvoertemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "da": "Fast fremledningstemperatur - køling",
@@ -1097,22 +1097,22 @@
       "id": "operation_mode_zone2_with_cool_condition",
       "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
       "title": {
-        "en": "The operation mode for zone 2 !{{is|is not}}",
-        "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}}",
-        "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}}",
-        "sv": "Driftläget för zon 2 !{{är|är inte}}",
-        "no": "Driftsmodusen for sone 2 !{{er|er ikke}}",
-        "da": "Driftstilstanden for zone 2 !{{er|er ikke}}",
-        "es": "El modo de operación para la zona 2 !{{está|no está}}"
+        "en": "The operation mode !{{is|is not}} in zone 2",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
+        "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
+        "sv": "Driftläget !{{är|är inte}} i zon 2",
+        "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
+        "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
+        "es": "El modo de operación !{{está|no está}} en zona 2"
       },
       "titleFormatted": {
-        "en": "The operation mode for zone 2 !{{is|is not}} [[operation_mode_zone]]",
-        "fr": "Le mode opérationnel pour la zone 2 !{{est|n'est pas}} [[operation_mode_zone]]",
-        "nl": "De bedrijfsmodus voor zone 2 !{{is|is niet}} [[operation_mode_zone]]",
-        "sv": "Driftläget för zon 2 !{{är|är inte}} [[operation_mode_zone]]",
-        "no": "Driftsmodusen for sone 2 !{{er|er ikke}} [[operation_mode_zone]]",
-        "da": "Driftstilstanden for zone 2 !{{er|er ikke}} [[operation_mode_zone]]",
-        "es": "El modo de operación para la zone 2 !{{está|no está}} [[operation_mode_zone]]"
+        "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
+        "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
+        "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
+        "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
+        "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
+        "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
+        "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
       },
       "args": [
         {
@@ -1136,7 +1136,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1172,7 +1172,7 @@
               "title": {
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
-                "nl": "Vaste stroomtemperatuur - koeling",
+                "nl": "Vaste aanvoertemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "da": "Fast fremledningstemperatur - køling",
@@ -1311,7 +1311,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1338,22 +1338,22 @@
       "id": "operation_mode_zone2_action",
       "$filter": "capabilities=operation_mode_zone.zone2",
       "title": {
-        "en": "Set the operation mode for zone 2",
-        "fr": "Définir le mode opérationnel pour la zone 2",
-        "nl": "Stel de bedrijfsmodus in voor zone 2",
-        "sv": "Ställ in driftläget för zon 2",
-        "no": "Innstill driftsmodusen for sone 2",
-        "da": "Indstil driftstilstanden for zone 2",
-        "es": "Configurar el modo de operación para la zona 2"
+        "en": "Set the operation mode in zone 2",
+        "fr": "Définir le mode opérationnel dans la zone 2",
+        "nl": "Stel de bedrijfsmodus in in zone 2",
+        "sv": "Ställ in driftläget i zon 2",
+        "no": "Innstill driftsmodusen i sone 2",
+        "da": "Indstil driftstilstanden i zone 2",
+        "es": "Configurar el modo de operación en zona 2"
       },
       "titleFormatted": {
-        "en": "Set the operation mode for zone 2 to [[operation_mode_zone]]",
-        "fr": "Définir le mode opérationnel pour la zone 2 à [[operation_mode_zone]]",
-        "nl": "Stel de bedrijfsmodus in voor zone 2 op [[operation_mode_zone]]",
-        "sv": "Ställ in driftläget för zon 2 till [[operation_mode_zone]]",
-        "no": "Innstill driftsmodusen for sone 2 til [[operation_mode_zone]]",
-        "da": "Indstil driftstilstanden for zone 2 til [[operation_mode_zone]]",
-        "es": "Configurar el modo de operación para la zona 2 a [[operation_mode_zone]]"
+        "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
+        "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
+        "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
+        "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
+        "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
+        "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
+        "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
       },
       "args": [
         {
@@ -1377,7 +1377,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1443,7 +1443,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1479,7 +1479,7 @@
               "title": {
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
-                "nl": "Vaste stroomtemperatuur - koeling",
+                "nl": "Vaste aanvoertemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "da": "Fast fremledningstemperatur - køling",
@@ -1494,22 +1494,22 @@
       "id": "operation_mode_zone2_with_cool_action",
       "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
       "title": {
-        "en": "Set the operation mode for zone 2",
-        "fr": "Définir le mode opérationnel pour la zone 2",
-        "nl": "Stel de bedrijfsmodus in voor zone 2",
-        "sv": "Ställ in driftläget för zon 2",
-        "no": "Innstill driftsmodusen for sone 2",
-        "da": "Indstil driftstilstanden for zone 2",
-        "es": "Configurar el modo de operación para la zona 2"
+        "en": "Set the operation mode in zone 2",
+        "fr": "Définir le mode opérationnel dans la zone 2",
+        "nl": "Stel de bedrijfsmodus in in zone 2",
+        "sv": "Ställ in driftläget i zon 2",
+        "no": "Innstill driftsmodusen i sone 2",
+        "da": "Indstil driftstilstanden i zone 2",
+        "es": "Configurar el modo de operación en zona 2"
       },
       "titleFormatted": {
-        "en": "Set the operation mode for zone 2 to [[operation_mode_zone]]",
-        "fr": "Définir le mode opérationnel pour la zone 2 à [[operation_mode_zone]]",
-        "nl": "Stel de bedrijfsmodus in voor zone 2 op [[operation_mode_zone]]",
-        "sv": "Ställ in driftläget för zon 2 till [[operation_mode_zone]]",
-        "no": "Innstill driftsmodusen for sone 2 til [[operation_mode_zone]]",
-        "da": "Indstil driftstilstanden for zone 2 til [[operation_mode_zone]]",
-        "es": "Configurar el modo de operación para la zona 2 a [[operation_mode_zone]]"
+        "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
+        "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
+        "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
+        "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
+        "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
+        "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
+        "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
       },
       "args": [
         {
@@ -1533,7 +1533,7 @@
               "title": {
                 "en": "Fixed flow temperature",
                 "fr": "Température de flux fixe",
-                "nl": "Vaste stroomtemperatuur",
+                "nl": "Vaste aanvoertemperatuur",
                 "sv": "Fast framledningstemperatur",
                 "no": "Fast fremløpstemperatur",
                 "da": "Fast fremledningstemperatur",
@@ -1569,7 +1569,7 @@
               "title": {
                 "en": "Fixed flow temperature - cooling",
                 "fr": "Température de flux fixe - refroidissement",
-                "nl": "Vaste stroomtemperatuur - koeling",
+                "nl": "Vaste aanvoertemperatuur - koeling",
                 "sv": "Fast framledningstemperatur - kylning",
                 "no": "Fast fremløpstemperatur - kjøling",
                 "da": "Fast fremledningstemperatur - køling",
@@ -1613,22 +1613,22 @@
       "id": "target_temperature_zone2_action",
       "$filter": "capabilities=target_temperature.zone2",
       "title": {
-        "en": "Set the temperature for zone 2",
-        "fr": "Définir la température pour la zone 2",
-        "nl": "Stel de temperatuur in voor zone 2",
-        "sv": "Ställ in temperaturen för zon 2",
-        "no": "Innstill temperaturen for sone 2",
-        "da": "Indstil temperaturen for zone 2",
-        "es": "Configurar la temperatura para la zona 2"
+        "en": "Set the temperature in zone 2",
+        "fr": "Définir la température dans la zone 2",
+        "nl": "Stel de temperatuur in in zone 2",
+        "sv": "Ställ in temperaturen i zon 2",
+        "no": "Innstill temperaturen i sone 2",
+        "da": "Indstil temperaturen i zone 2",
+        "es": "Configurar la temperatura en zona 2"
       },
       "titleFormatted": {
-        "en": "Set the temperature for zone 2 to [[target_temperature]]",
-        "fr": "Définir la température pour la zone 2 à [[target_temperature]]",
-        "nl": "Stel de temperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in temperaturen för zon 2 till [[target_temperature]]",
-        "no": "Innstill temperaturen for sone 2 til [[target_temperature]]",
-        "da": "Indstil temperaturen for zone 2 til [[target_temperature]]",
-        "es": "Configurar la temperatura para la zona 2 a [[target_temperature]]"
+        "en": "Set the temperature to [[target_temperature]] in zone 2",
+        "fr": "Définir la température à [[target_temperature]] dans la zone 2",
+        "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
+        "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2",
+        "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
+        "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
+        "es": "Configurar la temperatura a [[target_temperature]] en zona 2"
       },
       "args": [
         {
@@ -1645,19 +1645,19 @@
       "title": {
         "en": "Set the cool flow temperature",
         "fr": "Définir la température du flux de refroidissement",
-        "nl": "Stel de koelstroomtemperatuur in",
-        "sv": "Ställ in kylframledningstemperaturen",
-        "no": "Innstill kjølefremløpstemperaturen",
-        "da": "Indstil kølefremledningstemperaturen",
+        "nl": "Stel de aanvoertemperatuur voor koeling in",
+        "sv": "Ställ in framledningstemperaturen för kylning",
+        "no": "Innstill fremløpstemperaturen for kjøling",
+        "da": "Indstil fremledningstemperaturen for køling",
         "es": "Configurar la temperatura del flujo de enfriamiento"
       },
       "titleFormatted": {
         "en": "Set the cool flow temperature to [[target_temperature]]",
         "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
-        "nl": "Stel de koelstroomtemperatuur in op [[target_temperature]]",
-        "sv": "Ställ in kylframledningstemperaturen till [[target_temperature]]",
-        "no": "Innstill kjølefremløpstemperaturen til [[target_temperature]]",
-        "da": "Indstil kølefremledningstemperaturen til [[target_temperature]]",
+        "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]]",
+        "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]]",
+        "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]]",
+        "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]]",
         "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
       },
       "args": [
@@ -1674,7 +1674,7 @@
       "title": {
         "en": "Set the flow temperature",
         "fr": "Définir la température du flux",
-        "nl": "Stel de stroomtemperatuur in",
+        "nl": "Stel de aanvoertemperatuur in",
         "sv": "Ställ in framledningstemperaturen",
         "no": "Innstill fremløpstemperaturen",
         "da": "Indstil fremledningstemperaturen",
@@ -1683,7 +1683,7 @@
       "titleFormatted": {
         "en": "Set the flow temperature to [[target_temperature]]",
         "fr": "Définir la température du flux à [[target_temperature]]",
-        "nl": "Stel de stroomtemperatuur in op [[target_temperature]]",
+        "nl": "Stel de aanvoertemperatuur in op [[target_temperature]]",
         "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
         "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
         "da": "Indstil fremledningstemperaturen til [[target_temperature]]",
@@ -1702,22 +1702,22 @@
       "id": "target_temperature_zone2_flow_cool_action",
       "$filter": "capabilities=target_temperature.zone2_flow_cool",
       "title": {
-        "en": "Set the cool flow temperature for zone 2",
-        "fr": "Définir la température du flux de refroidissement pour la zone 2",
-        "nl": "Stel de koelstroomtemperatuur in voor zone 2",
-        "sv": "Ställ in kylframledningstemperaturen för zon 2",
-        "no": "Innstill kjølefremløpstemperaturen for sone 2",
-        "da": "Indstil kølefremledningstemperaturen for zone 2",
-        "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2"
+        "en": "Set the cool flow temperature in zone 2",
+        "fr": "Définir la température du flux de refroidissement dans la zone 2",
+        "nl": "Stel de aanvoertemperatuur voor koeling in in zone 2",
+        "sv": "Ställ in framledningstemperaturen för kylning i zon 2",
+        "no": "Innstill fremløpstemperaturen for kjøling i sone 2",
+        "da": "Indstil fremledningstemperaturen for køling i zone 2",
+        "es": "Configurar la temperatura del flujo de enfriamiento en zona 2"
       },
       "titleFormatted": {
-        "en": "Set the cool flow temperature for zone 2 to [[target_temperature]]",
-        "fr": "Définir la température du flux de refroidissement pour la zone 2 à [[target_temperature]]",
-        "nl": "Stel de koelstroomtemperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in kylframledningstemperaturen för zon 2 till [[target_temperature]]",
-        "no": "Innstill kjølefremløpstemperaturen for sone 2 til [[target_temperature]]",
-        "da": "Indstil kølefremledningstemperaturen for zone 2 til [[target_temperature]]",
-        "es": "Configurar la temperatura del flujo de enfriamiento para la zona 2 a [[target_temperature]]"
+        "en": "Set the cool flow temperature to [[target_temperature]] in zone 2",
+        "fr": "Définir la température du flux de refroidissement à [[target_temperature]] dans la zone 2",
+        "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]] in zone 2",
+        "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]] i zon 2",
+        "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]] i sone 2",
+        "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]] i zone 2",
+        "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]] en zona 2"
       },
       "args": [
         {
@@ -1732,22 +1732,22 @@
       "id": "target_temperature_zone2_flow_heat_action",
       "$filter": "capabilities=target_temperature.zone2_flow_heat",
       "title": {
-        "en": "Set the flow temperature for zone 2",
-        "fr": "Définir la température du flux pour la zone 2",
-        "nl": "Stel de stroomtemperatuur in voor zone 2",
-        "sv": "Ställ in framledningstemperaturen för zon 2",
-        "no": "Innstill fremløpstemperaturen for sone 2",
-        "da": "Indstil fremledningstemperaturen for zone 2",
-        "es": "Configurar la temperatura del flujo para la zona 2"
+        "en": "Set the flow temperature in zone 2",
+        "fr": "Définir la température du flux dans la zone 2",
+        "nl": "Stel de aanvoertemperatuur in in zone 2",
+        "sv": "Ställ in framledningstemperaturen i zon 2",
+        "no": "Innstill fremløpstemperaturen i sone 2",
+        "da": "Indstil fremledningstemperaturen i zone 2",
+        "es": "Configurar la temperatura del flujo en zona 2"
       },
       "titleFormatted": {
-        "en": "Set the flow temperature for zone 2 to [[target_temperature]]",
-        "fr": "Définir la température du flux pour la zone 2 à [[target_temperature]]",
-        "nl": "Stel de stroomtemperatuur in voor zone 2 op [[target_temperature]]",
-        "sv": "Ställ in framledningstemperaturen för zon 2 till [[target_temperature]]",
-        "no": "Innstill fremløpstemperaturen for sone 2 til [[target_temperature]]",
-        "da": "Indstil fremledningstemperaturen for zone 2 til [[target_temperature]]",
-        "es": "Configurar la temperatura del flujo para la zona 2 a [[target_temperature]]"
+        "en": "Set the flow temperature to [[target_temperature]] in zone 2",
+        "fr": "Définir la température du flux à [[target_temperature]] dans la zone 2",
+        "nl": "Stel de aanvoertemperatuur in op [[target_temperature]] in zone 2",
+        "sv": "Ställ in framledningstemperaturen till [[target_temperature]] i zon 2",
+        "no": "Innstill fremløpstemperaturen til [[target_temperature]] i sone 2",
+        "da": "Indstil fremledningstemperaturen til [[target_temperature]] i zone 2",
+        "es": "Configurar la temperatura del flujo a [[target_temperature]] en zona 2"
       },
       "args": [
         {

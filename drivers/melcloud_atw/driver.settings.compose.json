@@ -93,10 +93,10 @@
         "label": {
           "en": "Flow temperature",
           "fr": "Température de flux",
-          "nl": "Doorstroomtemperatuur",
+          "nl": "Aanvoertemperatuur",
           "sv": "Framledningstemperatur",
           "no": "Fremløpstemperatur ",
-          "da": "Fremløbstemperatur",
+          "da": "Fremledningstemperatur",
           "es": "Temperatura de flujo"
         },
         "value": false,
@@ -139,10 +139,10 @@
         "label": {
           "en": "Flow temperature - zone 2",
           "fr": "Température de flux - zone 2",
-          "nl": "Doorstroomtemperatuur - zone 2",
+          "nl": "Aanvoertemperatuur - zone 2",
           "sv": "Framledningstemperatur - zon 2",
           "no": "Fremløpstemperatur  - sone 2",
-          "da": "Fremløbstemperatur - zone 2",
+          "da": "Fremledningstemperatur - zone 2",
           "es": "Temperatura de flujo - zona 2"
         },
         "value": false,

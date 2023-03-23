@@ -284,7 +284,7 @@
       "title": {
         "en": "Flow temperature",
         "fr": "Température de flux",
-        "nl": "Doorstroomtemperatuur",
+        "nl": "Aanvoertemperatuur",
         "sv": "Framledningstemperatur",
         "no": "Fremløpstemperatur",
         "da": "Fremledningstemperatur",
@@ -295,7 +295,7 @@
       "title": {
         "en": "Flow temperature (external sensor)",
         "fr": "Température de flux (capteur externe)",
-        "nl": "Doorstroomtemperatuur (externe sensor)",
+        "nl": "Aanvoertemperatuur (externe sensor)",
         "sv": "Framledningstemperatur (extern sensor)",
         "no": "Fremløpstemperatur (ekstern sensor)",
         "da": "Fremledningstemperatur (ekstern sensor)",
@@ -306,7 +306,7 @@
       "title": {
         "en": "Flow temperature - zone 2 (external sensor)",
         "fr": "Température de flux - zone 2 (capteur externe)",
-        "nl": "Doorstroomtemperatuur - zone 2 (externe sensor)",
+        "nl": "Aanvoertemperatuur - zone 2 (externe sensor)",
         "sv": "Framledningstemperatur - zon 2 (extern sensor)",
         "no": "Fremløpstemperatur - sone 2 (ekstern sensor)",
         "da": "Fremledningstemperatur - zone 2 (ekstern sensor)",
@@ -828,10 +828,10 @@
       "title": {
         "en": "Cool flow target temperature",
         "fr": "Température cible du flux de refroidissement",
-        "nl": "Ingestelde koelstroomtemperatuur",
-        "sv": "Måltemperatur för kylframledning",
-        "no": "Ønsket temperatur for kjølefremløp",
-        "da": "Måltemperatur for kølefremledning",
+        "nl": "Ingestelde aanvoertemperatuur - koeling",
+        "sv": "Måltemperatur för framledning - kylning",
+        "no": "Ønsket temperatur for fremløp - kjøling",
+        "da": "Måltemperatur for fremledning - køling",
         "es": "Temperatura configurada del flujo de enfriamiento"
       },
       "min": 10,
@@ -841,7 +841,7 @@
       "title": {
         "en": "Flow target temperature",
         "fr": "Température cible du flux",
-        "nl": "Ingestelde stroomtemperatuur",
+        "nl": "Ingestelde aanvoertemperatuur",
         "sv": "Måltemperatur för framledning",
         "no": "Ønsket temperatur for fremløp",
         "da": "Måltemperatur for fremledning",
@@ -867,10 +867,10 @@
       "title": {
         "en": "Cool flow target temperature - zone 2",
         "fr": "Température cible du flux de refroidissement - zone 2",
-        "nl": "Ingestelde koelstroomtemperatuur - zone 2",
-        "sv": "Måltemperatur för kylframledning - zon 2",
-        "no": "Ønsket temperatur for kjølefremløp - sone 2",
-        "da": "Måltemperatur for kølefremledning - zone 2",
+        "nl": "Ingestelde anvoertemperatuur - koeling - zone 2",
+        "sv": "Måltemperatur för framledning - kylning - zon 2",
+        "no": "Ønsket temperatur for fremløp - kjøling - sone 2",
+        "da": "Måltemperatur for fremledning - køling - zone 2",
         "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
       },
       "min": 10,
@@ -880,7 +880,7 @@
       "title": {
         "en": "Flow target temperature - zone 2",
         "fr": "Température cible du flux - zone 2",
-        "nl": "Ingestelde stroomtemperatuur - zone 2",
+        "nl": "Ingestelde aanvoertemperatuur - zone 2",
         "sv": "Måltemperatur för framledning - zon 2",
         "no": "Ønsket temperatur for fremløp - sone 2",
         "da": "Måltemperatur for fremledning - zone 2",
