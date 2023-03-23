@@ -97,7 +97,7 @@
           "sv": "Wifi signalstyrka",
           "no": "Wifi signalstyrke",
           "da": "Wifi signalstyrke",
-          "es": "Fuerza de la señal wifi"
+          "es": "Potencia de señal wifi"
         },
         "value": true
       }

@@ -19,8 +19,8 @@
     },
     "authenticate": {
       "button": "Se connecter",
-      "password": "Mot de passe",
       "label": "Identifiants",
+      "password": "Mot de passe",
       "username": "Nom d'utilisateur"
     },
     "boolean": {
@@ -47,11 +47,40 @@
       "always_on": "Désactiver l'extinction depuis Homey",
       "apply": {
         "button": "Appliquer à tous les appareils",
-        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?",
+        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\nCette action peut prendre un certain temps.",
         "nothing": "Aucun changement à appliquer."
       },
       "interval": "Fréquence de mise à jour (minutes)",
       "label": "Paramètres des appareils"
+    },
+    "devices_ata": {
+      "auto_adjust": "Auto-ajuster la température de la climatisation",
+      "dashboard": "Affichage sur le tableau de bord",
+      "label": "Paramètres des appareils air-air",
+      "meter_power": {
+        "hourly_consumed": "Conso horaire",
+        "hourly_consumed_auto": "Conso horaire - automatique",
+        "hourly_consumed_cooling": "Conso horaire - refroidissement",
+        "hourly_consumed_dry": "Conso horaire - déshumidification",
+        "hourly_consumed_fan": "Conso horaire - ventilateur",
+        "hourly_consumed_heating": "Conso horaire - chauffage",
+        "hourly_consumed_other": "Conso horaire - autre",
+        "daily_consumed": "Conso quotidienne",
+        "daily_consumed_auto": "Conso quotidienne - automatique",
+        "daily_consumed_cooling": "Conso quotidienne - refroidissement",
+        "daily_consumed_dry": "Conso quotidienne - déshumidification",
+        "daily_consumed_fan": "Conso quotidienne - ventilateur",
+        "daily_consumed_heating": "Conso quotidienne - chauffage",
+        "daily_consumed_other": "Conso quotidienne - autre",
+        "total_consumed": "Conso totale",
+        "total_consumed_auto": "Conso totale - automatique",
+        "total_consumed_cooling": "Conso totale - refroidissement",
+        "total_consumed_dry": "Conso totale - déshumidification",
+        "total_consumed_fan": "Conso totale - ventilateur",
+        "total_consumed_heating": "Conso totale - chauffage",
+        "total_consumed_other": "Conso totale - autre"
+      },
+      "wifi": "Puissance du signal wifi"
     },
     "error_log": {
       "columns": {

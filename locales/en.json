@@ -47,11 +47,40 @@
       "always_on": "Disable shutdown from Homey",
       "apply": {
         "button": "Apply to all devices",
-        "confirm": "Are you sure you want to apply these settings to all devices?",
+        "confirm": "Are you sure you want to apply these settings to all devices?\nThis action may take some time.",
         "nothing": "No change to apply."
       },
       "interval": "Update frequency (minutes)",
       "label": "Device Settings"
+    },
+    "devices_ata": {
+      "auto_adjust": "Auto-adjust air conditioning temperature",
+      "dashboard": "Dashboard display",
+      "label": "Air-to-Air Device Settings",
+      "meter_power": {
+        "hourly_consumed": "Hourly consumption",
+        "hourly_consumed_auto": "Hourly consumption - automatic",
+        "hourly_consumed_cooling": "Hourly consumption - cooling",
+        "hourly_consumed_dry": "Hourly consumption - dry",
+        "hourly_consumed_fan": "Hourly consumption - fan",
+        "hourly_consumed_heating": "Hourly consumption - heating",
+        "hourly_consumed_other": "Hourly consumption - other",
+        "daily_consumed": "Daily consumption",
+        "daily_consumed_auto": "Daily consumption - automatic",
+        "daily_consumed_cooling": "Daily consumption - cooling",
+        "daily_consumed_dry": "Daily consumption - dry",
+        "daily_consumed_fan": "Daily consumption - fan",
+        "daily_consumed_heating": "Daily consumption - heating",
+        "daily_consumed_other": "Daily consumption - other",
+        "total_consumed": "Total consumption",
+        "total_consumed_auto": "Total consumption - automatic",
+        "total_consumed_cooling": "Total consumption - cooling",
+        "total_consumed_dry": "Total consumption - dry",
+        "total_consumed_fan": "Total consumption - fan",
+        "total_consumed_heating": "Total consumption - heating",
+        "total_consumed_other": "Total consumption - other"
+      },
+      "wifi": "Wifi signal strength"
     },
     "error_log": {
       "columns": {

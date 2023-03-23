@@ -265,19 +265,27 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setDeviceSettings(settings: Settings): Promise<boolean> {
+  async setDeviceSettings(
+    settings: Settings,
+    driverId?: string
+  ): Promise<boolean> {
     const changedKeys: string[] = Object.keys(settings)
     if (changedKeys.length === 0) {
       return false
     }
-    for (const device of this.getDevices()) {
-      await device.setSettings(settings)
-      await device.onSettings({
-        newSettings: device.getSettings(),
-        changedKeys
-      })
+    try {
+      for (const device of this.getDevices({ driverId })) {
+        await device.setSettings(settings)
+        await device.onSettings({
+          newSettings: device.getSettings(),
+          changedKeys
+        })
+      }
+      return true
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
     }
-    return true
+    return false
   }
 
   async getUnitErrorLog(
