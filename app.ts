@@ -271,7 +271,7 @@ export default class MELCloudApp extends App {
   ): Promise<boolean> {
     const changedKeys: string[] = Object.keys(settings)
     if (changedKeys.length === 0) {
-      return false
+      return true
     }
     try {
       for (const device of this.getDevices({ driverId })) {
