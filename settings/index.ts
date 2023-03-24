@@ -29,11 +29,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
 
+  const applySettingsAtaElement: HTMLButtonElement = document.getElementById(
+    'apply-settings-ata'
+  ) as HTMLButtonElement
   const applySettingsElement: HTMLButtonElement = document.getElementById(
     'apply-settings'
   ) as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById(
     'authenticate'
+  ) as HTMLButtonElement
+  const autoAdjustElement: HTMLButtonElement = document.getElementById(
+    'auto_adjust'
   ) as HTMLButtonElement
   const refreshFrostProtectionElement: HTMLButtonElement =
     document.getElementById('refresh-frost-protection') as HTMLButtonElement
@@ -54,6 +60,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   ) as HTMLDivElement
   const isNotAuthenticatedElement: HTMLDivElement = document.getElementById(
     'is-not-authenticated'
+  ) as HTMLDivElement
+  const hasDevicesAtaElement: HTMLDivElement = document.getElementById(
+    'has-devices-ata'
   ) as HTMLDivElement
   const hasErrorLogElement: HTMLDivElement = document.getElementById(
     'has-error-log'
@@ -85,6 +94,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const usernameElement: HTMLInputElement = document.getElementById(
     'username'
   ) as HTMLInputElement
+
+  const settingsAtaElements: HTMLInputElement[] = Array.from(
+    document.getElementsByName('settings-ata') as NodeListOf<HTMLInputElement>
+  )
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
     'always_on'
@@ -248,6 +261,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             setting instanceof HTMLInputElement
               ? int(setting, settingValue)
               : settingValue
+        } else if (
+          setting instanceof HTMLInputElement &&
+          setting.type === 'checkbox'
+        ) {
+          body[setting.id] = setting.checked
         } else if (['true', 'false'].includes(setting.value)) {
           body[setting.id] = setting.value === 'true'
         } else {
@@ -384,6 +402,33 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
   }
 
+  function hasDevices(driverId?: string): void {
+    let endPoint: string = '/devices'
+    if (driverId !== undefined) {
+      const queryString: string = new URLSearchParams({
+        driverId
+      }).toString()
+      endPoint += `?${queryString}`
+    }
+    // @ts-expect-error bug
+    Homey.api(
+      'GET',
+      endPoint,
+      async (error: Error, devices: MELCloudDevice[]): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          return
+        }
+        if (devices.length > 0) {
+          if (driverId === 'melcloud') {
+            hasDevicesAtaElement.style.display = 'block'
+          }
+        }
+      }
+    )
+  }
+
   function login(): void {
     const body: LoginCredentials = {
       username: usernameElement.value,
@@ -410,8 +455,90 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           return
         }
         await hasAuthenticated()
+        hasDevices('melcloud')
       }
     )
+  }
+
+  function setDeviceSettings(body: Settings, driverId?: string): void {
+    let endPoint: string = '/settings'
+    if (driverId !== undefined) {
+      const queryString: string = new URLSearchParams({
+        driverId
+      }).toString()
+      endPoint += `?${queryString}`
+    }
+    // @ts-expect-error bug
+    Homey.api(
+      'POST',
+      endPoint,
+      body,
+      async (error: Error, success: boolean): Promise<void> => {
+        if (error !== null) {
+          setDeviceSettings(body, driverId)
+          return
+        }
+        if (!success) {
+          // @ts-expect-error bug
+          await Homey.alert(
+            Homey.__('settings.alert.failure', {
+              action: Homey.__('settings.alert.actions.update')
+            })
+          )
+          return
+        }
+        // @ts-expect-error bug
+        await Homey.alert(
+          Homey.__('settings.alert.success', {
+            action: Homey.__('settings.alert.actions.update')
+          })
+        )
+      }
+    )
+  }
+
+  function addSettingsEventListener(
+    buttonElement: HTMLButtonElement,
+    elements: Array<HTMLInputElement | HTMLSelectElement>,
+    driverId?: string
+  ): void {
+    buttonElement.addEventListener('click', (): void => {
+      let body: Settings = {}
+      try {
+        body = buildSettingsBody(elements)
+      } catch (error: unknown) {
+        // @ts-expect-error bug
+        Homey.alert(error.message)
+        return
+      }
+      if (Object.keys(body).length === 0) {
+        // @ts-expect-error bug
+        Homey.alert(Homey.__('settings.devices.apply.nothing'))
+        return
+      }
+      // @ts-expect-error bug
+      Homey.confirm(
+        Homey.__('settings.devices.apply.confirm'),
+        null,
+        async (error: Error, ok: boolean): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            return
+          }
+          if (!ok) {
+            // @ts-expect-error bug
+            await Homey.alert(
+              Homey.__('settings.alert.failure', {
+                action: Homey.__('settings.alert.actions.update')
+              })
+            )
+            return
+          }
+          setDeviceSettings(body, driverId)
+        }
+      )
+    })
   }
 
   frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
@@ -445,69 +572,20 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     generateErrorLog()
   })
 
-  applySettingsElement.addEventListener('click', (): void => {
-    let body: Settings = {}
-    try {
-      body = buildSettingsBody([intervalElement, alwaysOnElement])
-    } catch (error: unknown) {
-      // @ts-expect-error bug
-      Homey.alert(error.message)
-      return
-    }
-    if (Object.keys(body).length === 0) {
-      // @ts-expect-error bug
-      Homey.alert(Homey.__('settings.devices.apply.nothing'))
-      return
-    }
+  addSettingsEventListener(applySettingsElement, [
+    intervalElement,
+    alwaysOnElement
+  ])
+
+  addSettingsEventListener(
+    applySettingsAtaElement,
+    settingsAtaElements,
+    'melcloud'
+  )
+
+  autoAdjustElement.addEventListener('click', (): void => {
     // @ts-expect-error bug
-    Homey.confirm(
-      Homey.__('settings.devices.apply.confirm'),
-      null,
-      async (error: Error, ok: boolean): Promise<void> => {
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        if (!ok) {
-          // @ts-expect-error bug
-          await Homey.alert(
-            Homey.__('settings.alert.failure', {
-              action: Homey.__('settings.alert.actions.update')
-            })
-          )
-          return
-        }
-        // @ts-expect-error bug
-        Homey.api(
-          'POST',
-          '/settings',
-          body,
-          async (error: Error, success: boolean): Promise<void> => {
-            if (error !== null) {
-              // @ts-expect-error bug
-              await Homey.alert(error.message)
-              return
-            }
-            if (!success) {
-              // @ts-expect-error bug
-              await Homey.alert(
-                Homey.__('settings.alert.failure', {
-                  action: Homey.__('settings.alert.actions.update')
-                })
-              )
-              return
-            }
-            // @ts-expect-error bug
-            await Homey.alert(
-              Homey.__('settings.alert.success', {
-                action: Homey.__('settings.alert.actions.update')
-              })
-            )
-          }
-        )
-      }
-    )
+    Homey.openURL('https://homey.app/a/com.mecloud.extension')
   })
 
   buildingElement.addEventListener('change', (): void => {

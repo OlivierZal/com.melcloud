@@ -70,43 +70,6 @@
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
-          data-i18n="settings.devices.label"
-        ></legend>
-        <div class="homey-form-group">
-          <label
-            class="homey-form-label"
-            for="interval"
-            data-i18n="settings.devices.interval"
-          ></label>
-          <input
-            class="homey-form-input"
-            id="interval"
-            type="number"
-            inputmode="numeric"
-            value=""
-          />
-        </div>
-        <div class="homey-form-group">
-          <label
-            class="homey-form-label"
-            for="always_on"
-            data-i18n="settings.devices.always_on"
-          ></label>
-          <select class="homey-form-select" id="always_on">
-            <option value=""></option>
-            <option value="false" data-i18n="settings.boolean.false"></option>
-            <option value="true" data-i18n="settings.boolean.true"></option>
-          </select>
-        </div>
-        <button
-          id="apply-settings"
-          class="homey-button-primary-full"
-          data-i18n="settings.devices.apply.button"
-        ></button>
-      </fieldset>
-      <fieldset class="homey-form-fieldset">
-        <legend
-          class="homey-form-legend"
           data-i18n="settings.buildings.label"
         ></legend>
         <div class="homey-form-group">
@@ -199,6 +162,355 @@
           data-i18n="settings.buildings.update"
         ></button>
       </fieldset>
+      <fieldset class="homey-form-fieldset">
+        <legend
+          class="homey-form-legend"
+          data-i18n="settings.devices.label"
+        ></legend>
+        <div class="homey-form-group">
+          <label
+            class="homey-form-label"
+            for="interval"
+            data-i18n="settings.devices.interval"
+          ></label>
+          <input
+            class="homey-form-input"
+            id="interval"
+            type="number"
+            inputmode="numeric"
+            value=""
+          />
+        </div>
+        <div class="homey-form-group">
+          <label
+            class="homey-form-label"
+            for="always_on"
+            data-i18n="settings.devices.always_on"
+          ></label>
+          <select class="homey-form-select" id="always_on">
+            <option value=""></option>
+            <option value="false" data-i18n="settings.boolean.false"></option>
+            <option value="true" data-i18n="settings.boolean.true"></option>
+          </select>
+        </div>
+        <button
+          id="apply-settings"
+          class="homey-button-primary-full"
+          data-i18n="settings.devices.apply.button"
+        ></button>
+      </fieldset>
+      <div id="has-devices-ata" style="display: none">
+        <fieldset class="homey-form-fieldset">
+          <legend
+            class="homey-form-legend"
+            data-i18n="settings.devices_ata.label"
+          ></legend>
+          <button
+            id="auto_adjust"
+            class="homey-button-secondary-full"
+            data-i18n="settings.devices_ata.auto_adjust"
+          ></button>
+          <div class="homey-form-group">
+            <fieldset class="homey-form-checkbox-set">
+              <legend
+                class="homey-form-checkbox-set-title"
+                data-i18n="settings.devices_ata.dashboard"
+              ></legend>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="measure_power.wifi"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.wifi"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_auto"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_auto"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_cooling"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_cooling"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_dry"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_dry"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_fan"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_fan"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_heating"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_heating"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.hourly_consumed_other"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.hourly_consumed_other"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_auto"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_auto"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_cooling"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_cooling"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_dry"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_dry"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_fan"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_fan"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_heating"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_heating"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.daily_consumed_other"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.daily_consumed_other"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_auto"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_auto"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_cooling"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_cooling"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_dry"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_dry"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_fan"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_fan"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_heating"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_heating"
+                ></span>
+              </label>
+              <label class="homey-form-checkbox">
+                <input
+                  class="homey-form-checkbox-input"
+                  type="checkbox"
+                  name="settings-ata"
+                  id="meter_power.total_consumed_other"
+                />
+                <span class="homey-form-checkbox-checkmark"></span>
+                <span
+                  class="homey-form-checkbox-text"
+                  data-i18n="settings.devices_ata.meter_power.total_consumed_other"
+                ></span>
+              </label>
+            </fieldset>
+          </div>
+          <button
+            id="apply-settings-ata"
+            class="homey-button-primary-full"
+            data-i18n="settings.devices.apply.button"
+          ></button>
+        </fieldset>
+      </div>
     </div>
   </body>
 </html>

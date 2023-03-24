@@ -46,7 +46,7 @@
         "sv": "Wifi signalstyrka",
         "no": "Wifi signalstyrke",
         "da": "Wifi signalstyrke",
-        "es": "Fuerza de la señal wifi"
+        "es": "Potencia de señal wifi"
       },
       "units": {
         "en": "dBm",
@@ -66,7 +66,7 @@
         "sv": "Timvis förbrukning",
         "no": "Timevis forbruk",
         "da": "Timevis forbrug",
-        "es": "Consumo horaire"
+        "es": "Consumo horario"
       }
     },
     "meter_power.hourly_consumed_auto": {
@@ -132,7 +132,7 @@
         "sv": "Timvis förbrukning - övrigt",
         "no": "Timevis forbruk - annet",
         "da": "Timevis forbrug - andet",
-        "es": "Consumo por hora - otro"
+        "es": "Consumo horario - otro"
       }
     },
     "meter_power.daily_consumed": {

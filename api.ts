@@ -83,6 +83,18 @@ module.exports = {
       )
   },
 
+  async getDevices({
+    homey,
+    query
+  }: {
+    homey: Homey
+    query?: { driverId: string }
+  }): Promise<MELCloudDevice[]> {
+    return (homey.app as MELCloudApp).getDevices({
+      driverId: query?.driverId
+    })
+  },
+
   async getFrostProtectionSettings({
     homey,
     params
@@ -177,12 +189,17 @@ module.exports = {
 
   async setDeviceSettings({
     homey,
-    body
+    body,
+    query
   }: {
     homey: Homey
     body: Settings
+    query?: { driverId: string }
   }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).setDeviceSettings(body)
+    return await (homey.app as MELCloudApp).setDeviceSettings(
+      body,
+      query?.driverId
+    )
   },
 
   async updateFrostProtectionSettings({

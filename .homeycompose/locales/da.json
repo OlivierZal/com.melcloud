@@ -47,11 +47,40 @@
       "always_on": "Deaktiver slukning fra Homey",
       "apply": {
         "button": "Anvend på alle enheder",
-        "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?",
+        "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?\nDenne handling kan tage lidt tid.",
         "nothing": "Ingen ændringer at anvende."
       },
       "interval": "Opdateringsfrekvens (minutter)",
       "label": "Enhedsindstillinger"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autojuster aircondition-temperaturen",
+      "dashboard": "Dashboard display",
+      "label": "Luft-luft enhedsindstillinger",
+      "meter_power": {
+        "hourly_consumed": "Timevis forbrug",
+        "hourly_consumed_auto": "Timevis forbrug - automatisk",
+        "hourly_consumed_cooling": "Timevis forbrug - køling",
+        "hourly_consumed_dry": "Timevis forbrug - affugtning",
+        "hourly_consumed_fan": "Timevis forbrug - blæser",
+        "hourly_consumed_heating": "Timevis forbrug - opvarmning",
+        "hourly_consumed_other": "Timevis forbrug - andet",
+        "daily_consumed": "Daglig forbrug",
+        "daily_consumed_auto": "Daglig forbrug - automatisk",
+        "daily_consumed_cooling": "Daglig forbrug - køling",
+        "daily_consumed_dry": "Daglig forbrug - affugtning",
+        "daily_consumed_fan": "Daglig forbrug - blæser",
+        "daily_consumed_heating": "Daglig forbrug - opvarmning",
+        "daily_consumed_other": "Daglig forbrug - andet",
+        "total_consumed": "Total forbrug",
+        "total_consumed_auto": "Total forbrug - automatisk",
+        "total_consumed_cooling": "Total forbrug - køling",
+        "total_consumed_dry": "Total forbrug - affugtning",
+        "total_consumed_fan": "Total forbrug - blæser",
+        "total_consumed_heating": "Total forbrug - opvarmning",
+        "total_consumed_other": "Total forbrug - andet"
+      },
+      "wifi": "Wifi signalstyrke"
     },
     "error_log": {
       "columns": {
@@ -72,7 +101,7 @@
     "int_error": {
       "message": "__name__ skal være et heltal mellem __min__ og __max__.",
       "values": {
-        "interval": "Opdateringsfrekvens",
+        "interval": "Opdateringsfrekvensen",
         "max": "Den maksimale temperatur",
         "min": "Den minimale temperatur"
       }

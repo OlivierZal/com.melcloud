@@ -47,11 +47,40 @@
       "always_on": "Schakel uitschakeling van Homey uit",
       "apply": {
         "button": "Toepassen op alle apparaten",
-        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
+        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\nDeze actie kan enige tijd in beslag nemen.",
         "nothing": "Geen wijziging om toe te passen."
       },
       "interval": "Updatefrequentie (minuten)",
       "label": "Apparaatinstellingen"
+    },
+    "devices_ata": {
+      "auto_adjust": "Auto-afstellen airco-temperatuur",
+      "dashboard": "Dashboardweergave",
+      "label": "Lucht-lucht apparaatinstellingen",
+      "meter_power": {
+        "hourly_consumed": "Uurlijkse verbruik",
+        "hourly_consumed_auto": "Uurlijkse verbruik - automatische",
+        "hourly_consumed_cooling": "Uurlijkse verbruik - koeling",
+        "hourly_consumed_dry": "Uurlijkse verbruik - droging",
+        "hourly_consumed_fan": "Uurlijkse verbruik - ventilator",
+        "hourly_consumed_heating": "Uurlijkse verbruik - verwarming",
+        "hourly_consumed_other": "Uurlijkse verbruik - andere",
+        "daily_consumed": "Dagelijkse verbruik",
+        "daily_consumed_auto": "Dagelijkse verbruik - automatische",
+        "daily_consumed_cooling": "Dagelijkse verbruik - koeling",
+        "daily_consumed_dry": "Dagelijkse verbruik - droging",
+        "daily_consumed_fan": "Dagelijkse verbruik - ventilator",
+        "daily_consumed_heating": "Dagelijkse verbruik - verwarming",
+        "daily_consumed_other": "Dagelijkse verbruik - andere",
+        "total_consumed": "Totaalverbruik",
+        "total_consumed_auto": "Totaalverbruik - automatische",
+        "total_consumed_cooling": "Totaalverbruik - koeling",
+        "total_consumed_dry": "Totaalverbruik - droging",
+        "total_consumed_fan": "Totaalverbruik - ventilator",
+        "total_consumed_heating": "Totaalverbruik - verwarming",
+        "total_consumed_other": "Totaalverbruik - andere"
+      },
+      "wifi": "Wifi signaalsterkte"
     },
     "error_log": {
       "columns": {

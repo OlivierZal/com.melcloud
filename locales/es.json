@@ -47,11 +47,40 @@
       "always_on": "Desactivar apagado desde Homey",
       "apply": {
         "button": "Aplicar a todos los dispositivos",
-        "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?",
+        "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?\nEsta acción puede llevar algún tiempo.",
         "nothing": "No hay cambios que aplicar."
       },
       "interval": "Frecuencia de actualización (minutos)",
       "label": "Configuración de los dispositivos"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autoajustar la temperatura del enfriamiento",
+      "dashboard": "Dashboard display",
+      "label": "Configuración de los dispositivos aire-aire",
+      "meter_power": {
+        "hourly_consumed": "Consumo horario",
+        "hourly_consumed_auto": "Consumo horario - automático",
+        "hourly_consumed_cooling": "Consumo horario - enfriamiento",
+        "hourly_consumed_dry": "Consumo horario - desumidificación",
+        "hourly_consumed_fan": "Consumo horario - ventilador",
+        "hourly_consumed_heating": "Consumo horario - calefacción",
+        "hourly_consumed_other": "Consumo horario - otro",
+        "daily_consumed": "Consumo diario",
+        "daily_consumed_auto": "Consumo diario - automático",
+        "daily_consumed_cooling": "Consumo diario - enfriamiento",
+        "daily_consumed_dry": "Consumo diario - desumidificación",
+        "daily_consumed_fan": "Consumo diario - ventilador",
+        "daily_consumed_heating": "Consumo diario - calefacción",
+        "daily_consumed_other": "Consumo diario - otro",
+        "total_consumed": "Consumo total",
+        "total_consumed_auto": "Consumo total - automático",
+        "total_consumed_cooling": "Consumo total - enfriamiento",
+        "total_consumed_dry": "Consumo total - desumidificación",
+        "total_consumed_fan": "Consumo total - ventilador",
+        "total_consumed_heating": "Consumo total - calefacción",
+        "total_consumed_other": "Consumo total - otro"
+      },
+      "wifi": "Potencia de señal wifi"
     },
     "error_log": {
       "columns": {
