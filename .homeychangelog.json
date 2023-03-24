@@ -88,5 +88,8 @@
   },
   "12.1.0": {
     "en": "Translated into Danish."
+  },
+  "13.0.0": {
+    "en": "Added a section dedicated to air-to-air heat pump customers in the application settings."
   }
 }
