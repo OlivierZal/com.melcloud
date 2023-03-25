@@ -28,7 +28,7 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Authenticatie geslaagd.\nVoeg een apparaat toe in Homey om toegang te krijgen tot de app-instellingen.",
+      "error": "Authenticatie geslaagd.\n\nVoeg een apparaat toe in Homey om toegang te krijgen tot de app-instellingen.",
       "label": "Gebouwinstellingen",
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
@@ -47,7 +47,7 @@
       "always_on": "Schakel uitschakeling van Homey uit",
       "apply": {
         "button": "Toepassen op alle apparaten",
-        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\nDeze actie kan enige tijd in beslag nemen.",
+        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\n\nDeze actie kan enige tijd in beslag nemen.",
         "nothing": "Geen wijziging om toe te passen."
       },
       "interval": "Updatefrequentie (minuten)",
@@ -93,7 +93,7 @@
       "error_count_text_1": "fout",
       "error_count_text_234": "fouten",
       "error_count_text_plural": "fouten",
-      "failure": "Minstens één van uw apparaten is niet langer geassocieerd met uw MELCloud-account.\nVerwijder het om het foutenlogboek te bekijken.",
+      "failure": "Minstens één van uw apparaten is niet langer geassocieerd met uw MELCloud-account.\n\nVerwijder het om het foutenlogboek te bekijken.",
       "label": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Bekijk alle fouten sinds"

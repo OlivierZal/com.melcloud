@@ -28,7 +28,7 @@
       "true": "Sí"
     },
     "buildings": {
-      "error": "Autenticación exitosa.\nAñade un dispositivo en Homey para acceder a la configuración de la aplicación.",
+      "error": "Autenticación exitosa.\n\nAñade un dispositivo en Homey para acceder a la configuración de la aplicación.",
       "label": "Configuración de los edificios",
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
@@ -47,7 +47,7 @@
       "always_on": "Desactivar apagado desde Homey",
       "apply": {
         "button": "Aplicar a todos los dispositivos",
-        "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?\nEsta acción puede llevar algún tiempo.",
+        "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?\n\nEsta acción puede llevar algún tiempo.",
         "nothing": "No hay cambios que aplicar."
       },
       "interval": "Frecuencia de actualización (minutos)",
@@ -93,7 +93,7 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errores",
       "error_count_text_plural": "errores",
-      "failure": "Al menos uno de sus dispositivos ya no está asociado con su cuenta de MELCloud.\nElimínelo para ver el registro de errores.",
+      "failure": "Al menos uno de sus dispositivos ya no está asociado con su cuenta de MELCloud.\n\nElimínelo para ver el registro de errores.",
       "label": "Registro de errores",
       "period": "Desde __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Ver los errores desde el"

@@ -28,7 +28,7 @@
       "true": "Oui"
     },
     "buildings": {
-      "error": "Authentification réussie.\nAjoutez un appareil dans Homey pour accéder aux paramètres de l'application.",
+      "error": "Authentification réussie.\n\nAjoutez un appareil dans Homey pour accéder aux paramètres de l'application.",
       "frost_protection": {
         "enabled": "Activer la <strong>protection contre le gel</strong>",
         "max": "Température maximale",
@@ -47,7 +47,7 @@
       "always_on": "Désactiver l'extinction depuis Homey",
       "apply": {
         "button": "Appliquer à tous les appareils",
-        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\nCette action peut prendre un certain temps.",
+        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\n\nCette action peut prendre un certain temps.",
         "nothing": "Aucun changement à appliquer."
       },
       "interval": "Fréquence de mise à jour (minutes)",
@@ -93,7 +93,7 @@
       "error_count_text_1": "erreur",
       "error_count_text_234": "erreurs",
       "error_count_text_plural": "erreurs",
-      "failure": "Au moins l'un de vos appareils n'est plus associé à votre compte MELCloud.\nSupprimez-le pour afficher le journal des erreurs.",
+      "failure": "Au moins l'un de vos appareils n'est plus associé à votre compte MELCloud.\n\nSupprimez-le pour afficher le journal des erreurs.",
       "label": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ : __errorCount__ __errorCountText__",
       "see": "Voir les erreurs depuis le"

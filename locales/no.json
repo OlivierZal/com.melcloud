@@ -28,7 +28,7 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Autentisering vellykket.\nLegg til en enhet i Homey for å få tilgang til appinnstillingene.",
+      "error": "Autentisering vellykket.\n\nLegg til en enhet i Homey for å få tilgang til appinnstillingene.",
       "label": "Byggingsinnstillinger",
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
@@ -47,7 +47,7 @@
       "always_on": "Deaktiver avstenging fra Homey",
       "apply": {
         "button": "Bruk på alle enheter",
-        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?\nDenne handlingen kan ta litt tid.",
+        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?\n\nDenne handlingen kan ta litt tid.",
         "nothing": "Ingen endring å bruke."
       },
       "interval": "Oppdateringsfrekvens (minutter)",
@@ -93,7 +93,7 @@
       "error_count_text_1": "feil",
       "error_count_text_234": "feil",
       "error_count_text_plural": "feil",
-      "failure": "Minst en av enhetene dine er ikke lenger tilknyttet din MELCloud-konto.\nFjern den for å se feilloggen.",
+      "failure": "Minst en av enhetene dine er ikke lenger tilknyttet din MELCloud-konto.\n\nFjern den for å se feilloggen.",
       "label": "Feillogg",
       "period": "Siden __fromDateHuman__: __errorCount__ __errorCountText__",
       "see": "Se alle feil siden"
