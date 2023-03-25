@@ -102,23 +102,34 @@
           ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-        <table style="width: 100%">
-          <tr>
-            <td style="text-align: center">
-              <button
-                id="refresh-holiday-mode"
-                class="homey-button-secondary"
-                data-i18n="settings.buildings.refresh"
-              ></button>
-            </td>
-            <td style="text-align: center">
-              <button
-                id="update-holiday-mode"
-                class="homey-button-primary"
-                data-i18n="settings.buildings.update"
-              ></button>
-            </td>
-          </tr>
+        <table
+          style="width: 100%"
+          aria-describedby="holiday-mode-update-buttons"
+        >
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center">
+                <button
+                  id="refresh-holiday-mode"
+                  class="homey-button-secondary"
+                  data-i18n="settings.buildings.refresh"
+                ></button>
+              </td>
+              <td style="text-align: center">
+                <button
+                  id="update-holiday-mode"
+                  class="homey-button-primary"
+                  data-i18n="settings.buildings.update"
+                ></button>
+              </td>
+            </tr>
+          </tbody>
         </table>
         <div class="homey-form-group">
           <label
@@ -159,23 +170,34 @@
             value="12"
           />
         </div>
-        <table style="width: 100%">
-          <tr>
-            <td style="text-align: center">
-              <button
-                id="refresh-frost-protection"
-                class="homey-button-secondary"
-                data-i18n="settings.buildings.refresh"
-              ></button>
-            </td>
-            <td style="text-align: center">
-              <button
-                id="update-frost-protection"
-                class="homey-button-primary"
-                data-i18n="settings.buildings.update"
-              ></button>
-            </td>
-          </tr>
+        <table
+          style="width: 100%"
+          aria-describedby="frost-protection-update-buttons"
+        >
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center">
+                <button
+                  id="refresh-frost-protection"
+                  class="homey-button-secondary"
+                  data-i18n="settings.buildings.refresh"
+                ></button>
+              </td>
+              <td style="text-align: center">
+                <button
+                  id="update-frost-protection"
+                  class="homey-button-primary"
+                  data-i18n="settings.buildings.update"
+                ></button>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </fieldset>
       <fieldset class="homey-form-fieldset">
