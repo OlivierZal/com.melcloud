@@ -111,9 +111,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'enabled-holiday-mode'
   ) as HTMLSelectElement
 
-  const tableElement: HTMLTableElement | null = document.querySelector('table')
+  const errorLogTable: HTMLTableElement = document.getElementById(
+    'error-log-table'
+  ) as HTMLTableElement
 
-  let hasLoadedTableHead: boolean = false
+  let hasLoadedErrorLogTableHead: boolean = false
   let errorCount: number = 0
   let fromDateHuman: string = ''
   let to: string = ''
@@ -145,7 +147,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       th.innerText = Homey.__(`settings.error_log.columns.${key}`)
       row.appendChild(th)
     }
-    hasLoadedTableHead = true
+    hasLoadedErrorLogTableHead = true
   }
 
   function generateTable(
@@ -218,12 +220,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         if (data.Errors.length === 0) {
           return
         }
-        if (tableElement !== null) {
-          if (!hasLoadedTableHead) {
-            generateTableHead(tableElement, Object.keys(data.Errors[0]))
-          }
-          generateTable(tableElement, data.Errors)
+        if (!hasLoadedErrorLogTableHead) {
+          generateTableHead(errorLogTable, Object.keys(data.Errors[0]))
         }
+        generateTable(errorLogTable, data.Errors)
       }
     )
   }
