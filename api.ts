@@ -95,6 +95,25 @@ module.exports = {
     })
   },
 
+  async getDeviceSettings({ homey }: { homey: Homey }): Promise<any> {
+    const drivers: any = homey.app.manifest.drivers
+    const settings: any = {}
+    for (const driver of drivers) {
+      settings[driver.id] = []
+      for (const setting of driver.settings) {
+        for (const child of setting.children) {
+          if (driver?.capabilitiesOptions?.[child.id]?.title !== undefined) {
+            settings[driver.id].push({
+              id: child.id,
+              title: driver.capabilitiesOptions[child.id].title
+            })
+          }
+        }
+      }
+    }
+    return settings
+  },
+
   async getFrostProtectionSettings({
     homey,
     params

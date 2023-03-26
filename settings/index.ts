@@ -15,16 +15,22 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
-  // @ts-expect-error bug
-  Homey.api(
-    'GET',
-    '/locale',
-    async (error: Error, data: string): Promise<void> => {
-      if (error === null) {
-        document.documentElement.setAttribute('lang', data)
-      }
-    }
-  )
+
+  async function getLocale(): Promise<string> {
+    return await new Promise((resolve, reject) => {
+      // @ts-expect-error bug
+      Homey.api('GET', '/locale', (error: Error, locale: string): void => {
+        if (error !== null) {
+          reject(error)
+          return
+        }
+        document.documentElement.setAttribute('lang', locale)
+        resolve(locale)
+      })
+    })
+  }
+
+  const locale = await getLocale()
 
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
@@ -68,9 +74,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'has-error-log'
   ) as HTMLDivElement
 
-  const periodElement: HTMLLabelElement = document.getElementById(
-    'period'
-  ) as HTMLLabelElement
+  const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
+    'settings-ata'
+  ) as HTMLFieldSetElement
 
   const fromElement: HTMLInputElement = document.getElementById(
     'from'
@@ -95,9 +101,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'username'
   ) as HTMLInputElement
 
-  const settingsAtaElements: HTMLInputElement[] = Array.from(
-    document.getElementsByName('settings-ata') as NodeListOf<HTMLInputElement>
-  )
+  const periodElement: HTMLLabelElement = document.getElementById(
+    'period'
+  ) as HTMLLabelElement
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
     'always_on'
@@ -402,31 +408,70 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
   }
 
-  function hasDevices(driverId?: string): void {
-    let endPoint: string = '/devices'
-    if (driverId !== undefined) {
-      const queryString: string = new URLSearchParams({
-        driverId
-      }).toString()
-      endPoint += `?${queryString}`
-    }
-    // @ts-expect-error bug
-    Homey.api(
-      'GET',
-      endPoint,
-      async (error: Error, devices: MELCloudDevice[]): Promise<void> => {
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        if (devices.length > 0) {
-          if (driverId === 'melcloud') {
-            hasDevicesAtaElement.style.display = 'block'
-          }
-        }
+  async function hasDevices(driverId?: string): Promise<boolean> {
+    return await new Promise((resolve, reject) => {
+      let endPoint: string = '/devices'
+      if (driverId !== undefined) {
+        const queryString: string = new URLSearchParams({
+          driverId
+        }).toString()
+        endPoint += `?${queryString}`
       }
-    )
+      // @ts-expect-error bug
+      Homey.api(
+        'GET',
+        endPoint,
+        async (error: Error, devices: MELCloudDevice[]): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            reject(error)
+            return
+          }
+          if (devices.length > 0) {
+            resolve(true)
+            return
+          }
+          resolve(false)
+        }
+      )
+    })
+  }
+
+  async function generateSettingsAtaChildrenElements(): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      // @ts-expect-error bug
+      Homey.api(
+        'GET',
+        '/devices/settings',
+        async (error: Error, settings: any): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            reject(error)
+            return
+          }
+          for (const setting of settings.melcloud) {
+            const label = document.createElement('label')
+            const input = document.createElement('input')
+            const checkmarkSpan = document.createElement('span')
+            const textSpan = document.createElement('span')
+            label.className = 'homey-form-checkbox'
+            input.className = 'homey-form-checkbox-input'
+            input.type = 'checkbox'
+            input.id = setting.id
+            checkmarkSpan.className = 'homey-form-checkbox-checkmark'
+            textSpan.className = 'homey-form-checkbox-text'
+            textSpan.innerText = setting.title[locale]
+            label.appendChild(input)
+            label.appendChild(checkmarkSpan)
+            label.appendChild(textSpan)
+            settingsAtaElement.appendChild(label)
+          }
+          resolve()
+        }
+      )
+    })
   }
 
   function login(): void {
@@ -455,13 +500,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           return
         }
         await hasAuthenticated()
-        hasDevices('melcloud')
+        const hasDevicesAta = await hasDevices('melcloud')
+        if (hasDevicesAta) {
+          await generateSettingsAtaChildrenElements()
+          hasDevicesAtaElement.style.display = 'block'
+        }
       }
     )
   }
 
   function setDeviceSettings(body: Settings, driverId?: string): void {
-    let endPoint: string = '/settings'
+    let endPoint: string = '/devices/settings'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
         driverId
@@ -579,7 +628,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   addSettingsEventListener(
     applySettingsAtaElement,
-    settingsAtaElements,
+    Array.from(settingsAtaElement.querySelectorAll('input')),
     'melcloud'
   )
 
