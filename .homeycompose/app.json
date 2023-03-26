@@ -123,41 +123,45 @@
       "method": "GET",
       "path": "/buildings"
     },
-    "getDevices": {
-      "method": "GET",
-      "path": "/devices"
-    },
     "getFrostProtectionSettings": {
       "method": "GET",
+      "path": "/buildings/:buildingId/settings/frost_protection"
+    },
+    "updateFrostProtectionSettings": {
+      "method": "POST",
       "path": "/buildings/:buildingId/settings/frost_protection"
     },
     "getHolidayModeSettings": {
       "method": "GET",
       "path": "/buildings/:buildingId/settings/holiday_mode"
     },
-    "getLocale": {
-      "method": "GET",
-      "path": "/locale"
+    "updateHolidayModeSettings": {
+      "method": "POST",
+      "path": "/buildings/:buildingId/settings/holiday_mode"
     },
     "getUnitErrorLog": {
       "method": "GET",
       "path": "/error_log"
     },
+    "getLocale": {
+      "method": "GET",
+      "path": "/locale"
+    },
     "login": {
       "method": "POST",
       "path": "/login"
     },
+    "getDevices": {
+      "method": "GET",
+      "path": "/devices"
+    },
+    "getDeviceSettings": {
+      "method": "GET",
+      "path": "/devices/settings"
+    },
     "setDeviceSettings": {
       "method": "POST",
-      "path": "/settings"
-    },
-    "updateFrostProtectionSettings": {
-      "method": "POST",
-      "path": "/buildings/:buildingId/settings/frost_protection"
-    },
-    "updateHolidayModeSettings": {
-      "method": "POST",
-      "path": "/buildings/:buildingId/settings/holiday_mode"
+      "path": "/devices/settings"
     }
   },
   "platforms": ["local"]
