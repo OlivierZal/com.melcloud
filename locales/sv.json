@@ -56,31 +56,7 @@
     "devices_ata": {
       "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
       "dashboard": "Dashboard display",
-      "label": "Luft-luft enhetsinställningar",
-      "meter_power": {
-        "hourly_consumed": "Timvis förbrukning",
-        "hourly_consumed_auto": "Timvis förbrukning - automatiskt",
-        "hourly_consumed_cooling": "Timvis förbrukning - kylning",
-        "hourly_consumed_dry": "Timvis förbrukning - avfuktning",
-        "hourly_consumed_fan": "Timvis förbrukning - fläkt",
-        "hourly_consumed_heating": "Timvis förbrukning - uppvärmning",
-        "hourly_consumed_other": "Timvis förbrukning - övrigt",
-        "daily_consumed": "Daglig förbrukning",
-        "daily_consumed_auto": "Daglig förbrukning - automatiskt",
-        "daily_consumed_cooling": "Daglig förbrukning - kylning",
-        "daily_consumed_dry": "Daglig förbrukning - avfuktning",
-        "daily_consumed_fan": "Daglig förbrukning - fläkt",
-        "daily_consumed_heating": "Daglig förbrukning - uppvärmning",
-        "daily_consumed_other": "Daglig förbrukning - övrigt",
-        "total_consumed": "Total förbrukning",
-        "total_consumed_auto": "Total förbrukning - automatiskt",
-        "total_consumed_cooling": "Total förbrukning - kylning",
-        "total_consumed_dry": "Total förbrukning - avfuktning",
-        "total_consumed_fan": "Total förbrukning - fläkt",
-        "total_consumed_heating": "Total förbrukning - uppvärmning",
-        "total_consumed_other": "Total förbrukning - övrigt"
-      },
-      "wifi": "Wifi signalstyrka"
+      "label": "Luft-luft enhetsinställningar"
     },
     "error_log": {
       "columns": {

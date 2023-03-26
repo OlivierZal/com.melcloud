@@ -56,31 +56,7 @@
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
       "dashboard": "Dashboard display",
-      "label": "Luft-luft enhetsinnstillinger",
-      "meter_power": {
-        "hourly_consumed": "Timevis forbruk",
-        "hourly_consumed_auto": "Timevis forbruk - automatisk",
-        "hourly_consumed_cooling": "Timevis forbruk - kjøling",
-        "hourly_consumed_dry": "Timevis forbruk - avfukting",
-        "hourly_consumed_fan": "Timevis forbruk - vifte",
-        "hourly_consumed_heating": "Timevis forbruk - oppvarming",
-        "hourly_consumed_other": "Timevis forbruk - annet",
-        "daily_consumed": "Daglige forbruk",
-        "daily_consumed_auto": "Daglige forbruk - automatisk",
-        "daily_consumed_cooling": "Daglige forbruk - kjøling",
-        "daily_consumed_dry": "Daglige forbruk - avfukting",
-        "daily_consumed_fan": "Daglige forbruk - vifte",
-        "daily_consumed_heating": "Daglige forbruk - oppvarming",
-        "daily_consumed_other": "Daglige forbruk - annet",
-        "total_consumed": "Total forbruk",
-        "total_consumed_auto": "Total forbruk - automatisk",
-        "total_consumed_cooling": "Total forbruk - kjøling",
-        "total_consumed_dry": "Total forbruk - avfukting",
-        "total_consumed_fan": "Total forbruk - vifte",
-        "total_consumed_heating": "Total forbruk - oppvarming",
-        "total_consumed_other": "Total forbruk - annet"
-      },
-      "wifi": "Wifi signalstyrke"
+      "label": "Luft-luft enhetsinnstillinger"
     },
     "error_log": {
       "columns": {
