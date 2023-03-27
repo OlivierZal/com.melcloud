@@ -15,6 +15,20 @@ export interface Settings extends Record<string, any> {
   interval?: number
 }
 
+export type Locale = 'en' | 'fr' | 'nl' | 'sv' | 'no' | 'da' | 'es'
+
+export type LocaleStrings = Record<Locale, string>
+
+export interface SettingsData {
+  id: string
+  driverId: string
+  label: LocaleStrings
+  title: LocaleStrings
+  min?: number
+  max?: number
+  units?: LocaleStrings
+}
+
 export interface SuccessData {
   readonly Success: boolean
   readonly AttributeErrors: Record<string, string[]> | null

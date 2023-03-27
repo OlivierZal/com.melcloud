@@ -13,7 +13,8 @@ import {
   type HolidayModeSettings,
   type LoginCredentials,
   type MELCloudDevice,
-  type Settings
+  type Settings,
+  type SettingsData
 } from './types'
 
 const format: string = 'd LLL yy HH:mm'
@@ -101,31 +102,33 @@ module.exports = {
   }: {
     homey: Homey
     query: { id?: string; driverId?: string }
-  }): Promise<any[]> {
-    const drivers: any = homey.app.manifest.drivers
-    return drivers
-      .flatMap((driver: any): any[] =>
+  }): Promise<SettingsData[]> {
+    let settings: any = homey.app.manifest.drivers.flatMap(
+      (driver: any): SettingsData[] =>
         driver.settings.flatMap((setting: any): any[] =>
           setting.children.map((child: any): any => ({
             id: child.id,
             driverId: driver.id,
             label: setting.label,
             title:
-              driver?.capabilitiesOptions?.[child.id]?.title !== undefined
-                ? driver.capabilitiesOptions[child.id].title
-                : child.label,
-            min: child.min ?? null,
-            max: child.max ?? null,
-            units: child.units ?? null,
-            values: child.values ?? null
+              driver?.capabilitiesOptions?.[child.id]?.title ?? child.label,
+            min: child.min,
+            max: child.max,
+            units: child.units
           }))
         )
+    )
+    if (query.id !== undefined) {
+      settings = settings.filter(
+        (setting: SettingsData): boolean => setting.id === query.id
       )
-      .filter(
-        (setting: any): boolean =>
-          setting.id === (query.id ?? setting.id) &&
-          setting.driverId === (query.driverId ?? setting.driverId)
+    }
+    if (query.driverId !== undefined) {
+      settings = settings.filter(
+        (setting: SettingsData): boolean => setting.driverId === query.driverId
       )
+    }
+    return settings
   },
 
   async getFrostProtectionSettings({
@@ -178,23 +181,17 @@ module.exports = {
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
     return {
       Errors: data
-        .map((errorData: ErrorLogData): ErrorDetails => {
-          const devices: MELCloudDevice[] = app
-            .getDevices()
-            .filter(
-              (device: MELCloudDevice): boolean =>
-                device.id === errorData.DeviceId
-            )
-          return {
-            Device: devices.length > 0 ? devices[0].getName() : 'Undefined',
+        .map(
+          (errorData: ErrorLogData): ErrorDetails => ({
+            Device: app.getDevice(errorData.DeviceId)?.getName() ?? 'Undefined',
             Date:
               errorData.StartDate !== null &&
               DateTime.fromISO(errorData.StartDate).year > 1
                 ? fromUTCtoLocal(errorData.StartDate, format)
                 : '',
             Error: errorData.ErrorMessage ?? ''
-          }
-        })
+          })
+        )
         .filter(
           (error: ErrorDetails): boolean =>
             error.Date !== '' && error.Error !== ''
