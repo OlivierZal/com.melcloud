@@ -95,23 +95,37 @@ module.exports = {
     })
   },
 
-  async getDeviceSettings({ homey }: { homey: Homey }): Promise<any> {
+  async getDeviceSettings({
+    homey,
+    query
+  }: {
+    homey: Homey
+    query: { id?: string; driverId?: string }
+  }): Promise<any[]> {
     const drivers: any = homey.app.manifest.drivers
-    const settings: any = {}
-    for (const driver of drivers) {
-      settings[driver.id] = []
-      for (const setting of driver.settings) {
-        for (const child of setting.children) {
-          if (driver?.capabilitiesOptions?.[child.id]?.title !== undefined) {
-            settings[driver.id].push({
-              id: child.id,
-              title: driver.capabilitiesOptions[child.id].title
-            })
-          }
-        }
-      }
-    }
-    return settings
+    return drivers
+      .flatMap((driver: any): any[] =>
+        driver.settings.flatMap((setting: any): any[] =>
+          setting.children.map((child: any): any => ({
+            id: child.id,
+            driverId: driver.id,
+            label: setting.label,
+            title:
+              driver?.capabilitiesOptions?.[child.id]?.title !== undefined
+                ? driver.capabilitiesOptions[child.id].title
+                : child.label,
+            min: child.min ?? null,
+            max: child.max ?? null,
+            units: child.units ?? null,
+            values: child.values ?? null
+          }))
+        )
+      )
+      .filter(
+        (setting: any): boolean =>
+          setting.id === (query.id ?? setting.id) &&
+          setting.driverId === (query.driverId ?? setting.driverId)
+      )
   },
 
   async getFrostProtectionSettings({

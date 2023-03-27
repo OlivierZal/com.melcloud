@@ -44,18 +44,15 @@
       "update": "Updaten"
     },
     "devices": {
-      "always_on": "Schakel uitschakeling van Homey uit",
       "apply": {
         "button": "Toepassen op alle apparaten",
         "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\n\nDeze actie kan enige tijd in beslag nemen.",
         "nothing": "Geen wijziging om toe te passen."
       },
-      "interval": "Updatefrequentie (minuten)",
       "label": "Apparaatinstellingen"
     },
     "devices_ata": {
       "auto_adjust": "Auto-afstellen airco-temperatuur",
-      "dashboard": "Dashboardweergave",
       "label": "Lucht-lucht apparaatinstellingen"
     },
     "error_log": {

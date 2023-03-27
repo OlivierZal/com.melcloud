@@ -44,18 +44,15 @@
       "update": "Mettre à jour"
     },
     "devices": {
-      "always_on": "Désactiver l'extinction depuis Homey",
       "apply": {
         "button": "Appliquer à tous les appareils",
         "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\n\nCette action peut prendre un certain temps.",
         "nothing": "Aucun changement à appliquer."
       },
-      "interval": "Fréquence de mise à jour (minutes)",
       "label": "Paramètres des appareils"
     },
     "devices_ata": {
       "auto_adjust": "Auto-ajuster la température de la climatisation",
-      "dashboard": "Affichage sur le tableau de bord",
       "label": "Paramètres des appareils air-air"
     },
     "error_log": {

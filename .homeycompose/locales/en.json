@@ -44,18 +44,15 @@
       "update": "Update"
     },
     "devices": {
-      "always_on": "Disable shutdown from Homey",
       "apply": {
         "button": "Apply to all devices",
         "confirm": "Are you sure you want to apply these settings to all devices?\n\nThis action may take some time.",
         "nothing": "No change to apply."
       },
-      "interval": "Update frequency (minutes)",
       "label": "Device Settings"
     },
     "devices_ata": {
       "auto_adjust": "Auto-adjust air conditioning temperature",
-      "dashboard": "Dashboard display",
       "label": "Air-to-Air Device Settings"
     },
     "error_log": {

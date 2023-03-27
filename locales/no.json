@@ -44,18 +44,15 @@
       "update": "Oppdater"
     },
     "devices": {
-      "always_on": "Deaktiver avstenging fra Homey",
       "apply": {
         "button": "Bruk på alle enheter",
         "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?\n\nDenne handlingen kan ta litt tid.",
         "nothing": "Ingen endring å bruke."
       },
-      "interval": "Oppdateringsfrekvens (minutter)",
       "label": "Enhetsinnstillinger"
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
-      "dashboard": "Dashboard display",
       "label": "Luft-luft enhetsinnstillinger"
     },
     "error_log": {

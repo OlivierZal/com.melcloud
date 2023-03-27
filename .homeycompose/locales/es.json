@@ -44,18 +44,15 @@
       "update": "Actualizar"
     },
     "devices": {
-      "always_on": "Desactivar apagado desde Homey",
       "apply": {
         "button": "Aplicar a todos los dispositivos",
         "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?\n\nEsta acción puede llevar algún tiempo.",
         "nothing": "No hay cambios que aplicar."
       },
-      "interval": "Frecuencia de actualización (minutos)",
       "label": "Configuración de los dispositivos"
     },
     "devices_ata": {
       "auto_adjust": "Autoajustar la temperatura del enfriamiento",
-      "dashboard": "Dashboard display",
       "label": "Configuración de los dispositivos aire-aire"
     },
     "error_log": {

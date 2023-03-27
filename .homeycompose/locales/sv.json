@@ -44,18 +44,15 @@
       "update": "Uppdatera"
     },
     "devices": {
-      "always_on": "Inaktivera avstängning från Homey",
       "apply": {
         "button": "Tillämpa på alla enheter",
         "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?\n\nDenna åtgärd kan ta lite tid.",
         "nothing": "Ingen ändring att tillämpa."
       },
-      "interval": "Uppdateringsfrekvens (minuter)",
       "label": "Enhetsinställningar"
     },
     "devices_ata": {
       "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
-      "dashboard": "Dashboard display",
       "label": "Luft-luft enhetsinställningar"
     },
     "error_log": {

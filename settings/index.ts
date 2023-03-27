@@ -19,18 +19,45 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   async function getLocale(): Promise<string> {
     return await new Promise((resolve, reject) => {
       // @ts-expect-error bug
-      Homey.api('GET', '/locale', (error: Error, locale: string): void => {
-        if (error !== null) {
-          reject(error)
-          return
+      Homey.api(
+        'GET',
+        '/locale',
+        async (error: Error, locale: string): Promise<void> => {
+          if (error !== null) {
+            reject(error)
+            return
+          }
+          document.documentElement.setAttribute('lang', locale)
+          resolve(locale)
         }
-        document.documentElement.setAttribute('lang', locale)
-        resolve(locale)
-      })
+      )
+    })
+  }
+
+  async function getDeviceSettings(): Promise<any[]> {
+    return await new Promise<any[]>((resolve, reject) => {
+      // @ts-expect-error bug
+      Homey.api(
+        'GET',
+        '/devices/settings?driverId=melcloud',
+        async (error: Error, settings: any[]): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            reject(error)
+            return
+          }
+          resolve(settings)
+        }
+      )
     })
   }
 
   const locale = await getLocale()
+  const settings: any[] = await getDeviceSettings()
+  const settingsAta: any[] = settings.filter(
+    (setting: any): boolean => setting.driverId === 'melcloud'
+  )
 
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
@@ -74,10 +101,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'has-error-log'
   ) as HTMLDivElement
 
-  const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
-    'settings-ata'
-  ) as HTMLFieldSetElement
-
   const fromElement: HTMLInputElement = document.getElementById(
     'from'
   ) as HTMLInputElement
@@ -101,8 +124,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'username'
   ) as HTMLInputElement
 
-  const periodElement: HTMLLabelElement = document.getElementById(
+  const alwaysOnLabelElement: HTMLLabelElement = document.getElementById(
+    'settings-always_on'
+  ) as HTMLLabelElement
+  const periodLabelElement: HTMLLabelElement = document.getElementById(
     'period'
+  ) as HTMLLabelElement
+  const intervalLabelElement: HTMLLabelElement = document.getElementById(
+    'settings-interval'
   ) as HTMLLabelElement
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
@@ -215,7 +244,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         fromElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
-        periodElement.innerText = Homey.__('settings.error_log.period', {
+        periodLabelElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman,
           errorCount,
           errorCountText: getErrorCountText(errorCount)
@@ -439,39 +468,40 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   async function generateSettingsAtaChildrenElements(): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      // @ts-expect-error bug
-      Homey.api(
-        'GET',
-        '/devices/settings',
-        async (error: Error, settings: any): Promise<void> => {
-          if (error !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
-            reject(error)
-            return
-          }
-          for (const setting of settings.melcloud) {
-            const label = document.createElement('label')
-            const input = document.createElement('input')
-            const checkmarkSpan = document.createElement('span')
-            const textSpan = document.createElement('span')
-            label.className = 'homey-form-checkbox'
-            input.className = 'homey-form-checkbox-input'
-            input.type = 'checkbox'
-            input.id = setting.id
-            checkmarkSpan.className = 'homey-form-checkbox-checkmark'
-            textSpan.className = 'homey-form-checkbox-text'
-            textSpan.innerText = setting.title[locale]
-            label.appendChild(input)
-            label.appendChild(checkmarkSpan)
-            label.appendChild(textSpan)
-            settingsAtaElement.appendChild(label)
-          }
-          resolve()
-        }
-      )
-    })
+    const dashboardAtaElement: HTMLLegendElement = document.getElementById(
+      'settings-ata-dashboard'
+    ) as HTMLLegendElement
+    dashboardAtaElement.innerText = settingsAta.filter(
+      (setting: any): boolean => setting.id === 'measure_power.wifi'
+    )[0].label[locale]
+
+    const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
+      'settings-ata'
+    ) as HTMLFieldSetElement
+    for (const setting of settingsAta.filter(
+      (setting: any): boolean => !['always_on', 'interval'].includes(setting.id)
+    )) {
+      const label = document.createElement('label')
+      const input = document.createElement('input')
+      const checkmarkSpan = document.createElement('span')
+      const textSpan = document.createElement('span')
+      label.className = 'homey-form-checkbox'
+      input.className = 'homey-form-checkbox-input'
+      input.type = 'checkbox'
+      input.id = setting.id
+      checkmarkSpan.className = 'homey-form-checkbox-checkmark'
+      textSpan.className = 'homey-form-checkbox-text'
+      textSpan.innerText = setting.title[locale]
+      label.appendChild(input)
+      label.appendChild(checkmarkSpan)
+      label.appendChild(textSpan)
+      settingsAtaElement.appendChild(label)
+    }
+    addSettingsEventListener(
+      applySettingsAtaElement,
+      Array.from(settingsAtaElement.querySelectorAll('input')),
+      'melcloud'
+    )
   }
 
   function login(): void {
@@ -557,7 +587,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         body = buildSettingsBody(elements)
       } catch (error: unknown) {
         // @ts-expect-error bug
-        Homey.alert(error.message)
+        Homey.alert(error instanceof Error ? error.message : String(error))
         return
       }
       if (Object.keys(body).length === 0) {
@@ -594,8 +624,20 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
   frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
   frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
-  intervalElement.min = '1'
-  intervalElement.max = '60'
+
+  const alwaysOnSetting = settingsAta.filter(
+    (setting: any): boolean => setting.id === 'always_on'
+  )[0]
+  alwaysOnLabelElement.innerText = alwaysOnSetting.title[locale]
+
+  const intervalSetting = settingsAta.filter(
+    (setting: any): boolean => setting.id === 'interval'
+  )[0]
+  intervalElement.min = intervalSetting.min
+  intervalElement.max = intervalSetting.max
+  intervalLabelElement.innerText = `${
+    intervalSetting.title[locale] as string
+  } (${intervalSetting.units[locale] as string})`
 
   await getHomeySetting(usernameElement)
   await getHomeySetting(passwordElement)
@@ -625,12 +667,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     intervalElement,
     alwaysOnElement
   ])
-
-  addSettingsEventListener(
-    applySettingsAtaElement,
-    Array.from(settingsAtaElement.querySelectorAll('input')),
-    'melcloud'
-  )
 
   autoAdjustElement.addEventListener('click', (): void => {
     // @ts-expect-error bug
@@ -755,7 +791,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     } catch (error: unknown) {
       getBuildingFrostProtectionSettings()
       // @ts-expect-error bug
-      Homey.alert(error.message)
+      Homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
     const body: FrostProtectionSettings = {
