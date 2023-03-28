@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { DateTime, Duration, Settings } from 'luxon'
+import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
 import {
   type Building,
@@ -31,7 +31,10 @@ export default class MELCloudApp extends App {
     Building<MELCloudDevice>['Name']
   >
 
+  deviceList!: Array<ListDevice<MELCloudDevice>>
+  deviceIds!: Array<MELCloudDevice['id']>
   loginTimeout!: NodeJS.Timeout
+  listDevicesTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
     Settings.defaultLocale = this.homey.i18n.getLanguage()
@@ -41,39 +44,14 @@ export default class MELCloudApp extends App {
       this.homey.settings.get('ContextKey') ?? ''
 
     this.buildings = {}
+    this.deviceList = []
+    this.deviceIds = []
     await this.refreshLogin()
-  }
-
-  async refreshLogin(): Promise<void> {
-    this.clearLoginRefresh()
-    const loginCredentials: LoginCredentials = {
-      username: this.homey.settings.get('username') ?? '',
-      password: this.homey.settings.get('password') ?? ''
-    }
-    const expiry: string | null = this.homey.settings.get('Expiry')
-    const ms: number =
-      expiry !== null
-        ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-        : 0
-    if (ms > 0) {
-      const maxTimeout: number = Math.pow(2, 31) - 1
-      const interval: number = Math.min(ms, maxTimeout)
-      this.loginTimeout = this.setTimeout(
-        'login refresh',
-        async (): Promise<boolean> => await this.login(loginCredentials),
-        interval
-      )
-    } else {
-      await this.login(loginCredentials)
-    }
-  }
-
-  clearLoginRefresh(): void {
-    this.homey.clearTimeout(this.loginTimeout)
-    this.log('Login refresh has been stopped')
+    await this.listDevices()
   }
 
   async login(loginCredentials: LoginCredentials): Promise<boolean> {
+    this.clearLoginRefresh()
     try {
       const { username, password } = loginCredentials
       if (username === '' && password === '') {
@@ -109,12 +87,57 @@ export default class MELCloudApp extends App {
     return false
   }
 
+  clearLoginRefresh(): void {
+    this.homey.clearTimeout(this.loginTimeout)
+    this.log('Login refresh has been stopped')
+  }
+
+  async refreshLogin(): Promise<void> {
+    const loginCredentials: LoginCredentials = {
+      username: this.homey.settings.get('username') ?? '',
+      password: this.homey.settings.get('password') ?? ''
+    }
+    const expiry: string | null = this.homey.settings.get('Expiry')
+    const ms: number =
+      expiry !== null
+        ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+        : 0
+    if (ms > 0) {
+      const maxTimeout: number = Math.pow(2, 31) - 1
+      const interval: number = Math.min(ms, maxTimeout)
+      this.loginTimeout = this.setTimeout(
+        'login refresh',
+        async (): Promise<boolean> => await this.login(loginCredentials),
+        interval,
+        'days'
+      )
+      return
+    }
+    await this.login(loginCredentials)
+  }
+
+  getFirstDeviceId(
+    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
+    safe: boolean = true
+  ): MELCloudDevice['id'] {
+    return this.getDeviceIds({ buildingId, driverId }, safe)[0]
+  }
+
   getDeviceIds(
     { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
     safe: boolean = true
   ): Array<MELCloudDevice['id']> {
     return this.getDevices({ buildingId, driverId }, safe).map(
       (device: MELCloudDevice): MELCloudDevice['id'] => device.id
+    )
+  }
+
+  getDevice(
+    id: number,
+    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {}
+  ): MELCloudDevice | undefined {
+    return this.getDevices({ buildingId, driverId }).find(
+      (device: MELCloudDevice): boolean => device.id === id
     )
   }
 
@@ -163,15 +186,15 @@ export default class MELCloudApp extends App {
   async listDevices<T extends MELCloudDevice>(
     deviceType?: T['driver']['deviceType']
   ): Promise<Array<ListDevice<T>>> {
+    this.clearListDevicesRefresh()
     const buildings: Array<Building<T>> = await this.getBuildings()
+    const newBuildings: Record<
+      Building<MELCloudDevice>['ID'],
+      Building<MELCloudDevice>['Name']
+    > = {}
     let devices: Array<ListDevice<T>> = []
     for (const building of buildings) {
-      if (
-        !(building.ID in this.buildings) ||
-        this.buildings[building.ID] !== building.Name
-      ) {
-        this.buildings[building.ID] = building.Name
-      }
+      newBuildings[building.ID] = building.Name
       devices.push(...building.Structure.Devices)
       for (const floor of building.Structure.Floors) {
         devices.push(...floor.Devices)
@@ -189,10 +212,43 @@ export default class MELCloudApp extends App {
           deviceType === device.Device.DeviceType
       )
     }
+    this.buildings = newBuildings
+    this.deviceList = devices
+    this.deviceIds = devices.map(
+      (device: ListDevice<T>): MELCloudDevice['id'] => device.DeviceID
+    )
+    await this.refreshListDevices()
     return devices
   }
 
-  async getDevice<T extends MELCloudDevice>(
+  clearListDevicesRefresh(): void {
+    this.homey.clearTimeout(this.listDevicesTimeout)
+    this.log('Device refresh from device list has been stopped')
+  }
+
+  async refreshListDevices(): Promise<void> {
+    for (const device of this.getDevices()) {
+      await device.handleDeviceFromList()
+    }
+    this.listDevicesTimeout = this.setTimeout(
+      'device refresh from device list',
+      async (): Promise<void> => {
+        await this.listDevices()
+      },
+      { minutes: 1 },
+      'minutes'
+    )
+  }
+
+  getDeviceFromList<T extends MELCloudDevice>(
+    id: number
+  ): ListDevice<T> | undefined {
+    return this.deviceList.find(
+      (device: ListDevice<T>): boolean => device.DeviceID === id
+    )
+  }
+
+  async getDeviceData<T extends MELCloudDevice>(
     device: T
   ): Promise<Data<T> | null> {
     try {
@@ -211,7 +267,7 @@ export default class MELCloudApp extends App {
     return null
   }
 
-  async setDevice<T extends MELCloudDevice>(
+  async setDeviceData<T extends MELCloudDevice>(
     device: T,
     updateData: UpdateData<T>
   ): Promise<Data<T> | null> {
@@ -293,7 +349,7 @@ export default class MELCloudApp extends App {
     toDate: DateTime
   ): Promise<ErrorLogData[] | boolean> {
     const postData: ErrorLogPostData = {
-      DeviceIDs: this.getDeviceIds(),
+      DeviceIDs: this.deviceIds,
       FromDate: fromDate.toISODate(),
       ToDate: toDate.toISODate()
     }
@@ -322,12 +378,12 @@ export default class MELCloudApp extends App {
       buildingName,
       '...'
     )
-    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(
+    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId(
       { buildingId },
       false
     )
     const { data } = await axios.get<FrostProtectionData>(
-      `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`
+      `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
     this.log(
       'Getting frost protection settings for building',
@@ -377,12 +433,12 @@ export default class MELCloudApp extends App {
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
     this.log('Getting holiday mode settings for building', buildingName, '...')
-    const buildingDeviceIds: Array<MELCloudDevice['id']> = this.getDeviceIds(
+    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId(
       { buildingId },
       false
     )
     const { data } = await axios.get<HolidayModeData>(
-      `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceIds[0]}`
+      `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
     this.log(
       'Getting holiday mode settings for building',
@@ -482,15 +538,16 @@ export default class MELCloudApp extends App {
 
   setTimeout(
     type: string,
-    callback: () => Promise<boolean>,
-    interval: number | object
+    callback: () => Promise<any>,
+    interval: number | object,
+    shiftTo: keyof DurationLikeObject
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next',
       type,
       'will run in',
-      duration.shiftTo('days').toHuman(),
+      duration.shiftTo(shiftTo).toHuman(),
       'on',
       DateTime.now()
         .plus(duration)

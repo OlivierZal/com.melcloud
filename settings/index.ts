@@ -7,16 +7,18 @@ import {
   type FrostProtectionSettings,
   type HolidayModeData,
   type HolidayModeSettings,
+  type Locale,
   type LoginCredentials,
   type MELCloudDevice,
-  type Settings
+  type Settings,
+  type SettingsData
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  async function getLocale(): Promise<string> {
+  async function getLocale(): Promise<Locale> {
     return await new Promise((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
@@ -28,19 +30,26 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             return
           }
           document.documentElement.setAttribute('lang', locale)
-          resolve(locale)
+          resolve(locale as Locale)
         }
       )
     })
   }
 
-  async function getDeviceSettings(): Promise<any[]> {
-    return await new Promise<any[]>((resolve, reject) => {
+  async function getDeviceSettings(driverId?: string): Promise<SettingsData[]> {
+    return await new Promise<SettingsData[]>((resolve, reject) => {
+      let endPoint: string = '/devices/settings'
+      if (driverId !== undefined) {
+        const queryString: string = new URLSearchParams({
+          driverId
+        }).toString()
+        endPoint += `?${queryString}`
+      }
       // @ts-expect-error bug
       Homey.api(
         'GET',
-        '/devices/settings?driverId=melcloud',
-        async (error: Error, settings: any[]): Promise<void> => {
+        endPoint,
+        async (error: Error, settings: SettingsData[]): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error bug
             await Homey.alert(error.message)
@@ -53,12 +62,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const locale = await getLocale()
-  const settings: any[] = await getDeviceSettings()
-  const settingsAta: any[] = settings.filter(
-    (setting: any): boolean => setting.driverId === 'melcloud'
-  )
+  function getDeviceSetting(
+    settings: SettingsData[],
+    id: string
+  ): SettingsData | undefined {
+    return settings.find((setting: SettingsData): boolean => setting.id === id)
+  }
 
+  const locale: Locale = await getLocale()
+  const settingsAta: SettingsData[] = await getDeviceSettings('melcloud')
+
+  const settingsMixin: string[] = ['always_on', 'interval']
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
 
@@ -146,7 +160,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'enabled-holiday-mode'
   ) as HTMLSelectElement
 
-  const errorLogTable: HTMLTableElement = document.getElementById(
+  const errorLogTableElement: HTMLTableElement = document.getElementById(
     'error-log-table'
   ) as HTMLTableElement
 
@@ -249,16 +263,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           errorCount,
           errorCountText: getErrorCountText(errorCount)
         })
-        if (hasErrorLogElement.style.display !== 'block') {
-          hasErrorLogElement.style.display = 'block'
+        hasErrorLogElement.style.display = 'block'
+        if (data.Errors.length > 0) {
+          if (!hasLoadedErrorLogTableHead) {
+            generateTableHead(errorLogTableElement, Object.keys(data.Errors[0]))
+          }
+          generateTable(errorLogTableElement, data.Errors)
         }
-        if (data.Errors.length === 0) {
-          return
-        }
-        if (!hasLoadedErrorLogTableHead) {
-          generateTableHead(errorLogTable, Object.keys(data.Errors[0]))
-        }
-        generateTable(errorLogTable, data.Errors)
       }
     )
   }
@@ -427,14 +438,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   async function hasAuthenticated(): Promise<void> {
     const isBuilding: boolean = await getBuildings()
-    if (isBuilding) {
-      generateErrorLog()
-      isNotAuthenticatedElement.style.display = 'none'
-      isAuthenticatedElement.style.display = 'block'
-    } else {
+    if (!isBuilding) {
       // @ts-expect-error bug
       await Homey.alert(Homey.__('settings.buildings.error'))
+      return
     }
+    generateErrorLog()
+    isNotAuthenticatedElement.style.display = 'none'
+    isAuthenticatedElement.style.display = 'block'
   }
 
   async function hasDevices(driverId?: string): Promise<boolean> {
@@ -471,15 +482,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const dashboardAtaElement: HTMLLegendElement = document.getElementById(
       'settings-ata-dashboard'
     ) as HTMLLegendElement
-    dashboardAtaElement.innerText = settingsAta.filter(
-      (setting: any): boolean => setting.id === 'measure_power.wifi'
-    )[0].label[locale]
+    dashboardAtaElement.innerText =
+      getDeviceSetting(settingsAta, 'measure_power.wifi')?.label[locale] ?? ''
 
     const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
       'settings-ata'
     ) as HTMLFieldSetElement
     for (const setting of settingsAta.filter(
-      (setting: any): boolean => !['always_on', 'interval'].includes(setting.id)
+      (setting: SettingsData): boolean => !settingsMixin.includes(setting.id)
     )) {
       const label = document.createElement('label')
       const input = document.createElement('input')
@@ -625,19 +635,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
   frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
 
-  const alwaysOnSetting = settingsAta.filter(
-    (setting: any): boolean => setting.id === 'always_on'
-  )[0]
-  alwaysOnLabelElement.innerText = alwaysOnSetting.title[locale]
+  const alwaysOnSetting = getDeviceSetting(settingsAta, 'always_on')
+  alwaysOnLabelElement.innerText = alwaysOnSetting?.title[locale] ?? ''
 
-  const intervalSetting = settingsAta.filter(
-    (setting: any): boolean => setting.id === 'interval'
-  )[0]
-  intervalElement.min = intervalSetting.min
-  intervalElement.max = intervalSetting.max
-  intervalLabelElement.innerText = `${
-    intervalSetting.title[locale] as string
-  } (${intervalSetting.units[locale] as string})`
+  const intervalSetting = getDeviceSetting(settingsAta, 'interval')
+  if (
+    intervalSetting?.min !== undefined &&
+    intervalSetting?.max !== undefined &&
+    intervalSetting?.units !== undefined
+  ) {
+    intervalElement.min = String(intervalSetting.min)
+    intervalElement.max = String(intervalSetting.max)
+    intervalLabelElement.innerText = `${intervalSetting.title[locale]} (${intervalSetting.units[locale]})`
+  }
 
   await getHomeySetting(usernameElement)
   await getHomeySetting(passwordElement)

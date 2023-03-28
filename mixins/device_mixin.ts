@@ -199,7 +199,7 @@ export default class MELCloudDeviceMixin extends Device {
   ): Promise<void> {
     this.diff = {}
     const updateData: UpdateData<T> = this.buildUpdateData(diff)
-    const data: Data<T> | null = await this.app.setDevice(
+    const data: Data<T> | null = await this.app.setDeviceData(
       this as unknown as T,
       updateData
     )
@@ -243,33 +243,16 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async syncFromDevice<T extends MELCloudDevice>(): Promise<void> {
-    const data: Data<T> | null = await this.app.getDevice(this as unknown as T)
+    const data: Data<T> | null = await this.app.getDeviceData(
+      this as unknown as T
+    )
     await this.sync(data)
   }
 
   async sync<T extends MELCloudDevice>(data: Data<T> | null): Promise<void> {
     await this.updateCapabilities(data)
     await this.updateThermostatMode()
-
-    const deviceFromList: ListDevice<T> | null = await this.getDeviceFromList()
-    await this.updateListCapabilities(deviceFromList)
-    await this.updateStore(deviceFromList)
     this.planSyncFromDevice({ minutes: this.getSetting('interval') })
-  }
-
-  async getDeviceFromList<
-    T extends MELCloudDevice
-  >(): Promise<ListDevice<T> | null> {
-    const listDevices: Array<ListDevice<T>> = await this.app.listDevices(
-      this.driver.deviceType
-    )
-    const devices: Array<ListDevice<T>> = listDevices.filter(
-      (device: ListDevice<T>): boolean => device.DeviceID === this.id
-    )
-    if (devices.length === 1) {
-      return devices[0]
-    }
-    return null
   }
 
   async updateCapabilities<T extends MELCloudDevice>(
@@ -326,10 +309,28 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
+  planSyncFromDevice(object: object): void {
+    this.clearSyncPlan()
+    this.syncTimeout = this.setTimeout(
+      'sync from device',
+      async (): Promise<void> => {
+        await this.syncFromDevice()
+      },
+      object
+    )
+  }
+
+  async handleDeviceFromList<T extends MELCloudDevice>(): Promise<void> {
+    const deviceFromList: ListDevice<T> | undefined =
+      this.app.getDeviceFromList(this.id)
+    await this.updateListCapabilities(deviceFromList)
+    await this.updateStore(deviceFromList)
+  }
+
   async updateListCapabilities<T extends MELCloudDevice>(
-    deviceFromList: ListDevice<T> | null
+    deviceFromList: ListDevice<T> | undefined
   ): Promise<void> {
-    if (deviceFromList === null) {
+    if (deviceFromList === undefined) {
       return
     }
     this.log('Syncing from device list:', deviceFromList.Device)
@@ -346,9 +347,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async updateStore<T extends MELCloudDevice>(
-    deviceFromList: ListDevice<T> | null
+    deviceFromList: ListDevice<T> | undefined
   ): Promise<void> {
-    if (deviceFromList === null) {
+    if (deviceFromList === undefined) {
       return
     }
     const { canCool, hasZone2 } = this.getStore()
@@ -365,17 +366,6 @@ export default class MELCloudDeviceMixin extends Device {
     if (hasStoreChanged) {
       await this.handleCapabilities()
     }
-  }
-
-  planSyncFromDevice(object: object): void {
-    this.clearSyncPlan()
-    this.syncTimeout = this.setTimeout(
-      'sync from device',
-      async (): Promise<void> => {
-        await this.syncFromDevice()
-      },
-      object
-    )
   }
 
   async runEnergyReports(): Promise<void> {
