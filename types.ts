@@ -12,7 +12,6 @@ export type ThermostatMode = 'auto' | 'heat' | 'cool' | 'off'
 
 export interface Settings extends Record<string, any> {
   always_on?: boolean
-  interval?: number
 }
 
 export type Locale = 'en' | 'fr' | 'nl' | 'sv' | 'no' | 'da' | 'es'
@@ -88,9 +87,15 @@ interface ListCapabilitiesMixin {
   readonly 'measure_power.wifi': number
 }
 
-interface ListCapabilitiesAta extends ListCapabilitiesMixin {}
+interface ListCapabilitiesAta
+  extends ListCapabilitiesMixin,
+    GetCapabilitiesAta,
+    SetCapabilitiesAta {}
 
-interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
+interface ListCapabilitiesAtw
+  extends ListCapabilitiesMixin,
+    GetCapabilitiesAtw,
+    SetCapabilitiesAtw {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
@@ -217,7 +222,6 @@ interface SetDeviceDataAtw extends SetDeviceDataMixin {
   readonly ForcedHotWaterMode?: boolean
   readonly OperationModeZone1?: number
   readonly OperationModeZone2?: number
-  readonly OutdoorTemperature?: number
   readonly SetCoolFlowTemperatureZone1?: number
   readonly SetCoolFlowTemperatureZone2?: number
   readonly SetHeatFlowTemperatureZone1?: number
@@ -250,6 +254,15 @@ type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? GetDeviceDataAtw
   : GetDeviceDataAta
 
+export type UpdateData<T extends MELCloudDevice> = Required<SetDeviceData<T>>
+
+export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
+  readonly DeviceID: T['id']
+  readonly HasPendingCommand: true
+}
+
+export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
+
 interface ListDeviceDataMixin {
   readonly CanCool: boolean
   readonly DeviceType: number
@@ -257,9 +270,20 @@ interface ListDeviceDataMixin {
   readonly WifiSignalStrength: number
 }
 
-interface ListDeviceDataAta extends ListDeviceDataMixin {}
+interface ListDeviceDataAta
+  extends ListDeviceDataMixin,
+    Exclude<
+      Data<MELCloudDeviceAta>,
+      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
+    > {
+  readonly FanSpeed: number
+  readonly VaneHorizontalDirection: number
+  readonly VaneVerticalDirection: number
+}
 
-interface ListDeviceDataAtw extends ListDeviceDataMixin {
+interface ListDeviceDataAtw
+  extends ListDeviceDataMixin,
+    Data<MELCloudDeviceAtw> {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -275,9 +299,8 @@ interface ListDeviceDataAtw extends ListDeviceDataMixin {
   readonly ReturnTemperatureZone2: number
 }
 
-type ListDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? ListDeviceDataAtw
-  : ListDeviceDataAta
+export type ListDeviceData<T extends MELCloudDevice> =
+  T extends MELCloudDeviceAtw ? ListDeviceDataAtw : ListDeviceDataAta
 
 export interface SetCapabilityMapping<T extends MELCloudDevice> {
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
@@ -424,8 +447,19 @@ export const listCapabilityMappingAta: Record<
   ListCapability<MELCloudDeviceAta>,
   ListCapabilityMapping<MELCloudDeviceAta>
 > = {
+  ...setCapabilityMappingAta,
+  ...getCapabilityMappingAta,
+  fan_power: {
+    tag: 'FanSpeed'
+  },
   'measure_power.wifi': {
     tag: 'WifiSignalStrength'
+  },
+  vertical: {
+    tag: 'VaneVerticalDirection'
+  },
+  horizontal: {
+    tag: 'VaneHorizontalDirection'
   }
 } as const
 
@@ -433,6 +467,8 @@ export const listCapabilityMappingAtw: Record<
   ListCapability<MELCloudDeviceAtw>,
   ListCapabilityMapping<MELCloudDeviceAtw>
 > = {
+  ...setCapabilityMappingAtw,
+  ...getCapabilityMappingAtw,
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
   },
@@ -490,10 +526,9 @@ export interface DeviceDetails {
   capabilities?: string[]
 }
 
-export type FlowArgsAta = {
+export interface FlowArgsAta
+  extends Record<Readonly<SetCapability<MELCloudDeviceAta>>, string> {
   readonly device: MELCloudDeviceAta
-} & {
-  readonly [capability in SetCapability<MELCloudDeviceAta>]: string
 }
 
 export interface LoginCredentials {
@@ -598,17 +633,6 @@ export interface Building<T extends MELCloudDevice>
   readonly Name: string
   readonly Structure: Structure<T>
 }
-
-export type UpdateData<T extends MELCloudDevice> = Required<
-  Readonly<SetDeviceData<T>>
->
-
-export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
-  readonly DeviceID: T['id']
-  readonly HasPendingCommand: true
-}
-
-export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
 
 export interface ReportPostData<T extends MELCloudDevice> {
   readonly DeviceID: T['id']
