@@ -89,7 +89,7 @@ export default class MELCloudDeviceMixin extends Device {
     const dashboardCapabilities: string[] = this.getDashboardCapabilities()
     await this.handleCapabilities(dashboardCapabilities)
     this.registerCapabilityListeners()
-    this.app.syncFromDevices()
+    await this.app.listDevices()
 
     this.reportInterval = null
     if (
@@ -252,7 +252,7 @@ export default class MELCloudDeviceMixin extends Device {
     await this.updateCapabilities(data, from)
     await this.updateThermostatMode()
     if (!from && Object.keys(this.diff).length === 0) {
-      this.app.syncFromDevices()
+      await this.app.listDevices()
     }
   }
 
@@ -400,7 +400,7 @@ export default class MELCloudDeviceMixin extends Device {
           !setting.startsWith('meter_power') && setting !== 'always_on'
       )
     ) {
-      this.app.syncFromDevices()
+      await this.app.listDevices()
     }
     const changedEnergyKeys = changedKeys.filter((setting: string): boolean =>
       setting.startsWith('meter_power')
@@ -417,7 +417,7 @@ export default class MELCloudDeviceMixin extends Device {
           (setting: string): boolean => setting.startsWith('meter_power')
         ).length === 0
       ) {
-        this.clearReportPlan()
+        this.clearEnergyReportsPlan()
       }
     }
   }
@@ -435,16 +435,16 @@ export default class MELCloudDeviceMixin extends Device {
     }
   }
 
-  clearReportPlan(): void {
-    this.reportInterval = null
+  clearEnergyReportsPlan(): void {
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearInterval(this.reportInterval)
+    this.reportInterval = null
     this.log('Energy cost reports have been paused')
   }
 
   async onDeleted(): Promise<void> {
     this.clearSync()
-    this.clearReportPlan()
+    this.clearEnergyReportsPlan()
   }
 
   async addCapability(capability: string): Promise<void> {

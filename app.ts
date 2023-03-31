@@ -34,7 +34,7 @@ export default class MELCloudApp extends App {
   deviceList!: Array<ListDevice<MELCloudDevice>>
   deviceIds!: Array<MELCloudDevice['id']>
   loginTimeout!: NodeJS.Timeout
-  syncFromDevicesTimeout!: NodeJS.Timeout
+  syncInterval!: NodeJS.Timeout | null
 
   async onInit(): Promise<void> {
     Settings.defaultLocale = this.homey.i18n.getLanguage()
@@ -47,6 +47,7 @@ export default class MELCloudApp extends App {
     this.deviceIds = []
     this.deviceList = []
 
+    this.syncInterval = null
     await this.refreshLogin()
     await this.listDevices()
   }
@@ -79,8 +80,8 @@ export default class MELCloudApp extends App {
           username,
           password
         })
+        await this.listDevices()
         await this.refreshLogin()
-        this.syncFromDevices()
         return true
       }
     } catch (error: unknown) {
@@ -178,26 +179,10 @@ export default class MELCloudApp extends App {
     )
   }
 
-  syncFromDevices(): void {
-    this.clearListDevicesRefresh()
-    this.syncFromDevicesTimeout = this.setTimeout(
-      'sync from devices',
-      async (): Promise<void> => {
-        await this.listDevices()
-      },
-      { seconds: 1 },
-      'seconds'
-    )
-  }
-
-  clearListDevicesRefresh(): void {
-    this.homey.clearTimeout(this.syncFromDevicesTimeout)
-    this.log('Device list refresh has been paused')
-  }
-
   async listDevices<T extends MELCloudDevice>(
     deviceType?: T['driver']['deviceType']
   ): Promise<Array<ListDevice<T>>> {
+    this.clearListDevicesRefresh()
     const buildings: Array<Building<T>> = await this.getBuildings()
     const newBuildings: Record<
       Building<MELCloudDevice>['ID'],
@@ -232,6 +217,12 @@ export default class MELCloudApp extends App {
     return devices
   }
 
+  clearListDevicesRefresh(): void {
+    this.homey.clearInterval(this.syncInterval)
+    this.syncInterval = null
+    this.log('Device list refresh has been paused')
+  }
+
   async getBuildings(): Promise<Array<Building<MELCloudDevice>>> {
     try {
       this.log('Searching for buildings...')
@@ -259,7 +250,10 @@ export default class MELCloudApp extends App {
   }
 
   async planSyncFromDevices(): Promise<void> {
-    this.syncFromDevicesTimeout = this.setTimeout(
+    if (this.syncInterval !== null) {
+      return
+    }
+    this.syncInterval = this.setInterval(
       'device list refresh',
       async (): Promise<void> => {
         await this.listDevices()
