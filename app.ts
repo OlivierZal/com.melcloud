@@ -34,7 +34,7 @@ export default class MELCloudApp extends App {
   deviceList!: Array<ListDevice<MELCloudDevice>>
   deviceIds!: Array<MELCloudDevice['id']>
   loginTimeout!: NodeJS.Timeout
-  listDevicesTimeout!: NodeJS.Timeout
+  syncFromDevicesTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
     Settings.defaultLocale = this.homey.i18n.getLanguage()
@@ -44,8 +44,9 @@ export default class MELCloudApp extends App {
       this.homey.settings.get('ContextKey') ?? ''
 
     this.buildings = {}
-    this.deviceList = []
     this.deviceIds = []
+    this.deviceList = []
+
     await this.refreshLogin()
     await this.listDevices()
   }
@@ -79,6 +80,7 @@ export default class MELCloudApp extends App {
           password
         })
         await this.refreshLogin()
+        this.syncFromDevices()
         return true
       }
     } catch (error: unknown) {
@@ -89,7 +91,7 @@ export default class MELCloudApp extends App {
 
   clearLoginRefresh(): void {
     this.homey.clearTimeout(this.loginTimeout)
-    this.log('Login refresh has been stopped')
+    this.log('Login refresh has been paused')
   }
 
   async refreshLogin(): Promise<void> {
@@ -166,27 +168,36 @@ export default class MELCloudApp extends App {
     return devices
   }
 
-  async getBuildings(): Promise<Array<Building<MELCloudDevice>>> {
-    try {
-      this.log('Searching for buildings...')
-      const { data } = await axios.get<Array<Building<MELCloudDevice>>>(
-        '/User/ListDevices'
-      )
-      this.log('Searching for buildings:\n', data)
-      return data
-    } catch (error: unknown) {
-      this.error(
-        'Searching for buildings:',
-        error instanceof Error ? error.message : error
-      )
-    }
-    return []
+  getDeviceFromList<T extends MELCloudDevice>(
+    id: number
+  ): ListDevice<T> | null {
+    return (
+      this.deviceList.find(
+        (device: ListDevice<T>): boolean => device.DeviceID === id
+      ) ?? null
+    )
+  }
+
+  syncFromDevices(): void {
+    this.clearListDevicesRefresh()
+    this.syncFromDevicesTimeout = this.setTimeout(
+      'sync from devices',
+      async (): Promise<void> => {
+        await this.listDevices()
+      },
+      { seconds: 1 },
+      'seconds'
+    )
+  }
+
+  clearListDevicesRefresh(): void {
+    this.homey.clearTimeout(this.syncFromDevicesTimeout)
+    this.log('Device list refresh has been paused')
   }
 
   async listDevices<T extends MELCloudDevice>(
     deviceType?: T['driver']['deviceType']
   ): Promise<Array<ListDevice<T>>> {
-    this.clearListDevicesRefresh()
     const buildings: Array<Building<T>> = await this.getBuildings()
     const newBuildings: Record<
       Building<MELCloudDevice>['ID'],
@@ -213,38 +224,48 @@ export default class MELCloudApp extends App {
       )
     }
     this.buildings = newBuildings
-    this.deviceList = devices
     this.deviceIds = devices.map(
       (device: ListDevice<T>): MELCloudDevice['id'] => device.DeviceID
     )
-    await this.refreshListDevices()
+    this.deviceList = devices
+    await this.syncDevicesFromList()
     return devices
   }
 
-  clearListDevicesRefresh(): void {
-    this.homey.clearTimeout(this.listDevicesTimeout)
-    this.log('Device refresh from device list has been stopped')
+  async getBuildings(): Promise<Array<Building<MELCloudDevice>>> {
+    try {
+      this.log('Searching for buildings...')
+      const { data } = await axios.get<Array<Building<MELCloudDevice>>>(
+        '/User/ListDevices'
+      )
+      this.log('Searching for buildings:\n', data)
+      return data
+    } catch (error: unknown) {
+      this.error(
+        'Searching for buildings:',
+        error instanceof Error ? error.message : error
+      )
+    }
+    return []
   }
 
-  async refreshListDevices(): Promise<void> {
+  async syncDevicesFromList(): Promise<void> {
     for (const device of this.getDevices()) {
-      await device.handleDeviceFromList()
+      if (Object.keys(device.diff).length === 0) {
+        await device.syncDeviceFromList()
+      }
     }
-    this.listDevicesTimeout = this.setTimeout(
-      'device refresh from device list',
+    await this.planSyncFromDevices()
+  }
+
+  async planSyncFromDevices(): Promise<void> {
+    this.syncFromDevicesTimeout = this.setTimeout(
+      'device list refresh',
       async (): Promise<void> => {
         await this.listDevices()
       },
       { minutes: 1 },
       'minutes'
-    )
-  }
-
-  getDeviceFromList<T extends MELCloudDevice>(
-    id: number
-  ): ListDevice<T> | undefined {
-    return this.deviceList.find(
-      (device: ListDevice<T>): boolean => device.DeviceID === id
     )
   }
 
@@ -536,18 +557,37 @@ export default class MELCloudApp extends App {
     }
   }
 
+  setInterval(
+    type: string,
+    callback: () => Promise<void>,
+    interval: number | object,
+    ...units: Array<keyof DurationLikeObject>
+  ): NodeJS.Timeout {
+    const duration: Duration = Duration.fromDurationLike(interval)
+    this.log(
+      `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
+      'will run every',
+      duration.shiftTo(...units).toHuman(),
+      'starting',
+      DateTime.now()
+        .plus(duration)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+    )
+    return this.homey.setInterval(callback, Number(duration))
+  }
+
   setTimeout(
     type: string,
     callback: () => Promise<any>,
     interval: number | object,
-    shiftTo: keyof DurationLikeObject
+    ...units: Array<keyof DurationLikeObject>
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next',
       type,
       'will run in',
-      duration.shiftTo(shiftTo).toHuman(),
+      duration.shiftTo(...units).toHuman(),
       'on',
       DateTime.now()
         .plus(duration)

@@ -1,4 +1,4 @@
-import { DateTime, Duration } from 'luxon'
+import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import { Device } from 'homey'
 import type MELCloudApp from '../app'
 import type MELCloudDeviceAta from '../drivers/melcloud/device'
@@ -14,6 +14,7 @@ import {
   type ListCapability,
   type ListCapabilityMapping,
   type ListDevice,
+  type ListDeviceData,
   type MELCloudDevice,
   type MELCloudDriver,
   type SetCapabilities,
@@ -88,7 +89,7 @@ export default class MELCloudDeviceMixin extends Device {
     const dashboardCapabilities: string[] = this.getDashboardCapabilities()
     await this.handleCapabilities(dashboardCapabilities)
     this.registerCapabilityListeners()
-    await this.syncFromDevice()
+    this.app.syncFromDevices()
 
     this.reportInterval = null
     if (
@@ -141,7 +142,7 @@ export default class MELCloudDeviceMixin extends Device {
     capability: ExtendedSetCapability<T>,
     value: CapabilityValue
   ): Promise<void> {
-    this.clearSyncPlan()
+    this.clearSync()
     switch (capability) {
       case 'onoff':
         this.diff.onoff = value as boolean
@@ -167,9 +168,10 @@ export default class MELCloudDeviceMixin extends Device {
     throw new Error('Method not implemented.')
   }
 
-  clearSyncPlan(): void {
+  clearSync(): void {
+    this.app.clearListDevicesRefresh()
     this.homey.clearTimeout(this.syncTimeout)
-    this.log('Sync has been paused')
+    this.log('Sync with device has been paused')
   }
 
   async setAlwaysOnWarning(): Promise<void> {
@@ -186,11 +188,12 @@ export default class MELCloudDeviceMixin extends Device {
 
   applySyncToDevice(): void {
     this.syncTimeout = this.setTimeout(
-      'sync to device',
+      'sync with device',
       async (): Promise<void> => {
         await this.syncToDevice(this.diff)
       },
-      { seconds: 1 }
+      { seconds: 1 },
+      'seconds'
     )
   }
 
@@ -203,7 +206,7 @@ export default class MELCloudDeviceMixin extends Device {
       this as unknown as T,
       updateData
     )
-    await this.sync(data)
+    await this.endSync(data)
   }
 
   buildUpdateData<T extends MELCloudDevice>(
@@ -242,26 +245,25 @@ export default class MELCloudDeviceMixin extends Device {
     return value as boolean | number
   }
 
-  async syncFromDevice<T extends MELCloudDevice>(): Promise<void> {
-    const data: Data<T> | null = await this.app.getDeviceData(
-      this as unknown as T
-    )
-    await this.sync(data)
-  }
-
-  async sync<T extends MELCloudDevice>(data: Data<T> | null): Promise<void> {
-    await this.updateCapabilities(data)
+  async endSync<T extends MELCloudDevice>(
+    data: Partial<ListDeviceData<T>> | null,
+    from: boolean = false
+  ): Promise<void> {
+    await this.updateCapabilities(data, from)
     await this.updateThermostatMode()
-    this.planSyncFromDevice({ minutes: this.getSetting('interval') })
+    if (!from && Object.keys(this.diff).length === 0) {
+      this.app.syncFromDevices()
+    }
   }
 
   async updateCapabilities<T extends MELCloudDevice>(
-    data: Data<T> | null
+    data: Partial<ListDeviceData<T>> | null,
+    from: boolean = false
   ): Promise<void> {
     if (data === null) {
       return
     }
-    if (data.EffectiveFlags !== undefined) {
+    if (!from && data.EffectiveFlags !== undefined) {
       for (const [capability, { effectiveFlag, tag }] of Object.entries(
         this.setCapabilityMapping
       )) {
@@ -275,11 +277,11 @@ export default class MELCloudDeviceMixin extends Device {
       }
     }
     for (const [capability, { tag }] of Object.entries(
-      this.getCapabilityMapping
+      from ? this.listCapabilityMapping : this.getCapabilityMapping
     )) {
       await this.convertFromDevice(
-        capability as GetCapability<T>,
-        data[tag as GetCapabilityMapping<T>['tag']] as boolean | number
+        capability as ListCapability<T>,
+        data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
       )
     }
   }
@@ -309,51 +311,27 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
-  planSyncFromDevice(object: object): void {
-    this.clearSyncPlan()
-    this.syncTimeout = this.setTimeout(
-      'sync from device',
-      async (): Promise<void> => {
-        await this.syncFromDevice()
-      },
-      object
+  async syncDeviceFromList<T extends MELCloudDevice>(): Promise<void> {
+    const deviceFromList: ListDevice<T> | null = this.app.getDeviceFromList(
+      this.id
     )
-  }
-
-  async handleDeviceFromList<T extends MELCloudDevice>(): Promise<void> {
-    const deviceFromList: ListDevice<T> | undefined =
-      this.app.getDeviceFromList(this.id)
-    await this.updateListCapabilities(deviceFromList)
-    await this.updateStore(deviceFromList)
-  }
-
-  async updateListCapabilities<T extends MELCloudDevice>(
-    deviceFromList: ListDevice<T> | undefined
-  ): Promise<void> {
-    if (deviceFromList === undefined) {
+    if (deviceFromList === null) {
       return
     }
-    this.log('Syncing from device list:', deviceFromList.Device)
-    for (const [capability, { tag }] of Object.entries(
-      this.listCapabilityMapping
-    )) {
-      await this.convertFromDevice(
-        capability as ListCapability<T>,
-        deviceFromList.Device[tag as ListCapabilityMapping<T>['tag']] as
-          | boolean
-          | number
-      )
-    }
+    const data: ListDeviceData<T> = deviceFromList.Device
+    this.log('Syncing from device list:', data)
+    await this.updateStore(data)
+    await this.endSync(data, true)
   }
 
   async updateStore<T extends MELCloudDevice>(
-    deviceFromList: ListDevice<T> | undefined
+    data: ListDeviceData<T> | null
   ): Promise<void> {
-    if (deviceFromList === undefined) {
+    if (data === null) {
       return
     }
     const { canCool, hasZone2 } = this.getStore()
-    const { CanCool, HasZone2 } = deviceFromList.Device
+    const { CanCool, HasZone2 } = data
     let hasStoreChanged: boolean = false
     if (canCool !== CanCool) {
       await this.setStoreValue('canCool', CanCool)
@@ -387,10 +365,14 @@ export default class MELCloudDeviceMixin extends Device {
           async (): Promise<void> => {
             await this.runEnergyReports()
           },
-          interval
+          interval,
+          'days',
+          'hours'
         )
       },
-      DateTime.now().plus(duration).set(values).diffNow()
+      DateTime.now().plus(duration).set(values).diffNow(),
+      'hours',
+      'minutes'
     )
   }
 
@@ -403,8 +385,7 @@ export default class MELCloudDeviceMixin extends Device {
   }): Promise<void> {
     if (
       changedKeys.some(
-        (setting: string): boolean =>
-          !['always_on', 'interval'].includes(setting)
+        (setting: string): boolean => !['always_on'].includes(setting)
       )
     ) {
       await this.handleDashboardCapabilities(newSettings, changedKeys)
@@ -419,7 +400,7 @@ export default class MELCloudDeviceMixin extends Device {
           !setting.startsWith('meter_power') && setting !== 'always_on'
       )
     ) {
-      this.planSyncFromDevice({ seconds: 1 })
+      this.app.syncFromDevices()
     }
     const changedEnergyKeys = changedKeys.filter((setting: string): boolean =>
       setting.startsWith('meter_power')
@@ -455,14 +436,14 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   clearReportPlan(): void {
+    this.reportInterval = null
     this.homey.clearTimeout(this.reportTimeout)
     this.homey.clearInterval(this.reportInterval)
-    this.reportInterval = null
-    this.log('Energy cost reports have been stopped')
+    this.log('Energy cost reports have been paused')
   }
 
   async onDeleted(): Promise<void> {
-    this.clearSyncPlan()
+    this.clearSync()
     this.clearReportPlan()
   }
 
@@ -504,13 +485,14 @@ export default class MELCloudDeviceMixin extends Device {
   setInterval(
     type: string,
     callback: () => Promise<void>,
-    interval: number | object
+    interval: number | object,
+    ...units: Array<keyof DurationLikeObject>
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
       'will run every',
-      duration.shiftTo('days', 'hours').toHuman(),
+      duration.shiftTo(...units).toHuman(),
       'starting',
       DateTime.now()
         .plus(duration)
@@ -522,14 +504,15 @@ export default class MELCloudDeviceMixin extends Device {
   setTimeout(
     type: string,
     callback: () => Promise<void>,
-    interval: number | object
+    interval: number | object,
+    ...units: Array<keyof DurationLikeObject>
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next',
       type,
       'will run in',
-      duration.shiftTo('hours', 'minutes', 'seconds').toHuman(),
+      duration.shiftTo(...units).toHuman(),
       'on',
       DateTime.now()
         .plus(duration)

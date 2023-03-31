@@ -2,45 +2,6 @@
   {
     "type": "group",
     "label": {
-      "en": "Configuration",
-      "fr": "Configuration",
-      "nl": "Configuratie",
-      "sv": "Konfiguration",
-      "no": "Konfigurasjon",
-      "da": "Konfiguration",
-      "es": "Configuración"
-    },
-    "children": [
-      {
-        "id": "interval",
-        "type": "number",
-        "label": {
-          "en": "Device update frequency",
-          "fr": "Fréquence de mise à jour de l'appareil",
-          "nl": "Apparaatupdatefrequentie",
-          "sv": "Enhetsuppdateringsfrekvens",
-          "no": "Enhetsoppdateringsfrekvens",
-          "da": "Enhedsopdateringsfrekvens",
-          "es": "Frecuencia de actualización del dispositivo"
-        },
-        "units": {
-          "en": "minutes",
-          "fr": "minutes",
-          "nl": "minuten",
-          "sv": "minuter",
-          "no": "minutter",
-          "da": "minutter",
-          "es": "minutos"
-        },
-        "value": 5,
-        "min": 1,
-        "max": 60
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
       "en": "Options",
       "fr": "Options",
       "nl": "Opties",

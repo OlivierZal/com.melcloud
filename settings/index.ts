@@ -72,7 +72,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const locale: Locale = await getLocale()
   const settingsAta: SettingsData[] = await getDeviceSettings('melcloud')
 
-  const settingsMixin: string[] = ['always_on', 'interval']
+  const settingsMixin: string[] = ['always_on']
   const minimumTemperature: number = 10
   const maximumTemperature: number = 38
 
@@ -128,9 +128,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const holidayModeEndDateElement: HTMLInputElement = document.getElementById(
     'end-date'
   ) as HTMLInputElement
-  const intervalElement: HTMLInputElement = document.getElementById(
-    'interval'
-  ) as HTMLInputElement
   const passwordElement: HTMLInputElement = document.getElementById(
     'password'
   ) as HTMLInputElement
@@ -143,9 +140,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   ) as HTMLLabelElement
   const periodLabelElement: HTMLLabelElement = document.getElementById(
     'period'
-  ) as HTMLLabelElement
-  const intervalLabelElement: HTMLLabelElement = document.getElementById(
-    'settings-interval'
   ) as HTMLLabelElement
 
   const alwaysOnElement: HTMLSelectElement = document.getElementById(
@@ -638,17 +632,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const alwaysOnSetting = getDeviceSetting(settingsAta, 'always_on')
   alwaysOnLabelElement.innerText = alwaysOnSetting?.title[locale] ?? ''
 
-  const intervalSetting = getDeviceSetting(settingsAta, 'interval')
-  if (
-    intervalSetting?.min !== undefined &&
-    intervalSetting?.max !== undefined &&
-    intervalSetting?.units !== undefined
-  ) {
-    intervalElement.min = String(intervalSetting.min)
-    intervalElement.max = String(intervalSetting.max)
-    intervalLabelElement.innerText = `${intervalSetting.title[locale]} (${intervalSetting.units[locale]})`
-  }
-
   await getHomeySetting(usernameElement)
   await getHomeySetting(passwordElement)
   login()
@@ -673,10 +656,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     generateErrorLog()
   })
 
-  addSettingsEventListener(applySettingsElement, [
-    intervalElement,
-    alwaysOnElement
-  ])
+  addSettingsEventListener(applySettingsElement, [alwaysOnElement])
 
   autoAdjustElement.addEventListener('click', (): void => {
     // @ts-expect-error bug
