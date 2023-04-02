@@ -91,5 +91,8 @@
   },
   "13.0.0": {
     "en": "Added a section dedicated to air-to-air heat pump customers in the application settings."
+  },
+  "14.0.0": {
+    "en": "Improved app memory consumption, devices are now updated every minute."
   }
 }
