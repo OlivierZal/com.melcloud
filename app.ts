@@ -2,6 +2,7 @@ import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
 import {
+  type SyncMode,
   type Building,
   type Data,
   type ErrorLogData,
@@ -180,7 +181,8 @@ export default class MELCloudApp extends App {
   }
 
   async listDevices<T extends MELCloudDevice>(
-    deviceType?: T['driver']['deviceType']
+    deviceType?: T['driver']['deviceType'],
+    syncMode: Exclude<SyncMode, 'syncTo'> = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
     this.clearListDevicesRefresh()
     const buildings: Array<Building<T>> = await this.getBuildings()
@@ -213,7 +215,7 @@ export default class MELCloudApp extends App {
       (device: ListDevice<T>): MELCloudDevice['id'] => device.DeviceID
     )
     this.deviceList = devices
-    await this.syncDevicesFromList()
+    await this.syncDevicesFromList(syncMode)
     return devices
   }
 
@@ -240,10 +242,12 @@ export default class MELCloudApp extends App {
     return []
   }
 
-  async syncDevicesFromList(): Promise<void> {
+  async syncDevicesFromList(
+    syncMode: Exclude<SyncMode, 'syncTo'>
+  ): Promise<void> {
     for (const device of this.getDevices()) {
-      if (Object.keys(device.diff).length === 0) {
-        await device.syncDeviceFromList()
+      if (!device.isDiff()) {
+        await device.syncDeviceFromList(syncMode)
       }
     }
     await this.planSyncFromDevices()

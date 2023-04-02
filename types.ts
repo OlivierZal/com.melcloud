@@ -6,6 +6,8 @@ import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
+export type SyncMode = 'syncTo' | 'syncFrom' | 'refresh'
+
 export type CapabilityValue = boolean | number | string
 
 export type ThermostatMode = 'auto' | 'heat' | 'cool' | 'off'
@@ -87,15 +89,13 @@ interface ListCapabilitiesMixin {
   readonly 'measure_power.wifi': number
 }
 
-interface ListCapabilitiesAta
-  extends ListCapabilitiesMixin,
-    GetCapabilitiesAta,
-    SetCapabilitiesAta {}
+interface ListCapabilitiesAta extends ListCapabilitiesMixin {
+  readonly fan_power: number
+  readonly vertical: number
+  readonly horizontal: number
+}
 
-interface ListCapabilitiesAtw
-  extends ListCapabilitiesMixin,
-    GetCapabilitiesAtw,
-    SetCapabilitiesAtw {
+interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
@@ -205,12 +205,12 @@ export type OperationModeZoneCapbility =
   | 'operation_mode_zone_with_cool.zone1'
   | 'operation_mode_zone_with_cool.zone2'
 
-interface SetDeviceDataMixin {
+interface BaseDeviceData {
   readonly EffectiveFlags: number
   readonly Power?: number
 }
 
-interface SetDeviceDataAta extends SetDeviceDataMixin {
+interface SetDeviceDataAta extends BaseDeviceData {
   readonly OperationMode?: number
   readonly SetTemperature?: number
   readonly SetFanSpeed?: number
@@ -218,7 +218,7 @@ interface SetDeviceDataAta extends SetDeviceDataMixin {
   readonly VaneHorizontal?: number
 }
 
-interface SetDeviceDataAtw extends SetDeviceDataMixin {
+interface SetDeviceDataAtw extends BaseDeviceData {
   readonly ForcedHotWaterMode?: boolean
   readonly OperationModeZone1?: number
   readonly OperationModeZone2?: number
@@ -235,11 +235,13 @@ type SetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   ? SetDeviceDataAtw
   : SetDeviceDataAta
 
-interface GetDeviceDataAta {
+interface GetDeviceDataMixin extends BaseDeviceData {}
+
+interface GetDeviceDataAta extends GetDeviceDataMixin, SetDeviceDataAta {
   readonly RoomTemperature: number
 }
 
-interface GetDeviceDataAtw {
+interface GetDeviceDataAtw extends GetDeviceDataMixin, SetDeviceDataAtw {
   readonly EcoHotWater: boolean
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
@@ -263,7 +265,7 @@ export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
 
 export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
 
-interface ListDeviceDataMixin {
+interface ListDeviceDataMixin extends BaseDeviceData {
   readonly CanCool: boolean
   readonly DeviceType: number
   readonly HasZone2: boolean
@@ -273,7 +275,7 @@ interface ListDeviceDataMixin {
 interface ListDeviceDataAta
   extends ListDeviceDataMixin,
     Exclude<
-      Data<MELCloudDeviceAta>,
+      GetDeviceDataAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     > {
   readonly FanSpeed: number
@@ -281,9 +283,7 @@ interface ListDeviceDataAta
   readonly VaneVerticalDirection: number
 }
 
-interface ListDeviceDataAtw
-  extends ListDeviceDataMixin,
-    Data<MELCloudDeviceAtw> {
+interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -447,8 +447,6 @@ export const listCapabilityMappingAta: Record<
   ListCapability<MELCloudDeviceAta>,
   ListCapabilityMapping<MELCloudDeviceAta>
 > = {
-  ...setCapabilityMappingAta,
-  ...getCapabilityMappingAta,
   fan_power: {
     tag: 'FanSpeed'
   },
@@ -467,8 +465,6 @@ export const listCapabilityMappingAtw: Record<
   ListCapability<MELCloudDeviceAtw>,
   ListCapabilityMapping<MELCloudDeviceAtw>
 > = {
-  ...setCapabilityMappingAtw,
-  ...getCapabilityMappingAtw,
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
   },

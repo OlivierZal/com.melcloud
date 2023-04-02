@@ -21,6 +21,7 @@ import {
   type SetCapability,
   type SetCapabilityMapping,
   type Settings,
+  type SyncMode,
   type ThermostatMode,
   type UpdateData
 } from '../types'
@@ -99,6 +100,10 @@ export default class MELCloudDeviceMixin extends Device {
     ) {
       await this.runEnergyReports()
     }
+  }
+
+  isDiff(): boolean {
+    return Object.keys(this.diff).length > 0
   }
 
   getDashboardCapabilities(settings: Settings = this.getSettings()): string[] {
@@ -206,7 +211,7 @@ export default class MELCloudDeviceMixin extends Device {
       this as unknown as T,
       updateData
     )
-    await this.endSync(data)
+    await this.endSync(data, 'syncTo')
   }
 
   buildUpdateData<T extends MELCloudDevice>(
@@ -247,42 +252,72 @@ export default class MELCloudDeviceMixin extends Device {
 
   async endSync<T extends MELCloudDevice>(
     data: Partial<ListDeviceData<T>> | null,
-    from: boolean = false
+    syncMode: SyncMode
   ): Promise<void> {
-    await this.updateCapabilities(data, from)
+    await this.updateCapabilities(data, syncMode)
     await this.updateThermostatMode()
-    if (!from && Object.keys(this.diff).length === 0) {
-      await this.app.listDevices()
+    if (syncMode === 'syncTo' && !this.isDiff()) {
+      await this.app.listDevices(undefined, 'syncFrom')
     }
   }
 
   async updateCapabilities<T extends MELCloudDevice>(
     data: Partial<ListDeviceData<T>> | null,
-    from: boolean = false
+    syncMode: SyncMode
   ): Promise<void> {
     if (data === null) {
       return
     }
-    if (!from && data.EffectiveFlags !== undefined) {
-      for (const [capability, { effectiveFlag, tag }] of Object.entries(
-        this.setCapabilityMapping
-      )) {
-        const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
-        if (effectiveFlags === 0n || Boolean(effectiveFlags & effectiveFlag)) {
+    switch (syncMode) {
+      case 'syncTo':
+        if (data.EffectiveFlags !== undefined) {
+          const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
+          for (const [capability, { effectiveFlag, tag }] of Object.entries({
+            ...this.setCapabilityMapping,
+            ...this.getCapabilityMapping
+          })) {
+            if (
+              capability in this.getCapabilityMapping ||
+              effectiveFlags === 0n ||
+              Boolean(effectiveFlags & effectiveFlag)
+            ) {
+              await this.convertFromDevice(
+                capability as ListCapability<T>,
+                data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
+              )
+            }
+          }
+        }
+        break
+      case 'syncFrom':
+        for (const [capability, { tag }] of Object.entries(
+          this.listCapabilityMapping
+        )) {
+          if (
+            !Object.keys({
+              ...this.setCapabilityMapping,
+              ...this.getCapabilityMapping
+            }).includes(capability)
+          ) {
+            await this.convertFromDevice(
+              capability as ListCapability<T>,
+              data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
+            )
+          }
+        }
+        break
+      case 'refresh':
+      default:
+        for (const [capability, { tag }] of Object.entries({
+          ...this.setCapabilityMapping,
+          ...this.getCapabilityMapping,
+          ...this.listCapabilityMapping
+        })) {
           await this.convertFromDevice(
-            capability as SetCapability<T>,
-            data[tag as SetCapabilityMapping<T>['tag']] as boolean | number
+            capability as ListCapability<T>,
+            data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
           )
         }
-      }
-    }
-    for (const [capability, { tag }] of Object.entries(
-      from ? this.listCapabilityMapping : this.getCapabilityMapping
-    )) {
-      await this.convertFromDevice(
-        capability as ListCapability<T>,
-        data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
-      )
     }
   }
 
@@ -311,7 +346,9 @@ export default class MELCloudDeviceMixin extends Device {
     )
   }
 
-  async syncDeviceFromList<T extends MELCloudDevice>(): Promise<void> {
+  async syncDeviceFromList<T extends MELCloudDevice>(
+    syncMode: Exclude<SyncMode, 'syncTo'>
+  ): Promise<void> {
     const deviceFromList: ListDevice<T> | null = this.app.getDeviceFromList(
       this.id
     )
@@ -321,7 +358,7 @@ export default class MELCloudDeviceMixin extends Device {
     const data: ListDeviceData<T> = deviceFromList.Device
     this.log('Syncing from device list:', data)
     await this.updateStore(data)
-    await this.endSync(data, true)
+    await this.endSync(data, syncMode)
   }
 
   async updateStore<T extends MELCloudDevice>(
