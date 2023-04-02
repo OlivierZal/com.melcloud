@@ -4,6 +4,7 @@ import type MELCloudApp from '../app'
 import type MELCloudDeviceAta from '../drivers/melcloud/device'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import {
+  type NonReportCapability,
   type Capability,
   type CapabilityValue,
   type Data,
@@ -90,7 +91,7 @@ export default class MELCloudDeviceMixin extends Device {
     const dashboardCapabilities: string[] = this.getDashboardCapabilities()
     await this.handleCapabilities(dashboardCapabilities)
     this.registerCapabilityListeners()
-    await this.app.listDevices()
+    this.app.applySyncFromDevices()
 
     this.reportInterval = null
     if (
@@ -257,7 +258,7 @@ export default class MELCloudDeviceMixin extends Device {
     await this.updateCapabilities(data, syncMode)
     await this.updateThermostatMode()
     if (syncMode === 'syncTo' && !this.isDiff()) {
-      await this.app.listDevices(undefined, 'syncFrom')
+      this.app.applySyncFromDevices()
     }
   }
 
@@ -265,59 +266,61 @@ export default class MELCloudDeviceMixin extends Device {
     data: Partial<ListDeviceData<T>> | null,
     syncMode: SyncMode
   ): Promise<void> {
-    if (data === null) {
+    if (data === null || data.EffectiveFlags === undefined) {
       return
     }
-    switch (syncMode) {
-      case 'syncTo':
-        if (data.EffectiveFlags !== undefined) {
-          const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
-          for (const [capability, { effectiveFlag, tag }] of Object.entries({
-            ...this.setCapabilityMapping,
-            ...this.getCapabilityMapping
-          })) {
-            if (
-              capability in this.getCapabilityMapping ||
-              effectiveFlags === 0n ||
-              Boolean(effectiveFlags & effectiveFlag)
-            ) {
-              await this.convertFromDevice(
-                capability as ListCapability<T>,
-                data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
-              )
-            }
+    const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
+    const combinedCapabilities: typeof this.getCapabilityMapping = {
+      ...this.setCapabilityMapping,
+      ...this.getCapabilityMapping
+    }
+
+    const capabilitiesToProcess: () =>
+      | typeof this.getCapabilityMapping
+      | typeof this.listCapabilityMapping = ():
+      | typeof this.getCapabilityMapping
+      | typeof this.listCapabilityMapping => {
+      switch (syncMode) {
+        case 'syncTo':
+          return combinedCapabilities
+        case 'syncFrom':
+          return this.listCapabilityMapping
+        case 'refresh':
+        default:
+          return {
+            ...combinedCapabilities,
+            ...this.listCapabilityMapping
           }
-        }
-        break
-      case 'syncFrom':
-        for (const [capability, { tag }] of Object.entries(
-          this.listCapabilityMapping
-        )) {
-          if (
-            !Object.keys({
-              ...this.setCapabilityMapping,
-              ...this.getCapabilityMapping
-            }).includes(capability)
-          ) {
-            await this.convertFromDevice(
-              capability as ListCapability<T>,
-              data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
-            )
-          }
-        }
-        break
-      case 'refresh':
-      default:
-        for (const [capability, { tag }] of Object.entries({
-          ...this.setCapabilityMapping,
-          ...this.getCapabilityMapping,
-          ...this.listCapabilityMapping
-        })) {
-          await this.convertFromDevice(
-            capability as ListCapability<T>,
-            data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
+      }
+    }
+
+    const shouldProcess = (
+      capability: NonReportCapability<T>,
+      effectiveFlag?: bigint
+    ): boolean => {
+      switch (syncMode) {
+        case 'syncTo':
+          return (
+            effectiveFlag === undefined ||
+            Boolean(effectiveFlag & effectiveFlags)
           )
-        }
+        case 'syncFrom':
+          return !Object.keys(combinedCapabilities).includes(capability)
+        case 'refresh':
+        default:
+          return true
+      }
+    }
+
+    for (const [capability, { effectiveFlag, tag }] of Object.entries(
+      capabilitiesToProcess()
+    )) {
+      if (shouldProcess(capability as NonReportCapability<T>, effectiveFlag)) {
+        await this.convertFromDevice(
+          capability as NonReportCapability<T>,
+          data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
+        )
+      }
     }
   }
 
@@ -437,7 +440,7 @@ export default class MELCloudDeviceMixin extends Device {
           !setting.startsWith('meter_power') && setting !== 'always_on'
       )
     ) {
-      await this.app.listDevices()
+      this.app.applySyncFromDevices()
     }
     const changedEnergyKeys = changedKeys.filter((setting: string): boolean =>
       setting.startsWith('meter_power')

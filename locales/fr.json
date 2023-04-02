@@ -74,7 +74,6 @@
     "int_error": {
       "message": "__name__ doit être un entier compris entre __min__ et __max__.",
       "values": {
-        "interval": "La fréquence de mise à jour",
         "max": "La température maximale",
         "min": "La température minimale"
       }

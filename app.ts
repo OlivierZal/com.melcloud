@@ -36,6 +36,7 @@ export default class MELCloudApp extends App {
   deviceIds!: Array<MELCloudDevice['id']>
   loginTimeout!: NodeJS.Timeout
   syncInterval!: NodeJS.Timeout | null
+  syncTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
     Settings.defaultLocale = this.homey.i18n.getLanguage()
@@ -81,7 +82,7 @@ export default class MELCloudApp extends App {
           username,
           password
         })
-        await this.listDevices()
+        this.applySyncFromDevices()
         await this.refreshLogin()
         return true
       }
@@ -180,8 +181,22 @@ export default class MELCloudApp extends App {
     )
   }
 
+  applySyncFromDevices(
+    deviceType?: number
+  ): void {
+    this.clearListDevicesRefresh()
+    this.syncTimeout = this.setTimeout(
+      'sync with device',
+      async (): Promise<void> => {
+        await this.listDevices(deviceType, 'syncFrom')
+      },
+      { seconds: 1 },
+      'seconds'
+    )
+  }
+
   async listDevices<T extends MELCloudDevice>(
-    deviceType?: T['driver']['deviceType'],
+    deviceType?: number,
     syncMode: Exclude<SyncMode, 'syncTo'> = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
     this.clearListDevicesRefresh()
@@ -220,6 +235,7 @@ export default class MELCloudApp extends App {
   }
 
   clearListDevicesRefresh(): void {
+    this.homey.clearTimeout(this.syncTimeout)
     this.homey.clearInterval(this.syncInterval)
     this.syncInterval = null
     this.log('Device list refresh has been paused')

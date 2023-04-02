@@ -189,10 +189,13 @@ export type ReportCapability<T extends MELCloudDevice> =
     ? keyof ReportCapabilitiesAtw
     : keyof ReportCapabilitiesAta
 
-export type Capability<T extends MELCloudDevice> =
+export type NonReportCapability<T extends MELCloudDevice> =
   | SetCapability<T>
   | GetCapability<T>
   | ListCapability<T>
+
+export type Capability<T extends MELCloudDevice> =
+  | NonReportCapability<T>
   | ReportCapability<T>
 
 export type ExtendedCapability<T extends MELCloudDevice> =

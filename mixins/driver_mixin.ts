@@ -30,6 +30,7 @@ export default class MELCloudDriverMixin extends Driver {
   }
 
   async discoverDevices<T extends MELCloudDevice>(): Promise<DeviceDetails[]> {
+    this.app.clearListDevicesRefresh()
     const devices: Array<ListDevice<T>> = await this.app.listDevices(
       this.deviceType
     )

@@ -74,7 +74,6 @@
     "int_error": {
       "message": "__name__ must be an integer between __min__ and __max__.",
       "values": {
-        "interval": "The update frequency",
         "max": "The maximum temperature",
         "min": "The minimum temperature"
       }

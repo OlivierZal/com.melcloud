@@ -74,7 +74,6 @@
     "int_error": {
       "message": "__name__ måste vara ett heltal mellan __min__ och __max__.",
       "values": {
-        "interval": "Uppdateringsfrekvensen",
         "max": "Maximal temperaturen",
         "min": "Minimal temperaturen"
       }

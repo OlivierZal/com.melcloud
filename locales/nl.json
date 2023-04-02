@@ -74,7 +74,6 @@
     "int_error": {
       "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",
       "values": {
-        "interval": "De updatefrequentie",
         "max": "De maximale temperatuur",
         "min": "De minimale temperatuur"
       }
