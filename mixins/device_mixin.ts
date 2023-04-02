@@ -258,7 +258,7 @@ export default class MELCloudDeviceMixin extends Device {
     await this.updateCapabilities(data, syncMode)
     await this.updateThermostatMode()
     if (syncMode === 'syncTo' && !this.isDiff()) {
-      this.app.applySyncFromDevices()
+      this.app.applySyncFromDevices(undefined, 'syncFrom')
     }
   }
 

@@ -182,13 +182,14 @@ export default class MELCloudApp extends App {
   }
 
   applySyncFromDevices(
-    deviceType?: number
+    deviceType?: number,
+    syncMode: Exclude<SyncMode, 'syncTo'> = 'refresh'
   ): void {
     this.clearListDevicesRefresh()
     this.syncTimeout = this.setTimeout(
       'sync with device',
       async (): Promise<void> => {
-        await this.listDevices(deviceType, 'syncFrom')
+        await this.listDevices(deviceType, syncMode)
       },
       { seconds: 1 },
       'seconds'
