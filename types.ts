@@ -6,7 +6,8 @@ import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
-export type SyncMode = 'syncTo' | 'syncFrom' | 'refresh'
+export type SyncFromMode = 'syncFrom' | 'refresh'
+export type SyncMode = 'syncTo' | SyncFromMode
 
 export type CapabilityValue = boolean | number | string
 
@@ -311,11 +312,11 @@ export interface SetCapabilityMapping<T extends MELCloudDevice> {
 }
 
 export interface GetCapabilityMapping<T extends MELCloudDevice> {
-  readonly tag: keyof GetDeviceData<T>
+  readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
 }
 
 export interface ListCapabilityMapping<T extends MELCloudDevice> {
-  readonly tag: keyof ListDeviceData<T>
+  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
 
 export const setCapabilityMappingAta: Record<

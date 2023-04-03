@@ -22,6 +22,7 @@ import {
   type SetCapability,
   type SetCapabilityMapping,
   type Settings,
+  type SyncFromMode,
   type SyncMode,
   type ThermostatMode,
   type UpdateData
@@ -350,7 +351,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async syncDeviceFromList<T extends MELCloudDevice>(
-    syncMode: Exclude<SyncMode, 'syncTo'>
+    syncMode: SyncFromMode
   ): Promise<void> {
     const deviceFromList: ListDevice<T> | null = this.app.getDeviceFromList(
       this.id
@@ -536,7 +537,7 @@ export default class MELCloudDeviceMixin extends Device {
       'starting',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
     )
     return this.homey.setInterval(callback, Number(duration))
   }
@@ -556,7 +557,7 @@ export default class MELCloudDeviceMixin extends Device {
       'on',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
     )
     return this.homey.setTimeout(callback, Number(duration))
   }

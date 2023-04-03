@@ -2,7 +2,7 @@ import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
 import {
-  type SyncMode,
+  type SyncFromMode,
   type Building,
   type Data,
   type ErrorLogData,
@@ -183,7 +183,7 @@ export default class MELCloudApp extends App {
 
   applySyncFromDevices(
     deviceType?: number,
-    syncMode: Exclude<SyncMode, 'syncTo'> = 'refresh'
+    syncMode: SyncFromMode = 'refresh'
   ): void {
     this.clearListDevicesRefresh()
     this.syncTimeout = this.setTimeout(
@@ -198,9 +198,8 @@ export default class MELCloudApp extends App {
 
   async listDevices<T extends MELCloudDevice>(
     deviceType?: number,
-    syncMode: Exclude<SyncMode, 'syncTo'> = 'refresh'
+    syncMode: SyncFromMode = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
-    this.clearListDevicesRefresh()
     const buildings: Array<Building<T>> = await this.getBuildings()
     const newBuildings: Record<
       Building<MELCloudDevice>['ID'],
@@ -259,9 +258,7 @@ export default class MELCloudApp extends App {
     return []
   }
 
-  async syncDevicesFromList(
-    syncMode: Exclude<SyncMode, 'syncTo'>
-  ): Promise<void> {
+  async syncDevicesFromList(syncMode: SyncFromMode): Promise<void> {
     for (const device of this.getDevices()) {
       if (!device.isDiff()) {
         await device.syncDeviceFromList(syncMode)
@@ -586,7 +583,7 @@ export default class MELCloudApp extends App {
       'starting',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
     )
     return this.homey.setInterval(callback, Number(duration))
   }
@@ -606,7 +603,7 @@ export default class MELCloudApp extends App {
       'on',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
     )
     return this.homey.setTimeout(callback, Number(duration))
   }
