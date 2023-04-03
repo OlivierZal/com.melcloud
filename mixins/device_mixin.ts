@@ -537,7 +537,7 @@ export default class MELCloudDeviceMixin extends Device {
       'starting',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setInterval(callback, Number(duration))
   }
@@ -557,7 +557,7 @@ export default class MELCloudDeviceMixin extends Device {
       'on',
       DateTime.now()
         .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS, { locale: 'en' })
+        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
   }

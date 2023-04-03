@@ -7,7 +7,6 @@ import {
   type FrostProtectionSettings,
   type HolidayModeData,
   type HolidayModeSettings,
-  type Locale,
   type LoginCredentials,
   type MELCloudDevice,
   type Settings,
@@ -18,7 +17,7 @@ import {
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  async function getLocale(): Promise<Locale> {
+  async function getLocale(): Promise<string> {
     return await new Promise((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
@@ -30,7 +29,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             return
           }
           document.documentElement.setAttribute('lang', locale)
-          resolve(locale as Locale)
+          resolve(locale)
         }
       )
     })
@@ -69,7 +68,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     return settings.find((setting: SettingsData): boolean => setting.id === id)
   }
 
-  const locale: Locale = await getLocale()
+  const locale: string = await getLocale()
   const settingsAta: SettingsData[] = await getDeviceSettings('melcloud')
 
   const settingsMixin: string[] = ['always_on']

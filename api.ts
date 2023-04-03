@@ -17,7 +17,7 @@ import {
   type SettingsData
 } from './types'
 
-const format: string = 'd LLL yy HH:mm'
+const format: string = 'dd/MM/yyyy HH:mm'
 
 function fromUTCtoLocal(utcDate: string | null, format?: string): string {
   if (utcDate === null) {
@@ -161,7 +161,7 @@ module.exports = {
   },
 
   async getLocale({ homey }: { homey: Homey }): Promise<string> {
-    return homey.i18n.getLanguage()
+    return (homey.app as MELCloudApp).locale
   },
 
   async getUnitErrorLog({
@@ -201,7 +201,7 @@ module.exports = {
           const date2 = DateTime.fromFormat(error2.Date, format)
           return Number(date2.diff(date1))
         }),
-      FromDateHuman: fromDate.toFormat('d LLLL yyyy'),
+      FromDateHuman: fromDate.setLocale(app.locale).toFormat('d LLLL yyyy'),
       NextFromDate: NextToDate.minus({ days: period }).toISODate(),
       NextToDate: NextToDate.toISODate()
     }
