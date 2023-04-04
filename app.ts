@@ -232,7 +232,7 @@ export default class MELCloudApp extends App {
       (device: ListDevice<T>): MELCloudDevice['id'] => device.DeviceID
     )
     this.deviceList = devices
-    await this.syncDevicesFromList(syncMode)
+    await this.syncDevicesFromList(syncMode).catch(this.error)
     return devices
   }
 
