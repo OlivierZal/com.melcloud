@@ -100,5 +100,8 @@
   },
   "14.0.2": {
     "en": "Fixed an issue for legacy air-to-water devices. The long-term solution is to recreate the devices as indicated in the in-app warnings!"
+  },
+  "14.0.3": {
+    "en": "Minor change.wq"
   }
 }
