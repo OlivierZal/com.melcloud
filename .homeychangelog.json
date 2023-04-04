@@ -94,5 +94,8 @@
   },
   "14.0.0": {
     "en": "Improved app memory consumption, devices are now updated every minute."
+  },
+  "14.0.1": {
+    "en": "Fixed device refresh."
   }
 }
