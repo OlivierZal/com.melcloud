@@ -1,0 +1,38 @@
+.bordered {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.bordered thead th {
+    background-color: #e6e6e6;
+}
+
+.bordered td,
+.bordered th {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+.bordered td {
+    vertical-align: middle;
+}
+
+.bordered th {
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+.button-container {
+    align-items: center;
+    display: flex;
+}
+
+.homey-button-secondary,
+.homey-button-primary {
+    flex-basis: 100%;
+}
+
+.input-container {
+    flex-basis: 60%;
+}

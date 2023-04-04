@@ -61,7 +61,7 @@
         "Device": "Appareil",
         "Error": "Erreur"
       },
-      "error": "Choisissez une date antérieure au __fromDateHuman__.",
+      "error": "Choisissez une date antérieure au\n__fromDateHuman__.",
       "error_count_text_0": "erreur",
       "error_count_text_1": "erreur",
       "error_count_text_234": "erreurs",

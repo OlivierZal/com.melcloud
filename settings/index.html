@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>MELCloud Settings</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <script
       type="text/javascript"
       src="/homey.js"
@@ -57,14 +58,22 @@
           ></legend>
           <div class="homey-form-group">
             <label class="homey-form-label" id="period"></label>
-            <table id="error-log-table" aria-describedby="error-log"></table>
+            <table
+              id="error-log-table"
+              class="bordered"
+              aria-describedby="error-log"
+            ></table>
           </div>
-          <button
-            id="see"
-            class="homey-button-secondary"
-            data-i18n="settings.error_log.see"
-          ></button>
-          <input id="from" type="date" value="" />
+          <div class="button-container">
+            <button
+              id="see"
+              class="homey-button-secondary"
+              data-i18n="settings.error_log.see"
+            ></button>
+            <div class="input-container">
+              <input id="from" type="date" value="" />
+            </div>
+          </div>
         </fieldset>
       </div>
       <fieldset class="homey-form-fieldset">
@@ -102,35 +111,18 @@
           ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-        <table
-          style="width: 100%"
-          aria-describedby="holiday-mode-update-buttons"
-        >
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <button
-                  id="refresh-holiday-mode"
-                  class="homey-button-secondary"
-                  data-i18n="settings.buildings.refresh"
-                ></button>
-              </td>
-              <td style="text-align: center">
-                <button
-                  id="update-holiday-mode"
-                  class="homey-button-primary"
-                  data-i18n="settings.buildings.update"
-                ></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="button-container">
+          <button
+            id="refresh-holiday-mode"
+            class="homey-button-secondary"
+            data-i18n="settings.buildings.refresh"
+          ></button>
+          <button
+            id="update-holiday-mode"
+            class="homey-button-primary"
+            data-i18n="settings.buildings.update"
+          ></button>
+        </div>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
@@ -170,35 +162,18 @@
             value="12"
           />
         </div>
-        <table
-          style="width: 100%"
-          aria-describedby="frost-protection-update-buttons"
-        >
-          <thead>
-            <tr>
-              <th></th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: center">
-                <button
-                  id="refresh-frost-protection"
-                  class="homey-button-secondary"
-                  data-i18n="settings.buildings.refresh"
-                ></button>
-              </td>
-              <td style="text-align: center">
-                <button
-                  id="update-frost-protection"
-                  class="homey-button-primary"
-                  data-i18n="settings.buildings.update"
-                ></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="button-container">
+          <button
+            id="refresh-frost-protection"
+            class="homey-button-secondary"
+            data-i18n="settings.buildings.refresh"
+          ></button>
+          <button
+            id="update-frost-protection"
+            class="homey-button-primary"
+            data-i18n="settings.buildings.update"
+          ></button>
+        </div>
       </fieldset>
       <fieldset class="homey-form-fieldset">
         <legend

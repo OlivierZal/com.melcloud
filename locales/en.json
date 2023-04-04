@@ -61,7 +61,7 @@
         "Device": "Device",
         "Error": "Error"
       },
-      "error": "Choose a date before __fromDateHuman__.",
+      "error": "Choose a date before\n__fromDateHuman__.",
       "error_count_text_0": "error",
       "error_count_text_1": "error",
       "error_count_text_234": "errors",

@@ -61,7 +61,7 @@
         "Device": "Apparaat",
         "Error": "Fout"
       },
-      "error": "Kies een datum voor __fromDateHuman__.",
+      "error": "Kies een datum voor\n__fromDateHuman__.",
       "error_count_text_0": "fout",
       "error_count_text_1": "fout",
       "error_count_text_234": "fouten",

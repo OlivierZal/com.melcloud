@@ -15,6 +15,7 @@
     "horizontal",
     "operation_mode",
     "thermostat_mode",
+    "measure_power.fan_power",
     "meter_power.hourly_consumed",
     "meter_power.hourly_consumed_auto",
     "meter_power.hourly_consumed_cooling",
@@ -38,6 +39,26 @@
     "meter_power.total_consumed_other"
   ],
   "capabilitiesOptions": {
+    "measure_power.fan_power": {
+      "title": {
+        "en": "Current fan speed",
+        "fr": "Vitesse actuelle du ventilateur",
+        "nl": "Huidige ventilatiesnelheid",
+        "sv": "Aktuell fläkthastighet",
+        "no": "Gjeldende viftehastighet",
+        "da": "Aktuel blæserhastighed",
+        "es": "Velocidad actual del ventilador"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
+    },
     "measure_power.wifi": {
       "title": {
         "en": "Wifi signal strength",
