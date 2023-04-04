@@ -278,7 +278,7 @@ export default class MELCloudApp extends App {
       async (): Promise<void> => {
         await this.listDevices()
       },
-      { minutes: 1 },
+      { minutes: 2 },
       'minutes'
     )
   }
