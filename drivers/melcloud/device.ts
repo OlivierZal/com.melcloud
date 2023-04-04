@@ -76,8 +76,11 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       fan: 'off'
     } as const
     this.requiredCapabilities = [
-      ...Object.keys(setCapabilityMappingAta),
-      ...Object.keys(getCapabilityMappingAta),
+      ...Object.keys({
+        ...setCapabilityMappingAta,
+        ...getCapabilityMappingAta,
+        ...listCapabilityMappingAta
+      }),
       'thermostat_mode'
     ]
     this.setCapabilityMapping = setCapabilityMappingAta

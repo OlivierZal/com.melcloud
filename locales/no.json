@@ -61,7 +61,7 @@
         "Device": "Enhet",
         "Error": "Feil"
       },
-      "error": "Velg en dato før __fromDateHuman__.",
+      "error": "Velg en dato før\n__fromDateHuman__.",
       "error_count_text_0": "feil",
       "error_count_text_1": "feil",
       "error_count_text_234": "feil",

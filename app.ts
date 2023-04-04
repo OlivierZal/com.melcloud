@@ -69,7 +69,7 @@ export default class MELCloudApp extends App {
         Password: password,
         Persist: true
       }
-      this.log('Login...\n', postData)
+      this.log('Login...')
       const { data } = await axios.post<LoginData>(
         '/Login/ClientLogin',
         postData
@@ -233,6 +233,7 @@ export default class MELCloudApp extends App {
     )
     this.deviceList = devices
     await this.syncDevicesFromList(syncMode).catch(this.error)
+    await this.planSyncFromDevices()
     return devices
   }
 
@@ -266,7 +267,6 @@ export default class MELCloudApp extends App {
         await device.syncDeviceFromList(syncMode)
       }
     }
-    await this.planSyncFromDevices()
   }
 
   async planSyncFromDevices(): Promise<void> {
@@ -336,8 +336,8 @@ export default class MELCloudApp extends App {
     try {
       const postData: ReportPostData<T> = {
         DeviceID: device.id,
-        FromDate: fromDate.toISODate(),
-        ToDate: toDate.toISODate(),
+        FromDate: fromDate.toISODate() ?? '',
+        ToDate: toDate.toISODate() ?? '',
         UseCurrency: false
       }
       device.log('Reporting energy cost...\n', postData)
@@ -385,8 +385,8 @@ export default class MELCloudApp extends App {
   ): Promise<ErrorLogData[] | boolean> {
     const postData: ErrorLogPostData = {
       DeviceIDs: this.deviceIds,
-      FromDate: fromDate.toISODate(),
-      ToDate: toDate.toISODate()
+      FromDate: fromDate.toISODate() ?? '',
+      ToDate: toDate.toISODate() ?? ''
     }
     this.log('Reporting error log...\n', postData)
     const { data } = await axios.post<ErrorLogData[] | FailureData>(

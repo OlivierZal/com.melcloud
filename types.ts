@@ -88,6 +88,7 @@ interface ListCapabilitiesMixin {
 
 interface ListCapabilitiesAta extends ListCapabilitiesMixin {
   readonly fan_power: number
+  readonly 'measure_power.fan_power': number
   readonly vertical: number
   readonly horizontal: number
 }
@@ -278,6 +279,7 @@ interface ListDeviceDataAta
       GetDeviceDataAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     > {
+  readonly ActualFanSpeed: number
   readonly FanSpeed: number
   readonly VaneHorizontalDirection: number
   readonly VaneVerticalDirection: number
@@ -449,6 +451,9 @@ export const listCapabilityMappingAta: Record<
 > = {
   fan_power: {
     tag: 'FanSpeed'
+  },
+  'measure_power.fan_power': {
+    tag: 'ActualFanSpeed'
   },
   'measure_power.wifi': {
     tag: 'WifiSignalStrength'

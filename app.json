@@ -3918,6 +3918,7 @@
         "horizontal",
         "operation_mode",
         "thermostat_mode",
+        "measure_power.fan_power",
         "meter_power.hourly_consumed",
         "meter_power.hourly_consumed_auto",
         "meter_power.hourly_consumed_cooling",
@@ -4054,6 +4055,26 @@
         "es": "Bombas de calor de aire a aire"
       },
       "capabilitiesOptions": {
+        "measure_power.fan_power": {
+          "title": {
+            "en": "Current fan speed",
+            "fr": "Vitesse actuelle du ventilateur",
+            "nl": "Huidige ventilatiesnelheid",
+            "sv": "Aktuell fläkthastighet",
+            "no": "Gjeldende viftehastighet",
+            "da": "Aktuel blæserhastighed",
+            "es": "Velocidad actual del ventilador"
+          },
+          "units": {
+            "en": "",
+            "fr": "",
+            "nl": "",
+            "sv": "",
+            "no": "",
+            "da": "",
+            "es": ""
+          }
+        },
         "measure_power.wifi": {
           "title": {
             "en": "Wifi signal strength",
@@ -4349,34 +4370,6 @@
                 "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
                 "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
               }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Dashboard display",
-            "fr": "Affichage sur le tableau de bord",
-            "nl": "Dashboardweergave",
-            "sv": "Instrumentpanelens visning",
-            "no": "Dashbordvisning",
-            "da": "Instrumentbrætvisning",
-            "es": "Visualización del panel de control"
-          },
-          "children": [
-            {
-              "id": "measure_power.wifi",
-              "type": "checkbox",
-              "label": {
-                "en": "Wifi signal strength",
-                "fr": "Puissance du signal wifi",
-                "nl": "Wifi signaalsterkte",
-                "sv": "Wifi signalstyrka",
-                "no": "Wifi signalstyrke",
-                "da": "Wifi signalstyrke",
-                "es": "Potencia de señal wifi"
-              },
-              "value": true
             }
           ]
         },
@@ -5321,13 +5314,13 @@
         },
         "meter_power.daily_cop": {
           "title": {
-            "en": "Last daily CoP",
-            "fr": "Dernier CoP quotidien",
-            "nl": "Laatste dagelijkse CoP",
-            "sv": "Senaste dagliga CoP",
-            "no": "Siste daglige CoP",
-            "da": "Seneste daglige CoP",
-            "es": "Último CoP diario"
+            "en": "Daily CoP",
+            "fr": "CoP quotidien",
+            "nl": "Dagelijkse CoP",
+            "sv": "Dagliga CoP",
+            "no": "Daglige CoP",
+            "da": "Daglige CoP",
+            "es": "CoP diario"
           },
           "units": {
             "en": "",
@@ -5342,12 +5335,12 @@
         },
         "meter_power.daily_cop_cooling": {
           "title": {
-            "en": "Last daily CoP - cooling",
-            "fr": "Dernier CoP quotidien - refroidissement",
-            "nl": "Laatste dagelijkse CoP - koeling",
-            "sv": "Senaste dagliga CoP - kylning",
-            "no": "Siste daglige CoP - kjøling",
-            "da": "Seneste daglige CoP - køling",
+            "en": "Daily CoP - cooling",
+            "fr": "CoP quotidien - refroidissement",
+            "nl": "Dagelijkse CoP - koeling",
+            "sv": "Dagliga CoP - kylning",
+            "no": "Daglige CoP - kjøling",
+            "da": "Daglige CoP - køling",
             "es": "Último CoP diario - enfriamiento"
           },
           "units": {
@@ -5363,13 +5356,13 @@
         },
         "meter_power.daily_cop_heating": {
           "title": {
-            "en": "Last daily CoP - heating",
-            "fr": "Dernier CoP quotidien - chauffage",
-            "nl": "Laatste dagelijkse CoP - verwarming",
-            "sv": "Senaste dagliga CoP - uppvärmning",
-            "no": "Siste daglige CoP - oppvarming",
-            "da": "Seneste daglige CoP - opvarmning",
-            "es": "Último CoP diario - calefacción"
+            "en": "Daily CoP - heating",
+            "fr": "CoP quotidien - chauffage",
+            "nl": "Dagelijkse CoP - verwarming",
+            "sv": "Dagliga CoP - uppvärmning",
+            "no": "Daglige CoP - oppvarming",
+            "da": "Daglige CoP - opvarmning",
+            "es": "CoP diario - calefacción"
           },
           "units": {
             "en": "",
@@ -5384,13 +5377,13 @@
         },
         "meter_power.daily_cop_hotwater": {
           "title": {
-            "en": "Last daily CoP - domestic hot water",
-            "fr": "Dernier CoP quotidien - eau chaude sanitaire",
-            "nl": "Laatste dagelijkse CoP - sanitair warm water",
-            "sv": "Senaste dagliga CoP - varmvattenladdning",
-            "no": "Siste daglige CoP - varmvannslastning",
-            "da": "Seneste daglige CoP - varmtvandslastning",
-            "es": "Último CoP diario - agua caliente sanitaria"
+            "en": "Daily CoP - domestic hot water",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "sv": "Dagliga CoP - varmvattenladdning",
+            "no": "Daglige CoP - varmvannslastning",
+            "da": "Daglige CoP - varmtvandslastning",
+            "es": "CoP diario - agua caliente sanitaria"
           },
           "units": {
             "en": "",
@@ -5405,90 +5398,90 @@
         },
         "meter_power.daily_consumed": {
           "title": {
-            "en": "Last daily consumption",
-            "fr": "Dernière conso quotidienne",
-            "nl": "Laatste dagelijkse verbruik",
-            "sv": "Senaste daglig förbrukning",
-            "no": "Siste daglige forbruk",
-            "da": "Seneste daglige forbrug",
-            "es": "Último consumo diario"
+            "en": "Daily consumption",
+            "fr": "Conso quotidienne",
+            "nl": "Dagelijkse verbruik",
+            "sv": "Dagliga förbrukning",
+            "no": "Daglige forbruk",
+            "da": "Daglige forbrug",
+            "es": "Consumo diario"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Last daily consumption - cooling",
-            "fr": "Dernière conso quotidienne - refroidissement",
-            "nl": "Laatste dagelijkse verbruik - koeling",
-            "sv": "Senaste daglig förbrukning - kylning",
-            "no": "Siste daglige forbruk - kjøling",
-            "da": "Seneste daglige forbrug - køling",
-            "es": "Último consumo diario - enfriamiento"
+            "en": "Daily consumption - cooling",
+            "fr": "Conso quotidienne - refroidissement",
+            "nl": "Dagelijkse verbruik - koeling",
+            "sv": "Dagliga förbrukning - kylning",
+            "no": "Daglige forbruk - kjøling",
+            "da": "Daglige forbrug - køling",
+            "es": "Consumo diario - enfriamiento"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Last daily consumption - heating",
-            "fr": "Dernière conso quotidienne - chauffage",
-            "nl": "Laatste dagelijkse verbruik - verwarming",
-            "sv": "Senaste daglig förbrukning - uppvärmning",
-            "no": "Siste daglige forbruk - oppvarming",
-            "da": "Seneste daglige forbrug - opvarmning",
-            "es": "Último consumo diario - calefacción"
+            "en": "Daily consumption - heating",
+            "fr": "Conso quotidienne - chauffage",
+            "nl": "Dagelijkse verbruik - verwarming",
+            "sv": "Dagliga förbrukning - uppvärmning",
+            "no": "Daglige forbruk - oppvarming",
+            "da": "Daglige forbrug - opvarmning",
+            "es": "Consumo diario - calefacción"
           }
         },
         "meter_power.daily_consumed_hotwater": {
           "title": {
-            "en": "Last daily consumption - domestic hot water",
-            "fr": "Dernière conso quotidienne - eau chaude sanitaire",
-            "nl": "Laatste dagelijkse verbruik - sanitair warm water",
-            "sv": "Senaste daglig förbrukning - varmvattenladdning",
-            "no": "Siste daglige forbruk - varmvannslastning",
-            "da": "Seneste daglige forbrug - varmtvandslastning",
-            "es": "Último consumo diario - agua caliente sanitaria"
+            "en": "Daily consumption - domestic hot water",
+            "fr": "Conso quotidienne - eau chaude sanitaire",
+            "nl": "Dagelijkse verbruik - sanitair warm water",
+            "sv": "Dagliga förbrukning - varmvattenladdning",
+            "no": "Daglige forbruk - varmvannslastning",
+            "da": "Daglige forbrug - varmtvandslastning",
+            "es": "Consumo diario - agua caliente sanitaria"
           }
         },
         "meter_power.daily_produced": {
           "title": {
-            "en": "Last daily production",
-            "fr": "Dernière production quotidienne",
-            "nl": "Laatste dagelijkse productie",
-            "sv": "Senaste daglig produktion",
-            "no": "Siste daglige produksjon",
-            "da": "Seneste daglige produktion",
-            "es": "Último producción diario"
+            "en": "Daily production",
+            "fr": "Production quotidienne",
+            "nl": "Dagelijkse productie",
+            "sv": "Daglig produktion",
+            "no": "Daglige produksjon",
+            "da": "Daglige produktion",
+            "es": "Producción diario"
           }
         },
         "meter_power.daily_produced_cooling": {
           "title": {
-            "en": "Last daily production - cooling",
-            "fr": "Dernière production quotidienne - refroidissement",
-            "nl": "Laatste dagelijkse productie - koeling",
-            "sv": "Senaste daglig produktion - kylning",
-            "no": "Siste daglige produksjon - kjøling",
-            "da": "Seneste daglige produktion - køling",
-            "es": "Último producción diario - enfriamiento"
+            "en": "Daily production - cooling",
+            "fr": "Production quotidienne - refroidissement",
+            "nl": "Dagelijkse productie - koeling",
+            "sv": "Daglig produktion - kylning",
+            "no": "Daglige produksjon - kjøling",
+            "da": "Daglige produktion - køling",
+            "es": "Producción diario - enfriamiento"
           }
         },
         "meter_power.daily_produced_heating": {
           "title": {
-            "en": "Last daily production - heating",
-            "fr": "Dernière production quotidienne - chauffage",
-            "nl": "Laatste dagelijkse productie - verwarming",
-            "sv": "Senaste daglig produktion - uppvärmning",
-            "no": "Siste daglige produksjon - oppvarming",
-            "da": "Seneste daglige produktion - opvarmning",
-            "es": "Último producción diario - calefacción"
+            "en": "Daily production - heating",
+            "fr": "Production quotidienne - chauffage",
+            "nl": "Dagelijkse productie - verwarming",
+            "sv": "Daglig produktion - uppvärmning",
+            "no": "Daglige produksjon - oppvarming",
+            "da": "Daglige produktion - opvarmning",
+            "es": "Producción diario - calefacción"
           }
         },
         "meter_power.daily_produced_hotwater": {
           "title": {
-            "en": "Last daily production - domestic hot water",
-            "fr": "Dernière production quotidienne - eau chaude sanitaire",
-            "nl": "Laatste dagelijkse productie - sanitair warm water",
-            "sv": "Senaste daglig produktion - varmvattenladdning",
-            "no": "Siste daglige produksjon - varmvannslastning",
-            "da": "Seneste daglige produktion - varmtvandslastning",
-            "es": "Último producción diario - agua caliente sanitaria"
+            "en": "Daily production - domestic hot water",
+            "fr": "Production quotidienne - eau chaude sanitaire",
+            "nl": "Dagelijkse productie - sanitair warm water",
+            "sv": "Daglig produktion - varmvattenladdning",
+            "no": "Daglige produksjon - varmvannslastning",
+            "da": "Daglige produktion - varmtvandslastning",
+            "es": "Producción diario - agua caliente sanitaria"
           }
         },
         "meter_power.total_cop": {
@@ -6102,13 +6095,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Last daily CoP display",
-            "fr": "Affichage du dernier CoP quotidien",
-            "nl": "Laatste dagelijkse CoP weergeven",
-            "sv": "Senaste dagliga CoP visning",
-            "no": "Siste daglige CoP visning",
-            "da": "Seneste daglige CoP visning",
-            "es": "Visualización del último CoP diario"
+            "en": "Daily CoP display",
+            "fr": "Affichage du CoP quotidien",
+            "nl": "Dagelijkse CoP weergeven",
+            "sv": "Dagliga CoP visning",
+            "no": "Daglige CoP visning",
+            "da": "Daglige CoP visning",
+            "es": "Visualización del CoP diario"
           },
           "children": [
             {
@@ -6172,13 +6165,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Last daily consumption display",
-            "fr": "Affichage de la dernière consommation quotidienne",
-            "nl": "Laatste dagelijkse verbruik weergeven",
-            "sv": "Senaste dagliga förbrukning visning",
-            "no": "Siste daglige forbruk visning",
-            "da": "Seneste daglige forbrug visning",
-            "es": "Visualización del último consumo diario"
+            "en": "Daily consumption display",
+            "fr": "Affichage de la consommation quotidienne",
+            "nl": "Dagelijkse verbruik weergeven",
+            "sv": "Dagliga förbrukning visning",
+            "no": "Daglige forbruk visning",
+            "da": "Daglige forbrug visning",
+            "es": "Visualización del consumo diario"
           },
           "children": [
             {
@@ -6242,13 +6235,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Last daily production display",
-            "fr": "Affichage de la dernière production quotidienne",
-            "nl": "Laatste dagelijkse productie weergeven",
-            "sv": "Senaste dagliga produktion visning",
-            "no": "Siste daglige produksjon visning",
-            "da": "Seneste daglige produktion visning",
-            "es": "Visualización de la última producción diaria"
+            "en": "Daily production display",
+            "fr": "Affichage de la production quotidienne",
+            "nl": "Dagelijkse productie weergeven",
+            "sv": "Dagliga produktion visning",
+            "no": "Daglige produksjon visning",
+            "da": "Daglige produktion visning",
+            "es": "Visualización de la producción diaria"
           },
           "children": [
             {

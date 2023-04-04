@@ -17,7 +17,7 @@ import {
   type SettingsData
 } from './types'
 
-const format: string = 'dd/MM/yyyy HH:mm'
+const format: string = 'd LLL yyyy HH:mm'
 
 function fromUTCtoLocal(utcDate: string | null, format?: string): string {
   if (utcDate === null) {
@@ -26,9 +26,11 @@ function fromUTCtoLocal(utcDate: string | null, format?: string): string {
   const localDate: DateTime = DateTime.fromISO(utcDate, {
     zone: 'utc'
   }).toLocal()
-  return format !== undefined
-    ? localDate.toFormat(format)
-    : localDate.toISO({ includeOffset: false })
+  return (
+    (format !== undefined
+      ? localDate.toFormat(format)
+      : localDate.toISO({ includeOffset: false })) ?? ''
+  )
 }
 
 function handleErrorLogQuery(query: ErrorLogQuery): {
@@ -202,8 +204,8 @@ module.exports = {
           return Number(date2.diff(date1))
         }),
       FromDateHuman: fromDate.setLocale(app.locale).toFormat('d LLLL yyyy'),
-      NextFromDate: NextToDate.minus({ days: period }).toISODate(),
-      NextToDate: NextToDate.toISODate()
+      NextFromDate: NextToDate.minus({ days: period }).toISODate() ?? '',
+      NextToDate: NextToDate.toISODate() ?? ''
     }
   },
 

@@ -280,13 +280,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Last daily CoP display",
-      "fr": "Affichage du dernier CoP quotidien",
-      "nl": "Laatste dagelijkse CoP weergeven",
-      "sv": "Senaste dagliga CoP visning",
-      "no": "Siste daglige CoP visning",
-      "da": "Seneste daglige CoP visning",
-      "es": "Visualización del último CoP diario"
+      "en": "Daily CoP display",
+      "fr": "Affichage du CoP quotidien",
+      "nl": "Dagelijkse CoP weergeven",
+      "sv": "Dagliga CoP visning",
+      "no": "Daglige CoP visning",
+      "da": "Daglige CoP visning",
+      "es": "Visualización del CoP diario"
     },
     "children": [
       {
@@ -350,13 +350,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Last daily consumption display",
-      "fr": "Affichage de la dernière consommation quotidienne",
-      "nl": "Laatste dagelijkse verbruik weergeven",
-      "sv": "Senaste dagliga förbrukning visning",
-      "no": "Siste daglige forbruk visning",
-      "da": "Seneste daglige forbrug visning",
-      "es": "Visualización del último consumo diario"
+      "en": "Daily consumption display",
+      "fr": "Affichage de la consommation quotidienne",
+      "nl": "Dagelijkse verbruik weergeven",
+      "sv": "Dagliga förbrukning visning",
+      "no": "Daglige forbruk visning",
+      "da": "Daglige forbrug visning",
+      "es": "Visualización del consumo diario"
     },
     "children": [
       {
@@ -420,13 +420,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Last daily production display",
-      "fr": "Affichage de la dernière production quotidienne",
-      "nl": "Laatste dagelijkse productie weergeven",
-      "sv": "Senaste dagliga produktion visning",
-      "no": "Siste daglige produksjon visning",
-      "da": "Seneste daglige produktion visning",
-      "es": "Visualización de la última producción diaria"
+      "en": "Daily production display",
+      "fr": "Affichage de la production quotidienne",
+      "nl": "Dagelijkse productie weergeven",
+      "sv": "Dagliga produktion visning",
+      "no": "Daglige produksjon visning",
+      "da": "Daglige produktion visning",
+      "es": "Visualización de la producción diaria"
     },
     "children": [
       {
