@@ -23,11 +23,18 @@
     width: 100%;
 }
 
-.homey-button-secondary,
-.homey-button-primary {
-    flex-basis: 100%;
+.hidden {
+    display: none;
 }
 
 .input-container {
     flex-basis: 60%;
+}
+
+[class*="homey-button-"] {
+    flex-basis: 100%;
+}
+
+[class*="homey-button-"].is-loading {
+    pointer-events: none;
 }

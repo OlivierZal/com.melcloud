@@ -14,7 +14,7 @@
     <header class="homey-header">
       <h1 class="homey-title" data-i18n="settings.title" />
     </header>
-    <div id="is-not-authenticated">
+    <div id="authenticating" class="hidden">
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
@@ -48,34 +48,32 @@
         ></button>
       </fieldset>
     </div>
-    <div id="is-authenticated" style="display: none">
-      <div id="has-error-log" style="display: none">
-        <fieldset class="homey-form-fieldset">
-          <legend
-            class="homey-form-legend"
-            id="error-log"
-            data-i18n="settings.error_log.label"
-          ></legend>
-          <div class="homey-form-group">
-            <label class="homey-form-label" id="period"></label>
-            <table
-              id="error-log-table"
-              class="bordered"
-              aria-describedby="error-log"
-            ></table>
+    <div id="authenticated" class="hidden">
+      <fieldset id="has-error-log" class="homey-form-fieldset hidden">
+        <legend
+          class="homey-form-legend"
+          id="error-log"
+          data-i18n="settings.error_log.label"
+        ></legend>
+        <div class="homey-form-group">
+          <label class="homey-form-label" id="period"></label>
+          <table
+            id="error-log-table"
+            class="bordered"
+            aria-describedby="error-log"
+          ></table>
+        </div>
+        <div class="button-container">
+          <button
+            id="see"
+            class="homey-button-secondary"
+            data-i18n="settings.error_log.see"
+          ></button>
+          <div class="input-container">
+            <input id="from" type="date" value="" />
           </div>
-          <div class="button-container">
-            <button
-              id="see"
-              class="homey-button-secondary"
-              data-i18n="settings.error_log.see"
-            ></button>
-            <div class="input-container">
-              <input id="from" type="date" value="" />
-            </div>
-          </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
       <fieldset class="homey-form-fieldset">
         <legend
           class="homey-form-legend"
@@ -198,32 +196,30 @@
           data-i18n="settings.devices.apply.button"
         ></button>
       </fieldset>
-      <div id="has-devices-ata" style="display: none">
-        <fieldset class="homey-form-fieldset">
-          <legend
-            class="homey-form-legend"
-            data-i18n="settings.devices_ata.label"
-          ></legend>
-          <button
-            id="auto_adjust"
-            class="homey-button-secondary-full"
-            data-i18n="settings.devices_ata.auto_adjust"
-          ></button>
-          <div class="homey-form-group">
-            <fieldset class="homey-form-checkbox-set" id="settings-ata">
-              <legend
-                class="homey-form-checkbox-set-title"
-                id="settings-ata-dashboard"
-              ></legend>
-            </fieldset>
-          </div>
-          <button
-            id="apply-settings-ata"
-            class="homey-button-primary-full"
-            data-i18n="settings.devices.apply.button"
-          ></button>
-        </fieldset>
-      </div>
+      <fieldset id="has-devices-ata" class="homey-form-fieldset hidden">
+        <legend
+          class="homey-form-legend"
+          data-i18n="settings.devices_ata.label"
+        ></legend>
+        <button
+          id="auto_adjust"
+          class="homey-button-secondary-full"
+          data-i18n="settings.devices_ata.auto_adjust"
+        ></button>
+        <div class="homey-form-group">
+          <fieldset class="homey-form-checkbox-set" id="settings-ata">
+            <legend
+              class="homey-form-checkbox-set-title"
+              id="settings-ata-dashboard"
+            ></legend>
+          </fieldset>
+        </div>
+        <button
+          id="apply-settings-ata"
+          class="homey-button-primary-full"
+          data-i18n="settings.devices.apply.button"
+        ></button>
+      </fieldset>
     </div>
   </body>
 </html>

@@ -61,13 +61,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function getDeviceSetting(
-    settings: SettingsData[],
-    id: string
-  ): SettingsData | undefined {
-    return settings.find((setting: SettingsData): boolean => setting.id === id)
-  }
-
   const locale: string = await getLocale()
   const settingsAta: SettingsData[] = await getDeviceSettings('melcloud')
 
@@ -101,18 +94,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'update-holiday-mode'
   ) as HTMLButtonElement
 
-  const isAuthenticatedElement: HTMLDivElement = document.getElementById(
-    'is-authenticated'
+  const authenticatedElement: HTMLDivElement = document.getElementById(
+    'authenticated'
   ) as HTMLDivElement
-  const isNotAuthenticatedElement: HTMLDivElement = document.getElementById(
-    'is-not-authenticated'
+  const authenticatingElement: HTMLDivElement = document.getElementById(
+    'authenticating'
   ) as HTMLDivElement
-  const hasDevicesAtaElement: HTMLDivElement = document.getElementById(
+
+  const hasDevicesAtaElement: HTMLFieldSetElement = document.getElementById(
     'has-devices-ata'
-  ) as HTMLDivElement
-  const hasErrorLogElement: HTMLDivElement = document.getElementById(
+  ) as HTMLFieldSetElement
+  const hasErrorLogElement: HTMLFieldSetElement = document.getElementById(
     'has-error-log'
-  ) as HTMLDivElement
+  ) as HTMLFieldSetElement
 
   const fromElement: HTMLInputElement = document.getElementById(
     'from'
@@ -161,6 +155,20 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   let errorCount: number = 0
   let fromDateHuman: string = ''
   let to: string = ''
+
+  function unhide(element: HTMLElement, value: boolean = true): void {
+    if (value) {
+      if (element.classList.contains('hidden')) {
+        element.classList.remove('hidden')
+      }
+    } else if (!element.classList.contains('hidden')) {
+      element.classList.add('hidden')
+    }
+  }
+
+  function hide(element: HTMLElement): void {
+    unhide(element, false)
+  }
 
   async function getHomeySetting(
     element: HTMLInputElement | HTMLSelectElement,
@@ -238,6 +246,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
+          seeElement.classList.remove('is-loading')
           if (error.message.includes('403')) {
             // @ts-expect-error bug
             await Homey.alert(Homey.__('settings.error_log.failure'))
@@ -251,12 +260,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         fromElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
+        seeElement.classList.remove('is-loading')
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman,
           errorCount,
           errorCountText: getErrorCountText(errorCount)
         })
-        hasErrorLogElement.style.display = 'block'
+        unhide(hasErrorLogElement)
         if (data.Errors.length > 0) {
           if (!hasLoadedErrorLogTableHead) {
             generateTableHead(errorLogTableElement, Object.keys(data.Errors[0]))
@@ -437,8 +447,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       return
     }
     generateErrorLog()
-    isNotAuthenticatedElement.style.display = 'none'
-    isAuthenticatedElement.style.display = 'block'
+    hide(authenticatingElement)
+    unhide(authenticatedElement)
   }
 
   async function hasDevices(driverId?: string): Promise<boolean> {
@@ -469,6 +479,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
       )
     })
+  }
+
+  function getDeviceSetting(
+    settings: SettingsData[],
+    id: string
+  ): SettingsData | undefined {
+    return settings.find((setting: SettingsData): boolean => setting.id === id)
   }
 
   async function generateSettingsAtaChildrenElements(): Promise<void> {
@@ -518,12 +535,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       '/login',
       body,
       async (error: Error, login: boolean): Promise<void> => {
+        authenticateElement.classList.remove('is-loading')
         if (error !== null) {
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
         }
         if (!login) {
+          unhide(authenticatingElement)
           // @ts-expect-error bug
           await Homey.alert(
             Homey.__('settings.alert.failure', {
@@ -536,13 +555,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         const hasDevicesAta = await hasDevices('melcloud')
         if (hasDevicesAta) {
           await generateSettingsAtaChildrenElements()
-          hasDevicesAtaElement.style.display = 'block'
+          unhide(hasDevicesAtaElement)
         }
       }
     )
   }
 
-  function setDeviceSettings(body: Settings, driverId?: string): void {
+  function setDeviceSettings(
+    body: Settings,
+    buttonElement: HTMLButtonElement,
+    driverId?: string
+  ): void {
     let endPoint: string = '/devices/settings'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
@@ -557,9 +580,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       body,
       async (error: Error, success: boolean): Promise<void> => {
         if (error !== null) {
-          setDeviceSettings(body, driverId)
+          setDeviceSettings(body, buttonElement, driverId)
           return
         }
+        buttonElement.classList.remove('is-loading')
         if (!success) {
           // @ts-expect-error bug
           await Homey.alert(
@@ -617,7 +641,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             )
             return
           }
-          setDeviceSettings(body, driverId)
+          buttonElement.classList.add('is-loading')
+          setDeviceSettings(body, buttonElement, driverId)
         }
       )
     })
@@ -636,6 +661,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   login()
 
   authenticateElement.addEventListener('click', (): void => {
+    authenticateElement.classList.add('is-loading')
     login()
   })
 
@@ -652,6 +678,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   seeElement.addEventListener('click', (): void => {
+    seeElement.classList.add('is-loading')
     generateErrorLog()
   })
 
