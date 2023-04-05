@@ -185,7 +185,9 @@ module.exports = {
       Errors: data
         .map(
           (errorData: ErrorLogData): ErrorDetails => ({
-            Device: app.getDevice(errorData.DeviceId)?.getName() ?? 'Undefined',
+            Device:
+              app.getDevice(errorData.DeviceId)?.getName() ??
+              app.deviceIds[errorData.DeviceId],
             Date:
               errorData.StartDate !== null &&
               DateTime.fromISO(errorData.StartDate).year > 1

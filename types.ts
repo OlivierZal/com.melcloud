@@ -679,7 +679,7 @@ export interface ErrorLogQuery {
 }
 
 export interface ErrorLogPostData {
-  readonly DeviceIDs: Array<MELCloudDevice['id']>
+  readonly DeviceIDs: string[]
   readonly FromDate: string
   readonly ToDate: string
 }

@@ -16,7 +16,9 @@ import {
   type ThermostatMode
 } from '../../types'
 
-function reverse(mapping: Record<string, string>): Record<string, string> {
+function reverse(
+  mapping: Record<number | string, string>
+): Record<string, string> {
   const reversedMapping: Record<string, string> = {}
   for (const [capabilityValue, deviceValue] of Object.entries(mapping)) {
     reversedMapping[deviceValue] = capabilityValue
@@ -24,7 +26,7 @@ function reverse(mapping: Record<string, string>): Record<string, string> {
   return reversedMapping
 }
 
-const operationModeFromDevice: Record<string, string> = {
+const operationModeFromDevice: Record<number, string> = {
   1: 'heat',
   2: 'dry',
   3: 'cool',
@@ -36,7 +38,7 @@ const operationModeToDevice: Record<string, string> = reverse(
   operationModeFromDevice
 )
 
-const verticalFromDevice: Record<string, string> = {
+const verticalFromDevice: Record<number, string> = {
   0: 'auto',
   1: 'top',
   2: 'middletop',
@@ -48,7 +50,7 @@ const verticalFromDevice: Record<string, string> = {
 
 const verticalToDevice: Record<string, string> = reverse(verticalFromDevice)
 
-const horizontalFromDevice: Record<string, string> = {
+const horizontalFromDevice: Record<number, string> = {
   0: 'auto',
   1: 'left',
   2: 'middleleft',

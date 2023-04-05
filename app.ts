@@ -34,7 +34,7 @@ export default class MELCloudApp extends App {
   >
 
   deviceList!: Array<ListDevice<MELCloudDevice>>
-  deviceIds!: Array<MELCloudDevice['id']>
+  deviceIds!: Record<MELCloudDevice['id'], string>
   loginTimeout!: NodeJS.Timeout
   syncInterval!: NodeJS.Timeout | null
   syncTimeout!: NodeJS.Timeout
@@ -48,7 +48,7 @@ export default class MELCloudApp extends App {
       this.homey.settings.get('ContextKey') ?? ''
 
     this.buildings = {}
-    this.deviceIds = []
+    this.deviceIds = {}
     this.deviceList = []
 
     this.syncInterval = null
@@ -228,9 +228,10 @@ export default class MELCloudApp extends App {
       )
     }
     this.buildings = newBuildings
-    this.deviceIds = devices.map(
-      (device: ListDevice<T>): MELCloudDevice['id'] => device.DeviceID
-    )
+    this.deviceIds = {}
+    for (const device of devices) {
+      this.deviceIds[device.DeviceID] = device.DeviceName
+    }
     this.deviceList = devices
     await this.syncDevicesFromList(syncMode).catch(this.error)
     await this.planSyncFromDevices()
@@ -384,7 +385,7 @@ export default class MELCloudApp extends App {
     toDate: DateTime
   ): Promise<ErrorLogData[] | boolean> {
     const postData: ErrorLogPostData = {
-      DeviceIDs: this.deviceIds,
+      DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? ''
     }
