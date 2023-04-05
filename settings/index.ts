@@ -100,13 +100,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const authenticatingElement: HTMLDivElement = document.getElementById(
     'authenticating'
   ) as HTMLDivElement
-
-  const hasDevicesAtaElement: HTMLFieldSetElement = document.getElementById(
+  const hasDevicesAtaElement: HTMLDivElement = document.getElementById(
     'has-devices-ata'
-  ) as HTMLFieldSetElement
-  const hasErrorLogElement: HTMLFieldSetElement = document.getElementById(
+  ) as HTMLDivElement
+  const hasErrorLogElement: HTMLDivElement = document.getElementById(
     'has-error-log'
-  ) as HTMLFieldSetElement
+  ) as HTMLDivElement
 
   const fromElement: HTMLInputElement = document.getElementById(
     'from'
@@ -156,7 +155,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   let fromDateHuman: string = ''
   let to: string = ''
 
-  function unhide(element: HTMLElement, value: boolean = true): void {
+  function unhide(element: HTMLDivElement, value: boolean = true): void {
     if (value) {
       if (element.classList.contains('hidden')) {
         element.classList.remove('hidden')
@@ -166,7 +165,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
   }
 
-  function hide(element: HTMLElement): void {
+  function hide(element: HTMLDivElement): void {
     unhide(element, false)
   }
 
