@@ -5,6 +5,7 @@
 
 .bordered thead th {
     background-color: #e6e6e6;
+    font-weight: bold;
 }
 
 .bordered td,
@@ -12,19 +13,14 @@
     border: 1px solid black;
     padding: 8px;
     text-align: center;
-}
-
-.bordered td {
-    vertical-align: middle;
-}
-
-.bordered th {
-    font-weight: bold;
     vertical-align: middle;
 }
 
 .button-container {
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .homey-button-secondary,
@@ -33,5 +29,5 @@
 }
 
 .input-container {
-    flex-basis: 100%;
+    flex-basis: 60%;
 }
