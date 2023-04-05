@@ -25,7 +25,6 @@
 
 .button-container {
     align-items: center;
-    display: flex;
 }
 
 .homey-button-secondary,
@@ -34,5 +33,5 @@
 }
 
 .input-container {
-    flex-basis: 60%;
+    flex-basis: 100%;
 }
