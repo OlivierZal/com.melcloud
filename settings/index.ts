@@ -341,6 +341,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       async (error: Error, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
+          refreshHolidayModeElement.classList.remove('is-loading')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -352,6 +353,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         holidayModeEndDateElement.value = data.HMEnabled
           ? data.HMEndDate ?? ''
           : ''
+        refreshHolidayModeElement.classList.remove('is-loading')
       }
     )
   }
@@ -375,6 +377,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       async (error: Error, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
+          refreshFrostProtectionElement.classList.remove('is-loading')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -386,6 +389,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         frostProtectionMaximumTemperatureElement.value = String(
           data.FPMaxTemperature
         )
+        refreshFrostProtectionElement.classList.remove('is-loading')
       }
     )
   }
@@ -561,8 +565,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function setDeviceSettings(
-    body: Settings,
     buttonElement: HTMLButtonElement,
+    body: Settings,
     driverId?: string
   ): void {
     let endPoint: string = '/devices/settings'
@@ -579,7 +583,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       body,
       async (error: Error, success: boolean): Promise<void> => {
         if (error !== null) {
-          setDeviceSettings(body, buttonElement, driverId)
+          setDeviceSettings(buttonElement, body, driverId)
           return
         }
         buttonElement.classList.remove('is-loading')
@@ -641,7 +645,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             return
           }
           buttonElement.classList.add('is-loading')
-          setDeviceSettings(body, buttonElement, driverId)
+          setDeviceSettings(buttonElement, body, driverId)
         }
       )
     })
@@ -730,10 +734,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   refreshHolidayModeElement.addEventListener('click', (): void => {
+    refreshHolidayModeElement.classList.add('is-loading')
     getBuildingHolidayModeSettings()
   })
 
   updateHolidayModeElement.addEventListener('click', (): void => {
+    updateHolidayModeElement.classList.add('is-loading')
     const Enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
       Enabled,
@@ -746,6 +752,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
+        updateHolidayModeElement.classList.remove('is-loading')
         getBuildingHolidayModeSettings()
         if (error !== null) {
           // @ts-expect-error bug
@@ -790,10 +797,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   )
 
   refreshFrostProtectionElement.addEventListener('click', (): void => {
+    refreshFrostProtectionElement.classList.add('is-loading')
     getBuildingFrostProtectionSettings()
   })
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
+    updateFrostProtectionElement.classList.add('is-loading')
     let frostProtectionMinimumTemperature: number = 0
     let frostProtectionMaximumTemperature: number = 0
     try {
@@ -804,6 +813,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         frostProtectionMaximumTemperatureElement
       )
     } catch (error: unknown) {
+      updateFrostProtectionElement.classList.remove('is-loading')
       getBuildingFrostProtectionSettings()
       // @ts-expect-error bug
       Homey.alert(error instanceof Error ? error.message : String(error))
@@ -826,6 +836,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
+        updateFrostProtectionElement.classList.remove('is-loading')
         getBuildingFrostProtectionSettings()
         if (error !== null) {
           // @ts-expect-error bug
