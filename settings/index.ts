@@ -248,7 +248,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
         if (error !== null) {
-          seeElement.classList.remove('is-loading')
+          seeElement.classList.remove('is-disabled')
           if (error.message.includes('403')) {
             // @ts-expect-error bug
             await Homey.alert(Homey.__('settings.error_log.failure'))
@@ -262,7 +262,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         sinceElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
-        seeElement.classList.remove('is-loading')
+        seeElement.classList.remove('is-disabled')
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman
         })
@@ -345,7 +345,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       async (error: Error, data: HolidayModeData): Promise<void> => {
         if (error !== null) {
-          refreshHolidayModeElement.classList.remove('is-loading')
+          refreshHolidayModeElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -357,7 +357,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         holidayModeEndDateElement.value = data.HMEnabled
           ? data.HMEndDate ?? ''
           : ''
-        refreshHolidayModeElement.classList.remove('is-loading')
+        refreshHolidayModeElement.classList.remove('is-disabled')
       }
     )
   }
@@ -381,7 +381,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       async (error: Error, data: FrostProtectionData): Promise<void> => {
         if (error !== null) {
-          refreshFrostProtectionElement.classList.remove('is-loading')
+          refreshFrostProtectionElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -393,7 +393,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         frostProtectionMaximumTemperatureElement.value = String(
           data.FPMaxTemperature
         )
-        refreshFrostProtectionElement.classList.remove('is-loading')
+        refreshFrostProtectionElement.classList.remove('is-disabled')
       }
     )
   }
@@ -542,7 +542,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       '/login',
       body,
       async (error: Error, login: boolean): Promise<void> => {
-        authenticateElement.classList.remove('is-loading')
+        authenticateElement.classList.remove('is-disabled')
         if (error !== null) {
           // @ts-expect-error bug
           await Homey.alert(error.message)
@@ -590,7 +590,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           setDeviceSettings(buttonElement, body, driverId)
           return
         }
-        buttonElement.classList.remove('is-loading')
+        buttonElement.classList.remove('is-disabled')
         if (!success) {
           // @ts-expect-error bug
           await Homey.alert(
@@ -648,7 +648,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             )
             return
           }
-          buttonElement.classList.add('is-loading')
+          buttonElement.classList.add('is-disabled')
           setDeviceSettings(buttonElement, body, driverId)
         }
       )
@@ -668,7 +668,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   login()
 
   authenticateElement.addEventListener('click', (): void => {
-    authenticateElement.classList.add('is-loading')
+    authenticateElement.classList.add('is-disabled')
     login()
   })
 
@@ -685,7 +685,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   seeElement.addEventListener('click', (): void => {
-    seeElement.classList.add('is-loading')
+    seeElement.classList.add('is-disabled')
     generateErrorLog()
   })
 
@@ -738,12 +738,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   refreshHolidayModeElement.addEventListener('click', (): void => {
-    refreshHolidayModeElement.classList.add('is-loading')
+    refreshHolidayModeElement.classList.add('is-disabled')
     getBuildingHolidayModeSettings()
   })
 
   updateHolidayModeElement.addEventListener('click', (): void => {
-    updateHolidayModeElement.classList.add('is-loading')
+    updateHolidayModeElement.classList.add('is-disabled')
     const Enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
       Enabled,
@@ -756,7 +756,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
-        updateHolidayModeElement.classList.remove('is-loading')
+        updateHolidayModeElement.classList.remove('is-disabled')
         getBuildingHolidayModeSettings()
         if (error !== null) {
           // @ts-expect-error bug
@@ -801,12 +801,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   )
 
   refreshFrostProtectionElement.addEventListener('click', (): void => {
-    refreshFrostProtectionElement.classList.add('is-loading')
+    refreshFrostProtectionElement.classList.add('is-disabled')
     getBuildingFrostProtectionSettings()
   })
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
-    updateFrostProtectionElement.classList.add('is-loading')
+    updateFrostProtectionElement.classList.add('is-disabled')
     let frostProtectionMinimumTemperature: number = 0
     let frostProtectionMaximumTemperature: number = 0
     try {
@@ -817,7 +817,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         frostProtectionMaximumTemperatureElement
       )
     } catch (error: unknown) {
-      updateFrostProtectionElement.classList.remove('is-loading')
+      updateFrostProtectionElement.classList.remove('is-disabled')
       getBuildingFrostProtectionSettings()
       // @ts-expect-error bug
       Homey.alert(error instanceof Error ? error.message : String(error))
@@ -840,7 +840,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       body,
       async (error: Error, success: boolean): Promise<void> => {
-        updateFrostProtectionElement.classList.remove('is-loading')
+        updateFrostProtectionElement.classList.remove('is-disabled')
         getBuildingFrostProtectionSettings()
         if (error !== null) {
           // @ts-expect-error bug
