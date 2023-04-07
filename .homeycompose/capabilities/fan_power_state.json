@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Current fan speed",
+    "fr": "Vitesse actuelle du ventilateur",
+    "nl": "Huidige ventilatiesnelheid",
+    "sv": "Aktuell fläkthastighet",
+    "no": "Aktuell viftehastighet",
+    "da": "Aktuel blæserhastighed",
+    "es": "Velocidad actual del ventilador"
+  },
+  "uiComponent": "sensor",
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiQuickAction": false,
+  "icon": "/assets/operation_mode_state.svg"
+}

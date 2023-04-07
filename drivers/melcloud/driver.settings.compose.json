@@ -39,31 +39,17 @@
   {
     "type": "group",
     "label": {
-      "en": "Hourly consumption display",
-      "fr": "Affichage de la consommation horaire",
-      "nl": "Uurlijkse verbruik weergeven",
-      "sv": "Timvis förbrukning visning",
-      "no": "Timevis forbruk visning",
-      "da": "Timevis forbrug visning",
-      "es": "Visualización del consumo horario"
+      "en": "Power display",
+      "fr": "Affichage de la puissance",
+      "nl": "Uurlijkse vermogen weergeven",
+      "sv": "Effekt visning",
+      "no": "Effekt visning",
+      "da": "Effekt visning",
+      "es": "Visualización de la potencia"
     },
     "children": [
       {
-        "id": "meter_power.hourly_consumed",
-        "type": "checkbox",
-        "label": {
-          "en": "All modes",
-          "fr": "Tous modes",
-          "nl": "Alle modi",
-          "sv": "Alla lägen",
-          "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
-        },
-        "value": true
-      },
-      {
-        "id": "meter_power.hourly_consumed_auto",
+        "id": "measure_power.auto",
         "type": "checkbox",
         "label": {
           "en": "Automatic",
@@ -74,10 +60,10 @@
           "da": "Automatisk",
           "es": "Automático"
         },
-        "value": true
+        "value": false
       },
       {
-        "id": "meter_power.hourly_consumed_cooling",
+        "id": "measure_power.cooling",
         "type": "checkbox",
         "label": {
           "en": "Cooling",
@@ -88,10 +74,10 @@
           "da": "Køling",
           "es": "Enfriamiento"
         },
-        "value": true
+        "value": false
       },
       {
-        "id": "meter_power.hourly_consumed_dry",
+        "id": "measure_power.dry",
         "type": "checkbox",
         "label": {
           "en": "Dry",
@@ -102,10 +88,10 @@
           "da": "Affugtning",
           "es": "Desumidificación"
         },
-        "value": true
+        "value": false
       },
       {
-        "id": "meter_power.hourly_consumed_fan",
+        "id": "measure_power.fan",
         "type": "checkbox",
         "label": {
           "en": "Fan",
@@ -116,10 +102,10 @@
           "da": "Blæser",
           "es": "Ventilador"
         },
-        "value": true
+        "value": false
       },
       {
-        "id": "meter_power.hourly_consumed_heating",
+        "id": "measure_power.heating",
         "type": "checkbox",
         "label": {
           "en": "Heating",
@@ -130,10 +116,10 @@
           "da": "Opvarmning",
           "es": "Calefacción"
         },
-        "value": true
+        "value": false
       },
       {
-        "id": "meter_power.hourly_consumed_other",
+        "id": "measure_power.other",
         "type": "checkbox",
         "label": {
           "en": "Other",
@@ -144,20 +130,20 @@
           "da": "Andet",
           "es": "Otro"
         },
-        "value": true
+        "value": false
       }
     ]
   },
   {
     "type": "group",
     "label": {
-      "en": "Daily consumption display",
-      "fr": "Affichage de la consommation quotidienne",
-      "nl": "Dagelijkse verbruik weergeven",
-      "sv": "Daglig förbrukning visning",
-      "no": "Daglig forbruk visning",
-      "da": "Daglig forbrug visning",
-      "es": "Visualización del consumo diario"
+      "en": "Daily energy usage display",
+      "fr": "Affichage de la conso d'énergie quotidienne",
+      "nl": "Dagelijkse energie verbruik weergeven",
+      "sv": "Daglig energianvändning visning",
+      "no": "Daglig energiforbruk visning",
+      "da": "Daglig energiforbrug visning",
+      "es": "Visualización del uso de energía"
     },
     "children": [
       {
@@ -172,7 +158,7 @@
           "da": "Alle tilstande",
           "es": "Todos los modos"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_auto",
@@ -186,7 +172,7 @@
           "da": "Automatisk",
           "es": "Automático"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_cooling",
@@ -200,7 +186,7 @@
           "da": "Køling",
           "es": "Enfriamiento"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_dry",
@@ -214,7 +200,7 @@
           "da": "Affugtning",
           "es": "Desumidificación"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_fan",
@@ -228,7 +214,7 @@
           "da": "Blæser",
           "es": "Ventilador"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_heating",
@@ -242,7 +228,7 @@
           "da": "Opvarmning",
           "es": "Calefacción"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_consumed_other",
@@ -256,19 +242,19 @@
           "da": "Andet",
           "es": "Otro"
         },
-        "value": true
+        "value": false
       }
     ]
   },
   {
     "type": "group",
     "label": {
-      "en": "Total consumption display",
-      "fr": "Affichage de la consommation totale",
-      "nl": "Totaalverbruik weergeven",
-      "sv": "Total förbrukning visning",
-      "no": "Total forbruk visning",
-      "da": "Total forbrug visning",
+      "en": "Total energy usage display",
+      "fr": "Affichage de la conso d'énergie totale",
+      "nl": "Totaal energie verbruik weergeven",
+      "sv": "Total energianvändning visning",
+      "no": "Total energiforbruk visning",
+      "da": "Total energiforbrug visning",
       "es": "Visualización del consumo total"
     },
     "children": [
@@ -284,7 +270,7 @@
           "da": "Alle tilstande",
           "es": "Todos los modos"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_auto",
@@ -298,7 +284,7 @@
           "da": "Automatisk",
           "es": "Automático"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_cooling",
@@ -312,7 +298,7 @@
           "da": "Køling",
           "es": "Enfriamiento"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_dry",
@@ -326,7 +312,7 @@
           "da": "Affugtning",
           "es": "Desumidificación"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_fan",
@@ -340,7 +326,7 @@
           "da": "Blæser",
           "es": "Ventilador"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_heating",
@@ -354,7 +340,7 @@
           "da": "Opvarmning",
           "es": "Calefacción"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.total_consumed_other",
@@ -368,7 +354,7 @@
           "da": "Andet",
           "es": "Otro"
         },
-        "value": true
+        "value": false
       }
     ]
   }

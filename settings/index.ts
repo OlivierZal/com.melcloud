@@ -304,28 +304,33 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   function buildSettingsBody(
     settings: Array<HTMLInputElement | HTMLSelectElement>
   ): Settings {
-    const body: Settings = {}
-    for (const setting of settings) {
-      if (setting.value !== '') {
-        const settingValue: number = Number.parseInt(setting.value)
-        if (!Number.isNaN(settingValue)) {
-          body[setting.id] =
-            setting instanceof HTMLInputElement
-              ? int(setting, settingValue)
-              : settingValue
-        } else if (
-          setting instanceof HTMLInputElement &&
-          setting.type === 'checkbox'
-        ) {
-          body[setting.id] = setting.checked
-        } else if (['true', 'false'].includes(setting.value)) {
-          body[setting.id] = setting.value === 'true'
-        } else {
-          body[setting.id] = setting.value
+    return settings.reduce(
+      (
+        body: Settings,
+        setting: HTMLInputElement | HTMLSelectElement
+      ): Settings => {
+        if (setting.value !== '') {
+          const settingValue: number = Number.parseInt(setting.value)
+          if (!Number.isNaN(settingValue)) {
+            body[setting.id] =
+              setting instanceof HTMLInputElement
+                ? int(setting, settingValue)
+                : settingValue
+          } else if (
+            setting instanceof HTMLInputElement &&
+            setting.type === 'checkbox'
+          ) {
+            body[setting.id] = setting.checked
+          } else if (['true', 'false'].includes(setting.value)) {
+            body[setting.id] = setting.value === 'true'
+          } else {
+            body[setting.id] = setting.value
+          }
         }
-      }
-    }
-    return body
+        return body
+      },
+      {}
+    )
   }
 
   function getBuildingHolidayModeSettings(settings?: HolidayModeData): void {

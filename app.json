@@ -208,6 +208,41 @@
         ]
       },
       {
+        "id": "fan_power_state_changed",
+        "title": {
+          "en": "The current fan speed has changed",
+          "fr": "La vitesse actuelle du ventilateur a été modifiée",
+          "nl": "De huidige ventilatiesnelheid is veranderd",
+          "sv": "Aktuell fläkthastigheten ändrades",
+          "no": "Aktuell viftehastigheten ble endret",
+          "da": "Den aktuelle blæserhastighed er blevet ændret",
+          "es": "La velocidad actual del ventilador ha cambiado"
+        },
+        "tokens": [
+          {
+            "name": "fan_power",
+            "type": "number",
+            "title": {
+              "en": "Current fan speed",
+              "fr": "Vitesse actuelle du ventilateur",
+              "nl": "Huidige ventilatiesnelheid",
+              "sv": "Aktuell fläkthastighet",
+              "no": "Aktuell viftehastighet",
+              "da": "Aktuel blæserhastighed",
+              "es": "Velocidad actual del ventilador"
+            },
+            "example": 5
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud"
+          }
+        ]
+      },
+      {
         "id": "operation_mode_changed",
         "title": {
           "en": "The operation mode has changed",
@@ -3914,18 +3949,17 @@
       "class": "thermostat",
       "capabilities": [
         "fan_power",
+        "fan_power_state",
         "vertical",
         "horizontal",
         "operation_mode",
         "thermostat_mode",
-        "measure_power.fan_power",
-        "meter_power.hourly_consumed",
-        "meter_power.hourly_consumed_auto",
-        "meter_power.hourly_consumed_cooling",
-        "meter_power.hourly_consumed_dry",
-        "meter_power.hourly_consumed_fan",
-        "meter_power.hourly_consumed_heating",
-        "meter_power.hourly_consumed_other",
+        "measure_power.auto",
+        "measure_power.cooling",
+        "measure_power.dry",
+        "measure_power.fan",
+        "measure_power.heating",
+        "measure_power.other",
         "meter_power.daily_consumed",
         "meter_power.daily_consumed_auto",
         "meter_power.daily_consumed_cooling",
@@ -4055,25 +4089,8 @@
         "es": "Bombas de calor de aire a aire"
       },
       "capabilitiesOptions": {
-        "measure_power.fan_power": {
-          "title": {
-            "en": "Current fan speed",
-            "fr": "Vitesse actuelle du ventilateur",
-            "nl": "Huidige ventilatiesnelheid",
-            "sv": "Aktuell fläkthastighet",
-            "no": "Gjeldende viftehastighet",
-            "da": "Aktuel blæserhastighed",
-            "es": "Velocidad actual del ventilador"
-          },
-          "units": {
-            "en": "",
-            "fr": "",
-            "nl": "",
-            "sv": "",
-            "no": "",
-            "da": "",
-            "es": ""
-          }
+        "measure_power": {
+          "approximated": true
         },
         "measure_power.wifi": {
           "title": {
@@ -4095,236 +4112,232 @@
             "es": "dBm"
           }
         },
-        "meter_power.hourly_consumed": {
+        "measure_power.auto": {
           "title": {
-            "en": "Hourly consumption",
-            "fr": "Conso horaire",
-            "nl": "Uurlijkse verbruik",
-            "sv": "Timvis förbrukning",
-            "no": "Timevis forbruk",
-            "da": "Timevis forbrug",
-            "es": "Consumo horario"
+            "en": "Power - automatic",
+            "fr": "Puissance - automatique",
+            "nl": "Vermogen - automatische",
+            "sv": "Effekt - automatiskt",
+            "no": "Effekt - automatisk",
+            "da": "Effekt - automatisk",
+            "es": "Potencia - automático"
           }
         },
-        "meter_power.hourly_consumed_auto": {
+        "measure_power.cooling": {
           "title": {
-            "en": "Hourly consumption - automatic",
-            "fr": "Conso horaire - automatique",
-            "nl": "Uurlijkse verbruik - automatische",
-            "sv": "Timvis förbrukning - automatiskt",
-            "no": "Timevis forbruk - automatisk",
-            "da": "Timevis forbrug - automatisk",
-            "es": "Consumo horario - automático"
+            "en": "Power - cooling",
+            "fr": "Puissance - refroidissement",
+            "nl": "Vermogen - koeling",
+            "sv": "Effekt - kylning",
+            "no": "Effekt - kjøling",
+            "da": "Effekt - køling",
+            "es": "Potencia - enfriamiento"
           }
         },
-        "meter_power.hourly_consumed_cooling": {
+        "measure_power.dry": {
           "title": {
-            "en": "Hourly consumption - cooling",
-            "fr": "Conso horaire - refroidissement",
-            "nl": "Uurlijkse verbruik - koeling",
-            "sv": "Timvis förbrukning - kylning",
-            "no": "Timevis forbruk - kjøling",
-            "da": "Timevis forbrug - køling",
-            "es": "Consumo horario - enfriamiento"
+            "en": "Power - dry",
+            "fr": "Puissance - déshumidification",
+            "nl": "Vermogen - droging",
+            "sv": "Effekt - avfuktning",
+            "no": "Effekt - avfukting",
+            "da": "Effekt - affugtning",
+            "es": "Potencia - desumidificación"
           }
         },
-        "meter_power.hourly_consumed_dry": {
+        "measure_power.fan": {
           "title": {
-            "en": "Hourly consumption - dry",
-            "fr": "Conso horaire - déshumidification",
-            "nl": "Uurlijkse verbruik - droging",
-            "sv": "Timvis förbrukning - avfuktning",
-            "no": "Timevis forbruk - avfukting",
-            "da": "Timevis forbrug - affugtning",
-            "es": "Consumo horario - desumidificación"
+            "en": "Power - fan",
+            "fr": "Puissance - ventilateur",
+            "nl": "Vermogen - ventilator",
+            "sv": "Effekt - fläkt",
+            "no": "Effekt - vifte",
+            "da": "Effekt - blæser",
+            "es": "Potencia - ventilador"
           }
         },
-        "meter_power.hourly_consumed_fan": {
+        "measure_power.heating": {
           "title": {
-            "en": "Hourly consumption - fan",
-            "fr": "Conso horaire - ventilateur",
-            "nl": "Uurlijkse verbruik - ventilator",
-            "sv": "Timvis förbrukning - fläkt",
-            "no": "Timevis forbruk - vifte",
-            "da": "Timevis forbrug - blæser",
-            "es": "Consumo horario - ventilador"
+            "en": "Power - heating",
+            "fr": "Puissance - chauffage",
+            "nl": "Vermogen - verwarming",
+            "sv": "Effekt - uppvärmning",
+            "no": "Effekt - oppvarming",
+            "da": "Effekt - opvarmning",
+            "es": "Potencia - calefacción"
           }
         },
-        "meter_power.hourly_consumed_heating": {
+        "measure_power.other": {
           "title": {
-            "en": "Hourly consumption - heating",
-            "fr": "Conso horaire - chauffage",
-            "nl": "Uurlijkse verbruik - verwarming",
-            "sv": "Timvis förbrukning - uppvärmning",
-            "no": "Timevis forbruk - oppvarming",
-            "da": "Timevis forbrug - opvarmning",
-            "es": "Consumo horario - calefacción"
-          }
-        },
-        "meter_power.hourly_consumed_other": {
-          "title": {
-            "en": "Hourly consumption - other",
-            "fr": "Conso horaire - autre",
-            "nl": "Uurlijkse verbruik - andere",
-            "sv": "Timvis förbrukning - övrigt",
-            "no": "Timevis forbruk - annet",
-            "da": "Timevis forbrug - andet",
-            "es": "Consumo horario - otro"
+            "en": "Power - other",
+            "fr": "Puissance - autre",
+            "nl": "Vermogen - andere",
+            "sv": "Effekt - övrigt",
+            "no": "Effekt - annet",
+            "da": "Effekt - andet",
+            "es": "Potencia - otro"
           }
         },
         "meter_power.daily_consumed": {
           "title": {
-            "en": "Daily consumption",
-            "fr": "Conso quotidienne",
-            "nl": "Dagelijkse verbruik",
-            "sv": "Daglig förbrukning",
-            "no": "Daglige forbruk",
-            "da": "Daglig forbrug",
-            "es": "Consumo diario"
+            "en": "Daily energy usage",
+            "fr": "Conso d'énergie quotidienne",
+            "nl": "Dagelijkse energie verbruik",
+            "sv": "Daglig energianvändning",
+            "no": "Daglige energiforbruk",
+            "da": "Daglig energiforbrug",
+            "es": "Uso de energía diario"
           }
         },
         "meter_power.daily_consumed_auto": {
           "title": {
-            "en": "Daily consumption - automatic",
-            "fr": "Conso quotidienne - automatique",
-            "nl": "Dagelijkse verbruik - automatische",
-            "sv": "Daglig förbrukning - automatiskt",
-            "no": "Daglige forbruk - automatisk",
-            "da": "Daglig forbrug - automatisk",
-            "es": "Consumo diario - automático"
+            "en": "Daily energy usage - automatic",
+            "fr": "Conso d'énergie quotidienne - automatique",
+            "nl": "Dagelijkse energie verbruik - automatische",
+            "sv": "Daglig energianvändning - automatiskt",
+            "no": "Daglige energiforbruk - automatisk",
+            "da": "Daglig energiforbrug - automatisk",
+            "es": "Uso de energía diario - automático"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Daily consumption - cooling",
-            "fr": "Conso quotidienne - refroidissement",
-            "nl": "Dagelijkse verbruik - koeling",
-            "sv": "Daglig förbrukning - kylning",
-            "no": "Daglige forbruk - kjøling",
-            "da": "Daglig forbrug - køling",
-            "es": "Consumo diario - enfriamiento"
+            "en": "Daily energy usage - cooling",
+            "fr": "Conso d'énergie quotidienne - refroidissement",
+            "nl": "Dagelijkse energie verbruik - koeling",
+            "sv": "Daglig energianvändning - kylning",
+            "no": "Daglige energiforbruk - kjøling",
+            "da": "Daglig energiforbrug - køling",
+            "es": "Uso de energía diario - enfriamiento"
           }
         },
         "meter_power.daily_consumed_dry": {
           "title": {
-            "en": "Daily consumption - dry",
-            "fr": "Conso quotidienne - déshumidification",
-            "nl": "Dagelijkse verbruik - droging",
-            "sv": "Daglig förbrukning - avfuktning",
-            "no": "Daglige forbruk - avfukting",
-            "da": "Daglig forbrug - affugtning",
-            "es": "Consumo diario - desumidificación"
+            "en": "Daily energy usage - dry",
+            "fr": "Conso d'énergie quotidienne - déshumidification",
+            "nl": "Dagelijkse energie verbruik - droging",
+            "sv": "Daglig energianvändning - avfuktning",
+            "no": "Daglige energiforbruk - avfukting",
+            "da": "Daglig energiforbrug - affugtning",
+            "es": "Uso de energía diario - desumidificación"
           }
         },
         "meter_power.daily_consumed_fan": {
           "title": {
-            "en": "Daily consumption - fan",
-            "fr": "Conso quotidienne - ventilateur",
-            "nl": "Dagelijkse verbruik - ventilator",
-            "sv": "Daglig förbrukning - fläkt",
-            "no": "Daglige forbruk - vifte",
-            "da": "Daglig forbrug - blæser",
-            "es": "Consumo diario - ventilación"
+            "en": "Daily energy usage - fan",
+            "fr": "Conso d'énergie quotidienne - ventilateur",
+            "nl": "Dagelijkse energie verbruik - ventilator",
+            "sv": "Daglig energianvändning - fläkt",
+            "no": "Daglige energiforbruk - vifte",
+            "da": "Daglig energiforbrug - blæser",
+            "es": "Uso de energía diario - ventilación"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Daily consumption - heating",
-            "fr": "Conso quotidienne - chauffage",
-            "nl": "Dagelijkse verbruik - verwarming",
-            "sv": "Daglig förbrukning - uppvärmning",
-            "no": "Daglige forbruk - oppvarming",
-            "da": "Daglig forbrug - opvarmning",
-            "es": "Consumo diario - calefacción"
+            "en": "Daily energy usage - heating",
+            "fr": "Conso d'énergie quotidienne - chauffage",
+            "nl": "Dagelijkse energie verbruik - verwarming",
+            "sv": "Daglig energianvändning - uppvärmning",
+            "no": "Daglige energiforbruk - oppvarming",
+            "da": "Daglig energiforbrug - opvarmning",
+            "es": "Uso de energía diario - calefacción"
           }
         },
         "meter_power.daily_consumed_other": {
           "title": {
-            "en": "Daily consumption - other",
-            "fr": "Conso quotidienne - autre",
-            "nl": "Dagelijkse verbruik - andere",
-            "sv": "Daglig förbrukning - övrigt",
-            "no": "Daglige forbruk - annet",
-            "da": "Daglig forbrug - andet",
-            "es": "Consumo diario - otro"
+            "en": "Daily energy usage - other",
+            "fr": "Conso d'énergie quotidienne - autre",
+            "nl": "Dagelijkse energie verbruik - andere",
+            "sv": "Daglig energianvändning - övrigt",
+            "no": "Daglige energiforbruk - annet",
+            "da": "Daglig energiforbrug - andet",
+            "es": "Uso de energía diario - otro"
           }
         },
         "meter_power.total_consumed": {
           "title": {
-            "en": "Total consumption",
-            "fr": "Conso totale",
-            "nl": "Totaalverbruik",
-            "sv": "Total förbrukning",
-            "no": "Total forbruk",
-            "da": "Total forbrug",
-            "es": "Consumo total"
-          }
+            "en": "Total energy usage",
+            "fr": "Conso d'énergie totale",
+            "nl": "Totaal energie verbruik",
+            "sv": "Total energianvändning",
+            "no": "Total energiforbruk",
+            "da": "Total energiforbrug",
+            "es": "Uso de energía total"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_auto": {
           "title": {
-            "en": "Total consumption - automatic",
-            "fr": "Conso totale - automatique",
-            "nl": "Totaalverbruik - automatische",
-            "sv": "Total förbrukning - automatiskt",
-            "no": "Total forbruk - automatisk",
-            "da": "Total forbrug - automatisk",
-            "es": "Consumo total - automático"
-          }
+            "en": "Total energy usage - automatic",
+            "fr": "Conso d'énergie totale - automatique",
+            "nl": "Totaal energie verbruik - automatische",
+            "sv": "Total energianvändning - automatiskt",
+            "no": "Total energiforbruk - automatisk",
+            "da": "Total energiforbrug - automatisk",
+            "es": "Uso de energía total - automático"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total consumption - cooling",
-            "fr": "Conso totale - refroidissement",
-            "nl": "Totaalverbruik - koeling",
-            "sv": "Total förbrukning - kylning",
-            "no": "Total forbruk - kjøling",
-            "da": "Total forbrug - køling",
-            "es": "Consumo total - enfriamiento"
-          }
+            "en": "Total energy usage - cooling",
+            "fr": "Conso d'énergie totale - refroidissement",
+            "nl": "Totaal energie verbruik - koeling",
+            "sv": "Total energianvändning - kylning",
+            "no": "Total energiforbruk - kjøling",
+            "da": "Total energiforbrug - køling",
+            "es": "Uso de energía total - enfriamiento"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_dry": {
           "title": {
-            "en": "Total consumption - dry",
-            "fr": "Conso totale - déshumidification",
-            "nl": "Totaalverbruik - droging",
-            "sv": "Total förbrukning - avfuktning",
-            "no": "Total forbruk - avfukting",
-            "da": "Total forbrug - affugtning",
-            "es": "Consumo total - desumidificación"
-          }
+            "en": "Total energy usage - dry",
+            "fr": "Conso d'énergie totale - déshumidification",
+            "nl": "Totaal energie verbruik - droging",
+            "sv": "Total energianvändning - avfuktning",
+            "no": "Total energiforbruk - avfukting",
+            "da": "Total energiforbrug - affugtning",
+            "es": "Uso de energía total - desumidificación"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_fan": {
           "title": {
-            "en": "Total consumption - fan",
-            "fr": "Conso totale - ventilateur",
-            "nl": "Totaalverbruik - ventilator",
-            "sv": "Total förbrukning - fläkt",
-            "no": "Total forbruk - vifte",
-            "da": "Total forbrug - blæser",
-            "es": "Consumo total - ventilador"
-          }
+            "en": "Total energy usage - fan",
+            "fr": "Conso d'énergie totale - ventilateur",
+            "nl": "Totaal energie verbruik - ventilator",
+            "sv": "Total energianvändning - fläkt",
+            "no": "Total energiforbruk - vifte",
+            "da": "Total energiforbrug - blæser",
+            "es": "Uso de energía total - ventilador"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total consumption - heating",
-            "fr": "Conso totale - chauffage",
-            "nl": "Totaalverbruik - verwarming",
-            "sv": "Total förbrukning - uppvärmning",
-            "no": "Total forbruk - oppvarming",
-            "da": "Total forbrug - opvarmning",
-            "es": "Consumo total - calefacción"
-          }
+            "en": "Total energy usage - heating",
+            "fr": "Conso d'énergie totale - chauffage",
+            "nl": "Totaal energie verbruik - verwarming",
+            "sv": "Total energianvändning - uppvärmning",
+            "no": "Total energiforbruk - oppvarming",
+            "da": "Total energiforbrug - opvarmning",
+            "es": "Uso de energía total - calefacción"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_other": {
           "title": {
-            "en": "Total consumption - other",
-            "fr": "Conso totale - autre",
-            "nl": "Totaalverbruik - andere",
-            "sv": "Total förbrukning - övrigt",
-            "no": "Total forbruk - annet",
-            "da": "Total forbrug - andet",
-            "es": "Consumo total - otro"
-          }
+            "en": "Total energy usage - other",
+            "fr": "Conso d'énergie totale - autre",
+            "nl": "Totaal energie verbruik - andere",
+            "sv": "Total energianvändning - övrigt",
+            "no": "Total energiforbruk - annet",
+            "da": "Total energiforbrug - andet",
+            "es": "Uso de energía total - otro"
+          },
+          "decimals": 0
         },
         "target_temperature": {
           "min": 10,
@@ -4376,31 +4389,17 @@
         {
           "type": "group",
           "label": {
-            "en": "Hourly consumption display",
-            "fr": "Affichage de la consommation horaire",
-            "nl": "Uurlijkse verbruik weergeven",
-            "sv": "Timvis förbrukning visning",
-            "no": "Timevis forbruk visning",
-            "da": "Timevis forbrug visning",
-            "es": "Visualización del consumo horario"
+            "en": "Power display",
+            "fr": "Affichage de la puissance",
+            "nl": "Uurlijkse vermogen weergeven",
+            "sv": "Effekt visning",
+            "no": "Effekt visning",
+            "da": "Effekt visning",
+            "es": "Visualización de la potencia"
           },
           "children": [
             {
-              "id": "meter_power.hourly_consumed",
-              "type": "checkbox",
-              "label": {
-                "en": "All modes",
-                "fr": "Tous modes",
-                "nl": "Alle modi",
-                "sv": "Alla lägen",
-                "no": "Alle moduser",
-                "da": "Alle tilstande",
-                "es": "Todos los modos"
-              },
-              "value": true
-            },
-            {
-              "id": "meter_power.hourly_consumed_auto",
+              "id": "measure_power.auto",
               "type": "checkbox",
               "label": {
                 "en": "Automatic",
@@ -4411,10 +4410,10 @@
                 "da": "Automatisk",
                 "es": "Automático"
               },
-              "value": true
+              "value": false
             },
             {
-              "id": "meter_power.hourly_consumed_cooling",
+              "id": "measure_power.cooling",
               "type": "checkbox",
               "label": {
                 "en": "Cooling",
@@ -4425,10 +4424,10 @@
                 "da": "Køling",
                 "es": "Enfriamiento"
               },
-              "value": true
+              "value": false
             },
             {
-              "id": "meter_power.hourly_consumed_dry",
+              "id": "measure_power.dry",
               "type": "checkbox",
               "label": {
                 "en": "Dry",
@@ -4439,10 +4438,10 @@
                 "da": "Affugtning",
                 "es": "Desumidificación"
               },
-              "value": true
+              "value": false
             },
             {
-              "id": "meter_power.hourly_consumed_fan",
+              "id": "measure_power.fan",
               "type": "checkbox",
               "label": {
                 "en": "Fan",
@@ -4453,10 +4452,10 @@
                 "da": "Blæser",
                 "es": "Ventilador"
               },
-              "value": true
+              "value": false
             },
             {
-              "id": "meter_power.hourly_consumed_heating",
+              "id": "measure_power.heating",
               "type": "checkbox",
               "label": {
                 "en": "Heating",
@@ -4467,10 +4466,10 @@
                 "da": "Opvarmning",
                 "es": "Calefacción"
               },
-              "value": true
+              "value": false
             },
             {
-              "id": "meter_power.hourly_consumed_other",
+              "id": "measure_power.other",
               "type": "checkbox",
               "label": {
                 "en": "Other",
@@ -4481,20 +4480,20 @@
                 "da": "Andet",
                 "es": "Otro"
               },
-              "value": true
+              "value": false
             }
           ]
         },
         {
           "type": "group",
           "label": {
-            "en": "Daily consumption display",
-            "fr": "Affichage de la consommation quotidienne",
-            "nl": "Dagelijkse verbruik weergeven",
-            "sv": "Daglig förbrukning visning",
-            "no": "Daglig forbruk visning",
-            "da": "Daglig forbrug visning",
-            "es": "Visualización del consumo diario"
+            "en": "Daily energy usage display",
+            "fr": "Affichage de la conso d'énergie quotidienne",
+            "nl": "Dagelijkse energie verbruik weergeven",
+            "sv": "Daglig energianvändning visning",
+            "no": "Daglig energiforbruk visning",
+            "da": "Daglig energiforbrug visning",
+            "es": "Visualización del uso de energía"
           },
           "children": [
             {
@@ -4509,7 +4508,7 @@
                 "da": "Alle tilstande",
                 "es": "Todos los modos"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_auto",
@@ -4523,7 +4522,7 @@
                 "da": "Automatisk",
                 "es": "Automático"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_cooling",
@@ -4537,7 +4536,7 @@
                 "da": "Køling",
                 "es": "Enfriamiento"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_dry",
@@ -4551,7 +4550,7 @@
                 "da": "Affugtning",
                 "es": "Desumidificación"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_fan",
@@ -4565,7 +4564,7 @@
                 "da": "Blæser",
                 "es": "Ventilador"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_heating",
@@ -4579,7 +4578,7 @@
                 "da": "Opvarmning",
                 "es": "Calefacción"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_consumed_other",
@@ -4593,19 +4592,19 @@
                 "da": "Andet",
                 "es": "Otro"
               },
-              "value": true
+              "value": false
             }
           ]
         },
         {
           "type": "group",
           "label": {
-            "en": "Total consumption display",
-            "fr": "Affichage de la consommation totale",
-            "nl": "Totaalverbruik weergeven",
-            "sv": "Total förbrukning visning",
-            "no": "Total forbruk visning",
-            "da": "Total forbrug visning",
+            "en": "Total energy usage display",
+            "fr": "Affichage de la conso d'énergie totale",
+            "nl": "Totaal energie verbruik weergeven",
+            "sv": "Total energianvändning visning",
+            "no": "Total energiforbruk visning",
+            "da": "Total energiforbrug visning",
             "es": "Visualización del consumo total"
           },
           "children": [
@@ -4621,7 +4620,7 @@
                 "da": "Alle tilstande",
                 "es": "Todos los modos"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_auto",
@@ -4635,7 +4634,7 @@
                 "da": "Automatisk",
                 "es": "Automático"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_cooling",
@@ -4649,7 +4648,7 @@
                 "da": "Køling",
                 "es": "Enfriamiento"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_dry",
@@ -4663,7 +4662,7 @@
                 "da": "Affugtning",
                 "es": "Desumidificación"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_fan",
@@ -4677,7 +4676,7 @@
                 "da": "Blæser",
                 "es": "Ventilador"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_heating",
@@ -4691,7 +4690,7 @@
                 "da": "Opvarmning",
                 "es": "Calefacción"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.total_consumed_other",
@@ -4705,7 +4704,7 @@
                 "da": "Andet",
                 "es": "Otro"
               },
-              "value": true
+              "value": false
             }
           ]
         }
@@ -4825,7 +4824,10 @@
         "alarm_generic.defrost_mode",
         "alarm_generic.eco_hot_water",
         "alarm_generic.immersion_heater",
+        "last_legionella",
+        "measure_power.cop",
         "measure_power.heat_pump_frequency",
+        "measure_power.produced",
         "measure_temperature.flow",
         "measure_temperature.flow_zone1",
         "measure_temperature.flow_zone2",
@@ -5163,6 +5165,30 @@
             "es": "Calentador eléctrico sumergible desactivado"
           }
         },
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_power.cop": {
+          "title": {
+            "en": "CoP",
+            "fr": "CoP",
+            "nl": "CoP",
+            "sv": "CoP",
+            "no": "CoP",
+            "da": "CoP",
+            "es": "CoP"
+          },
+          "units": {
+            "en": "",
+            "fr": "",
+            "nl": "",
+            "sv": "",
+            "no": "",
+            "da": "",
+            "es": ""
+          },
+          "decimals": 2
+        },
         "measure_power.heat_pump_frequency": {
           "title": {
             "en": "Heat pump frequency",
@@ -5180,6 +5206,17 @@
             "sv": "Hz",
             "no": "Hz",
             "es": "Hz"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "en": "Produced power",
+            "fr": "Puissance produite",
+            "nl": "Geproduceerd vermogen",
+            "sv": "Producerad effekt",
+            "no": "Produsert effekt",
+            "da": "Produceret effekt",
+            "es": "Potencia producida"
           }
         },
         "measure_power.wifi": {
@@ -5398,90 +5435,90 @@
         },
         "meter_power.daily_consumed": {
           "title": {
-            "en": "Daily consumption",
-            "fr": "Conso quotidienne",
-            "nl": "Dagelijkse verbruik",
-            "sv": "Dagliga förbrukning",
-            "no": "Daglige forbruk",
-            "da": "Daglige forbrug",
-            "es": "Consumo diario"
+            "en": "Daily energy usage",
+            "fr": "Conso d'énergie quotidienne",
+            "nl": "Dagelijkse energie verbruik",
+            "sv": "Dagliga energianvändning",
+            "no": "Daglige energiforbruk",
+            "da": "Daglige energiforbrug",
+            "es": "Uso de energía diario"
           }
         },
         "meter_power.daily_consumed_cooling": {
           "title": {
-            "en": "Daily consumption - cooling",
-            "fr": "Conso quotidienne - refroidissement",
-            "nl": "Dagelijkse verbruik - koeling",
-            "sv": "Dagliga förbrukning - kylning",
-            "no": "Daglige forbruk - kjøling",
-            "da": "Daglige forbrug - køling",
-            "es": "Consumo diario - enfriamiento"
+            "en": "Daily energy usage - cooling",
+            "fr": "Conso d'énergie quotidienne - refroidissement",
+            "nl": "Dagelijkse energie verbruik - koeling",
+            "sv": "Dagliga energianvändning - kylning",
+            "no": "Daglige energiforbruk - kjøling",
+            "da": "Daglige energiforbrug - køling",
+            "es": "Uso de energía diario - enfriamiento"
           }
         },
         "meter_power.daily_consumed_heating": {
           "title": {
-            "en": "Daily consumption - heating",
-            "fr": "Conso quotidienne - chauffage",
-            "nl": "Dagelijkse verbruik - verwarming",
-            "sv": "Dagliga förbrukning - uppvärmning",
-            "no": "Daglige forbruk - oppvarming",
-            "da": "Daglige forbrug - opvarmning",
-            "es": "Consumo diario - calefacción"
+            "en": "Daily energy usage - heating",
+            "fr": "Conso d'énergie quotidienne - chauffage",
+            "nl": "Dagelijkse energie verbruik - verwarming",
+            "sv": "Dagliga energianvändning - uppvärmning",
+            "no": "Daglige energiforbruk - oppvarming",
+            "da": "Daglige energiforbrug - opvarmning",
+            "es": "Uso de energía diario - calefacción"
           }
         },
         "meter_power.daily_consumed_hotwater": {
           "title": {
-            "en": "Daily consumption - domestic hot water",
-            "fr": "Conso quotidienne - eau chaude sanitaire",
-            "nl": "Dagelijkse verbruik - sanitair warm water",
-            "sv": "Dagliga förbrukning - varmvattenladdning",
-            "no": "Daglige forbruk - varmvannslastning",
-            "da": "Daglige forbrug - varmtvandslastning",
-            "es": "Consumo diario - agua caliente sanitaria"
+            "en": "Daily energy usage - domestic hot water",
+            "fr": "Conso d'énergie quotidienne - eau chaude sanitaire",
+            "nl": "Dagelijkse energie verbruik - sanitair warm water",
+            "sv": "Dagliga energianvändning - varmvattenladdning",
+            "no": "Daglige energiforbruk - varmvannslastning",
+            "da": "Daglige energiforbrug - varmtvandslastning",
+            "es": "Uso de energía diario - agua caliente sanitaria"
           }
         },
         "meter_power.daily_produced": {
           "title": {
-            "en": "Daily production",
-            "fr": "Production quotidienne",
-            "nl": "Dagelijkse productie",
-            "sv": "Daglig produktion",
-            "no": "Daglige produksjon",
-            "da": "Daglige produktion",
-            "es": "Producción diario"
+            "en": "Daily energy production",
+            "fr": "Prod d'énergie quotidienne",
+            "nl": "Dagelijkse energie productie",
+            "sv": "Daglig energiproduktion",
+            "no": "Daglige energiproduksjon",
+            "da": "Daglige energiproduktion",
+            "es": "Producción de energía diario"
           }
         },
         "meter_power.daily_produced_cooling": {
           "title": {
-            "en": "Daily production - cooling",
-            "fr": "Production quotidienne - refroidissement",
-            "nl": "Dagelijkse productie - koeling",
-            "sv": "Daglig produktion - kylning",
-            "no": "Daglige produksjon - kjøling",
-            "da": "Daglige produktion - køling",
-            "es": "Producción diario - enfriamiento"
+            "en": "Daily energy production - cooling",
+            "fr": "Prod d'énergie quotidienne - refroidissement",
+            "nl": "Dagelijkse energie productie - koeling",
+            "sv": "Daglig energiproduktion - kylning",
+            "no": "Daglige energiproduksjon - kjøling",
+            "da": "Daglige energiproduktion - køling",
+            "es": "Producción de energía diario - enfriamiento"
           }
         },
         "meter_power.daily_produced_heating": {
           "title": {
-            "en": "Daily production - heating",
-            "fr": "Production quotidienne - chauffage",
-            "nl": "Dagelijkse productie - verwarming",
-            "sv": "Daglig produktion - uppvärmning",
-            "no": "Daglige produksjon - oppvarming",
-            "da": "Daglige produktion - opvarmning",
-            "es": "Producción diario - calefacción"
+            "en": "Daily energy production - heating",
+            "fr": "Prod d'énergie quotidienne - chauffage",
+            "nl": "Dagelijkse energie productie - verwarming",
+            "sv": "Daglig energiproduktion - uppvärmning",
+            "no": "Daglige energiproduksjon - oppvarming",
+            "da": "Daglige energiproduktion - opvarmning",
+            "es": "Producción de energía diario - calefacción"
           }
         },
         "meter_power.daily_produced_hotwater": {
           "title": {
-            "en": "Daily production - domestic hot water",
-            "fr": "Production quotidienne - eau chaude sanitaire",
-            "nl": "Dagelijkse productie - sanitair warm water",
-            "sv": "Daglig produktion - varmvattenladdning",
-            "no": "Daglige produksjon - varmvannslastning",
-            "da": "Daglige produktion - varmtvandslastning",
-            "es": "Producción diario - agua caliente sanitaria"
+            "en": "Daily energy production - domestic hot water",
+            "fr": "Prod d'énergie quotidienne - eau chaude sanitaire",
+            "nl": "Dagelijkse energie productie - sanitair warm water",
+            "sv": "Daglig energiproduktion - varmvattenladdning",
+            "no": "Daglige energiproduksjon - varmvannslastning",
+            "da": "Daglige energiproduktion - varmtvandslastning",
+            "es": "Producción de energía diario - agua caliente sanitaria"
           }
         },
         "meter_power.total_cop": {
@@ -5570,91 +5607,99 @@
         },
         "meter_power.total_consumed": {
           "title": {
-            "en": "Total consumption",
-            "fr": "Conso totale",
-            "nl": "Totaalverbruik",
-            "sv": "Total förbrukning",
-            "no": "Total forbruk",
-            "da": "Total forbrug",
-            "es": "Consumo total"
-          }
+            "en": "Total energy usage",
+            "fr": "Conso d'énergie totale",
+            "nl": "Totaalenergie verbruik",
+            "sv": "Total energianvändning",
+            "no": "Total energiforbruk",
+            "da": "Total energiforbrug",
+            "es": "Uso de energía total"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_cooling": {
           "title": {
-            "en": "Total consumption - cooling",
-            "fr": "Conso totale - refroidissement",
-            "nl": "Totaalverbruik - koeling",
-            "sv": "Total förbrukning - kylning",
-            "no": "Total forbruk - kjøling",
-            "da": "Total forbrug - køling",
-            "es": "Consumo total - enfriamiento"
-          }
+            "en": "Total energy usage - cooling",
+            "fr": "Conso d'énergie totale - refroidissement",
+            "nl": "Totaalenergie verbruik - koeling",
+            "sv": "Total energianvändning - kylning",
+            "no": "Total energiforbruk - kjøling",
+            "da": "Total energiforbrug - køling",
+            "es": "Uso de energía total - enfriamiento"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_heating": {
           "title": {
-            "en": "Total consumption - heating",
-            "fr": "Conso totale - chauffage",
-            "nl": "Totaalverbruik - verwarming",
-            "sv": "Total förbrukning - uppvärmning",
-            "no": "Total forbruk - oppvarming",
-            "da": "Total forbrug - opvarmning",
-            "es": "Consumo total - calefacción"
-          }
+            "en": "Total energy usage - heating",
+            "fr": "Conso d'énergie totale - chauffage",
+            "nl": "Totaalenergie verbruik - verwarming",
+            "sv": "Total energianvändning - uppvärmning",
+            "no": "Total energiforbruk - oppvarming",
+            "da": "Total energiforbrug - opvarmning",
+            "es": "Uso de energía total - calefacción"
+          },
+          "decimals": 0
         },
         "meter_power.total_consumed_hotwater": {
           "title": {
-            "en": "Total consumption - domestic hot water",
-            "fr": "Conso totale - eau chaude sanitaire",
-            "nl": "Totaalverbruik - sanitair warm water",
-            "sv": "Total förbrukning - varmvattenladdning",
-            "no": "Total forbruk - varmvannslastning",
-            "da": "Total forbrug - varmtvandsindlæsning",
-            "es": "Consumo total - agua caliente sanitaria"
-          }
+            "en": "Total energy usage - domestic hot water",
+            "fr": "Conso d'énergie totale - eau chaude sanitaire",
+            "nl": "Totaalenergie verbruik - sanitair warm water",
+            "sv": "Total energianvändning - varmvattenladdning",
+            "no": "Total energiforbruk - varmvannslastning",
+            "da": "Total energiforbrug - varmtvandsindlæsning",
+            "es": "Uso de energía total - agua caliente sanitaria"
+          },
+          "decimals": 0
         },
         "meter_power.total_produced": {
           "title": {
-            "en": "Total production",
-            "fr": "Production totale",
-            "nl": "Totale productie",
-            "sv": "Total produktion",
-            "no": "Total produksjon",
-            "da": "Total produktion",
-            "es": "Producción total"
-          }
+            "en": "Total energy production",
+            "fr": "Prod d'énergie totale",
+            "nl": "Totale energie productie",
+            "sv": "Total energiproduktion",
+            "no": "Total energiproduksjon",
+            "da": "Total energiproduktion",
+            "es": "Producción de energía total"
+          },
+          "decimals": 0
         },
         "meter_power.total_produced_cooling": {
           "title": {
-            "en": "Total production - cooling",
-            "fr": "Production totale - refroidissement",
-            "nl": "Totale productie - koeling",
-            "sv": "Total produktion - kylning",
-            "no": "Total produksjon - kjøling",
-            "da": "Total produktion - køling",
-            "es": "Producción total - enfriamiento"
-          }
+            "en": "Total energy production - cooling",
+            "fr": "Prod d'énergie totale - refroidissement",
+            "nl": "Totale energie productie - koeling",
+            "sv": "Total energiproduktion - kylning",
+            "no": "Total energiproduksjon - kjøling",
+            "da": "Total energiproduktion - køling",
+            "es": "Producción de energía total - enfriamiento"
+          },
+          "decimals": 0
         },
         "meter_power.total_produced_heating": {
           "title": {
-            "en": "Total production - heating",
-            "fr": "Production totale - chauffage",
-            "nl": "Totale productie - verwarming",
-            "sv": "Total produktion - uppvärmning",
-            "no": "Total produksjon - oppvarming",
-            "da": "Total produktion - opvarmning",
-            "es": "Producción total - calefacción"
-          }
+            "en": "Total energy production - heating",
+            "fr": "Prod d'énergie totale - chauffage",
+            "nl": "Totale energie productie - verwarming",
+            "sv": "Total energiproduktion - uppvärmning",
+            "no": "Total energiproduksjon - oppvarming",
+            "da": "Total energiproduktion - opvarmning",
+            "es": "Producción de energía total - calefacción"
+          },
+          "decimals": 0
         },
         "meter_power.total_produced_hotwater": {
           "title": {
-            "en": "Total production - domestic hot water",
-            "fr": "Production totale - eau chaude sanitaire",
-            "nl": "Totale productie - sanitair warm water",
-            "sv": "Total produktion - varmvattenladdning",
-            "no": "Total produksjon - varmvannslastning",
-            "da": "Total produktion - varmtvandsindlæsning",
-            "es": "Producción total - agua caliente sanitaria"
-          }
+            "en": "Total energy production - domestic hot water",
+            "fr": "Prod d'énergie totale - eau chaude sanitaire",
+            "nl": "Totale energie productie - sanitair warm water",
+            "sv": "Total energiproduktion - varmvattenladdning",
+            "no": "Total energiproduksjon - varmvannslastning",
+            "da": "Total energiproduktion - varmtvandsindlæsning",
+            "es": "Producción de energía total - agua caliente sanitaria"
+          },
+          "decimals": 0
         },
         "onoff.forced_hot_water": {
           "title": {
@@ -6077,6 +6122,20 @@
               "value": false
             },
             {
+              "id": "last_legionella",
+              "type": "checkbox",
+              "label": {
+                "en": "Last legionella operation",
+                "fr": "Dernière opération legionella",
+                "nl": "Laatste legionella-bedrijf",
+                "sv": "Senaste legionella-drift",
+                "no": "Siste legionella-drift",
+                "da": "Seneste legionella-drift",
+                "es": "Última operación legionella"
+              },
+              "value": true
+            },
+            {
               "id": "measure_power.wifi",
               "type": "checkbox",
               "label": {
@@ -6088,7 +6147,7 @@
                 "da": "Wifi signalstyrke",
                 "es": "Potencia de señal wifi"
               },
-              "value": true
+              "value": false
             }
           ]
         },
@@ -6144,7 +6203,7 @@
                 "da": "Opvarmning",
                 "es": "Calefacción"
               },
-              "value": true
+              "value": false
             },
             {
               "id": "meter_power.daily_cop_hotwater",
@@ -6165,13 +6224,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Daily consumption display",
-            "fr": "Affichage de la consommation quotidienne",
-            "nl": "Dagelijkse verbruik weergeven",
-            "sv": "Dagliga förbrukning visning",
-            "no": "Daglige forbruk visning",
-            "da": "Daglige forbrug visning",
-            "es": "Visualización del consumo diario"
+            "en": "Daily energy usage display",
+            "fr": "Affichage de la conso d'énergie quotidienne",
+            "nl": "Dagelijkse energie verbruik weergeven",
+            "sv": "Dagliga energianvändning visning",
+            "no": "Daglige energiforbruk visning",
+            "da": "Daglige energiforbrug visning",
+            "es": "Visualización del uso de energía diario"
           },
           "children": [
             {
@@ -6235,13 +6294,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Daily production display",
-            "fr": "Affichage de la production quotidienne",
-            "nl": "Dagelijkse productie weergeven",
-            "sv": "Dagliga produktion visning",
-            "no": "Daglige produksjon visning",
-            "da": "Daglige produktion visning",
-            "es": "Visualización de la producción diaria"
+            "en": "Daily energy production display",
+            "fr": "Affichage de la prod d'énergie quotidienne",
+            "nl": "Dagelijkse energie productie weergeven",
+            "sv": "Dagliga energiproduktion visning",
+            "no": "Daglige energiproduksjon visning",
+            "da": "Daglige energiproduktion visning",
+            "es": "Visualización de la producción de energía diaria"
           },
           "children": [
             {
@@ -6375,13 +6434,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Total consumption display",
-            "fr": "Affichage de la consommation totale",
-            "nl": "Totaalverbruik weergeven",
-            "sv": "Total förbrukning visning",
-            "no": "Total forbruk visning",
-            "da": "Total forbrug visning",
-            "es": "Visualización del consumo total"
+            "en": "Total energy usage display",
+            "fr": "Affichage de la conso d'énergie totale",
+            "nl": "Totaalenergie verbruik weergeven",
+            "sv": "Total energianvändning visning",
+            "no": "Total energiforbruk visning",
+            "da": "Total energiforbrug visning",
+            "es": "Visualización del uso de energía total"
           },
           "children": [
             {
@@ -6445,13 +6504,13 @@
         {
           "type": "group",
           "label": {
-            "en": "Total production display",
-            "fr": "Affichage de la production totale",
-            "nl": "Totale productie weergeven",
-            "sv": "Total produktion visning",
-            "no": "Total produksjon visning",
-            "da": "Total produktion visning",
-            "es": "Visualización de la producción total"
+            "en": "Total energy production display",
+            "fr": "Affichage de la prod d'énergie totale",
+            "nl": "Totale energie productie weergeven",
+            "sv": "Total energiproduktion visning",
+            "no": "Total energiproduksjon visning",
+            "da": "Total energiproduktion visning",
+            "es": "Visualización de la producción de energía total"
           },
           "children": [
             {
@@ -6624,6 +6683,24 @@
       "min": 0,
       "max": 5,
       "step": 1
+    },
+    "fan_power_state": {
+      "type": "number",
+      "title": {
+        "en": "Current fan speed",
+        "fr": "Vitesse actuelle du ventilateur",
+        "nl": "Huidige ventilatiesnelheid",
+        "sv": "Aktuell fläkthastighet",
+        "no": "Aktuell viftehastighet",
+        "da": "Aktuel blæserhastighed",
+        "es": "Velocidad actual del ventilador"
+      },
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiQuickAction": false,
+      "icon": "/assets/operation_mode_state.svg"
     },
     "flow_temperature": {
       "type": "number",
@@ -6811,6 +6888,24 @@
       "setable": false,
       "uiQuickAction": false,
       "icon": "/assets/immersion_heater.svg"
+    },
+    "last_legionella": {
+      "type": "string",
+      "title": {
+        "en": "Last legionella operation",
+        "fr": "Dernière opération legionella",
+        "nl": "Laatste legionella-bedrijf",
+        "sv": "Senaste legionella-drift",
+        "no": "Siste legionella-drift",
+        "da": "Seneste legionella-drift",
+        "es": "Última operación legionella"
+      },
+      "uiComponent": "sensor",
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiQuickAction": false,
+      "icon": "/assets/operation_mode_state.svg"
     },
     "operation_mode": {
       "type": "enum",

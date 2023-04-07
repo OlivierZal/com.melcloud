@@ -6,6 +6,7 @@
   "icon": "{{driverAssetsPath}}/icon.svg",
   "class": "thermostat",
   "capabilities": [
+    "measure_power",
     "measure_power.wifi",
     "measure_temperature",
     "onoff",

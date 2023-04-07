@@ -262,6 +262,20 @@
         "value": false
       },
       {
+        "id": "last_legionella",
+        "type": "checkbox",
+        "label": {
+          "en": "Last legionella operation",
+          "fr": "Dernière opération legionella",
+          "nl": "Laatste legionella-bedrijf",
+          "sv": "Senaste legionella-drift",
+          "no": "Siste legionella-drift",
+          "da": "Seneste legionella-drift",
+          "es": "Última operación legionella"
+        },
+        "value": true
+      },
+      {
         "id": "measure_power.wifi",
         "type": "checkbox",
         "label": {
@@ -273,7 +287,7 @@
           "da": "Wifi signalstyrke",
           "es": "Potencia de señal wifi"
         },
-        "value": true
+        "value": false
       }
     ]
   },
@@ -329,7 +343,7 @@
           "da": "Opvarmning",
           "es": "Calefacción"
         },
-        "value": true
+        "value": false
       },
       {
         "id": "meter_power.daily_cop_hotwater",
@@ -350,13 +364,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Daily consumption display",
-      "fr": "Affichage de la consommation quotidienne",
-      "nl": "Dagelijkse verbruik weergeven",
-      "sv": "Dagliga förbrukning visning",
-      "no": "Daglige forbruk visning",
-      "da": "Daglige forbrug visning",
-      "es": "Visualización del consumo diario"
+      "en": "Daily energy usage display",
+      "fr": "Affichage de la conso d'énergie quotidienne",
+      "nl": "Dagelijkse energie verbruik weergeven",
+      "sv": "Dagliga energianvändning visning",
+      "no": "Daglige energiforbruk visning",
+      "da": "Daglige energiforbrug visning",
+      "es": "Visualización del uso de energía diario"
     },
     "children": [
       {
@@ -420,13 +434,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Daily production display",
-      "fr": "Affichage de la production quotidienne",
-      "nl": "Dagelijkse productie weergeven",
-      "sv": "Dagliga produktion visning",
-      "no": "Daglige produksjon visning",
-      "da": "Daglige produktion visning",
-      "es": "Visualización de la producción diaria"
+      "en": "Daily energy production display",
+      "fr": "Affichage de la prod d'énergie quotidienne",
+      "nl": "Dagelijkse energie productie weergeven",
+      "sv": "Dagliga energiproduktion visning",
+      "no": "Daglige energiproduksjon visning",
+      "da": "Daglige energiproduktion visning",
+      "es": "Visualización de la producción de energía diaria"
     },
     "children": [
       {
@@ -560,13 +574,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total consumption display",
-      "fr": "Affichage de la consommation totale",
-      "nl": "Totaalverbruik weergeven",
-      "sv": "Total förbrukning visning",
-      "no": "Total forbruk visning",
-      "da": "Total forbrug visning",
-      "es": "Visualización del consumo total"
+      "en": "Total energy usage display",
+      "fr": "Affichage de la conso d'énergie totale",
+      "nl": "Totaalenergie verbruik weergeven",
+      "sv": "Total energianvändning visning",
+      "no": "Total energiforbruk visning",
+      "da": "Total energiforbrug visning",
+      "es": "Visualización del uso de energía total"
     },
     "children": [
       {
@@ -630,13 +644,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total production display",
-      "fr": "Affichage de la production totale",
-      "nl": "Totale productie weergeven",
-      "sv": "Total produktion visning",
-      "no": "Total produksjon visning",
-      "da": "Total produktion visning",
-      "es": "Visualización de la producción total"
+      "en": "Total energy production display",
+      "fr": "Affichage de la prod d'énergie totale",
+      "nl": "Totale energie productie weergeven",
+      "sv": "Total energiproduktion visning",
+      "no": "Total energiproduksjon visning",
+      "da": "Total energiproduktion visning",
+      "es": "Visualización de la producción de energía total"
     },
     "children": [
       {

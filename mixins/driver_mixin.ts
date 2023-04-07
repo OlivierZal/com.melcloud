@@ -4,13 +4,14 @@ import type MELCloudApp from '../app'
 import {
   type DeviceDetails,
   type ListDevice,
+  type ListDeviceData,
   type LoginCredentials,
   type MELCloudDevice
 } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
-  deviceType!: number
+  deviceType!: ListDeviceData<MELCloudDevice>['DeviceType']
   heatPumpType!: string
 
   async onInit(): Promise<void> {
@@ -34,28 +35,27 @@ export default class MELCloudDriverMixin extends Driver {
     const devices: Array<ListDevice<T>> = await this.app.listDevices(
       this.deviceType
     )
-    return devices.map((device: ListDevice<T>): DeviceDetails => {
-      const { CanCool, HasZone2 } = device.Device
-      const deviceDetails: DeviceDetails = {
-        name: device.DeviceName,
-        data: {
-          id: device.DeviceID,
-          buildingid: device.BuildingID
-        },
-        store: {
-          canCool: CanCool,
-          hasZone2: HasZone2
+    return devices.map(
+      ({
+        DeviceName,
+        DeviceID,
+        BuildingID,
+        Device: { CanCool, HasZone2 }
+      }): DeviceDetails => {
+        const deviceDetails: DeviceDetails = {
+          name: DeviceName,
+          data: { id: DeviceID, buildingid: BuildingID },
+          store: { canCool: CanCool, hasZone2: HasZone2 }
         }
+        const capabilities: string[] = this.getRequiredCapabilities(
+          CanCool,
+          HasZone2
+        )
+        return capabilities.length > 0
+          ? { ...deviceDetails, capabilities }
+          : deviceDetails
       }
-      const capabilities: string[] = this.getRequiredCapabilities(
-        CanCool,
-        HasZone2
-      )
-      if (capabilities.length > 0) {
-        deviceDetails.capabilities = capabilities
-      }
-      return deviceDetails
-    })
+    )
   }
 
   getRequiredCapabilities(_canCool: boolean, _hasZone2: boolean): string[] {
