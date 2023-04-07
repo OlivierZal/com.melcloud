@@ -53,7 +53,8 @@
     },
     "devices_ata": {
       "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
-      "label": "Luft-luft enhetsinställningar"
+      "label": "Luft-luft enhetsinställningar",
+      "configure": "Konfigurera"
     },
     "error_log": {
       "columns": {
@@ -69,7 +70,8 @@
       "failure": "Minst en av dina enheter är inte längre associerad med ditt MELCloud-konto.\n\nTa bort den för att se felloggen.",
       "label": "Fellogg",
       "period": "Sedan __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Se alla fel sedan"
+      "see": "Se alla fel",
+      "since": "sedan"
     },
     "int_error": {
       "message": "__name__ måste vara ett heltal mellan __min__ och __max__.",

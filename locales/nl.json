@@ -53,7 +53,8 @@
     },
     "devices_ata": {
       "auto_adjust": "Auto-afstellen airco-temperatuur",
-      "label": "Lucht-lucht apparaatinstellingen"
+      "label": "Lucht-lucht apparaatinstellingen",
+      "configure": "Configureren"
     },
     "error_log": {
       "columns": {
@@ -69,7 +70,8 @@
       "failure": "Minstens één van uw apparaten is niet langer geassocieerd met uw MELCloud-account.\n\nVerwijder het om het foutenlogboek te bekijken.",
       "label": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Bekijk alle fouten sinds"
+      "see": "Bekijk alle fouten",
+      "since": "sinds"
     },
     "int_error": {
       "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",

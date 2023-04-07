@@ -64,14 +64,21 @@
               aria-describedby="error-log"
             ></table>
           </div>
-          <div class="button-container">
-            <button
-              id="see"
-              class="homey-button-secondary"
-              data-i18n="settings.error_log.see"
-            ></button>
-            <div class="input-container">
-              <input id="from" type="date" value="" />
+          <div class="container">
+            <div class="center">
+              <button
+                id="see"
+                class="homey-button-secondary-shadow"
+                data-i18n="settings.error_log.see"
+              ></button>
+            </div>
+            <div class="center">
+              <label
+                class="homey-form-label label"
+                for="since"
+                data-i18n="settings.error_log.since"
+              ></label>
+              <input id="since" type="date" value="" />
             </div>
           </div>
         </fieldset>
@@ -111,15 +118,15 @@
           ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-        <div class="button-container">
+        <div class="container">
           <button
             id="refresh-holiday-mode"
-            class="homey-button-secondary"
+            class="homey-button-secondary-shadow"
             data-i18n="settings.buildings.refresh"
           ></button>
           <button
             id="update-holiday-mode"
-            class="homey-button-primary"
+            class="homey-button-danger-shadow"
             data-i18n="settings.buildings.update"
           ></button>
         </div>
@@ -162,15 +169,15 @@
             value="12"
           />
         </div>
-        <div class="button-container">
+        <div class="container">
           <button
             id="refresh-frost-protection"
-            class="homey-button-secondary"
+            class="homey-button-secondary-shadow"
             data-i18n="settings.buildings.refresh"
           ></button>
           <button
             id="update-frost-protection"
-            class="homey-button-primary"
+            class="homey-button-danger-shadow"
             data-i18n="settings.buildings.update"
           ></button>
         </div>
@@ -194,7 +201,7 @@
         </div>
         <button
           id="apply-settings"
-          class="homey-button-primary-full"
+          class="homey-button-danger-shadow-full"
           data-i18n="settings.devices.apply.button"
         ></button>
       </fieldset>
@@ -204,10 +211,15 @@
             class="homey-form-legend"
             data-i18n="settings.devices_ata.label"
           ></legend>
+          <label
+            class="homey-form-label"
+            for="auto_adjust"
+            data-i18n="settings.devices_ata.auto_adjust"
+          ></label>
           <button
             id="auto_adjust"
-            class="homey-button-secondary-full"
-            data-i18n="settings.devices_ata.auto_adjust"
+            class="homey-button-secondary-shadow-full"
+            data-i18n="settings.devices_ata.configure"
           ></button>
           <div class="homey-form-group">
             <fieldset class="homey-form-checkbox-set" id="settings-ata">
@@ -219,7 +231,7 @@
           </div>
           <button
             id="apply-settings-ata"
-            class="homey-button-primary-full"
+            class="homey-button-danger-shadow-full"
             data-i18n="settings.devices.apply.button"
           ></button>
         </fieldset>

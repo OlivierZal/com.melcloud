@@ -107,8 +107,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'has-error-log'
   ) as HTMLDivElement
 
-  const fromElement: HTMLInputElement = document.getElementById(
-    'from'
+  const sinceElement: HTMLInputElement = document.getElementById(
+    'since'
   ) as HTMLInputElement
   const frostProtectionMinimumTemperatureElement: HTMLInputElement =
     document.getElementById('min') as HTMLInputElement
@@ -231,7 +231,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   function generateErrorLog(): void {
     const query: ErrorLogQuery = {
-      from: fromElement.value,
+      from: sinceElement.value,
       to,
       limit: '29',
       offset: '0'
@@ -256,7 +256,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           return
         }
         fromDateHuman = data.FromDateHuman
-        fromElement.value = data.NextFromDate
+        sinceElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
         seeElement.classList.remove('is-loading')
@@ -668,13 +668,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     login()
   })
 
-  fromElement.addEventListener('change', (): void => {
+  sinceElement.addEventListener('change', (): void => {
     if (
       to !== '' &&
-      fromElement.value !== '' &&
-      Date.parse(fromElement.value) > Date.parse(to)
+      sinceElement.value !== '' &&
+      Date.parse(sinceElement.value) > Date.parse(to)
     ) {
-      fromElement.value = to
+      sinceElement.value = to
       // @ts-expect-error bug
       Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
     }

@@ -53,6 +53,7 @@
     },
     "devices_ata": {
       "auto_adjust": "Autoajustar la temperatura del enfriamiento",
+      "configure": "Configurar",
       "label": "Configuración de los dispositivos aire-aire"
     },
     "error_log": {
@@ -69,7 +70,8 @@
       "failure": "Al menos uno de sus dispositivos ya no está asociado con su cuenta de MELCloud.\n\nElimínelo para ver el registro de errores.",
       "label": "Registro de errores",
       "period": "Desde __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Ver los errores desde el"
+      "see": "Ver los errores",
+      "since": "desde el"
     },
     "int_error": {
       "message": "__name__ debe ser un número entero entre __min__ y __max__.",

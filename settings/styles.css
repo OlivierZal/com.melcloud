@@ -1,40 +1,47 @@
 .bordered {
-    border-collapse: collapse;
-    width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 .bordered thead th {
-    background-color: #e6e6e6;
-    font-weight: bold;
+  background-color: #e6e6e6;
+  font-weight: bold;
 }
 
 .bordered td,
 .bordered th {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.button-container {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
-.input-container {
-    flex-basis: 60%;
+.homey-button-primary-full,
+.homey-button-secondary-shadow,
+.homey-button-danger-shadow,
+.homey-button-danger-shadow-full {
+  flex-basis: 100%;
 }
 
-[class*="homey-button-"] {
-    flex-basis: 100%;
+.homey-button-primary-full.is-loading,
+.homey-button-secondary-shadow.is-loading,
+.homey-button-danger-shadow.is-loading,
+.homey-button-danger-shadow-full.is-loading {
+  pointer-events: none;
 }
 
-[class*="homey-button-"].is-loading {
-    pointer-events: none;
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

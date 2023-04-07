@@ -53,6 +53,7 @@
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
+      "configure": "Konfigurer",
       "label": "Luft-luft enhedsindstillinger"
     },
     "error_log": {
@@ -69,7 +70,8 @@
       "failure": "Mindst en af dine enheder er ikke længere tilknyttet din MELCloud-konto.\n\nSlet den for at se fejlloggen.",
       "label": "Fejllog",
       "period": "Siden __fromDateHuman__: __errorCount__ __errorCountText__",
-      "see": "Se fejl siden den"
+      "see": "Se alle fejl",
+      "since": "siden den"
     },
     "int_error": {
       "message": "__name__ skal være et heltal mellem __min__ og __max__.",
