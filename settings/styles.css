@@ -45,3 +45,7 @@
   justify-content: center;
   align-items: center;
 }
+
+.label {
+  margin-right: 8px;
+}
