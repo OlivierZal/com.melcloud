@@ -130,6 +130,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const alwaysOnLabelElement: HTMLLabelElement = document.getElementById(
     'settings-always_on'
   ) as HTMLLabelElement
+  const errorCountLabelElement: HTMLLabelElement = document.getElementById(
+    'error_count'
+  ) as HTMLLabelElement
   const periodLabelElement: HTMLLabelElement = document.getElementById(
     'period'
   ) as HTMLLabelElement
@@ -261,10 +264,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         errorCount += data.Errors.length
         seeElement.classList.remove('is-loading')
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
-          fromDateHuman,
-          errorCount,
-          errorCountText: getErrorCountText(errorCount)
+          fromDateHuman
         })
+        errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(
+          errorCount
+        )}`
         unhide(hasErrorLogElement)
         if (data.Errors.length > 0) {
           if (!hasLoadedErrorLogTableHead) {

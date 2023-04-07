@@ -12,7 +12,7 @@
   </head>
   <body>
     <header class="homey-header">
-      <h1 class="homey-title" data-i18n="settings.title" />
+      <h1 class="homey-title" data-i18n="settings.title"></h1>
     </header>
     <div id="authenticating" class="hidden">
       <fieldset class="homey-form-fieldset">
@@ -57,7 +57,16 @@
             data-i18n="settings.error_log.label"
           ></legend>
           <div class="homey-form-group">
-            <label class="homey-form-label" id="period"></label>
+            <div class="label-container">
+              <label
+                class="homey-form-label inline unset-margin-top bolded"
+                id="period"
+              ></label>
+              <label
+                class="homey-form-label inline unset-margin-top"
+                id="error_count"
+              ></label>
+            </div>
             <table
               id="error-log-table"
               class="bordered"
@@ -65,16 +74,16 @@
             ></table>
           </div>
           <div class="container">
-            <div class="center">
+            <div class="left">
               <button
                 id="see"
                 class="homey-button-secondary-shadow"
                 data-i18n="settings.error_log.see"
               ></button>
             </div>
-            <div class="center">
+            <div class="right">
               <label
-                class="homey-form-label custom-label"
+                class="homey-form-label unset-margin"
                 for="since"
                 data-i18n="settings.error_log.since"
               ></label>
