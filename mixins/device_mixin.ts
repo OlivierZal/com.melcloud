@@ -490,8 +490,8 @@ export default class MELCloudDeviceMixin extends Device {
         )
       }
       return (
-        tags.reduce(
-          (sum: number, tag: keyof ReportData<T>) =>
+        tags.reduce<number>(
+          (sum, tag: keyof ReportData<T>) =>
             sum +
             (capability.includes('measure_power')
               ? (data[tag] as number[])[this.reportPlanParameters.toDate.hour] *

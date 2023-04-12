@@ -18,8 +18,8 @@ function reverseMapping(
   mapping: Record<number | string, string>
 ): Record<string, string> {
   return Object.entries(mapping).reduce<Record<string, string>>(
-    (reversedMapping, [capabilityValue, deviceValue]) => {
-      reversedMapping[deviceValue] = capabilityValue
+    (reversedMapping, [deviceValue, capabilityValue]: [string, string]) => {
+      reversedMapping[capabilityValue] = deviceValue
       return reversedMapping
     },
     {}

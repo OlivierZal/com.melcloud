@@ -216,23 +216,26 @@ export default class MELCloudApp extends App {
     syncMode: SyncFromMode = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings()
-    const { devices, newBuildings, deviceIds } = buildings.reduce(
-      (
-        acc: {
-          devices: Array<ListDevice<T>>
-          newBuildings: Record<number, string>
-          deviceIds: Record<number, string>
-        },
-        building: Building<T>
-      ) => {
+    const { devices, newBuildings, deviceIds } = buildings.reduce<{
+      devices: Array<ListDevice<T>>
+      newBuildings: Record<number, string>
+      deviceIds: Record<number, string>
+    }>(
+      (acc, building: Building<T>) => {
         acc.newBuildings[building.ID] = building.Name
         const buildingDevices: Array<ListDevice<T>> = [
           ...building.Structure.Devices,
-          ...building.Structure.Floors.flatMap((floor) => [
-            ...floor.Devices,
-            ...floor.Areas.flatMap((area) => area.Devices)
-          ]),
-          ...building.Structure.Areas.flatMap((area) => area.Devices)
+          ...building.Structure.Floors.flatMap(
+            (floor): Array<ListDevice<T>> => [
+              ...floor.Devices,
+              ...floor.Areas.flatMap(
+                (area): Array<ListDevice<T>> => area.Devices
+              )
+            ]
+          ),
+          ...building.Structure.Areas.flatMap(
+            (area): Array<ListDevice<T>> => area.Devices
+          )
         ]
         acc.devices.push(...buildingDevices)
         for (const device of buildingDevices) {
@@ -243,7 +246,7 @@ export default class MELCloudApp extends App {
       { devices: [], newBuildings: {}, deviceIds: {} }
     )
 
-    const filteredDevices =
+    const filteredDevices: Array<ListDevice<T>> =
       deviceType !== undefined
         ? devices.filter((device) => deviceType === device.Device.DeviceType)
         : devices
