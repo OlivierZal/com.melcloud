@@ -304,11 +304,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   function buildSettingsBody(
     settings: Array<HTMLInputElement | HTMLSelectElement>
   ): Settings {
-    return settings.reduce(
-      (
-        body: Settings,
-        setting: HTMLInputElement | HTMLSelectElement
-      ): Settings => {
+    return settings.reduce<Settings>(
+      (body, setting: HTMLInputElement | HTMLSelectElement) => {
         if (setting.value !== '') {
           const settingValue: number = Number.parseInt(setting.value)
           if (!Number.isNaN(settingValue)) {
