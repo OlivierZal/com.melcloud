@@ -138,7 +138,7 @@ export default class MELCloudDeviceMixin extends Device {
   > {
     return Object.fromEntries(
       Object.entries(this.reportCapabilityMapping).filter(
-        ([capability, _]) =>
+        ([capability, _]): boolean =>
           this.hasCapability(capability) &&
           capability.includes('total') === total
       )
