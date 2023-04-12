@@ -138,7 +138,7 @@ export default class MELCloudDeviceMixin extends Device {
   > {
     return Object.fromEntries(
       Object.entries(this.reportCapabilityMapping).filter(
-        ([capability, _]): boolean =>
+        ([capability, _]: [string, any]): boolean =>
           this.hasCapability(capability) &&
           capability.includes('total') === total
       )
@@ -252,7 +252,9 @@ export default class MELCloudDeviceMixin extends Device {
   ): UpdateData<T> {
     let effectiveFlags: bigint = 0n
     const updateDataEntries = Object.entries(this.setCapabilityMapping)
-      .filter(([capability, _]): boolean => this.hasCapability(capability))
+      .filter(([capability, _]: [string, any]): boolean =>
+        this.hasCapability(capability)
+      )
       .map(([capability, { effectiveFlag, tag }]) => {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
@@ -482,7 +484,7 @@ export default class MELCloudDeviceMixin extends Device {
     capability: ReportCapability<T>,
     tags: ReportCapabilityMapping<T>
   ): Promise<void> {
-    const reportValue = (): CapabilityValue => {
+    const reportValue: () => CapabilityValue = (): CapabilityValue => {
       if (capability.includes('cop')) {
         return (
           (data[tags[0]] as number) /
@@ -574,7 +576,7 @@ export default class MELCloudDeviceMixin extends Device {
             ReportCapabilityMapping<MELCloudDeviceAtw>
           >
       > = this.getReportCapabilities(total)
-      const changedEnergyKeys = changedKeys.filter(
+      const changedEnergyKeys: string[] = changedKeys.filter(
         (setting: string): boolean => setting in reportCapabilities
       )
       if (
