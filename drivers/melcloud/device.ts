@@ -4,26 +4,26 @@ import type MELCloudDriverAta from './driver'
 import {
   getCapabilityMappingAta,
   listCapabilityMappingAta,
+  reportCapabilityMappingAta,
   setCapabilityMappingAta,
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
-  type ReportCapabilities,
-  type ReportCapability,
-  type ReportData,
   type SetCapabilities,
   type SetCapability,
   type ThermostatMode
 } from '../../types'
 
-function reverse(
+function reverseMapping(
   mapping: Record<number | string, string>
 ): Record<string, string> {
-  const reversedMapping: Record<string, string> = {}
-  for (const [capabilityValue, deviceValue] of Object.entries(mapping)) {
-    reversedMapping[deviceValue] = capabilityValue
-  }
-  return reversedMapping
+  return Object.entries(mapping).reduce<Record<string, string>>(
+    (reversedMapping, [deviceValue, capabilityValue]: [string, string]) => {
+      reversedMapping[capabilityValue] = deviceValue
+      return reversedMapping
+    },
+    {}
+  )
 }
 
 const operationModeFromDevice: Record<number, string> = {
@@ -34,7 +34,7 @@ const operationModeFromDevice: Record<number, string> = {
   8: 'auto'
 } as const
 
-const operationModeToDevice: Record<string, string> = reverse(
+const operationModeToDevice: Record<string, string> = reverseMapping(
   operationModeFromDevice
 )
 
@@ -48,7 +48,8 @@ const verticalFromDevice: Record<number, string> = {
   7: 'swing'
 } as const
 
-const verticalToDevice: Record<string, string> = reverse(verticalFromDevice)
+const verticalToDevice: Record<string, string> =
+  reverseMapping(verticalFromDevice)
 
 const horizontalFromDevice: Record<number, string> = {
   0: 'auto',
@@ -61,7 +62,8 @@ const horizontalFromDevice: Record<number, string> = {
   12: 'swing'
 } as const
 
-const horizontalToDevice: Record<string, string> = reverse(horizontalFromDevice)
+const horizontalToDevice: Record<string, string> =
+  reverseMapping(horizontalFromDevice)
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
@@ -88,7 +90,9 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
     this.listCapabilityMapping = listCapabilityMappingAta
+    this.reportCapabilityMapping = reportCapabilityMappingAta
     this.reportPlanParameters = {
+      toDate: DateTime.now().minus({ hours: 1 }),
       interval: { hours: 1 },
       duration: { hours: 1 },
       values: { minute: 10, second: 0, millisecond: 0 }
@@ -103,7 +107,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     switch (capability) {
       case 'thermostat_mode':
         if (value !== 'off') {
-          this.diff.operation_mode = reverse(
+          this.diff.operation_mode = reverseMapping(
             this.operationModeToThermostatMode
           )[value as ThermostatMode]
         }
@@ -157,82 +161,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         newValue = horizontalFromDevice[newValue as number]
     }
     await this.setCapabilityValue(capability, newValue)
-  }
-
-  async runEnergyReports(): Promise<void> {
-    const reportMapping: ReportCapabilities<MELCloudDeviceAta> = {
-      'meter_power.hourly_consumed': 0,
-      'meter_power.hourly_consumed_auto': 0,
-      'meter_power.hourly_consumed_cooling': 0,
-      'meter_power.hourly_consumed_dry': 0,
-      'meter_power.hourly_consumed_fan': 0,
-      'meter_power.hourly_consumed_heating': 0,
-      'meter_power.hourly_consumed_other': 0,
-      'meter_power.daily_consumed': 0,
-      'meter_power.daily_consumed_auto': 0,
-      'meter_power.daily_consumed_cooling': 0,
-      'meter_power.daily_consumed_dry': 0,
-      'meter_power.daily_consumed_fan': 0,
-      'meter_power.daily_consumed_heating': 0,
-      'meter_power.daily_consumed_other': 0,
-      'meter_power.total_consumed': 0,
-      'meter_power.total_consumed_auto': 0,
-      'meter_power.total_consumed_cooling': 0,
-      'meter_power.total_consumed_dry': 0,
-      'meter_power.total_consumed_fan': 0,
-      'meter_power.total_consumed_heating': 0,
-      'meter_power.total_consumed_other': 0
-    }
-    const toDate: DateTime = DateTime.now().minus({ hours: 1 })
-    const periods: {
-      [period in 'hourly' | 'daily' | 'total']: {
-        fromDate: DateTime
-        toDate: DateTime
-      }
-    } = {
-      hourly: { fromDate: toDate, toDate },
-      daily: { fromDate: toDate, toDate },
-      total: { fromDate: DateTime.local(1970), toDate }
-    }
-    for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAta> | null =
-        await this.app.reportEnergyCost(this, fromDate, toDate)
-      if (data !== null) {
-        for (const mode of [
-          'Auto',
-          'Cooling',
-          'Dry',
-          'Fan',
-          'Heating',
-          'Other'
-        ]) {
-          const modeData: number =
-            period === 'hourly'
-              ? (data[mode as keyof ReportData<MELCloudDeviceAta>] as number[])[
-                  toDate.hour
-                ]
-              : (data[
-                  `Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAta>
-                ] as number)
-          reportMapping[
-            `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
-          ] = modeData / data.UsageDisclaimerPercentages.split(', ').length
-          reportMapping[
-            `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAta>
-          ] +=
-            reportMapping[
-              `meter_power.${period}_consumed_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAta>
-            ]
-        }
-      }
-    }
-    for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.convertFromDevice(
-        capability as ReportCapability<MELCloudDeviceAta>,
-        value
-      )
-    }
-    this.planEnergyReports()
   }
 }
 

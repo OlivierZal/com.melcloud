@@ -4,14 +4,12 @@ import type MELCloudDriverAtw from './driver'
 import {
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
+  reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
   type OperationModeZoneCapbility,
-  type ReportCapabilities,
-  type ReportCapability,
-  type ReportData,
   type SetCapabilities,
   type SetCapability
 } from '../../types'
@@ -39,7 +37,9 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
+    this.reportCapabilityMapping = reportCapabilityMappingAtw
     this.reportPlanParameters = {
+      toDate: DateTime.now().minus({ days: 1 }),
       interval: { days: 1 },
       duration: { days: 1 },
       values: { hour: 0, minute: 10, second: 0, millisecond: 0 }
@@ -123,10 +123,19 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
 
   async convertFromDevice(
     capability: Capability<MELCloudDeviceAtw>,
-    value: boolean | number
+    value: boolean | number | string
   ): Promise<void> {
     let newValue: CapabilityValue = value
     switch (capability) {
+      case 'last_legionella':
+        newValue = DateTime.fromISO(value as string, {
+          locale: this.app.locale
+        }).toLocaleString(DateTime.DATE_HUGE)
+        break
+      case 'measure_power':
+      case 'measure_power.produced':
+        ;(newValue as number) *= 1000
+        break
       case 'operation_mode_state':
         newValue = operationModeFromDevice[newValue as number]
         break
@@ -147,85 +156,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         newValue = Boolean(newValue)
     }
     await this.setCapabilityValue(capability, newValue)
-  }
-
-  async runEnergyReports(): Promise<void> {
-    const reportMapping: ReportCapabilities<MELCloudDeviceAtw> = {
-      'meter_power.daily_cop': 0,
-      'meter_power.daily_cop_cooling': 0,
-      'meter_power.daily_cop_heating': 0,
-      'meter_power.daily_cop_hotwater': 0,
-      'meter_power.daily_consumed': 0,
-      'meter_power.daily_consumed_cooling': 0,
-      'meter_power.daily_consumed_heating': 0,
-      'meter_power.daily_consumed_hotwater': 0,
-      'meter_power.daily_produced': 0,
-      'meter_power.daily_produced_cooling': 0,
-      'meter_power.daily_produced_heating': 0,
-      'meter_power.daily_produced_hotwater': 0,
-      'meter_power.total_cop': 0,
-      'meter_power.total_cop_cooling': 0,
-      'meter_power.total_cop_heating': 0,
-      'meter_power.total_cop_hotwater': 0,
-      'meter_power.total_consumed': 0,
-      'meter_power.total_consumed_cooling': 0,
-      'meter_power.total_consumed_heating': 0,
-      'meter_power.total_consumed_hotwater': 0,
-      'meter_power.total_produced': 0,
-      'meter_power.total_produced_cooling': 0,
-      'meter_power.total_produced_heating': 0,
-      'meter_power.total_produced_hotwater': 0
-    }
-    const toDate: DateTime = DateTime.now().minus({ days: 1 })
-    const periods: {
-      [period in 'daily' | 'total']: { fromDate: DateTime; toDate: DateTime }
-    } = {
-      daily: { fromDate: toDate, toDate },
-      total: { fromDate: DateTime.local(1970), toDate }
-    }
-    for (const [period, { fromDate, toDate }] of Object.entries(periods)) {
-      const data: ReportData<MELCloudDeviceAtw> | null =
-        await this.app.reportEnergyCost(this, fromDate, toDate)
-      if (data !== null) {
-        for (const mode of ['Cooling', 'Heating', 'HotWater']) {
-          for (const type of ['Consumed', 'Produced']) {
-            reportMapping[
-              `meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-            ] =
-              data[`Total${mode}${type}` as keyof ReportData<MELCloudDeviceAtw>]
-            reportMapping[
-              `meter_power.${period}_${type.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-            ] +=
-              reportMapping[
-                `meter_power.${period}_${type.toLowerCase()}_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-              ]
-          }
-          reportMapping[
-            `meter_power.${period}_cop_${mode.toLowerCase()}` as ReportCapability<MELCloudDeviceAtw>
-          ] =
-            data[
-              `Total${mode}Produced` as keyof ReportData<MELCloudDeviceAtw>
-            ] /
-            data[`Total${mode}Consumed` as keyof ReportData<MELCloudDeviceAtw>]
-        }
-        reportMapping[
-          `meter_power.${period}_cop` as ReportCapability<MELCloudDeviceAtw>
-        ] =
-          reportMapping[
-            `meter_power.${period}_produced` as ReportCapability<MELCloudDeviceAtw>
-          ] /
-          reportMapping[
-            `meter_power.${period}_consumed` as ReportCapability<MELCloudDeviceAtw>
-          ]
-      }
-    }
-    for (const [capability, value] of Object.entries(reportMapping)) {
-      await this.convertFromDevice(
-        capability as ReportCapability<MELCloudDeviceAtw>,
-        value
-      )
-    }
-    this.planEnergyReports()
   }
 }
 

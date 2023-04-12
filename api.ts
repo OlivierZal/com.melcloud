@@ -17,18 +17,17 @@ import {
   type SettingsData
 } from './types'
 
-const format: string = 'd LLL yyyy HH:mm'
-
-function fromUTCtoLocal(utcDate: string | null, format?: string): string {
+function fromUTCtoLocal(utcDate: string | null, locale?: string): string {
   if (utcDate === null) {
     return ''
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, {
-    zone: 'utc'
+    zone: 'utc',
+    locale
   }).toLocal()
   return (
-    (format !== undefined
-      ? localDate.toFormat(format)
+    (locale !== undefined
+      ? localDate.toLocaleString(DateTime.DATETIME_MED)
       : localDate.toISO({ includeOffset: false })) ?? ''
   )
 }
@@ -138,7 +137,7 @@ module.exports = {
     params
   }: {
     homey: Homey
-    params: { buildingId: string }
+    params: { buildingId: Building<MELCloudDevice>['ID'] }
   }): Promise<FrostProtectionData> {
     return await (homey.app as MELCloudApp).getFrostProtectionSettings(
       Number(params.buildingId)
@@ -150,7 +149,7 @@ module.exports = {
     params
   }: {
     homey: Homey
-    params: { buildingId: string }
+    params: { buildingId: Building<MELCloudDevice>['ID'] }
   }): Promise<HolidayModeData> {
     const data: HolidayModeData = await (
       homey.app as MELCloudApp
@@ -191,7 +190,7 @@ module.exports = {
             Date:
               errorData.StartDate !== null &&
               DateTime.fromISO(errorData.StartDate).year > 1
-                ? fromUTCtoLocal(errorData.StartDate, format)
+                ? fromUTCtoLocal(errorData.StartDate, app.locale)
                 : '',
             Error: errorData.ErrorMessage ?? ''
           })
@@ -200,12 +199,10 @@ module.exports = {
           (error: ErrorDetails): boolean =>
             error.Date !== '' && error.Error !== ''
         )
-        .sort((error1: ErrorDetails, error2: ErrorDetails): number => {
-          const date1 = DateTime.fromFormat(error1.Date, format)
-          const date2 = DateTime.fromFormat(error2.Date, format)
-          return Number(date2.diff(date1))
-        }),
-      FromDateHuman: fromDate.setLocale(app.locale).toFormat('d LLLL yyyy'),
+        .reverse(),
+      FromDateHuman: fromDate
+        .setLocale(app.locale)
+        .toLocaleString(DateTime.DATE_FULL),
       NextFromDate: NextToDate.minus({ days: period }).toISODate() ?? '',
       NextToDate: NextToDate.toISODate() ?? ''
     }

@@ -88,7 +88,7 @@ interface ListCapabilitiesMixin {
 
 interface ListCapabilitiesAta extends ListCapabilitiesMixin {
   readonly fan_power: number
-  readonly 'measure_power.fan_power': number
+  readonly fan_power_state: number
   readonly vertical: number
   readonly horizontal: number
 }
@@ -99,6 +99,9 @@ interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
   readonly 'alarm_generic.booster_heater2_plus': boolean
   readonly 'alarm_generic.defrost_mode': boolean
   readonly 'alarm_generic.immersion_heater': boolean
+  readonly last_legionella: string
+  readonly measure_power: number
+  readonly 'measure_power.produced': number
   readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
@@ -110,13 +113,13 @@ interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
 }
 
 interface ReportCapabilitiesAta {
-  'meter_power.hourly_consumed': number
-  'meter_power.hourly_consumed_auto': number
-  'meter_power.hourly_consumed_cooling': number
-  'meter_power.hourly_consumed_dry': number
-  'meter_power.hourly_consumed_fan': number
-  'meter_power.hourly_consumed_heating': number
-  'meter_power.hourly_consumed_other': number
+  measure_power: number
+  'measure_power.auto': number
+  'measure_power.cooling': number
+  'measure_power.dry': number
+  'measure_power.fan': number
+  'measure_power.heating': number
+  'measure_power.other': number
   'meter_power.daily_consumed': number
   'meter_power.daily_consumed_auto': number
   'meter_power.daily_consumed_cooling': number
@@ -198,7 +201,8 @@ export type Capability<T extends MELCloudDevice> =
 
 export type ExtendedCapability<T extends MELCloudDevice> =
   | Capability<T>
-  | 'thermostat_mode'
+  | ExtendedSetCapability<T>
+  | 'measure_power.cop'
 
 export type OperationModeZoneCapbility =
   | 'operation_mode_zone.zone1'
@@ -289,12 +293,15 @@ interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
+  readonly CurrentEnergyConsumed: number
+  readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
   readonly FlowTemperature: number
   readonly FlowTemperatureZone1: number
   readonly FlowTemperatureZone2: number
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
+  readonly LastLegionellaActivationTime: string
   readonly MixingTankWaterTemperature: number
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number
@@ -303,6 +310,43 @@ interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
 
 export type ListDeviceData<T extends MELCloudDevice> =
   T extends MELCloudDeviceAtw ? ListDeviceDataAtw : ListDeviceDataAta
+
+export interface ReportPostData<T extends MELCloudDevice> {
+  readonly DeviceID: T['id']
+  readonly FromDate: string
+  readonly ToDate: string
+  readonly UseCurrency: false
+}
+
+interface ReportDataAta {
+  readonly Auto: number[]
+  readonly Cooling: number[]
+  readonly Dry: number[]
+  readonly Fan: number[]
+  readonly Heating: number[]
+  readonly Other: number[]
+  readonly TotalAutoConsumed: number
+  readonly TotalCoolingConsumed: number
+  readonly TotalDryConsumed: number
+  readonly TotalFanConsumed: number
+  readonly TotalHeatingConsumed: number
+  readonly TotalOtherConsumed: number
+  readonly UsageDisclaimerPercentages: string
+}
+
+interface ReportDataAtw {
+  readonly CoP: number[]
+  readonly TotalCoolingConsumed: number
+  readonly TotalHeatingConsumed: number
+  readonly TotalHotWaterConsumed: number
+  readonly TotalCoolingProduced: number
+  readonly TotalHeatingProduced: number
+  readonly TotalHotWaterProduced: number
+}
+
+export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
+  ? ReportDataAtw
+  : ReportDataAta
 
 export interface SetCapabilityMapping<T extends MELCloudDevice> {
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
@@ -316,6 +360,10 @@ export interface GetCapabilityMapping<T extends MELCloudDevice> {
 export interface ListCapabilityMapping<T extends MELCloudDevice> {
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
+
+export type ReportCapabilityMapping<T extends MELCloudDevice> = Array<
+  keyof ReportData<T>
+>
 
 export const setCapabilityMappingAta: Record<
   SetCapability<MELCloudDeviceAta>,
@@ -445,18 +493,25 @@ export const getCapabilityMappingAtw: Record<
   }
 } as const
 
+const listCapabilityMappingMixin: Record<
+  keyof ListCapabilitiesMixin,
+  ListCapabilityMapping<MELCloudDevice>
+> = {
+  'measure_power.wifi': {
+    tag: 'WifiSignalStrength'
+  }
+} as const
+
 export const listCapabilityMappingAta: Record<
   ListCapability<MELCloudDeviceAta>,
   ListCapabilityMapping<MELCloudDeviceAta>
 > = {
+  ...listCapabilityMappingMixin,
   fan_power: {
     tag: 'FanSpeed'
   },
-  'measure_power.fan_power': {
+  fan_power_state: {
     tag: 'ActualFanSpeed'
-  },
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength'
   },
   vertical: {
     tag: 'VaneVerticalDirection'
@@ -470,6 +525,7 @@ export const listCapabilityMappingAtw: Record<
   ListCapability<MELCloudDeviceAtw>,
   ListCapabilityMapping<MELCloudDeviceAtw>
 > = {
+  ...listCapabilityMappingMixin,
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status'
   },
@@ -485,11 +541,17 @@ export const listCapabilityMappingAtw: Record<
   'alarm_generic.immersion_heater': {
     tag: 'ImmersionHeaterStatus'
   },
+  last_legionella: {
+    tag: 'LastLegionellaActivationTime'
+  },
+  measure_power: {
+    tag: 'CurrentEnergyConsumed'
+  },
+  'measure_power.produced': {
+    tag: 'CurrentEnergyProduced'
+  },
   'measure_power.heat_pump_frequency': {
     tag: 'HeatPumpFrequency'
-  },
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength'
   },
   'measure_temperature.flow': {
     tag: 'FlowTemperature'
@@ -513,6 +575,111 @@ export const listCapabilityMappingAtw: Record<
     tag: 'MixingTankWaterTemperature'
   }
 } as const
+
+export const reportCapabilityMappingAta: Record<
+  ReportCapability<MELCloudDeviceAta>,
+  ReportCapabilityMapping<MELCloudDeviceAta>
+> = {
+  measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
+  'measure_power.auto': ['Auto'],
+  'measure_power.cooling': ['Cooling'],
+  'measure_power.dry': ['Dry'],
+  'measure_power.fan': ['Fan'],
+  'measure_power.heating': ['Heating'],
+  'measure_power.other': ['Other'],
+  'meter_power.daily_consumed': [
+    'TotalAutoConsumed',
+    'TotalCoolingConsumed',
+    'TotalDryConsumed',
+    'TotalFanConsumed',
+    'TotalHeatingConsumed',
+    'TotalOtherConsumed'
+  ],
+  'meter_power.daily_consumed_auto': ['TotalAutoConsumed'],
+  'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
+  'meter_power.daily_consumed_dry': ['TotalDryConsumed'],
+  'meter_power.daily_consumed_fan': ['TotalFanConsumed'],
+  'meter_power.daily_consumed_heating': ['TotalHeatingConsumed'],
+  'meter_power.daily_consumed_other': ['TotalOtherConsumed'],
+  'meter_power.total_consumed': [
+    'TotalAutoConsumed',
+    'TotalCoolingConsumed',
+    'TotalDryConsumed',
+    'TotalFanConsumed',
+    'TotalHeatingConsumed',
+    'TotalOtherConsumed'
+  ],
+  'meter_power.total_consumed_auto': ['TotalAutoConsumed'],
+  'meter_power.total_consumed_cooling': ['TotalCoolingConsumed'],
+  'meter_power.total_consumed_dry': ['TotalDryConsumed'],
+  'meter_power.total_consumed_fan': ['TotalFanConsumed'],
+  'meter_power.total_consumed_heating': ['TotalHeatingConsumed'],
+  'meter_power.total_consumed_other': ['TotalOtherConsumed']
+}
+
+export const reportCapabilityMappingAtw: Record<
+  ReportCapability<MELCloudDeviceAtw>,
+  ReportCapabilityMapping<MELCloudDeviceAtw>
+> = {
+  'meter_power.daily_cop': ['CoP'],
+  'meter_power.daily_cop_cooling': [
+    'TotalCoolingProduced',
+    'TotalCoolingConsumed'
+  ],
+  'meter_power.daily_cop_heating': [
+    'TotalHeatingProduced',
+    'TotalHeatingConsumed'
+  ],
+  'meter_power.daily_cop_hotwater': [
+    'TotalHotWaterProduced',
+    'TotalHotWaterConsumed'
+  ],
+  'meter_power.daily_consumed': [
+    'TotalCoolingConsumed',
+    'TotalHeatingConsumed',
+    'TotalHotWaterConsumed'
+  ],
+  'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
+  'meter_power.daily_consumed_heating': ['TotalHeatingConsumed'],
+  'meter_power.daily_consumed_hotwater': ['TotalHotWaterConsumed'],
+  'meter_power.daily_produced': [
+    'TotalCoolingProduced',
+    'TotalHeatingProduced',
+    'TotalHotWaterProduced'
+  ],
+  'meter_power.daily_produced_cooling': ['TotalCoolingProduced'],
+  'meter_power.daily_produced_heating': ['TotalHeatingProduced'],
+  'meter_power.daily_produced_hotwater': ['TotalHotWaterProduced'],
+  'meter_power.total_cop': ['CoP'],
+  'meter_power.total_cop_cooling': [
+    'TotalCoolingProduced',
+    'TotalCoolingConsumed'
+  ],
+  'meter_power.total_cop_heating': [
+    'TotalHeatingProduced',
+    'TotalHeatingConsumed'
+  ],
+  'meter_power.total_cop_hotwater': [
+    'TotalHotWaterProduced',
+    'TotalHotWaterConsumed'
+  ],
+  'meter_power.total_consumed': [
+    'TotalCoolingConsumed',
+    'TotalHeatingConsumed',
+    'TotalHotWaterConsumed'
+  ],
+  'meter_power.total_consumed_cooling': ['TotalCoolingConsumed'],
+  'meter_power.total_consumed_heating': ['TotalHeatingConsumed'],
+  'meter_power.total_consumed_hotwater': ['TotalHotWaterConsumed'],
+  'meter_power.total_produced': [
+    'TotalCoolingProduced',
+    'TotalHeatingProduced',
+    'TotalHotWaterProduced'
+  ],
+  'meter_power.total_produced_cooling': ['TotalCoolingProduced'],
+  'meter_power.total_produced_heating': ['TotalHeatingProduced'],
+  'meter_power.total_produced_hotwater': ['TotalHotWaterProduced']
+}
 
 export interface DeviceDetails {
   readonly name: string
@@ -634,42 +801,6 @@ export interface Building<T extends MELCloudDevice>
   readonly Name: string
   readonly Structure: Structure<T>
 }
-
-export interface ReportPostData<T extends MELCloudDevice> {
-  readonly DeviceID: T['id']
-  readonly FromDate: string
-  readonly ToDate: string
-  readonly UseCurrency: false
-}
-
-interface ReportDataAta {
-  readonly Heating: number[]
-  readonly Cooling: number[]
-  readonly Auto: number[]
-  readonly Dry: number[]
-  readonly Fan: number[]
-  readonly Other: number[]
-  readonly TotalHeatingConsumed: number
-  readonly TotalCoolingConsumed: number
-  readonly TotalAutoConsumed: number
-  readonly TotalDryConsumed: number
-  readonly TotalFanConsumed: number
-  readonly TotalOtherConsumed: number
-  readonly UsageDisclaimerPercentages: string
-}
-
-interface ReportDataAtw {
-  readonly TotalHeatingConsumed: number
-  readonly TotalCoolingConsumed: number
-  readonly TotalHotWaterConsumed: number
-  readonly TotalHeatingProduced: number
-  readonly TotalCoolingProduced: number
-  readonly TotalHotWaterProduced: number
-}
-
-export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? ReportDataAtw
-  : ReportDataAta
 
 export interface ErrorLogQuery {
   readonly from?: string

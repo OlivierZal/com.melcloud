@@ -15,6 +15,7 @@ import {
   type HolidayModePostData,
   type HolidayModeSettings,
   type ListDevice,
+  type ListDeviceData,
   type LoginCredentials,
   type LoginData,
   type LoginPostData,
@@ -124,14 +125,20 @@ export default class MELCloudApp extends App {
   }
 
   getFirstDeviceId(
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
+    {
+      buildingId,
+      driverId
+    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
     safe: boolean = true
   ): MELCloudDevice['id'] {
     return this.getDeviceIds({ buildingId, driverId }, safe)[0]
   }
 
   getDeviceIds(
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
+    {
+      buildingId,
+      driverId
+    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
     safe: boolean = true
   ): Array<MELCloudDevice['id']> {
     return this.getDevices({ buildingId, driverId }, safe).map(
@@ -141,7 +148,10 @@ export default class MELCloudApp extends App {
 
   getDevice(
     id: number,
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {}
+    {
+      buildingId,
+      driverId
+    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {}
   ): MELCloudDevice | undefined {
     return this.getDevices({ buildingId, driverId }).find(
       (device: MELCloudDevice): boolean => device.id === id
@@ -149,7 +159,10 @@ export default class MELCloudApp extends App {
   }
 
   getDevices(
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
+    {
+      buildingId,
+      driverId
+    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
     safe: boolean = true
   ): MELCloudDevice[] {
     const drivers: Driver[] =
@@ -183,8 +196,8 @@ export default class MELCloudApp extends App {
     )
   }
 
-  applySyncFromDevices(
-    deviceType?: number,
+  applySyncFromDevices<T extends MELCloudDevice>(
+    deviceType?: ListDeviceData<T>['DeviceType'],
     syncMode: SyncFromMode = 'refresh'
   ): void {
     this.clearListDevicesRefresh()
@@ -203,39 +216,47 @@ export default class MELCloudApp extends App {
     syncMode: SyncFromMode = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings()
-    const newBuildings: Record<
-      Building<MELCloudDevice>['ID'],
-      Building<MELCloudDevice>['Name']
-    > = {}
-    let devices: Array<ListDevice<T>> = []
-    for (const building of buildings) {
-      newBuildings[building.ID] = building.Name
-      devices.push(...building.Structure.Devices)
-      for (const floor of building.Structure.Floors) {
-        devices.push(...floor.Devices)
-        for (const area of floor.Areas) {
-          devices.push(...area.Devices)
+    const { devices, newBuildings, deviceIds } = buildings.reduce<{
+      devices: Array<ListDevice<T>>
+      newBuildings: Record<number, string>
+      deviceIds: Record<number, string>
+    }>(
+      (acc, building: Building<T>) => {
+        acc.newBuildings[building.ID] = building.Name
+        const buildingDevices: Array<ListDevice<T>> = [
+          ...building.Structure.Devices,
+          ...building.Structure.Floors.flatMap(
+            (floor): Array<ListDevice<T>> => [
+              ...floor.Devices,
+              ...floor.Areas.flatMap(
+                (area): Array<ListDevice<T>> => area.Devices
+              )
+            ]
+          ),
+          ...building.Structure.Areas.flatMap(
+            (area): Array<ListDevice<T>> => area.Devices
+          )
+        ]
+        acc.devices.push(...buildingDevices)
+        for (const device of buildingDevices) {
+          acc.deviceIds[device.DeviceID] = device.DeviceName
         }
-      }
-      for (const area of building.Structure.Areas) {
-        devices.push(...area.Devices)
-      }
-    }
-    if (deviceType !== undefined) {
-      devices = devices.filter(
-        (device: ListDevice<T>): boolean =>
-          deviceType === device.Device.DeviceType
-      )
-    }
+        return acc
+      },
+      { devices: [], newBuildings: {}, deviceIds: {} }
+    )
+
+    const filteredDevices: Array<ListDevice<T>> =
+      deviceType !== undefined
+        ? devices.filter((device) => deviceType === device.Device.DeviceType)
+        : devices
+
     this.buildings = newBuildings
-    this.deviceIds = {}
-    for (const device of devices) {
-      this.deviceIds[device.DeviceID] = device.DeviceName
-    }
-    this.deviceList = devices
+    this.deviceIds = deviceIds
+    this.deviceList = filteredDevices
     await this.syncDevicesFromList(syncMode).catch(this.error)
     await this.planSyncFromDevices()
-    return devices
+    return filteredDevices
   }
 
   clearListDevicesRefresh(): void {
@@ -402,7 +423,7 @@ export default class MELCloudApp extends App {
   }
 
   async getFrostProtectionSettings(
-    buildingId: number
+    buildingId: Building<MELCloudDevice>['ID']
   ): Promise<FrostProtectionData> {
     if (!(buildingId in this.buildings)) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
@@ -431,7 +452,7 @@ export default class MELCloudApp extends App {
   }
 
   async updateFrostProtectionSettings(
-    buildingId: number,
+    buildingId: Building<MELCloudDevice>['ID'],
     settings: FrostProtectionSettings
   ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
@@ -462,7 +483,9 @@ export default class MELCloudApp extends App {
     return this.handleFailure(data)
   }
 
-  async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
+  async getHolidayModeSettings(
+    buildingId: Building<MELCloudDevice>['ID']
+  ): Promise<HolidayModeData> {
     if (!(buildingId in this.buildings)) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
     }
@@ -486,7 +509,7 @@ export default class MELCloudApp extends App {
   }
 
   async updateHolidayModeSettings(
-    buildingId: number,
+    buildingId: Building<MELCloudDevice>['ID'],
     settings: HolidayModeSettings
   ): Promise<boolean> {
     if (!(buildingId in this.buildings)) {
