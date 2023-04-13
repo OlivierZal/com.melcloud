@@ -65,18 +65,20 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
         capability.startsWith('operation_mode_state')
     )
-    for (const capability of operationModeStateCapabilities) {
-      this.homey.flow
-        .getConditionCard(`${capability}_condition`)
-        .registerRunListener(
-          (args: {
-            device: MELCloudDeviceAtw
-            operation_mode_state: string
-          }): boolean =>
-            args.operation_mode_state ===
-            args.device.getCapabilityValue('operation_mode_state')
-        )
-    }
+    operationModeStateCapabilities.forEach(
+      (capability: SetCapability<MELCloudDeviceAtw>): void => {
+        this.homey.flow
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener(
+            (args: {
+              device: MELCloudDeviceAtw
+              operation_mode_state: string
+            }): boolean =>
+              args.operation_mode_state ===
+              args.device.getCapabilityValue('operation_mode_state')
+          )
+      }
+    )
 
     const booleanCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
       this.manifest.capabilities.filter(
@@ -84,25 +86,30 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
           capability.startsWith('alarm_generic') ||
           capability.startsWith('onoff.')
       )
-    for (const capability of booleanCapabilities) {
-      this.homey.flow
-        .getConditionCard(`${capability}_condition`)
-        .registerRunListener((args: { device: MELCloudDeviceAtw }): boolean =>
-          args.device.getCapabilityValue(capability)
-        )
-      if (capability.startsWith('onoff')) {
+    booleanCapabilities.forEach(
+      (capability: SetCapability<MELCloudDeviceAtw>): void => {
         this.homey.flow
-          .getActionCard(`${capability}_action`)
-          .registerRunListener(
-            async (args: {
-              device: MELCloudDeviceAtw
-              onoff: 'true' | 'false'
-            }): Promise<void> => {
-              await args.device.onCapability(capability, args.onoff === 'true')
-            }
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener((args: { device: MELCloudDeviceAtw }): boolean =>
+            args.device.getCapabilityValue(capability)
           )
+        if (capability.startsWith('onoff')) {
+          this.homey.flow
+            .getActionCard(`${capability}_action`)
+            .registerRunListener(
+              async (args: {
+                device: MELCloudDeviceAtw
+                onoff: 'true' | 'false'
+              }): Promise<void> => {
+                await args.device.onCapability(
+                  capability,
+                  args.onoff === 'true'
+                )
+              }
+            )
+        }
       }
-    }
+    )
 
     const operationModeZoneCapabilities: Array<
       SetCapability<MELCloudDeviceAtw>
@@ -110,52 +117,62 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
         capability.startsWith('operation_mode_zone')
     )
-    for (const capability of operationModeZoneCapabilities) {
-      let flowPrefix: string = `operation_mode_zone${
-        capability[capability.length - 1]
-      }`
-      if (capability.includes('with_cool')) {
-        flowPrefix += '_with_cool'
+    operationModeZoneCapabilities.forEach(
+      (capability: SetCapability<MELCloudDeviceAtw>): void => {
+        let flowPrefix: string = `operation_mode_zone${
+          capability[capability.length - 1]
+        }`
+        if (capability.includes('with_cool')) {
+          flowPrefix += '_with_cool'
+        }
+        this.homey.flow
+          .getConditionCard(`${flowPrefix}_condition`)
+          .registerRunListener(
+            (args: {
+              device: MELCloudDeviceAtw
+              operation_mode_zone: string
+            }): boolean =>
+              args.operation_mode_zone ===
+              args.device.getCapabilityValue(capability)
+          )
+        this.homey.flow
+          .getActionCard(`${flowPrefix}_action`)
+          .registerRunListener(
+            async (args: {
+              device: MELCloudDeviceAtw
+              operation_mode_zone: string
+            }): Promise<void> => {
+              await args.device.onCapability(
+                capability,
+                args.operation_mode_zone
+              )
+            }
+          )
       }
-      this.homey.flow
-        .getConditionCard(`${flowPrefix}_condition`)
-        .registerRunListener(
-          (args: {
-            device: MELCloudDeviceAtw
-            operation_mode_zone: string
-          }): boolean =>
-            args.operation_mode_zone ===
-            args.device.getCapabilityValue(capability)
-        )
-      this.homey.flow
-        .getActionCard(`${flowPrefix}_action`)
-        .registerRunListener(
-          async (args: {
-            device: MELCloudDeviceAtw
-            operation_mode_zone: string
-          }): Promise<void> => {
-            await args.device.onCapability(capability, args.operation_mode_zone)
-          }
-        )
-    }
+    )
 
     const flowTemperatureCapabilities: Array<SetCapability<MELCloudDeviceAtw>> =
       this.manifest.capabilities.filter(
         (capability: SetCapability<MELCloudDeviceAtw>): boolean =>
           capability.startsWith('target_temperature.')
       )
-    for (const capability of flowTemperatureCapabilities) {
-      this.homey.flow
-        .getActionCard(`${capability.replace(/\./g, '_')}_action`)
-        .registerRunListener(
-          async (args: {
-            device: MELCloudDeviceAtw
-            target_temperature: number
-          }): Promise<void> => {
-            await args.device.onCapability(capability, args.target_temperature)
-          }
-        )
-    }
+    flowTemperatureCapabilities.forEach(
+      (capability: SetCapability<MELCloudDeviceAtw>): void => {
+        this.homey.flow
+          .getActionCard(`${capability.replace(/\./g, '_')}_action`)
+          .registerRunListener(
+            async (args: {
+              device: MELCloudDeviceAtw
+              target_temperature: number
+            }): Promise<void> => {
+              await args.device.onCapability(
+                capability,
+                args.target_temperature
+              )
+            }
+          )
+      }
+    )
 
     // Deprecated
     this.homey.flow

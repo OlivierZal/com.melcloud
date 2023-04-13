@@ -169,12 +169,12 @@ export default class MELCloudApp extends App {
       driverId !== undefined
         ? [this.homey.drivers.getDriver(driverId)]
         : Object.values(this.homey.drivers.getDrivers())
-    let devices: MELCloudDevice[] = []
-    for (const driver of drivers) {
-      for (const device of driver.getDevices()) {
-        devices.push(device as MELCloudDevice)
-      }
-    }
+    let devices: MELCloudDevice[] = drivers.flatMap(
+      (driver: Driver): MELCloudDevice[] =>
+        (driver.getDevices() as MELCloudDevice[]).map(
+          (device: MELCloudDevice): MELCloudDevice => device
+        )
+    )
     if (buildingId !== undefined) {
       devices = devices.filter(
         (device: MELCloudDevice): boolean => device.buildingid === buildingId
@@ -225,22 +225,16 @@ export default class MELCloudApp extends App {
         acc.newBuildings[building.ID] = building.Name
         const buildingDevices: Array<ListDevice<T>> = [
           ...building.Structure.Devices,
-          ...building.Structure.Floors.flatMap(
-            (floor): Array<ListDevice<T>> => [
-              ...floor.Devices,
-              ...floor.Areas.flatMap(
-                (area): Array<ListDevice<T>> => area.Devices
-              )
-            ]
-          ),
-          ...building.Structure.Areas.flatMap(
-            (area): Array<ListDevice<T>> => area.Devices
-          )
+          ...building.Structure.Floors.flatMap((floor) => [
+            ...floor.Devices,
+            ...floor.Areas.flatMap((area) => area.Devices)
+          ]),
+          ...building.Structure.Areas.flatMap((area) => area.Devices)
         ]
         acc.devices.push(...buildingDevices)
-        for (const device of buildingDevices) {
+        buildingDevices.forEach((device: ListDevice<T>): void => {
           acc.deviceIds[device.DeviceID] = device.DeviceName
-        }
+        })
         return acc
       },
       { devices: [], newBuildings: {}, deviceIds: {} }
@@ -284,11 +278,13 @@ export default class MELCloudApp extends App {
   }
 
   async syncDevicesFromList(syncMode: SyncFromMode): Promise<void> {
-    for (const device of this.getDevices()) {
-      if (!device.isDiff()) {
-        await device.syncDeviceFromList(syncMode)
-      }
-    }
+    await Promise.all(
+      this.getDevices()
+        .filter((device) => !device.isDiff())
+        .map(async (device: MELCloudDevice): Promise<void> => {
+          await device.syncDeviceFromList(syncMode)
+        })
+    )
   }
 
   async planSyncFromDevices(): Promise<void> {
@@ -362,16 +358,16 @@ export default class MELCloudApp extends App {
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false
       }
-      device.log('Reporting energy cost...\n', postData)
+      device.log('Reporting energy...\n', postData)
       const { data } = await axios.post<ReportData<T>>(
         '/EnergyCost/Report',
         postData
       )
-      device.log('Reporting energy cost:\n', data)
+      device.log('Reporting energy:\n', data)
       return data
     } catch (error: unknown) {
       device.error(
-        'Reporting energy cost:',
+        'Reporting energy:',
         error instanceof Error ? error.message : error
       )
     }
@@ -387,13 +383,17 @@ export default class MELCloudApp extends App {
       return true
     }
     try {
-      for (const device of this.getDevices({ driverId })) {
-        await device.setSettings(settings)
-        await device.onSettings({
-          newSettings: device.getSettings(),
-          changedKeys
-        })
-      }
+      await Promise.all(
+        this.getDevices({ driverId }).map(
+          async (device: MELCloudDevice): Promise<void> => {
+            await device.setSettings(settings)
+            await device.onSettings({
+              newSettings: device.getSettings(),
+              changedKeys
+            })
+          }
+        )
+      )
       return true
     } catch (error: unknown) {
       this.error(error instanceof Error ? error.message : error)
@@ -576,23 +576,23 @@ export default class MELCloudApp extends App {
     if (data.Success || data.AttributeErrors === null) {
       return data.Success
     }
-    let errorMessage: string = ''
-    for (const [error, messages] of Object.entries(data.AttributeErrors)) {
-      errorMessage += `${error}: `
-      for (const message of messages) {
-        errorMessage += `${message} `
-      }
-      errorMessage = `${errorMessage.slice(0, -1)}\n`
-    }
+    const errorMessage: string = Object.entries(data.AttributeErrors)
+      .map(
+        ([error, messages]: [string, string[]]): string =>
+          `${error}: ${messages.join(' ')}`
+      )
+      .join('\n')
     throw new Error(errorMessage.slice(0, -1))
   }
 
   setSettings(settings: Settings): void {
-    for (const [setting, value] of Object.entries(settings)) {
-      if (value !== this.homey.settings.get(setting)) {
-        this.homey.settings.set(setting, value)
+    Object.entries(settings).forEach(
+      ([setting, value]: [string, any]): void => {
+        if (value !== this.homey.settings.get(setting)) {
+          this.homey.settings.set(setting, value)
+        }
       }
-    }
+    )
   }
 
   setInterval(

@@ -9,7 +9,7 @@ import {
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
-  type OperationModeZoneCapbility,
+  type OperationModeZoneCapability,
   type SetCapabilities,
   type SetCapability
 } from '../../types'
@@ -72,16 +72,16 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async handleOperationModeZones(
-    capability: OperationModeZoneCapbility,
+    capability: OperationModeZoneCapability,
     value: CapabilityValue
   ): Promise<void> {
     this.diff[capability] = value as string
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
       const zoneValue: number = Number(value)
-      const otherZone: OperationModeZoneCapbility = this.getOtherCapabilityZone(
+      const otherZone: OperationModeZoneCapability = this.getOtherCapabilityZone(
         capability
-      ) as OperationModeZoneCapbility
+      ) as OperationModeZoneCapability
       let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
         if (zoneValue > 2) {
