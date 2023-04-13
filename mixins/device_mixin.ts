@@ -89,7 +89,7 @@ export default class MELCloudDeviceMixin extends Device {
   reportTimeout!: { true?: NodeJS.Timeout; false?: NodeJS.Timeout }
   reportInterval!: { true: NodeJS.Timeout | null; false: NodeJS.Timeout | null }
   reportPlanParameters!: {
-    toDate: DateTime
+    minus: object
     interval: object
     duration: object
     values: object
@@ -448,7 +448,13 @@ export default class MELCloudDeviceMixin extends Device {
     if (Object.keys(reportCapabilities).length === 0) {
       return
     }
-    const data: ReportData<T> | null = await this.fetchReportData(total)
+    const toDate = DateTime.now().minus(this.reportPlanParameters.minus)
+    const fromDate: DateTime = total ? DateTime.local(1970) : toDate
+    const data: ReportData<T> | null = await this.app.reportEnergyCost(
+      this as unknown as T,
+      fromDate,
+      toDate
+    )
     if (data !== null) {
       const deviceCount: number =
         'UsageDisclaimerPercentages' in data
@@ -457,32 +463,22 @@ export default class MELCloudDeviceMixin extends Device {
       for (const [capability, tags] of Object.entries(reportCapabilities)) {
         await this.updateReportCapabilities(
           data,
-          deviceCount,
           capability as ReportCapability<T>,
-          tags
+          tags,
+          deviceCount,
+          toDate
         )
       }
     }
     this.planEnergyReport(total)
   }
 
-  async fetchReportData<T extends MELCloudDevice>(
-    total: boolean = false
-  ): Promise<ReportData<T> | null> {
-    const { toDate } = this.reportPlanParameters
-    const fromDate: DateTime = total ? DateTime.local(1970) : toDate
-    return await this.app.reportEnergyCost(
-      this as unknown as T,
-      fromDate,
-      toDate
-    )
-  }
-
   async updateReportCapabilities<T extends MELCloudDevice>(
     data: ReportData<T>,
-    deviceCount: number,
     capability: ReportCapability<T>,
-    tags: ReportCapabilityMapping<T>
+    tags: ReportCapabilityMapping<T>,
+    deviceCount: number,
+    toDate: DateTime
   ): Promise<void> {
     const reportValue: () => CapabilityValue = (): CapabilityValue => {
       if (capability.includes('cop')) {
@@ -496,8 +492,7 @@ export default class MELCloudDeviceMixin extends Device {
           (sum, tag: keyof ReportData<T>) =>
             sum +
             (capability.includes('measure_power')
-              ? (data[tag] as number[])[this.reportPlanParameters.toDate.hour] *
-                1000
+              ? (data[tag] as number[])[toDate.hour] * 1000
               : (data[tag] as number)),
           0
         ) / deviceCount

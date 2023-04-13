@@ -39,7 +39,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     this.listCapabilityMapping = listCapabilityMappingAtw
     this.reportCapabilityMapping = reportCapabilityMappingAtw
     this.reportPlanParameters = {
-      toDate: DateTime.now().minus({ days: 1 }),
+      minus: { days: 1 },
       interval: { days: 1 },
       duration: { days: 1 },
       values: { hour: 0, minute: 10, second: 0, millisecond: 0 }

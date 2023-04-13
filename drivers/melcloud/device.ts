@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import type MELCloudDriverAta from './driver'
 import {
@@ -92,7 +91,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.listCapabilityMapping = listCapabilityMappingAta
     this.reportCapabilityMapping = reportCapabilityMappingAta
     this.reportPlanParameters = {
-      toDate: DateTime.now().minus({ hours: 1 }),
+      minus: { hours: 1 },
       interval: { hours: 1 },
       duration: { hours: 1 },
       values: { minute: 10, second: 0, millisecond: 0 }
