@@ -103,5 +103,8 @@
   },
   "15.0.2": {
     "en": "Added new data... and live consumption! (refreshed every 3 minutes for air-to-water devices, and on a hourly basis for air-to-air devices)."
+  },
+  "15.1.0": {
+    "en": "Optimized loops (task parallelization)."
   }
 }
