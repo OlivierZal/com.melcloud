@@ -19,7 +19,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
   async function getLocale(): Promise<string> {
-    return await new Promise((resolve, reject) => {
+    return await new Promise<string>((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
         'GET',
@@ -462,7 +462,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   async function hasDevices(driverId?: string): Promise<boolean> {
-    return await new Promise((resolve, reject) => {
+    return await new Promise<boolean>((resolve, reject) => {
       let endPoint: string = '/devices'
       if (driverId !== undefined) {
         const queryString: string = new URLSearchParams({
