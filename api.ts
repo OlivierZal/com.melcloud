@@ -76,6 +76,12 @@ module.exports = {
         (building: Building<MELCloudDevice>): boolean =>
           app.getDevices({ buildingId: building.ID }).length > 0
       )
+      .sort(
+        (
+          building1: Building<MELCloudDevice>,
+          building2: Building<MELCloudDevice>
+        ): number => building1.Name.localeCompare(building2.Name)
+      )
       .map(
         (building: Building<MELCloudDevice>): Building<MELCloudDevice> => ({
           ...building,
