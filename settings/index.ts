@@ -1,6 +1,7 @@
 import type Homey from 'homey/lib/Homey'
 import {
   type Building,
+  type ErrorDetails,
   type ErrorLog,
   type ErrorLogQuery,
   type FrostProtectionData,
@@ -194,26 +195,26 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   function generateTableHead(table: HTMLTableElement, keys: string[]): void {
     const thead: HTMLTableSectionElement = table.createTHead()
     const row: HTMLTableRowElement = thead.insertRow()
-    for (const key of keys) {
+    keys.forEach((key: string): void => {
       const th: HTMLTableCellElement = document.createElement('th')
       th.innerText = Homey.__(`settings.error_log.columns.${key}`)
       row.appendChild(th)
-    }
+    })
     hasLoadedErrorLogTableHead = true
   }
 
   function generateTable(
     table: HTMLTableElement,
-    errors: ErrorLog['Errors']
+    errors: ErrorDetails[]
   ): void {
     const tbody: HTMLTableSectionElement = table.createTBody()
-    for (const error of errors) {
+    errors.forEach((error: ErrorDetails): void => {
       const row: HTMLTableRowElement = tbody.insertRow()
-      for (const value of Object.values(error)) {
+      Object.values(error).forEach((value: string): void => {
         const cell: HTMLTableCellElement = row.insertCell()
         cell.innerText = value
-      }
-    }
+      })
+    })
   }
 
   function getErrorCountText(errorCount: number): string {
@@ -416,18 +417,18 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          for (const building of buildings) {
+          if (buildings.length === 0) {
+            resolve(false)
+            return
+          }
+          buildings.forEach((building: Building<MELCloudDevice>): void => {
             const { ID, Name } = building
             const option: HTMLOptionElement = document.createElement('option')
             option.setAttribute('value', String(ID))
             const optionText: Text = document.createTextNode(Name)
             option.appendChild(optionText)
             buildingElement.appendChild(option)
-          }
-          if (buildings.length === 0) {
-            resolve(false)
-            return
-          }
+          })
           const {
             HMEnabled,
             HMStartDate,
@@ -507,25 +508,27 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
       'settings-ata'
     ) as HTMLFieldSetElement
-    for (const setting of settingsAta.filter(
-      (setting: SettingsData): boolean => !settingsMixin.includes(setting.id)
-    )) {
-      const label = document.createElement('label')
-      const input = document.createElement('input')
-      const checkmarkSpan = document.createElement('span')
-      const textSpan = document.createElement('span')
-      label.className = 'homey-form-checkbox'
-      input.className = 'homey-form-checkbox-input'
-      input.type = 'checkbox'
-      input.id = setting.id
-      checkmarkSpan.className = 'homey-form-checkbox-checkmark'
-      textSpan.className = 'homey-form-checkbox-text'
-      textSpan.innerText = setting.title[locale]
-      label.appendChild(input)
-      label.appendChild(checkmarkSpan)
-      label.appendChild(textSpan)
-      settingsAtaElement.appendChild(label)
-    }
+    settingsAta
+      .filter(
+        (setting: SettingsData): boolean => !settingsMixin.includes(setting.id)
+      )
+      .forEach((setting: SettingsData): void => {
+        const label = document.createElement('label')
+        const input = document.createElement('input')
+        const checkmarkSpan = document.createElement('span')
+        const textSpan = document.createElement('span')
+        label.className = 'homey-form-checkbox'
+        input.className = 'homey-form-checkbox-input'
+        input.type = 'checkbox'
+        input.id = setting.id
+        checkmarkSpan.className = 'homey-form-checkbox-checkmark'
+        textSpan.className = 'homey-form-checkbox-text'
+        textSpan.innerText = setting.title[locale]
+        label.appendChild(input)
+        label.appendChild(checkmarkSpan)
+        label.appendChild(textSpan)
+        settingsAtaElement.appendChild(label)
+      })
     addSettingsEventListener(
       applySettingsAtaElement,
       Array.from(settingsAtaElement.querySelectorAll('input')),

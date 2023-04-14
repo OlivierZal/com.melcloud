@@ -25,23 +25,25 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.deviceType = 0
     this.heatPumpType = 'Ata'
 
-    for (const capability of flowCapabilities) {
-      this.homey.flow
-        .getConditionCard(`${capability}_condition`)
-        .registerRunListener(
-          (args: FlowArgsAta): boolean =>
-            getCapabilityArg(args, capability) ===
-            args.device.getCapabilityValue(capability)
-        )
-      this.homey.flow
-        .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
-          await args.device.onCapability(
-            capability,
-            getCapabilityArg(args, capability)
+    flowCapabilities.forEach(
+      (capability: SetCapability<MELCloudDeviceAta>): void => {
+        this.homey.flow
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener(
+            (args: FlowArgsAta): boolean =>
+              getCapabilityArg(args, capability) ===
+              args.device.getCapabilityValue(capability)
           )
-        })
-    }
+        this.homey.flow
+          .getActionCard(`${capability}_action`)
+          .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+            await args.device.onCapability(
+              capability,
+              getCapabilityArg(args, capability)
+            )
+          })
+      }
+    )
   }
 }
 

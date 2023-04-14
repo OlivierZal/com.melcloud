@@ -152,28 +152,34 @@ export default class MELCloudDeviceMixin extends Device {
       ...this.requiredCapabilities,
       ...dashboardCapabilities
     ]
-    for (const capability of requiredCapabilities) {
-      await this.addCapability(capability)
-    }
-    for (const capability of this.getCapabilities()) {
-      if (!requiredCapabilities.includes(capability)) {
-        await this.removeCapability(capability)
-      }
-    }
+    await Promise.all(
+      requiredCapabilities.map(async (capability: string): Promise<void> => {
+        await this.addCapability(capability)
+      })
+    )
+    await Promise.all(
+      this.getCapabilities().map(async (capability: string): Promise<void> => {
+        if (!requiredCapabilities.includes(capability)) {
+          await this.removeCapability(capability)
+        }
+      })
+    )
   }
 
   registerCapabilityListeners<T extends MELCloudDevice>(): void {
-    for (const capability of [
-      ...Object.keys(this.setCapabilityMapping),
-      'thermostat_mode'
-    ]) {
-      this.registerCapabilityListener(
-        capability,
-        async (value: CapabilityValue): Promise<void> => {
-          await this.onCapability(capability as ExtendedSetCapability<T>, value)
-        }
-      )
-    }
+    ;[...Object.keys(this.setCapabilityMapping), 'thermostat_mode'].forEach(
+      (capability: string): void => {
+        this.registerCapabilityListener(
+          capability,
+          async (value: CapabilityValue): Promise<void> => {
+            await this.onCapability(
+              capability as ExtendedSetCapability<T>,
+              value
+            )
+          }
+        )
+      }
+    )
   }
 
   async onCapability<T extends MELCloudDevice>(
@@ -312,9 +318,7 @@ export default class MELCloudDeviceMixin extends Device {
       ...this.getCapabilityMapping
     }
 
-    const capabilitiesToProcess: () =>
-      | typeof this.getCapabilityMapping
-      | typeof this.listCapabilityMapping = ():
+    const capabilitiesToProcess = ():
       | typeof this.getCapabilityMapping
       | typeof this.listCapabilityMapping => {
       switch (syncMode) {
@@ -330,7 +334,55 @@ export default class MELCloudDeviceMixin extends Device {
           }
       }
     }
+    const capabilities: Array<
+      [
+        NonReportCapability<T>,
+        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+      ]
+    > = Object.entries(capabilitiesToProcess()) as Array<
+      [
+        NonReportCapability<T>,
+        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+      ]
+    >
+    const keysToProcessLast: string[] = [
+      'operation_mode_state.zone1',
+      'operation_mode_state.zone2'
+    ]
+    const filteredCapabilities = (
+      last: boolean = false
+    ): Array<
+      [
+        NonReportCapability<T>,
+        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+      ]
+    > =>
+      capabilities.filter(
+        ([capability, _]: [
+          NonReportCapability<T>,
+          { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+        ]): boolean => keysToProcessLast.includes(capability) === last
+      )
 
+    const processCapabilities = async (
+      capabilitiesArray: Array<
+        [
+          NonReportCapability<T>,
+          { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+        ]
+      >
+    ): Promise<void> => {
+      await Promise.all(
+        capabilitiesArray.map(
+          async ([capability, { effectiveFlag, tag }]: [
+            NonReportCapability<T>,
+            { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+          ]): Promise<void> => {
+            await processCapability(capability, tag, effectiveFlag)
+          }
+        )
+      )
+    }
     const shouldProcess = (
       capability: NonReportCapability<T>,
       effectiveFlag?: bigint
@@ -348,17 +400,18 @@ export default class MELCloudDeviceMixin extends Device {
           return true
       }
     }
-
-    for (const [capability, { effectiveFlag, tag }] of Object.entries(
-      capabilitiesToProcess()
-    )) {
-      if (shouldProcess(capability as NonReportCapability<T>, effectiveFlag)) {
-        await this.convertFromDevice(
-          capability as NonReportCapability<T>,
-          data[tag as ListCapabilityMapping<T>['tag']] as boolean | number
-        )
+    const processCapability = async (
+      capability: NonReportCapability<T>,
+      tag: ListCapabilityMapping<T>['tag'],
+      effectiveFlag?: bigint
+    ): Promise<void> => {
+      if (shouldProcess(capability, effectiveFlag)) {
+        await this.convertFromDevice(capability, data[tag] as boolean | number)
       }
     }
+
+    await processCapabilities(filteredCapabilities())
+    await processCapabilities(filteredCapabilities(true))
   }
 
   async convertFromDevice(
@@ -422,16 +475,11 @@ export default class MELCloudDeviceMixin extends Device {
     }
     const { canCool, hasZone2 } = this.getStore()
     const { CanCool, HasZone2 } = data
-    let hasStoreChanged: boolean = false
-    if (canCool !== CanCool) {
-      await this.setStoreValue('canCool', CanCool)
-      hasStoreChanged = true
-    }
-    if (hasZone2 !== HasZone2) {
-      await this.setStoreValue('hasZone2', HasZone2)
-      hasStoreChanged = true
-    }
-    if (hasStoreChanged) {
+    if (canCool !== CanCool || hasZone2 !== HasZone2) {
+      await Promise.all([
+        this.setStoreValue('canCool', CanCool),
+        this.setStoreValue('hasZone2', HasZone2)
+      ])
       await this.handleCapabilities()
     }
   }
@@ -460,27 +508,34 @@ export default class MELCloudDeviceMixin extends Device {
         'UsageDisclaimerPercentages' in data
           ? data.UsageDisclaimerPercentages.split(', ').length
           : 1
-      for (const [capability, tags] of Object.entries(reportCapabilities)) {
-        await this.updateReportCapabilities(
-          data,
-          capability as ReportCapability<T>,
-          tags,
-          deviceCount,
-          toDate
+      await Promise.all(
+        Object.entries(reportCapabilities).map(
+          async ([capability, tags]: [
+            string,
+            ReportCapabilityMapping<T>
+          ]): Promise<void> => {
+            await this.updateReportCapability(
+              data,
+              capability as ReportCapability<T>,
+              tags,
+              deviceCount,
+              toDate
+            )
+          }
         )
-      }
+      )
     }
     this.planEnergyReport(total)
   }
 
-  async updateReportCapabilities<T extends MELCloudDevice>(
+  async updateReportCapability<T extends MELCloudDevice>(
     data: ReportData<T>,
     capability: ReportCapability<T>,
     tags: ReportCapabilityMapping<T>,
     deviceCount: number,
     toDate: DateTime
   ): Promise<void> {
-    const reportValue: () => CapabilityValue = (): CapabilityValue => {
+    const reportValue = (): number => {
       if (capability.includes('cop')) {
         return (
           (data[tags[0]] as number) /
@@ -506,7 +561,7 @@ export default class MELCloudDeviceMixin extends Device {
     if (this.reportInterval[totalString] !== null) {
       return
     }
-    const type: string = `${total ? 'total ' : ''}energy cost report`
+    const type: string = `${total ? 'total ' : ''}energy report`
     const { interval, duration, values } = total
       ? {
           interval: { days: 1 },
@@ -560,50 +615,54 @@ export default class MELCloudDeviceMixin extends Device {
     ) {
       this.app.applySyncFromDevices()
     }
-    for (const total of [false, true]) {
-      const reportCapabilities: Partial<
-        | Record<
-            ReportCapability<MELCloudDeviceAta>,
-            ReportCapabilityMapping<MELCloudDeviceAta>
-          >
-        | Record<
-            ReportCapability<MELCloudDeviceAtw>,
-            ReportCapabilityMapping<MELCloudDeviceAtw>
-          >
-      > = this.getReportCapabilities(total)
-      const changedEnergyKeys: string[] = changedKeys.filter(
-        (setting: string): boolean => setting in reportCapabilities
-      )
-      if (
-        changedEnergyKeys.length === 0 ||
-        Object.keys(reportCapabilities).length === 0
-      ) {
-        if (Object.keys(reportCapabilities).length === 0) {
-          this.clearEnergyReportPlan(total)
-        }
-        continue
-      }
-      if (
-        changedEnergyKeys.some(
-          (setting: string): boolean => newSettings[setting] === true
+    await Promise.all(
+      [false, true].map(async (total: boolean): Promise<void> => {
+        const reportCapabilities: Partial<
+          | Record<
+              ReportCapability<MELCloudDeviceAta>,
+              ReportCapabilityMapping<MELCloudDeviceAta>
+            >
+          | Record<
+              ReportCapability<MELCloudDeviceAtw>,
+              ReportCapabilityMapping<MELCloudDeviceAtw>
+            >
+        > = this.getReportCapabilities(total)
+        const changedEnergyKeys: string[] = changedKeys.filter(
+          (setting: string): boolean => setting in reportCapabilities
         )
-      ) {
-        await this.runEnergyReport(total)
-      }
-    }
+        if (
+          changedEnergyKeys.length === 0 ||
+          Object.keys(reportCapabilities).length === 0
+        ) {
+          if (Object.keys(reportCapabilities).length === 0) {
+            this.clearEnergyReportPlan(total)
+          }
+          return
+        }
+        if (
+          changedEnergyKeys.some(
+            (setting: string): boolean => newSettings[setting] === true
+          )
+        ) {
+          await this.runEnergyReport(total)
+        }
+      })
+    )
   }
 
   async handleDashboardCapabilities(
     newSettings: Settings,
     changedCapabilities: string[]
   ): Promise<void> {
-    for (const capability of changedCapabilities) {
-      if (newSettings[capability] === true) {
-        await this.addCapability(capability)
-      } else {
+    await Promise.all(
+      changedCapabilities.map(async (capability: string): Promise<void> => {
+        if (newSettings[capability] === true) {
+          await this.addCapability(capability)
+          return
+        }
         await this.removeCapability(capability)
-      }
-    }
+      })
+    )
   }
 
   clearEnergyReportPlans(): void {
@@ -616,7 +675,7 @@ export default class MELCloudDeviceMixin extends Device {
     this.homey.clearTimeout(this.reportTimeout[totalString])
     this.homey.clearInterval(this.reportInterval[totalString])
     this.reportInterval[totalString] = null
-    this.log('Energy cost reports have been paused')
+    this.log('Energy reports have been paused')
   }
 
   async onDeleted(): Promise<void> {

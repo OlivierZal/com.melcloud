@@ -204,7 +204,7 @@ export type ExtendedCapability<T extends MELCloudDevice> =
   | ExtendedSetCapability<T>
   | 'measure_power.cop'
 
-export type OperationModeZoneCapbility =
+export type OperationModeZoneCapability =
   | 'operation_mode_zone.zone1'
   | 'operation_mode_zone.zone2'
   | 'operation_mode_zone_with_cool.zone1'
