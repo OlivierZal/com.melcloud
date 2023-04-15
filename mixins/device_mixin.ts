@@ -299,7 +299,6 @@ export default class MELCloudDeviceMixin extends Device {
   ): Promise<void> {
     await this.updateCapabilities(data, syncMode)
     await this.updateThermostatMode()
-    await this.updateCoP()
     if (syncMode === 'syncTo' && !this.isDiff()) {
       this.app.applySyncFromDevices(undefined, 'syncFrom')
     }
@@ -437,19 +436,6 @@ export default class MELCloudDeviceMixin extends Device {
       'thermostat_mode',
       isOn ? this.operationModeToThermostatMode[operationMode] : 'off'
     )
-  }
-
-  async updateCoP(): Promise<void> {
-    if (
-      this.hasCapability('measure_power.cop') &&
-      this.hasCapability('measure_power.produced')
-    ) {
-      await this.setCapabilityValue(
-        'measure_power.cop',
-        this.getCapabilityValue('measure_power.produced') /
-          this.getCapabilityValue('measure_power')
-      )
-    }
   }
 
   async syncDeviceFromList<T extends MELCloudDevice>(

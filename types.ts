@@ -202,7 +202,6 @@ export type Capability<T extends MELCloudDevice> =
 export type ExtendedCapability<T extends MELCloudDevice> =
   | Capability<T>
   | ExtendedSetCapability<T>
-  | 'measure_power.cop'
 
 export type OperationModeZoneCapability =
   | 'operation_mode_zone.zone1'

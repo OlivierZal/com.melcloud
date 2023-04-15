@@ -4825,7 +4825,6 @@
         "alarm_generic.eco_hot_water",
         "alarm_generic.immersion_heater",
         "last_legionella",
-        "measure_power.cop",
         "measure_power.heat_pump_frequency",
         "measure_power.produced",
         "measure_temperature.flow",
@@ -5167,27 +5166,6 @@
         },
         "measure_power": {
           "approximated": true
-        },
-        "measure_power.cop": {
-          "title": {
-            "en": "CoP",
-            "fr": "CoP",
-            "nl": "CoP",
-            "sv": "CoP",
-            "no": "CoP",
-            "da": "CoP",
-            "es": "CoP"
-          },
-          "units": {
-            "en": "",
-            "fr": "",
-            "nl": "",
-            "sv": "",
-            "no": "",
-            "da": "",
-            "es": ""
-          },
-          "decimals": 2
         },
         "measure_power.heat_pump_frequency": {
           "title": {

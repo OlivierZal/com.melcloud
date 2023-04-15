@@ -226,7 +226,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
               : this.notCoolZone2CapabilitiesAtw)
           ]
         : []),
-      'measure_power.cop',
       'measure_power.produced'
     ]
   }
