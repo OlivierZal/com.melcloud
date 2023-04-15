@@ -121,7 +121,9 @@ module.exports = {
               driver?.capabilitiesOptions?.[child.id]?.title ?? child.label,
             min: child.min,
             max: child.max,
-            units: child.units
+            values: child.values,
+            units: child.units,
+            type: child.type
           }))
         )
     )

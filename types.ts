@@ -22,9 +22,11 @@ export interface SettingsData {
   driverId: string
   label: Record<string, string>
   title: Record<string, string>
+  type: string
   min?: number
   max?: number
   units?: Record<string, string>
+  values?: Array<{ id: string; label: Record<string, string> }>
 }
 
 export interface SuccessData {
