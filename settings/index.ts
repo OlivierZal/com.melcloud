@@ -496,7 +496,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     return settings.find((setting: SettingsData): boolean => setting.id === id)
   }
 
-  async function generateSettingsAtaChildrenElements(): Promise<void> {
+  function generateSettingsAtaChildrenElements(): void {
     const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
       'settings-ata'
     ) as HTMLFieldSetElement
@@ -558,7 +558,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         await hasAuthenticated()
         const hasDevicesAta = await hasDevices('melcloud')
         if (hasDevicesAta) {
-          await generateSettingsAtaChildrenElements()
+          generateSettingsAtaChildrenElements()
           unhide(hasDevicesAtaElement)
         }
       }
