@@ -285,17 +285,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     element: HTMLInputElement,
     value: number = Number.parseInt(element.value)
   ): number {
-    if (
-      Number.isNaN(value) ||
-      value < Number(element.min) ||
-      value > Number(element.max)
-    ) {
+    const minValue: number = Number(element.min)
+    const maxValue: number = Number(element.max)
+    if (Number.isNaN(value) || value < minValue || value > maxValue) {
       element.value = ''
       throw new Error(
         Homey.__('settings.int_error.message', {
           name: Homey.__(`settings.int_error.values.${element.id}`),
-          min: element.min,
-          max: element.max
+          min: minValue,
+          max: maxValue
         })
       )
     }
