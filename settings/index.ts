@@ -497,12 +497,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   async function generateSettingsAtaChildrenElements(): Promise<void> {
-    const dashboardAtaElement: HTMLLegendElement = document.getElementById(
-      'settings-ata-dashboard'
-    ) as HTMLLegendElement
-    dashboardAtaElement.innerText =
-      getDeviceSetting(settingsAta, 'measure_power.wifi')?.label[locale] ?? ''
-
     const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
       'settings-ata'
     ) as HTMLFieldSetElement
