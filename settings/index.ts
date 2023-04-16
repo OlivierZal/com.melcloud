@@ -63,11 +63,24 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   const locale: string = await getLocale()
-  const settingsAta: SettingsData[] = await getDeviceSettings('melcloud')
+  const { settings, settingsAta } = (
+    await getDeviceSettings('melcloud')
+  ).reduce<{ settings: SettingsData[]; settingsAta: SettingsData[] }>(
+    (acc, setting: SettingsData) => {
+      if (setting.label.en === 'Options') {
+        acc.settings.push(setting)
+      } else {
+        acc.settingsAta.push(setting)
+      }
+      return acc
+    },
+    { settings: [], settingsAta: [] }
+  )
 
-  const settingsMixin: string[] = ['always_on']
-  const minimumTemperature: number = 10
-  const maximumTemperature: number = 38
+  const minMinTemperature: number = 4
+  const maxMinTemperature: number = 14
+  const minMaxTemperature: number = 6
+  const maxMaxTemperature: number = 16
 
   const applySettingsAtaElement: HTMLButtonElement = document.getElementById(
     'apply-settings-ata'
@@ -128,9 +141,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'username'
   ) as HTMLInputElement
 
-  const alwaysOnLabelElement: HTMLLabelElement = document.getElementById(
-    'settings-always_on'
-  ) as HTMLLabelElement
   const errorCountLabelElement: HTMLLabelElement = document.getElementById(
     'error_count'
   ) as HTMLLabelElement
@@ -138,9 +148,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'period'
   ) as HTMLLabelElement
 
-  const alwaysOnElement: HTMLSelectElement = document.getElementById(
-    'always_on'
-  ) as HTMLSelectElement
   const buildingElement: HTMLSelectElement = document.getElementById(
     'buildings'
   ) as HTMLSelectElement
@@ -422,7 +429,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           buildings.forEach((building: Building<MELCloudDevice>): void => {
             const { ID, Name } = building
             const option: HTMLOptionElement = document.createElement('option')
-            option.setAttribute('value', String(ID))
+            option.value = String(ID)
             const optionText: Text = document.createTextNode(Name)
             option.appendChild(optionText)
             buildingElement.appendChild(option)
@@ -454,6 +461,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       await Homey.alert(Homey.__('settings.buildings.error'))
       return
     }
+    generateSettingsChildrenElements()
     generateErrorLog()
     hide(authenticatingElement)
     unhide(authenticatedElement)
@@ -489,11 +497,46 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function getDeviceSetting(
-    settings: SettingsData[],
-    id: string
-  ): SettingsData | undefined {
-    return settings.find((setting: SettingsData): boolean => setting.id === id)
+  function generateSettingsChildrenElements(): void {
+    const settingsElement: HTMLDivElement = document.getElementById(
+      'settings'
+    ) as HTMLDivElement
+    settings.forEach((setting: SettingsData): void => {
+      const divElement: HTMLDivElement = document.createElement('div')
+      const labelElement = document.createElement('label')
+      divElement.className = 'homey-form-group'
+      labelElement.className = 'homey-form-checkbox'
+      labelElement.setAttribute('for', setting.id)
+      labelElement.id = `setting-${setting.id}`
+      labelElement.innerText = setting.title[locale]
+      divElement.appendChild(labelElement)
+      const selectElement = document.createElement('select')
+      selectElement.className = 'homey-form-select'
+      ;[
+        { id: '' },
+        ...(setting.type === 'checkbox'
+          ? [{ id: 'false' }, { id: 'true' }]
+          : setting.values ?? [])
+      ].forEach((value: { id: string; label?: Record<string, string> }) => {
+        const { id, label } = value
+        const optionElement: HTMLOptionElement =
+          document.createElement('option')
+        optionElement.value = id
+        if (id !== '') {
+          optionElement.innerText =
+            label !== undefined
+              ? label[locale]
+              : Homey.__(`settings.boolean.${id}`)
+        }
+        selectElement.appendChild(optionElement)
+      })
+      divElement.appendChild(selectElement)
+      settingsElement.appendChild(divElement)
+    })
+    addSettingsEventListener(
+      applySettingsElement,
+      Array.from(settingsElement.querySelectorAll('select'))
+    )
   }
 
   function generateSettingsAtaChildrenElements(): void {
@@ -501,25 +544,24 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'settings-ata'
     ) as HTMLFieldSetElement
     settingsAta
-      .filter(
-        (setting: SettingsData): boolean => !settingsMixin.includes(setting.id)
-      )
+      .filter((setting: SettingsData): boolean => setting.type === 'checkbox')
       .forEach((setting: SettingsData): void => {
-        const label = document.createElement('label')
-        const input = document.createElement('input')
-        const checkmarkSpan = document.createElement('span')
-        const textSpan = document.createElement('span')
-        label.className = 'homey-form-checkbox'
-        input.className = 'homey-form-checkbox-input'
-        input.type = 'checkbox'
-        input.id = setting.id
-        checkmarkSpan.className = 'homey-form-checkbox-checkmark'
-        textSpan.className = 'homey-form-checkbox-text'
-        textSpan.innerText = setting.title[locale]
-        label.appendChild(input)
-        label.appendChild(checkmarkSpan)
-        label.appendChild(textSpan)
-        settingsAtaElement.appendChild(label)
+        const labelElement: HTMLLabelElement = document.createElement('label')
+        const inputElement: HTMLInputElement = document.createElement('input')
+        const checkmarkSpanElement: HTMLSpanElement =
+          document.createElement('span')
+        const textSpanElement: HTMLSpanElement = document.createElement('span')
+        labelElement.className = 'homey-form-checkbox'
+        inputElement.className = 'homey-form-checkbox-input'
+        inputElement.type = 'checkbox'
+        inputElement.id = setting.id
+        checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
+        textSpanElement.className = 'homey-form-checkbox-text'
+        textSpanElement.innerText = setting.title[locale]
+        labelElement.appendChild(inputElement)
+        labelElement.appendChild(checkmarkSpanElement)
+        labelElement.appendChild(textSpanElement)
+        settingsAtaElement.appendChild(labelElement)
       })
     addSettingsEventListener(
       applySettingsAtaElement,
@@ -652,13 +694,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  frostProtectionMinimumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMinimumTemperatureElement.max = String(maximumTemperature)
-  frostProtectionMaximumTemperatureElement.min = String(minimumTemperature)
-  frostProtectionMaximumTemperatureElement.max = String(maximumTemperature)
-
-  const alwaysOnSetting = getDeviceSetting(settingsAta, 'always_on')
-  alwaysOnLabelElement.innerText = alwaysOnSetting?.title[locale] ?? ''
+  frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
+  frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
+  frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
+  frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
 
   await getHomeySetting(usernameElement)
   await getHomeySetting(passwordElement)
@@ -685,8 +724,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     seeElement.classList.add('is-disabled')
     generateErrorLog()
   })
-
-  addSettingsEventListener(applySettingsElement, [alwaysOnElement])
 
   autoAdjustElement.addEventListener('click', (): void => {
     // @ts-expect-error bug
@@ -804,15 +841,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
     updateFrostProtectionElement.classList.add('is-disabled')
-    let frostProtectionMinimumTemperature: number = 0
-    let frostProtectionMaximumTemperature: number = 0
+    let MinimumTemperature: number = 0
+    let MaximumTemperature: number = 0
     try {
-      frostProtectionMinimumTemperature = int(
-        frostProtectionMinimumTemperatureElement
-      )
-      frostProtectionMaximumTemperature = int(
-        frostProtectionMaximumTemperatureElement
-      )
+      MinimumTemperature = int(frostProtectionMinimumTemperatureElement)
+      MaximumTemperature = int(frostProtectionMaximumTemperatureElement)
     } catch (error: unknown) {
       updateFrostProtectionElement.classList.remove('is-disabled')
       getBuildingFrostProtectionSettings()
@@ -820,16 +853,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       Homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
+    if (MinimumTemperature > MaximumTemperature) {
+      ;[MinimumTemperature, MaximumTemperature] = [
+        MaximumTemperature,
+        MinimumTemperature
+      ]
+    }
+    if (MaximumTemperature - MinimumTemperature < 2) {
+      MaximumTemperature = MinimumTemperature + 2
+    }
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
-      MinimumTemperature: Math.min(
-        frostProtectionMinimumTemperature,
-        frostProtectionMaximumTemperature
-      ),
-      MaximumTemperature: Math.max(
-        frostProtectionMinimumTemperature,
-        frostProtectionMaximumTemperature
-      )
+      MinimumTemperature,
+      MaximumTemperature
     }
     // @ts-expect-error bug
     Homey.api(
