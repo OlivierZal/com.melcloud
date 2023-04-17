@@ -41,8 +41,12 @@
   justify-content: flex-start;
 }
 
-.right {
+.left {
   justify-content: flex-end;
+}
+
+.right {
+  justify-content: flex-start;
 }
 
 .homey-form-label.unset-margin {
