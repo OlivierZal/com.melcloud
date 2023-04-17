@@ -15,6 +15,7 @@ import {
   type LoginCredentials,
   type ManifestDevice,
   type ManifestDeviceSetting,
+  type ManifestDeviceSettingData,
   type MELCloudDevice,
   type Settings
 } from './types'
@@ -118,27 +119,29 @@ module.exports = {
       (driver: ManifestDevice): DeviceSetting[] =>
         (driver.settings ?? []).flatMap(
           (setting: ManifestDeviceSetting): DeviceSetting[] =>
-            setting.children.map((child: any): any => ({
-              id: child.id,
-              driverId: driver.id,
-              group: setting.label.en.toLowerCase(),
-              groupLabel: setting.label[language],
-              title: (driver.capabilitiesOptions?.[child.id]?.title ??
-                child.label)[language],
-              min: child.min,
-              max: child.max,
-              type: child.type,
-              units: child.units,
-              values: (child.values ?? []).map(
-                (value: {
-                  id: string
-                  label: Record<string, string>
-                }): { id: string; label: string } => ({
-                  id: value.id,
-                  label: value.label[language]
-                })
-              )
-            }))
+            setting.children.map(
+              (child: ManifestDeviceSettingData): DeviceSetting => ({
+                id: child.id,
+                driverId: driver.id,
+                group: setting.label.en.toLowerCase(),
+                groupLabel: setting.label[language],
+                title: (driver.capabilitiesOptions?.[child.id]?.title ??
+                  child.label)[language],
+                min: child.min,
+                max: child.max,
+                type: child.type,
+                units: child.units,
+                values: (child.values ?? []).map(
+                  (value: {
+                    id: string
+                    label: Record<string, string>
+                  }): { id: string; label: string } => ({
+                    id: value.id,
+                    label: value.label[language]
+                  })
+                )
+              })
+            )
         )
     )
     if (query.id !== undefined) {

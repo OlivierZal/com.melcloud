@@ -17,23 +17,25 @@ export interface Settings extends Record<string, any> {
   always_on?: boolean
 }
 
-export interface ManifestDevice {
+export interface ManifestDeviceSettingData {
   id: string
-  capabilitiesOptions?: Record<string, { title?: Record<string, string> }>
-  settings?: ManifestDeviceSetting[]
+  label: Record<string, string>
+  min?: number
+  max?: number
+  type: string
+  units?: string
+  values?: Array<{ id: string; label: Record<string, string> }>
 }
 
 export interface ManifestDeviceSetting {
   label: Record<string, string>
-  children: Array<{
-    id: string
-    label: Record<string, string>
-    min?: number
-    max?: number
-    type: string
-    units?: string
-    values?: Array<{ id: string; label: Record<string, string> }>
-  }>
+  children: ManifestDeviceSettingData[]
+}
+
+export interface ManifestDevice {
+  id: string
+  capabilitiesOptions?: Record<string, { title?: Record<string, string> }>
+  settings?: ManifestDeviceSetting[]
 }
 
 export interface DeviceSetting {
