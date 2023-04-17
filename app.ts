@@ -28,7 +28,6 @@ import {
 } from './types'
 
 export default class MELCloudApp extends App {
-  locale!: string
   buildings!: Record<
     Building<MELCloudDevice>['ID'],
     Building<MELCloudDevice>['Name']
@@ -41,7 +40,6 @@ export default class MELCloudApp extends App {
   syncTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
-    this.locale = this.homey.i18n.getLanguage()
     Settings.defaultLocale = 'en-us'
     Settings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
@@ -632,6 +630,10 @@ export default class MELCloudApp extends App {
         .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
     )
     return this.homey.setTimeout(callback, Number(duration))
+  }
+
+  getLanguage(): string {
+    return this.homey.i18n.getLanguage()
   }
 }
 

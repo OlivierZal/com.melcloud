@@ -3,6 +3,7 @@ import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
 import {
   type Building,
+  type DeviceSetting,
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogData,
@@ -12,21 +13,22 @@ import {
   type HolidayModeData,
   type HolidayModeSettings,
   type LoginCredentials,
+  type ManifestDevice,
+  type ManifestDeviceSetting,
   type MELCloudDevice,
-  type Settings,
-  type SettingsData
+  type Settings
 } from './types'
 
-function fromUTCtoLocal(utcDate: string | null, locale?: string): string {
+function fromUTCtoLocal(utcDate: string | null, language?: string): string {
   if (utcDate === null) {
     return ''
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, {
     zone: 'utc',
-    locale
+    locale: language
   }).toLocal()
   return (
-    (locale !== undefined
+    (language !== undefined
       ? localDate.toLocaleString(DateTime.DATETIME_MED)
       : localDate.toISO({ includeOffset: false })) ?? ''
   )
@@ -109,32 +111,44 @@ module.exports = {
   }: {
     homey: Homey
     query: { id?: string; driverId?: string }
-  }): Promise<SettingsData[]> {
-    let settings: any = homey.app.manifest.drivers.flatMap(
-      (driver: any): SettingsData[] =>
-        driver.settings.flatMap((setting: any): any[] =>
-          setting.children.map((child: any): any => ({
-            id: child.id,
-            driverId: driver.id,
-            label: setting.label,
-            title:
-              driver?.capabilitiesOptions?.[child.id]?.title ?? child.label,
-            min: child.min,
-            max: child.max,
-            values: child.values,
-            units: child.units,
-            type: child.type
-          }))
+  }): Promise<DeviceSetting[]> {
+    const app: MELCloudApp = homey.app as MELCloudApp
+    const language: string = app.getLanguage()
+    let settings: DeviceSetting[] = app.manifest.drivers.flatMap(
+      (driver: ManifestDevice): DeviceSetting[] =>
+        (driver.settings ?? []).flatMap(
+          (setting: ManifestDeviceSetting): DeviceSetting[] =>
+            setting.children.map((child: any): any => ({
+              id: child.id,
+              driverId: driver.id,
+              group: setting.label.en.toLowerCase(),
+              groupLabel: setting.label[language],
+              title: (driver.capabilitiesOptions?.[child.id]?.title ??
+                child.label)[language],
+              min: child.min,
+              max: child.max,
+              type: child.type,
+              units: child.units,
+              values: (child.values ?? []).map(
+                (value: {
+                  id: string
+                  label: Record<string, string>
+                }): { id: string; label: string } => ({
+                  id: value.id,
+                  label: value.label[language]
+                })
+              )
+            }))
         )
     )
     if (query.id !== undefined) {
       settings = settings.filter(
-        (setting: SettingsData): boolean => setting.id === query.id
+        (setting: DeviceSetting): boolean => setting.id === query.id
       )
     }
     if (query.driverId !== undefined) {
       settings = settings.filter(
-        (setting: SettingsData): boolean => setting.driverId === query.driverId
+        (setting: DeviceSetting): boolean => setting.driverId === query.driverId
       )
     }
     return settings
@@ -169,8 +183,8 @@ module.exports = {
     }
   },
 
-  async getLocale({ homey }: { homey: Homey }): Promise<string> {
-    return (homey.app as MELCloudApp).locale
+  async getLanguage({ homey }: { homey: Homey }): Promise<string> {
+    return (homey.app as MELCloudApp).getLanguage()
   },
 
   async getUnitErrorLog({
@@ -198,7 +212,7 @@ module.exports = {
             Date:
               errorData.StartDate !== null &&
               DateTime.fromISO(errorData.StartDate).year > 1
-                ? fromUTCtoLocal(errorData.StartDate, app.locale)
+                ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
                 : '',
             Error: errorData.ErrorMessage ?? ''
           })
@@ -209,7 +223,7 @@ module.exports = {
         )
         .reverse(),
       FromDateHuman: fromDate
-        .setLocale(app.locale)
+        .setLocale(app.getLanguage())
         .toLocaleString(DateTime.DATE_FULL),
       NextFromDate: NextToDate.minus({ days: period }).toISODate() ?? '',
       NextToDate: NextToDate.toISODate() ?? ''

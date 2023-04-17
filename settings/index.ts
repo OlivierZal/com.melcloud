@@ -11,33 +11,33 @@ import {
   type LoginCredentials,
   type MELCloudDevice,
   type Settings,
-  type SettingsData
+  type DeviceSetting
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
-  async function getLocale(): Promise<string> {
-    return await new Promise<string>((resolve, reject) => {
-      // @ts-expect-error bug
-      Homey.api(
-        'GET',
-        '/locale',
-        async (error: Error, locale: string): Promise<void> => {
-          if (error !== null) {
-            reject(error)
-            return
-          }
-          document.documentElement.setAttribute('lang', locale)
-          resolve(locale)
+  await new Promise<string>((resolve, reject) => {
+    // @ts-expect-error bug
+    Homey.api(
+      'GET',
+      '/language',
+      async (error: Error, language: string): Promise<void> => {
+        if (error !== null) {
+          reject(error)
+          return
         }
-      )
-    })
-  }
+        document.documentElement.setAttribute('lang', language)
+        resolve(language)
+      }
+    )
+  })
 
-  async function getDeviceSettings(driverId?: string): Promise<SettingsData[]> {
-    return await new Promise<SettingsData[]>((resolve, reject) => {
+  async function getDeviceSettings(
+    driverId?: string
+  ): Promise<DeviceSetting[]> {
+    return await new Promise<DeviceSetting[]>((resolve, reject) => {
       let endPoint: string = '/devices/settings'
       if (driverId !== undefined) {
         const queryString: string = new URLSearchParams({
@@ -49,7 +49,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       Homey.api(
         'GET',
         endPoint,
-        async (error: Error, settings: SettingsData[]): Promise<void> => {
+        async (error: Error, settings: DeviceSetting[]): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error bug
             await Homey.alert(error.message)
@@ -62,12 +62,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const locale: string = await getLocale()
   const { settings, settingsAta } = (
     await getDeviceSettings('melcloud')
-  ).reduce<{ settings: SettingsData[]; settingsAta: SettingsData[] }>(
-    (acc, setting: SettingsData) => {
-      if (setting.label.en === 'Options') {
+  ).reduce<{ settings: DeviceSetting[]; settingsAta: DeviceSetting[] }>(
+    (acc, setting: DeviceSetting) => {
+      if (setting.group === 'options') {
         acc.settings.push(setting)
       } else {
         acc.settingsAta.push(setting)
@@ -501,14 +500,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const settingsElement: HTMLDivElement = document.getElementById(
       'settings'
     ) as HTMLDivElement
-    settings.forEach((setting: SettingsData): void => {
+    settings.forEach((setting: DeviceSetting): void => {
       const divElement: HTMLDivElement = document.createElement('div')
       const labelElement = document.createElement('label')
       divElement.className = 'homey-form-group'
       labelElement.className = 'homey-form-checkbox'
       labelElement.setAttribute('for', setting.id)
       labelElement.id = `setting-${setting.id}`
-      labelElement.innerText = setting.title[locale]
+      labelElement.innerText = setting.title
       divElement.appendChild(labelElement)
       const selectElement = document.createElement('select')
       selectElement.className = 'homey-form-select'
@@ -517,16 +516,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         ...(setting.type === 'checkbox'
           ? [{ id: 'false' }, { id: 'true' }]
           : setting.values ?? [])
-      ].forEach((value: { id: string; label?: Record<string, string> }) => {
+      ].forEach((value: { id: string; label?: string }) => {
         const { id, label } = value
         const optionElement: HTMLOptionElement =
           document.createElement('option')
         optionElement.value = id
         if (id !== '') {
-          optionElement.innerText =
-            label !== undefined
-              ? label[locale]
-              : Homey.__(`settings.boolean.${id}`)
+          optionElement.innerText = label ?? Homey.__(`settings.boolean.${id}`)
         }
         selectElement.appendChild(optionElement)
       })
@@ -544,8 +540,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'settings-ata'
     ) as HTMLFieldSetElement
     settingsAta
-      .filter((setting: SettingsData): boolean => setting.type === 'checkbox')
-      .forEach((setting: SettingsData): void => {
+      .filter((setting: DeviceSetting): boolean => setting.type === 'checkbox')
+      .forEach((setting: DeviceSetting): void => {
         const labelElement: HTMLLabelElement = document.createElement('label')
         const inputElement: HTMLInputElement = document.createElement('input')
         const checkmarkSpanElement: HTMLSpanElement =
@@ -557,7 +553,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         inputElement.id = setting.id
         checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
         textSpanElement.className = 'homey-form-checkbox-text'
-        textSpanElement.innerText = setting.title[locale]
+        textSpanElement.innerText = setting.title
         labelElement.appendChild(inputElement)
         labelElement.appendChild(checkmarkSpanElement)
         labelElement.appendChild(textSpanElement)

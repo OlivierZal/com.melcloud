@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "15.1.2",
+  "version": "15.1.3",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -142,13 +142,13 @@
       "method": "POST",
       "path": "/buildings/:buildingId/settings/holiday_mode"
     },
+    "getLanguage": {
+      "method": "GET",
+      "path": "/language"
+    },
     "getUnitErrorLog": {
       "method": "GET",
       "path": "/error_log"
-    },
-    "getLocale": {
-      "method": "GET",
-      "path": "/locale"
     },
     "login": {
       "method": "POST",

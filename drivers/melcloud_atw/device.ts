@@ -79,9 +79,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
       const zoneValue: number = Number(value)
-      const otherZone: OperationModeZoneCapability = this.getOtherCapabilityZone(
-        capability
-      ) as OperationModeZoneCapability
+      const otherZone: OperationModeZoneCapability =
+        this.getOtherCapabilityZone(capability) as OperationModeZoneCapability
       let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
         if (zoneValue > 2) {
@@ -129,7 +128,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     switch (capability) {
       case 'last_legionella':
         newValue = DateTime.fromISO(value as string, {
-          locale: this.app.locale
+          locale: this.app.getLanguage()
         }).toLocaleString(DateTime.DATE_HUGE)
         break
       case 'measure_power':
