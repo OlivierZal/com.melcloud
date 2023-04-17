@@ -103,8 +103,5 @@
   },
   "15.1.0": {
     "en": "Optimized loops (task parallelization)."
-  },
-  "15.1.2": {
-    "en": "Reshaped app setting backend."
   }
 }
