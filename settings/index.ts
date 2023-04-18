@@ -79,7 +79,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'apply-settings-ata'
   ) as HTMLButtonElement
   const applySettingsMixinElement: HTMLButtonElement = document.getElementById(
-    'apply-settings'
+    'apply-settings-mixin'
   ) as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById(
     'authenticate'
@@ -114,7 +114,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'has-error-log'
   ) as HTMLDivElement
   const settingsMixinElement: HTMLDivElement = document.getElementById(
-    'settings'
+    'settings-mixin'
   ) as HTMLDivElement
 
   const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
