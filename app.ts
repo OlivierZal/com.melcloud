@@ -577,10 +577,10 @@ export default class MELCloudApp extends App {
     const errorMessage: string = Object.entries(data.AttributeErrors)
       .map(
         ([error, messages]: [string, string[]]): string =>
-          `${error}: ${messages.join(' ')}`
+          `${error}: ${messages.join(', ')}`
       )
       .join('\n')
-    throw new Error(errorMessage.slice(0, -1))
+    throw new Error(errorMessage)
   }
 
   setSettings(settings: Settings): void {

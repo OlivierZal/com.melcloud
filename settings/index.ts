@@ -819,20 +819,22 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       body,
       async (error: Error, success: boolean): Promise<void> => {
         updateHolidayModeElement.classList.remove('is-disabled')
-        getBuildingHolidayModeSettings()
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        if (!success) {
-          // @ts-expect-error bug
-          await Homey.alert(
-            Homey.__('settings.alert.failure', {
-              action: Homey.__('settings.alert.actions.update')
-            })
-          )
-          return
+        if (error !== null || !success) {
+          getBuildingHolidayModeSettings()
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            return
+          }
+          if (!success) {
+            // @ts-expect-error bug
+            await Homey.alert(
+              Homey.__('settings.alert.failure', {
+                action: Homey.__('settings.alert.actions.update')
+              })
+            )
+            return
+          }
         }
         // @ts-expect-error bug
         await Homey.alert(
@@ -890,6 +892,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     if (MaximumTemperature - MinimumTemperature < 2) {
       MaximumTemperature = MinimumTemperature + 2
     }
+    frostProtectionMinimumTemperatureElement.value = String(MinimumTemperature)
+    frostProtectionMaximumTemperatureElement.value = String(MaximumTemperature)
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
       MinimumTemperature,
@@ -902,20 +906,22 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       body,
       async (error: Error, success: boolean): Promise<void> => {
         updateFrostProtectionElement.classList.remove('is-disabled')
-        getBuildingFrostProtectionSettings()
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        if (!success) {
-          // @ts-expect-error bug
-          await Homey.alert(
-            Homey.__('settings.alert.failure', {
-              action: Homey.__('settings.alert.actions.update')
-            })
-          )
-          return
+        if (error !== null || !success) {
+          getBuildingFrostProtectionSettings()
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            return
+          }
+          if (!success) {
+            // @ts-expect-error bug
+            await Homey.alert(
+              Homey.__('settings.alert.failure', {
+                action: Homey.__('settings.alert.actions.update')
+              })
+            )
+            return
+          }
         }
         // @ts-expect-error bug
         await Homey.alert(
