@@ -211,11 +211,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function generateTableHead(
-    tableElement: HTMLTableElement,
-    keys: string[]
-  ): void {
-    const theadElement: HTMLTableSectionElement = tableElement.createTHead()
+  function generateErrorLogTableHead(keys: string[]): void {
+    const theadElement: HTMLTableSectionElement =
+      errorLogTableElement.createTHead()
     const rowElement: HTMLTableRowElement = theadElement.insertRow()
     keys.forEach((key: string): void => {
       const thElement: HTMLTableCellElement = document.createElement('th')
@@ -225,11 +223,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     hasLoadedErrorLogTableHead = true
   }
 
-  function generateTable(
-    tableElement: HTMLTableElement,
-    errors: ErrorDetails[]
-  ): void {
-    const tbodyElement: HTMLTableSectionElement = tableElement.createTBody()
+  function generateErrorLogTable(errors: ErrorDetails[]): void {
+    const tbodyElement: HTMLTableSectionElement =
+      errorLogTableElement.createTBody()
     errors.forEach((error: ErrorDetails): void => {
       const rowElement: HTMLTableRowElement = tbodyElement.insertRow()
       Object.values(error).forEach((value: string): void => {
@@ -295,9 +291,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         unhide(hasErrorLogElement)
         if (data.Errors.length > 0) {
           if (!hasLoadedErrorLogTableHead) {
-            generateTableHead(errorLogTableElement, Object.keys(data.Errors[0]))
+            generateErrorLogTableHead(Object.keys(data.Errors[0]))
           }
-          generateTable(errorLogTableElement, data.Errors)
+          generateErrorLogTable(data.Errors)
         }
       }
     )
