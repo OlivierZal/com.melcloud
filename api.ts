@@ -119,11 +119,11 @@ module.exports = {
       (driver: ManifestDevice): DeviceSetting[] =>
         (driver.settings ?? []).flatMap(
           (setting: ManifestDeviceSetting): DeviceSetting[] =>
-            setting.children.map(
+            (setting.children ?? []).map(
               (child: ManifestDeviceSettingData): DeviceSetting => ({
                 id: child.id,
                 driverId: driver.id,
-                group: setting.label.en.toLowerCase(),
+                groupId: setting.id,
                 groupLabel: setting.label[language],
                 title: (driver.capabilitiesOptions?.[child.id]?.title ??
                   child.label)[language],

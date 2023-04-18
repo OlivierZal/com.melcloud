@@ -1,5 +1,6 @@
 [
   {
+    "id": "options",
     "type": "group",
     "label": {
       "en": "Options",
@@ -37,6 +38,7 @@
     ]
   },
   {
+    "id": "dashboard",
     "type": "group",
     "label": {
       "en": "Dashboard display",

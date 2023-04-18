@@ -66,7 +66,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     await getDeviceSettings('melcloud')
   ).reduce<{ settings: DeviceSetting[]; settingsAta: DeviceSetting[] }>(
     (acc, setting: DeviceSetting) => {
-      if (setting.group === 'options') {
+      if (setting.groupId === 'options') {
         acc.settings.push(setting)
       } else {
         acc.settingsAta.push(setting)
@@ -161,11 +161,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const dashboardAtaElement: HTMLLegendElement = document.getElementById(
     'settings-ata-dashboard'
   ) as HTMLLegendElement
-  dashboardAtaElement.innerText = (
+  dashboardAtaElement.innerText =
     settingsAta.find(
-      (setting: DeviceSetting): boolean => setting.id === 'measure_power.wifi'
-    ) as DeviceSetting
-  ).groupLabel
+      (setting: DeviceSetting): boolean => setting.groupId === 'dashboard'
+    )?.groupLabel ?? ''
 
   const buildingElement: HTMLSelectElement = document.getElementById(
     'buildings'
