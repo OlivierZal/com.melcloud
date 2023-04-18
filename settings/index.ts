@@ -34,21 +34,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
   })
 
-  async function getDeviceSettings(
-    driverId?: string
-  ): Promise<DeviceSetting[]> {
+  async function getDeviceSettings(): Promise<DeviceSetting[]> {
     return await new Promise<DeviceSetting[]>((resolve, reject) => {
-      let endPoint: string = '/devices/settings'
-      if (driverId !== undefined) {
-        const queryString: string = new URLSearchParams({
-          driverId
-        }).toString()
-        endPoint += `?${queryString}`
-      }
       // @ts-expect-error bug
       Homey.api(
         'GET',
-        endPoint,
+        '/devices/settings',
         async (error: Error, settings: DeviceSetting[]): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error bug
@@ -62,19 +53,22 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const { settings, settingsAta } = (
-    await getDeviceSettings('melcloud')
-  ).reduce<{ settings: DeviceSetting[]; settingsAta: DeviceSetting[] }>(
-    (acc, setting: DeviceSetting) => {
-      if (setting.groupId === 'options') {
-        acc.settings.push(setting)
-      } else {
-        acc.settingsAta.push(setting)
-      }
-      return acc
-    },
-    { settings: [], settingsAta: [] }
-  )
+  const settings: DeviceSetting[] = await getDeviceSettings()
+  const { settingsMixin, settingsAta } = settings
+    .filter(
+      (setting: DeviceSetting): boolean => setting.driverId === 'melcloud'
+    )
+    .reduce<{ settingsMixin: DeviceSetting[]; settingsAta: DeviceSetting[] }>(
+      (acc, setting: DeviceSetting) => {
+        if (setting.groupId === 'options') {
+          acc.settingsMixin.push(setting)
+        } else {
+          acc.settingsAta.push(setting)
+        }
+        return acc
+      },
+      { settingsMixin: [], settingsAta: [] }
+    )
 
   const minMinTemperature: number = 4
   const maxMinTemperature: number = 14
@@ -84,7 +78,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const applySettingsAtaElement: HTMLButtonElement = document.getElementById(
     'apply-settings-ata'
   ) as HTMLButtonElement
-  const applySettingsElement: HTMLButtonElement = document.getElementById(
+  const applySettingsMixinElement: HTMLButtonElement = document.getElementById(
     'apply-settings'
   ) as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById(
@@ -119,7 +113,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const hasErrorLogElement: HTMLDivElement = document.getElementById(
     'has-error-log'
   ) as HTMLDivElement
-  const settingsElement: HTMLDivElement = document.getElementById(
+  const settingsMixinElement: HTMLDivElement = document.getElementById(
     'settings'
   ) as HTMLDivElement
 
@@ -650,9 +644,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       return
     }
     generateSelectChildrenElements(
-      settings,
-      settingsElement,
-      applySettingsElement
+      settingsMixin,
+      settingsMixinElement,
+      applySettingsMixinElement
     )
     generateErrorLog()
     hide(authenticatingElement)
