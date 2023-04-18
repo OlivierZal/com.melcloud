@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "15.1.5",
+  "version": "15.1.6",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -4383,6 +4383,34 @@
                 "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
                 "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
               }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Dashboard display",
+            "fr": "Affichage sur le tableau de bord",
+            "nl": "Dashboardweergave",
+            "sv": "Instrumentpanelens visning",
+            "no": "Dashbordvisning",
+            "da": "Instrumentbrætvisning",
+            "es": "Visualización del panel de control"
+          },
+          "children": [
+            {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Wifi signal strength",
+                "fr": "Puissance du signal wifi",
+                "nl": "Wifi signaalsterkte",
+                "sv": "Wifi signalstyrka",
+                "no": "Wifi signalstyrke",
+                "da": "Wifi signalstyrke",
+                "es": "Potencia de señal wifi"
+              },
+              "value": false
             }
           ]
         },

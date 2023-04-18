@@ -81,10 +81,10 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     this.requiredCapabilities = [
       ...Object.keys({
         ...setCapabilityMappingAta,
-        ...getCapabilityMappingAta,
-        ...listCapabilityMappingAta
+        ...getCapabilityMappingAta
       }),
-      'thermostat_mode'
+      'thermostat_mode',
+      'fan_power_state'
     ]
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta

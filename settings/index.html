@@ -41,11 +41,13 @@
             value=""
           />
         </div>
-        <button
-          id="authenticate"
-          class="homey-button-primary-full"
-          data-i18n="settings.authenticate.button"
-        ></button>
+        <div class="homey-form-group">
+          <button
+            id="authenticate"
+            class="homey-button-primary-full"
+            data-i18n="settings.authenticate.button"
+          ></button>
+        </div>
       </fieldset>
     </div>
     <div id="authenticated" class="hidden">
@@ -73,7 +75,7 @@
               aria-describedby="error-log"
             ></table>
           </div>
-          <div class="container">
+          <div class="homey-form-group container">
             <div class="left">
               <button
                 id="see"
@@ -127,7 +129,7 @@
           ></label>
           <input id="end-date" type="datetime-local" value="" />
         </div>
-        <div class="container">
+        <div class="homey-form-group container">
           <button
             id="refresh-holiday-mode"
             class="homey-button-secondary-shadow"
@@ -178,7 +180,7 @@
             value="12"
           />
         </div>
-        <div class="container">
+        <div class="homey-form-group container">
           <button
             id="refresh-frost-protection"
             class="homey-button-secondary-shadow"
@@ -197,11 +199,13 @@
           data-i18n="settings.devices.label"
         ></legend>
         <div id="settings"></div>
-        <button
-          id="apply-settings"
-          class="homey-button-danger-shadow-full"
-          data-i18n="settings.devices.apply.button"
-        ></button>
+        <div class="homey-form-group">
+          <button
+            id="apply-settings"
+            class="homey-button-danger-shadow-full"
+            data-i18n="settings.devices.apply.button"
+          ></button>
+        </div>
       </fieldset>
       <div id="has-devices-ata" class="hidden">
         <fieldset class="homey-form-fieldset">
@@ -209,16 +213,20 @@
             class="homey-form-legend"
             data-i18n="settings.devices_ata.label"
           ></legend>
-          <label
-            class="homey-form-label"
-            for="auto_adjust"
-            data-i18n="settings.devices_ata.auto_adjust"
-          ></label>
-          <button
-            id="auto_adjust"
-            class="homey-button-secondary-shadow-full"
-            data-i18n="settings.devices_ata.configure"
-          ></button>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              for="auto_adjust"
+              data-i18n="settings.devices_ata.auto_adjust"
+            ></label>
+          </div>
+          <div class="homey-form-group">
+            <button
+              id="auto_adjust"
+              class="homey-button-secondary-shadow-full"
+              data-i18n="settings.devices_ata.configure"
+            ></button>
+          </div>
           <div class="homey-form-group">
             <fieldset class="homey-form-checkbox-set" id="settings-ata">
               <legend
@@ -227,11 +235,13 @@
               ></legend>
             </fieldset>
           </div>
-          <button
-            id="apply-settings-ata"
-            class="homey-button-danger-shadow-full"
-            data-i18n="settings.devices.apply.button"
-          ></button>
+          <div class="homey-form-group">
+            <button
+              id="apply-settings-ata"
+              class="homey-button-danger-shadow-full"
+              data-i18n="settings.devices.apply.button"
+            ></button>
+          </div>
         </fieldset>
       </div>
     </div>

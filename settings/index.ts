@@ -132,8 +132,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   ) as HTMLInputElement
   const frostProtectionMinimumTemperatureElement: HTMLInputElement =
     document.getElementById('min') as HTMLInputElement
+  frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
+  frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
   const frostProtectionMaximumTemperatureElement: HTMLInputElement =
     document.getElementById('max') as HTMLInputElement
+  frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
+  frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
   const holidayModeStartDateElement: HTMLInputElement = document.getElementById(
     'start-date'
   ) as HTMLInputElement
@@ -153,6 +157,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const periodLabelElement: HTMLLabelElement = document.getElementById(
     'period'
   ) as HTMLLabelElement
+
+  const dashboardAtaElement: HTMLLegendElement = document.getElementById(
+    'settings-ata-dashboard'
+  ) as HTMLLegendElement
+  dashboardAtaElement.innerText = (
+    settingsAta.find(
+      (setting: DeviceSetting): boolean => setting.id === 'measure_power.wifi'
+    ) as DeviceSetting
+  ).groupLabel
 
   const buildingElement: HTMLSelectElement = document.getElementById(
     'buildings'
@@ -719,15 +732,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
   }
 
-  frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
-  frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
-  frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
-  frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
-
-  await getHomeySetting(usernameElement)
-  await getHomeySetting(passwordElement)
-  login()
-
   authenticateElement.addEventListener('click', (): void => {
     authenticateElement.classList.add('is-disabled')
     login()
@@ -923,4 +927,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       }
     )
   })
+
+  await getHomeySetting(usernameElement)
+  await getHomeySetting(passwordElement)
+  login()
 }
