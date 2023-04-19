@@ -73,13 +73,7 @@
       "see": "Se alla fel",
       "since": "sedan"
     },
-    "int_error": {
-      "message": "__name__ måste vara ett heltal mellan __min__ och __max__.",
-      "values": {
-        "max": "Maximal temperaturen",
-        "min": "Minimal temperaturen"
-      }
-    },
+    "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "title": "MELCloud-inställningar"
   },
   "warnings": {

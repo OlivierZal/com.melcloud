@@ -53,8 +53,8 @@
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
-      "label": "Luft-luft enhetsinnstillinger",
-      "configure": "Konfigurer"
+      "configure": "Konfigurer",
+      "label": "Luft-luft enhetsinnstillinger"
     },
     "error_log": {
       "columns": {
@@ -73,13 +73,7 @@
       "see": "Se alle feil",
       "since": "siden"
     },
-    "int_error": {
-      "message": "__name__ må være et heltall mellom __min__ og __max__.",
-      "values": {
-        "max": "Maksimal temperaturen",
-        "min": "Minimal temperaturen"
-      }
-    },
+    "int_error": "__name__: må være et heltall mellom __min__ og __max__.",
     "title": "MELCloud-innstillinger"
   },
   "warnings": {

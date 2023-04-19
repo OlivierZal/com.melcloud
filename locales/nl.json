@@ -53,8 +53,8 @@
     },
     "devices_ata": {
       "auto_adjust": "Auto-afstellen airco-temperatuur",
-      "label": "Lucht-lucht apparaatinstellingen",
-      "configure": "Configureren"
+      "configure": "Configureren",
+      "label": "Lucht-lucht apparaatinstellingen"
     },
     "error_log": {
       "columns": {
@@ -73,13 +73,7 @@
       "see": "Bekijk alle fouten",
       "since": "sinds"
     },
-    "int_error": {
-      "message": "__name__ moet een heel getal zijn tussen __min__ en __max__.",
-      "values": {
-        "max": "De maximale temperatuur",
-        "min": "De minimale temperatuur"
-      }
-    },
+    "int_error": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "title": "MELCloud-instellingen"
   },
   "warnings": {

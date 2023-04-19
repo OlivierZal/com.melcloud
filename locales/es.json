@@ -53,8 +53,8 @@
     },
     "devices_ata": {
       "auto_adjust": "Autoajustar la temperatura del enfriamiento",
-      "label": "Configuración de los dispositivos aire-aire",
-      "configure": "Configurar"
+      "configure": "Configurar",
+      "label": "Configuración de los dispositivos aire-aire"
     },
     "error_log": {
       "columns": {
@@ -73,13 +73,7 @@
       "see": "Ver los errores",
       "since": "desde el"
     },
-    "int_error": {
-      "message": "__name__ debe ser un número entero entre __min__ y __max__.",
-      "values": {
-        "max": "La temperatura máxima",
-        "min": "La temperatura mínima"
-      }
-    },
+    "int_error": "__name__: debe ser un número entero entre __min__ y __max__.",
     "title": "Configuración de MELCloud"
   },
   "warnings": {

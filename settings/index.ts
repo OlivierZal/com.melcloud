@@ -307,9 +307,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const maxValue: number = Number(element.max)
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
       element.value = ''
+      const labelElement: HTMLLabelElement | null = document.querySelector(
+        `label[for="${element.id}"]`
+      )
       throw new Error(
-        Homey.__('settings.int_error.message', {
-          name: Homey.__(`settings.int_error.values.${element.id}`),
+        Homey.__('settings.int_error', {
+          name: Homey.__(labelElement?.innerText ?? ''),
           min: minValue,
           max: maxValue
         })
