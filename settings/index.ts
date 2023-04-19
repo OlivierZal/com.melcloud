@@ -285,13 +285,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'GET',
       `/error_log?${queryString}`,
       async (error: Error, data: ErrorLog): Promise<void> => {
+        seeElement.classList.remove('is-disabled')
         if (error !== null) {
-          seeElement.classList.remove('is-disabled')
-          if (error.message.includes('403')) {
-            // @ts-expect-error bug
-            await Homey.alert(Homey.__('settings.error_log.failure'))
-            return
-          }
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -300,7 +295,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         sinceElement.value = data.NextFromDate
         to = data.NextToDate
         errorCount += data.Errors.length
-        seeElement.classList.remove('is-disabled')
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman
         })
@@ -385,8 +379,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'GET',
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       async (error: Error, data: HolidayModeData): Promise<void> => {
+        refreshHolidayModeElement.classList.remove('is-disabled')
         if (error !== null) {
-          refreshHolidayModeElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -398,7 +392,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         holidayModeEndDateElement.value = data.HMEnabled
           ? data.HMEndDate ?? ''
           : ''
-        refreshHolidayModeElement.classList.remove('is-disabled')
       }
     )
   }
@@ -421,8 +414,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'GET',
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       async (error: Error, data: FrostProtectionData): Promise<void> => {
+        refreshFrostProtectionElement.classList.remove('is-disabled')
         if (error !== null) {
-          refreshFrostProtectionElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(error.message)
           return
@@ -434,7 +427,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         frostProtectionMaximumTemperatureElement.value = String(
           data.FPMaxTemperature
         )
-        refreshFrostProtectionElement.classList.remove('is-disabled')
       }
     )
   }

@@ -65,7 +65,6 @@
       "error_count_text_1": "erreur",
       "error_count_text_234": "erreurs",
       "error_count_text_plural": "erreurs",
-      "failure": "Au moins l'un de vos appareils n'est plus associé à votre compte MELCloud.\n\nSupprimez-le pour afficher le journal des erreurs.",
       "label": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ :",
       "see": "Voir les erreurs",

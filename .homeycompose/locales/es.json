@@ -65,7 +65,6 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errores",
       "error_count_text_plural": "errores",
-      "failure": "Al menos uno de sus dispositivos ya no está asociado con su cuenta de MELCloud.\n\nElimínelo para ver el registro de errores.",
       "label": "Registro de errores",
       "period": "Desde __fromDateHuman__:",
       "see": "Ver los errores",
