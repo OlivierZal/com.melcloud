@@ -53,21 +53,26 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const settings: DeviceSetting[] = await getDeviceSettings()
-  const { settingsMixin, settingsAta } = settings
+  const { settings, settingsLogin, settingsAta } = (await getDeviceSettings())
     .filter(
       (setting: DeviceSetting): boolean => setting.driverId === 'melcloud'
     )
-    .reduce<{ settingsMixin: DeviceSetting[]; settingsAta: DeviceSetting[] }>(
+    .reduce<{
+      settings: DeviceSetting[]
+      settingsLogin: DeviceSetting[]
+      settingsAta: DeviceSetting[]
+    }>(
       (acc, setting: DeviceSetting) => {
         if (setting.groupId === 'options') {
-          acc.settingsMixin.push(setting)
+          acc.settings.push(setting)
+        } else if (setting.groupId === 'login') {
+          acc.settingsLogin.push(setting)
         } else {
           acc.settingsAta.push(setting)
         }
         return acc
       },
-      { settingsMixin: [], settingsAta: [] }
+      { settings: [], settingsLogin: [], settingsAta: [] }
     )
 
   const minMinTemperature: number = 4
@@ -78,8 +83,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const applySettingsAtaElement: HTMLButtonElement = document.getElementById(
     'apply-settings-ata'
   ) as HTMLButtonElement
-  const applySettingsMixinElement: HTMLButtonElement = document.getElementById(
-    'apply-settings-mixin'
+  const applySettingsElement: HTMLButtonElement = document.getElementById(
+    'apply-settings'
   ) as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById(
     'authenticate'
@@ -113,8 +118,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const hasErrorLogElement: HTMLDivElement = document.getElementById(
     'has-error-log'
   ) as HTMLDivElement
-  const settingsMixinElement: HTMLDivElement = document.getElementById(
-    'settings-mixin'
+  const loginElement: HTMLDivElement = document.getElementById(
+    'login'
+  ) as HTMLDivElement
+  const settingsElement: HTMLDivElement = document.getElementById(
+    'settings'
   ) as HTMLDivElement
 
   const settingsAtaElement: HTMLFieldSetElement = document.getElementById(
@@ -138,12 +146,23 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const holidayModeEndDateElement: HTMLInputElement = document.getElementById(
     'end-date'
   ) as HTMLInputElement
-  const passwordElement: HTMLInputElement = document.getElementById(
-    'password'
-  ) as HTMLInputElement
-  const usernameElement: HTMLInputElement = document.getElementById(
-    'username'
-  ) as HTMLInputElement
+  const [usernameElement, passwordElement]: HTMLInputElement[] =
+    settingsLogin.map((setting: DeviceSetting): HTMLInputElement => {
+      const divElement: HTMLDivElement = document.createElement('div')
+      divElement.classList.add('homey-form-group')
+      const labelElement: HTMLLabelElement = document.createElement('label')
+      labelElement.classList.add('homey-form-label')
+      labelElement.setAttribute('for', setting.id)
+      labelElement.innerText = setting.title
+      const inputElement: HTMLInputElement = document.createElement('input')
+      inputElement.classList.add('homey-form-input')
+      inputElement.id = setting.id
+      inputElement.type = setting.type
+      inputElement.placeholder = setting.placeholder ?? ''
+      loginElement.appendChild(labelElement)
+      loginElement.appendChild(inputElement)
+      return inputElement
+    }, [])
 
   const errorCountLabelElement: HTMLLabelElement = document.getElementById(
     'error_count'
@@ -555,12 +574,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function generateSelectChildrenElements(
-    settings: DeviceSetting[],
-    settingsElement: HTMLDivElement,
-    applySettingsElement: HTMLButtonElement,
-    driverId?: string
-  ): void {
+  function generateMixinChildrenElements(): void {
     settings
       .filter((setting: DeviceSetting): boolean =>
         ['checkbox', 'dropdown'].includes(setting.type)
@@ -597,8 +611,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       })
     addSettingsEventListener(
       applySettingsElement,
-      Array.from(settingsElement.querySelectorAll('select')),
-      driverId
+      Array.from(settingsElement.querySelectorAll('select'))
     )
   }
 
@@ -642,11 +655,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       await Homey.alert(Homey.__('settings.buildings.error'))
       return
     }
-    generateSelectChildrenElements(
-      settingsMixin,
-      settingsMixinElement,
-      applySettingsMixinElement
-    )
+    generateMixinChildrenElements()
     generateErrorLog()
     hide(authenticatingElement)
     unhide(authenticatedElement)

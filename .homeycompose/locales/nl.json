@@ -19,9 +19,7 @@
     },
     "authenticate": {
       "button": "Inloggen",
-      "label": "Referenties",
-      "password": "Wachtwoord",
-      "username": "Gebruikersnaam"
+      "label": "Referenties"
     },
     "boolean": {
       "false": "Nee",

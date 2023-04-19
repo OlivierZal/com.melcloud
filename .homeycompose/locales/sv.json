@@ -19,9 +19,7 @@
     },
     "authenticate": {
       "button": "Logga in",
-      "label": "Inloggningsuppgifter",
-      "password": "Lösenord",
-      "username": "Användarnamn"
+      "label": "Inloggningsuppgifter"
     },
     "boolean": {
       "false": "Nej",

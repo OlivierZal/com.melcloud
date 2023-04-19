@@ -19,9 +19,7 @@
     },
     "authenticate": {
       "button": "Log ind",
-      "label": "Brugernavn og adgangskode",
-      "password": "Adgangskode",
-      "username": "Brugernavn"
+      "label": "Brugernavn og adgangskode"
     },
     "boolean": {
       "false": "Nej",

@@ -19,9 +19,7 @@
     },
     "authenticate": {
       "button": "Iniciar sesión",
-      "label": "Credenciales",
-      "password": "Contraseña",
-      "username": "Nombre de usuario"
+      "label": "Credenciales"
     },
     "boolean": {
       "false": "No",

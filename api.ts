@@ -17,6 +17,7 @@ import {
   type ManifestDeviceSetting,
   type ManifestDeviceSettingData,
   type MELCloudDevice,
+  type PairSetting,
   type Settings
 } from './types'
 
@@ -113,23 +114,20 @@ module.exports = {
   }): Promise<DeviceSetting[]> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
-    return app.manifest.drivers.flatMap(
+    const settings: DeviceSetting[] = app.manifest.drivers.flatMap(
       (driver: ManifestDevice): DeviceSetting[] =>
         (driver.settings ?? []).flatMap(
           (setting: ManifestDeviceSetting): DeviceSetting[] =>
             (setting.children ?? []).map(
               (child: ManifestDeviceSettingData): DeviceSetting => ({
                 id: child.id,
-                driverId: driver.id,
-                groupId: setting.id,
-                groupLabel: setting.label[language],
                 title: (driver.capabilitiesOptions?.[child.id]?.title ??
                   child.label)[language],
+                type: child.type,
                 min: child.min,
                 max: child.max,
-                type: child.type,
                 units: child.units,
-                values: (child.values ?? []).map(
+                values: child.values?.map(
                   (value: {
                     id: string
                     label: Record<string, string>
@@ -137,11 +135,42 @@ module.exports = {
                     id: value.id,
                     label: value.label[language]
                   })
-                )
+                ),
+                driverId: driver.id,
+                groupId: setting.id,
+                groupLabel: setting.label[language]
               })
             )
         )
     )
+    const loginSetting: PairSetting | undefined = app.manifest.drivers
+      .flatMap((driver: ManifestDevice): PairSetting[] => driver.pair ?? [])
+      ?.find((pairSetting: PairSetting): boolean => pairSetting.id === 'login')
+    const settingsLogin: DeviceSetting[] = Object.values(
+      Object.entries(loginSetting?.options ?? {}).reduce<
+        Record<string, DeviceSetting>
+      >((acc, [option, label]: [string, Record<string, string>]) => {
+        const isPassword: boolean = option.startsWith('password')
+        const key: 'password' | 'username' = isPassword
+          ? 'password'
+          : 'username'
+        if (!(key in acc)) {
+          acc[key] = {
+            groupId: 'login',
+            id: key,
+            title: '',
+            type: isPassword ? 'password' : 'text'
+          }
+        }
+        if (option.endsWith('Placeholder')) {
+          acc[key].placeholder = label[language]
+        } else {
+          acc[key].title = label[language]
+        }
+        return acc
+      }, {})
+    )
+    return [...settings, ...settingsLogin]
   },
 
   async getFrostProtectionSettings({

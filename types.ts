@@ -18,38 +18,54 @@ export interface Settings extends Record<string, any> {
 }
 
 export interface ManifestDeviceSettingData {
-  id: string
-  label: Record<string, string>
-  min?: number
-  max?: number
-  type: string
-  units?: string
-  values?: Array<{ id: string; label: Record<string, string> }>
+  readonly id: string
+  readonly label: Record<string, string>
+
+  readonly type: string
+  readonly min?: number
+  readonly max?: number
+  readonly units?: string
+  readonly values?: Array<{ id: string; label: Record<string, string> }>
 }
 
 export interface ManifestDeviceSetting {
-  id?: string
-  label: Record<string, string>
-  children?: ManifestDeviceSettingData[]
+  readonly label: Record<string, string>
+  readonly id?: string
+  readonly children?: ManifestDeviceSettingData[]
+}
+
+export interface PairSetting {
+  readonly id: string
+  readonly options?: {
+    readonly usernameLabel: Record<string, string>
+    readonly usernamePlaceholder: Record<string, string>
+    readonly passwordLabel: Record<string, string>
+    readonly passwordPlaceholder: Record<string, string>
+  }
 }
 
 export interface ManifestDevice {
-  id: string
-  capabilitiesOptions?: Record<string, { title?: Record<string, string> }>
-  settings?: ManifestDeviceSetting[]
+  readonly id: string
+  readonly capabilitiesOptions?: Record<
+    string,
+    { readonly title?: Record<string, string> }
+  >
+  readonly pair?: PairSetting[]
+  readonly settings?: ManifestDeviceSetting[]
 }
 
 export interface DeviceSetting {
-  id: string
-  driverId: string
-  groupId?: string
-  groupLabel: string
+  readonly id: string
+  readonly type: string
   title: string
-  type: string
-  min?: number
-  max?: number
-  units?: string
-  values?: Array<{ id: string; label: string }>
+  readonly driverId?: string
+  readonly groupId?: string
+  readonly groupLabel?: string
+  readonly min?: number
+  readonly max?: number
+  readonly units?: string
+  readonly values?: Array<{ id: string; label: string }>
+  placeholder?: string
 }
 
 export interface SuccessData {

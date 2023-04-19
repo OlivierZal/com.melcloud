@@ -20,27 +20,7 @@
           class="homey-form-legend"
           data-i18n="settings.authenticate.label"
         ></legend>
-        <div class="homey-form-group">
-          <label
-            class="homey-form-label"
-            for="username"
-            data-i18n="settings.authenticate.username"
-          ></label>
-          <input class="homey-form-input" id="username" type="text" value="" />
-        </div>
-        <div class="homey-form-group">
-          <label
-            class="homey-form-label"
-            for="password"
-            data-i18n="settings.authenticate.password"
-          ></label>
-          <input
-            class="homey-form-input"
-            id="password"
-            type="password"
-            value=""
-          />
-        </div>
+        <div id="login"></div>
         <div class="homey-form-group">
           <button
             id="authenticate"
@@ -198,10 +178,10 @@
           class="homey-form-legend"
           data-i18n="settings.devices.label"
         ></legend>
-        <div id="settings-mixin"></div>
+        <div id="settings"></div>
         <div class="homey-form-group">
           <button
-            id="apply-settings-mixin"
+            id="apply-settings"
             class="homey-button-danger-shadow-full"
             data-i18n="settings.devices.apply.button"
           ></button>
