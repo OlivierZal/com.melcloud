@@ -53,7 +53,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const { settings, settingsLogin, settingsAta } = (await getDeviceSettings())
+  const allSettings: DeviceSetting[] = await getDeviceSettings()
+  const { settings, settingsLogin, settingsAta } = allSettings
     .filter(
       (setting: DeviceSetting): boolean => setting.driverId === 'melcloud'
     )
