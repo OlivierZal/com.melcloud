@@ -588,7 +588,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           ...(setting.type === 'checkbox'
             ? [{ id: 'false' }, { id: 'true' }]
             : setting.values ?? [])
-        ].forEach((value: { id: string; label?: string }) => {
+        ].forEach((value: { id: string; label?: string }): void => {
           const { id, label } = value
           const optionElement: HTMLOptionElement =
             document.createElement('option')
