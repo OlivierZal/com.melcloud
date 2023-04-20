@@ -230,9 +230,15 @@ export default class MELCloudApp extends App {
           ...building.Structure.Areas.flatMap((area) => area.Devices)
         ]
         acc.devices.push(...buildingDevices)
-        buildingDevices.forEach((device: ListDevice<T>): void => {
-          acc.deviceIds[device.DeviceID] = device.DeviceName
-        })
+        const buildingDeviceIds: Record<number, string> =
+          buildingDevices.reduce<Record<number, string>>(
+            (deviceIds, device: ListDevice<T>) => ({
+              ...deviceIds,
+              [device.DeviceID]: device.DeviceName
+            }),
+            {}
+          )
+        acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
         return acc
       },
       { devices: [], newBuildings: {}, deviceIds: {} }
