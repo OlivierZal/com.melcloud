@@ -153,11 +153,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       divElement.classList.add('homey-form-group')
       const labelElement: HTMLLabelElement = document.createElement('label')
       labelElement.classList.add('homey-form-label')
-      labelElement.setAttribute('for', setting.id)
       labelElement.innerText = setting.title
       const inputElement: HTMLInputElement = document.createElement('input')
       inputElement.classList.add('homey-form-input')
       inputElement.id = setting.id
+      labelElement.setAttribute('for', inputElement.id)
       inputElement.type = setting.type
       inputElement.placeholder = setting.placeholder ?? ''
       loginElement.appendChild(labelElement)
@@ -579,10 +579,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         labelElement.className = 'homey-form-label'
         labelElement.id = `setting-${setting.id}`
         labelElement.innerText = setting.title
-        labelElement.setAttribute('for', setting.id)
         divElement.appendChild(labelElement)
         const selectElement = document.createElement('select')
         selectElement.className = 'homey-form-select'
+        selectElement.id = setting.id
+        labelElement.setAttribute('for', selectElement.id)
         ;[
           { id: '' },
           ...(setting.type === 'checkbox'
