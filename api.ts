@@ -215,10 +215,7 @@ module.exports = {
   }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
-    const data: ErrorLogData[] = (await app.getUnitErrorLog(
-      fromDate,
-      toDate
-    )) as ErrorLogData[]
+    const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
 
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
     return {
@@ -267,11 +264,8 @@ module.exports = {
     homey: Homey
     body: Settings
     query?: { driverId: string }
-  }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).setDeviceSettings(
-      body,
-      query?.driverId
-    )
+  }): Promise<void> {
+    await (homey.app as MELCloudApp).setDeviceSettings(body, query?.driverId)
   },
 
   async updateFrostProtectionSettings({

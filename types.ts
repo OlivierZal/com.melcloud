@@ -69,11 +69,11 @@ export interface DeviceSetting {
 }
 
 export interface SuccessData {
-  readonly Success: boolean
-  readonly AttributeErrors: Record<string, string[]> | null
+  readonly Success: true
+  readonly AttributeErrors: null
 }
 
-export interface FailureData extends SuccessData {
+export interface FailureData {
   readonly Success: false
   readonly AttributeErrors: Record<string, string[]>
 }

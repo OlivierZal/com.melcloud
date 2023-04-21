@@ -59,7 +59,7 @@ export default class MELCloudApp extends App {
     this.clearLoginRefresh()
     try {
       const { username, password } = loginCredentials
-      if (username === '' && password === '') {
+      if (username === '' || password === '') {
         return false
       }
       const postData: LoginPostData = {
@@ -74,23 +74,26 @@ export default class MELCloudApp extends App {
         postData
       )
       this.log('Login:\n', data)
-      if (data.LoginData?.ContextKey !== undefined) {
-        axios.defaults.headers.common['X-MitsContextKey'] =
-          data.LoginData.ContextKey
-        this.setSettings({
-          ContextKey: data.LoginData.ContextKey,
-          Expiry: data.LoginData.Expiry,
-          username,
-          password
-        })
-        this.applySyncFromDevices()
-        await this.refreshLogin()
-        return true
+      if (data.LoginData?.ContextKey === undefined) {
+        return false
       }
+      axios.defaults.headers.common['X-MitsContextKey'] =
+        data.LoginData.ContextKey
+      this.setSettings({
+        ContextKey: data.LoginData.ContextKey,
+        Expiry: data.LoginData.Expiry,
+        username,
+        password
+      })
+      this.applySyncFromDevices()
+      await this.refreshLogin()
+      return true
     } catch (error: unknown) {
-      this.error('Login:', error instanceof Error ? error.message : error)
+      const errorMessage: string =
+        error instanceof Error ? error.message : String(error)
+      this.error('Login:', errorMessage)
+      throw new Error(errorMessage)
     }
-    return false
   }
 
   clearLoginRefresh(): void {
@@ -113,33 +116,39 @@ export default class MELCloudApp extends App {
       const interval: number = Math.min(ms, maxTimeout)
       this.loginTimeout = this.setTimeout(
         'login refresh',
-        async (): Promise<boolean> => await this.login(loginCredentials),
+        async (): Promise<void> => {
+          await this.login(loginCredentials).catch(this.error)
+        },
         interval,
         'days'
       )
       return
     }
-    await this.login(loginCredentials)
+    await this.login(loginCredentials).catch(this.error)
   }
 
-  getFirstDeviceId(
-    {
-      buildingId,
-      driverId
-    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
-    safe: boolean = true
-  ): MELCloudDevice['id'] {
-    return this.getDeviceIds({ buildingId, driverId }, safe)[0]
+  getFirstDeviceId({
+    buildingId,
+    driverId
+  }: {
+    buildingId?: Building<MELCloudDevice>['ID']
+    driverId?: string
+  } = {}): MELCloudDevice['id'] {
+    const deviceIds = this.getDeviceIds({ buildingId, driverId })
+    if (deviceIds.length === 0) {
+      throw new Error(this.homey.__('app.building.no_device', { buildingId }))
+    }
+    return deviceIds[0]
   }
 
-  getDeviceIds(
-    {
-      buildingId,
-      driverId
-    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
-    safe: boolean = true
-  ): Array<MELCloudDevice['id']> {
-    return this.getDevices({ buildingId, driverId }, safe).map(
+  getDeviceIds({
+    buildingId,
+    driverId
+  }: {
+    buildingId?: Building<MELCloudDevice>['ID']
+    driverId?: string
+  } = {}): Array<MELCloudDevice['id']> {
+    return this.getDevices({ buildingId, driverId }).map(
       (device: MELCloudDevice): MELCloudDevice['id'] => device.id
     )
   }
@@ -156,13 +165,13 @@ export default class MELCloudApp extends App {
     )
   }
 
-  getDevices(
-    {
-      buildingId,
-      driverId
-    }: { buildingId?: Building<MELCloudDevice>['ID']; driverId?: string } = {},
-    safe: boolean = true
-  ): MELCloudDevice[] {
+  getDevices({
+    buildingId,
+    driverId
+  }: {
+    buildingId?: Building<MELCloudDevice>['ID']
+    driverId?: string
+  } = {}): MELCloudDevice[] {
     const drivers: Driver[] =
       driverId !== undefined
         ? [this.homey.drivers.getDriver(driverId)]
@@ -177,9 +186,6 @@ export default class MELCloudApp extends App {
       devices = devices.filter(
         (device: MELCloudDevice): boolean => device.buildingid === buildingId
       )
-      if (!safe && devices.length === 0) {
-        throw new Error(this.homey.__('app.building.no_device', { buildingId }))
-      }
     }
     return devices
   }
@@ -284,7 +290,7 @@ export default class MELCloudApp extends App {
   async syncDevicesFromList(syncMode: SyncFromMode): Promise<void> {
     await Promise.all(
       this.getDevices()
-        .filter((device) => !device.isDiff())
+        .filter((device: MELCloudDevice): boolean => !device.isDiff())
         .map(async (device: MELCloudDevice): Promise<void> => {
           await device.syncDeviceFromList(syncMode)
         })
@@ -381,34 +387,41 @@ export default class MELCloudApp extends App {
   async setDeviceSettings(
     settings: Settings,
     driverId?: string
-  ): Promise<boolean> {
+  ): Promise<void> {
     const changedKeys: string[] = Object.keys(settings)
     if (changedKeys.length === 0) {
-      return true
+      return
     }
     try {
       await Promise.all(
         this.getDevices({ driverId }).map(
           async (device: MELCloudDevice): Promise<void> => {
-            await device.setSettings(settings)
-            await device.onSettings({
-              newSettings: device.getSettings(),
-              changedKeys
-            })
+            try {
+              await device.setSettings(settings).then((): void => {
+                device.log(settings)
+              })
+              await device.onSettings({
+                newSettings: device.getSettings(),
+                changedKeys
+              })
+            } catch (error: unknown) {
+              const errorMessage: string =
+                error instanceof Error ? error.message : String(error)
+              device.error(errorMessage)
+              throw new Error(errorMessage)
+            }
           }
         )
       )
-      return true
     } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
+      throw new Error(error instanceof Error ? error.message : String(error))
     }
-    return false
   }
 
   async getUnitErrorLog(
     fromDate: DateTime,
     toDate: DateTime
-  ): Promise<ErrorLogData[] | boolean> {
+  ): Promise<ErrorLogData[]> {
     const postData: ErrorLogPostData = {
       DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
@@ -439,10 +452,9 @@ export default class MELCloudApp extends App {
       buildingName,
       '...'
     )
-    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId(
-      { buildingId },
-      false
-    )
+    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId({
+      buildingId
+    })
     const { data } = await axios.get<FrostProtectionData>(
       `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
@@ -484,7 +496,7 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    return this.handleFailure(data)
+    return this.handleResponse(data)
   }
 
   async getHolidayModeSettings(
@@ -496,10 +508,9 @@ export default class MELCloudApp extends App {
     const buildingName: Building<MELCloudDevice>['Name'] =
       this.buildings[buildingId]
     this.log('Getting holiday mode settings for building', buildingName, '...')
-    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId(
-      { buildingId },
-      false
-    )
+    const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId({
+      buildingId
+    })
     const { data } = await axios.get<HolidayModeData>(
       `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
@@ -573,13 +584,17 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    return this.handleFailure(data)
+    return this.handleResponse(data)
   }
 
-  handleFailure(data: SuccessData): boolean {
-    if (data.Success || data.AttributeErrors === null) {
-      return data.Success
+  handleResponse(data: SuccessData | FailureData): true {
+    if (data.AttributeErrors !== null) {
+      this.handleFailure(data)
     }
+    return true
+  }
+
+  handleFailure(data: FailureData): never {
     const errorMessage: string = Object.entries(data.AttributeErrors)
       .map(
         ([error, messages]: [string, string[]]): string =>
