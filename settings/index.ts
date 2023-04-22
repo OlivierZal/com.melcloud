@@ -719,7 +719,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     ) {
       sinceElement.value = to
       // @ts-expect-error bug
-      Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
+      void Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
     }
   })
 
@@ -844,7 +844,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       updateFrostProtectionElement.classList.remove('is-disabled')
       getBuildingFrostProtectionSettings()
       // @ts-expect-error bug
-      Homey.alert(error instanceof Error ? error.message : String(error))
+      void Homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
     if (MinimumTemperature > MaximumTemperature) {
