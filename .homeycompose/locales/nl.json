@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "Authenticatie",
-        "update": "Update"
-      },
-      "failure": "__action__ mislukt.",
-      "success": "__action__ geslaagd."
-    },
     "authenticate": {
       "button": "Inloggen",
-      "label": "Referenties"
+      "failure": "Authenticatie mislukt.",
+      "legend": "Referenties"
     },
     "boolean": {
       "false": "Nee",
@@ -27,7 +20,7 @@
     },
     "buildings": {
       "error": "Authenticatie geslaagd.\n\nVoeg een apparaat toe in Homey om toegang te krijgen tot de app-instellingen.",
-      "label": "Gebouwinstellingen",
+      "legend": "Gebouwinstellingen",
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
         "max": "Maximale temperatuur",
@@ -47,12 +40,12 @@
         "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\n\nDeze actie kan enige tijd in beslag nemen.",
         "nothing": "Geen wijziging om toe te passen."
       },
-      "label": "Apparaatinstellingen"
+      "legend": "Apparaatinstellingen"
     },
     "devices_ata": {
       "auto_adjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
-      "label": "Lucht-lucht apparaatinstellingen"
+      "legend": "Lucht-lucht apparaatinstellingen"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "fout",
       "error_count_text_234": "fouten",
       "error_count_text_plural": "fouten",
-      "label": "Foutenlogboek",
+      "legend": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"
     },
     "int_error": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "success": "Update geslaagd.",
     "title": "MELCloud-instellingen"
   },
   "warnings": {

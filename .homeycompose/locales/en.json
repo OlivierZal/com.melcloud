@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "Authentication",
-        "update": "Update"
-      },
-      "failure": "__action__ failed.",
-      "success": "__action__ successful."
-    },
     "authenticate": {
       "button": "Log in",
-      "label": "Credentials"
+      "failure": "Authentication failed.",
+      "legend": "Credentials"
     },
     "boolean": {
       "false": "No",
@@ -27,7 +20,7 @@
     },
     "buildings": {
       "error": "Authentication succeeded.\n\nAdd a device in Homey to access the app settings.",
-      "label": "Building Settings",
+      "legend": "Building Settings",
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
         "max": "Maximum temperature",
@@ -47,12 +40,12 @@
         "confirm": "Are you sure you want to apply these settings to all devices?\n\nThis action may take some time.",
         "nothing": "No change to apply."
       },
-      "label": "Device Settings"
+      "legend": "Device Settings"
     },
     "devices_ata": {
       "auto_adjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "label": "Air-to-Air Device Settings"
+      "legend": "Air-to-Air Device Settings"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errors",
       "error_count_text_plural": "errors",
-      "label": "Error Log",
+      "legend": "Error Log",
       "period": "Since __fromDateHuman__:",
       "see": "See all errors",
       "since": "since"
     },
     "int_error": "__name__: must be an integer between __min__ and __max__.",
+    "success": "Update successful.",
     "title": "MELCloud Settings"
   },
   "warnings": {

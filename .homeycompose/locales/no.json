@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "Autentisering",
-        "update": "Oppdatering"
-      },
-      "failure": "__action__ mislyktes.",
-      "success": "__action__ vellykket."
-    },
     "authenticate": {
       "button": "Logg inn",
-      "label": "Innloggingsinformasjon"
+      "failure": "Autentisering mislyktes.",
+      "legend": "Innloggingsinformasjon"
     },
     "boolean": {
       "false": "Nei",
@@ -27,7 +20,7 @@
     },
     "buildings": {
       "error": "Autentisering vellykket.\n\nLegg til en enhet i Homey for å få tilgang til appinnstillingene.",
-      "label": "Byggingsinnstillinger",
+      "legend": "Byggingsinnstillinger",
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
         "max": "Maksimal temperatur",
@@ -47,12 +40,12 @@
         "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?\n\nDenne handlingen kan ta litt tid.",
         "nothing": "Ingen endring å bruke."
       },
-      "label": "Enhetsinnstillinger"
+      "legend": "Enhetsinnstillinger"
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "label": "Luft-luft enhetsinnstillinger"
+      "legend": "Luft-luft enhetsinnstillinger"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "feil",
       "error_count_text_234": "feil",
       "error_count_text_plural": "feil",
-      "label": "Feillogg",
+      "legend": "Feillogg",
       "period": "Siden __fromDateHuman__:",
       "see": "Se alle feil",
       "since": "siden"
     },
     "int_error": "__name__: må være et heltall mellom __min__ og __max__.",
+    "success": "Oppdatering vellykket.",
     "title": "MELCloud-innstillinger"
   },
   "warnings": {

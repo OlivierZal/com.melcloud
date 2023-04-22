@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "Godkendelse",
-        "update": "Opdatering"
-      },
-      "failure": "__action__ mislykkedes.",
-      "success": "__action__ lykkedes."
-    },
     "authenticate": {
       "button": "Log ind",
-      "label": "Brugernavn og adgangskode"
+      "failure": "Godkendelse mislykkedes.",
+      "legend": "Brugernavn og adgangskode"
     },
     "boolean": {
       "false": "Nej",
@@ -37,7 +30,7 @@
         "end_date": "Slutdato",
         "start_date": "Startdato"
       },
-      "label": "Bygningsindstillinger",
+      "legend": "Bygningsindstillinger",
       "refresh": "Genindlæs",
       "update": "Opdater"
     },
@@ -47,12 +40,12 @@
         "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?\n\nDenne handling kan tage lidt tid.",
         "nothing": "Ingen ændringer at anvende."
       },
-      "label": "Enhedsindstillinger"
+      "legend": "Enhedsindstillinger"
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "label": "Luft-luft enhedsindstillinger"
+      "legend": "Luft-luft enhedsindstillinger"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "fejl",
       "error_count_text_234": "fejl",
       "error_count_text_plural": "fejl",
-      "label": "Fejllog",
+      "legend": "Fejllog",
       "period": "Siden __fromDateHuman__:",
       "see": "Se alle fejl",
       "since": "siden den"
     },
     "int_error": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "success": "Opdatering lykkedes.",
     "title": "MELCloud-indstillinger"
   },
   "warnings": {

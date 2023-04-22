@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "L'authentification",
-        "update": "La mise à jour"
-      },
-      "failure": "__action__ a échoué.",
-      "success": "__action__ a réussi."
-    },
     "authenticate": {
       "button": "Se connecter",
-      "label": "Identifiants"
+      "failure": "L'authentification a échoué.",
+      "legend": "Identifiants"
     },
     "boolean": {
       "false": "Non",
@@ -37,7 +30,7 @@
         "end_date": "Date de fin",
         "start_date": "Date de début"
       },
-      "label": "Paramètres des bâtiments",
+      "legend": "Paramètres des bâtiments",
       "refresh": "Rafraîchir",
       "update": "Mettre à jour"
     },
@@ -47,12 +40,12 @@
         "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\n\nCette action peut prendre un certain temps.",
         "nothing": "Aucun changement à appliquer."
       },
-      "label": "Paramètres des appareils"
+      "legend": "Paramètres des appareils"
     },
     "devices_ata": {
       "auto_adjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
-      "label": "Paramètres des appareils air-air"
+      "legend": "Paramètres des appareils air-air"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "erreur",
       "error_count_text_234": "erreurs",
       "error_count_text_plural": "erreurs",
-      "label": "Journal des erreurs",
+      "legend": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"
     },
     "int_error": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "success": "La mise à jour a réussi.",
     "title": "Paramètres MELCloud"
   },
   "warnings": {

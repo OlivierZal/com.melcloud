@@ -9,17 +9,10 @@
     }
   },
   "settings": {
-    "alert": {
-      "actions": {
-        "authenticate": "Autenticación",
-        "update": "Actualización"
-      },
-      "failure": "__action__ fallida.",
-      "success": "__action__ exitosa."
-    },
     "authenticate": {
       "button": "Iniciar sesión",
-      "label": "Credenciales"
+      "failure": "Autenticación fallida.",
+      "legend": "Credenciales"
     },
     "boolean": {
       "false": "No",
@@ -27,7 +20,7 @@
     },
     "buildings": {
       "error": "Autenticación exitosa.\n\nAñade un dispositivo en Homey para acceder a la configuración de la aplicación.",
-      "label": "Configuración de los edificios",
+      "legend": "Configuración de los edificios",
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
         "max": "Temperatura máxima",
@@ -47,12 +40,12 @@
         "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?\n\nEsta acción puede llevar algún tiempo.",
         "nothing": "No hay cambios que aplicar."
       },
-      "label": "Configuración de los dispositivos"
+      "legend": "Configuración de los dispositivos"
     },
     "devices_ata": {
       "auto_adjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
-      "label": "Configuración de los dispositivos aire-aire"
+      "legend": "Configuración de los dispositivos aire-aire"
     },
     "error_log": {
       "columns": {
@@ -65,12 +58,13 @@
       "error_count_text_1": "error",
       "error_count_text_234": "errores",
       "error_count_text_plural": "errores",
-      "label": "Registro de errores",
+      "legend": "Registro de errores",
       "period": "Desde __fromDateHuman__:",
       "see": "Ver los errores",
       "since": "desde el"
     },
     "int_error": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "success": "Actualización exitosa.",
     "title": "Configuración de MELCloud"
   },
   "warnings": {
