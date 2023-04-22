@@ -433,8 +433,8 @@ export default class MELCloudApp extends App {
       postData
     )
     this.log('Reporting error log:\n', data)
-    if ('Success' in data) {
-      return this.handleFailure(data)
+    if ('AttributeErrors' in data) {
+      this.handleFailure(data)
     }
     return data
   }
@@ -470,7 +470,7 @@ export default class MELCloudApp extends App {
   async updateFrostProtectionSettings(
     buildingId: Building<MELCloudDevice>['ID'],
     settings: FrostProtectionSettings
-  ): Promise<boolean> {
+  ): Promise<void> {
     if (!(buildingId in this.buildings)) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
     }
@@ -486,7 +486,7 @@ export default class MELCloudApp extends App {
       '...\n',
       postData
     )
-    const { data } = await axios.post<SuccessData>(
+    const { data } = await axios.post<SuccessData | FailureData>(
       '/FrostProtection/Update',
       postData
     )
@@ -496,7 +496,7 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    return this.handleResponse(data)
+    this.handleResponse(data)
   }
 
   async getHolidayModeSettings(
@@ -526,7 +526,7 @@ export default class MELCloudApp extends App {
   async updateHolidayModeSettings(
     buildingId: Building<MELCloudDevice>['ID'],
     settings: HolidayModeSettings
-  ): Promise<boolean> {
+  ): Promise<void> {
     if (!(buildingId in this.buildings)) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
     }
@@ -574,7 +574,7 @@ export default class MELCloudApp extends App {
       '...\n',
       postData
     )
-    const { data } = await axios.post<SuccessData>(
+    const { data } = await axios.post<SuccessData | FailureData>(
       '/HolidayMode/Update',
       postData
     )
@@ -584,14 +584,13 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    return this.handleResponse(data)
+    this.handleResponse(data)
   }
 
-  handleResponse(data: SuccessData | FailureData): true {
+  handleResponse(data: SuccessData | FailureData): void {
     if (data.AttributeErrors !== null) {
       this.handleFailure(data)
     }
-    return true
   }
 
   handleFailure(data: FailureData): never {

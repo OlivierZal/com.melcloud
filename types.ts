@@ -69,12 +69,10 @@ export interface DeviceSetting {
 }
 
 export interface SuccessData {
-  readonly Success: true
   readonly AttributeErrors: null
 }
 
 export interface FailureData {
-  readonly Success: false
   readonly AttributeErrors: Record<string, string[]>
 }
 

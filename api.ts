@@ -276,8 +276,8 @@ module.exports = {
     homey: Homey
     params: { buildingId: string }
     body: FrostProtectionSettings
-  }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).updateFrostProtectionSettings(
+  }): Promise<void> {
+    await (homey.app as MELCloudApp).updateFrostProtectionSettings(
       Number(params.buildingId),
       body
     )
@@ -291,8 +291,8 @@ module.exports = {
     homey: Homey
     params: { buildingId: string }
     body: HolidayModeSettings
-  }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).updateHolidayModeSettings(
+  }): Promise<void> {
+    await (homey.app as MELCloudApp).updateHolidayModeSettings(
       Number(params.buildingId),
       body
     )
