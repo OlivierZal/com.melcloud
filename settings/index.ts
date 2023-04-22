@@ -793,24 +793,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'POST',
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       body,
-      async (error: Error, success: boolean): Promise<void> => {
+      async (error: Error): Promise<void> => {
         updateHolidayModeElement.classList.remove('is-disabled')
-        if (error !== null || !success) {
+        if (error !== null) {
           getBuildingHolidayModeSettings()
-          if (error !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
-            return
-          }
-          if (!success) {
-            // @ts-expect-error bug
-            await Homey.alert(
-              Homey.__('settings.alert.failure', {
-                action: Homey.__('settings.alert.actions.update')
-              })
-            )
-            return
-          }
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          return
         }
         // @ts-expect-error bug
         await Homey.alert(
@@ -880,24 +869,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'POST',
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       body,
-      async (error: Error, success: boolean): Promise<void> => {
+      async (error: Error): Promise<void> => {
         updateFrostProtectionElement.classList.remove('is-disabled')
-        if (error !== null || !success) {
+        if (error !== null) {
           getBuildingFrostProtectionSettings()
-          if (error !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
-            return
-          }
-          if (!success) {
-            // @ts-expect-error bug
-            await Homey.alert(
-              Homey.__('settings.alert.failure', {
-                action: Homey.__('settings.alert.actions.update')
-              })
-            )
-            return
-          }
+          // @ts-expect-error bug
+          await Homey.alert(error.message)
+          return
         }
         // @ts-expect-error bug
         await Homey.alert(
