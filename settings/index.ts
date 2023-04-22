@@ -655,11 +655,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          if (devices.length > 0) {
-            resolve(true)
+          if (devices.length === 0) {
+            resolve(false)
             return
           }
-          resolve(false)
+          resolve(true)
         }
       )
     })
