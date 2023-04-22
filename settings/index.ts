@@ -516,12 +516,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         body = buildSettingsBody(elements)
       } catch (error: unknown) {
         // @ts-expect-error bug
-        void Homey.alert(error instanceof Error ? error.message : String(error))
+        Homey.alert(error instanceof Error ? error.message : String(error))
         return
       }
       if (Object.keys(body).length === 0) {
         // @ts-expect-error bug
-        void Homey.alert(Homey.__('settings.devices.apply.nothing'))
+        Homey.alert(Homey.__('settings.devices.apply.nothing'))
         return
       }
       // @ts-expect-error bug
@@ -719,7 +719,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     ) {
       sinceElement.value = to
       // @ts-expect-error bug
-      void Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
+      Homey.alert(Homey.__('settings.error_log.error', { fromDateHuman }))
     }
   })
 
@@ -844,7 +844,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       updateFrostProtectionElement.classList.remove('is-disabled')
       getBuildingFrostProtectionSettings()
       // @ts-expect-error bug
-      void Homey.alert(error instanceof Error ? error.message : String(error))
+      Homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
     if (MinimumTemperature > MaximumTemperature) {
