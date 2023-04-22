@@ -442,11 +442,8 @@ export default class MELCloudApp extends App {
   async getFrostProtectionSettings(
     buildingId: Building<MELCloudDevice>['ID']
   ): Promise<FrostProtectionData> {
-    if (!(buildingId in this.buildings)) {
-      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
-    }
     const buildingName: Building<MELCloudDevice>['Name'] =
-      this.buildings[buildingId]
+      this.getBuildingName(buildingId)
     this.log(
       'Getting frost protection settings for building',
       buildingName,
@@ -471,11 +468,8 @@ export default class MELCloudApp extends App {
     buildingId: Building<MELCloudDevice>['ID'],
     settings: FrostProtectionSettings
   ): Promise<void> {
-    if (!(buildingId in this.buildings)) {
-      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
-    }
     const buildingName: Building<MELCloudDevice>['Name'] =
-      this.buildings[buildingId]
+      this.getBuildingName(buildingId)
     const postData: FrostProtectionPostData = {
       ...settings,
       BuildingIds: [buildingId]
@@ -502,11 +496,8 @@ export default class MELCloudApp extends App {
   async getHolidayModeSettings(
     buildingId: Building<MELCloudDevice>['ID']
   ): Promise<HolidayModeData> {
-    if (!(buildingId in this.buildings)) {
-      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
-    }
     const buildingName: Building<MELCloudDevice>['Name'] =
-      this.buildings[buildingId]
+      this.getBuildingName(buildingId)
     this.log('Getting holiday mode settings for building', buildingName, '...')
     const buildingDeviceId: MELCloudDevice['id'] = this.getFirstDeviceId({
       buildingId
@@ -527,11 +518,8 @@ export default class MELCloudApp extends App {
     buildingId: Building<MELCloudDevice>['ID'],
     settings: HolidayModeSettings
   ): Promise<void> {
-    if (!(buildingId in this.buildings)) {
-      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
-    }
     const buildingName: Building<MELCloudDevice>['Name'] =
-      this.buildings[buildingId]
+      this.getBuildingName(buildingId)
     const { Enabled, StartDate, EndDate } = settings
     if (Enabled && (StartDate === '' || EndDate === '')) {
       throw new Error(this.homey.__('app.holiday_mode.date_missing'))
@@ -601,6 +589,15 @@ export default class MELCloudApp extends App {
       )
       .join('\n')
     throw new Error(errorMessage)
+  }
+
+  getBuildingName(
+    buildingId: Building<MELCloudDevice>['ID']
+  ): Building<MELCloudDevice>['Name'] {
+    if (!(buildingId in this.buildings)) {
+      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
+    }
+    return this.buildings[buildingId]
   }
 
   setSettings(settings: Settings): void {
