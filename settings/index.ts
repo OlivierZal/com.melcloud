@@ -493,33 +493,20 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       endPoint += `?${queryString}`
     }
     // @ts-expect-error bug
-    Homey.api(
-      'POST',
-      endPoint,
-      body,
-      async (error: Error, success: boolean): Promise<void> => {
-        if (error !== null) {
-          setDeviceSettings(buttonElement, body, driverId)
-          return
-        }
-        buttonElement.classList.remove('is-disabled')
-        if (!success) {
-          // @ts-expect-error bug
-          await Homey.alert(
-            Homey.__('settings.alert.failure', {
-              action: Homey.__('settings.alert.actions.update')
-            })
-          )
-          return
-        }
+    Homey.api('POST', endPoint, body, async (error: Error): Promise<void> => {
+      if (error !== null) {
         // @ts-expect-error bug
-        await Homey.alert(
-          Homey.__('settings.alert.success', {
-            action: Homey.__('settings.alert.actions.update')
-          })
-        )
+        await Homey.alert(error.message)
+        return
       }
-    )
+      buttonElement.classList.remove('is-disabled')
+      // @ts-expect-error bug
+      await Homey.alert(
+        Homey.__('settings.alert.success', {
+          action: Homey.__('settings.alert.actions.update')
+        })
+      )
+    })
   }
 
   function addSettingsEventListener(
@@ -551,17 +538,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             await Homey.alert(error.message)
             return
           }
-          if (!ok) {
-            // @ts-expect-error bug
-            await Homey.alert(
-              Homey.__('settings.alert.failure', {
-                action: Homey.__('settings.alert.actions.update')
-              })
-            )
-            return
+          if (ok) {
+            buttonElement.classList.add('is-disabled')
+            setDeviceSettings(buttonElement, body, driverId)
           }
-          buttonElement.classList.add('is-disabled')
-          setDeviceSettings(buttonElement, body, driverId)
         }
       )
     })
@@ -697,13 +677,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       body,
       async (error: Error, login: boolean): Promise<void> => {
         authenticateElement.classList.remove('is-disabled')
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          return
-        }
-        if (!login) {
+        if (error !== null || !login) {
           unhide(authenticatingElement)
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            return
+          }
           // @ts-expect-error bug
           await Homey.alert(
             Homey.__('settings.alert.failure', {
