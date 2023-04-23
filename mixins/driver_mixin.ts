@@ -4,14 +4,13 @@ import type MELCloudApp from '../app'
 import {
   type DeviceDetails,
   type ListDevice,
-  type ListDeviceData,
   type LoginCredentials,
   type MELCloudDevice
 } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
-  deviceType!: ListDeviceData<MELCloudDevice>['DeviceType']
+  deviceType!: number
   heatPumpType!: string
 
   async onInit(): Promise<void> {

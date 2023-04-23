@@ -302,7 +302,7 @@ type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
 export type UpdateData<T extends MELCloudDevice> = Required<SetDeviceData<T>>
 
 export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
-  readonly DeviceID: T['id']
+  readonly DeviceID: number
   readonly HasPendingCommand: true
 }
 
@@ -349,8 +349,8 @@ interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
 export type ListDeviceData<T extends MELCloudDevice> =
   T extends MELCloudDeviceAtw ? ListDeviceDataAtw : ListDeviceDataAta
 
-export interface ReportPostData<T extends MELCloudDevice> {
-  readonly DeviceID: T['id']
+export interface ReportPostData {
+  readonly DeviceID: number
   readonly FromDate: string
   readonly ToDate: string
   readonly UseCurrency: false
@@ -763,7 +763,7 @@ export interface FrostProtectionSettings {
 }
 
 export interface FrostProtectionPostData extends FrostProtectionSettings {
-  readonly BuildingIds: [Building<MELCloudDevice>['ID']]
+  readonly BuildingIds: [number]
 }
 
 export interface FrostProtectionData {
@@ -798,7 +798,7 @@ export interface HolidayModePostData {
   } | null
   readonly HMTimeZones: [
     {
-      readonly Buildings: [Building<MELCloudDevice>['ID']]
+      readonly Buildings: [number]
     }
   ]
 }
@@ -854,7 +854,7 @@ export interface ErrorLogPostData {
 }
 
 export interface ErrorLogData {
-  readonly DeviceId: MELCloudDevice['id']
+  readonly DeviceId: number
   readonly ErrorMessage: string
   readonly StartDate: string
   readonly EndDate: string

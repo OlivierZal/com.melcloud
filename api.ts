@@ -188,7 +188,7 @@ module.exports = {
     params
   }: {
     homey: Homey
-    params: { buildingId: Building<MELCloudDevice>['ID'] }
+    params: { buildingId: number }
   }): Promise<FrostProtectionData> {
     return await (homey.app as MELCloudApp).getFrostProtectionSettings(
       Number(params.buildingId)
@@ -200,7 +200,7 @@ module.exports = {
     params
   }: {
     homey: Homey
-    params: { buildingId: Building<MELCloudDevice>['ID'] }
+    params: { buildingId: number }
   }): Promise<HolidayModeData> {
     const data: HolidayModeData = await (
       homey.app as MELCloudApp
