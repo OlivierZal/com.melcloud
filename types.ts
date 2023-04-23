@@ -57,8 +57,8 @@ export interface ManifestDevice {
 export interface DeviceSetting {
   readonly id: string
   readonly type: string
+  readonly driverId: string
   title: string
-  readonly driverId?: string
   readonly groupId?: string
   readonly groupLabel?: string
   readonly min?: number

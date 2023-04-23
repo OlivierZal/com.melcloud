@@ -5809,8 +5809,8 @@
             "da": "Måltemperatur for fremledning - køling",
             "es": "Temperatura configurada del flujo de enfriamiento"
           },
-          "min": 10,
-          "max": 30
+          "min": 5,
+          "max": 25
         },
         "target_temperature.zone1_flow_heat": {
           "title": {
@@ -5848,8 +5848,8 @@
             "da": "Måltemperatur for fremledning - køling - zone 2",
             "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
           },
-          "min": 10,
-          "max": 30
+          "min": 5,
+          "max": 25
         },
         "target_temperature.zone2_flow_heat": {
           "title": {

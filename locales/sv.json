@@ -1,0 +1,75 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Byggnaden __buildingId__ har ingen enhet.",
+      "not_found": "Byggnaden __buildingId__ kunde inte hittas."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdatum och/eller slutdatum saknas."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Logga in",
+      "failure": "Autentisering misslyckades.",
+      "legend": "Inloggningsuppgifter"
+    },
+    "boolean": {
+      "false": "Nej",
+      "true": "Ja"
+    },
+    "buildings": {
+      "error": "Autentisering lyckades.\n\nLägg till en enhet i Homey för att komma åt appinställningarna.",
+      "legend": "Byggnadsinställningar",
+      "frost_protection": {
+        "enabled": "Aktivera <strong>frostskydd</strong>",
+        "max": "Maximal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktivera <strong>semesterläge</strong>",
+        "end_date": "Slutdatum",
+        "start_date": "Startdatum"
+      },
+      "refresh": "Ladda om",
+      "update": "Uppdatera"
+    },
+    "devices": {
+      "apply": {
+        "button": "Tillämpa på alla enheter",
+        "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?\n\nDenna åtgärd kan ta lite tid.",
+        "nothing": "Ingen ändring att tillämpa."
+      },
+      "legend": "Enhetsinställningar"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
+      "configure": "Konfigurera",
+      "legend": "Luft-luft enhetsinställningar"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Datum",
+        "Device": "Enhet",
+        "Error": "Fel"
+      },
+      "error": "Välj ett datum före\n__fromDateHuman__.",
+      "error_count_text_0": "fel",
+      "error_count_text_1": "fel",
+      "error_count_text_234": "fel",
+      "error_count_text_plural": "fel",
+      "legend": "Fellogg",
+      "period": "Sedan __fromDateHuman__:",
+      "see": "Se alla fel",
+      "since": "sedan"
+    },
+    "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "success": "Uppdatering lyckades.",
+    "title": "MELCloud-inställningar"
+  },
+  "warnings": {
+    "always_on": "Avstängning från Homey har inaktiverats.",
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
+    "display_error": "Uppdatering lyckades (även om ett annat värde visas)."
+  }
+}

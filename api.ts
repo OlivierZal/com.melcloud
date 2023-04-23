@@ -143,32 +143,42 @@ module.exports = {
             )
         )
     )
-    const loginSetting: PairSetting | undefined = app.manifest.drivers
-      .flatMap((driver: ManifestDevice): PairSetting[] => driver.pair ?? [])
-      ?.find((pairSetting: PairSetting): boolean => pairSetting.id === 'login')
-    const settingsLogin: DeviceSetting[] = Object.values(
-      Object.entries(loginSetting?.options ?? {}).reduce<
-        Record<string, DeviceSetting>
-      >((acc, [option, label]: [string, Record<string, string>]) => {
-        const isPassword: boolean = option.startsWith('password')
-        const key: 'password' | 'username' = isPassword
-          ? 'password'
-          : 'username'
-        if (!(key in acc)) {
-          acc[key] = {
-            groupId: 'login',
-            id: key,
-            title: '',
-            type: isPassword ? 'password' : 'text'
-          }
+
+    const settingsLogin: DeviceSetting[] = app.manifest.drivers.flatMap(
+      (driver: ManifestDevice): DeviceSetting[] => {
+        const driverPairSetting: PairSetting | undefined = driver.pair?.find(
+          (pairSetting: PairSetting): boolean => pairSetting.id === 'login'
+        )
+        if (driverPairSetting === undefined) {
+          return []
         }
-        if (option.endsWith('Placeholder')) {
-          acc[key].placeholder = label[language]
-        } else {
-          acc[key].title = label[language]
-        }
-        return acc
-      }, {})
+        const driverLoginSettings: DeviceSetting[] = Object.values(
+          Object.entries(driverPairSetting.options ?? {}).reduce<
+            Record<string, DeviceSetting>
+          >((acc, [option, label]: [string, Record<string, string>]) => {
+            const isPassword: boolean = option.startsWith('password')
+            const key: 'password' | 'username' = isPassword
+              ? 'password'
+              : 'username'
+            if (!(key in acc)) {
+              acc[key] = {
+                groupId: 'login',
+                id: key,
+                title: '',
+                type: isPassword ? 'password' : 'text',
+                driverId: driver.id
+              }
+            }
+            if (option.endsWith('Placeholder')) {
+              acc[key].placeholder = label[language]
+            } else {
+              acc[key].title = label[language]
+            }
+            return acc
+          }, {})
+        )
+        return driverLoginSettings
+      }
     )
     return [...settings, ...settingsLogin]
   },
