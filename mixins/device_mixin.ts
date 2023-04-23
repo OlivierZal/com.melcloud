@@ -261,7 +261,7 @@ export default class MELCloudDeviceMixin extends Device {
       .filter(([capability, _]: [string, any]): boolean =>
         this.hasCapability(capability)
       )
-      .map(([capability, { effectiveFlag, tag }]) => {
+      .map(([capability, { tag, effectiveFlag }]) => {
         if (capability in diff) {
           effectiveFlags |= effectiveFlag
           return [
@@ -336,12 +336,18 @@ export default class MELCloudDeviceMixin extends Device {
     const capabilities: Array<
       [
         NonReportCapability<T>,
-        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+        {
+          tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+          effectiveFlag?: bigint
+        }
       ]
     > = Object.entries(capabilitiesToProcess()) as Array<
       [
         NonReportCapability<T>,
-        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+        {
+          tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+          effectiveFlag?: bigint
+        }
       ]
     >
     const keysToProcessLast: string[] = [
@@ -353,13 +359,19 @@ export default class MELCloudDeviceMixin extends Device {
     ): Array<
       [
         NonReportCapability<T>,
-        { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+        {
+          tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+          effectiveFlag?: bigint
+        }
       ]
     > =>
       capabilities.filter(
         ([capability, _]: [
           NonReportCapability<T>,
-          { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+          {
+            tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+            effectiveFlag?: bigint
+          }
         ]): boolean => keysToProcessLast.includes(capability) === last
       )
 
@@ -367,15 +379,21 @@ export default class MELCloudDeviceMixin extends Device {
       capabilitiesArray: Array<
         [
           NonReportCapability<T>,
-          { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+          {
+            tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+            effectiveFlag?: bigint
+          }
         ]
       >
     ): Promise<void> => {
       await Promise.all(
         capabilitiesArray.map(
-          async ([capability, { effectiveFlag, tag }]: [
+          async ([capability, { tag, effectiveFlag }]: [
             NonReportCapability<T>,
-            { tag: ListCapabilityMapping<T>['tag']; effectiveFlag?: bigint }
+            {
+              tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+              effectiveFlag?: bigint
+            }
           ]): Promise<void> => {
             await processCapability(capability, tag, effectiveFlag)
           }
@@ -401,7 +419,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
     const processCapability = async (
       capability: NonReportCapability<T>,
-      tag: ListCapabilityMapping<T>['tag'],
+      tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>,
       effectiveFlag?: bigint
     ): Promise<void> => {
       if (shouldProcess(capability, effectiveFlag)) {
