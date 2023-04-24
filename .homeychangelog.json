@@ -103,5 +103,8 @@
   },
   "15.1.0": {
     "en": "Optimized loops (task parallelization)."
+  },
+  "16.0.0": {
+    "en": "Reshaped error management."
   }
 }
