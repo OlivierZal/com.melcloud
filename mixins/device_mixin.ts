@@ -86,8 +86,8 @@ export default class MELCloudDeviceMixin extends Device {
   diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
 
   syncTimeout!: NodeJS.Timeout
-  reportTimeout!: { true?: NodeJS.Timeout; false?: NodeJS.Timeout }
-  reportInterval!: { true: NodeJS.Timeout | null; false: NodeJS.Timeout | null }
+  reportTimeout!: { true: NodeJS.Timeout | null; false: NodeJS.Timeout | null }
+  reportInterval!: { true?: NodeJS.Timeout; false?: NodeJS.Timeout }
   reportPlanParameters!: {
     minus: object
     interval: object
@@ -109,8 +109,8 @@ export default class MELCloudDeviceMixin extends Device {
     this.registerCapabilityListeners()
     this.app.applySyncFromDevices()
 
-    this.reportTimeout = {}
-    this.reportInterval = { true: null, false: null }
+    this.reportTimeout = { true: null, false: null }
+    this.reportInterval = {}
     await this.runEnergyReports()
   }
 
@@ -562,7 +562,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   planEnergyReport(total: boolean = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
-    if (this.reportInterval[totalString] !== null) {
+    if (this.reportTimeout[totalString] !== null) {
       return
     }
     const type: string = `${total ? 'total' : 'daily'} energy report`
@@ -678,7 +678,7 @@ export default class MELCloudDeviceMixin extends Device {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
     this.homey.clearTimeout(this.reportTimeout[totalString])
     this.homey.clearInterval(this.reportInterval[totalString])
-    this.reportInterval[totalString] = null
+    this.reportTimeout[totalString] = null
     this.log(total ? 'Total' : 'Daily', 'energy report has been stopped')
   }
 
