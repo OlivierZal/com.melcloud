@@ -570,7 +570,7 @@ export default class MELCloudDeviceMixin extends Device {
       ? {
           interval: { days: 1 },
           duration: { days: 1 },
-          values: { hour: 0, minute: 10, second: 0, millisecond: 0 }
+          values: { hour: 0, minute: 5, second: 0, millisecond: 0 }
         }
       : this.reportPlanParameters
     this.reportTimeout[totalString] = this.setTimeout(

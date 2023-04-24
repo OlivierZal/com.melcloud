@@ -94,7 +94,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       minus: { hours: 1 },
       interval: { hours: 1 },
       duration: { hours: 1 },
-      values: { minute: 10, second: 0, millisecond: 0 }
+      values: { minute: 5, second: 0, millisecond: 0 }
     }
     await super.onInit()
   }
