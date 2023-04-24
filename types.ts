@@ -17,10 +17,9 @@ export interface Settings extends Record<string, any> {
   always_on?: boolean
 }
 
-export interface ManifestDeviceSettingData {
+export interface ManifestDriverSettingData {
   readonly id: string
   readonly label: Record<string, string>
-
   readonly type: string
   readonly min?: number
   readonly max?: number
@@ -28,15 +27,17 @@ export interface ManifestDeviceSettingData {
   readonly values?: Array<{ id: string; label: Record<string, string> }>
 }
 
-export interface ManifestDeviceSetting {
+export interface ManifestDriverSetting {
   readonly label: Record<string, string>
   readonly id?: string
-  readonly children?: ManifestDeviceSettingData[]
+  readonly children?: ManifestDriverSettingData[]
 }
 
-export interface PairSetting {
-  readonly id: string
-  readonly options?: {
+export type PairSetting = { id: string } & Record<string, any>
+
+export interface LoginSetting extends PairSetting {
+  readonly id: 'login'
+  readonly options: {
     readonly usernameLabel: Record<string, string>
     readonly usernamePlaceholder: Record<string, string>
     readonly passwordLabel: Record<string, string>
@@ -44,14 +45,14 @@ export interface PairSetting {
   }
 }
 
-export interface ManifestDevice {
+export interface ManifestDriver {
   readonly id: string
   readonly capabilitiesOptions?: Record<
     string,
     { readonly title?: Record<string, string> }
   >
-  readonly pair?: PairSetting[]
-  readonly settings?: ManifestDeviceSetting[]
+  readonly pair: LoginSetting & PairSetting[]
+  readonly settings?: ManifestDriverSetting[]
 }
 
 export interface DeviceSetting {
