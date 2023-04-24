@@ -565,7 +565,7 @@ export default class MELCloudDeviceMixin extends Device {
     if (this.reportTimeout[totalString] !== null) {
       return
     }
-    const type: string = `${total ? 'total' : 'daily'} energy report`
+    const type: string = `${total ? 'total' : 'regular'} energy report`
     const { interval, duration, values } = total
       ? {
           interval: { days: 1 },
@@ -679,7 +679,7 @@ export default class MELCloudDeviceMixin extends Device {
     this.homey.clearTimeout(this.reportTimeout[totalString])
     this.homey.clearInterval(this.reportInterval[totalString])
     this.reportTimeout[totalString] = null
-    this.log(total ? 'Total' : 'Daily', 'energy report has been stopped')
+    this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
   }
 
   async onDeleted(): Promise<void> {
