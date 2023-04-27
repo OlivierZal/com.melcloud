@@ -1,6 +1,5 @@
 import type Homey from 'homey/lib/Homey'
 import {
-  credentialKeys,
   type Building,
   type ErrorDetails,
   type ErrorLog,
@@ -169,7 +168,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const credentialElement: Partial<
     Record<keyof LoginCredentials, HTMLInputElement>
   > = {}
-  for (const credentialKey of credentialKeys) {
+  for (const credentialKey of ['username', 'password']) {
     const setting: DeviceSetting | undefined = allSettings.find(
       (setting: DeviceSetting): boolean => setting.id === credentialKey
     )
@@ -190,7 +189,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     await getHomeySetting(inputElement)
     loginElement.appendChild(labelElement)
     loginElement.appendChild(inputElement)
-    credentialElement[setting.id] = inputElement
+    credentialElement[setting.id as keyof LoginCredentials] = inputElement
   }
 
   const errorCountLabelElement: HTMLLabelElement = document.getElementById(
