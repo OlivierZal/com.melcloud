@@ -1,5 +1,6 @@
 import type Homey from 'homey/lib/Homey'
 import {
+  credentialKeys,
   type Building,
   type ErrorDetails,
   type ErrorLog,
@@ -165,12 +166,16 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'end-date'
   ) as HTMLInputElement
 
-  const credentialKeys: Array<keyof LoginCredentials> = ['username', 'password']
-  const credentialElement: Record<string, HTMLInputElement> = {}
+  const credentialElement: Partial<
+    Record<keyof LoginCredentials, HTMLInputElement>
+  > = {}
   for (const credentialKey of credentialKeys) {
-    const setting: DeviceSetting = allSettings.find(
+    const setting: DeviceSetting | undefined = allSettings.find(
       (setting: DeviceSetting): boolean => setting.id === credentialKey
-    ) as DeviceSetting
+    )
+    if (setting === undefined) {
+      continue
+    }
     const divElement: HTMLDivElement = document.createElement('div')
     divElement.classList.add('homey-form-group')
     const labelElement: HTMLLabelElement = document.createElement('label')
@@ -663,8 +668,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   async function login(): Promise<void> {
-    const username: string = credentialElement.username.value
-    const password: string = credentialElement.password.value
+    const username: string = credentialElement.username?.value ?? ''
+    const password: string = credentialElement.password?.value ?? ''
     if (username === '' || password === '') {
       authenticateElement.classList.remove('is-disabled')
       unhide(authenticatingElement)

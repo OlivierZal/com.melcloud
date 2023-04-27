@@ -738,10 +738,9 @@ export interface FlowArgsAta
   readonly device: MELCloudDeviceAta
 }
 
-export interface LoginCredentials {
-  readonly username: string
-  readonly password: string
-}
+export const credentialKeys: [string, string] = ['username', 'password']
+
+export type LoginCredentials = Record<(typeof credentialKeys)[number], string>
 
 export interface LoginPostData {
   readonly AppVersion: '1.26.2.0'
