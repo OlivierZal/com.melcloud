@@ -19,7 +19,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Authenticatie geslaagd.\n\nVoeg een apparaat toe in Homey om toegang te krijgen tot de app-instellingen.",
       "legend": "Gebouwinstellingen",
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Toepassen op alle apparaten",
-        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?\n\nDeze actie kan enige tijd in beslag nemen.",
+        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
         "nothing": "Geen wijziging om toe te passen."
       },
       "legend": "Apparaatinstellingen"
@@ -46,6 +45,9 @@
       "auto_adjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
       "legend": "Lucht-lucht apparaatinstellingen"
+    },
+    "devices_atw": {
+      "legend": "Lucht-water apparaatinstellingen"
     },
     "error_log": {
       "columns": {

@@ -212,7 +212,9 @@ export default class MELCloudApp extends App {
     deviceType?: number,
     syncMode: SyncFromMode = 'refresh'
   ): Promise<Array<ListDevice<T>>> {
-    const buildings: Array<Building<T>> = await this.getBuildings()
+    const buildings: Array<Building<T>> = await this.getBuildings().catch(
+      (): Array<Building<T>> => []
+    )
     const { devices, newBuildings, deviceIds } = buildings.reduce<{
       devices: Array<ListDevice<T>>
       newBuildings: Record<number, string>
@@ -272,12 +274,11 @@ export default class MELCloudApp extends App {
       this.log('Searching for buildings:\n', data)
       return data
     } catch (error: unknown) {
-      this.error(
-        'Searching for buildings:',
-        error instanceof Error ? error.message : error
-      )
+      const errorMessage: string =
+        error instanceof Error ? error.message : String(error)
+      this.error('Searching for buildings:', errorMessage)
+      throw new Error(errorMessage)
     }
-    return []
   }
 
   async syncDevicesFromList(syncMode: SyncFromMode): Promise<void> {
@@ -375,40 +376,6 @@ export default class MELCloudApp extends App {
       )
     }
     return null
-  }
-
-  async setDeviceSettings(
-    settings: Settings,
-    driverId?: string
-  ): Promise<void> {
-    const changedKeys: string[] = Object.keys(settings)
-    if (changedKeys.length === 0) {
-      return
-    }
-    try {
-      await Promise.all(
-        this.getDevices({ driverId }).map(
-          async (device: MELCloudDevice): Promise<void> => {
-            try {
-              await device.setSettings(settings).then((): void => {
-                device.log(settings)
-              })
-              await device.onSettings({
-                newSettings: device.getSettings(),
-                changedKeys
-              })
-            } catch (error: unknown) {
-              const errorMessage: string =
-                error instanceof Error ? error.message : String(error)
-              device.error(errorMessage)
-              throw new Error(errorMessage)
-            }
-          }
-        )
-      )
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : String(error))
-    }
   }
 
   async getUnitErrorLog(
@@ -579,7 +546,7 @@ export default class MELCloudApp extends App {
   }
 
   getBuildingName(buildingId: number): string {
-    if (!(buildingId in this.buildings)) {
+    if (this.buildings[buildingId] === undefined) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
     }
     return this.buildings[buildingId]

@@ -19,7 +19,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Autentisering lyckades.\n\nLägg till en enhet i Homey för att komma åt appinställningarna.",
       "legend": "Byggnadsinställningar",
       "frost_protection": {
         "enabled": "Aktivera <strong>frostskydd</strong>",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Tillämpa på alla enheter",
-        "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?\n\nDenna åtgärd kan ta lite tid.",
+        "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?",
         "nothing": "Ingen ändring att tillämpa."
       },
       "legend": "Enhetsinställningar"
@@ -46,6 +45,9 @@
       "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
       "legend": "Luft-luft enhetsinställningar"
+    },
+    "devices_atw": {
+      "legend": "Luft-vatten enhetsinställningar"
     },
     "error_log": {
       "columns": {

@@ -5,7 +5,7 @@
 }
 
 .bordered th {
-  background-color: #e6e6e6;
+  background-color: #939496;
   font-weight: bold;
 }
 
@@ -65,4 +65,25 @@
 
 .homey-form-label.bolded {
   font-weight: bold;
+}
+
+input.homey-form-checkbox-input:indeterminate ~ .homey-form-checkbox-checkmark {
+  background-color: var(--homey-color-highlight);
+  border-color: var(--homey-color-highlight);
+  position: relative;
+}
+
+input.homey-form-checkbox-input:indeterminate
+  ~ .homey-form-checkbox-checkmark::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 2px;
+  background-color: var(--homey-icon-color-white);
+  opacity: 1;
+  -webkit-mask-image: none;
+  mask-image: none;
 }
