@@ -76,24 +76,33 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const deviceSettings: DeviceSettings = await getDeviceSettings()
-  const flatDeviceSettings: Record<string, any[]> = Object.values(
-    deviceSettings
-  ).reduce<Record<string, any[]>>((acc, settings: Record<string, any[]>) => {
-    Object.entries(settings).forEach(
-      ([settingId, settingValues]: [string, any[]]): void => {
-        if (acc[settingId] === undefined) {
-          acc[settingId] = []
-        }
-        acc[settingId].push(
-          ...settingValues.filter(
-            (value: any): boolean => !acc[settingId].includes(value)
-          )
+  function flattenDeviceSettings(
+    deviceSettings: DeviceSettings
+  ): Record<string, any[]> {
+    return Object.values(deviceSettings).reduce<Record<string, any[]>>(
+      (acc, settings: Record<string, any[]>) => {
+        Object.entries(settings).forEach(
+          ([settingId, settingValues]: [string, any[]]): void => {
+            if (acc[settingId] === undefined) {
+              acc[settingId] = []
+            }
+            acc[settingId].push(
+              ...settingValues.filter(
+                (value: any): boolean => !acc[settingId].includes(value)
+              )
+            )
+          }
         )
-      }
+        return acc
+      },
+      {}
     )
-    return acc
-  }, {})
+  }
+
+  const deviceSettings: DeviceSettings = await getDeviceSettings()
+  let flatDeviceSettings: Record<string, any[]> =
+    flattenDeviceSettings(deviceSettings)
+
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
   const { driverSettingsMixin, driverSettings } = allDriverSettings
     .filter((setting: DriverSetting): boolean => setting.groupId !== 'login')
@@ -551,6 +560,27 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
+  function updateDeviceSettings(body: Settings, driverId?: string): void {
+    if (driverId !== undefined) {
+      Object.entries(body).forEach(
+        ([settingId, settingValue]: [string, any]): void => {
+          deviceSettings[driverId][settingId] = [settingValue]
+        }
+      )
+    } else {
+      Object.entries(body).forEach(
+        ([settingId, settingValue]: [string, any]): void => {
+          Object.values(deviceSettings).forEach(
+            (settings: Record<string, any[]>): void => {
+              settings[settingId] = [settingValue]
+            }
+          )
+        }
+      )
+    }
+    flatDeviceSettings = flattenDeviceSettings(deviceSettings)
+  }
+
   function setDeviceSettings(
     buttonElement: HTMLButtonElement,
     body: Settings,
@@ -570,24 +600,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         await Homey.alert(error.message)
         return
       }
-      if (driverId !== undefined) {
-        Object.entries(body).forEach(
-          ([settingId, settingValue]: [string, any]): void => {
-            deviceSettings[driverId][settingId] = [settingValue]
-          }
-        )
-      } else {
-        Object.entries(body).forEach(
-          ([settingId, settingValue]: [string, any]): void => {
-            Object.values(deviceSettings).forEach(
-              (settings: Record<string, any[]>): void => {
-                settings[settingId] = [settingValue]
-              }
-            )
-            flatDeviceSettings[settingId] = [settingValue]
-          }
-        )
-      }
+      updateDeviceSettings(body, driverId)
       buttonElement.classList.remove('is-disabled')
       // @ts-expect-error bug
       await Homey.alert(Homey.__('settings.success'))
