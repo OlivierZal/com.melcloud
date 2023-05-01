@@ -76,32 +76,24 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function flattenDeviceSettings(
-    deviceSettings: DeviceSettings
-  ): Record<string, any[]> {
-    return Object.values(deviceSettings).reduce<Record<string, any[]>>(
-      (acc, settings: Record<string, any[]>) => {
-        Object.entries(settings).forEach(
-          ([settingId, settingValues]: [string, any[]]): void => {
-            if (acc[settingId] === undefined) {
-              acc[settingId] = []
-            }
-            acc[settingId].push(
-              ...settingValues.filter(
-                (value: any): boolean => !acc[settingId].includes(value)
-              )
-            )
-          }
-        )
-        return acc
-      },
-      {}
-    )
-  }
-
   const deviceSettings: DeviceSettings = await getDeviceSettings()
-  let flatDeviceSettings: Record<string, any[]> =
-    flattenDeviceSettings(deviceSettings)
+  const flatDeviceSettings: Record<string, any[]> = Object.values(
+    deviceSettings
+  ).reduce<Record<string, any[]>>((acc, settings: Record<string, any[]>) => {
+    Object.entries(settings).forEach(
+      ([settingId, settingValues]: [string, any[]]): void => {
+        if (acc[settingId] === undefined) {
+          acc[settingId] = []
+        }
+        acc[settingId].push(
+          ...settingValues.filter(
+            (value: any): boolean => !acc[settingId].includes(value)
+          )
+        )
+      }
+    )
+    return acc
+  }, {})
 
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
   const { driverSettingsMixin, driverSettings } = allDriverSettings
@@ -575,10 +567,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
               settings[settingId] = [settingValue]
             }
           )
+          flatDeviceSettings[settingId] = [settingValue]
         }
       )
     }
-    flatDeviceSettings = flattenDeviceSettings(deviceSettings)
   }
 
   function setDeviceSettings(
