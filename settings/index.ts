@@ -529,31 +529,34 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          if (buildingElement.childElementCount !== 0) {
-            return
+          if (buildingElement.childElementCount === 0) {
+            buildings.forEach((building: Building<MELCloudDevice>): void => {
+              const { ID, Name } = building
+              const optionElement: HTMLOptionElement =
+                document.createElement('option')
+              optionElement.value = String(ID)
+              optionElement.innerText = Name
+              buildingElement.appendChild(optionElement)
+            })
+            const {
+              HMEnabled,
+              HMStartDate,
+              HMEndDate,
+              FPEnabled,
+              FPMinTemperature,
+              FPMaxTemperature
+            } = buildings[0]
+            getBuildingHolidayModeSettings({
+              HMEnabled,
+              HMStartDate,
+              HMEndDate
+            })
+            getBuildingFrostProtectionSettings({
+              FPEnabled,
+              FPMinTemperature,
+              FPMaxTemperature
+            })
           }
-          buildings.forEach((building: Building<MELCloudDevice>): void => {
-            const { ID, Name } = building
-            const optionElement: HTMLOptionElement =
-              document.createElement('option')
-            optionElement.value = String(ID)
-            optionElement.innerText = Name
-            buildingElement.appendChild(optionElement)
-          })
-          const {
-            HMEnabled,
-            HMStartDate,
-            HMEndDate,
-            FPEnabled,
-            FPMinTemperature,
-            FPMaxTemperature
-          } = buildings[0]
-          getBuildingHolidayModeSettings({ HMEnabled, HMStartDate, HMEndDate })
-          getBuildingFrostProtectionSettings({
-            FPEnabled,
-            FPMinTemperature,
-            FPMaxTemperature
-          })
           resolve()
         }
       )
@@ -696,7 +699,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const settingsElement: HTMLDivElement = document.getElementById(
       `settings-${driverId}`
     ) as HTMLDivElement
-    if (settingsElement.childElementCount !== 0) {
+    if (settingsElement.childElementCount > 0) {
       return
     }
     const fieldSetElement: HTMLFieldSetElement =
