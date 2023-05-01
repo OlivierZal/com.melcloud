@@ -803,6 +803,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function needsAuthentication(value: boolean = true): void {
+    authenticateElement.classList.remove('is-disabled')
     hide(authenticatedElement, value)
     unhide(authenticatingElement, value)
   }
@@ -841,8 +842,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       '/login',
       body,
       async (error: Error, login: boolean): Promise<void> => {
-        authenticateElement.classList.remove('is-disabled')
         if (error !== null || !login) {
+          authenticateElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(
             error !== null
@@ -1030,5 +1031,4 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   await start()
-  needsAuthentication()
 }
