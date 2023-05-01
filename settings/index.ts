@@ -79,7 +79,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   function flattenDeviceSettings(): Record<string, any[]> {
     return Object.values(deviceSettings).reduce<Record<string, any[]>>(
       (acc, settings: Record<string, any[]>) => {
-        Object.entries(settings).reduce<Record<string, any[]>>(
+        return Object.entries(settings).reduce<Record<string, any[]>>(
           (merged, [settingId, settingValues]: [string, any[]]) => {
             if (merged[settingId] === undefined) {
               merged[settingId] = []
@@ -94,7 +94,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           },
           acc
         )
-        return acc
       },
       {}
     )
@@ -650,6 +649,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function generateMixinChildrenElements(): void {
+    if (settingsMixinElement.childElementCount > 0) {
+      return
+    }
     driverSettingsMixin
       .filter((setting: DriverSetting): boolean =>
         ['checkbox', 'dropdown'].includes(setting.type)
@@ -1028,4 +1030,5 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   await start()
+  needsAuthentication()
 }
