@@ -76,24 +76,32 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  const deviceSettings: DeviceSettings = await getDeviceSettings()
-  const flatDeviceSettings: Record<string, any[]> = Object.values(
-    deviceSettings
-  ).reduce<Record<string, any[]>>((acc, settings: Record<string, any[]>) => {
-    Object.entries(settings).forEach(
-      ([settingId, settingValues]: [string, any[]]): void => {
-        if (acc[settingId] === undefined) {
-          acc[settingId] = []
-        }
-        acc[settingId].push(
-          ...settingValues.filter(
-            (value: any): boolean => !acc[settingId].includes(value)
-          )
+  function flattenDeviceSettings(): Record<string, any[]> {
+    return Object.values(deviceSettings).reduce<Record<string, any[]>>(
+      (acc, settings: Record<string, any[]>) => {
+        Object.entries(settings).reduce<Record<string, any[]>>(
+          (merged, [settingId, settingValues]: [string, any[]]) => {
+            if (merged[settingId] === undefined) {
+              merged[settingId] = []
+            }
+            merged[settingId].push(
+              ...settingValues.filter(
+                (settingValue: any): boolean =>
+                  !merged[settingId].includes(settingValue)
+              )
+            )
+            return merged
+          },
+          acc
         )
-      }
+        return acc
+      },
+      {}
     )
-    return acc
-  }, {})
+  }
+
+  const deviceSettings: DeviceSettings = await getDeviceSettings()
+  let flatDeviceSettings: Record<string, any[]> = flattenDeviceSettings()
 
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
   const { driverSettingsMixin, driverSettings } = allDriverSettings
@@ -559,6 +567,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           deviceSettings[driverId][settingId] = [settingValue]
         }
       )
+      flatDeviceSettings = flattenDeviceSettings()
     } else {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, any]): void => {
