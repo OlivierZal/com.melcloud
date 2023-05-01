@@ -19,7 +19,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Godkendelse lykkedes.\n\nTilføj en enhed i Homey for at få adgang til app-indstillingerne.",
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
         "max": "Maksimal temperatur",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Anvend på alle enheder",
-        "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?\n\nDenne handling kan tage lidt tid.",
+        "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?",
         "nothing": "Ingen ændringer at anvende."
       },
       "legend": "Enhedsindstillinger"
@@ -46,6 +45,9 @@
       "auto_adjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-luft enhedsindstillinger"
+    },
+    "devices_atw": {
+      "legend": "Luft-vand enhedsindstillinger"
     },
     "error_log": {
       "columns": {

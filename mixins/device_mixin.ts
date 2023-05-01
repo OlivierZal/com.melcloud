@@ -570,7 +570,7 @@ export default class MELCloudDeviceMixin extends Device {
       ? {
           interval: { days: 1 },
           duration: { days: 1 },
-          values: { hour: 0, minute: 5, second: 0, millisecond: 0 }
+          values: { hour: 1, minute: 5, second: 0, millisecond: 0 }
         }
       : this.reportPlanParameters
     this.reportTimeout[totalString] = this.setTimeout(
@@ -634,21 +634,12 @@ export default class MELCloudDeviceMixin extends Device {
         const changedEnergyKeys: string[] = changedKeys.filter(
           (setting: string): boolean => setting in reportCapabilities
         )
-        if (
-          changedEnergyKeys.length === 0 ||
-          Object.keys(reportCapabilities).length === 0
-        ) {
-          if (Object.keys(reportCapabilities).length === 0) {
+        if (changedEnergyKeys.length !== 0) {
+          if (Object.keys(reportCapabilities).length !== 0) {
+            await this.runEnergyReport(total)
+          } else {
             this.clearEnergyReportPlan(total)
           }
-          return
-        }
-        if (
-          changedEnergyKeys.some(
-            (setting: string): boolean => newSettings[setting] === true
-          )
-        ) {
-          await this.runEnergyReport(total)
         }
       })
     )

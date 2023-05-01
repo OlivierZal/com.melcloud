@@ -19,7 +19,6 @@
       "true": "Oui"
     },
     "buildings": {
-      "error": "Authentification réussie.\n\nAjoutez un appareil dans Homey pour accéder aux paramètres de l'application.",
       "frost_protection": {
         "enabled": "Activer la <strong>protection contre le gel</strong>",
         "max": "Température maximale",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Appliquer à tous les appareils",
-        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?\n\nCette action peut prendre un certain temps.",
+        "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?",
         "nothing": "Aucun changement à appliquer."
       },
       "legend": "Paramètres des appareils"
@@ -46,6 +45,9 @@
       "auto_adjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
       "legend": "Paramètres des appareils air-air"
+    },
+    "devices_atw": {
+      "legend": "Paramètres des appareils air-eau"
     },
     "error_log": {
       "columns": {

@@ -19,7 +19,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "error": "Autentisering vellykket.\n\nLegg til en enhet i Homey for å få tilgang til appinnstillingene.",
       "legend": "Byggingsinnstillinger",
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Bruk på alle enheter",
-        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?\n\nDenne handlingen kan ta litt tid.",
+        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
         "nothing": "Ingen endring å bruke."
       },
       "legend": "Enhetsinnstillinger"
@@ -46,6 +45,9 @@
       "auto_adjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-luft enhetsinnstillinger"
+    },
+    "devices_atw": {
+      "legend": "Luft-vann enhetsinnstillinger"
     },
     "error_log": {
       "columns": {

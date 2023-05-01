@@ -19,7 +19,6 @@
       "true": "Yes"
     },
     "buildings": {
-      "error": "Authentication succeeded.\n\nAdd a device in Homey to access the app settings.",
       "legend": "Building Settings",
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
@@ -37,7 +36,7 @@
     "devices": {
       "apply": {
         "button": "Apply to all devices",
-        "confirm": "Are you sure you want to apply these settings to all devices?\n\nThis action may take some time.",
+        "confirm": "Are you sure you want to apply these settings to all devices?",
         "nothing": "No change to apply."
       },
       "legend": "Device Settings"
@@ -46,6 +45,9 @@
       "auto_adjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
       "legend": "Air-to-Air Device Settings"
+    },
+    "devices_atw": {
+      "legend": "Air-to-Water Device Settings"
     },
     "error_log": {
       "columns": {

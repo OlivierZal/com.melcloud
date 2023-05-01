@@ -165,6 +165,10 @@
     "setDeviceSettings": {
       "method": "POST",
       "path": "/devices/settings"
+    },
+    "getDriverSettings": {
+      "method": "GET",
+      "path": "/drivers/settings"
     }
   },
   "platforms": [
@@ -5868,6 +5872,7 @@
       "id": "melcloud_atw",
       "settings": [
         {
+          "id": "options",
           "type": "group",
           "label": {
             "en": "Options",
@@ -6034,6 +6039,7 @@
           ]
         },
         {
+          "id": "dashboard",
           "type": "group",
           "label": {
             "en": "Dashboard display",
@@ -6108,7 +6114,7 @@
                 "en": "Eco domestic hot water",
                 "fr": "Eau chaude sanitaire éco",
                 "nl": "Sanitair eco warm water",
-                "sv": "Eco-låge för varmvattenladdning",
+                "sv": "Eco-läge för varmvattenladdning",
                 "no": "Eco-modus for varmvannslastning",
                 "da": "Eco-tilstand for varmtvandsindlæsning",
                 "es": "Agua caliente sanitaria eco"

@@ -3,7 +3,8 @@ import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
 import {
   type Building,
-  type DeviceSetting,
+  type DeviceSettings,
+  type DriverSetting,
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogData,
@@ -112,15 +113,41 @@ module.exports = {
     homey
   }: {
     homey: Homey
-  }): Promise<DeviceSetting[]> {
+  }): Promise<DeviceSettings> {
+    return (homey.app as MELCloudApp)
+      .getDevices()
+      .reduce<DeviceSettings>((acc, device) => {
+        const driverId: string = device.driver.id
+        if (acc[driverId] === undefined) {
+          acc[driverId] = {}
+        }
+        Object.entries(device.getSettings()).forEach(
+          ([settingId, value]: [string, any]) => {
+            if (acc[driverId][settingId] === undefined) {
+              acc[driverId][settingId] = []
+            }
+            if (!acc[driverId][settingId].includes(value)) {
+              acc[driverId][settingId].push(value)
+            }
+          }
+        )
+        return acc
+      }, {})
+  },
+
+  async getDriverSettings({
+    homey
+  }: {
+    homey: Homey
+  }): Promise<DriverSetting[]> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
-    const settings: DeviceSetting[] = app.manifest.drivers.flatMap(
-      (driver: ManifestDriver): DeviceSetting[] =>
+    const settings: DriverSetting[] = app.manifest.drivers.flatMap(
+      (driver: ManifestDriver): DriverSetting[] =>
         (driver.settings ?? []).flatMap(
-          (setting: ManifestDriverSetting): DeviceSetting[] =>
+          (setting: ManifestDriverSetting): DriverSetting[] =>
             (setting.children ?? []).map(
-              (child: ManifestDriverSettingData): DeviceSetting => ({
+              (child: ManifestDriverSettingData): DriverSetting => ({
                 id: child.id,
                 title: (driver.capabilitiesOptions?.[child.id]?.title ??
                   child.label)[language],
@@ -145,23 +172,23 @@ module.exports = {
         )
     )
 
-    const settingsLogin: DeviceSetting[] = app.manifest.drivers.flatMap(
-      (driver: ManifestDriver): DeviceSetting[] => {
+    const settingsLogin: DriverSetting[] = app.manifest.drivers.flatMap(
+      (driver: ManifestDriver): DriverSetting[] => {
         const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
           (pairSetting: PairSetting): boolean => pairSetting.id === 'login'
         ) as LoginSetting | undefined
         if (driverLoginSetting === undefined) {
           return []
         }
-        const driverLoginSettings: DeviceSetting[] = Object.values(
+        const driverLoginSettings: DriverSetting[] = Object.values(
           Object.entries(driverLoginSetting.options).reduce<
-            Record<string, DeviceSetting>
+            Record<string, DriverSetting>
           >((acc, [option, label]: [string, Record<string, string>]) => {
             const isPassword: boolean = option.startsWith('password')
             const key: keyof LoginCredentials = isPassword
               ? 'password'
               : 'username'
-            if (!(key in acc)) {
+            if (acc[key] === undefined) {
               acc[key] = {
                 groupId: 'login',
                 id: key,
@@ -170,11 +197,8 @@ module.exports = {
                 driverId: driver.id
               }
             }
-            if (option.endsWith('Placeholder')) {
-              acc[key].placeholder = label[language]
-            } else {
-              acc[key].title = label[language]
-            }
+            acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+              label[language]
             return acc
           }, {})
         )
@@ -276,7 +300,47 @@ module.exports = {
     body: Settings
     query?: { driverId: string }
   }): Promise<void> {
-    await (homey.app as MELCloudApp).setDeviceSettings(body, query?.driverId)
+    const changedKeys: string[] = Object.keys(body)
+    if (changedKeys.length === 0) {
+      return
+    }
+    try {
+      await Promise.all(
+        (homey.app as MELCloudApp)
+          .getDevices({ driverId: query?.driverId })
+          .map(async (device: MELCloudDevice): Promise<void> => {
+            const deviceChangedKeys: string[] = changedKeys.filter(
+              (changedKey: string): boolean =>
+                body[changedKey] !== device.getSetting(changedKey)
+            )
+            if (deviceChangedKeys.length === 0) {
+              return
+            }
+            const deviceSettings: Settings = Object.keys(body)
+              .filter((key) => deviceChangedKeys.includes(key))
+              .reduce<Settings>((obj, key: string) => {
+                obj[key] = body[key]
+                return obj
+              }, {})
+            try {
+              await device.setSettings(deviceSettings).then((): void => {
+                device.log('Setting:', deviceSettings)
+              })
+              await device.onSettings({
+                newSettings: device.getSettings(),
+                changedKeys: deviceChangedKeys
+              })
+            } catch (error: unknown) {
+              const errorMessage: string =
+                error instanceof Error ? error.message : String(error)
+              device.error(errorMessage)
+              throw new Error(errorMessage)
+            }
+          })
+      )
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : String(error))
+    }
   },
 
   async updateFrostProtectionSettings({
