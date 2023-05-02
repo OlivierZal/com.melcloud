@@ -211,42 +211,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'end-date'
   ) as HTMLInputElement
 
-  const credentialKeys: string[] = ['username', 'password']
-  const credentials: Record<string, string> = Object.assign(
-    {},
-    ...(await Promise.all(
-      credentialKeys.map(
-        async (credentialKey: string): Promise<Record<string, string>> => ({
-          [credentialKey]: await getHomeySetting(credentialKey)
-        })
-      )
-    ))
-  )
-  const [usernameElement, passwordElement]: Array<HTMLInputElement | null> =
-    credentialKeys.map((credentialKey: string): HTMLInputElement | null => {
-      const setting: DriverSetting | undefined = allDriverSettings.find(
-        (setting: DriverSetting): boolean => setting.id === credentialKey
-      )
-      if (setting === undefined) {
-        return null
-      }
-      const divElement: HTMLDivElement = document.createElement('div')
-      divElement.classList.add('homey-form-group')
-      const labelElement: HTMLLabelElement = document.createElement('label')
-      labelElement.classList.add('homey-form-label')
-      labelElement.innerText = setting.title
-      const inputElement: HTMLInputElement = document.createElement('input')
-      inputElement.classList.add('homey-form-input')
-      inputElement.id = setting.id
-      labelElement.setAttribute('for', inputElement.id)
-      inputElement.type = setting.type
-      inputElement.placeholder = setting.placeholder ?? ''
-      inputElement.value = credentials[setting.id]
-      loginElement.appendChild(labelElement)
-      loginElement.appendChild(inputElement)
-      return inputElement
-    })
-
   const errorCountLabelElement: HTMLLabelElement = document.getElementById(
     'error_count'
   ) as HTMLLabelElement
@@ -262,6 +226,13 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   const holidayModeEnabledElement: HTMLSelectElement = document.getElementById(
     'enabled-holiday-mode'
   ) as HTMLSelectElement
+
+  let usernameElement: HTMLInputElement | null = document.getElementById(
+    'username'
+  ) as HTMLInputElement | null
+  let passwordElement: HTMLInputElement | null = document.getElementById(
+    'password'
+  ) as HTMLInputElement | null
 
   let errorLogTableElement: HTMLTableElement | null = document.getElementById(
     'error-log-table'
@@ -400,7 +371,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     setting: HTMLInputElement | HTMLSelectElement
   ): any {
     const value: any = setting.value
-    const intValue: number = Number.parseInt(value, 10)
+    const intValue: number = Number.parseInt(value)
     if (!Number.isNaN(intValue)) {
       return setting instanceof HTMLInputElement
         ? int(setting, intValue)
@@ -807,22 +778,54 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
   }
 
-  function needsAuthentication(value: boolean = true): void {
-    authenticateElement.classList.remove('is-disabled')
+  async function needsAuthentication(value: boolean = true): Promise<void> {
+    if (loginElement.childElementCount === 0) {
+      const credentialKeys: string[] = ['username', 'password']
+      const credentials: Record<string, string> = Object.assign(
+        {},
+        ...(await Promise.all(
+          credentialKeys.map(
+            async (credentialKey: string): Promise<Record<string, string>> => ({
+              [credentialKey]: await getHomeySetting(credentialKey)
+            })
+          )
+        ))
+      )
+      ;[usernameElement, passwordElement] = credentialKeys.map(
+        (credentialKey: string): HTMLInputElement | null => {
+          const setting: DriverSetting | undefined = allDriverSettings.find(
+            (setting: DriverSetting): boolean => setting.id === credentialKey
+          )
+          if (setting === undefined) {
+            return null
+          }
+          const divElement: HTMLDivElement = document.createElement('div')
+          divElement.classList.add('homey-form-group')
+          const labelElement: HTMLLabelElement = document.createElement('label')
+          labelElement.classList.add('homey-form-label')
+          labelElement.innerText = setting.title
+          const inputElement: HTMLInputElement = document.createElement('input')
+          inputElement.classList.add('homey-form-input')
+          inputElement.id = setting.id
+          labelElement.setAttribute('for', inputElement.id)
+          inputElement.type = setting.type
+          inputElement.placeholder = setting.placeholder ?? ''
+          inputElement.value = credentials[setting.id]
+          loginElement.appendChild(labelElement)
+          loginElement.appendChild(inputElement)
+          return inputElement
+        }
+      )
+    }
     hide(authenticatedElement, value)
     unhide(authenticatingElement, value)
   }
 
   async function start(): Promise<void> {
     try {
-      const username: string = usernameElement?.value ?? ''
-      const password: string = passwordElement?.value ?? ''
-      if (username === '' || password === '') {
-        throw new Error()
-      }
       await load()
     } catch (error: unknown) {
-      needsAuthentication()
+      await needsAuthentication()
       // @ts-expect-error bug
       await Homey.alert(String(error))
     }
@@ -858,7 +861,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           return
         }
         await load()
-        needsAuthentication(false)
+        await needsAuthentication(false)
       }
     )
   }
