@@ -116,22 +116,22 @@ module.exports = {
   }): Promise<DeviceSettings> {
     return (homey.app as MELCloudApp)
       .getDevices()
-      .reduce<DeviceSettings>((acc, device) => {
+      .reduce<DeviceSettings>((deviceSettings, device) => {
         const driverId: string = device.driver.id
-        if (acc[driverId] === undefined) {
-          acc[driverId] = {}
+        if (deviceSettings[driverId] === undefined) {
+          deviceSettings[driverId] = {}
         }
         Object.entries(device.getSettings()).forEach(
           ([settingId, value]: [string, any]) => {
-            if (acc[driverId][settingId] === undefined) {
-              acc[driverId][settingId] = []
+            if (deviceSettings[driverId][settingId] === undefined) {
+              deviceSettings[driverId][settingId] = []
             }
-            if (!acc[driverId][settingId].includes(value)) {
-              acc[driverId][settingId].push(value)
+            if (!deviceSettings[driverId][settingId].includes(value)) {
+              deviceSettings[driverId][settingId].push(value)
             }
           }
         )
-        return acc
+        return deviceSettings
       }, {})
   },
 
@@ -180,29 +180,35 @@ module.exports = {
         if (driverLoginSetting === undefined) {
           return []
         }
-        const driverLoginSettings: DriverSetting[] = Object.values(
+        return Object.values(
           Object.entries(driverLoginSetting.options).reduce<
             Record<string, DriverSetting>
-          >((acc, [option, label]: [string, Record<string, string>]) => {
-            const isPassword: boolean = option.startsWith('password')
-            const key: keyof LoginCredentials = isPassword
-              ? 'password'
-              : 'username'
-            if (acc[key] === undefined) {
-              acc[key] = {
-                groupId: 'login',
-                id: key,
-                title: '',
-                type: isPassword ? 'password' : 'text',
-                driverId: driver.id
+          >(
+            (
+              driverLoginSettings,
+              [option, label]: [string, Record<string, string>]
+            ) => {
+              const isPassword: boolean = option.startsWith('password')
+              const key: keyof LoginCredentials = isPassword
+                ? 'password'
+                : 'username'
+              if (driverLoginSettings[key] === undefined) {
+                driverLoginSettings[key] = {
+                  groupId: 'login',
+                  id: key,
+                  title: '',
+                  type: isPassword ? 'password' : 'text',
+                  driverId: driver.id
+                }
               }
-            }
-            acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-              label[language]
-            return acc
-          }, {})
+              driverLoginSettings[key][
+                option.endsWith('Placeholder') ? 'placeholder' : 'title'
+              ] = label[language]
+              return driverLoginSettings
+            },
+            {}
+          )
         )
-        return driverLoginSettings
       }
     )
     return [...settings, ...settingsLogin]
@@ -318,9 +324,9 @@ module.exports = {
             }
             const deviceSettings: Settings = Object.keys(body)
               .filter((key) => deviceChangedKeys.includes(key))
-              .reduce<Settings>((obj, key: string) => {
-                obj[key] = body[key]
-                return obj
+              .reduce<Settings>((settings, key: string) => {
+                settings[key] = body[key]
+                return settings
               }, {})
             try {
               await device.setSettings(deviceSettings).then((): void => {

@@ -215,10 +215,10 @@ export default class MELCloudApp extends App {
     const buildings: Array<Building<T>> = await this.getBuildings().catch(
       (): Array<Building<T>> => []
     )
-    const { devices, newBuildings, deviceIds } = buildings.reduce<{
+    const { devices, deviceIds, newBuildings } = buildings.reduce<{
       devices: Array<ListDevice<T>>
-      newBuildings: Record<number, string>
       deviceIds: Record<number, string>
+      newBuildings: Record<number, string>
     }>(
       (acc, building: Building<T>) => {
         acc.newBuildings[building.ID] = building.Name
@@ -242,7 +242,7 @@ export default class MELCloudApp extends App {
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
         return acc
       },
-      { devices: [], newBuildings: {}, deviceIds: {} }
+      { devices: [], deviceIds: {}, newBuildings: {} }
     )
 
     const filteredDevices: Array<ListDevice<T>> =

@@ -78,8 +78,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   function flattenDeviceSettings(): Record<string, any[]> {
     return Object.values(deviceSettings).reduce<Record<string, any[]>>(
-      (acc, settings: Record<string, any[]>) => {
-        return Object.entries(settings).reduce<Record<string, any[]>>(
+      (flatDeviceSettings, settings: Record<string, any[]>) =>
+        Object.entries(settings).reduce<Record<string, any[]>>(
           (merged, [settingId, settingValues]: [string, any[]]) => {
             if (merged[settingId] === undefined) {
               merged[settingId] = []
@@ -92,9 +92,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             )
             return merged
           },
-          acc
-        )
-      },
+          flatDeviceSettings
+        ),
       {}
     )
   }
@@ -130,20 +129,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
 
   async function getHomeySetting(
-    element: HTMLInputElement | HTMLSelectElement,
+    id: string,
     defaultValue: any = ''
-  ): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
+  ): Promise<string> {
+    return await new Promise<string>((resolve, reject) => {
       // @ts-expect-error bug
-      Homey.get(element.id, async (error: Error, value: any): Promise<void> => {
+      Homey.get(id, async (error: Error, value: any): Promise<void> => {
         if (error !== null) {
           // @ts-expect-error bug
           await Homey.alert(error.message)
           reject(error)
           return
         }
-        element.value = String(value ?? defaultValue)
-        resolve()
+        resolve(String(value ?? defaultValue))
       })
     })
   }
@@ -213,34 +211,41 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'end-date'
   ) as HTMLInputElement
 
-  const [usernameElement, passwordElement]: Array<HTMLInputElement | null> =
-    await Promise.all(
-      ['username', 'password'].map(
-        async (credentialKey: string): Promise<HTMLInputElement | null> => {
-          const setting: DriverSetting | undefined = allDriverSettings.find(
-            (setting: DriverSetting): boolean => setting.id === credentialKey
-          )
-          if (setting === undefined) {
-            return null
-          }
-          const divElement: HTMLDivElement = document.createElement('div')
-          divElement.classList.add('homey-form-group')
-          const labelElement: HTMLLabelElement = document.createElement('label')
-          labelElement.classList.add('homey-form-label')
-          labelElement.innerText = setting.title
-          const inputElement: HTMLInputElement = document.createElement('input')
-          inputElement.classList.add('homey-form-input')
-          inputElement.id = setting.id
-          labelElement.setAttribute('for', inputElement.id)
-          inputElement.type = setting.type
-          inputElement.placeholder = setting.placeholder ?? ''
-          await getHomeySetting(inputElement)
-          loginElement.appendChild(labelElement)
-          loginElement.appendChild(inputElement)
-          return inputElement
-        }
+  const credentialKeys: string[] = ['username', 'password']
+  const credentials: Record<string, string> = Object.assign(
+    {},
+    ...(await Promise.all(
+      credentialKeys.map(
+        async (credentialKey: string): Promise<Record<string, string>> => ({
+          [credentialKey]: await getHomeySetting(credentialKey)
+        })
       )
-    )
+    ))
+  )
+  const [usernameElement, passwordElement]: Array<HTMLInputElement | null> =
+    credentialKeys.map((credentialKey: string): HTMLInputElement | null => {
+      const setting: DriverSetting | undefined = allDriverSettings.find(
+        (setting: DriverSetting): boolean => setting.id === credentialKey
+      )
+      if (setting === undefined) {
+        return null
+      }
+      const divElement: HTMLDivElement = document.createElement('div')
+      divElement.classList.add('homey-form-group')
+      const labelElement: HTMLLabelElement = document.createElement('label')
+      labelElement.classList.add('homey-form-label')
+      labelElement.innerText = setting.title
+      const inputElement: HTMLInputElement = document.createElement('input')
+      inputElement.classList.add('homey-form-input')
+      inputElement.id = setting.id
+      labelElement.setAttribute('for', inputElement.id)
+      inputElement.type = setting.type
+      inputElement.placeholder = setting.placeholder ?? ''
+      inputElement.value = credentials[setting.id]
+      loginElement.appendChild(labelElement)
+      loginElement.appendChild(inputElement)
+      return inputElement
+    })
 
   const errorCountLabelElement: HTMLLabelElement = document.getElementById(
     'error_count'
@@ -528,7 +533,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          if (buildingElement.childElementCount === 0) {
+          if (buildings.length > 0 && buildingElement.childElementCount === 0) {
             buildings.forEach((building: Building<MELCloudDevice>): void => {
               const { ID, Name } = building
               const optionElement: HTMLOptionElement =
