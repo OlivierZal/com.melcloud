@@ -242,16 +242,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   let fromDateHuman: string = ''
   let to: string = ''
 
-  function unhide(element: HTMLDivElement, value: boolean = true): void {
-    if (value) {
-      element.classList.contains('hidden') && element.classList.remove('hidden')
-    } else if (!element.classList.contains('hidden')) {
-      element.classList.add('hidden')
-    }
+  function hide(element: HTMLDivElement, value: boolean = true): void {
+    element.classList.toggle('hidden', value)
   }
 
-  function hide(element: HTMLDivElement, value: boolean = true): void {
-    unhide(element, !value)
+  function unhide(element: HTMLDivElement, value: boolean = true): void {
+    element.classList.toggle('hidden', !value)
   }
 
   function generateErrorLogTable(keys: string[]): HTMLTableElement {
