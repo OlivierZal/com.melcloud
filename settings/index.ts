@@ -29,7 +29,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           reject(error)
           return
         }
-        document.documentElement.setAttribute('lang', language)
+        document.documentElement.lang = language
         resolve(language)
       }
     )
@@ -638,7 +638,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         const selectElement = document.createElement('select')
         selectElement.className = 'homey-form-select'
         selectElement.id = setting.id
-        labelElement.setAttribute('for', selectElement.id)
+        labelElement.htmlFor = selectElement.id
         ;[
           { id: '' },
           ...(setting.type === 'checkbox'
@@ -803,7 +803,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           const inputElement: HTMLInputElement = document.createElement('input')
           inputElement.classList.add('homey-form-input')
           inputElement.id = setting.id
-          labelElement.setAttribute('for', inputElement.id)
+          labelElement.htmlFor = inputElement.id
           inputElement.type = setting.type
           inputElement.placeholder = setting.placeholder ?? ''
           inputElement.value = credentials[setting.id]
