@@ -184,14 +184,12 @@ module.exports = {
               const key: keyof LoginCredentials = isPassword
                 ? 'password'
                 : 'username'
-              if (driverLoginSettings[key] === undefined) {
-                driverLoginSettings[key] = {
-                  groupId: 'login',
-                  id: key,
-                  title: '',
-                  type: isPassword ? 'password' : 'text',
-                  driverId: driver.id
-                }
+              driverLoginSettings[key] ??= {
+                groupId: 'login',
+                id: key,
+                title: '',
+                type: isPassword ? 'password' : 'text',
+                driverId: driver.id
               }
               driverLoginSettings[key][
                 option.endsWith('Placeholder') ? 'placeholder' : 'title'
