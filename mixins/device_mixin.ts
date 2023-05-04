@@ -82,6 +82,8 @@ export default class MELCloudDeviceMixin extends Device {
       >
 
   id!: number
+  driverId!: string
+  driverUri!: string
   buildingid!: number
   diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
 

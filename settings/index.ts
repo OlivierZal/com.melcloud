@@ -495,8 +495,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           buildings: Array<Building<MELCloudDevice>>
         ): Promise<void> => {
           if (error !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
             reject(error)
             return
           }
@@ -730,19 +728,12 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
   }
 
-  async function hasDevices(driverId?: string): Promise<boolean> {
-    return await new Promise<boolean>((resolve, reject) => {
-      let endPoint: string = '/devices'
-      if (driverId !== undefined) {
-        const queryString: string = new URLSearchParams({
-          driverId
-        }).toString()
-        endPoint += `?${queryString}`
-      }
+  async function getDevices(): Promise<MELCloudDevice[]> {
+    return await new Promise<MELCloudDevice[]>((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
         'GET',
-        endPoint,
+        '/devices',
         async (error: Error, devices: MELCloudDevice[]): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error bug
@@ -750,24 +741,29 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          if (devices.length === 0) {
-            resolve(false)
-            return
-          }
-          resolve(true)
+          resolve(devices)
         }
       )
     })
   }
 
   async function load(): Promise<void> {
-    await getBuildings()
+    try {
+      await getBuildings()
+    } catch (error: unknown) {
+      throw new Error(error instanceof Error ? error.message : String(error))
+    }
     generateErrorLog()
     generateMixinChildrenElements()
     await Promise.all(
       ['melcloud', 'melcloud_atw'].map(async (driverId): Promise<void> => {
-        const hasDevicesForDriver: boolean = await hasDevices(driverId)
-        if (hasDevicesForDriver) {
+        const devices: MELCloudDevice[] = await getDevices()
+        if (
+          devices.filter(
+            (device: MELCloudDevice): boolean =>
+              device.driverId === `${device.driverUri}:${driverId}`
+          ).length > 0
+        ) {
           generateCheckboxChildrenElements(driverId)
         }
       })

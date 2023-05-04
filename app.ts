@@ -171,9 +171,7 @@ export default class MELCloudApp extends App {
         : Object.values(this.homey.drivers.getDrivers())
     let devices: MELCloudDevice[] = drivers.flatMap(
       (driver: Driver): MELCloudDevice[] =>
-        (driver.getDevices() as MELCloudDevice[]).map(
-          (device: MELCloudDevice): MELCloudDevice => device
-        )
+        driver.getDevices() as MELCloudDevice[]
     )
     if (buildingId !== undefined) {
       devices = devices.filter(

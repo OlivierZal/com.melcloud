@@ -97,16 +97,8 @@ module.exports = {
       )
   },
 
-  async getDevices({
-    homey,
-    query
-  }: {
-    homey: Homey
-    query?: { driverId: string }
-  }): Promise<MELCloudDevice[]> {
-    return (homey.app as MELCloudApp).getDevices({
-      driverId: query?.driverId
-    })
+  async getDevices({ homey }: { homey: Homey }): Promise<MELCloudDevice[]> {
+    return (homey.app as MELCloudApp).getDevices()
   },
 
   async getDeviceSettings({
