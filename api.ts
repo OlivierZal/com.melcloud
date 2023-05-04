@@ -110,14 +110,10 @@ module.exports = {
       .getDevices()
       .reduce<DeviceSettings>((deviceSettings, device) => {
         const driverId: string = device.driver.id
-        if (deviceSettings[driverId] === undefined) {
-          deviceSettings[driverId] = {}
-        }
+        deviceSettings[driverId] ??= {}
         Object.entries(device.getSettings()).forEach(
           ([settingId, value]: [string, any]) => {
-            if (deviceSettings[driverId][settingId] === undefined) {
-              deviceSettings[driverId][settingId] = []
-            }
+            deviceSettings[driverId][settingId] ??= []
             if (!deviceSettings[driverId][settingId].includes(value)) {
               deviceSettings[driverId][settingId].push(value)
             }
