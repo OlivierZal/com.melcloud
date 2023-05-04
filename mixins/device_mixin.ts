@@ -637,11 +637,10 @@ export default class MELCloudDeviceMixin extends Device {
           (setting: string): boolean => setting in reportCapabilities
         )
         if (changedEnergyKeys.length > 0) {
-          if (Object.keys(reportCapabilities).length > 0) {
-            await this.runEnergyReport(total)
-          } else {
-            this.clearEnergyReportPlan(total)
-          }
+          Object.keys(reportCapabilities).length > 0 &&
+            (await this.runEnergyReport(total))
+        } else {
+          this.clearEnergyReportPlan(total)
         }
       })
     )

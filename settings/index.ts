@@ -81,9 +81,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       (flatDeviceSettings, settings: Record<string, any[]>) =>
         Object.entries(settings).reduce<Record<string, any[]>>(
           (merged, [settingId, settingValues]: [string, any[]]) => {
-            if (merged[settingId] === undefined) {
-              merged[settingId] = []
-            }
+            merged[settingId] ??= []
             merged[settingId].push(
               ...settingValues.filter(
                 (settingValue: any): boolean =>
@@ -115,9 +113,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           ) && acc.driverSettingsMixin.push(setting)
         } else {
           const driverId: string = setting.driverId
-          if (acc.driverSettings[driverId] === undefined) {
-            acc.driverSettings[driverId] = []
-          }
+          acc.driverSettings[driverId] ??= []
           acc.driverSettings[driverId].push(setting)
         }
         return acc
