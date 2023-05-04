@@ -495,6 +495,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           buildings: Array<Building<MELCloudDevice>>
         ): Promise<void> => {
           if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
             reject(error)
             return
           }
@@ -619,9 +621,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function generateMixinChildrenElements(): void {
-    if (settingsMixinElement.childElementCount > 0) {
-      return
-    }
     driverSettingsMixin
       .filter((setting: DriverSetting): boolean =>
         ['checkbox', 'dropdown'].includes(setting.type)
@@ -671,9 +670,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const settingsElement: HTMLDivElement = document.getElementById(
       `settings-${driverId}`
     ) as HTMLDivElement
-    if (settingsElement.childElementCount > 0) {
-      return
-    }
     const fieldSetElement: HTMLFieldSetElement =
       document.createElement('fieldset')
     fieldSetElement.className = 'homey-form-checkbox-set'
@@ -747,27 +743,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  async function load(): Promise<void> {
-    try {
-      await getBuildings()
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : String(error))
-    }
+  async function generate(): Promise<void> {
+    await getBuildings()
     generateErrorLog()
-    generateMixinChildrenElements()
-    await Promise.all(
-      ['melcloud', 'melcloud_atw'].map(async (driverId): Promise<void> => {
-        const devices: MELCloudDevice[] = await getDevices()
-        if (
-          devices.filter(
-            (device: MELCloudDevice): boolean =>
-              device.driverId === `${device.driverUri}:${driverId}`
-          ).length > 0
-        ) {
-          generateCheckboxChildrenElements(driverId)
-        }
-      })
-    )
   }
 
   async function needsAuthentication(value: boolean = true): Promise<void> {
@@ -813,13 +791,25 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     unhide(authenticatingElement, value)
   }
 
-  async function start(): Promise<void> {
+  async function load(): Promise<void> {
+    generateMixinChildrenElements()
+    await Promise.all(
+      ['melcloud', 'melcloud_atw'].map(async (driverId): Promise<void> => {
+        const devices: MELCloudDevice[] = await getDevices()
+        if (
+          devices.filter(
+            (device: MELCloudDevice): boolean =>
+              device.driverId === `${device.driverUri}:${driverId}`
+          ).length > 0
+        ) {
+          generateCheckboxChildrenElements(driverId)
+        }
+      })
+    )
     try {
-      await load()
+      await generate()
     } catch (error: unknown) {
       await needsAuthentication()
-      // @ts-expect-error bug
-      await Homey.alert(String(error))
     }
   }
 
@@ -852,7 +842,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           )
           return
         }
-        await load()
+        await generate()
         await needsAuthentication(false)
       }
     )
@@ -1030,5 +1020,5 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     )
   })
 
-  await start()
+  await load()
 }
