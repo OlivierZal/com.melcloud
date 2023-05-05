@@ -112,5 +112,8 @@
   },
   "17.0.1": {
     "en": "Ensured that credential fields are well ordered."
+  },
+  "17.0.2": {
+    "en": "Improved performances."
   }
 }
