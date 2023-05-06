@@ -6,7 +6,7 @@ import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
-export type SyncFromMode = 'syncFrom' | 'refresh'
+export type SyncFromMode = 'syncFrom'
 export type SyncMode = 'syncTo' | SyncFromMode
 
 export type CapabilityValue = boolean | number | string
@@ -155,54 +155,54 @@ interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
 }
 
 interface ReportCapabilitiesAta {
-  measure_power: number
-  'measure_power.auto': number
-  'measure_power.cooling': number
-  'measure_power.dry': number
-  'measure_power.fan': number
-  'measure_power.heating': number
-  'measure_power.other': number
-  'meter_power.daily_consumed': number
-  'meter_power.daily_consumed_auto': number
-  'meter_power.daily_consumed_cooling': number
-  'meter_power.daily_consumed_dry': number
-  'meter_power.daily_consumed_fan': number
-  'meter_power.daily_consumed_heating': number
-  'meter_power.daily_consumed_other': number
-  'meter_power.total_consumed': number
-  'meter_power.total_consumed_auto': number
-  'meter_power.total_consumed_cooling': number
-  'meter_power.total_consumed_dry': number
-  'meter_power.total_consumed_fan': number
-  'meter_power.total_consumed_heating': number
-  'meter_power.total_consumed_other': number
+  measure_power?: number
+  'measure_power.auto'?: number
+  'measure_power.cooling'?: number
+  'measure_power.dry'?: number
+  'measure_power.fan'?: number
+  'measure_power.heating'?: number
+  'measure_power.other'?: number
+  'meter_power.daily_consumed'?: number
+  'meter_power.daily_consumed_auto'?: number
+  'meter_power.daily_consumed_cooling'?: number
+  'meter_power.daily_consumed_dry'?: number
+  'meter_power.daily_consumed_fan'?: number
+  'meter_power.daily_consumed_heating'?: number
+  'meter_power.daily_consumed_other'?: number
+  'meter_power.total_consumed'?: number
+  'meter_power.total_consumed_auto'?: number
+  'meter_power.total_consumed_cooling'?: number
+  'meter_power.total_consumed_dry'?: number
+  'meter_power.total_consumed_fan'?: number
+  'meter_power.total_consumed_heating'?: number
+  'meter_power.total_consumed_other'?: number
 }
 
 interface ReportCapabilitiesAtw {
-  'meter_power.daily_cop': number
-  'meter_power.daily_cop_cooling': number
-  'meter_power.daily_cop_heating': number
-  'meter_power.daily_cop_hotwater': number
-  'meter_power.daily_consumed': number
-  'meter_power.daily_consumed_cooling': number
-  'meter_power.daily_consumed_heating': number
-  'meter_power.daily_consumed_hotwater': number
-  'meter_power.daily_produced': number
-  'meter_power.daily_produced_cooling': number
-  'meter_power.daily_produced_heating': number
-  'meter_power.daily_produced_hotwater': number
-  'meter_power.total_cop': number
-  'meter_power.total_cop_cooling': number
-  'meter_power.total_cop_heating': number
-  'meter_power.total_cop_hotwater': number
-  'meter_power.total_consumed': number
-  'meter_power.total_consumed_cooling': number
-  'meter_power.total_consumed_heating': number
-  'meter_power.total_consumed_hotwater': number
-  'meter_power.total_produced': number
-  'meter_power.total_produced_cooling': number
-  'meter_power.total_produced_heating': number
-  'meter_power.total_produced_hotwater': number
+  'meter_power.daily_cop'?: number
+  'meter_power.daily_cop_cooling'?: number
+  'meter_power.daily_cop_heating'?: number
+  'meter_power.daily_cop_hotwater'?: number
+  'meter_power.daily_consumed'?: number
+  'meter_power.daily_consumed_cooling'?: number
+  'meter_power.daily_consumed_heating'?: number
+  'meter_power.daily_consumed_hotwater'?: number
+  'meter_power.daily_produced'?: number
+  'meter_power.daily_produced_cooling'?: number
+  'meter_power.daily_produced_heating'?: number
+  'meter_power.daily_produced_hotwater'?: number
+  'meter_power.total_cop'?: number
+  'meter_power.total_cop_cooling'?: number
+  'meter_power.total_cop_heating'?: number
+  'meter_power.total_cop_hotwater'?: number
+  'meter_power.total_consumed'?: number
+  'meter_power.total_consumed_cooling'?: number
+  'meter_power.total_consumed_heating'?: number
+  'meter_power.total_consumed_hotwater'?: number
+  'meter_power.total_produced'?: number
+  'meter_power.total_produced_cooling'?: number
+  'meter_power.total_produced_heating'?: number
+  'meter_power.total_produced_hotwater'?: number
 }
 
 export type ReportCapabilities<T extends MELCloudDevice> =
@@ -400,6 +400,7 @@ export interface GetCapabilityMapping<T extends MELCloudDevice> {
 
 export interface ListCapabilityMapping<T extends MELCloudDevice> {
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+  readonly effectiveFlag?: bigint
 }
 
 export type ReportCapabilityMapping<T extends MELCloudDevice> = Array<

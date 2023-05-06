@@ -78,22 +78,24 @@ module.exports = {
     const app: MELCloudApp = homey.app as MELCloudApp
     const buildings: Array<Building<MELCloudDevice>> = await app.getBuildings()
     return buildings
-      .filter(
-        (building: Building<MELCloudDevice>): boolean =>
-          app.getDevices({ buildingId: building.ID }).length > 0
+      .reduce<Array<Building<MELCloudDevice>>>(
+        (buildingSettings, building: Building<MELCloudDevice>) => {
+          if (app.getDevices({ buildingId: building.ID }).length > 0) {
+            buildingSettings.push({
+              ...building,
+              HMStartDate: fromUTCtoLocal(building.HMStartDate),
+              HMEndDate: fromUTCtoLocal(building.HMEndDate)
+            })
+          }
+          return buildingSettings
+        },
+        []
       )
       .sort(
         (
           building1: Building<MELCloudDevice>,
           building2: Building<MELCloudDevice>
         ): number => building1.Name.localeCompare(building2.Name)
-      )
-      .map(
-        (building: Building<MELCloudDevice>): Building<MELCloudDevice> => ({
-          ...building,
-          HMStartDate: fromUTCtoLocal(building.HMStartDate),
-          HMEndDate: fromUTCtoLocal(building.HMEndDate)
-        })
       )
   },
 
@@ -247,23 +249,24 @@ module.exports = {
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
     return {
       Errors: data
-        .map(
-          (errorData: ErrorLogData): ErrorDetails => ({
-            Device:
-              app.getDevice(errorData.DeviceId)?.getName() ??
-              app.deviceIds[errorData.DeviceId],
-            Date:
-              errorData.StartDate !== null &&
-              DateTime.fromISO(errorData.StartDate).year > 1
-                ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
-                : '',
-            Error: errorData.ErrorMessage ?? ''
-          })
-        )
-        .filter(
-          (error: ErrorDetails): boolean =>
-            error.Date !== '' && error.Error !== ''
-        )
+        .reduce<ErrorDetails[]>((errors, errorData: ErrorLogData) => {
+          const date: string =
+            errorData.StartDate !== null &&
+            DateTime.fromISO(errorData.StartDate).year > 1
+              ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
+              : ''
+          const error: string = errorData.ErrorMessage ?? ''
+          if (date !== '' && error !== '') {
+            errors.push({
+              Device:
+                app.getDevice(errorData.DeviceId)?.getName() ??
+                app.deviceIds[errorData.DeviceId],
+              Date: date,
+              Error: error
+            })
+          }
+          return errors
+        }, [])
         .reverse(),
       FromDateHuman: fromDate
         .setLocale(app.getLanguage())
@@ -308,12 +311,13 @@ module.exports = {
             if (deviceChangedKeys.length === 0) {
               return
             }
-            const deviceSettings: Settings = Object.keys(body)
-              .filter((key) => deviceChangedKeys.includes(key))
-              .reduce<Settings>((settings, key: string) => {
+            const deviceSettings: Settings = deviceChangedKeys.reduce<Settings>(
+              (settings, key: string) => {
                 settings[key] = body[key]
                 return settings
-              }, {})
+              },
+              {}
+            )
             try {
               await device.setSettings(deviceSettings).then((): void => {
                 device.log('Setting:', deviceSettings)
