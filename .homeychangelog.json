@@ -115,5 +115,8 @@
   },
   "17.0.2": {
     "en": "Improved performances."
+  },
+  "17.0.3": {
+    "en": "Made app faster."
   }
 }

@@ -100,29 +100,30 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   let flatDeviceSettings: Record<string, any[]> = flattenDeviceSettings()
 
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
-  const { driverSettingsMixin, driverSettings } = allDriverSettings
-    .filter((setting: DriverSetting): boolean => setting.groupId !== 'login')
-    .reduce<{
-      driverSettingsMixin: DriverSetting[]
-      driverSettings: Record<string, DriverSetting[]>
-    }>(
-      (acc, setting: DriverSetting) => {
-        if (setting.groupId === 'options') {
-          !acc.driverSettingsMixin.some(
-            (option: DriverSetting): boolean => option.id === setting.id
-          ) && acc.driverSettingsMixin.push(setting)
-        } else {
-          const driverId: string = setting.driverId
-          acc.driverSettings[driverId] ??= []
-          acc.driverSettings[driverId].push(setting)
-        }
+  const { driverSettingsMixin, driverSettings } = allDriverSettings.reduce<{
+    driverSettingsMixin: DriverSetting[]
+    driverSettings: Record<string, DriverSetting[]>
+  }>(
+    (acc, setting: DriverSetting) => {
+      if (setting.groupId === 'login') {
         return acc
-      },
-      {
-        driverSettingsMixin: [],
-        driverSettings: {}
       }
-    )
+      if (setting.groupId === 'options') {
+        !acc.driverSettingsMixin.some(
+          (option: DriverSetting): boolean => option.id === setting.id
+        ) && acc.driverSettingsMixin.push(setting)
+      } else {
+        const driverId: string = setting.driverId
+        acc.driverSettings[driverId] ??= []
+        acc.driverSettings[driverId].push(setting)
+      }
+      return acc
+    },
+    {
+      driverSettingsMixin: [],
+      driverSettings: {}
+    }
+  )
 
   async function getHomeySetting(
     id: string,
@@ -230,9 +231,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     'password'
   ) as HTMLInputElement | null
 
-  let errorLogTableElement: HTMLTableElement | null = document.getElementById(
-    'error-log-table'
-  ) as HTMLTableElement | null
+  let errorLogTBodyElement: HTMLTableSectionElement | null = null
 
   let errorCount: number = 0
   let fromDateHuman: string = ''
@@ -246,10 +245,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     element.classList.toggle('hidden', !value)
   }
 
-  function generateErrorLogTable(keys: string[]): HTMLTableElement {
+  function generateErrorLogTable(keys: string[]): HTMLTableSectionElement {
     const tableElement: HTMLTableElement = document.createElement('table')
     tableElement.className = 'bordered'
-    tableElement.id = 'error-log-table'
     tableElement.setAttribute('aria-describedby', 'Error Log')
     const theadElement: HTMLTableSectionElement = tableElement.createTHead()
     const rowElement: HTMLTableRowElement = theadElement.insertRow()
@@ -259,17 +257,19 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       rowElement.appendChild(thElement)
     })
     errorLogElement.appendChild(tableElement)
-    return tableElement
+    return tableElement.createTBody()
   }
 
   function generateErrorLogTableData(errors: ErrorDetails[]): void {
-    if (errorLogTableElement === null) {
-      errorLogTableElement = generateErrorLogTable(Object.keys(errors[0]))
+    if (errors.length === 0) {
+      return
     }
-    const tbodyElement: HTMLTableSectionElement =
-      errorLogTableElement.createTBody()
+    if (errorLogTBodyElement === null) {
+      errorLogTBodyElement = generateErrorLogTable(Object.keys(errors[0]))
+    }
     errors.forEach((error: ErrorDetails): void => {
-      const rowElement: HTMLTableRowElement = tbodyElement.insertRow()
+      // @ts-expect-error bug
+      const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
       Object.values(error).forEach((value: string): void => {
         const cellElement: HTMLTableCellElement = rowElement.insertCell()
         cellElement.innerText = value
@@ -315,18 +315,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           return
         }
         fromDateHuman = data.FromDateHuman
-        sinceElement.value = data.NextFromDate
-        to = data.NextToDate
-        errorCount += data.Errors.length
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
           fromDateHuman
         })
+        sinceElement.value = data.NextFromDate
+        to = data.NextToDate
+
+        errorCount += data.Errors.length
         errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(
           errorCount
         )}`
-        if (data.Errors.length > 0) {
-          generateErrorLogTableData(data.Errors)
-        }
+        generateErrorLogTableData(data.Errors)
       }
     )
   }
@@ -363,6 +362,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     setting: HTMLInputElement | HTMLSelectElement
   ): any {
     const value: any = setting.value
+    if (value === '') {
+      return
+    }
     const intValue: number = Number.parseInt(value)
     if (!Number.isNaN(intValue)) {
       return setting instanceof HTMLInputElement
@@ -387,21 +389,18 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       settingId: string,
       driverId?: string
     ): boolean => {
-      if (settingValue === undefined) {
-        return false
+      if (settingValue !== undefined) {
+        const deviceSetting: any[] =
+          driverId !== undefined
+            ? deviceSettings[driverId][settingId]
+            : flatDeviceSettings[settingId]
+        return deviceSetting.length !== 1 || settingValue !== deviceSetting[0]
       }
-      const deviceSetting: any[] =
-        driverId !== undefined
-          ? deviceSettings[driverId][settingId]
-          : flatDeviceSettings[settingId]
-      return deviceSetting.length !== 1 || settingValue !== deviceSetting[0]
+      return false
     }
 
     return settings.reduce<Settings>(
       (body, setting: HTMLInputElement | HTMLSelectElement) => {
-        if (setting.value === '') {
-          return body
-        }
         const settingValue: any = processSettingValue(setting)
         if (shouldUpdate(settingValue, setting.id, driverId)) {
           body[setting.id] = settingValue
@@ -496,7 +495,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          if (buildings.length > 0 && buildingElement.childElementCount === 0) {
+          if (buildingElement.childElementCount === 0) {
             buildings.forEach((building: Building<MELCloudDevice>): void => {
               const { ID, Name } = building
               const optionElement: HTMLOptionElement =
@@ -505,6 +504,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
               optionElement.innerText = Name
               buildingElement.appendChild(optionElement)
             })
+          }
+          if (buildings.length > 0) {
             const {
               HMEnabled,
               HMStartDate,
@@ -617,45 +618,43 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function generateMixinChildrenElements(): void {
-    driverSettingsMixin
-      .filter((setting: DriverSetting): boolean =>
-        ['checkbox', 'dropdown'].includes(setting.type)
-      )
-      .forEach((setting: DriverSetting): void => {
-        const divElement: HTMLDivElement = document.createElement('div')
-        divElement.className = 'homey-form-group'
-        const labelElement = document.createElement('label')
-        labelElement.className = 'homey-form-label'
-        labelElement.id = `setting-${setting.id}`
-        labelElement.innerText = setting.title
-        const selectElement = document.createElement('select')
-        selectElement.className = 'homey-form-select'
-        selectElement.id = setting.id
-        labelElement.htmlFor = selectElement.id
-        ;[
-          { id: '' },
-          ...(setting.type === 'checkbox'
-            ? [{ id: 'false' }, { id: 'true' }]
-            : setting.values ?? [])
-        ].forEach((value: { id: string; label?: string }): void => {
-          const { id, label } = value
-          const optionElement: HTMLOptionElement =
-            document.createElement('option')
-          optionElement.value = id
-          if (id !== '') {
-            optionElement.innerText =
-              label ?? Homey.__(`settings.boolean.${id}`)
-          }
-          selectElement.appendChild(optionElement)
-        })
-        const values: any[] = flatDeviceSettings[setting.id]
-        if (values.length === 1) {
-          selectElement.value = String(values[0])
+    driverSettingsMixin.forEach((setting: DriverSetting): void => {
+      if (!['checkbox', 'dropdown'].includes(setting.type)) {
+        return
+      }
+      const divElement: HTMLDivElement = document.createElement('div')
+      divElement.className = 'homey-form-group'
+      const labelElement = document.createElement('label')
+      labelElement.className = 'homey-form-label'
+      labelElement.id = `setting-${setting.id}`
+      labelElement.innerText = setting.title
+      const selectElement = document.createElement('select')
+      selectElement.className = 'homey-form-select'
+      selectElement.id = setting.id
+      labelElement.htmlFor = selectElement.id
+      ;[
+        { id: '' },
+        ...(setting.type === 'checkbox'
+          ? [{ id: 'false' }, { id: 'true' }]
+          : setting.values ?? [])
+      ].forEach((value: { id: string; label?: string }): void => {
+        const { id, label } = value
+        const optionElement: HTMLOptionElement =
+          document.createElement('option')
+        optionElement.value = id
+        if (id !== '') {
+          optionElement.innerText = label ?? Homey.__(`settings.boolean.${id}`)
         }
-        divElement.appendChild(labelElement)
-        divElement.appendChild(selectElement)
-        settingsMixinElement.appendChild(divElement)
+        selectElement.appendChild(optionElement)
       })
+      const values: any[] = flatDeviceSettings[setting.id]
+      if (values.length === 1) {
+        selectElement.value = String(values[0])
+      }
+      divElement.appendChild(labelElement)
+      divElement.appendChild(selectElement)
+      settingsMixinElement.appendChild(divElement)
+    })
     addSettingsEventListener(
       applySettingsMixinElement,
       Array.from(settingsMixinElement.querySelectorAll('select'))
@@ -670,45 +669,46 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       document.createElement('fieldset')
     fieldSetElement.className = 'homey-form-checkbox-set'
     let previousGroupLabel: string | undefined
-    driverSettings[driverId]
-      .filter((setting: DriverSetting): boolean => setting.type === 'checkbox')
-      .forEach((setting: DriverSetting): void => {
-        if (setting.groupLabel !== previousGroupLabel) {
-          previousGroupLabel = setting.groupLabel
-          const legendElement: HTMLLegendElement =
-            document.createElement('legend')
-          legendElement.className = 'homey-form-checkbox-set-title'
-          legendElement.innerText = setting.groupLabel ?? ''
-          fieldSetElement.appendChild(legendElement)
-        }
-        const labelElement: HTMLLabelElement = document.createElement('label')
-        labelElement.className = 'homey-form-checkbox'
-        const inputElement: HTMLInputElement = document.createElement('input')
-        inputElement.className = 'homey-form-checkbox-input'
-        inputElement.id = setting.id
-        inputElement.type = 'checkbox'
-        const checked: any[] = deviceSettings[driverId][setting.id]
-        if (checked.length === 1) {
-          inputElement.checked = checked[0]
-        } else {
-          inputElement.indeterminate = true
-          inputElement.addEventListener('change', (): void => {
-            if (inputElement.indeterminate) {
-              inputElement.indeterminate = false
-            }
-          })
-        }
-        const checkmarkSpanElement: HTMLSpanElement =
-          document.createElement('span')
-        checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
-        const textSpanElement: HTMLSpanElement = document.createElement('span')
-        textSpanElement.className = 'homey-form-checkbox-text'
-        textSpanElement.innerText = setting.title
-        labelElement.appendChild(inputElement)
-        labelElement.appendChild(checkmarkSpanElement)
-        labelElement.appendChild(textSpanElement)
-        fieldSetElement.appendChild(labelElement)
-      })
+    driverSettings[driverId].forEach((setting: DriverSetting): void => {
+      if (setting.type !== 'checkbox') {
+        return
+      }
+      if (setting.groupLabel !== previousGroupLabel) {
+        previousGroupLabel = setting.groupLabel
+        const legendElement: HTMLLegendElement =
+          document.createElement('legend')
+        legendElement.className = 'homey-form-checkbox-set-title'
+        legendElement.innerText = setting.groupLabel ?? ''
+        fieldSetElement.appendChild(legendElement)
+      }
+      const labelElement: HTMLLabelElement = document.createElement('label')
+      labelElement.className = 'homey-form-checkbox'
+      const inputElement: HTMLInputElement = document.createElement('input')
+      inputElement.className = 'homey-form-checkbox-input'
+      inputElement.id = setting.id
+      inputElement.type = 'checkbox'
+      const checked: any[] = deviceSettings[driverId][setting.id]
+      if (checked.length === 1) {
+        inputElement.checked = checked[0]
+      } else {
+        inputElement.indeterminate = true
+        inputElement.addEventListener('change', (): void => {
+          if (inputElement.indeterminate) {
+            inputElement.indeterminate = false
+          }
+        })
+      }
+      const checkmarkSpanElement: HTMLSpanElement =
+        document.createElement('span')
+      checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
+      const textSpanElement: HTMLSpanElement = document.createElement('span')
+      textSpanElement.className = 'homey-form-checkbox-text'
+      textSpanElement.innerText = setting.title
+      labelElement.appendChild(inputElement)
+      labelElement.appendChild(checkmarkSpanElement)
+      labelElement.appendChild(textSpanElement)
+      fieldSetElement.appendChild(labelElement)
+    })
     settingsElement.appendChild(fieldSetElement)
     addSettingsEventListener(
       document.getElementById(
@@ -793,10 +793,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       ['melcloud', 'melcloud_atw'].map(async (driverId): Promise<void> => {
         const devices: MELCloudDevice[] = await getDevices()
         if (
-          devices.filter(
+          devices.some(
             (device: MELCloudDevice): boolean =>
               device.driverId === `${device.driverUri}:${driverId}`
-          ).length > 0
+          )
         ) {
           generateCheckboxChildrenElements(driverId)
         }

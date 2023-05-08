@@ -165,11 +165,11 @@ export default class MELCloudApp extends App {
     buildingId?: number
     driverId?: string
   } = {}): MELCloudDevice[] {
-    const drivers: Driver[] =
+    let devices: MELCloudDevice[] = (
       driverId !== undefined
         ? [this.homey.drivers.getDriver(driverId)]
         : Object.values(this.homey.drivers.getDrivers())
-    let devices: MELCloudDevice[] = drivers.flatMap(
+    ).flatMap(
       (driver: Driver): MELCloudDevice[] =>
         driver.getDevices() as MELCloudDevice[]
     )
@@ -183,18 +183,13 @@ export default class MELCloudApp extends App {
 
   getDeviceFromList<T extends MELCloudDevice>(
     id: number
-  ): ListDevice<T> | null {
-    return (
-      this.deviceList.find(
-        (device: ListDevice<T>): boolean => device.DeviceID === id
-      ) ?? null
+  ): ListDevice<T> | undefined {
+    return this.deviceList.find(
+      (device: ListDevice<T>): boolean => device.DeviceID === id
     )
   }
 
-  applySyncFromDevices(
-    deviceType?: number,
-    syncMode: SyncFromMode = 'refresh'
-  ): void {
+  applySyncFromDevices(deviceType?: number, syncMode?: SyncFromMode): void {
     this.clearListDevicesRefresh()
     this.syncTimeout = this.setTimeout(
       'sync with device',
@@ -208,12 +203,12 @@ export default class MELCloudApp extends App {
 
   async listDevices<T extends MELCloudDevice>(
     deviceType?: number,
-    syncMode: SyncFromMode = 'refresh'
+    syncMode?: SyncFromMode
   ): Promise<Array<ListDevice<T>>> {
     const buildings: Array<Building<T>> = await this.getBuildings().catch(
       (): Array<Building<T>> => []
     )
-    const { devices, deviceIds, newBuildings } = buildings.reduce<{
+    let { devices, deviceIds, newBuildings } = buildings.reduce<{
       devices: Array<ListDevice<T>>
       deviceIds: Record<number, string>
       newBuildings: Record<number, string>
@@ -242,18 +237,17 @@ export default class MELCloudApp extends App {
       },
       { devices: [], deviceIds: {}, newBuildings: {} }
     )
-
-    const filteredDevices: Array<ListDevice<T>> =
-      deviceType !== undefined
-        ? devices.filter((device) => deviceType === device.Device.DeviceType)
-        : devices
-
+    if (deviceType !== undefined) {
+      devices = devices.filter(
+        (device) => deviceType === device.Device.DeviceType
+      )
+    }
     this.buildings = newBuildings
     this.deviceIds = deviceIds
-    this.deviceList = filteredDevices
+    this.deviceList = devices
     await this.syncDevicesFromList(syncMode).catch(this.error)
     await this.planSyncFromDevices()
-    return filteredDevices
+    return devices
   }
 
   clearListDevicesRefresh(): void {
@@ -279,13 +273,17 @@ export default class MELCloudApp extends App {
     }
   }
 
-  async syncDevicesFromList(syncMode: SyncFromMode): Promise<void> {
+  async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
     await Promise.all(
-      this.getDevices()
-        .filter((device: MELCloudDevice): boolean => !device.isDiff())
-        .map(async (device: MELCloudDevice): Promise<void> => {
-          await device.syncDeviceFromList(syncMode)
-        })
+      this.getDevices().reduce<Array<Promise<void>>>(
+        (syncDevices, device: MELCloudDevice) => {
+          if (!device.isDiff()) {
+            syncDevices.push(device.syncDeviceFromList(syncMode))
+          }
+          return syncDevices
+        },
+        []
+      )
     )
   }
 
