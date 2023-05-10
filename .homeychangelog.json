@@ -118,5 +118,8 @@
   },
   "17.0.3": {
     "en": "Made app faster."
+  },
+  "17.0.4": {
+    "en": "Optimized code."
   }
 }
