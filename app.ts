@@ -23,7 +23,7 @@ import {
   type ReportData,
   type ReportPostData,
   type SuccessData,
-  type UpdateData
+  type UpdateData,
 } from './types'
 
 export default class MELCloudApp extends App {
@@ -62,7 +62,7 @@ export default class MELCloudApp extends App {
         AppVersion: '1.26.2.0',
         Email: username,
         Password: password,
-        Persist: true
+        Persist: true,
       }
       this.log('Login...')
       const { data } = await axios.post<LoginData>(
@@ -79,7 +79,7 @@ export default class MELCloudApp extends App {
         ContextKey: data.LoginData.ContextKey,
         Expiry: data.LoginData.Expiry,
         username,
-        password
+        password,
       })
       this.applySyncFromDevices()
       await this.refreshLogin()
@@ -100,7 +100,7 @@ export default class MELCloudApp extends App {
   async refreshLogin(): Promise<void> {
     const loginCredentials: LoginCredentials = {
       username: this.homey.settings.get('username') ?? '',
-      password: this.homey.settings.get('password') ?? ''
+      password: this.homey.settings.get('password') ?? '',
     }
     const expiry: string | null = this.homey.settings.get('Expiry')
     const ms: number =
@@ -125,7 +125,7 @@ export default class MELCloudApp extends App {
 
   getFirstDeviceId({
     buildingId,
-    driverId
+    driverId,
   }: {
     buildingId?: number
     driverId?: string
@@ -139,7 +139,7 @@ export default class MELCloudApp extends App {
 
   getDeviceIds({
     buildingId,
-    driverId
+    driverId,
   }: {
     buildingId?: number
     driverId?: string
@@ -160,7 +160,7 @@ export default class MELCloudApp extends App {
 
   getDevices({
     buildingId,
-    driverId
+    driverId,
   }: {
     buildingId?: number
     driverId?: string
@@ -219,14 +219,14 @@ export default class MELCloudApp extends App {
           ...building.Structure.Areas.flatMap((area) => area.Devices),
           ...building.Structure.Floors.flatMap((floor) => [
             ...floor.Devices,
-            ...floor.Areas.flatMap((area) => area.Devices)
-          ])
+            ...floor.Areas.flatMap((area) => area.Devices),
+          ]),
         ]
         const buildingDeviceIds: Record<number, string> =
           buildingDevices.reduce<Record<number, string>>(
             (deviceIds, device: ListDevice<T>) => ({
               ...deviceIds,
-              [device.DeviceID]: device.DeviceName
+              [device.DeviceID]: device.DeviceName,
             }),
             {}
           )
@@ -329,7 +329,7 @@ export default class MELCloudApp extends App {
       const postData: PostData<T> = {
         DeviceID: device.id,
         HasPendingCommand: true,
-        ...updateData
+        ...updateData,
       }
       device.log('Syncing with device...\n', postData)
       const { data } = await axios.post<Data<T>>(
@@ -357,7 +357,7 @@ export default class MELCloudApp extends App {
         DeviceID: device.id,
         FromDate: fromDate.toISODate() ?? '',
         ToDate: toDate.toISODate() ?? '',
-        UseCurrency: false
+        UseCurrency: false,
       }
       device.log('Reporting energy...\n', postData)
       const { data } = await axios.post<ReportData<T>>(
@@ -382,7 +382,7 @@ export default class MELCloudApp extends App {
     const postData: ErrorLogPostData = {
       DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
-      ToDate: toDate.toISODate() ?? ''
+      ToDate: toDate.toISODate() ?? '',
     }
     this.log('Reporting error log...\n', postData)
     const { data } = await axios.post<ErrorLogData[] | FailureData>(
@@ -406,7 +406,7 @@ export default class MELCloudApp extends App {
       '...'
     )
     const buildingDeviceId: number = this.getFirstDeviceId({
-      buildingId
+      buildingId,
     })
     const { data } = await axios.get<FrostProtectionData>(
       `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
@@ -427,7 +427,7 @@ export default class MELCloudApp extends App {
     const buildingName: string = this.getBuildingName(buildingId)
     const postData: FrostProtectionPostData = {
       ...settings,
-      BuildingIds: [buildingId]
+      BuildingIds: [buildingId],
     }
     this.log(
       'Updating frost protection settings for building',
@@ -452,7 +452,7 @@ export default class MELCloudApp extends App {
     const buildingName: string = this.getBuildingName(buildingId)
     this.log('Getting holiday mode settings for building', buildingName, '...')
     const buildingDeviceId: number = this.getFirstDeviceId({
-      buildingId
+      buildingId,
     })
     const { data } = await axios.get<HolidayModeData>(
       `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
@@ -491,7 +491,7 @@ export default class MELCloudApp extends App {
               Day: utcStartDate.day,
               Hour: utcStartDate.hour,
               Minute: utcStartDate.minute,
-              Second: utcStartDate.second
+              Second: utcStartDate.second,
             }
           : null,
       EndDate:
@@ -502,10 +502,10 @@ export default class MELCloudApp extends App {
               Day: utcEndDate.day,
               Hour: utcEndDate.hour,
               Minute: utcEndDate.minute,
-              Second: utcEndDate.second
+              Second: utcEndDate.second,
             }
           : null,
-      HMTimeZones: [{ Buildings: [buildingId] }]
+      HMTimeZones: [{ Buildings: [buildingId] }],
     }
     this.log(
       'Updating holiday mode settings for building',

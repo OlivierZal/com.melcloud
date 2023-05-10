@@ -3,7 +3,7 @@ import type MELCloudDeviceAtw from './device'
 import {
   type GetCapability,
   type ListCapability,
-  type SetCapability
+  type SetCapability,
 } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
@@ -39,11 +39,11 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'operation_mode_state',
       'target_temperature',
       'target_temperature.tank_water',
-      'target_temperature.zone1_flow_heat'
+      'target_temperature.zone1_flow_heat',
     ]
     this.coolCapabilitiesAtw = [
       'operation_mode_zone_with_cool.zone1',
-      'target_temperature.zone1_flow_cool'
+      'target_temperature.zone1_flow_cool',
     ]
     this.notCoolCapabilitiesAtw = ['operation_mode_zone.zone1']
     this.zone2CapabilitiesAtw = [
@@ -51,11 +51,11 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
       'target_temperature.zone2',
-      'target_temperature.zone2_flow_heat'
+      'target_temperature.zone2_flow_heat',
     ]
     this.coolZone2CapabilitiesAtw = [
       'operation_mode_zone_with_cool.zone2',
-      'target_temperature.zone2_flow_cool'
+      'target_temperature.zone2_flow_cool',
     ]
     this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
@@ -191,10 +191,10 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
             ...this.zone2CapabilitiesAtw,
             ...(canCool
               ? this.coolZone2CapabilitiesAtw
-              : this.notCoolZone2CapabilitiesAtw)
+              : this.notCoolZone2CapabilitiesAtw),
           ]
         : []),
-      'measure_power.produced'
+      'measure_power.produced',
     ]
   }
 }

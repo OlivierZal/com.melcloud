@@ -20,7 +20,7 @@ import {
   type ManifestDriverSettingData,
   type MELCloudDevice,
   type PairSetting,
-  type Settings
+  type Settings,
 } from './types'
 
 function fromUTCtoLocal(utcDate: string | null, language?: string): string {
@@ -29,7 +29,7 @@ function fromUTCtoLocal(utcDate: string | null, language?: string): string {
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, {
     zone: 'utc',
-    locale: language
+    locale: language,
   }).toLocal()
   return (
     (language !== undefined
@@ -65,13 +65,13 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
     toDate: to.minus({ days }),
-    period
+    period,
   }
 }
 
 module.exports = {
   async getBuildings({
-    homey
+    homey,
   }: {
     homey: Homey
   }): Promise<Array<Building<MELCloudDevice>>> {
@@ -84,7 +84,7 @@ module.exports = {
             buildingSettings.push({
               ...building,
               HMStartDate: fromUTCtoLocal(building.HMStartDate),
-              HMEndDate: fromUTCtoLocal(building.HMEndDate)
+              HMEndDate: fromUTCtoLocal(building.HMEndDate),
             })
           }
           return buildingSettings
@@ -100,7 +100,7 @@ module.exports = {
   },
 
   async getDeviceSettings({
-    homey
+    homey,
   }: {
     homey: Homey
   }): Promise<DeviceSettings> {
@@ -122,7 +122,7 @@ module.exports = {
   },
 
   async getDriverSettings({
-    homey
+    homey,
   }: {
     homey: Homey
   }): Promise<DriverSetting[]> {
@@ -147,12 +147,12 @@ module.exports = {
                     label: Record<string, string>
                   }): { id: string; label: string } => ({
                     id: value.id,
-                    label: value.label[language]
+                    label: value.label[language],
                   })
                 ),
                 driverId: driver.id,
                 groupId: setting.id,
-                groupLabel: setting.label[language]
+                groupLabel: setting.label[language],
               })
             )
         )
@@ -183,7 +183,7 @@ module.exports = {
                 id: key,
                 title: '',
                 type: isPassword ? 'password' : 'text',
-                driverId: driver.id
+                driverId: driver.id,
               }
               driverLoginSettings[key][
                 option.endsWith('Placeholder') ? 'placeholder' : 'title'
@@ -200,7 +200,7 @@ module.exports = {
 
   async getFrostProtectionSettings({
     homey,
-    params
+    params,
   }: {
     homey: Homey
     params: { buildingId: number }
@@ -212,7 +212,7 @@ module.exports = {
 
   async getHolidayModeSettings({
     homey,
-    params
+    params,
   }: {
     homey: Homey
     params: { buildingId: number }
@@ -223,7 +223,7 @@ module.exports = {
     return {
       ...data,
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
-      HMEndDate: fromUTCtoLocal(data.HMEndDate)
+      HMEndDate: fromUTCtoLocal(data.HMEndDate),
     }
   },
 
@@ -233,7 +233,7 @@ module.exports = {
 
   async getUnitErrorLog({
     homey,
-    query
+    query,
   }: {
     homey: Homey
     query: ErrorLogQuery
@@ -258,7 +258,7 @@ module.exports = {
                 app.getDevice(errorData.DeviceId)?.getName() ??
                 app.deviceIds[errorData.DeviceId],
               Date: date,
-              Error: error
+              Error: error,
             })
           }
           return errors
@@ -268,13 +268,13 @@ module.exports = {
         .setLocale(app.getLanguage())
         .toLocaleString(DateTime.DATE_FULL),
       NextFromDate: NextToDate.minus({ days: period }).toISODate() ?? '',
-      NextToDate: NextToDate.toISODate() ?? ''
+      NextToDate: NextToDate.toISODate() ?? '',
     }
   },
 
   async login({
     homey,
-    body
+    body,
   }: {
     homey: Homey
     body: LoginCredentials
@@ -285,7 +285,7 @@ module.exports = {
   async setDeviceSettings({
     homey,
     body,
-    query
+    query,
   }: {
     homey: Homey
     body: Settings
@@ -320,7 +320,7 @@ module.exports = {
               })
               await device.onSettings({
                 newSettings: device.getSettings(),
-                changedKeys: deviceChangedKeys
+                changedKeys: deviceChangedKeys,
               })
             } catch (error: unknown) {
               const errorMessage: string =
@@ -338,7 +338,7 @@ module.exports = {
   async updateFrostProtectionSettings({
     homey,
     params,
-    body
+    body,
   }: {
     homey: Homey
     params: { buildingId: string }
@@ -353,7 +353,7 @@ module.exports = {
   async updateHolidayModeSettings({
     homey,
     params,
-    body
+    body,
   }: {
     homey: Homey
     params: { buildingId: string }
@@ -363,5 +363,5 @@ module.exports = {
       Number(params.buildingId),
       body
     )
-  }
+  },
 }

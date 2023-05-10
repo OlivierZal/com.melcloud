@@ -28,7 +28,7 @@ import {
   type SyncFromMode,
   type SyncMode,
   type ThermostatMode,
-  type UpdateData
+  type UpdateData,
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
@@ -146,7 +146,7 @@ export default class MELCloudDeviceMixin extends Device {
   async handleCapabilities(): Promise<void> {
     const requiredCapabilities: string[] = [
       ...this.requiredCapabilities,
-      ...this.getDashboardCapabilities()
+      ...this.getDashboardCapabilities(),
     ]
     await Promise.all(
       requiredCapabilities.map(async (capability: string): Promise<void> => {
@@ -307,7 +307,7 @@ export default class MELCloudDeviceMixin extends Device {
     const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
     const combinedCapabilities: typeof this.getCapabilityMapping = {
       ...this.setCapabilityMapping,
-      ...this.getCapabilityMapping
+      ...this.getCapabilityMapping,
     }
 
     const capabilitiesToProcess = ():
@@ -321,7 +321,7 @@ export default class MELCloudDeviceMixin extends Device {
         default:
           return {
             ...combinedCapabilities,
-            ...this.listCapabilityMapping
+            ...this.listCapabilityMapping,
           }
       }
     }
@@ -333,7 +333,7 @@ export default class MELCloudDeviceMixin extends Device {
     >
     const keysToProcessLast: string[] = [
       'operation_mode_state.zone1',
-      'operation_mode_state.zone2'
+      'operation_mode_state.zone2',
     ]
     const [regularCapabilities, lastCapabilities]: Array<
       Array<[NonReportCapability<T>, ListCapabilityMapping<T>]>
@@ -450,7 +450,7 @@ export default class MELCloudDeviceMixin extends Device {
     if (canCool !== CanCool || hasZone2 !== HasZone2) {
       await Promise.all([
         this.setStoreValue('canCool', CanCool),
-        this.setStoreValue('hasZone2', HasZone2)
+        this.setStoreValue('hasZone2', HasZone2),
       ])
       await this.handleCapabilities()
     }
@@ -538,7 +538,7 @@ export default class MELCloudDeviceMixin extends Device {
       ? {
           interval: { days: 1 },
           duration: { days: 1 },
-          values: { hour: 1, minute: 5, second: 0, millisecond: 0 }
+          values: { hour: 1, minute: 5, second: 0, millisecond: 0 },
         }
       : this.reportPlanParameters
     this.reportTimeout[totalString] = this.setTimeout(
@@ -563,7 +563,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async onSettings({
     newSettings,
-    changedKeys
+    changedKeys,
   }: {
     newSettings: Settings
     changedKeys: string[]

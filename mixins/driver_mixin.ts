@@ -5,7 +5,7 @@ import {
   type DeviceDetails,
   type ListDevice,
   type LoginCredentials,
-  type MELCloudDevice
+  type MELCloudDevice,
 } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
@@ -39,12 +39,12 @@ export default class MELCloudDriverMixin extends Driver {
         DeviceName,
         DeviceID,
         BuildingID,
-        Device: { CanCool, HasZone2 }
+        Device: { CanCool, HasZone2 },
       }): DeviceDetails => ({
         name: DeviceName,
         data: { id: DeviceID, buildingid: BuildingID },
         store: { canCool: CanCool, hasZone2: HasZone2 },
-        capabilities: this.getRequiredCapabilities(CanCool, HasZone2)
+        capabilities: this.getRequiredCapabilities(CanCool, HasZone2),
       })
     )
   }

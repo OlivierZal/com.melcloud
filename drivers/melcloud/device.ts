@@ -10,7 +10,7 @@ import {
   type ExtendedSetCapability,
   type SetCapabilities,
   type SetCapability,
-  type ThermostatMode
+  type ThermostatMode,
 } from '../../types'
 
 function reverseMapping(
@@ -30,7 +30,7 @@ const operationModeFromDevice: Record<number, string> = {
   2: 'dry',
   3: 'cool',
   7: 'fan',
-  8: 'auto'
+  8: 'auto',
 } as const
 
 const operationModeToDevice: Record<string, string> = reverseMapping(
@@ -44,7 +44,7 @@ const verticalFromDevice: Record<number, string> = {
   3: 'middle',
   4: 'middlebottom',
   5: 'bottom',
-  7: 'swing'
+  7: 'swing',
 } as const
 
 const verticalToDevice: Record<string, string> =
@@ -58,7 +58,7 @@ const horizontalFromDevice: Record<number, string> = {
   4: 'middleright',
   5: 'right',
   8: 'split',
-  12: 'swing'
+  12: 'swing',
 } as const
 
 const horizontalToDevice: Record<string, string> =
@@ -76,15 +76,15 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       heat: 'heat',
       cool: 'cool',
       dry: 'off',
-      fan: 'off'
+      fan: 'off',
     } as const
     this.requiredCapabilities = [
       ...Object.keys({
         ...setCapabilityMappingAta,
-        ...getCapabilityMappingAta
+        ...getCapabilityMappingAta,
       }),
       'thermostat_mode',
-      'fan_power_state'
+      'fan_power_state',
     ]
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
@@ -94,7 +94,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       minus: { hours: 1 },
       interval: { hours: 1 },
       duration: { hours: 1 },
-      values: { minute: 5, second: 0, millisecond: 0 }
+      values: { minute: 5, second: 0, millisecond: 0 },
     }
     await super.onInit()
   }

@@ -413,28 +413,28 @@ export const setCapabilityMappingAta: Record<
 > = {
   onoff: {
     tag: 'Power',
-    effectiveFlag: 0x1n
+    effectiveFlag: 0x1n,
   },
   operation_mode: {
     tag: 'OperationMode',
-    effectiveFlag: 0x2n
+    effectiveFlag: 0x2n,
   },
   target_temperature: {
     tag: 'SetTemperature',
-    effectiveFlag: 0x4n
+    effectiveFlag: 0x4n,
   },
   fan_power: {
     tag: 'SetFanSpeed',
-    effectiveFlag: 0x8n
+    effectiveFlag: 0x8n,
   },
   vertical: {
     tag: 'VaneVertical',
-    effectiveFlag: 0x10n
+    effectiveFlag: 0x10n,
   },
   horizontal: {
     tag: 'VaneHorizontal',
-    effectiveFlag: 0x100n
-  }
+    effectiveFlag: 0x100n,
+  },
 } as const
 
 export const setCapabilityMappingAtw: Record<
@@ -443,56 +443,56 @@ export const setCapabilityMappingAtw: Record<
 > = {
   onoff: {
     tag: 'Power',
-    effectiveFlag: 0x1n
+    effectiveFlag: 0x1n,
   },
   'operation_mode_zone.zone1': {
     tag: 'OperationModeZone1',
-    effectiveFlag: 0x8n
+    effectiveFlag: 0x8n,
   },
   'operation_mode_zone_with_cool.zone1': {
     tag: 'OperationModeZone1',
-    effectiveFlag: 0x8n
+    effectiveFlag: 0x8n,
   },
   'operation_mode_zone.zone2': {
     tag: 'OperationModeZone2',
-    effectiveFlag: 0x10n
+    effectiveFlag: 0x10n,
   },
   'operation_mode_zone_with_cool.zone2': {
     tag: 'OperationModeZone2',
-    effectiveFlag: 0x10n
+    effectiveFlag: 0x10n,
   },
   'onoff.forced_hot_water': {
     tag: 'ForcedHotWaterMode',
-    effectiveFlag: 0x10000n
+    effectiveFlag: 0x10000n,
   },
   target_temperature: {
     tag: 'SetTemperatureZone1',
-    effectiveFlag: 0x200000080n
+    effectiveFlag: 0x200000080n,
   },
   'target_temperature.zone2': {
     tag: 'SetTemperatureZone2',
-    effectiveFlag: 0x800000200n
+    effectiveFlag: 0x800000200n,
   },
   'target_temperature.zone1_flow_cool': {
     tag: 'SetCoolFlowTemperatureZone1',
-    effectiveFlag: 0x1000000000000n
+    effectiveFlag: 0x1000000000000n,
   },
   'target_temperature.zone1_flow_heat': {
     tag: 'SetHeatFlowTemperatureZone1',
-    effectiveFlag: 0x1000000000000n
+    effectiveFlag: 0x1000000000000n,
   },
   'target_temperature.zone2_flow_cool': {
     tag: 'SetCoolFlowTemperatureZone2',
-    effectiveFlag: 0x1000000000000n
+    effectiveFlag: 0x1000000000000n,
   },
   'target_temperature.zone2_flow_heat': {
     tag: 'SetHeatFlowTemperatureZone2',
-    effectiveFlag: 0x1000000000000n
+    effectiveFlag: 0x1000000000000n,
   },
   'target_temperature.tank_water': {
     tag: 'SetTankWaterTemperature',
-    effectiveFlag: 0x1000000000020n
-  }
+    effectiveFlag: 0x1000000000020n,
+  },
 } as const
 
 export const getCapabilityMappingAta: Record<
@@ -500,8 +500,8 @@ export const getCapabilityMappingAta: Record<
   GetCapabilityMapping<MELCloudDeviceAta>
 > = {
   measure_temperature: {
-    tag: 'RoomTemperature'
-  }
+    tag: 'RoomTemperature',
+  },
 } as const
 
 export const getCapabilityMappingAtw: Record<
@@ -509,30 +509,30 @@ export const getCapabilityMappingAtw: Record<
   GetCapabilityMapping<MELCloudDeviceAtw>
 > = {
   'alarm_generic.eco_hot_water': {
-    tag: 'EcoHotWater'
+    tag: 'EcoHotWater',
   },
   measure_temperature: {
-    tag: 'RoomTemperatureZone1'
+    tag: 'RoomTemperatureZone1',
   },
   'measure_temperature.zone2': {
-    tag: 'RoomTemperatureZone2'
+    tag: 'RoomTemperatureZone2',
   },
   'measure_temperature.outdoor': {
-    tag: 'OutdoorTemperature'
+    tag: 'OutdoorTemperature',
   },
   'measure_temperature.tank_water': {
-    tag: 'TankWaterTemperature'
+    tag: 'TankWaterTemperature',
   },
   operation_mode_state: {
-    tag: 'OperationMode'
+    tag: 'OperationMode',
   },
   // Must follow `operation_mode_state`
   'operation_mode_state.zone1': {
-    tag: 'IdleZone1'
+    tag: 'IdleZone1',
   },
   'operation_mode_state.zone2': {
-    tag: 'IdleZone2'
-  }
+    tag: 'IdleZone2',
+  },
 } as const
 
 const listCapabilityMappingMixin: Record<
@@ -540,8 +540,8 @@ const listCapabilityMappingMixin: Record<
   ListCapabilityMapping<MELCloudDevice>
 > = {
   'measure_power.wifi': {
-    tag: 'WifiSignalStrength'
-  }
+    tag: 'WifiSignalStrength',
+  },
 } as const
 
 export const listCapabilityMappingAta: Record<
@@ -550,17 +550,17 @@ export const listCapabilityMappingAta: Record<
 > = {
   ...listCapabilityMappingMixin,
   fan_power: {
-    tag: 'FanSpeed'
+    tag: 'FanSpeed',
   },
   fan_power_state: {
-    tag: 'ActualFanSpeed'
+    tag: 'ActualFanSpeed',
   },
   vertical: {
-    tag: 'VaneVerticalDirection'
+    tag: 'VaneVerticalDirection',
   },
   horizontal: {
-    tag: 'VaneHorizontalDirection'
-  }
+    tag: 'VaneHorizontalDirection',
+  },
 } as const
 
 export const listCapabilityMappingAtw: Record<
@@ -569,53 +569,53 @@ export const listCapabilityMappingAtw: Record<
 > = {
   ...listCapabilityMappingMixin,
   'alarm_generic.booster_heater1': {
-    tag: 'BoosterHeater1Status'
+    tag: 'BoosterHeater1Status',
   },
   'alarm_generic.booster_heater2': {
-    tag: 'BoosterHeater2Status'
+    tag: 'BoosterHeater2Status',
   },
   'alarm_generic.booster_heater2_plus': {
-    tag: 'BoosterHeater2PlusStatus'
+    tag: 'BoosterHeater2PlusStatus',
   },
   'alarm_generic.defrost_mode': {
-    tag: 'DefrostMode'
+    tag: 'DefrostMode',
   },
   'alarm_generic.immersion_heater': {
-    tag: 'ImmersionHeaterStatus'
+    tag: 'ImmersionHeaterStatus',
   },
   last_legionella: {
-    tag: 'LastLegionellaActivationTime'
+    tag: 'LastLegionellaActivationTime',
   },
   measure_power: {
-    tag: 'CurrentEnergyConsumed'
+    tag: 'CurrentEnergyConsumed',
   },
   'measure_power.produced': {
-    tag: 'CurrentEnergyProduced'
+    tag: 'CurrentEnergyProduced',
   },
   'measure_power.heat_pump_frequency': {
-    tag: 'HeatPumpFrequency'
+    tag: 'HeatPumpFrequency',
   },
   'measure_temperature.flow': {
-    tag: 'FlowTemperature'
+    tag: 'FlowTemperature',
   },
   'measure_temperature.flow_zone1': {
-    tag: 'FlowTemperatureZone1'
+    tag: 'FlowTemperatureZone1',
   },
   'measure_temperature.flow_zone2': {
-    tag: 'FlowTemperatureZone2'
+    tag: 'FlowTemperatureZone2',
   },
   'measure_temperature.return': {
-    tag: 'ReturnTemperature'
+    tag: 'ReturnTemperature',
   },
   'measure_temperature.return_zone1': {
-    tag: 'ReturnTemperatureZone1'
+    tag: 'ReturnTemperatureZone1',
   },
   'measure_temperature.return_zone2': {
-    tag: 'ReturnTemperatureZone2'
+    tag: 'ReturnTemperatureZone2',
   },
   'measure_temperature.tank_water_mixing': {
-    tag: 'MixingTankWaterTemperature'
-  }
+    tag: 'MixingTankWaterTemperature',
+  },
 } as const
 
 export const reportCapabilityMappingAta: Record<
@@ -635,7 +635,7 @@ export const reportCapabilityMappingAta: Record<
     'TotalDryConsumed',
     'TotalFanConsumed',
     'TotalHeatingConsumed',
-    'TotalOtherConsumed'
+    'TotalOtherConsumed',
   ],
   'meter_power.daily_consumed_auto': ['TotalAutoConsumed'],
   'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
@@ -649,14 +649,14 @@ export const reportCapabilityMappingAta: Record<
     'TotalDryConsumed',
     'TotalFanConsumed',
     'TotalHeatingConsumed',
-    'TotalOtherConsumed'
+    'TotalOtherConsumed',
   ],
   'meter_power.total_consumed_auto': ['TotalAutoConsumed'],
   'meter_power.total_consumed_cooling': ['TotalCoolingConsumed'],
   'meter_power.total_consumed_dry': ['TotalDryConsumed'],
   'meter_power.total_consumed_fan': ['TotalFanConsumed'],
   'meter_power.total_consumed_heating': ['TotalHeatingConsumed'],
-  'meter_power.total_consumed_other': ['TotalOtherConsumed']
+  'meter_power.total_consumed_other': ['TotalOtherConsumed'],
 }
 
 export const reportCapabilityMappingAtw: Record<
@@ -666,20 +666,20 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.daily_cop': ['CoP'],
   'meter_power.daily_cop_cooling': [
     'TotalCoolingProduced',
-    'TotalCoolingConsumed'
+    'TotalCoolingConsumed',
   ],
   'meter_power.daily_cop_heating': [
     'TotalHeatingProduced',
-    'TotalHeatingConsumed'
+    'TotalHeatingConsumed',
   ],
   'meter_power.daily_cop_hotwater': [
     'TotalHotWaterProduced',
-    'TotalHotWaterConsumed'
+    'TotalHotWaterConsumed',
   ],
   'meter_power.daily_consumed': [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
-    'TotalHotWaterConsumed'
+    'TotalHotWaterConsumed',
   ],
   'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
   'meter_power.daily_consumed_heating': ['TotalHeatingConsumed'],
@@ -687,7 +687,7 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.daily_produced': [
     'TotalCoolingProduced',
     'TotalHeatingProduced',
-    'TotalHotWaterProduced'
+    'TotalHotWaterProduced',
   ],
   'meter_power.daily_produced_cooling': ['TotalCoolingProduced'],
   'meter_power.daily_produced_heating': ['TotalHeatingProduced'],
@@ -695,20 +695,20 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.total_cop': ['CoP'],
   'meter_power.total_cop_cooling': [
     'TotalCoolingProduced',
-    'TotalCoolingConsumed'
+    'TotalCoolingConsumed',
   ],
   'meter_power.total_cop_heating': [
     'TotalHeatingProduced',
-    'TotalHeatingConsumed'
+    'TotalHeatingConsumed',
   ],
   'meter_power.total_cop_hotwater': [
     'TotalHotWaterProduced',
-    'TotalHotWaterConsumed'
+    'TotalHotWaterConsumed',
   ],
   'meter_power.total_consumed': [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
-    'TotalHotWaterConsumed'
+    'TotalHotWaterConsumed',
   ],
   'meter_power.total_consumed_cooling': ['TotalCoolingConsumed'],
   'meter_power.total_consumed_heating': ['TotalHeatingConsumed'],
@@ -716,11 +716,11 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.total_produced': [
     'TotalCoolingProduced',
     'TotalHeatingProduced',
-    'TotalHotWaterProduced'
+    'TotalHotWaterProduced',
   ],
   'meter_power.total_produced_cooling': ['TotalCoolingProduced'],
   'meter_power.total_produced_heating': ['TotalHeatingProduced'],
-  'meter_power.total_produced_hotwater': ['TotalHotWaterProduced']
+  'meter_power.total_produced_hotwater': ['TotalHotWaterProduced'],
 }
 
 export interface DeviceDetails {

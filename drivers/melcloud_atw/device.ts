@@ -11,7 +11,7 @@ import {
   type ExtendedSetCapability,
   type OperationModeZoneCapability,
   type SetCapabilities,
-  type SetCapability
+  type SetCapability,
 } from '../../types'
 
 const operationModeFromDevice: string[] = [
@@ -21,7 +21,7 @@ const operationModeFromDevice: string[] = [
   'cooling',
   'defrost',
   'standby',
-  'legionella'
+  'legionella',
 ]
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
@@ -42,7 +42,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       minus: { days: 1 },
       interval: { days: 1 },
       duration: { days: 1 },
-      values: { hour: 1, minute: 10, second: 0, millisecond: 0 }
+      values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
     }
     await super.onInit()
   }
@@ -128,7 +128,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     switch (capability) {
       case 'last_legionella':
         newValue = DateTime.fromISO(value as string, {
-          locale: this.app.getLanguage()
+          locale: this.app.getLanguage(),
         }).toLocaleString(DateTime.DATE_HUGE)
         break
       case 'measure_power':

@@ -12,7 +12,7 @@ import {
   type HolidayModeSettings,
   type LoginCredentials,
   type MELCloudDevice,
-  type Settings
+  type Settings,
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -124,7 +124,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     },
     {
       driverSettingsMixin: [],
-      driverSettings: {}
+      driverSettings: {},
     }
   )
 
@@ -301,7 +301,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       from: sinceElement.value,
       to,
       limit: '29',
-      offset: '0'
+      offset: '0',
     }
     const queryString: string = new URLSearchParams(
       query as Record<string, string>
@@ -319,7 +319,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         }
         fromDateHuman = data.FromDateHuman
         periodLabelElement.innerText = Homey.__('settings.error_log.period', {
-          fromDateHuman
+          fromDateHuman,
         })
         sinceElement.value = data.NextFromDate
         to = data.NextToDate
@@ -354,7 +354,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         Homey.__('settings.int_error', {
           name: Homey.__(labelElement?.innerText ?? ''),
           min: minValue,
-          max: maxValue
+          max: maxValue,
         })
       )
     }
@@ -515,17 +515,17 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
               HMEndDate,
               FPEnabled,
               FPMinTemperature,
-              FPMaxTemperature
+              FPMaxTemperature,
             } = buildings[0]
             getBuildingHolidayModeSettings({
               HMEnabled,
               HMStartDate,
-              HMEndDate
+              HMEndDate,
             })
             getBuildingFrostProtectionSettings({
               FPEnabled,
               FPMinTemperature,
-              FPMaxTemperature
+              FPMaxTemperature,
             })
           }
           resolve()
@@ -564,7 +564,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     let endPoint: string = '/devices/settings'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
-        driverId
+        driverId,
       }).toString()
       endPoint += `?${queryString}`
     }
@@ -639,7 +639,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         { id: '' },
         ...(setting.type === 'checkbox'
           ? [{ id: 'false' }, { id: 'true' }]
-          : setting.values ?? [])
+          : setting.values ?? []),
       ].forEach((value: { id: string; label?: string }): void => {
         const { id, label } = value
         const optionElement: HTMLOptionElement =
@@ -736,7 +736,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         ...(await Promise.all(
           credentialKeys.map(
             async (credentialKey: string): Promise<Record<string, string>> => ({
-              [credentialKey]: await getHomeySetting(credentialKey)
+              [credentialKey]: await getHomeySetting(credentialKey),
             })
           )
         ))
@@ -792,7 +792,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
     const body: LoginCredentials = {
       username,
-      password
+      password,
     }
     // @ts-expect-error bug
     Homey.api(
@@ -895,7 +895,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const body: HolidayModeSettings = {
       Enabled,
       StartDate: Enabled ? holidayModeStartDateElement.value : '',
-      EndDate: Enabled ? holidayModeEndDateElement.value : ''
+      EndDate: Enabled ? holidayModeEndDateElement.value : '',
     }
     // @ts-expect-error bug
     Homey.api(
@@ -956,7 +956,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     if (MinimumTemperature > MaximumTemperature) {
       ;[MinimumTemperature, MaximumTemperature] = [
         MaximumTemperature,
-        MinimumTemperature
+        MinimumTemperature,
       ]
     }
     if (MaximumTemperature - MinimumTemperature < 2) {
@@ -967,7 +967,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
       MinimumTemperature,
-      MaximumTemperature
+      MaximumTemperature,
     }
     // @ts-expect-error bug
     Homey.api(

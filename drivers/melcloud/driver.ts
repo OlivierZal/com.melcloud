@@ -6,7 +6,7 @@ const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
   'operation_mode',
   'fan_power',
   'vertical',
-  'horizontal'
+  'horizontal',
 ]
 
 function getCapabilityArg(
