@@ -214,16 +214,14 @@ export default class MELCloudApp extends App {
       newBuildings: Record<number, string>
     }>(
       (acc, building: Building<T>) => {
-        acc.newBuildings[building.ID] = building.Name
         const buildingDevices: Array<ListDevice<T>> = [
           ...building.Structure.Devices,
+          ...building.Structure.Areas.flatMap((area) => area.Devices),
           ...building.Structure.Floors.flatMap((floor) => [
             ...floor.Devices,
             ...floor.Areas.flatMap((area) => area.Devices)
-          ]),
-          ...building.Structure.Areas.flatMap((area) => area.Devices)
+          ])
         ]
-        acc.devices.push(...buildingDevices)
         const buildingDeviceIds: Record<number, string> =
           buildingDevices.reduce<Record<number, string>>(
             (deviceIds, device: ListDevice<T>) => ({
@@ -232,14 +230,17 @@ export default class MELCloudApp extends App {
             }),
             {}
           )
+        acc.devices.push(...buildingDevices)
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
+        acc.newBuildings[building.ID] = building.Name
         return acc
       },
       { devices: [], deviceIds: {}, newBuildings: {} }
     )
     if (deviceType !== undefined) {
       devices = devices.filter(
-        (device) => deviceType === device.Device.DeviceType
+        (device: ListDevice<T>): boolean =>
+          deviceType === device.Device.DeviceType
       )
     }
     this.buildings = newBuildings
