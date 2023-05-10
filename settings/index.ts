@@ -751,16 +751,16 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           }
           const divElement: HTMLDivElement = document.createElement('div')
           divElement.classList.add('homey-form-group')
-          const labelElement: HTMLLabelElement = document.createElement('label')
-          labelElement.classList.add('homey-form-label')
-          labelElement.innerText = setting.title
           const inputElement: HTMLInputElement = document.createElement('input')
           inputElement.classList.add('homey-form-input')
           inputElement.id = setting.id
-          labelElement.htmlFor = inputElement.id
           inputElement.type = setting.type
           inputElement.placeholder = setting.placeholder ?? ''
           inputElement.value = credentials[setting.id]
+          const labelElement: HTMLLabelElement = document.createElement('label')
+          labelElement.classList.add('homey-form-label')
+          labelElement.innerText = setting.title
+          labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
           loginElement.appendChild(inputElement)
           return inputElement
