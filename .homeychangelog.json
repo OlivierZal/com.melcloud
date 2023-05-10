@@ -121,5 +121,8 @@
   },
   "17.0.4": {
     "en": "Optimized code."
+  },
+  "17.0.5": {
+    "en": "MELCloud certificate is broken, SSL verification is disable as a temporary fix."
   }
 }
