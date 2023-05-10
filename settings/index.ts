@@ -54,6 +54,28 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
+  function flattenDeviceSettings(
+    deviceSettings: DeviceSettings
+  ): Record<string, any[]> {
+    return Object.values(deviceSettings).reduce<Record<string, any[]>>(
+      (flatDeviceSettings, settings: Record<string, any[]>) =>
+        Object.entries(settings).reduce<Record<string, any[]>>(
+          (merged, [settingId, settingValues]: [string, any[]]) => {
+            merged[settingId] ??= []
+            merged[settingId].push(
+              ...settingValues.filter(
+                (settingValue: any): boolean =>
+                  !merged[settingId].includes(settingValue)
+              )
+            )
+            return merged
+          },
+          flatDeviceSettings
+        ),
+      {}
+    )
+  }
+
   async function getDriverSettings(): Promise<DriverSetting[]> {
     return await new Promise<DriverSetting[]>((resolve, reject) => {
       // @ts-expect-error bug
@@ -76,28 +98,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function flattenDeviceSettings(): Record<string, any[]> {
-    return Object.values(deviceSettings).reduce<Record<string, any[]>>(
-      (flatDeviceSettings, settings: Record<string, any[]>) =>
-        Object.entries(settings).reduce<Record<string, any[]>>(
-          (merged, [settingId, settingValues]: [string, any[]]) => {
-            merged[settingId] ??= []
-            merged[settingId].push(
-              ...settingValues.filter(
-                (settingValue: any): boolean =>
-                  !merged[settingId].includes(settingValue)
-              )
-            )
-            return merged
-          },
-          flatDeviceSettings
-        ),
-      {}
-    )
-  }
-
   const deviceSettings: DeviceSettings = await getDeviceSettings()
-  let flatDeviceSettings: Record<string, any[]> = flattenDeviceSettings()
+  let flatDeviceSettings: Record<string, any[]> =
+    flattenDeviceSettings(deviceSettings)
 
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
   const { driverSettingsMixin, driverSettings } = allDriverSettings.reduce<{
@@ -538,7 +541,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           deviceSettings[driverId][settingId] = [settingValue]
         }
       )
-      flatDeviceSettings = flattenDeviceSettings()
+      flatDeviceSettings = flattenDeviceSettings(deviceSettings)
     } else {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, any]): void => {
@@ -720,25 +723,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
   }
 
-  async function getDevices(): Promise<MELCloudDevice[]> {
-    return await new Promise<MELCloudDevice[]>((resolve, reject) => {
-      // @ts-expect-error bug
-      Homey.api(
-        'GET',
-        '/devices',
-        async (error: Error, devices: MELCloudDevice[]): Promise<void> => {
-          if (error !== null) {
-            // @ts-expect-error bug
-            await Homey.alert(error.message)
-            reject(error)
-            return
-          }
-          resolve(devices)
-        }
-      )
-    })
-  }
-
   async function generate(): Promise<void> {
     await getBuildings()
     generateErrorLog()
@@ -789,19 +773,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   async function load(): Promise<void> {
     generateMixinChildrenElements()
-    await Promise.all(
-      ['melcloud', 'melcloud_atw'].map(async (driverId): Promise<void> => {
-        const devices: MELCloudDevice[] = await getDevices()
-        if (
-          devices.some(
-            (device: MELCloudDevice): boolean =>
-              device.driverId === `${device.driverUri}:${driverId}`
-          )
-        ) {
-          generateCheckboxChildrenElements(driverId)
-        }
-      })
-    )
+    Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
     try {
       await generate()
     } catch (error: unknown) {

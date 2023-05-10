@@ -99,10 +99,6 @@ module.exports = {
       )
   },
 
-  async getDevices({ homey }: { homey: Homey }): Promise<MELCloudDevice[]> {
-    return (homey.app as MELCloudApp).getDevices()
-  },
-
   async getDeviceSettings({
     homey
   }: {

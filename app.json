@@ -154,10 +154,6 @@
       "method": "POST",
       "path": "/login"
     },
-    "getDevices": {
-      "method": "GET",
-      "path": "/devices"
-    },
     "getDeviceSettings": {
       "method": "GET",
       "path": "/devices/settings"
