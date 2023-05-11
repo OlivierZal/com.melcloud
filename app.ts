@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Agent } from 'https'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
 import {
@@ -42,11 +41,6 @@ export default class MELCloudApp extends App {
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =
       this.homey.settings.get('ContextKey') ?? ''
-
-    const agent: Agent = new Agent({
-      rejectUnauthorized: false,
-    })
-    axios.defaults.httpsAgent = agent
 
     this.buildings = {}
     this.deviceIds = {}
