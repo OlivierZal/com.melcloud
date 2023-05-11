@@ -124,5 +124,8 @@
   },
   "17.0.5": {
     "en": "MELCloud certificate is broken, SSL verification is disable as a temporary fix."
+  },
+  "17.0.6": {
+    "en": "Removed workaround (MELCloud certificate has been renewed)."
   }
 }
