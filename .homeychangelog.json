@@ -109,26 +109,5 @@
   },
   "17.0.0": {
     "en": "Improved memory usage and enhanced app settings."
-  },
-  "17.0.1": {
-    "en": "Ensured that credential fields are well ordered."
-  },
-  "17.0.2": {
-    "en": "Improved performances."
-  },
-  "17.0.3": {
-    "en": "Made app faster."
-  },
-  "17.0.4": {
-    "en": "Optimized code."
-  },
-  "17.0.5": {
-    "en": "MELCloud certificate is broken, SSL verification is disable as a temporary fix."
-  },
-  "17.0.6": {
-    "en": "Removed workaround (MELCloud certificate has been renewed)."
-  },
-  "17.0.7": {
-    "en": "Allowed to disable air-to-air device's energy measurement from app/device settings (since it is not always accurate)."
   }
 }
