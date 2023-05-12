@@ -127,5 +127,8 @@
   },
   "17.0.6": {
     "en": "Removed workaround (MELCloud certificate has been renewed)."
+  },
+  "17.0.7": {
+    "en": "Allowed to disable air-to-air device's energy measurement from app/device settings (since it is not always accurate)."
   }
 }
