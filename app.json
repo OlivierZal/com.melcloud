@@ -4429,6 +4429,20 @@
           },
           "children": [
             {
+              "id": "measure_power",
+              "type": "checkbox",
+              "label": {
+                "en": "All modes",
+                "fr": "Tous modes",
+                "nl": "Alle modi",
+                "sv": "Alla lägen",
+                "no": "Alle moduser",
+                "da": "Alle tilstande",
+                "es": "Todos los modos"
+              },
+              "value": true
+            },
+            {
               "id": "measure_power.auto",
               "type": "checkbox",
               "label": {

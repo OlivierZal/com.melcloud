@@ -103,7 +103,6 @@ export default class MELCloudDeviceMixin extends Device {
     this.buildingid = buildingid
     this.diff = {}
 
-    this.requiredCapabilities = [...this.requiredCapabilities, 'measure_power']
     await this.handleCapabilities()
     this.registerCapabilityListeners()
     this.app.applySyncFromDevices()
