@@ -8,9 +8,7 @@ import {
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
-  type SetCapabilities,
   type SetCapability,
-  type ThermostatMode,
 } from '../../types'
 
 function reverseMapping(
@@ -67,17 +65,9 @@ const horizontalToDevice: Record<string, string> =
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
   declare operationModeCapability: SetCapability<MELCloudDeviceAta>
-  declare diff: SetCapabilities<MELCloudDeviceAta>
+  declare diff: Map<SetCapability<MELCloudDeviceAta>, CapabilityValue>
 
   async onInit(): Promise<void> {
-    this.operationModeCapability = 'operation_mode'
-    this.operationModeToThermostatMode = {
-      auto: 'auto',
-      heat: 'heat',
-      cool: 'cool',
-      dry: 'off',
-      fan: 'off',
-    } as const
     this.requiredCapabilities = [
       ...Object.keys({
         ...setCapabilityMappingAta,
@@ -103,28 +93,21 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     capability: ExtendedSetCapability<MELCloudDeviceAta>,
     value: CapabilityValue
   ): Promise<void> {
-    switch (capability) {
-      case 'thermostat_mode':
-        if (value !== 'off') {
-          this.diff.operation_mode = reverseMapping(
-            this.operationModeToThermostatMode
-          )[value as ThermostatMode]
-        }
-        break
-      case 'fan_power':
-        this.diff[capability] = value as number
-        break
-      case 'operation_mode':
-      case 'vertical':
-      case 'horizontal':
-        this.diff[capability] = value as string
-        if (
-          capability === 'operation_mode' &&
-          ['dry', 'fan'].includes(value as string) &&
-          this.getCapabilityValue('thermostat_mode') !== 'off'
-        ) {
-          await this.setDisplayErrorWarning()
-        }
+    if (capability === 'thermostat_mode') {
+      this.diff.set('onoff', value !== 'off')
+      if (value !== 'off') {
+        this.diff.set('operation_mode', value)
+      }
+      await this.setAlwaysOnWarning()
+    } else {
+      this.diff.set(capability, value)
+      if (
+        capability === 'operation_mode' &&
+        ['dry', 'fan'].includes(value as string) &&
+        this.getCapabilityValue('thermostat_mode') !== 'off'
+      ) {
+        await this.setDisplayErrorWarning()
+      }
     }
   }
 
@@ -160,6 +143,16 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         newValue = horizontalFromDevice[newValue as number]
     }
     await this.setCapabilityValue(capability, newValue)
+  }
+
+  async updateThermostatMode(): Promise<void> {
+    const isOn: boolean = this.getCapabilityValue('onoff')
+    const operationMode: string | number =
+      this.getCapabilityValue('operation_mode')
+    await this.setCapabilityValue(
+      'thermostat_mode',
+      isOn ? operationMode : 'off'
+    )
   }
 }
 

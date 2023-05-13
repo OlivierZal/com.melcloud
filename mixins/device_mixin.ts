@@ -7,11 +7,11 @@ import {
   type NonReportCapability,
   type Capability,
   type CapabilityValue,
-  type Data,
   type ExtendedCapability,
   type ExtendedSetCapability,
   type GetCapability,
   type GetCapabilityMapping,
+  type GetDeviceData,
   type ListCapability,
   type ListCapabilityMapping,
   type ReportCapabilityMapping,
@@ -21,24 +21,18 @@ import {
   type MELCloudDriver,
   type ReportCapability,
   type ReportData,
-  type SetCapabilities,
   type SetCapability,
   type SetCapabilityMapping,
+  type SetDeviceData,
   type Settings,
   type SyncFromMode,
   type SyncMode,
-  type ThermostatMode,
-  type UpdateData,
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
-  operationModeCapability!:
-    | SetCapability<MELCloudDeviceAta>
-    | SetCapability<MELCloudDeviceAtw>
 
-  operationModeToThermostatMode!: Record<string, ThermostatMode>
   requiredCapabilities!: string[]
 
   setCapabilityMapping!:
@@ -83,7 +77,10 @@ export default class MELCloudDeviceMixin extends Device {
 
   id!: number
   buildingid!: number
-  diff!: SetCapabilities<MELCloudDeviceAta> | SetCapabilities<MELCloudDeviceAtw>
+  diff!: Map<
+    SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
+    CapabilityValue
+  >
 
   syncTimeout!: NodeJS.Timeout
   reportTimeout!: { true: NodeJS.Timeout | null; false: NodeJS.Timeout | null }
@@ -95,13 +92,13 @@ export default class MELCloudDeviceMixin extends Device {
     values: object
   }
 
-  async onInit(): Promise<void> {
+  async onInit<T extends MELCloudDevice>(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData()
     this.id = id
     this.buildingid = buildingid
-    this.diff = {}
+    this.diff = new Map<SetCapability<T>, CapabilityValue>()
 
     await this.handleCapabilities()
     this.registerCapabilityListeners()
@@ -113,7 +110,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   isDiff(): boolean {
-    return Object.keys(this.diff).length > 0
+    return this.diff.size > 0
   }
 
   getDashboardCapabilities(settings: Settings = this.getSettings()): string[] {
@@ -182,17 +179,8 @@ export default class MELCloudDeviceMixin extends Device {
     value: CapabilityValue
   ): Promise<void> {
     this.clearSync()
-    switch (capability) {
-      case 'onoff':
-        this.diff.onoff = value as boolean
-        await this.setAlwaysOnWarning()
-        break
-      case 'thermostat_mode':
-        this.diff.onoff = String(value) !== 'off'
-        await this.setAlwaysOnWarning()
-        break
-      case 'target_temperature':
-        this.diff.target_temperature = value as number
+    if (capability === 'onoff') {
+      await this.setAlwaysOnWarning()
     }
     await this.specificOnCapability(capability, value)
     this.applySyncToDevice()
@@ -229,48 +217,48 @@ export default class MELCloudDeviceMixin extends Device {
     this.syncTimeout = this.setTimeout(
       'sync with device',
       async (): Promise<void> => {
-        await this.syncToDevice(this.diff)
+        await this.syncToDevice()
       },
       { seconds: 1 },
       'seconds'
     )
   }
 
-  async syncToDevice<T extends MELCloudDevice>(
-    diff: SetCapabilities<T>
-  ): Promise<void> {
-    this.diff = {}
-    const updateData: UpdateData<T> = this.buildUpdateData(diff)
-    const data: Data<T> | null = await this.app.setDeviceData(
+  async syncToDevice<T extends MELCloudDevice>(): Promise<void> {
+    const updateData: SetDeviceData<T> = this.buildUpdateData()
+    const data: GetDeviceData<T> | null = await this.app.setDeviceData(
       this as unknown as T,
       updateData
     )
     await this.endSync(data, 'syncTo')
   }
 
-  buildUpdateData<T extends MELCloudDevice>(
-    diff: SetCapabilities<T>
-  ): UpdateData<T> {
-    return Object.entries(this.setCapabilityMapping).reduce<any>(
-      (updateData, [capability, { tag, effectiveFlag }]) => {
+  buildUpdateData<T extends MELCloudDevice>(): SetDeviceData<T> {
+    const updateData: SetDeviceData<T> = Object.entries(
+      this.setCapabilityMapping
+    ).reduce<any>(
+      (
+        acc,
+        [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>]
+      ) => {
         if (!this.hasCapability(capability)) {
-          return updateData
+          return acc
         }
-        if (capability in diff) {
-          updateData.EffectiveFlags = Number(
-            BigInt(updateData.EffectiveFlags) | effectiveFlag
+        acc[tag] = this.convertToDevice(
+          capability as SetCapability<T>,
+          this.diff.get(capability as SetCapability<T>)
+        )
+        if (this.diff.has(capability as SetCapability<T>)) {
+          this.diff.delete(capability as SetCapability<T>)
+          acc.EffectiveFlags = Number(
+            BigInt(acc.EffectiveFlags) | effectiveFlag
           )
         }
-        updateData[tag] = this.convertToDevice(
-          capability as SetCapability<T>,
-          capability in diff
-            ? (diff[capability as keyof SetCapabilities<T>] as CapabilityValue)
-            : undefined
-        )
-        return updateData
+        return acc
       },
       { EffectiveFlags: 0 }
     )
+    return updateData
   }
 
   convertToDevice(
@@ -410,21 +398,7 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async updateThermostatMode(): Promise<void> {
-    if (
-      !this.hasCapability('thermostat_mode') ||
-      this.operationModeCapability === undefined ||
-      this.operationModeToThermostatMode === undefined
-    ) {
-      return
-    }
-    const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: string | number = this.getCapabilityValue(
-      this.operationModeCapability
-    )
-    await this.setCapabilityValue(
-      'thermostat_mode',
-      isOn ? this.operationModeToThermostatMode[operationMode] : 'off'
-    )
+    // Abstract method
   }
 
   async syncDeviceFromList<T extends MELCloudDevice>(
@@ -439,20 +413,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   async updateStore<T extends MELCloudDevice>(
-    data: ListDeviceData<T> | null
+    _data: ListDeviceData<T> | null
   ): Promise<void> {
-    if (data === null) {
-      return
-    }
-    const { canCool, hasZone2 } = this.getStore()
-    const { CanCool, HasZone2 } = data
-    if (canCool !== CanCool || hasZone2 !== HasZone2) {
-      await Promise.all([
-        this.setStoreValue('canCool', CanCool),
-        this.setStoreValue('hasZone2', HasZone2),
-      ])
-      await this.handleCapabilities()
-    }
+    // Abstract method
   }
 
   async runEnergyReports(): Promise<void> {
