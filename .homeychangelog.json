@@ -109,5 +109,8 @@
   },
   "17.0.0": {
     "en": "Improved memory usage and enhanced app settings."
+  },
+  "17.1.0": {
+    "en": "Use Map()"
   }
 }
