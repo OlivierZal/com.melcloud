@@ -135,8 +135,7 @@ module.exports = {
             (setting.children ?? []).map(
               (child: ManifestDriverSettingData): DriverSetting => ({
                 id: child.id,
-                title: (driver.capabilitiesOptions?.[child.id]?.title ??
-                  child.label)[language],
+                title: child.label[language],
                 type: child.type,
                 min: child.min,
                 max: child.max,
