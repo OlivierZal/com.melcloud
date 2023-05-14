@@ -9,9 +9,9 @@ import {
   type Capability,
   type CapabilityValue,
   type ExtendedSetCapability,
-  type OperationModeZoneCapability,
-  type SetCapabilities,
+  type MELCloudDevice,
   type SetCapability,
+  type ListDeviceData,
 } from '../../types'
 
 const operationModeFromDevice: string[] = [
@@ -26,7 +26,7 @@ const operationModeFromDevice: string[] = [
 
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
-  declare diff: SetCapabilities<MELCloudDeviceAtw>
+  declare diff: Map<SetCapability<MELCloudDeviceAtw>, CapabilityValue>
 
   async onInit(): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
@@ -51,36 +51,23 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     capability: ExtendedSetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue
   ): Promise<void> {
-    switch (capability) {
-      case 'onoff.forced_hot_water':
-        this.diff[capability] = value as boolean
-        break
-      case 'operation_mode_zone.zone1':
-      case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool.zone1':
-      case 'operation_mode_zone_with_cool.zone2':
-        await this.handleOperationModeZones(capability, value)
-        break
-      case 'target_temperature.zone2':
-      case 'target_temperature.zone1_flow_cool':
-      case 'target_temperature.zone1_flow_heat':
-      case 'target_temperature.zone2_flow_cool':
-      case 'target_temperature.zone2_flow_heat':
-      case 'target_temperature.tank_water':
-        this.diff[capability] = value as number
+    this.diff.set(capability, value)
+    if (capability.startsWith('operation_mode_zone')) {
+      await this.handleOperationModeZones(capability, value)
     }
   }
 
   async handleOperationModeZones(
-    capability: OperationModeZoneCapability,
+    capability: ExtendedSetCapability<MELCloudDeviceAtw>,
     value: CapabilityValue
   ): Promise<void> {
-    this.diff[capability] = value as string
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
       const zoneValue: number = Number(value)
-      const otherZone: OperationModeZoneCapability =
-        this.getOtherCapabilityZone(capability) as OperationModeZoneCapability
+      const otherZone: ExtendedSetCapability<MELCloudDeviceAtw> =
+        this.getOtherCapabilityZone(
+          capability
+        ) as ExtendedSetCapability<MELCloudDeviceAtw>
       let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
         if (zoneValue > 2) {
@@ -94,7 +81,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
         otherZoneValue += 1
       }
-      this.diff[otherZone] = String(otherZoneValue)
+      this.diff.set(otherZone, String(otherZoneValue))
       await this.setDisplayErrorWarning()
     }
   }
@@ -155,6 +142,23 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         newValue = Boolean(newValue)
     }
     await this.setCapabilityValue(capability, newValue)
+  }
+
+  async updateStore<MELCloudDeviceAtw extends MELCloudDevice>(
+    data: ListDeviceData<MELCloudDeviceAtw> | null
+  ): Promise<void> {
+    if (data === null) {
+      return
+    }
+    const { canCool, hasZone2 } = this.getStore()
+    const { CanCool, HasZone2 } = data
+    if (canCool !== CanCool || hasZone2 !== HasZone2) {
+      await Promise.all([
+        this.setStoreValue('canCool', CanCool),
+        this.setStoreValue('hasZone2', HasZone2),
+      ])
+      await this.handleCapabilities()
+    }
   }
 }
 

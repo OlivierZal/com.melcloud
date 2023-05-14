@@ -11,8 +11,6 @@ export type SyncMode = 'syncTo' | SyncFromMode
 
 export type CapabilityValue = boolean | number | string
 
-export type ThermostatMode = 'auto' | 'heat' | 'cool' | 'off'
-
 export interface Settings extends Record<string, any> {
   always_on?: boolean
 }
@@ -104,9 +102,6 @@ interface SetCapabilitiesAtw extends SetCapabilitiesMixin {
   'target_temperature.zone2_flow_heat'?: number
   'target_temperature.tank_water'?: number
 }
-
-export type SetCapabilities<T extends MELCloudDevice> =
-  T extends MELCloudDeviceAtw ? SetCapabilitiesAtw : SetCapabilitiesAta
 
 interface GetCapabilitiesMixin {
   readonly measure_temperature: number
@@ -205,17 +200,15 @@ interface ReportCapabilitiesAtw {
   'meter_power.total_produced_hotwater'?: number
 }
 
-export type ReportCapabilities<T extends MELCloudDevice> =
-  T extends MELCloudDeviceAtw ? ReportCapabilitiesAtw : ReportCapabilitiesAta
-
 export type SetCapability<T extends MELCloudDevice> =
   T extends MELCloudDeviceAtw
     ? keyof SetCapabilitiesAtw
     : keyof SetCapabilitiesAta
 
 export type ExtendedSetCapability<T extends MELCloudDevice> =
-  | SetCapability<T>
-  | 'thermostat_mode'
+  T extends MELCloudDeviceAtw
+    ? SetCapability<MELCloudDeviceAtw>
+    : SetCapability<MELCloudDeviceAta> | 'thermostat_mode'
 
 export type GetCapability<T extends MELCloudDevice> =
   T extends MELCloudDeviceAtw
@@ -245,41 +238,34 @@ export type ExtendedCapability<T extends MELCloudDevice> =
   | Capability<T>
   | ExtendedSetCapability<T>
 
-export type OperationModeZoneCapability =
-  | 'operation_mode_zone.zone1'
-  | 'operation_mode_zone.zone2'
-  | 'operation_mode_zone_with_cool.zone1'
-  | 'operation_mode_zone_with_cool.zone2'
-
 interface BaseDeviceData {
-  readonly EffectiveFlags: number
-  readonly Power?: number
+  EffectiveFlags: number
+  readonly Power: number
 }
 
 interface SetDeviceDataAta extends BaseDeviceData {
-  readonly OperationMode?: number
-  readonly SetTemperature?: number
-  readonly SetFanSpeed?: number
-  readonly VaneVertical?: number
-  readonly VaneHorizontal?: number
+  readonly OperationMode: number
+  readonly SetTemperature: number
+  readonly SetFanSpeed: number
+  readonly VaneVertical: number
+  readonly VaneHorizontal: number
 }
 
 interface SetDeviceDataAtw extends BaseDeviceData {
-  readonly ForcedHotWaterMode?: boolean
-  readonly OperationModeZone1?: number
-  readonly OperationModeZone2?: number
-  readonly SetCoolFlowTemperatureZone1?: number
-  readonly SetCoolFlowTemperatureZone2?: number
-  readonly SetHeatFlowTemperatureZone1?: number
-  readonly SetHeatFlowTemperatureZone2?: number
-  readonly SetTankWaterTemperature?: number
-  readonly SetTemperatureZone1?: number
-  readonly SetTemperatureZone2?: number
+  readonly ForcedHotWaterMode: boolean
+  readonly OperationModeZone1: number
+  readonly OperationModeZone2: number
+  readonly SetCoolFlowTemperatureZone1: number
+  readonly SetCoolFlowTemperatureZone2: number
+  readonly SetHeatFlowTemperatureZone1: number
+  readonly SetHeatFlowTemperatureZone2: number
+  readonly SetTankWaterTemperature: number
+  readonly SetTemperatureZone1: number
+  readonly SetTemperatureZone2: number
 }
 
-type SetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? SetDeviceDataAtw
-  : SetDeviceDataAta
+export type SetDeviceData<T extends MELCloudDevice> =
+  T extends MELCloudDeviceAtw ? SetDeviceDataAtw : SetDeviceDataAta
 
 interface GetDeviceDataMixin extends BaseDeviceData {}
 
@@ -298,18 +284,13 @@ interface GetDeviceDataAtw extends GetDeviceDataMixin, SetDeviceDataAtw {
   readonly TankWaterTemperature: number
 }
 
-type GetDeviceData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
-  ? GetDeviceDataAtw
-  : GetDeviceDataAta
+export type GetDeviceData<T extends MELCloudDevice> =
+  T extends MELCloudDeviceAtw ? GetDeviceDataAtw : GetDeviceDataAta
 
-export type UpdateData<T extends MELCloudDevice> = Required<SetDeviceData<T>>
-
-export type PostData<T extends MELCloudDevice> = UpdateData<T> & {
+export type PostData<T extends MELCloudDevice> = SetDeviceData<T> & {
   readonly DeviceID: number
   readonly HasPendingCommand: true
 }
-
-export type Data<T extends MELCloudDevice> = UpdateData<T> & GetDeviceData<T>
 
 interface ListDeviceDataMixin extends BaseDeviceData {
   readonly CanCool: boolean
