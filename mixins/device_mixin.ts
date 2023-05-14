@@ -426,7 +426,10 @@ export default class MELCloudDeviceMixin extends Device {
   async runEnergyReport<T extends MELCloudDevice>(
     total: boolean = false
   ): Promise<void> {
-    const reportCapabilities = this.getReportCapabilities(total)
+    const reportCapabilities: Record<
+      string,
+      ReportCapabilityMapping<T>
+    > = this.getReportCapabilities(total)
     if (Object.keys(reportCapabilities).length === 0) {
       return
     }
