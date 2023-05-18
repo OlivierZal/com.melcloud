@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MELCloud Settings</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <script
@@ -24,6 +26,7 @@
         <div class="homey-form-group">
           <button
             id="authenticate"
+            aria-label="Authenticate"
             class="homey-button-primary-full"
             data-i18n="settings.authenticate.button"
           ></button>
@@ -52,6 +55,7 @@
           <div class="left">
             <button
               id="see"
+              aria-label="See"
               class="homey-button-secondary-shadow"
               data-i18n="settings.error_log.see"
             ></button>
@@ -60,6 +64,7 @@
             <label
               class="homey-form-label unset-margin"
               for="since"
+              aria-label="Since"
               data-i18n="settings.error_log.since"
             ></label>
             <input id="since" type="date" value="" />
@@ -72,12 +77,17 @@
           data-i18n="settings.buildings.legend"
         ></legend>
         <div class="homey-form-group">
-          <select class="homey-form-select" id="buildings"></select>
+          <select
+            class="homey-form-select"
+            id="buildings"
+            aria-label="Buildings"
+          ></select>
         </div>
         <div class="homey-form-group">
           <label
             class="homey-form-label"
             for="enabled-holiday-mode"
+            aria-label="Enabled"
             data-i18n="settings.buildings.holiday_mode.enabled"
           ></label>
           <select class="homey-form-select" id="enabled-holiday-mode">
@@ -89,6 +99,7 @@
           <label
             class="homey-form-label"
             for="start-date"
+            aria-label="Start date"
             data-i18n="settings.buildings.holiday_mode.start_date"
           ></label>
           <input id="start-date" type="datetime-local" value="" />
@@ -97,6 +108,7 @@
           <label
             class="homey-form-label"
             for="end-date"
+            aria-label="End date"
             data-i18n="settings.buildings.holiday_mode.end_date"
           ></label>
           <input id="end-date" type="datetime-local" value="" />
@@ -104,11 +116,13 @@
         <div class="homey-form-group container">
           <button
             id="refresh-holiday-mode"
+            aria-label="Refresh"
             class="homey-button-secondary-shadow"
             data-i18n="settings.buildings.refresh"
           ></button>
           <button
             id="update-holiday-mode"
+            aria-label="Update"
             class="homey-button-danger-shadow"
             data-i18n="settings.buildings.update"
           ></button>
@@ -117,6 +131,7 @@
           <label
             class="homey-form-label"
             for="enabled-frost-protection"
+            aria-label="Enabled"
             data-i18n="settings.buildings.frost_protection.enabled"
           ></label>
           <select class="homey-form-select" id="enabled-frost-protection">
@@ -128,6 +143,7 @@
           <label
             class="homey-form-label"
             for="min"
+            aria-label="Minimum temperature"
             data-i18n="settings.buildings.frost_protection.min"
           ></label>
           <input
@@ -142,6 +158,7 @@
           <label
             class="homey-form-label"
             for="max"
+            aria-label="Maximum temperature"
             data-i18n="settings.buildings.frost_protection.max"
           ></label>
           <input
@@ -155,11 +172,13 @@
         <div class="homey-form-group container">
           <button
             id="refresh-frost-protection"
+            aria-label="Refresh"
             class="homey-button-secondary-shadow"
             data-i18n="settings.buildings.refresh"
           ></button>
           <button
             id="update-frost-protection"
+            aria-label="Update"
             class="homey-button-danger-shadow"
             data-i18n="settings.buildings.update"
           ></button>
@@ -174,6 +193,7 @@
         <div class="homey-form-group">
           <button
             id="apply-settings-mixin"
+            aria-label="Apply"
             class="homey-button-danger-shadow-full"
             data-i18n="settings.devices.apply.button"
           ></button>
@@ -195,6 +215,7 @@
           <div class="homey-form-group">
             <button
               id="auto_adjust"
+              aria-label="Auto-adjust"
               class="homey-button-secondary-shadow-full"
               data-i18n="settings.devices_ata.configure"
             ></button>
@@ -203,6 +224,7 @@
           <div class="homey-form-group">
             <button
               id="apply-settings-melcloud"
+              aria-label="Apply"
               class="homey-button-danger-shadow-full"
               data-i18n="settings.devices.apply.button"
             ></button>
@@ -219,6 +241,7 @@
           <div class="homey-form-group">
             <button
               id="apply-settings-melcloud_atw"
+              aria-label="Apply"
               class="homey-button-danger-shadow-full"
               data-i18n="settings.devices.apply.button"
             ></button>
