@@ -142,14 +142,18 @@ export default class MELCloudDeviceMixin extends Device {
       ...this.driver.getRequiredCapabilities(this.getStore()),
       ...this.getDashboardCapabilities(),
     ]
-    for (const capability of requiredCapabilities) {
-      await this.addCapability(capability)
-    }
-    for (const capability of this.getCapabilities()) {
-      if (!requiredCapabilities.includes(capability)) {
-        await this.removeCapability(capability)
-      }
-    }
+    await Promise.all(
+      requiredCapabilities.map(async (capability: string): Promise<void> => {
+        await this.addCapability(capability)
+      })
+    )
+    await Promise.all(
+      this.getCapabilities().map(async (capability: string): Promise<void> => {
+        if (!requiredCapabilities.includes(capability)) {
+          await this.removeCapability(capability)
+        }
+      })
+    )
   }
 
   registerCapabilityListeners<T extends MELCloudDevice>(): void {
