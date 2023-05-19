@@ -405,10 +405,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
 
     return settings.reduce<Settings>(
-      (body, setting: HTMLInputElement | HTMLSelectElement) => {
-        const settingValue: any = processSettingValue(setting)
-        if (shouldUpdate(settingValue, setting.id, driverId)) {
-          body[setting.id] = settingValue
+      (body, element: HTMLInputElement | HTMLSelectElement) => {
+        const settingValue: any = processSettingValue(element)
+        const settingId: string = element.id.split('--')[0]
+        if (shouldUpdate(settingValue, settingId, driverId)) {
+          body[settingId] = settingValue
         }
         return body
       },
@@ -634,7 +635,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       labelElement.innerText = setting.title
       const selectElement = document.createElement('select')
       selectElement.className = 'homey-form-select'
-      selectElement.id = `setting-${setting.id}`
+      selectElement.id = `${setting.id}--setting`
       labelElement.htmlFor = selectElement.id
       ;[
         { id: '' },
@@ -689,7 +690,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       labelElement.className = 'homey-form-checkbox'
       const inputElement: HTMLInputElement = document.createElement('input')
       inputElement.className = 'homey-form-checkbox-input'
-      inputElement.id = `settings-${driverId}-${setting.id}`
+      inputElement.id = `${setting.id}--settings-${driverId}`
       labelElement.htmlFor = inputElement.id
       inputElement.type = 'checkbox'
       const checked: any[] = deviceSettings[driverId][setting.id]
