@@ -1,6 +1,12 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAta from './device'
-import { type FlowArgsAta, type SetCapability } from '../../types'
+import {
+  getCapabilityMappingAta,
+  setCapabilityMappingAta,
+  type FlowArgsAta,
+  type SetCapability,
+  type Store,
+} from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
   'operation_mode',
@@ -44,6 +50,17 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
           })
       }
     )
+  }
+
+  getRequiredCapabilities(_store: Store): string[] {
+    return [
+      ...Object.keys({
+        ...setCapabilityMappingAta,
+        ...getCapabilityMappingAta,
+      }),
+      'thermostat_mode',
+      'fan_power_state',
+    ]
   }
 }
 

@@ -33,8 +33,6 @@ export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
   declare driver: MELCloudDriver
 
-  requiredCapabilities!: string[]
-
   setCapabilityMapping!:
     | Record<
         SetCapability<MELCloudDeviceAta>,
@@ -141,21 +139,17 @@ export default class MELCloudDeviceMixin extends Device {
 
   async handleCapabilities(): Promise<void> {
     const requiredCapabilities: string[] = [
-      ...this.requiredCapabilities,
+      ...this.driver.getRequiredCapabilities(this.getStore()),
       ...this.getDashboardCapabilities(),
     ]
-    await Promise.all(
-      requiredCapabilities.map(async (capability: string): Promise<void> => {
-        await this.addCapability(capability)
-      })
-    )
-    await Promise.all(
-      this.getCapabilities().map(async (capability: string): Promise<void> => {
-        if (!requiredCapabilities.includes(capability)) {
-          await this.removeCapability(capability)
-        }
-      })
-    )
+    for (const capability of requiredCapabilities) {
+      await this.addCapability(capability)
+    }
+    for (const capability of this.getCapabilities()) {
+      if (!requiredCapabilities.includes(capability)) {
+        await this.removeCapability(capability)
+      }
+    }
   }
 
   registerCapabilityListeners<T extends MELCloudDevice>(): void {

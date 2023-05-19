@@ -4,6 +4,7 @@ import {
   type GetCapability,
   type ListCapability,
   type SetCapability,
+  type Store,
 } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
@@ -182,7 +183,8 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
       )
   }
 
-  getRequiredCapabilities(canCool: boolean, hasZone2: boolean): string[] {
+  getRequiredCapabilities(store: Store): string[] {
+    const { canCool, hasZone2 } = store
     return [
       ...this.capabilitiesAtw,
       ...(canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),

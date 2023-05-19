@@ -68,14 +68,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare diff: Map<SetCapability<MELCloudDeviceAta>, CapabilityValue>
 
   async onInit(): Promise<void> {
-    this.requiredCapabilities = [
-      ...Object.keys({
-        ...setCapabilityMappingAta,
-        ...getCapabilityMappingAta,
-      }),
-      'thermostat_mode',
-      'fan_power_state',
-    ]
     this.setCapabilityMapping = setCapabilityMappingAta
     this.getCapabilityMapping = getCapabilityMappingAta
     this.listCapabilityMapping = listCapabilityMappingAta

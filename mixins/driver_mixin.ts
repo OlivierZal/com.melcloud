@@ -6,6 +6,7 @@ import {
   type ListDevice,
   type LoginCredentials,
   type MELCloudDevice,
+  type Store,
 } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {
@@ -40,20 +41,23 @@ export default class MELCloudDriverMixin extends Driver {
         DeviceID,
         BuildingID,
         Device: { CanCool, HasZone2 },
-      }): DeviceDetails => ({
-        name: DeviceName,
-        data: { id: DeviceID, buildingid: BuildingID },
-        store: { canCool: CanCool, hasZone2: HasZone2 },
-        capabilities: this.getRequiredCapabilities(CanCool, HasZone2),
-      })
+      }): DeviceDetails => {
+        const store: Store = {
+          canCool: CanCool,
+          hasZone2: HasZone2,
+        }
+        return {
+          name: DeviceName,
+          data: { id: DeviceID, buildingid: BuildingID },
+          store,
+          capabilities: this.getRequiredCapabilities(store),
+        }
+      }
     )
   }
 
-  getRequiredCapabilities(
-    _canCool: boolean,
-    _hasZone2: boolean
-  ): string[] | undefined {
-    return undefined
+  getRequiredCapabilities(_store: Store): string[] {
+    throw new Error('Method not implemented.')
   }
 
   onRepair(session: PairSession): void {

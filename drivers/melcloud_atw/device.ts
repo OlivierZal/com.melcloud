@@ -29,11 +29,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare diff: Map<SetCapability<MELCloudDeviceAtw>, CapabilityValue>
 
   async onInit(): Promise<void> {
-    const { canCool, hasZone2 } = this.getStore()
-    this.requiredCapabilities = this.driver.getRequiredCapabilities(
-      canCool,
-      hasZone2
-    )
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
@@ -153,10 +148,12 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     const { canCool, hasZone2 } = this.getStore()
     const { CanCool, HasZone2 } = data
     if (canCool !== CanCool || hasZone2 !== HasZone2) {
-      await Promise.all([
-        this.setStoreValue('canCool', CanCool),
-        this.setStoreValue('hasZone2', HasZone2),
-      ])
+      if (canCool !== CanCool) {
+        await this.setStoreValue('canCool', CanCool)
+      }
+      if (hasZone2 !== HasZone2) {
+        await this.setStoreValue('hasZone2', HasZone2)
+      }
       await this.handleCapabilities()
     }
   }

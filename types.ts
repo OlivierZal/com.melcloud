@@ -15,6 +15,11 @@ export interface Settings extends Record<string, any> {
   always_on?: boolean
 }
 
+export interface Store {
+  readonly canCool: boolean
+  readonly hasZone2: boolean
+}
+
 export interface ManifestDriverSettingData {
   readonly id: string
   readonly label: Record<string, string>
@@ -710,11 +715,8 @@ export interface DeviceDetails {
     readonly id: number
     readonly buildingid: number
   }
-  readonly store: {
-    readonly canCool: boolean
-    readonly hasZone2: boolean
-  }
-  capabilities?: string[]
+  readonly store: Store
+  readonly capabilities: string[]
 }
 
 export interface FlowArgsAta
