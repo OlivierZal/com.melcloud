@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "allowJs": true,
+    "allowJs": false,
     "lib": ["DOM", "ESNext"],
     "outDir": ".homeybuild/",
     "target": "ESNext"
