@@ -113,7 +113,7 @@
   "17.1.0": {
     "en": "Use Map()"
   },
-  "17.1.2": {
-    "en": "Resolved a performance issue that sometimes occurred when creating an air-to-air device."
+  "18.0.0": {
+    "en": "If you haven't already done so following the notification posted several months ago, it is now necessary to delete your air-water devices and recreate them: this will enable you to benefit from all the app's new features (new settings, new capabilities, etc.). Your flows will also have to be recreated (once and for all, don't worry!)."
   }
 }
