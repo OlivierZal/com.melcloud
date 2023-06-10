@@ -11,6 +11,10 @@ import {
   type SetCapability,
 } from '../../types'
 
+function isThermostatMode(value: string): boolean {
+  return !['dry', 'fan'].includes(value)
+}
+
 function reverseMapping(
   mapping: Record<number | string, string>
 ): Record<string, string> {
@@ -95,7 +99,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
       this.diff.set(capability, value)
       if (
         capability === 'operation_mode' &&
-        ['dry', 'fan'].includes(value as string) &&
+        !isThermostatMode(value as string) &&
         this.getCapabilityValue('thermostat_mode') !== 'off'
       ) {
         await this.setDisplayErrorWarning()
@@ -139,11 +143,10 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
 
   async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: string | number =
-      this.getCapabilityValue('operation_mode')
+    const operationMode: string = this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
       'thermostat_mode',
-      isOn ? operationMode : 'off'
+      isOn && isThermostatMode(operationMode) ? operationMode : 'off'
     )
   }
 }
