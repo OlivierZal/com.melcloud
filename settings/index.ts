@@ -751,7 +751,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           inputElement.classList.add('homey-form-input')
           inputElement.type = setting.type
           inputElement.placeholder = setting.placeholder ?? ''
-          inputElement.value = homeySettings[setting.id]
+          inputElement.value = homeySettings[setting.id] ?? ''
           inputElement.id = setting.id
           labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
