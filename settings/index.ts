@@ -128,21 +128,20 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     }
   )
 
-  async function getHomeySetting(
-    id: string,
-    defaultValue: any = ''
-  ): Promise<string> {
-    return await new Promise<string>((resolve, reject) => {
+  async function getHomeySettings(): Promise<Record<string, any>> {
+    return await new Promise<Record<string, any>>((resolve, reject) => {
       // @ts-expect-error bug
-      Homey.get(id, async (error: Error, value: any): Promise<void> => {
-        if (error !== null) {
-          // @ts-expect-error bug
-          await Homey.alert(error.message)
-          reject(error)
-          return
+      Homey.get(
+        async (error: Error, settings: Record<string, any>): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error bug
+            await Homey.alert(error.message)
+            reject(error)
+            return
+          }
+          resolve(settings)
         }
-        resolve(String(value ?? defaultValue))
-      })
+      )
     })
   }
 
@@ -733,17 +732,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   async function needsAuthentication(value: boolean = true): Promise<void> {
     if (loginElement.childElementCount === 0) {
+      const homeySettings: Record<string, any> = await getHomeySettings()
       const credentialKeys: string[] = ['username', 'password']
-      const credentials: Record<string, string> = Object.assign(
-        {},
-        ...(await Promise.all(
-          credentialKeys.map(
-            async (credentialKey: string): Promise<Record<string, string>> => ({
-              [credentialKey]: await getHomeySetting(credentialKey),
-            })
-          )
-        ))
-      )
       ;[usernameElement, passwordElement] = credentialKeys.map(
         (credentialKey: string): HTMLInputElement | null => {
           const setting: DriverSetting | undefined = allDriverSettings.find(
@@ -761,7 +751,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           inputElement.classList.add('homey-form-input')
           inputElement.type = setting.type
           inputElement.placeholder = setting.placeholder ?? ''
-          inputElement.value = credentials[setting.id]
+          inputElement.value = homeySettings[setting.id]
           inputElement.id = setting.id
           labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
