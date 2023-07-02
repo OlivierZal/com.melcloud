@@ -283,18 +283,18 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   function getErrorCountText(errorCount: number): string {
     if (errorCount === 0) {
-      return Homey.__('settings.error_log.error_count_text_0')
+      return Homey.__('settings.error_log.error_count.0')
     }
     if (errorCount === 1) {
-      return Homey.__('settings.error_log.error_count_text_1')
+      return Homey.__('settings.error_log.error_count.1')
     }
     if (
       [2, 3, 4].includes(errorCount % 10) &&
       ![12, 13, 14].includes(errorCount % 100)
     ) {
-      return Homey.__('settings.error_log.error_count_text_234')
+      return Homey.__('settings.error_log.error_count.234')
     }
-    return Homey.__('settings.error_log.error_count_text_plural')
+    return Homey.__('settings.error_log.error_count.plural')
   }
 
   function generateErrorLog(): void {

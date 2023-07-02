@@ -56,10 +56,12 @@
         "Error": "Fout"
       },
       "error": "Kies een datum voor\n__fromDateHuman__.",
-      "error_count_text_0": "fout",
-      "error_count_text_1": "fout",
-      "error_count_text_234": "fouten",
-      "error_count_text_plural": "fouten",
+      "error_count": {
+        "0": "fout",
+        "1": "fout",
+        "234": "fouten",
+        "plural": "fouten"
+      },
       "legend": "Foutenlogboek",
       "period": "Sinds __fromDateHuman__:",
       "see": "Bekijk alle fouten",

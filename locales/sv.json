@@ -56,10 +56,12 @@
         "Error": "Fel"
       },
       "error": "Välj ett datum före\n__fromDateHuman__.",
-      "error_count_text_0": "fel",
-      "error_count_text_1": "fel",
-      "error_count_text_234": "fel",
-      "error_count_text_plural": "fel",
+      "error_count": {
+        "0": "fel",
+        "1": "fel",
+        "234": "fel",
+        "plural": "fel"
+      },
       "legend": "Fellogg",
       "period": "Sedan __fromDateHuman__:",
       "see": "Se alla fel",

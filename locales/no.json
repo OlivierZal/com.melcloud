@@ -56,10 +56,12 @@
         "Error": "Feil"
       },
       "error": "Velg en dato før\n__fromDateHuman__.",
-      "error_count_text_0": "feil",
-      "error_count_text_1": "feil",
-      "error_count_text_234": "feil",
-      "error_count_text_plural": "feil",
+      "error_count": {
+        "0": "feil",
+        "1": "feil",
+        "234": "feil",
+        "plural": "feil"
+      },
       "legend": "Feillogg",
       "period": "Siden __fromDateHuman__:",
       "see": "Se alle feil",

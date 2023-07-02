@@ -56,10 +56,12 @@
         "Error": "Error"
       },
       "error": "Elija una fecha anterior a\n__fromDateHuman__.",
-      "error_count_text_0": "error",
-      "error_count_text_1": "error",
-      "error_count_text_234": "errores",
-      "error_count_text_plural": "errores",
+      "error_count": {
+        "0": "error",
+        "1": "error",
+        "234": "errores",
+        "plural": "errores"
+      },
       "legend": "Registro de errores",
       "period": "Desde __fromDateHuman__:",
       "see": "Ver los errores",

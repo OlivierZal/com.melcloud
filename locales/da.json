@@ -56,10 +56,12 @@
         "Error": "Fejl"
       },
       "error": "Vælg en dato før\n__fromDateHuman__.",
-      "error_count_text_0": "fejl",
-      "error_count_text_1": "fejl",
-      "error_count_text_234": "fejl",
-      "error_count_text_plural": "fejl",
+      "error_count": {
+        "0": "fejl",
+        "1": "fejl",
+        "234": "fejl",
+        "plural": "fejl"
+      },
       "legend": "Fejllog",
       "period": "Siden __fromDateHuman__:",
       "see": "Se alle fejl",

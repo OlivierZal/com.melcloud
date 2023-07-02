@@ -56,10 +56,12 @@
         "Error": "Erreur"
       },
       "error": "Choisissez une date antérieure au\n__fromDateHuman__.",
-      "error_count_text_0": "erreur",
-      "error_count_text_1": "erreur",
-      "error_count_text_234": "erreurs",
-      "error_count_text_plural": "erreurs",
+      "error_count": {
+        "0": "erreur",
+        "1": "erreur",
+        "234": "erreurs",
+        "plural": "erreurs"
+      },
       "legend": "Journal des erreurs",
       "period": "Depuis le __fromDateHuman__ :",
       "see": "Voir les erreurs",
