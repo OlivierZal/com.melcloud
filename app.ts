@@ -2,7 +2,6 @@ import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
 import type {
-  SyncFromMode,
   Building,
   ErrorLogData,
   ErrorLogPostData,
@@ -24,6 +23,7 @@ import type {
   ReportPostData,
   SetDeviceData,
   SuccessData,
+  SyncFromMode,
 } from './types'
 
 export default class MELCloudApp extends App {
