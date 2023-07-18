@@ -1,12 +1,7 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAta from './device'
-import {
-  getCapabilityMappingAta,
-  setCapabilityMappingAta,
-  type FlowArgsAta,
-  type SetCapability,
-  type Store,
-} from '../../types'
+import { getCapabilityMappingAta, setCapabilityMappingAta } from '../../types'
+import type { FlowArgsAta, SetCapability, Store } from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
   'operation_mode',

@@ -1,26 +1,26 @@
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
-import {
-  type Building,
-  type DeviceSettings,
-  type DriverSetting,
-  type ErrorDetails,
-  type ErrorLog,
-  type ErrorLogData,
-  type ErrorLogQuery,
-  type FrostProtectionData,
-  type FrostProtectionSettings,
-  type HolidayModeData,
-  type HolidayModeSettings,
-  type LoginCredentials,
-  type LoginSetting,
-  type ManifestDriver,
-  type ManifestDriverSetting,
-  type ManifestDriverSettingData,
-  type MELCloudDevice,
-  type PairSetting,
-  type Settings,
+import type {
+  Building,
+  DeviceSettings,
+  DriverSetting,
+  ErrorDetails,
+  ErrorLog,
+  ErrorLogData,
+  ErrorLogQuery,
+  FrostProtectionData,
+  FrostProtectionSettings,
+  HolidayModeData,
+  HolidayModeSettings,
+  LoginCredentials,
+  LoginSetting,
+  ManifestDriver,
+  ManifestDriverSetting,
+  ManifestDriverSettingData,
+  MELCloudDevice,
+  PairSetting,
+  Settings,
 } from './types'
 
 function fromUTCtoLocal(utcDate: string | null, language?: string): string {
@@ -40,8 +40,8 @@ function fromUTCtoLocal(utcDate: string | null, language?: string): string {
 
 function handleErrorLogQuery(query: ErrorLogQuery): {
   fromDate: DateTime
-  toDate: DateTime
   period: number
+  toDate: DateTime
 } {
   const defaultLimit: number = 1
   const defaultOffset: number = 0
@@ -275,8 +275,8 @@ module.exports = {
     homey,
     body,
   }: {
-    homey: Homey
     body: LoginCredentials
+    homey: Homey
   }): Promise<boolean> {
     return await (homey.app as MELCloudApp).login(body)
   },
@@ -286,8 +286,8 @@ module.exports = {
     body,
     query,
   }: {
-    homey: Homey
     body: Settings
+    homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
     const changedKeys: string[] = Object.keys(body)
@@ -339,9 +339,9 @@ module.exports = {
     params,
     body,
   }: {
+    body: FrostProtectionSettings
     homey: Homey
     params: { buildingId: string }
-    body: FrostProtectionSettings
   }): Promise<void> {
     await (homey.app as MELCloudApp).updateFrostProtectionSettings(
       Number(params.buildingId),
@@ -354,9 +354,9 @@ module.exports = {
     params,
     body,
   }: {
+    body: HolidayModeSettings
     homey: Homey
     params: { buildingId: string }
-    body: HolidayModeSettings
   }): Promise<void> {
     await (homey.app as MELCloudApp).updateHolidayModeSettings(
       Number(params.buildingId),

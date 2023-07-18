@@ -1,18 +1,18 @@
 import type Homey from 'homey/lib/Homey'
-import {
-  type Building,
-  type DeviceSettings,
-  type DriverSetting,
-  type ErrorDetails,
-  type ErrorLog,
-  type ErrorLogQuery,
-  type FrostProtectionData,
-  type FrostProtectionSettings,
-  type HolidayModeData,
-  type HolidayModeSettings,
-  type LoginCredentials,
-  type MELCloudDevice,
-  type Settings,
+import type {
+  Building,
+  DeviceSettings,
+  DriverSetting,
+  ErrorDetails,
+  ErrorLog,
+  ErrorLogQuery,
+  FrostProtectionData,
+  FrostProtectionSettings,
+  HolidayModeData,
+  HolidayModeSettings,
+  LoginCredentials,
+  MELCloudDevice,
+  Settings,
 } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -104,8 +104,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   const allDriverSettings: DriverSetting[] = await getDriverSettings()
   const { driverSettingsMixin, driverSettings } = allDriverSettings.reduce<{
-    driverSettingsMixin: DriverSetting[]
     driverSettings: Record<string, DriverSetting[]>
+    driverSettingsMixin: DriverSetting[]
   }>(
     (acc, setting: DriverSetting) => {
       if (setting.groupId === 'login') {

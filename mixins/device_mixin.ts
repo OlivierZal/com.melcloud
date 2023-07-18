@@ -3,30 +3,30 @@ import { Device } from 'homey'
 import type MELCloudApp from '../app'
 import type MELCloudDeviceAta from '../drivers/melcloud/device'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
-import {
-  type NonReportCapability,
-  type Capability,
-  type CapabilityValue,
-  type ExtendedCapability,
-  type ExtendedSetCapability,
-  type GetCapability,
-  type GetCapabilityMapping,
-  type GetDeviceData,
-  type ListCapability,
-  type ListCapabilityMapping,
-  type ReportCapabilityMapping,
-  type ListDevice,
-  type ListDeviceData,
-  type MELCloudDevice,
-  type MELCloudDriver,
-  type ReportCapability,
-  type ReportData,
-  type SetCapability,
-  type SetCapabilityMapping,
-  type SetDeviceData,
-  type Settings,
-  type SyncFromMode,
-  type SyncMode,
+import type {
+  NonReportCapability,
+  Capability,
+  CapabilityValue,
+  ExtendedCapability,
+  ExtendedSetCapability,
+  GetCapability,
+  GetCapabilityMapping,
+  GetDeviceData,
+  ListCapability,
+  ListCapabilityMapping,
+  ReportCapabilityMapping,
+  ListDevice,
+  ListDeviceData,
+  MELCloudDevice,
+  MELCloudDriver,
+  ReportCapability,
+  ReportData,
+  SetCapability,
+  SetCapabilityMapping,
+  SetDeviceData,
+  Settings,
+  SyncFromMode,
+  SyncMode,
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
@@ -81,12 +81,12 @@ export default class MELCloudDeviceMixin extends Device {
   >
 
   syncTimeout!: NodeJS.Timeout
-  reportTimeout!: { true: NodeJS.Timeout | null; false: NodeJS.Timeout | null }
-  reportInterval!: { true?: NodeJS.Timeout; false?: NodeJS.Timeout }
+  reportTimeout!: { false: NodeJS.Timeout | null; true: NodeJS.Timeout | null }
+  reportInterval!: { false?: NodeJS.Timeout; true?: NodeJS.Timeout }
   reportPlanParameters!: {
-    minus: object
-    interval: object
     duration: object
+    interval: object
+    minus: object
     values: object
   }
 
@@ -528,8 +528,8 @@ export default class MELCloudDeviceMixin extends Device {
     newSettings,
     changedKeys,
   }: {
-    newSettings: Settings
     changedKeys: string[]
+    newSettings: Settings
   }): Promise<void> {
     if (
       changedKeys.some(

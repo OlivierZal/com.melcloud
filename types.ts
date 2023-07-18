@@ -23,17 +23,17 @@ export interface Store {
 export interface ManifestDriverSettingData {
   readonly id: string
   readonly label: Record<string, string>
-  readonly type: string
-  readonly min?: number
   readonly max?: number
+  readonly min?: number
+  readonly type: string
   readonly units?: string
   readonly values?: Array<{ id: string; label: Record<string, string> }>
 }
 
 export interface ManifestDriverSetting {
-  readonly label: Record<string, string>
-  readonly id?: string
   readonly children?: ManifestDriverSettingData[]
+  readonly id?: string
+  readonly label: Record<string, string>
 }
 
 export type PairSetting = { id: string } & Record<string, any>
@@ -41,35 +41,35 @@ export type PairSetting = { id: string } & Record<string, any>
 export interface LoginSetting extends PairSetting {
   readonly id: 'login'
   readonly options: {
-    readonly usernameLabel: Record<string, string>
-    readonly usernamePlaceholder: Record<string, string>
     readonly passwordLabel: Record<string, string>
     readonly passwordPlaceholder: Record<string, string>
+    readonly usernameLabel: Record<string, string>
+    readonly usernamePlaceholder: Record<string, string>
   }
 }
 
 export interface ManifestDriver {
-  readonly id: string
   readonly capabilitiesOptions?: Record<
     string,
     { readonly title?: Record<string, string> }
   >
+  readonly id: string
   readonly pair?: LoginSetting & PairSetting[]
   readonly settings?: ManifestDriverSetting[]
 }
 
 export interface DriverSetting {
-  readonly id: string
-  readonly type: string
   readonly driverId: string
-  title: string
   readonly groupId?: string
   readonly groupLabel?: string
-  readonly min?: number
+  readonly id: string
   readonly max?: number
+  readonly min?: number
+  placeholder?: string
+  title: string
+  readonly type: string
   readonly units?: string
   readonly values?: Array<{ id: string; label: string }>
-  placeholder?: string
 }
 
 export type DeviceSettings = Record<string, Record<string, any[]>>
@@ -88,24 +88,24 @@ interface SetCapabilitiesMixin {
 }
 
 interface SetCapabilitiesAta extends SetCapabilitiesMixin {
-  operation_mode?: string
   fan_power?: number
-  vertical?: string
   horizontal?: string
+  operation_mode?: string
+  vertical?: string
 }
 
 interface SetCapabilitiesAtw extends SetCapabilitiesMixin {
-  'operation_mode_zone.zone1'?: string
-  'operation_mode_zone_with_cool.zone1'?: string
-  'operation_mode_zone.zone2'?: string
-  'operation_mode_zone_with_cool.zone2'?: string
   'onoff.forced_hot_water'?: boolean
-  'target_temperature.zone2'?: number
+  'operation_mode_zone.zone1'?: string
+  'operation_mode_zone.zone2'?: string
+  'operation_mode_zone_with_cool.zone1'?: string
+  'operation_mode_zone_with_cool.zone2'?: string
+  'target_temperature.tank_water'?: number
   'target_temperature.zone1_flow_cool'?: number
   'target_temperature.zone1_flow_heat'?: number
+  'target_temperature.zone2'?: number
   'target_temperature.zone2_flow_cool'?: number
   'target_temperature.zone2_flow_heat'?: number
-  'target_temperature.tank_water'?: number
 }
 
 interface GetCapabilitiesMixin {
@@ -116,9 +116,9 @@ interface GetCapabilitiesAta extends GetCapabilitiesMixin {}
 
 interface GetCapabilitiesAtw extends GetCapabilitiesMixin {
   readonly 'alarm_generic.eco_hot_water': boolean
-  readonly 'measure_temperature.zone2': number
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
+  readonly 'measure_temperature.zone2': number
   readonly operation_mode_state: number
   readonly 'operation_mode_state.zone1': number
   readonly 'operation_mode_state.zone2': number
@@ -131,8 +131,8 @@ interface ListCapabilitiesMixin {
 interface ListCapabilitiesAta extends ListCapabilitiesMixin {
   readonly fan_power: number
   readonly fan_power_state: number
-  readonly vertical: number
   readonly horizontal: number
+  readonly vertical: number
 }
 
 interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
@@ -143,8 +143,8 @@ interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
   readonly 'alarm_generic.immersion_heater': boolean
   readonly last_legionella: string
   readonly measure_power: number
-  readonly 'measure_power.produced': number
   readonly 'measure_power.heat_pump_frequency': number
+  readonly 'measure_power.produced': number
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
   readonly 'measure_temperature.flow_zone2': number
@@ -179,26 +179,26 @@ interface ReportCapabilitiesAta {
 }
 
 interface ReportCapabilitiesAtw {
-  'meter_power.daily_cop'?: number
-  'meter_power.daily_cop_cooling'?: number
-  'meter_power.daily_cop_heating'?: number
-  'meter_power.daily_cop_hotwater'?: number
   'meter_power.daily_consumed'?: number
   'meter_power.daily_consumed_cooling'?: number
   'meter_power.daily_consumed_heating'?: number
   'meter_power.daily_consumed_hotwater'?: number
+  'meter_power.daily_cop'?: number
+  'meter_power.daily_cop_cooling'?: number
+  'meter_power.daily_cop_heating'?: number
+  'meter_power.daily_cop_hotwater'?: number
   'meter_power.daily_produced'?: number
   'meter_power.daily_produced_cooling'?: number
   'meter_power.daily_produced_heating'?: number
   'meter_power.daily_produced_hotwater'?: number
-  'meter_power.total_cop'?: number
-  'meter_power.total_cop_cooling'?: number
-  'meter_power.total_cop_heating'?: number
-  'meter_power.total_cop_hotwater'?: number
   'meter_power.total_consumed'?: number
   'meter_power.total_consumed_cooling'?: number
   'meter_power.total_consumed_heating'?: number
   'meter_power.total_consumed_hotwater'?: number
+  'meter_power.total_cop'?: number
+  'meter_power.total_cop_cooling'?: number
+  'meter_power.total_cop_heating'?: number
+  'meter_power.total_cop_hotwater'?: number
   'meter_power.total_produced'?: number
   'meter_power.total_produced_cooling'?: number
   'meter_power.total_produced_heating'?: number
@@ -250,10 +250,10 @@ interface BaseDeviceData {
 
 interface SetDeviceDataAta extends BaseDeviceData {
   readonly OperationMode: number
-  readonly SetTemperature: number
   readonly SetFanSpeed: number
-  readonly VaneVertical: number
+  readonly SetTemperature: number
   readonly VaneHorizontal: number
+  readonly VaneVertical: number
 }
 
 interface SetDeviceDataAtw extends BaseDeviceData {
@@ -318,8 +318,8 @@ interface ListDeviceDataAta
 
 interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
   readonly BoosterHeater1Status: boolean
-  readonly BoosterHeater2Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
+  readonly BoosterHeater2Status: boolean
   readonly CurrentEnergyConsumed: number
   readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
@@ -364,10 +364,10 @@ interface ReportDataAta {
 interface ReportDataAtw {
   readonly CoP: number[]
   readonly TotalCoolingConsumed: number
-  readonly TotalHeatingConsumed: number
-  readonly TotalHotWaterConsumed: number
   readonly TotalCoolingProduced: number
+  readonly TotalHeatingConsumed: number
   readonly TotalHeatingProduced: number
+  readonly TotalHotWaterConsumed: number
   readonly TotalHotWaterProduced: number
 }
 
@@ -376,8 +376,8 @@ export type ReportData<T extends MELCloudDevice> = T extends MELCloudDeviceAtw
   : ReportDataAta
 
 export interface SetCapabilityMapping<T extends MELCloudDevice> {
-  readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
   readonly effectiveFlag: bigint
+  readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
 }
 
 export interface GetCapabilityMapping<T extends MELCloudDevice> {
@@ -385,8 +385,8 @@ export interface GetCapabilityMapping<T extends MELCloudDevice> {
 }
 
 export interface ListCapabilityMapping<T extends MELCloudDevice> {
-  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
   readonly effectiveFlag?: bigint
+  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
 
 export type ReportCapabilityMapping<T extends MELCloudDevice> = Array<
@@ -710,13 +710,13 @@ export const reportCapabilityMappingAtw: Record<
 }
 
 export interface DeviceDetails {
-  readonly name: string
-  readonly data: {
-    readonly id: number
-    readonly buildingid: number
-  }
-  readonly store: Store
   readonly capabilities: string[]
+  readonly data: {
+    readonly buildingid: number
+    readonly id: number
+  }
+  readonly name: string
+  readonly store: Store
 }
 
 export interface FlowArgsAta
@@ -725,8 +725,8 @@ export interface FlowArgsAta
 }
 
 export interface LoginCredentials {
-  username: string
   password: string
+  username: string
 }
 
 export interface LoginPostData {
@@ -745,8 +745,8 @@ export interface LoginData {
 
 export interface FrostProtectionSettings {
   readonly Enabled: boolean
-  readonly MinimumTemperature: number
   readonly MaximumTemperature: number
+  readonly MinimumTemperature: number
 }
 
 export interface FrostProtectionPostData extends FrostProtectionSettings {
@@ -755,45 +755,45 @@ export interface FrostProtectionPostData extends FrostProtectionSettings {
 
 export interface FrostProtectionData {
   readonly FPEnabled: boolean
-  readonly FPMinTemperature: number
   readonly FPMaxTemperature: number
+  readonly FPMinTemperature: number
 }
 
 export interface HolidayModeSettings {
   readonly Enabled: boolean
-  readonly StartDate: string
   readonly EndDate: string
+  readonly StartDate: string
 }
 
 export interface HolidayModePostData {
   readonly Enabled: boolean
-  readonly StartDate: {
-    readonly Year: number
-    readonly Month: number
-    readonly Day: number
-    readonly Hour: number
-    readonly Minute: number
-    readonly Second: number
-  } | null
   readonly EndDate: {
-    readonly Year: number
-    readonly Month: number
     readonly Day: number
     readonly Hour: number
     readonly Minute: number
+    readonly Month: number
     readonly Second: number
+    readonly Year: number
   } | null
   readonly HMTimeZones: [
     {
       readonly Buildings: [number]
     }
   ]
+  readonly StartDate: {
+    readonly Day: number
+    readonly Hour: number
+    readonly Minute: number
+    readonly Month: number
+    readonly Second: number
+    readonly Year: number
+  } | null
 }
 
 export interface HolidayModeData {
   readonly HMEnabled: boolean
-  readonly HMStartDate: string | null
   readonly HMEndDate: string | null
+  readonly HMStartDate: string | null
 }
 
 interface BaseListDevice {
@@ -807,15 +807,15 @@ export interface ListDevice<T extends MELCloudDevice> extends BaseListDevice {
 }
 
 export interface Structure<T extends MELCloudDevice> {
-  readonly Devices: Array<ListDevice<T>>
   readonly Areas: Array<{
     readonly Devices: Array<ListDevice<T>>
   }>
+  readonly Devices: Array<ListDevice<T>>
   readonly Floors: Array<{
-    readonly Devices: Array<ListDevice<T>>
     readonly Areas: Array<{
       readonly Devices: Array<ListDevice<T>>
     }>
+    readonly Devices: Array<ListDevice<T>>
   }>
 }
 
@@ -829,9 +829,9 @@ export interface Building<T extends MELCloudDevice>
 
 export interface ErrorLogQuery {
   readonly from?: string
-  readonly to?: string
   readonly limit?: string
   readonly offset?: string
+  readonly to?: string
 }
 
 export interface ErrorLogPostData {
@@ -842,15 +842,15 @@ export interface ErrorLogPostData {
 
 export interface ErrorLogData {
   readonly DeviceId: number
+  readonly Duration: number
+  readonly EndDate: string
   readonly ErrorMessage: string
   readonly StartDate: string
-  readonly EndDate: string
-  readonly Duration: number
 }
 
 export interface ErrorDetails {
-  readonly Device: string
   readonly Date: string
+  readonly Device: string
   readonly Error: string
 }
 

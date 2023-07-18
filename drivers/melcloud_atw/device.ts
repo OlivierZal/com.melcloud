@@ -6,12 +6,14 @@ import {
   listCapabilityMappingAtw,
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
-  type Capability,
-  type CapabilityValue,
-  type ExtendedSetCapability,
-  type MELCloudDevice,
-  type SetCapability,
-  type ListDeviceData,
+} from '../../types'
+import type {
+  Capability,
+  CapabilityValue,
+  ExtendedSetCapability,
+  MELCloudDevice,
+  SetCapability,
+  ListDeviceData,
 } from '../../types'
 
 const operationModeFromDevice: string[] = [

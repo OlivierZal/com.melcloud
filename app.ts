@@ -1,29 +1,29 @@
 import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
 import { App, type Driver } from 'homey'
-import {
-  type SyncFromMode,
-  type Building,
-  type ErrorLogData,
-  type ErrorLogPostData,
-  type FailureData,
-  type FrostProtectionData,
-  type FrostProtectionPostData,
-  type FrostProtectionSettings,
-  type GetDeviceData,
-  type HolidayModeData,
-  type HolidayModePostData,
-  type HolidayModeSettings,
-  type ListDevice,
-  type LoginCredentials,
-  type LoginData,
-  type LoginPostData,
-  type MELCloudDevice,
-  type PostData,
-  type ReportData,
-  type ReportPostData,
-  type SetDeviceData,
-  type SuccessData,
+import type {
+  SyncFromMode,
+  Building,
+  ErrorLogData,
+  ErrorLogPostData,
+  FailureData,
+  FrostProtectionData,
+  FrostProtectionPostData,
+  FrostProtectionSettings,
+  GetDeviceData,
+  HolidayModeData,
+  HolidayModePostData,
+  HolidayModeSettings,
+  ListDevice,
+  LoginCredentials,
+  LoginData,
+  LoginPostData,
+  MELCloudDevice,
+  PostData,
+  ReportData,
+  ReportPostData,
+  SetDeviceData,
+  SuccessData,
 } from './types'
 
 export default class MELCloudApp extends App {
@@ -209,8 +209,8 @@ export default class MELCloudApp extends App {
       (): Array<Building<T>> => []
     )
     let { devices, deviceIds, newBuildings } = buildings.reduce<{
-      devices: Array<ListDevice<T>>
       deviceIds: Record<number, string>
+      devices: Array<ListDevice<T>>
       newBuildings: Record<number, string>
     }>(
       (acc, building: Building<T>) => {

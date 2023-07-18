@@ -1,12 +1,12 @@
 import { Driver } from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
-import {
-  type DeviceDetails,
-  type ListDevice,
-  type LoginCredentials,
-  type MELCloudDevice,
-  type Store,
+import type {
+  DeviceDetails,
+  ListDevice,
+  LoginCredentials,
+  MELCloudDevice,
+  Store,
 } from '../types'
 
 export default class MELCloudDriverMixin extends Driver {

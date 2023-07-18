@@ -5,10 +5,12 @@ import {
   listCapabilityMappingAta,
   reportCapabilityMappingAta,
   setCapabilityMappingAta,
-  type Capability,
-  type CapabilityValue,
-  type ExtendedSetCapability,
-  type SetCapability,
+} from '../../types'
+import type {
+  Capability,
+  CapabilityValue,
+  ExtendedSetCapability,
+  SetCapability,
 } from '../../types'
 
 function isThermostatMode(value: string): boolean {
