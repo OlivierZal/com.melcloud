@@ -21,10 +21,10 @@ function reverseMapping(
   mapping: Record<number | string, string>
 ): Record<string, string> {
   return Object.entries(mapping).reduce<Record<string, string>>(
-    (reversedMapping, [deviceValue, capabilityValue]: [string, string]) => {
-      reversedMapping[capabilityValue] = deviceValue
-      return reversedMapping
-    },
+    (reversedMapping, [deviceValue, capabilityValue]: [string, string]) => ({
+      ...reversedMapping,
+      [capabilityValue]: deviceValue,
+    }),
     {}
   )
 }

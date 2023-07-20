@@ -1,5 +1,7 @@
-import { DateTime, Duration, type DurationLikeObject } from 'luxon'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
+import axios from 'axios'
+import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import type MELCloudApp from '../app'
 import type MELCloudDeviceAta from '../drivers/melcloud/device'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
@@ -19,8 +21,10 @@ import type {
   ListDeviceData,
   MELCloudDevice,
   MELCloudDriver,
+  PostData,
   ReportCapability,
   ReportData,
+  ReportPostData,
   SetCapability,
   SetCapabilityMapping,
   SetDeviceData,
@@ -113,6 +117,58 @@ export default class MELCloudDeviceMixin extends Device {
     await this.runEnergyReports()
   }
 
+  async setDeviceData<T extends MELCloudDevice>(
+    updateData: SetDeviceData<T>
+  ): Promise<GetDeviceData<T> | null> {
+    try {
+      const postData: PostData<T> = {
+        DeviceID: this.id,
+        HasPendingCommand: true,
+        ...updateData,
+      }
+      this.log('Syncing with device...\n', postData)
+      const { data } = await axios.post<GetDeviceData<T>>(
+        `/Device/Set${this.driver.heatPumpType}`,
+        postData
+      )
+      this.log('Syncing with device:\n', data)
+      return data
+    } catch (error: unknown) {
+      this.error(
+        'Syncing with device:',
+        error instanceof Error ? error.message : error
+      )
+    }
+    return null
+  }
+
+  async reportEnergyCost<T extends MELCloudDevice>(
+    fromDate: DateTime,
+    toDate: DateTime
+  ): Promise<ReportData<T> | null> {
+    try {
+      const postData: ReportPostData = {
+        DeviceID: this.id,
+        FromDate: fromDate.toISODate() ?? '',
+        ToDate: toDate.toISODate() ?? '',
+        UseCurrency: false,
+      }
+      this.log('Reporting energy...\n', postData)
+      const { data } = await axios.post<ReportData<T>>(
+        '/EnergyCost/Report',
+        postData
+      )
+      this.log('Reporting energy:\n', data)
+      return data
+    } catch (error: unknown) {
+      this.error(
+        'Reporting energy:',
+        error instanceof Error ? error.message : error
+      )
+    }
+    return null
+  }
+
   isDiff(): boolean {
     return this.diff.size > 0
   }
@@ -131,13 +187,17 @@ export default class MELCloudDeviceMixin extends Device {
         reportCapabilities,
         [capability, tags]: [string, ReportCapabilityMapping<T>]
       ) => {
+        const newReportCapabilities: Record<
+          ReportCapability<T>,
+          ReportCapabilityMapping<T>
+        > = { ...reportCapabilities }
         if (
           this.hasCapability(capability) &&
           capability.includes('total') === total
         ) {
-          reportCapabilities[capability] = tags
+          newReportCapabilities[capability as ReportCapability<T>] = tags
         }
-        return reportCapabilities
+        return newReportCapabilities
       },
       {}
     )
@@ -230,10 +290,7 @@ export default class MELCloudDeviceMixin extends Device {
 
   async syncToDevice<T extends MELCloudDevice>(): Promise<void> {
     const updateData: SetDeviceData<T> = this.buildUpdateData()
-    const data: GetDeviceData<T> | null = await this.app.setDeviceData(
-      this as unknown as T,
-      updateData
-    )
+    const data: GetDeviceData<T> | null = await this.setDeviceData(updateData)
     await this.endSync(data, 'syncTo')
   }
 
@@ -441,8 +498,7 @@ export default class MELCloudDeviceMixin extends Device {
     }
     const toDate = DateTime.now().minus(this.reportPlanParameters.minus)
     const fromDate: DateTime = total ? DateTime.local(1970) : toDate
-    const data: ReportData<T> | null = await this.app.reportEnergyCost(
-      this as unknown as T,
+    const data: ReportData<T> | null = await this.reportEnergyCost(
       fromDate,
       toDate
     )

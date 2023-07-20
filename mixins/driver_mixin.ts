@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Driver } from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
@@ -23,12 +24,11 @@ export default class MELCloudDriverMixin extends Driver {
   onPair(session: PairSession): void {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> =>
-        await this.app.login(data)
+      async (data: LoginCredentials): Promise<boolean> => this.app.login(data)
     )
     session.setHandler(
       'list_devices',
-      async (): Promise<DeviceDetails[]> => await this.discoverDevices()
+      async (): Promise<DeviceDetails[]> => this.discoverDevices()
     )
   }
 
@@ -65,8 +65,7 @@ export default class MELCloudDriverMixin extends Driver {
   onRepair(session: PairSession): void {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> =>
-        await this.app.login(data)
+      async (data: LoginCredentials): Promise<boolean> => this.app.login(data)
     )
   }
 }

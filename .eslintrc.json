@@ -4,18 +4,40 @@
     "es2024": true,
     "node": true
   },
-  "extends": [
-    "standard-with-typescript",
-    "plugin:typescript-sort-keys/recommended",
-    "prettier"
-  ],
+  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
   "overrides": [],
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "project": "./tsconfig.json",
     "sourceType": "module"
   },
-  "plugins": ["typescript-sort-keys"],
-  "rules": {}
+  "rules": {
+    "class-methods-use-this": [
+      "error",
+      {
+        "exceptMethods": [
+          "convertFromDevice",
+          "getRequiredCapabilities",
+          "specificOnCapability",
+          "updateStore",
+          "updateThermostatMode"
+        ]
+      }
+    ],
+    "import/no-import-module-exports": "off",
+    "no-bitwise": "off",
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allow": ["__"]
+      }
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "onHomeyReady"
+      }
+    ]
+  }
 }

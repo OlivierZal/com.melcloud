@@ -108,16 +108,17 @@ module.exports = {
       .getDevices()
       .reduce<DeviceSettings>((deviceSettings, device) => {
         const driverId: string = device.driver.id
-        deviceSettings[driverId] ??= {}
+        const newDeviceSettings: DeviceSettings = { ...deviceSettings }
+        newDeviceSettings[driverId] ??= {}
         Object.entries(device.getSettings()).forEach(
           ([settingId, value]: [string, any]) => {
-            deviceSettings[driverId][settingId] ??= []
-            if (!deviceSettings[driverId][settingId].includes(value)) {
-              deviceSettings[driverId][settingId].push(value)
+            newDeviceSettings[driverId][settingId] ??= []
+            if (!newDeviceSettings[driverId][settingId].includes(value)) {
+              newDeviceSettings[driverId][settingId].push(value)
             }
           }
         )
-        return deviceSettings
+        return newDeviceSettings
       }, {})
   },
 
@@ -177,17 +178,20 @@ module.exports = {
               const key: keyof LoginCredentials = isPassword
                 ? 'password'
                 : 'username'
-              driverLoginSettings[key] ??= {
+              const newDriverLoginSettings: Record<string, DriverSetting> = {
+                ...driverLoginSettings,
+              }
+              newDriverLoginSettings[key] ??= {
                 groupId: 'login',
                 id: key,
                 title: '',
                 type: isPassword ? 'password' : 'text',
                 driverId: driver.id,
               }
-              driverLoginSettings[key][
+              newDriverLoginSettings[key][
                 option.endsWith('Placeholder') ? 'placeholder' : 'title'
               ] = label[language]
-              return driverLoginSettings
+              return newDriverLoginSettings
             },
             {}
           )
@@ -204,7 +208,7 @@ module.exports = {
     homey: Homey
     params: { buildingId: number }
   }): Promise<FrostProtectionData> {
-    return await (homey.app as MELCloudApp).getFrostProtectionSettings(
+    return (homey.app as MELCloudApp).getFrostProtectionSettings(
       Number(params.buildingId)
     )
   },
@@ -278,7 +282,7 @@ module.exports = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return await (homey.app as MELCloudApp).login(body)
+    return (homey.app as MELCloudApp).login(body)
   },
 
   async setDeviceSettings({
@@ -307,10 +311,10 @@ module.exports = {
               return
             }
             const deviceSettings: Settings = deviceChangedKeys.reduce<Settings>(
-              (settings, key: string) => {
-                settings[key] = body[key]
-                return settings
-              },
+              (settings, key: string) => ({
+                ...settings,
+                [key]: body[key],
+              }),
               {}
             )
             try {

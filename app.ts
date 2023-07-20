@@ -1,6 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { App, type Driver } from 'homey'
 import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
-import { App, type Driver } from 'homey'
 import type {
   Building,
   ErrorLogData,
@@ -9,7 +10,6 @@ import type {
   FrostProtectionData,
   FrostProtectionPostData,
   FrostProtectionSettings,
-  GetDeviceData,
   HolidayModeData,
   HolidayModePostData,
   HolidayModeSettings,
@@ -18,10 +18,6 @@ import type {
   LoginData,
   LoginPostData,
   MELCloudDevice,
-  PostData,
-  ReportData,
-  ReportPostData,
-  SetDeviceData,
   SuccessData,
   SyncFromMode,
 } from './types'
@@ -228,9 +224,13 @@ export default class MELCloudApp extends App {
     const buildings: Array<Building<T>> = await this.getBuildings().catch(
       (): Array<Building<T>> => []
     )
-    let { devices, deviceIds, newBuildings } = buildings.reduce<{
+    const buildingData: {
       deviceIds: Record<number, string>
-      devices: Array<ListDevice<T>>
+      deviceList: Array<ListDevice<T>>
+      newBuildings: Record<number, string>
+    } = buildings.reduce<{
+      deviceIds: Record<number, string>
+      deviceList: Array<ListDevice<T>>
       newBuildings: Record<number, string>
     }>(
       (acc, building: Building<T>) => {
@@ -244,31 +244,32 @@ export default class MELCloudApp extends App {
         ]
         const buildingDeviceIds: Record<number, string> =
           buildingDevices.reduce<Record<number, string>>(
-            (deviceIds, device: ListDevice<T>) => ({
-              ...deviceIds,
+            (ids, device: ListDevice<T>) => ({
+              ...ids,
               [device.DeviceID]: device.DeviceName,
             }),
             {}
           )
-        acc.devices.push(...buildingDevices)
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
+        acc.deviceList.push(...buildingDevices)
         acc.newBuildings[building.ID] = building.Name
         return acc
       },
-      { devices: [], deviceIds: {}, newBuildings: {} }
+      { deviceIds: {}, deviceList: [], newBuildings: {} }
     )
+    let { deviceList } = buildingData
     if (deviceType !== undefined) {
-      devices = devices.filter(
+      deviceList = deviceList.filter(
         (device: ListDevice<T>): boolean =>
           deviceType === device.Device.DeviceType
       )
     }
-    this.buildings = newBuildings
-    this.deviceIds = deviceIds
-    this.deviceList = devices
+    this.deviceList = deviceList
+    this.buildings = buildingData.newBuildings
+    this.deviceIds = buildingData.deviceIds
     await this.syncDevicesFromList(syncMode).catch(this.error)
     await this.planSyncFromDevices()
-    return devices
+    return deviceList
   }
 
   clearListDevicesRefresh(): void {
@@ -320,79 +321,6 @@ export default class MELCloudApp extends App {
       { minutes: 3 },
       'minutes'
     )
-  }
-
-  async getDeviceData<T extends MELCloudDevice>(
-    device: T
-  ): Promise<GetDeviceData<T> | null> {
-    try {
-      device.log('Syncing from device...')
-      const { data } = await axios.get<GetDeviceData<T>>(
-        `/Device/Get?id=${device.id}&buildingID=${device.buildingid}`
-      )
-      device.log('Syncing from device:\n', data)
-      return data
-    } catch (error: unknown) {
-      device.error(
-        'Syncing from device:',
-        error instanceof Error ? error.message : error
-      )
-    }
-    return null
-  }
-
-  async setDeviceData<T extends MELCloudDevice>(
-    device: T,
-    updateData: SetDeviceData<T>
-  ): Promise<GetDeviceData<T> | null> {
-    try {
-      const postData: PostData<T> = {
-        DeviceID: device.id,
-        HasPendingCommand: true,
-        ...updateData,
-      }
-      device.log('Syncing with device...\n', postData)
-      const { data } = await axios.post<GetDeviceData<T>>(
-        `/Device/Set${device.driver.heatPumpType}`,
-        postData
-      )
-      device.log('Syncing with device:\n', data)
-      return data
-    } catch (error: unknown) {
-      device.error(
-        'Syncing with device:',
-        error instanceof Error ? error.message : error
-      )
-    }
-    return null
-  }
-
-  async reportEnergyCost<T extends MELCloudDevice>(
-    device: T,
-    fromDate: DateTime,
-    toDate: DateTime
-  ): Promise<ReportData<T> | null> {
-    try {
-      const postData: ReportPostData = {
-        DeviceID: device.id,
-        FromDate: fromDate.toISODate() ?? '',
-        ToDate: toDate.toISODate() ?? '',
-        UseCurrency: false,
-      }
-      device.log('Reporting energy...\n', postData)
-      const { data } = await axios.post<ReportData<T>>(
-        '/EnergyCost/Report',
-        postData
-      )
-      device.log('Reporting energy:\n', data)
-      return data
-    } catch (error: unknown) {
-      device.error(
-        'Reporting energy:',
-        error instanceof Error ? error.message : error
-      )
-    }
-    return null
   }
 
   async getUnitErrorLog(

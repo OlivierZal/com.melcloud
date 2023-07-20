@@ -15,7 +15,6 @@ import type {
   Settings,
 } from '../types'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function onHomeyReady(Homey: Homey): Promise<void> {
   await Homey.ready()
 
@@ -36,7 +35,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   })
 
   async function getDeviceSettings(): Promise<DeviceSettings> {
-    return await new Promise<DeviceSettings>((resolve, reject) => {
+    return new Promise<DeviceSettings>((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
         'GET',
@@ -61,14 +60,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       (flatDeviceSettings, settings: Record<string, any[]>) =>
         Object.entries(settings).reduce<Record<string, any[]>>(
           (merged, [settingId, settingValues]: [string, any[]]) => {
-            merged[settingId] ??= []
-            merged[settingId].push(
+            const newMerged: Record<string, any[]> = { ...merged }
+            newMerged[settingId] ??= []
+            newMerged[settingId].push(
               ...settingValues.filter(
                 (settingValue: any): boolean =>
-                  !merged[settingId].includes(settingValue)
+                  !newMerged[settingId].includes(settingValue)
               )
             )
-            return merged
+            return newMerged
           },
           flatDeviceSettings
         ),
@@ -77,7 +77,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   async function getDriverSettings(): Promise<DriverSetting[]> {
-    return await new Promise<DriverSetting[]>((resolve, reject) => {
+    return new Promise<DriverSetting[]>((resolve, reject) => {
       // @ts-expect-error bug
       Homey.api(
         'GET',
@@ -133,7 +133,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   )
 
   async function getHomeySettings(): Promise<Record<string, any>> {
-    return await new Promise<Record<string, any>>((resolve, reject) => {
+    return new Promise<Record<string, any>>((resolve, reject) => {
       // @ts-expect-error bug
       Homey.get(
         async (error: Error, settings: Record<string, any>): Promise<void> => {
@@ -285,17 +285,14 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     })
   }
 
-  function getErrorCountText(errorCount: number): string {
-    if (errorCount === 0) {
+  function getErrorCountText(count: number): string {
+    if (count === 0) {
       return Homey.__('settings.error_log.error_count.0')
     }
-    if (errorCount === 1) {
+    if (count === 1) {
       return Homey.__('settings.error_log.error_count.1')
     }
-    if (
-      [2, 3, 4].includes(errorCount % 10) &&
-      ![12, 13, 14].includes(errorCount % 100)
-    ) {
+    if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
       return Homey.__('settings.error_log.error_count.234')
     }
     return Homey.__('settings.error_log.error_count.plural')
@@ -351,6 +348,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       intMaxValueMap.set(element, maxValue)
     }
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
+      // eslint-disable-next-line no-param-reassign
       element.value = ''
       const labelElement: HTMLLabelElement | null = document.querySelector(
         `label[for="${element.id}"]`
@@ -408,7 +406,10 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         const settingValue: any = processSettingValue(element)
         const settingId: string = element.id.split('--')[0]
         if (shouldUpdate(settingValue, settingId)) {
-          body[settingId] = settingValue
+          return {
+            ...body,
+            [settingId]: settingValue,
+          }
         }
         return body
       },
@@ -549,6 +550,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         ([settingId, settingValue]: [string, any]): void => {
           Object.values(deviceSettings).forEach(
             (settings: Record<string, any[]>): void => {
+              // eslint-disable-next-line no-param-reassign
               settings[settingId] = [settingValue]
             }
           )
@@ -793,8 +795,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       'POST',
       '/login',
       body,
-      async (error: Error, login: boolean): Promise<void> => {
-        if (error !== null || !login) {
+      async (error: Error, loggedIn: boolean): Promise<void> => {
+        if (error !== null || !loggedIn) {
           authenticateElement.classList.remove('is-disabled')
           // @ts-expect-error bug
           await Homey.alert(
@@ -812,7 +814,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   authenticateElement.addEventListener('click', (): void => {
     authenticateElement.classList.add('is-disabled')
-    void login()
+    login()
   })
 
   sinceElement.addEventListener('change', (): void => {
