@@ -406,10 +406,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         const settingValue: any = processSettingValue(element)
         const settingId: string = element.id.split('--')[0]
         if (shouldUpdate(settingValue, settingId)) {
-          return {
-            ...body,
-            [settingId]: settingValue,
-          }
+          return { ...body, [settingId]: settingValue }
         }
         return body
       },
