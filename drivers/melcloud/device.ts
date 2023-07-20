@@ -70,7 +70,9 @@ const horizontalToDevice: Record<string, string> =
 
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
+
   declare operationModeCapability: SetCapability<MELCloudDeviceAta>
+
   declare diff: Map<SetCapability<MELCloudDeviceAta>, CapabilityValue>
 
   async onInit(): Promise<void> {
@@ -139,6 +141,8 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
         break
       case 'horizontal':
         newValue = horizontalFromDevice[newValue as number]
+        break
+      default:
     }
     await this.setCapabilityValue(capability, newValue)
   }

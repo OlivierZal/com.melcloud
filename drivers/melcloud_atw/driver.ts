@@ -15,12 +15,15 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
   >
 
   coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+
   notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+
   zone2CapabilitiesAtw!: Array<
     SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>
   >
 
   coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+
   notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
 
   async onInit(): Promise<void> {

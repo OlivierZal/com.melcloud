@@ -11,7 +11,9 @@ import type {
 
 export default class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
+
   deviceType!: number
+
   heatPumpType!: string
 
   async onInit(): Promise<void> {

@@ -112,11 +112,15 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
         return acc
       }
       if (setting.groupId === 'options') {
-        !acc.driverSettingsMixin.some(
-          (option: DriverSetting): boolean => option.id === setting.id
-        ) && acc.driverSettingsMixin.push(setting)
+        if (
+          !acc.driverSettingsMixin.some(
+            (option: DriverSetting): boolean => option.id === setting.id
+          )
+        ) {
+          acc.driverSettingsMixin.push(setting)
+        }
       } else {
-        const driverId: string = setting.driverId
+        const { driverId } = setting
         acc.driverSettings[driverId] ??= []
         acc.driverSettings[driverId].push(setting)
       }
@@ -336,7 +340,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   function int(
     element: HTMLInputElement,
-    value: number = Number.parseInt(element.value)
+    value: number = Number.parseInt(element.value, 10)
   ): number {
     let minValue = intMinValueMap.get(element)
     let maxValue = intMaxValueMap.get(element)
@@ -365,11 +369,11 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   function processSettingValue(
     setting: HTMLInputElement | HTMLSelectElement
   ): any {
-    const value: any = setting.value
+    const { value } = setting
     if (value === '') {
-      return
+      return null
     }
-    const intValue: number = Number.parseInt(value)
+    const intValue: number = Number.parseInt(value, 10)
     if (!Number.isNaN(intValue)) {
       return setting instanceof HTMLInputElement
         ? int(setting, intValue)
@@ -379,7 +383,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       if (!setting.indeterminate) {
         return setting.checked
       }
-      return
+      return null
     }
     return ['true', 'false'].includes(value) ? value === 'true' : value
   }
@@ -388,12 +392,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     settings: Array<HTMLInputElement | HTMLSelectElement>,
     driverId?: string
   ): Settings {
-    const shouldUpdate = (
-      settingValue: any,
-      settingId: string,
-      driverId?: string
-    ): boolean => {
-      if (settingValue !== undefined) {
+    const shouldUpdate = (settingValue: any, settingId: string): boolean => {
+      if (settingValue !== null) {
         const deviceSetting: any[] =
           driverId !== undefined
             ? deviceSettings[driverId][settingId]
@@ -407,7 +407,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       (body, element: HTMLInputElement | HTMLSelectElement) => {
         const settingValue: any = processSettingValue(element)
         const settingId: string = element.id.split('--')[0]
-        if (shouldUpdate(settingValue, settingId, driverId)) {
+        if (shouldUpdate(settingValue, settingId)) {
           body[settingId] = settingValue
         }
         return body
@@ -694,7 +694,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       inputElement.type = 'checkbox'
       const checked: any[] = deviceSettings[driverId][setting.id]
       if (checked.length === 1) {
-        inputElement.checked = checked[0]
+        ;[inputElement.checked] = checked
       } else {
         inputElement.indeterminate = true
         inputElement.addEventListener('change', (): void => {
@@ -736,23 +736,24 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       const credentialKeys: string[] = ['username', 'password']
       ;[usernameElement, passwordElement] = credentialKeys.map(
         (credentialKey: string): HTMLInputElement | null => {
-          const setting: DriverSetting | undefined = allDriverSettings.find(
-            (setting: DriverSetting): boolean => setting.id === credentialKey
-          )
-          if (setting === undefined) {
+          const driverSetting: DriverSetting | undefined =
+            allDriverSettings.find(
+              (setting: DriverSetting): boolean => setting.id === credentialKey
+            )
+          if (driverSetting === undefined) {
             return null
           }
           const divElement: HTMLDivElement = document.createElement('div')
           divElement.classList.add('homey-form-group')
           const labelElement: HTMLLabelElement = document.createElement('label')
           labelElement.classList.add('homey-form-label')
-          labelElement.innerText = setting.title
+          labelElement.innerText = driverSetting.title
           const inputElement: HTMLInputElement = document.createElement('input')
           inputElement.classList.add('homey-form-input')
-          inputElement.type = setting.type
-          inputElement.placeholder = setting.placeholder ?? ''
-          inputElement.value = homeySettings[setting.id] ?? ''
-          inputElement.id = setting.id
+          inputElement.type = driverSetting.type
+          inputElement.placeholder = driverSetting.placeholder ?? ''
+          inputElement.value = homeySettings[driverSetting.id] ?? ''
+          inputElement.id = driverSetting.id
           labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
           loginElement.appendChild(inputElement)

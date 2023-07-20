@@ -31,6 +31,7 @@ import type {
 
 export default class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
+
   declare driver: MELCloudDriver
 
   setCapabilityMapping!:
@@ -74,15 +75,20 @@ export default class MELCloudDeviceMixin extends Device {
       >
 
   id!: number
+
   buildingid!: number
+
   diff!: Map<
     SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
     CapabilityValue
   >
 
   syncTimeout!: NodeJS.Timeout
+
   reportTimeout!: { false: NodeJS.Timeout | null; true: NodeJS.Timeout | null }
+
   reportInterval!: { false?: NodeJS.Timeout; true?: NodeJS.Timeout }
+
   reportPlanParameters!: {
     duration: object
     interval: object
@@ -342,22 +348,6 @@ export default class MELCloudDeviceMixin extends Device {
       [[], []]
     )
 
-    const processCapabilities = async (
-      capabilitiesArray: Array<
-        [NonReportCapability<T>, ListCapabilityMapping<T>]
-      >
-    ): Promise<void> => {
-      await Promise.all(
-        capabilitiesArray.map(
-          async ([capability, { tag, effectiveFlag }]: [
-            NonReportCapability<T>,
-            ListCapabilityMapping<T>
-          ]): Promise<void> => {
-            await processCapability(capability, tag, effectiveFlag)
-          }
-        )
-      )
-    }
     const shouldProcess = (
       capability: NonReportCapability<T>,
       effectiveFlag?: bigint
@@ -374,6 +364,7 @@ export default class MELCloudDeviceMixin extends Device {
           return true
       }
     }
+
     const processCapability = async (
       capability: NonReportCapability<T>,
       tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>,
@@ -382,6 +373,23 @@ export default class MELCloudDeviceMixin extends Device {
       if (shouldProcess(capability, effectiveFlag)) {
         await this.convertFromDevice(capability, data[tag] as boolean | number)
       }
+    }
+
+    const processCapabilities = async (
+      capabilitiesArray: Array<
+        [NonReportCapability<T>, ListCapabilityMapping<T>]
+      >
+    ): Promise<void> => {
+      await Promise.all(
+        capabilitiesArray.map(
+          async ([capability, { tag, effectiveFlag }]: [
+            NonReportCapability<T>,
+            ListCapabilityMapping<T>
+          ]): Promise<void> => {
+            await processCapability(capability, tag, effectiveFlag)
+          }
+        )
+      )
     }
 
     await processCapabilities(regularCapabilities)

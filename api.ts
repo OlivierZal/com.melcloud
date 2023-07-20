@@ -54,10 +54,10 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
-  let period: number = Number.parseInt(String(query.limit))
+  let period: number = Number.parseInt(String(query.limit), 10)
   period = !Number.isNaN(period) ? period : defaultLimit
 
-  let offset: number = Number.parseInt(String(query.offset))
+  let offset: number = Number.parseInt(String(query.offset), 10)
   offset = from === null && !Number.isNaN(offset) ? offset : defaultOffset
 
   const limit: number = from === null ? period : defaultLimit

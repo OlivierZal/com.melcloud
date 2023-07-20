@@ -26,13 +26,33 @@ import type {
   SyncFromMode,
 } from './types'
 
+function handleFailure(data: FailureData): never {
+  const errorMessage: string = Object.entries(data.AttributeErrors)
+    .map(
+      ([error, messages]: [string, string[]]): string =>
+        `${error}: ${messages.join(', ')}`
+    )
+    .join('\n')
+  throw new Error(errorMessage)
+}
+
+function handleResponse(data: SuccessData | FailureData): void {
+  if (data.AttributeErrors !== null) {
+    handleFailure(data)
+  }
+}
+
 export default class MELCloudApp extends App {
   buildings!: Record<number, string>
 
   deviceList!: Array<ListDevice<MELCloudDevice>>
+
   deviceIds!: Record<number, string>
+
   loginTimeout!: NodeJS.Timeout
+
   syncInterval!: NodeJS.Timeout | null
+
   syncTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
@@ -108,7 +128,7 @@ export default class MELCloudApp extends App {
         ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
         : 0
     if (ms > 0) {
-      const maxTimeout: number = Math.pow(2, 31) - 1
+      const maxTimeout: number = 2 ** 31 - 1
       const interval: number = Math.min(ms, maxTimeout)
       this.loginTimeout = this.setTimeout(
         'login refresh',
@@ -391,7 +411,7 @@ export default class MELCloudApp extends App {
     )
     this.log('Reporting error log:\n', data)
     if ('AttributeErrors' in data) {
-      this.handleFailure(data)
+      handleFailure(data)
     }
     return data
   }
@@ -445,7 +465,7 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    this.handleResponse(data)
+    handleResponse(data)
   }
 
   async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
@@ -523,23 +543,7 @@ export default class MELCloudApp extends App {
       ':\n',
       data
     )
-    this.handleResponse(data)
-  }
-
-  handleResponse(data: SuccessData | FailureData): void {
-    if (data.AttributeErrors !== null) {
-      this.handleFailure(data)
-    }
-  }
-
-  handleFailure(data: FailureData): never {
-    const errorMessage: string = Object.entries(data.AttributeErrors)
-      .map(
-        ([error, messages]: [string, string[]]): string =>
-          `${error}: ${messages.join(', ')}`
-      )
-      .join('\n')
-    throw new Error(errorMessage)
+    handleResponse(data)
   }
 
   getBuildingName(buildingId: number): string {

@@ -26,8 +26,15 @@ const operationModeFromDevice: string[] = [
   'legionella',
 ]
 
+function getOtherCapabilityZone(capability: string): string {
+  return capability.endsWith('.zone1')
+    ? capability.replace(/.zone1$/, '.zone2')
+    : capability.replace(/.zone2$/, '.zone1')
+}
+
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
+
   declare diff: Map<SetCapability<MELCloudDeviceAtw>, CapabilityValue>
 
   async onInit(): Promise<void> {
@@ -62,7 +69,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     if (hasZone2 === true) {
       const zoneValue: number = Number(value)
       const otherZone: ExtendedSetCapability<MELCloudDeviceAtw> =
-        this.getOtherCapabilityZone(
+        getOtherCapabilityZone(
           capability
         ) as ExtendedSetCapability<MELCloudDeviceAtw>
       let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
@@ -81,12 +88,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       this.diff.set(otherZone, String(otherZoneValue))
       await this.setDisplayErrorWarning()
     }
-  }
-
-  getOtherCapabilityZone(capability: string): string {
-    return capability.endsWith('.zone1')
-      ? capability.replace(/.zone1$/, '.zone2')
-      : capability.replace(/.zone2$/, '.zone1')
   }
 
   convertToDevice(
@@ -137,6 +138,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
         break
       case 'alarm_generic.defrost_mode':
         newValue = Boolean(newValue)
+        break
+      default:
     }
     await this.setCapabilityValue(capability, newValue)
   }
