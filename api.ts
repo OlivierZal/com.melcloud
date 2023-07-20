@@ -311,10 +311,7 @@ module.exports = {
               return
             }
             const deviceSettings: Settings = deviceChangedKeys.reduce<Settings>(
-              (settings, key: string) => ({
-                ...settings,
-                [key]: body[key],
-              }),
+              (settings, key: string) => ({ ...settings, [key]: body[key] }),
               {}
             )
             try {
