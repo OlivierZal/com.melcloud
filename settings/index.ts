@@ -545,12 +545,9 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
     } else {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, any]): void => {
-          Object.values(deviceSettings).forEach(
-            (settings: Record<string, any[]>): void => {
-              // eslint-disable-next-line no-param-reassign
-              settings[settingId] = [settingValue]
-            }
-          )
+          Object.keys(deviceSettings).forEach((id: string): void => {
+            deviceSettings[id][settingId] = [settingValue]
+          })
           flatDeviceSettings[settingId] = [settingValue]
         }
       )
