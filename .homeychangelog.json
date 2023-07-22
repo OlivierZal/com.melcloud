@@ -115,5 +115,8 @@
   },
   "18.0.0": {
     "en": "If you haven't already done so following the notification posted several months ago, it is now necessary to delete your air-to-water devices and recreate them: this will enable you to benefit from all the app's new features (new settings, new capabilities, etc.). Your flows will also have to be recreated (once and for all, don't worry!)."
+  },
+  "19.0.0": {
+    "en": "Updated modules."
   }
 }
