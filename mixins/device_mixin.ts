@@ -29,6 +29,7 @@ import type {
   SetCapabilityMapping,
   SetDeviceData,
   Settings,
+  SettingValue,
   SyncFromMode,
   SyncMode,
 } from '../types'
@@ -638,7 +639,7 @@ export default class MELCloudDeviceMixin extends Device {
           await this.runEnergyReport(total)
         } else if (
           Object.entries(newSettings).every(
-            ([setting, value]: [string, any]): boolean =>
+            ([setting, value]: [string, SettingValue]): boolean =>
               !(setting in this.reportCapabilityMapping) || value === false
           )
         ) {
@@ -759,11 +760,11 @@ export default class MELCloudDeviceMixin extends Device {
     return this.homey.setTimeout(callback, Number(duration))
   }
 
-  log(...args: any[]): void {
+  log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
 
-  error(...args: any[]): void {
+  error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
 }

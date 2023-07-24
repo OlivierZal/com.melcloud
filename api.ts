@@ -21,6 +21,7 @@ import type {
   MELCloudDevice,
   PairSetting,
   Settings,
+  SettingValue,
 } from './types'
 
 function fromUTCtoLocal(utcDate: string | null, language?: string): string {
@@ -110,8 +111,8 @@ module.exports = {
         const driverId: string = device.driver.id
         const newDeviceSettings: DeviceSettings = { ...deviceSettings }
         newDeviceSettings[driverId] ??= {}
-        Object.entries(device.getSettings()).forEach(
-          ([settingId, value]: [string, any]) => {
+        Object.entries(device.getSettings() as Settings).forEach(
+          ([settingId, value]: [string, SettingValue]): void => {
             newDeviceSettings[driverId][settingId] ??= []
             if (!newDeviceSettings[driverId][settingId].includes(value)) {
               newDeviceSettings[driverId][settingId].push(value)

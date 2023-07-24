@@ -1,7 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { App, type Driver } from 'homey'
 import axios from 'axios'
-import { DateTime, Duration, type DurationLikeObject, Settings } from 'luxon'
+import {
+  DateTime,
+  Duration,
+  Settings as LuxonSettings,
+  type DurationLikeObject,
+} from 'luxon'
 import type {
   Building,
   ErrorLogData,
@@ -18,6 +23,8 @@ import type {
   LoginData,
   LoginPostData,
   MELCloudDevice,
+  Settings,
+  SettingValue,
   SuccessData,
   SyncFromMode,
 } from './types'
@@ -52,8 +59,8 @@ export default class MELCloudApp extends App {
   syncTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
-    Settings.defaultLocale = 'en-us'
-    Settings.defaultZone = this.homey.clock.getTimezone()
+    LuxonSettings.defaultLocale = 'en-us'
+    LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
     axios.defaults.headers.common['X-MitsContextKey'] =
       this.homey.settings.get('ContextKey') ?? ''
@@ -483,7 +490,7 @@ export default class MELCloudApp extends App {
 
   setSettings(settings: Settings): void {
     Object.entries(settings).forEach(
-      ([setting, value]: [string, any]): void => {
+      ([setting, value]: [string, SettingValue]): void => {
         if (value !== this.homey.settings.get(setting)) {
           this.homey.settings.set(setting, value)
         }
@@ -512,7 +519,7 @@ export default class MELCloudApp extends App {
 
   setTimeout(
     type: string,
-    callback: () => Promise<any>,
+    callback: () => Promise<void>,
     interval: number | object,
     ...units: Array<keyof DurationLikeObject>
   ): NodeJS.Timeout {

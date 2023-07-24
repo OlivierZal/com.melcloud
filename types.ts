@@ -11,7 +11,9 @@ export type SyncMode = 'syncTo' | SyncFromMode
 
 export type CapabilityValue = boolean | number | string
 
-export interface Settings extends Record<string, any> {
+export type SettingValue = boolean | number | string | null | undefined
+
+export interface Settings extends Record<string, SettingValue> {
   always_on?: boolean
 }
 
@@ -36,7 +38,7 @@ export interface ManifestDriverSetting {
   readonly label: Record<string, string>
 }
 
-export type PairSetting = { id: string } & Record<string, any>
+export type PairSetting = { id: string }
 
 export interface LoginSetting extends PairSetting {
   readonly id: 'login'
@@ -72,7 +74,9 @@ export interface DriverSetting {
   readonly values?: Array<{ id: string; label: string }>
 }
 
-export type DeviceSettings = Record<string, Record<string, any[]>>
+export type DeviceSetting = Record<string, SettingValue[]>
+
+export type DeviceSettings = Record<string, DeviceSetting>
 
 export interface SuccessData {
   readonly AttributeErrors: null
