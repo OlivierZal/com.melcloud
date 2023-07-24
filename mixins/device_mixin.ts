@@ -184,14 +184,15 @@ export default class MELCloudDeviceMixin extends Device {
   getReportCapabilities<T extends MELCloudDevice>(
     total: boolean = false
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
-    return Object.entries(this.reportCapabilityMapping).reduce<any>(
+    return Object.entries(this.reportCapabilityMapping).reduce<
+      Partial<Record<ReportCapability<T>, ReportCapabilityMapping<T>>>
+    >(
       (
         reportCapabilities,
         [capability, tags]: [string, ReportCapabilityMapping<T>]
       ) => {
-        const newReportCapabilities: Record<
-          ReportCapability<T>,
-          ReportCapabilityMapping<T>
+        const newReportCapabilities: Partial<
+          Record<ReportCapability<T>, ReportCapabilityMapping<T>>
         > = { ...reportCapabilities }
         if (
           this.hasCapability(capability) &&
@@ -202,7 +203,7 @@ export default class MELCloudDeviceMixin extends Device {
         return newReportCapabilities
       },
       {}
-    )
+    ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   }
 
   async handleCapabilities(): Promise<void> {
