@@ -32,6 +32,7 @@ import type {
   SettingValue,
   SyncFromMode,
   SyncMode,
+  UpdateDeviceData,
 } from '../types'
 
 export default class MELCloudDeviceMixin extends Device {
@@ -296,9 +297,9 @@ export default class MELCloudDeviceMixin extends Device {
   }
 
   buildUpdateData<T extends MELCloudDevice>(): SetDeviceData<T> {
-    const updateData: SetDeviceData<T> = Object.entries(
-      this.setCapabilityMapping
-    ).reduce<any>(
+    return Object.entries(this.setCapabilityMapping).reduce<
+      UpdateDeviceData<T>
+    >(
       (
         acc,
         [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>]
@@ -309,7 +310,7 @@ export default class MELCloudDeviceMixin extends Device {
         acc[tag] = this.convertToDevice(
           capability as SetCapability<T>,
           this.diff.get(capability as SetCapability<T>)
-        )
+        ) as SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
         if (this.diff.has(capability as SetCapability<T>)) {
           this.diff.delete(capability as SetCapability<T>)
           acc.EffectiveFlags = Number(
@@ -319,8 +320,7 @@ export default class MELCloudDeviceMixin extends Device {
         return acc
       },
       { EffectiveFlags: 0 }
-    )
-    return updateData
+    ) as SetDeviceData<T>
   }
 
   convertToDevice(

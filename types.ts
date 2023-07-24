@@ -249,40 +249,48 @@ export type ExtendedCapability<T extends MELCloudDevice> =
 
 interface BaseDeviceData {
   EffectiveFlags: number
-  readonly Power: number
+  readonly Power?: number
 }
 
-interface SetDeviceDataAta extends BaseDeviceData {
-  readonly OperationMode: number
-  readonly SetFanSpeed: number
-  readonly SetTemperature: number
-  readonly VaneHorizontal: number
-  readonly VaneVertical: number
+interface UpdateDeviceDataAta extends BaseDeviceData {
+  readonly OperationMode?: number
+  readonly SetFanSpeed?: number
+  readonly SetTemperature?: number
+  readonly VaneHorizontal?: number
+  readonly VaneVertical?: number
 }
 
-interface SetDeviceDataAtw extends BaseDeviceData {
-  readonly ForcedHotWaterMode: boolean
-  readonly OperationModeZone1: number
-  readonly OperationModeZone2: number
-  readonly SetCoolFlowTemperatureZone1: number
-  readonly SetCoolFlowTemperatureZone2: number
-  readonly SetHeatFlowTemperatureZone1: number
-  readonly SetHeatFlowTemperatureZone2: number
-  readonly SetTankWaterTemperature: number
-  readonly SetTemperatureZone1: number
-  readonly SetTemperatureZone2: number
+interface UpdateDeviceDataAtw extends BaseDeviceData {
+  readonly ForcedHotWaterMode?: boolean
+  readonly OperationModeZone1?: number
+  readonly OperationModeZone2?: number
+  readonly SetCoolFlowTemperatureZone1?: number
+  readonly SetCoolFlowTemperatureZone2?: number
+  readonly SetHeatFlowTemperatureZone1?: number
+  readonly SetHeatFlowTemperatureZone2?: number
+  readonly SetTankWaterTemperature?: number
+  readonly SetTemperatureZone1?: number
+  readonly SetTemperatureZone2?: number
 }
 
-export type SetDeviceData<T extends MELCloudDevice> =
-  T extends MELCloudDeviceAtw ? SetDeviceDataAtw : SetDeviceDataAta
+export type UpdateDeviceData<T extends MELCloudDevice> =
+  T extends MELCloudDeviceAtw ? UpdateDeviceDataAtw : UpdateDeviceDataAta
 
-interface GetDeviceDataMixin extends BaseDeviceData {}
+type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
 
-interface GetDeviceDataAta extends GetDeviceDataMixin, SetDeviceDataAta {
+type SetDeviceDataAtw = Readonly<Required<UpdateDeviceDataAtw>>
+
+export type SetDeviceData<T extends MELCloudDevice> = Readonly<
+  Required<UpdateDeviceData<T>>
+>
+
+interface GetDeviceDataMixin {}
+
+interface GetDeviceDataAta extends SetDeviceDataAta, GetDeviceDataMixin {
   readonly RoomTemperature: number
 }
 
-interface GetDeviceDataAtw extends GetDeviceDataMixin, SetDeviceDataAtw {
+interface GetDeviceDataAtw extends SetDeviceDataAtw, GetDeviceDataMixin {
   readonly EcoHotWater: boolean
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
@@ -301,7 +309,7 @@ export type PostData<T extends MELCloudDevice> = SetDeviceData<T> & {
   readonly HasPendingCommand: true
 }
 
-interface ListDeviceDataMixin extends BaseDeviceData {
+interface ListDeviceDataMixin {
   readonly CanCool: boolean
   readonly DeviceType: number
   readonly HasZone2: boolean
@@ -309,18 +317,18 @@ interface ListDeviceDataMixin extends BaseDeviceData {
 }
 
 interface ListDeviceDataAta
-  extends ListDeviceDataMixin,
-    Exclude<
+  extends Exclude<
       GetDeviceDataAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
-    > {
+    >,
+    ListDeviceDataMixin {
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
   readonly VaneHorizontalDirection: number
   readonly VaneVerticalDirection: number
 }
 
-interface ListDeviceDataAtw extends ListDeviceDataMixin, GetDeviceDataAtw {
+interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataMixin {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
