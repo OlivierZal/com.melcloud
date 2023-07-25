@@ -139,7 +139,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   getReportCapabilities<T extends MELCloudDriver>(
-    total: boolean = false
+    total = false
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
     return Object.entries(this.driver.reportCapabilityMapping).reduce<
       Partial<Record<ReportCapability<T>, ReportCapabilityMapping<T>>>
@@ -304,18 +304,16 @@ export default abstract class MELCloudDeviceMixin extends Device {
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode
   ): Promise<void> {
-    if (data === null || data.EffectiveFlags === undefined) {
+    if (data?.EffectiveFlags === undefined) {
       return
     }
-    const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
-    const combinedCapabilities: typeof this.driver.getCapabilityMapping = {
+    const effectiveFlags = BigInt(data.EffectiveFlags)
+    const combinedCapabilities = {
       ...this.driver.setCapabilityMapping,
       ...this.driver.getCapabilityMapping,
     }
 
-    const capabilitiesToProcess = ():
-      | typeof this.driver.getCapabilityMapping
-      | typeof this.driver.listCapabilityMapping => {
+    const capabilitiesToProcess = () => {
       switch (syncMode) {
         case 'syncTo':
           return combinedCapabilities
@@ -440,7 +438,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   async runEnergyReport<T extends MELCloudDriver>(
-    total: boolean = false
+    total = false
   ): Promise<void> {
     const reportCapabilities: Record<
       string,
@@ -508,12 +506,12 @@ export default abstract class MELCloudDeviceMixin extends Device {
     await this.setCapabilityValue(capability, reportValue())
   }
 
-  planEnergyReport(total: boolean = false): void {
+  planEnergyReport(total = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
     if (this.reportTimeout[totalString] !== null) {
       return
     }
-    const type: string = `${total ? 'total' : 'regular'} energy report`
+    const type = `${total ? 'total' : 'regular'} energy report`
     const { interval, duration, values } = total
       ? {
           interval: { days: 1 },
@@ -624,7 +622,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     this.clearEnergyReportPlan(true)
   }
 
-  clearEnergyReportPlan(total: boolean = false): void {
+  clearEnergyReportPlan(total = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
     this.homey.clearTimeout(this.reportTimeout[totalString])
     this.homey.clearInterval(this.reportInterval[totalString])
@@ -632,7 +630,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
   }
 
-  async onDeleted(): Promise<void> {
+  onDeleted(): void {
     this.clearSync()
     this.clearEnergyReportPlans()
   }
@@ -644,7 +642,9 @@ export default abstract class MELCloudDeviceMixin extends Device {
         .then((): void => {
           this.log('Adding capability', capability)
         })
-        .catch(this.error)
+        .catch((err: Error): void => {
+          this.error(err.message)
+        })
     }
   }
 
@@ -655,7 +655,9 @@ export default abstract class MELCloudDeviceMixin extends Device {
         .then((): void => {
           this.log('Removing capability', capability)
         })
-        .catch(this.error)
+        .catch((err: Error): void => {
+          this.error(err.message)
+        })
     }
   }
 
@@ -672,7 +674,9 @@ export default abstract class MELCloudDeviceMixin extends Device {
         .then((): void => {
           this.log('Capability', capability, 'is', value)
         })
-        .catch(this.error)
+        .catch((err: Error): void => {
+          this.error(err.message)
+        })
     }
   }
 

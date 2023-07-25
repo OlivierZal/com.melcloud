@@ -136,14 +136,18 @@ export default class MELCloudApp extends App {
       this.loginTimeout = this.setTimeout(
         'login refresh',
         async (): Promise<void> => {
-          await this.login(loginCredentials).catch(this.error)
+          await this.login(loginCredentials).catch((err: Error): void => {
+            this.error(err.message)
+          })
         },
         interval,
         'days'
       )
       return
     }
-    await this.login(loginCredentials).catch(this.error)
+    await this.login(loginCredentials).catch((err: Error): void => {
+      this.error(err.message)
+    })
   }
 
   getFirstDeviceId({
@@ -266,8 +270,10 @@ export default class MELCloudApp extends App {
     this.deviceList = deviceList
     this.buildings = buildingData.newBuildings
     this.deviceIds = buildingData.deviceIds
-    await this.syncDevicesFromList(syncMode).catch(this.error)
-    await this.planSyncFromDevices()
+    await this.syncDevicesFromList(syncMode).catch((err: Error): void => {
+      this.error(err.message)
+    })
+    this.planSyncFromDevices()
     return deviceList
   }
 
@@ -306,7 +312,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  async planSyncFromDevices(): Promise<void> {
+  planSyncFromDevices(): void {
     if (this.syncInterval !== null) {
       return
     }
@@ -472,7 +478,7 @@ export default class MELCloudApp extends App {
   }
 
   getBuildingName(buildingId: number): string {
-    if (this.buildings[buildingId] === undefined) {
+    if (!(buildingId in this.buildings)) {
       throw new Error(this.homey.__('app.building.not_found', { buildingId }))
     }
     return this.buildings[buildingId]

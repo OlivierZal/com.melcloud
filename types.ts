@@ -38,7 +38,9 @@ export interface ManifestDriverSetting {
   readonly label: Record<string, string>
 }
 
-export type PairSetting = { id: string }
+export interface PairSetting {
+  id: string
+}
 
 export interface LoginSetting extends PairSetting {
   readonly id: 'login'
@@ -116,7 +118,7 @@ interface GetCapabilitiesMixin {
   readonly measure_temperature: number
 }
 
-interface GetCapabilitiesAta extends GetCapabilitiesMixin {}
+type GetCapabilitiesAta = GetCapabilitiesMixin
 
 interface GetCapabilitiesAtw extends GetCapabilitiesMixin {
   readonly 'alarm_generic.eco_hot_water': boolean
@@ -284,13 +286,11 @@ export type SetDeviceData<T extends MELCloudDriver> = Readonly<
   Required<UpdateDeviceData<T>>
 >
 
-interface GetDeviceDataMixin {}
-
-interface GetDeviceDataAta extends SetDeviceDataAta, GetDeviceDataMixin {
+interface GetDeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
 
-interface GetDeviceDataAtw extends SetDeviceDataAtw, GetDeviceDataMixin {
+interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly EcoHotWater: boolean
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean

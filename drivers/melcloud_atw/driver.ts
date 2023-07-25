@@ -114,7 +114,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
               )
           }
         } else if (capability.startsWith('operation_mode_zone')) {
-          let flowPrefix: string = `operation_mode_zone${capability.slice(-1)}`
+          let flowPrefix = `operation_mode_zone${capability.slice(-1)}`
           if (capability.includes('with_cool')) {
             flowPrefix += '_with_cool'
           }

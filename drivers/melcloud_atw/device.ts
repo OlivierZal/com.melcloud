@@ -57,12 +57,12 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   ): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
-      const zoneValue: number = Number(value)
+      const zoneValue = Number(value)
       const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(
           capability
         ) as ExtendedSetCapability<MELCloudDriverAtw>
-      let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
+      let otherZoneValue = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
         if (zoneValue > 2) {
           if (otherZoneValue < 3) {

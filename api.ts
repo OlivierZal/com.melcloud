@@ -44,8 +44,8 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
   period: number
   toDate: DateTime
 } {
-  const defaultLimit: number = 1
-  const defaultOffset: number = 0
+  const defaultLimit = 1
+  const defaultOffset = 0
   const from: DateTime | null =
     query.from !== undefined && query.from !== ''
       ? DateTime.fromISO(query.from)
@@ -90,20 +90,20 @@ module.exports = {
       )
   },
 
-  async getDeviceSettings({
-    homey,
-  }: {
-    homey: Homey
-  }): Promise<DeviceSettings> {
+  getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)
       .getDevices()
       .reduce<DeviceSettings>((deviceSettings, device) => {
         const driverId: string = device.driver.id
         const newDeviceSettings: DeviceSettings = { ...deviceSettings }
-        newDeviceSettings[driverId] ??= {}
+        if (!(driverId in newDeviceSettings)) {
+          newDeviceSettings[driverId] = {}
+        }
         Object.entries(device.getSettings() as Settings).forEach(
           ([settingId, value]: [string, SettingValue]): void => {
-            newDeviceSettings[driverId][settingId] ??= []
+            if (!(settingId in newDeviceSettings[driverId])) {
+              newDeviceSettings[driverId][settingId] = []
+            }
             if (!newDeviceSettings[driverId][settingId].includes(value)) {
               newDeviceSettings[driverId][settingId].push(value)
             }
@@ -113,11 +113,7 @@ module.exports = {
       }, {})
   },
 
-  async getDriverSettings({
-    homey,
-  }: {
-    homey: Homey
-  }): Promise<DriverSetting[]> {
+  getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
     const settings: DriverSetting[] = app.manifest.drivers.flatMap(
@@ -172,12 +168,14 @@ module.exports = {
               const newDriverLoginSettings: Record<string, DriverSetting> = {
                 ...driverLoginSettings,
               }
-              newDriverLoginSettings[key] ??= {
-                groupId: 'login',
-                id: key,
-                title: '',
-                type: isPassword ? 'password' : 'text',
-                driverId: driver.id,
+              if (!(key in newDriverLoginSettings)) {
+                newDriverLoginSettings[key] = {
+                  groupId: 'login',
+                  id: key,
+                  title: '',
+                  type: isPassword ? 'password' : 'text',
+                  driverId: driver.id,
+                }
               }
               newDriverLoginSettings[key][
                 option.endsWith('Placeholder') ? 'placeholder' : 'title'
@@ -221,7 +219,7 @@ module.exports = {
     }
   },
 
-  async getLanguage({ homey }: { homey: Homey }): Promise<string> {
+  getLanguage({ homey }: { homey: Homey }): string {
     return (homey.app as MELCloudApp).getLanguage()
   },
 
@@ -241,12 +239,11 @@ module.exports = {
       Errors: data
         .reduce<ErrorDetails[]>((errors, errorData: ErrorLogData) => {
           const date: string =
-            errorData.StartDate !== null &&
             DateTime.fromISO(errorData.StartDate).year > 1
               ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
               : ''
-          const error: string = errorData.ErrorMessage ?? ''
-          if (date !== '' && error !== '') {
+          const error: string = errorData.ErrorMessage
+          if (date !== '') {
             errors.push({
               Device:
                 app.getDevice(errorData.DeviceId)?.getName() ??

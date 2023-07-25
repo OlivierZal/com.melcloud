@@ -67,6 +67,7 @@ export default abstract class MELCloudDriverMixin extends Driver {
         ReportCapabilityMapping<MELCloudDriverAtw>
       >
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async onInit(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
   }
