@@ -1,5 +1,11 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAtw from './device'
+import {
+  getCapabilityMappingAtw,
+  listCapabilityMappingAtw,
+  reportCapabilityMappingAtw,
+  setCapabilityMappingAtw,
+} from '../../types'
 import type {
   GetCapability,
   ListCapability,
@@ -30,6 +36,11 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     await super.onInit()
     this.deviceType = 1
     this.heatPumpType = 'Atw'
+
+    this.setCapabilityMapping = setCapabilityMappingAtw
+    this.getCapabilityMapping = getCapabilityMappingAtw
+    this.listCapabilityMapping = listCapabilityMappingAtw
+    this.reportCapabilityMapping = reportCapabilityMappingAtw
 
     this.capabilitiesAtw = [
       'measure_power.heat_pump_frequency',

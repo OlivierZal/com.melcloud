@@ -1,6 +1,11 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
 import type MELCloudDeviceAta from './device'
-import { getCapabilityMappingAta, setCapabilityMappingAta } from '../../types'
+import {
+  getCapabilityMappingAta,
+  listCapabilityMappingAta,
+  setCapabilityMappingAta,
+  reportCapabilityMappingAta,
+} from '../../types'
 import type { FlowArgsAta, SetCapability } from '../../types'
 
 const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
@@ -26,6 +31,11 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.deviceType = 0
     this.heatPumpType = 'Ata'
 
+    this.setCapabilityMapping = setCapabilityMappingAta
+    this.getCapabilityMapping = getCapabilityMappingAta
+    this.listCapabilityMapping = listCapabilityMappingAta
+    this.reportCapabilityMapping = reportCapabilityMappingAta
+
     flowCapabilities.forEach(
       (capability: SetCapability<MELCloudDeviceAta>): void => {
         this.homey.flow
@@ -50,8 +60,8 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
   getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
-        ...setCapabilityMappingAta,
-        ...getCapabilityMappingAta,
+        ...this.setCapabilityMapping,
+        ...this.getCapabilityMapping,
       }),
       'thermostat_mode',
       'fan_power_state',

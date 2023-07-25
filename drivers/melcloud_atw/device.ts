@@ -1,12 +1,6 @@
 import { DateTime } from 'luxon'
 import MELCloudDeviceMixin from '../../mixins/device_mixin'
 import type MELCloudDriverAtw from './driver'
-import {
-  getCapabilityMappingAtw,
-  listCapabilityMappingAtw,
-  reportCapabilityMappingAtw,
-  setCapabilityMappingAtw,
-} from '../../types'
 import type {
   Capability,
   CapabilityValue,
@@ -38,10 +32,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare diff: Map<SetCapability<MELCloudDeviceAtw>, CapabilityValue>
 
   async onInit(): Promise<void> {
-    this.setCapabilityMapping = setCapabilityMappingAtw
-    this.getCapabilityMapping = getCapabilityMappingAtw
-    this.listCapabilityMapping = listCapabilityMappingAtw
-    this.reportCapabilityMapping = reportCapabilityMappingAtw
     this.reportPlanParameters = {
       minus: { days: 1 },
       interval: { days: 1 },

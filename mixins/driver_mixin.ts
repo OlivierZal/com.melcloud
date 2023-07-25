@@ -2,11 +2,21 @@
 import { Driver } from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
+import type MELCloudDeviceAta from '../drivers/melcloud/device'
+import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import type {
   DeviceDetails,
+  GetCapability,
+  GetCapabilityMapping,
+  ListCapability,
+  ListCapabilityMapping,
   ListDevice,
   LoginCredentials,
   MELCloudDevice,
+  ReportCapability,
+  ReportCapabilityMapping,
+  SetCapability,
+  SetCapabilityMapping,
   Store,
 } from '../types'
 
@@ -16,6 +26,46 @@ export default abstract class MELCloudDriverMixin extends Driver {
   deviceType!: number
 
   heatPumpType!: string
+
+  setCapabilityMapping!:
+    | Record<
+        SetCapability<MELCloudDeviceAta>,
+        SetCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        SetCapability<MELCloudDeviceAtw>,
+        SetCapabilityMapping<MELCloudDeviceAtw>
+      >
+
+  getCapabilityMapping!:
+    | Record<
+        GetCapability<MELCloudDeviceAta>,
+        GetCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        GetCapability<MELCloudDeviceAtw>,
+        GetCapabilityMapping<MELCloudDeviceAtw>
+      >
+
+  listCapabilityMapping!:
+    | Record<
+        ListCapability<MELCloudDeviceAta>,
+        ListCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        ListCapability<MELCloudDeviceAtw>,
+        ListCapabilityMapping<MELCloudDeviceAtw>
+      >
+
+  reportCapabilityMapping!:
+    | Record<
+        ReportCapability<MELCloudDeviceAta>,
+        ReportCapabilityMapping<MELCloudDeviceAta>
+      >
+    | Record<
+        ReportCapability<MELCloudDeviceAtw>,
+        ReportCapabilityMapping<MELCloudDeviceAtw>
+      >
 
   async onInit(): Promise<void> {
     this.app = this.homey.app as MELCloudApp

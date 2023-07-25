@@ -6,23 +6,20 @@ import type MELCloudApp from '../app'
 import type MELCloudDeviceAta from '../drivers/melcloud/device'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
 import type {
-  NonReportCapability,
   Capability,
   CapabilityValue,
   ExtendedCapability,
   ExtendedSetCapability,
-  GetCapability,
-  GetCapabilityMapping,
   GetDeviceData,
-  ListCapability,
   ListCapabilityMapping,
-  ReportCapabilityMapping,
   ListDevice,
   ListDeviceData,
   MELCloudDevice,
   MELCloudDriver,
+  NonReportCapability,
   PostData,
   ReportCapability,
+  ReportCapabilityMapping,
   ReportData,
   ReportPostData,
   SetCapability,
@@ -39,46 +36,6 @@ export default abstract class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
-
-  setCapabilityMapping!:
-    | Record<
-        SetCapability<MELCloudDeviceAta>,
-        SetCapabilityMapping<MELCloudDeviceAta>
-      >
-    | Record<
-        SetCapability<MELCloudDeviceAtw>,
-        SetCapabilityMapping<MELCloudDeviceAtw>
-      >
-
-  getCapabilityMapping!:
-    | Record<
-        GetCapability<MELCloudDeviceAta>,
-        GetCapabilityMapping<MELCloudDeviceAta>
-      >
-    | Record<
-        GetCapability<MELCloudDeviceAtw>,
-        GetCapabilityMapping<MELCloudDeviceAtw>
-      >
-
-  listCapabilityMapping!:
-    | Record<
-        ListCapability<MELCloudDeviceAta>,
-        ListCapabilityMapping<MELCloudDeviceAta>
-      >
-    | Record<
-        ListCapability<MELCloudDeviceAtw>,
-        ListCapabilityMapping<MELCloudDeviceAtw>
-      >
-
-  reportCapabilityMapping!:
-    | Record<
-        ReportCapability<MELCloudDeviceAta>,
-        ReportCapabilityMapping<MELCloudDeviceAta>
-      >
-    | Record<
-        ReportCapability<MELCloudDeviceAtw>,
-        ReportCapabilityMapping<MELCloudDeviceAtw>
-      >
 
   id!: number
 
@@ -184,7 +141,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   getReportCapabilities<T extends MELCloudDevice>(
     total: boolean = false
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
-    return Object.entries(this.reportCapabilityMapping).reduce<
+    return Object.entries(this.driver.reportCapabilityMapping).reduce<
       Partial<Record<ReportCapability<T>, ReportCapabilityMapping<T>>>
     >(
       (
@@ -226,19 +183,17 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   registerCapabilityListeners<T extends MELCloudDevice>(): void {
-    ;[...Object.keys(this.setCapabilityMapping), 'thermostat_mode'].forEach(
-      (capability: string): void => {
-        this.registerCapabilityListener(
-          capability,
-          async (value: CapabilityValue): Promise<void> => {
-            await this.onCapability(
-              capability as ExtendedSetCapability<T>,
-              value
-            )
-          }
-        )
-      }
-    )
+    ;[
+      ...Object.keys(this.driver.setCapabilityMapping),
+      'thermostat_mode',
+    ].forEach((capability: string): void => {
+      this.registerCapabilityListener(
+        capability,
+        async (value: CapabilityValue): Promise<void> => {
+          await this.onCapability(capability as ExtendedSetCapability<T>, value)
+        }
+      )
+    })
   }
 
   async onCapability<T extends MELCloudDevice>(
@@ -296,7 +251,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   buildUpdateData<T extends MELCloudDevice>(): SetDeviceData<T> {
-    return Object.entries(this.setCapabilityMapping).reduce<
+    return Object.entries(this.driver.setCapabilityMapping).reduce<
       UpdateDeviceData<T>
     >(
       (
@@ -353,23 +308,23 @@ export default abstract class MELCloudDeviceMixin extends Device {
       return
     }
     const effectiveFlags: bigint = BigInt(data.EffectiveFlags)
-    const combinedCapabilities: typeof this.getCapabilityMapping = {
-      ...this.setCapabilityMapping,
-      ...this.getCapabilityMapping,
+    const combinedCapabilities: typeof this.driver.getCapabilityMapping = {
+      ...this.driver.setCapabilityMapping,
+      ...this.driver.getCapabilityMapping,
     }
 
     const capabilitiesToProcess = ():
-      | typeof this.getCapabilityMapping
-      | typeof this.listCapabilityMapping => {
+      | typeof this.driver.getCapabilityMapping
+      | typeof this.driver.listCapabilityMapping => {
       switch (syncMode) {
         case 'syncTo':
           return combinedCapabilities
         case 'syncFrom':
-          return this.listCapabilityMapping
+          return this.driver.listCapabilityMapping
         default:
           return {
             ...combinedCapabilities,
-            ...this.listCapabilityMapping,
+            ...this.driver.listCapabilityMapping,
           }
       }
     }
@@ -604,14 +559,16 @@ export default abstract class MELCloudDeviceMixin extends Device {
     } else if (
       changedKeys.some(
         (setting: string): boolean =>
-          setting !== 'always_on' && !(setting in this.reportCapabilityMapping)
+          setting !== 'always_on' &&
+          !(setting in this.driver.reportCapabilityMapping)
       )
     ) {
       this.app.applySyncFromDevices()
     }
 
     const changedEnergyKeys: string[] = changedKeys.filter(
-      (setting: string): boolean => setting in this.reportCapabilityMapping
+      (setting: string): boolean =>
+        setting in this.driver.reportCapabilityMapping
     )
     if (changedEnergyKeys.length === 0) {
       return
@@ -633,7 +590,8 @@ export default abstract class MELCloudDeviceMixin extends Device {
         } else if (
           Object.entries(newSettings).every(
             ([setting, value]: [string, SettingValue]): boolean =>
-              !(setting in this.reportCapabilityMapping) || value === false
+              !(setting in this.driver.reportCapabilityMapping) ||
+              value === false
           )
         ) {
           this.clearEnergyReportPlan(total)
