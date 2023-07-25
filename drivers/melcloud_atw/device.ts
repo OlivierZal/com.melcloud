@@ -162,6 +162,11 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
       await this.handleCapabilities()
     }
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  async updateThermostatMode(): Promise<void> {
+    // Not implemented.
+  }
 }
 
 module.exports = MELCloudDeviceAtw

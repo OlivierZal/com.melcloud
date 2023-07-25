@@ -35,7 +35,7 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default class MELCloudDeviceMixin extends Device {
+export default abstract class MELCloudDeviceMixin extends Device {
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
@@ -253,14 +253,12 @@ export default class MELCloudDeviceMixin extends Device {
     this.applySyncToDevice()
   }
 
-  async specificOnCapability(
-    _capability:
+  abstract specificOnCapability(
+    capability:
       | ExtendedSetCapability<MELCloudDeviceAta>
       | ExtendedSetCapability<MELCloudDeviceAtw>,
-    _value: CapabilityValue
-  ): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
+    value: CapabilityValue
+  ): Promise<void>
 
   clearSync(): void {
     this.app.clearListDevicesRefresh()
@@ -455,16 +453,12 @@ export default class MELCloudDeviceMixin extends Device {
     await processCapabilities(lastCapabilities)
   }
 
-  async convertFromDevice(
-    _capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>,
-    _value: boolean | number
-  ): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
+  abstract convertFromDevice(
+    capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>,
+    value: boolean | number
+  ): Promise<void>
 
-  async updateThermostatMode(): Promise<void> {
-    // Abstract method
-  }
+  abstract updateThermostatMode(): Promise<void>
 
   async syncDeviceFromList<T extends MELCloudDevice>(
     syncMode?: SyncFromMode
@@ -477,11 +471,9 @@ export default class MELCloudDeviceMixin extends Device {
     await this.endSync(data, syncMode)
   }
 
-  async updateStore<T extends MELCloudDevice>(
-    _data: ListDeviceData<T> | null
-  ): Promise<void> {
-    // Abstract method
-  }
+  abstract updateStore<T extends MELCloudDevice>(
+    data: ListDeviceData<T> | null
+  ): Promise<void>
 
   async runEnergyReports(): Promise<void> {
     await this.runEnergyReport()

@@ -10,7 +10,7 @@ import type {
   Store,
 } from '../types'
 
-export default class MELCloudDriverMixin extends Driver {
+export default abstract class MELCloudDriverMixin extends Driver {
   app!: MELCloudApp
 
   deviceType!: number
@@ -58,9 +58,7 @@ export default class MELCloudDriverMixin extends Driver {
     )
   }
 
-  getRequiredCapabilities(_store: Store): string[] {
-    throw new Error('Method not implemented.')
-  }
+  abstract getRequiredCapabilities(store: Store): string[]
 
   onRepair(session: PairSession): void {
     session.setHandler(

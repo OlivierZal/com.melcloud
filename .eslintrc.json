@@ -24,20 +24,7 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
-        "argsIgnorePattern": "^_",
         "varsIgnorePattern": "onHomeyReady"
-      }
-    ],
-    "class-methods-use-this": [
-      "error",
-      {
-        "exceptMethods": [
-          "convertFromDevice",
-          "getRequiredCapabilities",
-          "specificOnCapability",
-          "updateStore",
-          "updateThermostatMode"
-        ]
       }
     ],
     "import/no-import-module-exports": "off",
