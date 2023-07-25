@@ -12,7 +12,6 @@ import type {
   HolidayModeData,
   HolidayModeSettings,
   LoginCredentials,
-  MELCloudDevice,
   Settings,
   SettingValue,
 } from '../types'
@@ -386,7 +385,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
   }
 
   function buildSettingsBody(
-    settings: Array<HTMLInputElement | HTMLSelectElement>,
+    settings: (HTMLInputElement | HTMLSelectElement)[],
     driverId?: string
   ): Settings {
     const shouldUpdate = (
@@ -490,10 +489,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       Homey.api(
         'GET',
         '/buildings',
-        async (
-          error: Error,
-          buildings: Array<Building<MELCloudDevice>>
-        ): Promise<void> => {
+        async (error: Error, buildings: Building[]): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error bug
             await Homey.alert(error.message)
@@ -501,7 +497,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
             return
           }
           if (buildingElement.childElementCount === 0) {
-            buildings.forEach((building: Building<MELCloudDevice>): void => {
+            buildings.forEach((building: Building): void => {
               const { ID, Name } = building
               const optionElement: HTMLOptionElement =
                 document.createElement('option')
@@ -584,7 +580,7 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
 
   function addSettingsEventListener(
     buttonElement: HTMLButtonElement,
-    elements: Array<HTMLInputElement | HTMLSelectElement>,
+    elements: (HTMLInputElement | HTMLSelectElement)[],
     driverId?: string
   ): void {
     buttonElement.addEventListener('click', (): void => {

@@ -14,23 +14,24 @@ import type {
 } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  capabilitiesAtw!: Array<
-    | SetCapability<MELCloudDeviceAtw>
-    | GetCapability<MELCloudDeviceAtw>
-    | ListCapability<MELCloudDeviceAtw>
-  >
+  capabilitiesAtw!: (
+    | SetCapability<MELCloudDriverAtw>
+    | GetCapability<MELCloudDriverAtw>
+    | ListCapability<MELCloudDriverAtw>
+  )[]
 
-  coolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  coolCapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
 
-  notCoolCapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  notCoolCapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
 
-  zone2CapabilitiesAtw!: Array<
-    SetCapability<MELCloudDeviceAtw> | GetCapability<MELCloudDeviceAtw>
-  >
+  zone2CapabilitiesAtw!: (
+    | SetCapability<MELCloudDriverAtw>
+    | GetCapability<MELCloudDriverAtw>
+  )[]
 
-  coolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  coolZone2CapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
 
-  notCoolZone2CapabilitiesAtw!: Array<SetCapability<MELCloudDeviceAtw>>
+  notCoolZone2CapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
 
   async onInit(): Promise<void> {
     await super.onInit()
@@ -75,7 +76,7 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
     this.manifest.capabilities.forEach(
-      (capability: SetCapability<MELCloudDeviceAtw>): void => {
+      (capability: SetCapability<MELCloudDriverAtw>): void => {
         if (capability.startsWith('operation_mode_state')) {
           this.homey.flow
             .getConditionCard(`${capability}_condition`)

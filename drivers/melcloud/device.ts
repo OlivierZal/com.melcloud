@@ -65,9 +65,9 @@ const horizontalToDevice: Record<string, string> =
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
 
-  declare operationModeCapability: SetCapability<MELCloudDeviceAta>
+  declare operationModeCapability: SetCapability<MELCloudDriverAta>
 
-  declare diff: Map<SetCapability<MELCloudDeviceAta>, CapabilityValue>
+  declare diff: Map<SetCapability<MELCloudDriverAta>, CapabilityValue>
 
   async onInit(): Promise<void> {
     this.reportPlanParameters = {
@@ -80,7 +80,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async specificOnCapability(
-    capability: ExtendedSetCapability<MELCloudDeviceAta>,
+    capability: ExtendedSetCapability<MELCloudDriverAta>,
     value: CapabilityValue
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
@@ -102,7 +102,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   convertToDevice(
-    capability: SetCapability<MELCloudDeviceAta>,
+    capability: SetCapability<MELCloudDriverAta>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     switch (capability) {
@@ -118,7 +118,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   }
 
   async convertFromDevice(
-    capability: Capability<MELCloudDeviceAta>,
+    capability: Capability<MELCloudDriverAta>,
     value: boolean | number
   ): Promise<void> {
     let newValue: CapabilityValue = value

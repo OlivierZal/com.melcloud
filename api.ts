@@ -71,32 +71,22 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
 }
 
 module.exports = {
-  async getBuildings({
-    homey,
-  }: {
-    homey: Homey
-  }): Promise<Array<Building<MELCloudDevice>>> {
+  async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const buildings: Array<Building<MELCloudDevice>> = await app.getBuildings()
+    const buildings: Building[] = await app.getBuildings()
     return buildings
-      .reduce<Array<Building<MELCloudDevice>>>(
-        (buildingSettings, building: Building<MELCloudDevice>) => {
-          if (app.getDevices({ buildingId: building.ID }).length > 0) {
-            buildingSettings.push({
-              ...building,
-              HMStartDate: fromUTCtoLocal(building.HMStartDate),
-              HMEndDate: fromUTCtoLocal(building.HMEndDate),
-            })
-          }
-          return buildingSettings
-        },
-        []
-      )
-      .sort(
-        (
-          building1: Building<MELCloudDevice>,
-          building2: Building<MELCloudDevice>
-        ): number => building1.Name.localeCompare(building2.Name)
+      .reduce<Building[]>((buildingSettings, building: Building) => {
+        if (app.getDevices({ buildingId: building.ID }).length > 0) {
+          buildingSettings.push({
+            ...building,
+            HMStartDate: fromUTCtoLocal(building.HMStartDate),
+            HMEndDate: fromUTCtoLocal(building.HMEndDate),
+          })
+        }
+        return buildingSettings
+      }, [])
+      .sort((building1: Building, building2: Building): number =>
+        building1.Name.localeCompare(building2.Name)
       )
   },
 

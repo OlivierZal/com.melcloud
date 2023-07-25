@@ -1,14 +1,13 @@
 import MELCloudDriverMixin from '../../mixins/driver_mixin'
-import type MELCloudDeviceAta from './device'
 import {
   getCapabilityMappingAta,
   listCapabilityMappingAta,
   setCapabilityMappingAta,
   reportCapabilityMappingAta,
 } from '../../types'
-import type { FlowArgsAta, SetCapability } from '../../types'
+import type { FlowArgs, SetCapability } from '../../types'
 
-const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
+const flowCapabilities: SetCapability<MELCloudDriverAta>[] = [
   'operation_mode',
   'fan_power',
   'vertical',
@@ -16,8 +15,8 @@ const flowCapabilities: Array<SetCapability<MELCloudDeviceAta>> = [
 ]
 
 function getCapabilityArg(
-  args: FlowArgsAta,
-  capability: SetCapability<MELCloudDeviceAta>
+  args: FlowArgs<MELCloudDriverAta>,
+  capability: SetCapability<MELCloudDriverAta>
 ): number | string {
   if (capability === 'fan_power') {
     return Number(args[capability])
@@ -37,22 +36,24 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.reportCapabilityMapping = reportCapabilityMappingAta
 
     flowCapabilities.forEach(
-      (capability: SetCapability<MELCloudDeviceAta>): void => {
+      (capability: SetCapability<MELCloudDriverAta>): void => {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
           .registerRunListener(
-            (args: FlowArgsAta): boolean =>
+            (args: FlowArgs<MELCloudDriverAta>): boolean =>
               getCapabilityArg(args, capability) ===
               args.device.getCapabilityValue(capability)
           )
         this.homey.flow
           .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
-            await args.device.onCapability(
-              capability,
-              getCapabilityArg(args, capability)
-            )
-          })
+          .registerRunListener(
+            async (args: FlowArgs<MELCloudDriverAta>): Promise<void> => {
+              await args.device.onCapability(
+                capability,
+                getCapabilityArg(args, capability)
+              )
+            }
+          )
       }
     )
   }

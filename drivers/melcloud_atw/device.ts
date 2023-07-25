@@ -5,7 +5,7 @@ import type {
   Capability,
   CapabilityValue,
   ExtendedSetCapability,
-  MELCloudDevice,
+  MELCloudDriver,
   SetCapability,
   ListDeviceData,
 } from '../../types'
@@ -29,7 +29,7 @@ function getOtherCapabilityZone(capability: string): string {
 export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
 
-  declare diff: Map<SetCapability<MELCloudDeviceAtw>, CapabilityValue>
+  declare diff: Map<SetCapability<MELCloudDriverAtw>, CapabilityValue>
 
   async onInit(): Promise<void> {
     this.reportPlanParameters = {
@@ -42,7 +42,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async specificOnCapability(
-    capability: ExtendedSetCapability<MELCloudDeviceAtw>,
+    capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue
   ): Promise<void> {
     this.diff.set(capability, value)
@@ -52,16 +52,16 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async handleOperationModeZones(
-    capability: ExtendedSetCapability<MELCloudDeviceAtw>,
+    capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue
   ): Promise<void> {
     const { canCool, hasZone2 } = this.getStore()
     if (hasZone2 === true) {
       const zoneValue: number = Number(value)
-      const otherZone: ExtendedSetCapability<MELCloudDeviceAtw> =
+      const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(
           capability
-        ) as ExtendedSetCapability<MELCloudDeviceAtw>
+        ) as ExtendedSetCapability<MELCloudDriverAtw>
       let otherZoneValue: number = Number(this.getCapabilityValue(otherZone))
       if (canCool === true) {
         if (zoneValue > 2) {
@@ -81,7 +81,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   convertToDevice(
-    capability: SetCapability<MELCloudDeviceAtw>,
+    capability: SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     switch (capability) {
@@ -96,7 +96,7 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   }
 
   async convertFromDevice(
-    capability: Capability<MELCloudDeviceAtw>,
+    capability: Capability<MELCloudDriverAtw>,
     value: boolean | number | string
   ): Promise<void> {
     let newValue: CapabilityValue = value
@@ -134,8 +134,8 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     await this.setCapabilityValue(capability, newValue)
   }
 
-  async updateStore<MELCloudDeviceAtw extends MELCloudDevice>(
-    data: ListDeviceData<MELCloudDeviceAtw> | null
+  async updateStore<T extends MELCloudDriver>(
+    data: ListDeviceData<T> | null
   ): Promise<void> {
     if (data === null) {
       return

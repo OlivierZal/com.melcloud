@@ -2,8 +2,8 @@
 import { Driver } from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
-import type MELCloudDeviceAta from '../drivers/melcloud/device'
-import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import type MELCloudDriverAta from '../drivers/melcloud/driver'
+import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import type {
   DeviceDetails,
   GetCapability,
@@ -12,7 +12,7 @@ import type {
   ListCapabilityMapping,
   ListDevice,
   LoginCredentials,
-  MELCloudDevice,
+  MELCloudDriver,
   ReportCapability,
   ReportCapabilityMapping,
   SetCapability,
@@ -29,42 +29,42 @@ export default abstract class MELCloudDriverMixin extends Driver {
 
   setCapabilityMapping!:
     | Record<
-        SetCapability<MELCloudDeviceAta>,
-        SetCapabilityMapping<MELCloudDeviceAta>
+        SetCapability<MELCloudDriverAta>,
+        SetCapabilityMapping<MELCloudDriverAta>
       >
     | Record<
-        SetCapability<MELCloudDeviceAtw>,
-        SetCapabilityMapping<MELCloudDeviceAtw>
+        SetCapability<MELCloudDriverAtw>,
+        SetCapabilityMapping<MELCloudDriverAtw>
       >
 
   getCapabilityMapping!:
     | Record<
-        GetCapability<MELCloudDeviceAta>,
-        GetCapabilityMapping<MELCloudDeviceAta>
+        GetCapability<MELCloudDriverAta>,
+        GetCapabilityMapping<MELCloudDriverAta>
       >
     | Record<
-        GetCapability<MELCloudDeviceAtw>,
-        GetCapabilityMapping<MELCloudDeviceAtw>
+        GetCapability<MELCloudDriverAtw>,
+        GetCapabilityMapping<MELCloudDriverAtw>
       >
 
   listCapabilityMapping!:
     | Record<
-        ListCapability<MELCloudDeviceAta>,
-        ListCapabilityMapping<MELCloudDeviceAta>
+        ListCapability<MELCloudDriverAta>,
+        ListCapabilityMapping<MELCloudDriverAta>
       >
     | Record<
-        ListCapability<MELCloudDeviceAtw>,
-        ListCapabilityMapping<MELCloudDeviceAtw>
+        ListCapability<MELCloudDriverAtw>,
+        ListCapabilityMapping<MELCloudDriverAtw>
       >
 
   reportCapabilityMapping!:
     | Record<
-        ReportCapability<MELCloudDeviceAta>,
-        ReportCapabilityMapping<MELCloudDeviceAta>
+        ReportCapability<MELCloudDriverAta>,
+        ReportCapabilityMapping<MELCloudDriverAta>
       >
     | Record<
-        ReportCapability<MELCloudDeviceAtw>,
-        ReportCapabilityMapping<MELCloudDeviceAtw>
+        ReportCapability<MELCloudDriverAtw>,
+        ReportCapabilityMapping<MELCloudDriverAtw>
       >
 
   async onInit(): Promise<void> {
@@ -82,11 +82,11 @@ export default abstract class MELCloudDriverMixin extends Driver {
     )
   }
 
-  async discoverDevices<T extends MELCloudDevice>(): Promise<DeviceDetails[]> {
+  async discoverDevices<T extends MELCloudDriver>(): Promise<DeviceDetails[]> {
     this.app.clearListDevicesRefresh()
-    const devices: Array<ListDevice<T>> = await this.app.listDevices(
+    const devices: ListDevice<T>[] = (await this.app.listDevices(
       this.deviceType
-    )
+    )) as ListDevice<T>[]
     return devices.map(
       ({
         DeviceName,

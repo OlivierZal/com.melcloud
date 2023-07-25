@@ -3,8 +3,8 @@ import { Device } from 'homey'
 import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import type MELCloudApp from '../app'
-import type MELCloudDeviceAta from '../drivers/melcloud/device'
-import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device'
+import type MELCloudDriverAta from '../drivers/melcloud/driver'
+import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import type {
   Capability,
   CapabilityValue,
@@ -13,8 +13,8 @@ import type {
   GetDeviceData,
   ListCapabilityMapping,
   ListDevice,
+  ListDeviceAny,
   ListDeviceData,
-  MELCloudDevice,
   MELCloudDriver,
   NonReportCapability,
   PostData,
@@ -42,7 +42,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   buildingid!: number
 
   diff!: Map<
-    SetCapability<MELCloudDeviceAta> | SetCapability<MELCloudDeviceAtw>,
+    SetCapability<MELCloudDriverAta> | SetCapability<MELCloudDriverAtw>,
     CapabilityValue
   >
 
@@ -59,7 +59,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     values: object
   }
 
-  async onInit<T extends MELCloudDevice>(): Promise<void> {
+  async onInit<T extends MELCloudDriver>(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData()
@@ -76,7 +76,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     await this.runEnergyReports()
   }
 
-  async setDeviceData<T extends MELCloudDevice>(
+  async setDeviceData<T extends MELCloudDriver>(
     updateData: SetDeviceData<T>
   ): Promise<GetDeviceData<T> | null> {
     try {
@@ -101,7 +101,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     return null
   }
 
-  async reportEnergyCost<T extends MELCloudDevice>(
+  async reportEnergyCost<T extends MELCloudDriver>(
     fromDate: DateTime,
     toDate: DateTime
   ): Promise<ReportData<T> | null> {
@@ -138,7 +138,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     )
   }
 
-  getReportCapabilities<T extends MELCloudDevice>(
+  getReportCapabilities<T extends MELCloudDriver>(
     total: boolean = false
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
     return Object.entries(this.driver.reportCapabilityMapping).reduce<
@@ -182,7 +182,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     )
   }
 
-  registerCapabilityListeners<T extends MELCloudDevice>(): void {
+  registerCapabilityListeners<T extends MELCloudDriver>(): void {
     ;[
       ...Object.keys(this.driver.setCapabilityMapping),
       'thermostat_mode',
@@ -196,7 +196,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     })
   }
 
-  async onCapability<T extends MELCloudDevice>(
+  async onCapability<T extends MELCloudDriver>(
     capability: ExtendedSetCapability<T>,
     value: CapabilityValue
   ): Promise<void> {
@@ -210,8 +210,8 @@ export default abstract class MELCloudDeviceMixin extends Device {
 
   abstract specificOnCapability(
     capability:
-      | ExtendedSetCapability<MELCloudDeviceAta>
-      | ExtendedSetCapability<MELCloudDeviceAtw>,
+      | ExtendedSetCapability<MELCloudDriverAta>
+      | ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue
   ): Promise<void>
 
@@ -244,13 +244,13 @@ export default abstract class MELCloudDeviceMixin extends Device {
     )
   }
 
-  async syncToDevice<T extends MELCloudDevice>(): Promise<void> {
+  async syncToDevice<T extends MELCloudDriver>(): Promise<void> {
     const updateData: SetDeviceData<T> = this.buildUpdateData()
     const data: GetDeviceData<T> | null = await this.setDeviceData(updateData)
     await this.endSync(data, 'syncTo')
   }
 
-  buildUpdateData<T extends MELCloudDevice>(): SetDeviceData<T> {
+  buildUpdateData<T extends MELCloudDriver>(): SetDeviceData<T> {
     return Object.entries(this.driver.setCapabilityMapping).reduce<
       UpdateDeviceData<T>
     >(
@@ -279,8 +279,8 @@ export default abstract class MELCloudDeviceMixin extends Device {
 
   convertToDevice(
     capability:
-      | SetCapability<MELCloudDeviceAta>
-      | SetCapability<MELCloudDeviceAtw>,
+      | SetCapability<MELCloudDriverAta>
+      | SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     if (capability === 'onoff') {
@@ -289,7 +289,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     return value as boolean | number
   }
 
-  async endSync<T extends MELCloudDevice>(
+  async endSync<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode
   ): Promise<void> {
@@ -300,7 +300,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async updateCapabilities<T extends MELCloudDevice>(
+  async updateCapabilities<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode
   ): Promise<void> {
@@ -329,19 +329,20 @@ export default abstract class MELCloudDeviceMixin extends Device {
       }
     }
 
-    const capabilities: Array<
-      [NonReportCapability<T>, ListCapabilityMapping<T>]
-    > = Object.entries(capabilitiesToProcess()) as Array<
-      [NonReportCapability<T>, ListCapabilityMapping<T>]
-    >
+    const capabilities: [NonReportCapability<T>, ListCapabilityMapping<T>][] =
+      Object.entries(capabilitiesToProcess()) as [
+        NonReportCapability<T>,
+        ListCapabilityMapping<T>
+      ][]
     const keysToProcessLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
-    const [regularCapabilities, lastCapabilities]: Array<
-      Array<[NonReportCapability<T>, ListCapabilityMapping<T>]>
-    > = capabilities.reduce<
-      Array<Array<[NonReportCapability<T>, ListCapabilityMapping<T>]>>
+    const [regularCapabilities, lastCapabilities]: [
+      NonReportCapability<T>,
+      ListCapabilityMapping<T>
+    ][][] = capabilities.reduce<
+      [NonReportCapability<T>, ListCapabilityMapping<T>][][]
     >(
       (
         acc,
@@ -388,9 +389,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     }
 
     const processCapabilities = async (
-      capabilitiesArray: Array<
-        [NonReportCapability<T>, ListCapabilityMapping<T>]
-      >
+      capabilitiesArray: [NonReportCapability<T>, ListCapabilityMapping<T>][]
     ): Promise<void> => {
       await Promise.all(
         capabilitiesArray.map(
@@ -409,24 +408,29 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   abstract convertFromDevice(
-    capability: Capability<MELCloudDeviceAta> | Capability<MELCloudDeviceAtw>,
+    capability: Capability<MELCloudDriverAta> | Capability<MELCloudDriverAtw>,
     value: boolean | number
   ): Promise<void>
 
   abstract updateThermostatMode(): Promise<void>
 
-  async syncDeviceFromList<T extends MELCloudDevice>(
+  async syncDeviceFromList<T extends MELCloudDriver>(
     syncMode?: SyncFromMode
   ): Promise<void> {
-    const deviceFromList: ListDevice<T> | undefined =
-      this.app.getDeviceFromList(this.id)
+    const deviceFromList: ListDevice<T> | undefined = this.getDeviceFromList()
     const data: ListDeviceData<T> | null = deviceFromList?.Device ?? null
     this.log('Syncing from device list:', data)
     await this.updateStore(data)
     await this.endSync(data, syncMode)
   }
 
-  abstract updateStore<T extends MELCloudDevice>(
+  getDeviceFromList<T extends MELCloudDriver>(): ListDevice<T> | undefined {
+    return this.app.deviceList.find(
+      (device: ListDeviceAny): boolean => device.DeviceID === this.id
+    ) as ListDevice<T> | undefined
+  }
+
+  abstract updateStore<T extends MELCloudDriver>(
     data: ListDeviceData<T> | null
   ): Promise<void>
 
@@ -435,7 +439,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     await this.runEnergyReport(true)
   }
 
-  async runEnergyReport<T extends MELCloudDevice>(
+  async runEnergyReport<T extends MELCloudDriver>(
     total: boolean = false
   ): Promise<void> {
     const reportCapabilities: Record<
@@ -476,7 +480,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     this.planEnergyReport(total)
   }
 
-  async updateReportCapability<T extends MELCloudDevice>(
+  async updateReportCapability<T extends MELCloudDriver>(
     data: ReportData<T>,
     capability: ReportCapability<T>,
     tags: ReportCapabilityMapping<T>,
@@ -655,7 +659,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     }
   }
 
-  async setCapabilityValue<T extends MELCloudDevice>(
+  async setCapabilityValue<T extends MELCloudDriver>(
     capability: ExtendedCapability<T>,
     value: CapabilityValue
   ): Promise<void> {
@@ -676,7 +680,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     type: string,
     callback: () => Promise<void>,
     interval: number | object,
-    ...units: Array<keyof DurationLikeObject>
+    ...units: (keyof DurationLikeObject)[]
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
@@ -695,7 +699,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     type: string,
     callback: () => Promise<void>,
     interval: number | object,
-    ...units: Array<keyof DurationLikeObject>
+    ...units: (keyof DurationLikeObject)[]
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(

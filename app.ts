@@ -18,7 +18,7 @@ import type {
   HolidayModeData,
   HolidayModePostData,
   HolidayModeSettings,
-  ListDevice,
+  ListDeviceAny,
   LoginCredentials,
   LoginData,
   LoginPostData,
@@ -48,7 +48,7 @@ function handleResponse(data: SuccessData | FailureData): void {
 export default class MELCloudApp extends App {
   buildings!: Record<number, string>
 
-  deviceList!: Array<ListDevice<MELCloudDevice>>
+  deviceList!: ListDeviceAny[]
 
   deviceIds!: Record<number, string>
 
@@ -204,14 +204,6 @@ export default class MELCloudApp extends App {
     return devices
   }
 
-  getDeviceFromList<T extends MELCloudDevice>(
-    id: number
-  ): ListDevice<T> | undefined {
-    return this.deviceList.find(
-      (device: ListDevice<T>): boolean => device.DeviceID === id
-    )
-  }
-
   applySyncFromDevices(deviceType?: number, syncMode?: SyncFromMode): void {
     this.clearListDevicesRefresh()
     this.syncTimeout = this.setTimeout(
@@ -224,24 +216,24 @@ export default class MELCloudApp extends App {
     )
   }
 
-  async listDevices<T extends MELCloudDevice>(
+  async listDevices(
     deviceType?: number,
     syncMode?: SyncFromMode
-  ): Promise<Array<ListDevice<T>>> {
-    const buildings: Array<Building<T>> = await this.getBuildings().catch(
-      (): Array<Building<T>> => []
+  ): Promise<ListDeviceAny[]> {
+    const buildings: Building[] = await this.getBuildings().catch(
+      (): Building[] => []
     )
     const buildingData: {
       deviceIds: Record<number, string>
-      deviceList: Array<ListDevice<T>>
+      deviceList: ListDeviceAny[]
       newBuildings: Record<number, string>
     } = buildings.reduce<{
       deviceIds: Record<number, string>
-      deviceList: Array<ListDevice<T>>
+      deviceList: ListDeviceAny[]
       newBuildings: Record<number, string>
     }>(
-      (acc, building: Building<T>) => {
-        const buildingDevices: Array<ListDevice<T>> = [
+      (acc, building: Building) => {
+        const buildingDevices: ListDeviceAny[] = [
           ...building.Structure.Devices,
           ...building.Structure.Areas.flatMap((area) => area.Devices),
           ...building.Structure.Floors.flatMap((floor) => [
@@ -251,7 +243,7 @@ export default class MELCloudApp extends App {
         ]
         const buildingDeviceIds: Record<number, string> =
           buildingDevices.reduce<Record<number, string>>(
-            (ids, device: ListDevice<T>) => ({
+            (ids, device: ListDeviceAny) => ({
               ...ids,
               [device.DeviceID]: device.DeviceName,
             }),
@@ -267,7 +259,7 @@ export default class MELCloudApp extends App {
     let { deviceList } = buildingData
     if (deviceType !== undefined) {
       deviceList = deviceList.filter(
-        (device: ListDevice<T>): boolean =>
+        (device: ListDeviceAny): boolean =>
           deviceType === device.Device.DeviceType
       )
     }
@@ -286,12 +278,10 @@ export default class MELCloudApp extends App {
     this.log('Device list refresh has been paused')
   }
 
-  async getBuildings(): Promise<Array<Building<MELCloudDevice>>> {
+  async getBuildings(): Promise<Building[]> {
     try {
       this.log('Searching for buildings...')
-      const { data } = await axios.get<Array<Building<MELCloudDevice>>>(
-        '/User/ListDevices'
-      )
+      const { data } = await axios.get<Building[]>('/User/ListDevices')
       this.log('Searching for buildings:\n', data)
       return data
     } catch (error: unknown) {
@@ -304,7 +294,7 @@ export default class MELCloudApp extends App {
 
   async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
     await Promise.all(
-      this.getDevices().reduce<Array<Promise<void>>>(
+      this.getDevices().reduce<Promise<void>[]>(
         (syncDevices, device: MELCloudDevice) => {
           if (!device.isDiff()) {
             syncDevices.push(device.syncDeviceFromList(syncMode))
@@ -502,7 +492,7 @@ export default class MELCloudApp extends App {
     type: string,
     callback: () => Promise<void>,
     interval: number | object,
-    ...units: Array<keyof DurationLikeObject>
+    ...units: (keyof DurationLikeObject)[]
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
@@ -521,7 +511,7 @@ export default class MELCloudApp extends App {
     type: string,
     callback: () => Promise<void>,
     interval: number | object,
-    ...units: Array<keyof DurationLikeObject>
+    ...units: (keyof DurationLikeObject)[]
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
