@@ -2,6 +2,7 @@
 const js = require('@eslint/js')
 const typescriptEslintParser = require('@typescript-eslint/parser')
 const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin')
+const globals = require('globals')
 const importPlugin = require('eslint-plugin-import')
 const prettier = require('eslint-config-prettier')
 /* eslint-enable @typescript-eslint/no-var-requires */
@@ -12,6 +13,11 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx', 'eslint.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
+      globals: {
+        ...globals.browser,
+        ...globals.es2024,
+        ...globals.node,
+      },
       parser: typescriptEslintParser,
       parserOptions: { project: './tsconfig.json' },
       sourceType: 'module',
