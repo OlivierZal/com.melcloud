@@ -19,7 +19,9 @@ module.exports = [
         ...globals.node,
       },
       parser: typescriptEslintParser,
-      parserOptions: { project: './tsconfig.json' },
+      parserOptions: {
+        project: './tsconfig.json',
+      },
       sourceType: 'module',
     },
     linterOptions: {
