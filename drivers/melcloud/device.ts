@@ -65,8 +65,6 @@ const horizontalToDevice: Record<string, string> =
 export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
 
-  declare operationModeCapability: SetCapability<MELCloudDriverAta>
-
   declare diff: Map<SetCapability<MELCloudDriverAta>, CapabilityValue>
 
   async onInit(): Promise<void> {
@@ -146,7 +144,6 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     )
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async updateStore(): Promise<void> {
     // Not implemented.
   }

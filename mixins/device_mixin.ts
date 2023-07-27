@@ -1,10 +1,7 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
 import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import type MELCloudApp from '../app'
-import type MELCloudDriverAta from '../drivers/melcloud/driver'
-import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import type {
   Capability,
   CapabilityValue,
@@ -41,16 +38,16 @@ export default abstract class MELCloudDeviceMixin extends Device {
 
   buildingid!: number
 
-  diff!: Map<
-    SetCapability<MELCloudDriverAta> | SetCapability<MELCloudDriverAtw>,
-    CapabilityValue
-  >
+  diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
 
   syncTimeout!: NodeJS.Timeout
 
-  reportTimeout!: { false: NodeJS.Timeout | null; true: NodeJS.Timeout | null }
+  reportTimeout: {
+    false: NodeJS.Timeout | null
+    true: NodeJS.Timeout | null
+  } = { true: null, false: null }
 
-  reportInterval!: { false?: NodeJS.Timeout; true?: NodeJS.Timeout }
+  reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
 
   reportPlanParameters!: {
     duration: object
@@ -71,8 +68,6 @@ export default abstract class MELCloudDeviceMixin extends Device {
     this.registerCapabilityListeners()
     this.app.applySyncFromDevices()
 
-    this.reportTimeout = { true: null, false: null }
-    this.reportInterval = {}
     await this.runEnergyReports()
   }
 
@@ -209,9 +204,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   abstract specificOnCapability(
-    capability:
-      | ExtendedSetCapability<MELCloudDriverAta>
-      | ExtendedSetCapability<MELCloudDriverAtw>,
+    capability: ExtendedSetCapability<MELCloudDriver>,
     value: CapabilityValue
   ): Promise<void>
 
@@ -278,9 +271,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   convertToDevice(
-    capability:
-      | SetCapability<MELCloudDriverAta>
-      | SetCapability<MELCloudDriverAtw>,
+    capability: SetCapability<MELCloudDriver>,
     value: CapabilityValue = this.getCapabilityValue(capability)
   ): boolean | number {
     if (capability === 'onoff') {
@@ -406,7 +397,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   }
 
   abstract convertFromDevice(
-    capability: Capability<MELCloudDriverAta> | Capability<MELCloudDriverAtw>,
+    capability: Capability<MELCloudDriver>,
     value: boolean | number
   ): Promise<void>
 

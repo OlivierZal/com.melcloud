@@ -1,11 +1,12 @@
 {
   "name": "com.melcloud",
-  "version": "19.1.0",
+  "version": "20.0.0",
   "main": "app.ts",
   "scripts": {
     "build": "tsc"
   },
   "devDependencies": {
+    "@eslint/js": "^8.45.0",
     "@tsconfig/node20": "^20.1.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",
     "@types/luxon": "^3.3.1",
@@ -13,8 +14,6 @@
     "@typescript-eslint/eslint-plugin": "^6.2.0",
     "@typescript-eslint/parser": "^6.2.0",
     "eslint": "^8.45.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",

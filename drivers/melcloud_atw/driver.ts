@@ -14,24 +14,53 @@ import type {
 } from '../../types'
 
 export default class MELCloudDriverAtw extends MELCloudDriverMixin {
-  capabilitiesAtw!: (
+  capabilitiesAtw: (
     | SetCapability<MELCloudDriverAtw>
     | GetCapability<MELCloudDriverAtw>
     | ListCapability<MELCloudDriverAtw>
-  )[]
+  )[] = [
+    'measure_power.heat_pump_frequency',
+    'measure_temperature',
+    'measure_temperature.outdoor',
+    'measure_temperature.flow',
+    'measure_temperature.return',
+    'measure_temperature.tank_water',
+    'onoff',
+    'onoff.forced_hot_water',
+    'operation_mode_state',
+    'target_temperature',
+    'target_temperature.tank_water',
+    'target_temperature.zone1_flow_heat',
+  ]
 
-  coolCapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
+  coolCapabilitiesAtw: SetCapability<MELCloudDriverAtw>[] = [
+    'operation_mode_zone_with_cool.zone1',
+    'target_temperature.zone1_flow_cool',
+  ]
 
-  notCoolCapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
+  notCoolCapabilitiesAtw: SetCapability<MELCloudDriverAtw>[] = [
+    'operation_mode_zone.zone1',
+  ]
 
-  zone2CapabilitiesAtw!: (
+  zone2CapabilitiesAtw: (
     | SetCapability<MELCloudDriverAtw>
     | GetCapability<MELCloudDriverAtw>
-  )[]
+  )[] = [
+    'measure_temperature.zone2',
+    'operation_mode_state.zone1',
+    'operation_mode_state.zone2',
+    'target_temperature.zone2',
+    'target_temperature.zone2_flow_heat',
+  ]
 
-  coolZone2CapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
+  coolZone2CapabilitiesAtw: SetCapability<MELCloudDriverAtw>[] = [
+    'operation_mode_zone_with_cool.zone2',
+    'target_temperature.zone2_flow_cool',
+  ]
 
-  notCoolZone2CapabilitiesAtw!: SetCapability<MELCloudDriverAtw>[]
+  notCoolZone2CapabilitiesAtw: SetCapability<MELCloudDriverAtw>[] = [
+    'operation_mode_zone.zone2',
+  ]
 
   async onInit(): Promise<void> {
     await super.onInit()
@@ -42,38 +71,6 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
     this.reportCapabilityMapping = reportCapabilityMappingAtw
-
-    this.capabilitiesAtw = [
-      'measure_power.heat_pump_frequency',
-      'measure_temperature',
-      'measure_temperature.outdoor',
-      'measure_temperature.flow',
-      'measure_temperature.return',
-      'measure_temperature.tank_water',
-      'onoff',
-      'onoff.forced_hot_water',
-      'operation_mode_state',
-      'target_temperature',
-      'target_temperature.tank_water',
-      'target_temperature.zone1_flow_heat',
-    ]
-    this.coolCapabilitiesAtw = [
-      'operation_mode_zone_with_cool.zone1',
-      'target_temperature.zone1_flow_cool',
-    ]
-    this.notCoolCapabilitiesAtw = ['operation_mode_zone.zone1']
-    this.zone2CapabilitiesAtw = [
-      'measure_temperature.zone2',
-      'operation_mode_state.zone1',
-      'operation_mode_state.zone2',
-      'target_temperature.zone2',
-      'target_temperature.zone2_flow_heat',
-    ]
-    this.coolZone2CapabilitiesAtw = [
-      'operation_mode_zone_with_cool.zone2',
-      'target_temperature.zone2_flow_cool',
-    ]
-    this.notCoolZone2CapabilitiesAtw = ['operation_mode_zone.zone2']
 
     this.manifest.capabilities.forEach(
       (capability: SetCapability<MELCloudDriverAtw>): void => {

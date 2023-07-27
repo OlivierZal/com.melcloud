@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { App, type Driver } from 'homey'
 import axios from 'axios'
 import {
@@ -46,15 +45,15 @@ function handleResponse(data: SuccessData | FailureData): void {
 }
 
 export default class MELCloudApp extends App {
-  buildings!: Record<number, string>
+  buildings: Record<number, string> = {}
 
-  deviceList!: ListDeviceAny[]
+  deviceList: ListDeviceAny[] = []
 
-  deviceIds!: Record<number, string>
+  deviceIds: Record<number, string> = {}
 
   loginTimeout!: NodeJS.Timeout
 
-  syncInterval!: NodeJS.Timeout | null
+  syncInterval: NodeJS.Timeout | null = null
 
   syncTimeout!: NodeJS.Timeout
 
@@ -65,11 +64,6 @@ export default class MELCloudApp extends App {
     axios.defaults.headers.common['X-MitsContextKey'] =
       this.homey.settings.get('ContextKey') ?? ''
 
-    this.buildings = {}
-    this.deviceIds = {}
-    this.deviceList = []
-
-    this.syncInterval = null
     await this.refreshLogin()
     await this.listDevices()
   }

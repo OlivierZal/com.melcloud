@@ -153,7 +153,6 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async updateThermostatMode(): Promise<void> {
     // Not implemented.
   }

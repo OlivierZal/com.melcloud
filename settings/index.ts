@@ -355,7 +355,6 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
       intMaxValueMap.set(element, maxValue)
     }
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
-      // eslint-disable-next-line no-param-reassign
       element.value = ''
       const labelElement: HTMLLabelElement | null = document.querySelector(
         `label[for="${element.id}"]`
@@ -762,7 +761,8 @@ async function onHomeyReady(Homey: Homey): Promise<void> {
           inputElement.classList.add('homey-form-input')
           inputElement.type = driverSetting.type
           inputElement.placeholder = driverSetting.placeholder ?? ''
-          inputElement.value = homeySettings[driverSetting.id] as string
+          inputElement.value =
+            (homeySettings[driverSetting.id] as string | undefined) ?? ''
           inputElement.id = driverSetting.id
           labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
