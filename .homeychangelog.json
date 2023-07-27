@@ -118,5 +118,8 @@
   },
   "19.0.0": {
     "en": "Updated modules."
+  },
+  "20.0.0": {
+    "en": "Use new eslint config."
   }
 }
