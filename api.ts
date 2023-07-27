@@ -242,8 +242,8 @@ module.exports = {
             DateTime.fromISO(errorData.StartDate).year > 1
               ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
               : ''
-          const error: string = errorData.ErrorMessage
-          if (date !== '') {
+          const error: string = errorData.ErrorMessage?.trim() ?? ''
+          if (date !== '' && error !== '') {
             errors.push({
               Device:
                 app.getDevice(errorData.DeviceId)?.getName() ??
