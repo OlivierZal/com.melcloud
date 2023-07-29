@@ -750,7 +750,7 @@ export interface LoginCredentials {
 }
 
 export interface LoginPostData {
-  readonly AppVersion: '1.27.6.0'
+  readonly AppVersion: string
   readonly Email: string
   readonly Password: string
   readonly Persist: true
