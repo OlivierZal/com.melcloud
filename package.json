@@ -6,7 +6,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@eslint/js": "^8.45.0",
+    "@eslint/js": "^8.46.0",
     "@tsconfig/node20": "^20.1.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",
     "@types/luxon": "^3.3.1",
