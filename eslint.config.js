@@ -1,16 +1,13 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const js = require('@eslint/js')
 const typescriptEslintParser = require('@typescript-eslint/parser')
 const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin')
 const globals = require('globals')
 const importPlugin = require('eslint-plugin-import')
 const prettier = require('eslint-config-prettier')
-/* eslint-enable @typescript-eslint/no-var-requires */
 
 module.exports = [
+  js.configs.recommended,
   {
-    ...js.configs.recommended,
-    files: ['**/*.ts', '**/*.tsx', 'eslint.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: {
@@ -18,24 +15,32 @@ module.exports = [
         ...globals.es2024,
         ...globals.node,
       },
-      parser: typescriptEslintParser,
-      parserOptions: {
-        project: './tsconfig.json',
-      },
       sourceType: 'module',
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      '@typescript-eslint': typescriptEslintPlugin,
       import: importPlugin,
     },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
+    languageOptions: {
+      parser: typescriptEslintParser,
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': typescriptEslintPlugin,
+    },
     rules: {
+      ...typescriptEslintPlugin.configs['eslint-recommended'].overrides[0]
+        .rules,
       ...typescriptEslintPlugin.configs['strict-type-checked'].rules,
       ...typescriptEslintPlugin.configs['stylistic-type-checked'].rules,
       ...importPlugin.configs.typescript.rules,
-      ...prettier.rules,
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
@@ -43,18 +48,23 @@ module.exports = [
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { varsIgnorePattern: 'onHomeyReady' },
+        {
+          varsIgnorePattern: 'onHomeyReady',
+        },
       ],
     },
     settings: {
-      'import/parsers': {
-        '@typescript-eslint/parser': ['.ts', '.tsx'],
-      },
+      ...importPlugin.configs.typescript.settings,
       'import/resolver': {
+        ...importPlugin.configs.typescript.settings['import/resolver'],
         typescript: {
           alwaysTryTypes: true,
         },
       },
     },
   },
+  {
+    files: ['eslint.config.js'],
+  },
+  prettier,
 ]
