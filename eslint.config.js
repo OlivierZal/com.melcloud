@@ -23,6 +23,7 @@ module.exports = [
     plugins: {
       import: importPlugin,
     },
+    rules: importPlugin.configs.recommended.rules,
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
