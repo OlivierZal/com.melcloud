@@ -213,5 +213,3 @@ export default class MELCloudDriverAtw extends MELCloudDriverMixin {
     ]
   }
 }
-
-module.exports = MELCloudDriverAtw

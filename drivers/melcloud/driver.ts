@@ -69,5 +69,3 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     ]
   }
 }
-
-module.exports = MELCloudDriverAta

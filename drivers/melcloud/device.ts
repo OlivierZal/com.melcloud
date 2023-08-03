@@ -148,5 +148,3 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     // Not implemented.
   }
 }
-
-module.exports = MELCloudDeviceAta

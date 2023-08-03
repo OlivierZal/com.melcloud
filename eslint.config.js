@@ -1,11 +1,16 @@
-const js = require('@eslint/js')
-const typescriptEslintParser = require('@typescript-eslint/parser')
-const typescriptEslintPlugin = require('@typescript-eslint/eslint-plugin')
-const prettier = require('eslint-config-prettier')
-const importPlugin = require('eslint-plugin-import')
-const globals = require('globals')
+import js from '@eslint/js'
+/* eslint-disable import/no-unresolved */
+import tsParser from '@typescript-eslint/parser'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+/* eslint-enable import/no-unresolved */
+import prettierConfig from 'eslint-config-prettier'
+import importPlugin from 'eslint-plugin-import'
+import globals from 'globals'
 
-module.exports = [
+export default [
+  {
+    ignores: ['.homeybuild/'],
+  },
   js.configs.recommended,
   {
     languageOptions: {
@@ -28,19 +33,18 @@ module.exports = [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     languageOptions: {
-      parser: typescriptEslintParser,
+      parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
       },
     },
     plugins: {
-      '@typescript-eslint': typescriptEslintPlugin,
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
-      ...typescriptEslintPlugin.configs['eslint-recommended'].overrides[0]
-        .rules,
-      ...typescriptEslintPlugin.configs['strict-type-checked'].rules,
-      ...typescriptEslintPlugin.configs['stylistic-type-checked'].rules,
+      ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
+      ...tsPlugin.configs['strict-type-checked'].rules,
+      ...tsPlugin.configs['stylistic-type-checked'].rules,
       ...importPlugin.configs.typescript.rules,
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -64,8 +68,5 @@ module.exports = [
       },
     },
   },
-  {
-    files: ['eslint.config.js'],
-  },
-  prettier,
+  prettierConfig,
 ]

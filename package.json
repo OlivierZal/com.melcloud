@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc"
   },
+  "type": "module",
   "devDependencies": {
     "@eslint/js": "^8.46.0",
     "@tsconfig/node20": "^20.1.0",

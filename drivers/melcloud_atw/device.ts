@@ -157,5 +157,3 @@ export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
     // Not implemented.
   }
 }
-
-module.exports = MELCloudDeviceAtw

@@ -531,5 +531,3 @@ export default class MELCloudApp extends App {
     return this.homey.i18n.getLanguage()
   }
 }
-
-module.exports = MELCloudApp
