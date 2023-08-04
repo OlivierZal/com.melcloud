@@ -1,6 +1,6 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=OlivierZal_com.melcloud)
-
 # MELCloud for Homey
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=OlivierZal_com.melcloud)
 
 ## Introduction
 
