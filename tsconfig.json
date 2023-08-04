@@ -6,6 +6,7 @@
     "moduleResolution": "Node",
     "outDir": ".homeybuild/",
     "target": "ESNext",
+    "skipLibCheck": true,
     "strict": true
   }
 }
