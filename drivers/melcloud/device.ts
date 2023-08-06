@@ -144,6 +144,7 @@ export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
     )
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async updateStore(): Promise<void> {
     // Not implemented.
   }

@@ -5,9 +5,9 @@ import {
   setCapabilityMappingAta,
   reportCapabilityMappingAta,
 } from '../../types'
-import type { FlowArgs, SetCapability } from '../../types'
+import type { FlowArgsAta, SetCapabilityAta } from '../../types'
 
-const flowCapabilities: SetCapability<MELCloudDriverAta>[] = [
+const flowCapabilities: SetCapabilityAta[] = [
   'operation_mode',
   'fan_power',
   'vertical',
@@ -15,8 +15,8 @@ const flowCapabilities: SetCapability<MELCloudDriverAta>[] = [
 ]
 
 function getCapabilityArg(
-  args: FlowArgs<MELCloudDriverAta>,
-  capability: SetCapability<MELCloudDriverAta>
+  args: FlowArgsAta,
+  capability: SetCapabilityAta
 ): number | string {
   if (capability === 'fan_power') {
     return Number(args[capability])
@@ -36,18 +36,18 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.reportCapabilityMapping = reportCapabilityMappingAta
 
     flowCapabilities.forEach(
-      (capability: SetCapability<MELCloudDriverAta>): void => {
+      (capability: SetCapabilityAta): void => {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
           .registerRunListener(
-            (args: FlowArgs<MELCloudDriverAta>): boolean =>
+            (args: FlowArgsAta): boolean =>
               getCapabilityArg(args, capability) ===
               args.device.getCapabilityValue(capability)
           )
         this.homey.flow
           .getActionCard(`${capability}_action`)
           .registerRunListener(
-            async (args: FlowArgs<MELCloudDriverAta>): Promise<void> => {
+            async (args: FlowArgsAta): Promise<void> => {
               await args.device.onCapability(
                 capability,
                 getCapabilityArg(args, capability)

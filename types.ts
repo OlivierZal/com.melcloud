@@ -211,25 +211,25 @@ interface ReportCapabilitiesAtw {
   'meter_power.total_produced_hotwater'?: number
 }
 
+export type SetCapabilityAta = keyof SetCapabilitiesAta
+export type SetCapabilityAtw = keyof SetCapabilitiesAtw
 export type SetCapability<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? keyof SetCapabilitiesAtw
-    : keyof SetCapabilitiesAta
+  T extends MELCloudDriverAtw ? SetCapabilityAtw : SetCapabilityAta
 
 export type ExtendedSetCapability<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
     ? SetCapability<MELCloudDriverAtw>
     : SetCapability<MELCloudDriverAta> | 'thermostat_mode'
 
+type GetCapabilityAta = keyof GetCapabilitiesAta
+export type GetCapabilityAtw = keyof GetCapabilitiesAtw
 export type GetCapability<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? keyof GetCapabilitiesAtw
-    : keyof GetCapabilitiesAta
+  T extends MELCloudDriverAtw ? GetCapabilityAtw : GetCapabilityAta
 
+type ListCapabilityAta = keyof ListCapabilitiesAta
+export type ListCapabilityAtw = keyof ListCapabilitiesAtw
 export type ListCapability<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? keyof ListCapabilitiesAtw
-    : keyof ListCapabilitiesAta
+  T extends MELCloudDriverAtw ? ListCapabilityAtw : ListCapabilityAta
 
 export type ReportCapability<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
@@ -730,19 +730,10 @@ export interface DeviceDetails {
   readonly store: Store
 }
 
-interface FlowArgsAta
+export interface FlowArgsAta
   extends Record<Readonly<SetCapability<MELCloudDriverAta>>, string> {
   readonly device: MELCloudDeviceAta
 }
-
-interface FlowArgsAtw
-  extends Record<Readonly<SetCapability<MELCloudDriverAtw>>, string> {
-  readonly device: MELCloudDeviceAtw
-}
-
-export type FlowArgs<T extends MELCloudDriver> = T extends MELCloudDriverAtw
-  ? FlowArgsAtw
-  : FlowArgsAta
 
 export interface LoginCredentials {
   password: string
