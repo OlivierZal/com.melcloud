@@ -1,12 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { App, type Driver } from 'homey'
+import { App } from 'homey'
+import type { Driver } from 'homey'
 import axios from 'axios'
-import {
-  DateTime,
-  Duration,
-  Settings as LuxonSettings,
-  type DurationLikeObject,
-} from 'luxon'
+import { DateTime, Duration, Settings as LuxonSettings } from 'luxon'
+import type { DurationLikeObject } from 'luxon'
 import type {
   Building,
   ErrorLogData,

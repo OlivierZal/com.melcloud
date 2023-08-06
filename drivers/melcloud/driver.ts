@@ -35,27 +35,23 @@ export default class MELCloudDriverAta extends MELCloudDriverMixin {
     this.listCapabilityMapping = listCapabilityMappingAta
     this.reportCapabilityMapping = reportCapabilityMappingAta
 
-    flowCapabilities.forEach(
-      (capability: SetCapabilityAta): void => {
-        this.homey.flow
-          .getConditionCard(`${capability}_condition`)
-          .registerRunListener(
-            (args: FlowArgsAta): boolean =>
-              getCapabilityArg(args, capability) ===
-              args.device.getCapabilityValue(capability)
+    flowCapabilities.forEach((capability: SetCapabilityAta): void => {
+      this.homey.flow
+        .getConditionCard(`${capability}_condition`)
+        .registerRunListener(
+          (args: FlowArgsAta): boolean =>
+            getCapabilityArg(args, capability) ===
+            args.device.getCapabilityValue(capability)
+        )
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+          await args.device.onCapability(
+            capability,
+            getCapabilityArg(args, capability)
           )
-        this.homey.flow
-          .getActionCard(`${capability}_action`)
-          .registerRunListener(
-            async (args: FlowArgsAta): Promise<void> => {
-              await args.device.onCapability(
-                capability,
-                getCapabilityArg(args, capability)
-              )
-            }
-          )
-      }
-    )
+        })
+    })
   }
 
   getRequiredCapabilities(): string[] {

@@ -1,7 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
 import axios from 'axios'
-import { DateTime, Duration, type DurationLikeObject } from 'luxon'
+import { DateTime, Duration } from 'luxon'
+import type { DurationLikeObject } from 'luxon'
 import type MELCloudApp from '../app'
 import type {
   Capability,

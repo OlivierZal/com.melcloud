@@ -26,7 +26,7 @@ delete airbnbImports.plugins
 
 delete airbnbNode.env
 
-const tsDisabledRules = {
+const tsCustomRules = {
   'no-bitwise': 'off',
   'no-underscore-dangle': [
     'error',
@@ -34,6 +34,8 @@ const tsDisabledRules = {
       allow: ['__'],
     },
   ],
+  '@typescript-eslint/consistent-type-exports': 'error',
+  '@typescript-eslint/consistent-type-imports': 'error',
   '@typescript-eslint/no-unsafe-argument': 'off',
   '@typescript-eslint/no-unsafe-assignment': 'off',
   '@typescript-eslint/no-unsafe-call': 'off',
@@ -45,7 +47,7 @@ const tsDisabledRules = {
       varsIgnorePattern: 'onHomeyReady',
     },
   ],
-  'import/extensions': 'off',
+  'import/consistent-type-specifier-style': 'error',
 }
 
 export default [
@@ -59,6 +61,20 @@ export default [
   airbnbVariables,
   airbnbES6,
   airbnbImports,
+  {
+    rules: {
+      'import/extensions': [
+        'error',
+        'ignorePackages',
+        {
+          ts: 'never',
+          tsx: 'never',
+          mts: 'never',
+          cts: 'never',
+        },
+      ],
+    },
+  },
   airbnbStrict,
   {
     files: ['eslint.config.js'],
@@ -77,7 +93,7 @@ export default [
       ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
       ...tsPlugin.configs['strict-type-checked'].rules,
       ...tsPlugin.configs['stylistic-type-checked'].rules,
-      ...tsDisabledRules,
+      ...tsCustomRules,
     },
   },
   importPlugin.configs.typescript,
