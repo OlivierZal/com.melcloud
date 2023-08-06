@@ -85,7 +85,7 @@ export default [
       ...tsDisabledRules,
     },
   },
-  // importPlugin.configs.recommended,
+  importPlugin.configs.recommended,
   importPlugin.configs.typescript,
   {
     languageOptions: {
