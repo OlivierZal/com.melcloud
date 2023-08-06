@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
 import axios from 'axios'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'

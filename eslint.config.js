@@ -26,9 +26,6 @@ delete airbnbImports.plugins
 
 delete airbnbNode.env
 
-delete importPlugin.configs.recommended.parserOptions
-delete importPlugin.configs.recommended.plugins
-
 const tsDisabledRules = {
   'no-bitwise': 'off',
   'no-underscore-dangle': [
@@ -48,6 +45,7 @@ const tsDisabledRules = {
       varsIgnorePattern: 'onHomeyReady',
     },
   ],
+  'import/extensions': 'off',
 }
 
 export default [
@@ -60,10 +58,8 @@ export default [
   airbnbStyle,
   airbnbVariables,
   airbnbES6,
-  {
-    ...airbnbImports,
-    files: ['**/*.js'],
-  },
+  airbnbImports,
+  airbnbStrict,
   {
     files: ['eslint.config.js'],
     rules: {
@@ -75,7 +71,6 @@ export default [
       ],
     },
   },
-  airbnbStrict,
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     rules: {
@@ -85,7 +80,6 @@ export default [
       ...tsDisabledRules,
     },
   },
-  importPlugin.configs.recommended,
   importPlugin.configs.typescript,
   {
     languageOptions: {
