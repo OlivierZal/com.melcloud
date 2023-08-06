@@ -26,7 +26,7 @@ delete airbnbImports.plugins
 
 delete airbnbNode.env
 
-const tsCustomRules = {
+const jsCustomRules = {
   'no-bitwise': 'off',
   'no-underscore-dangle': [
     'error',
@@ -34,6 +34,8 @@ const tsCustomRules = {
       allow: ['__'],
     },
   ],
+}
+const tsCustomRules = {
   '@typescript-eslint/consistent-type-exports': 'error',
   '@typescript-eslint/consistent-type-imports': 'error',
   '@typescript-eslint/no-unsafe-argument': 'off',
@@ -48,6 +50,16 @@ const tsCustomRules = {
     },
   ],
   'import/consistent-type-specifier-style': 'error',
+  'import/extensions': [
+    'error',
+    'ignorePackages',
+    {
+      ts: 'never',
+      tsx: 'never',
+      mts: 'never',
+      cts: 'never',
+    },
+  ],
 }
 
 export default [
@@ -61,20 +73,6 @@ export default [
   airbnbVariables,
   airbnbES6,
   airbnbImports,
-  {
-    rules: {
-      'import/extensions': [
-        'error',
-        'ignorePackages',
-        {
-          ts: 'never',
-          tsx: 'never',
-          mts: 'never',
-          cts: 'never',
-        },
-      ],
-    },
-  },
   airbnbStrict,
   {
     files: ['eslint.config.js'],
@@ -120,6 +118,9 @@ export default [
         },
       },
     },
+  },
+  {
+    rules: jsCustomRules,
   },
   prettier,
 ]
