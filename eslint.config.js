@@ -96,6 +96,10 @@ export default [
   },
   importPlugin.configs.typescript,
   {
+    rules: jsCustomRules,
+  },
+  prettier,
+  {
     languageOptions: {
       ecmaVersion: 'latest',
       parser: tsParser,
@@ -119,8 +123,4 @@ export default [
       },
     },
   },
-  {
-    rules: jsCustomRules,
-  },
-  prettier,
 ]
