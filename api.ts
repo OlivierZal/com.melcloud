@@ -70,7 +70,7 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
   }
 }
 
-export default {
+module.exports = {
   async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const buildings: Building[] = await app.getBuildings()

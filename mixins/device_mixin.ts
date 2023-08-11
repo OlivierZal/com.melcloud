@@ -720,3 +720,5 @@ export default abstract class MELCloudDeviceMixin extends Device {
     super.error(this.getName(), '-', ...args)
   }
 }
+
+module.exports = MELCloudDeviceMixin
