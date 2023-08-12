@@ -2,8 +2,6 @@
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "outDir": ".homeybuild/",
     "target": "ESNext",
     "skipLibCheck": true,

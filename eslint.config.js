@@ -1,15 +1,16 @@
-import tsParser from '@typescript-eslint/parser'
-import tsPlugin from '@typescript-eslint/eslint-plugin'
-import airbnbBestPractices from 'eslint-config-airbnb-base/rules/best-practices'
-import airbnbErrors from 'eslint-config-airbnb-base/rules/errors'
-import airbnbES6 from 'eslint-config-airbnb-base/rules/es6'
-import airbnbImports from 'eslint-config-airbnb-base/rules/imports'
-import airbnbNode from 'eslint-config-airbnb-base/rules/node'
-import airbnbStrict from 'eslint-config-airbnb-base/rules/strict'
-import airbnbStyle from 'eslint-config-airbnb-base/rules/style'
-import airbnbVariables from 'eslint-config-airbnb-base/rules/variables'
-import prettier from 'eslint-config-prettier'
-import importPlugin from 'eslint-plugin-import'
+const tsParser = require('@typescript-eslint/parser')
+const tsPlugin = require('@typescript-eslint/eslint-plugin')
+const airbnbBestPractices = require('eslint-config-airbnb-base/rules/best-practices')
+const airbnbErrors = require('eslint-config-airbnb-base/rules/errors')
+const airbnbES6 = require('eslint-config-airbnb-base/rules/es6')
+const airbnbImports = require('eslint-config-airbnb-base/rules/imports')
+const airbnbNode = require('eslint-config-airbnb-base/rules/node')
+const airbnbStrict = require('eslint-config-airbnb-base/rules/strict')
+const airbnbStyle = require('eslint-config-airbnb-base/rules/style')
+const airbnbVariables = require('eslint-config-airbnb-base/rules/variables')
+const prettier = require('eslint-config-prettier')
+const importPlugin = require('eslint-plugin-import')
+const globals = require('globals')
 
 airbnbES6.languageOptions = {
   parserOptions: airbnbES6.parserOptions,
@@ -60,9 +61,10 @@ const tsCustomRules = {
       cts: 'never',
     },
   ],
+  'import/no-import-module-exports': 'off',
 }
 
-export default [
+module.exports = [
   {
     ignores: ['.homeybuild/'],
   },
@@ -102,6 +104,9 @@ export default [
   {
     languageOptions: {
       ecmaVersion: 'latest',
+      globals: {
+        ...globals.node,
+      },
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
