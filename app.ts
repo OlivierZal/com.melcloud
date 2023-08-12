@@ -1,3 +1,4 @@
+import 'source-map-support/register' 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { App } from 'homey'
 import type { Driver } from 'homey'
