@@ -55,6 +55,10 @@ const tsCustomRules = {
     'error',
     'ignorePackages',
     {
+      js: 'always',
+      jsx: 'always',
+      mjs: 'always',
+      cjs: 'always',
       ts: 'never',
       tsx: 'never',
       mts: 'never',
