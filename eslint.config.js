@@ -61,7 +61,6 @@ const tsCustomRules = {
       cts: 'never',
     },
   ],
-  'import/no-import-module-exports': 'off',
 }
 
 module.exports = [

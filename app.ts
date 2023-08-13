@@ -1,4 +1,4 @@
-import 'source-map-support/register' 
+import 'source-map-support/register'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { App } from 'homey'
 import type { Driver } from 'homey'
@@ -43,7 +43,7 @@ function handleResponse(data: SuccessData | FailureData): void {
   }
 }
 
-export default class MELCloudApp extends App {
+export = class MELCloudApp extends App {
   buildings: Record<number, string> = {}
 
   deviceList: ListDeviceAny[] = []
@@ -530,5 +530,3 @@ export default class MELCloudApp extends App {
     return this.homey.i18n.getLanguage()
   }
 }
-
-module.exports = MELCloudApp

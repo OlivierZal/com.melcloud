@@ -24,7 +24,7 @@ function getCapabilityArg(
   return args[capability]
 }
 
-export default class MELCloudDriverAta extends MELCloudDriverMixin {
+export = class MELCloudDriverAta extends MELCloudDriverMixin {
   async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 0

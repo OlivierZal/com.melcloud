@@ -26,7 +26,7 @@ function getOtherCapabilityZone(capability: string): string {
     : capability.replace(/.zone2$/, '.zone1')
 }
 
-export default class MELCloudDeviceAtw extends MELCloudDeviceMixin {
+export = class MELCloudDeviceAtw extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAtw
 
   declare diff: Map<SetCapability<MELCloudDriverAtw>, CapabilityValue>

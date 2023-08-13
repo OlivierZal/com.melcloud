@@ -1,11 +1,11 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
-    "inlineSourceMap": true,
     "lib": ["DOM", "ESNext"],
     "outDir": ".homeybuild/",
     "target": "ESNext",
     "skipLibCheck": true,
+    "sourceMap": true,
     "strict": true
   }
 }

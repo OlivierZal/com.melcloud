@@ -13,7 +13,7 @@ import type {
   Store,
 } from '../../types'
 
-export default class MELCloudDriverAtw extends MELCloudDriverMixin {
+export = class MELCloudDriverAtw extends MELCloudDriverMixin {
   capabilitiesAtw: (SetCapabilityAtw | GetCapabilityAtw | ListCapabilityAtw)[] =
     [
       'measure_power.heat_pump_frequency',

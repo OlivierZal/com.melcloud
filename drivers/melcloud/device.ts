@@ -62,7 +62,7 @@ const horizontalFromDevice: Record<number, string> = {
 const horizontalToDevice: Record<string, string> =
   reverseMapping(horizontalFromDevice)
 
-export default class MELCloudDeviceAta extends MELCloudDeviceMixin {
+export = class MELCloudDeviceAta extends MELCloudDeviceMixin {
   declare driver: MELCloudDriverAta
 
   declare diff: Map<SetCapability<MELCloudDriverAta>, CapabilityValue>

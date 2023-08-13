@@ -118,5 +118,3 @@ export default abstract class MELCloudDriverMixin extends Driver {
     )
   }
 }
-
-module.exports = MELCloudDriverMixin
