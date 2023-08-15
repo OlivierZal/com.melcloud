@@ -3,8 +3,8 @@ import 'source-map-support/register'
 import { App } from 'homey'
 import type { Driver } from 'homey'
 import axios from 'axios'
-import { DateTime, Duration, Settings as LuxonSettings } from 'luxon'
-import type { DurationLikeObject } from 'luxon'
+import { DateTime, Settings as LuxonSettings } from 'luxon'
+import WithCustomLogging from './mixin'
 import type {
   Building,
   ErrorLogData,
@@ -43,7 +43,7 @@ function handleResponse(data: SuccessData | FailureData): void {
   }
 }
 
-export = class MELCloudApp extends App {
+export = class MELCloudApp extends WithCustomLogging(App) {
   buildings: Record<number, string> = {}
 
   deviceList: ListDeviceAny[] = []
@@ -485,45 +485,6 @@ export = class MELCloudApp extends App {
         }
       }
     )
-  }
-
-  setInterval(
-    type: string,
-    callback: () => Promise<void>,
-    interval: number | object,
-    ...units: (keyof DurationLikeObject)[]
-  ): NodeJS.Timeout {
-    const duration: Duration = Duration.fromDurationLike(interval)
-    this.log(
-      `${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()}`,
-      'will run every',
-      duration.shiftTo(...units).toHuman(),
-      'starting',
-      DateTime.now()
-        .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
-    )
-    return this.homey.setInterval(callback, Number(duration))
-  }
-
-  setTimeout(
-    type: string,
-    callback: () => Promise<void>,
-    interval: number | object,
-    ...units: (keyof DurationLikeObject)[]
-  ): NodeJS.Timeout {
-    const duration: Duration = Duration.fromDurationLike(interval)
-    this.log(
-      'Next',
-      type.toLowerCase(),
-      'will run in',
-      duration.shiftTo(...units).toHuman(),
-      'on',
-      DateTime.now()
-        .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
-    )
-    return this.homey.setTimeout(callback, Number(duration))
   }
 
   getLanguage(): string {
