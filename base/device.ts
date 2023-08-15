@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
 import axios from 'axios'
-import { DateTime, Duration } from 'luxon'
-import type { DurationLikeObject } from 'luxon'
+import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
+import WithCustomLogging from '../mixin'
 import type {
   Capability,
   CapabilityValue,
@@ -31,7 +31,9 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default abstract class BaseMELCloudDevice extends Device {
+export default abstract class BaseMELCloudDevice extends WithCustomLogging(
+  Device
+) {
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
@@ -671,52 +673,5 @@ export default abstract class BaseMELCloudDevice extends Device {
           this.error(err.message)
         })
     }
-  }
-
-  setInterval(
-    type: string,
-    callback: () => Promise<void>,
-    interval: number | object,
-    ...units: (keyof DurationLikeObject)[]
-  ): NodeJS.Timeout {
-    const duration: Duration = Duration.fromDurationLike(interval)
-    this.log(
-      `${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()}`,
-      'will run every',
-      duration.shiftTo(...units).toHuman(),
-      'starting',
-      DateTime.now()
-        .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
-    )
-    return this.homey.setInterval(callback, Number(duration))
-  }
-
-  setTimeout(
-    type: string,
-    callback: () => Promise<void>,
-    interval: number | object,
-    ...units: (keyof DurationLikeObject)[]
-  ): NodeJS.Timeout {
-    const duration: Duration = Duration.fromDurationLike(interval)
-    this.log(
-      'Next',
-      type.toLowerCase(),
-      'will run in',
-      duration.shiftTo(...units).toHuman(),
-      'on',
-      DateTime.now()
-        .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
-    )
-    return this.homey.setTimeout(callback, Number(duration))
-  }
-
-  log(...args: unknown[]): void {
-    super.log(this.getName(), '-', ...args)
-  }
-
-  error(...args: unknown[]): void {
-    super.error(this.getName(), '-', ...args)
   }
 }
