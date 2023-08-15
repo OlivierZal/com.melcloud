@@ -107,10 +107,10 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const deviceSettings: DeviceSettings = await getDeviceSettings()
   let flatDeviceSettings: DeviceSetting = flattenDeviceSettings(deviceSettings)
 
-  const allDriverSettings: DriverSetting[] = await getDriverSettings()
-  const { driverSettingsMixin, driverSettings } = allDriverSettings.reduce<{
+  const driverSettingsAll: DriverSetting[] = await getDriverSettings()
+  const { driverSettingsCommon, driverSettings } = driverSettingsAll.reduce<{
     driverSettings: Record<string, DriverSetting[]>
-    driverSettingsMixin: DriverSetting[]
+    driverSettingsCommon: DriverSetting[]
   }>(
     (acc, setting: DriverSetting) => {
       if (setting.groupId === 'login') {
@@ -118,11 +118,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }
       if (setting.groupId === 'options') {
         if (
-          !acc.driverSettingsMixin.some(
+          !acc.driverSettingsCommon.some(
             (option: DriverSetting): boolean => option.id === setting.id
           )
         ) {
-          acc.driverSettingsMixin.push(setting)
+          acc.driverSettingsCommon.push(setting)
         }
       } else {
         const { driverId } = setting
@@ -134,7 +134,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       return acc
     },
     {
-      driverSettingsMixin: [],
+      driverSettingsCommon: [],
       driverSettings: {},
     }
   )
@@ -164,8 +164,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const minMaxTemperature = 6
   const maxMaxTemperature = 16
 
-  const applySettingsMixinElement: HTMLButtonElement = document.getElementById(
-    'apply-settings-mixin'
+  const applySettingsCommonElement: HTMLButtonElement = document.getElementById(
+    'apply-settings-common'
   ) as HTMLButtonElement
   const authenticateElement: HTMLButtonElement = document.getElementById(
     'authenticate'
@@ -199,8 +199,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const loginElement: HTMLDivElement = document.getElementById(
     'login'
   ) as HTMLDivElement
-  const settingsMixinElement: HTMLDivElement = document.getElementById(
-    'settings-mixin'
+  const settingsCommonElement: HTMLDivElement = document.getElementById(
+    'settings-common'
   ) as HTMLDivElement
 
   const sinceElement: HTMLInputElement = document.getElementById(
@@ -630,8 +630,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     })
   }
 
-  function generateMixinChildrenElements(): void {
-    driverSettingsMixin.forEach((setting: DriverSetting): void => {
+  function generateCommonChildrenElements(): void {
+    driverSettingsCommon.forEach((setting: DriverSetting): void => {
       if (!['checkbox', 'dropdown'].includes(setting.type)) {
         return
       }
@@ -665,11 +665,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }
       divElement.appendChild(labelElement)
       divElement.appendChild(selectElement)
-      settingsMixinElement.appendChild(divElement)
+      settingsCommonElement.appendChild(divElement)
     })
     addSettingsEventListener(
-      applySettingsMixinElement,
-      Array.from(settingsMixinElement.querySelectorAll('select'))
+      applySettingsCommonElement,
+      Array.from(settingsCommonElement.querySelectorAll('select'))
     )
   }
 
@@ -747,7 +747,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       ;[usernameElement, passwordElement] = credentialKeys.map(
         (credentialKey: string): HTMLInputElement | null => {
           const driverSetting: DriverSetting | undefined =
-            allDriverSettings.find(
+            driverSettingsAll.find(
               (setting: DriverSetting): boolean => setting.id === credentialKey
             )
           if (driverSetting === undefined) {
@@ -777,7 +777,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   async function load(): Promise<void> {
-    generateMixinChildrenElements()
+    generateCommonChildrenElements()
     Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
     try {
       await generate()

@@ -88,19 +88,19 @@ export interface FailureData {
   readonly AttributeErrors: Record<string, string[]>
 }
 
-interface SetCapabilitiesMixin {
+interface SetCapabilitiesCommon {
   onoff?: boolean
   target_temperature?: number
 }
 
-interface SetCapabilitiesAta extends SetCapabilitiesMixin {
+interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
   horizontal?: string
   operation_mode?: string
   vertical?: string
 }
 
-interface SetCapabilitiesAtw extends SetCapabilitiesMixin {
+interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
   'onoff.forced_hot_water'?: boolean
   'operation_mode_zone.zone1'?: string
   'operation_mode_zone.zone2'?: string
@@ -114,13 +114,13 @@ interface SetCapabilitiesAtw extends SetCapabilitiesMixin {
   'target_temperature.zone2_flow_heat'?: number
 }
 
-interface GetCapabilitiesMixin {
+interface GetCapabilitiesCommon {
   readonly measure_temperature: number
 }
 
-type GetCapabilitiesAta = GetCapabilitiesMixin
+type GetCapabilitiesAta = GetCapabilitiesCommon
 
-interface GetCapabilitiesAtw extends GetCapabilitiesMixin {
+interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
@@ -130,18 +130,18 @@ interface GetCapabilitiesAtw extends GetCapabilitiesMixin {
   readonly 'operation_mode_state.zone2': number
 }
 
-interface ListCapabilitiesMixin {
+interface ListCapabilitiesCommon {
   readonly 'measure_power.wifi': number
 }
 
-interface ListCapabilitiesAta extends ListCapabilitiesMixin {
+interface ListCapabilitiesAta extends ListCapabilitiesCommon {
   readonly fan_power: number
   readonly fan_power_state: number
   readonly horizontal: number
   readonly vertical: number
 }
 
-interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
+interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
@@ -157,7 +157,7 @@ interface ListCapabilitiesAtw extends ListCapabilitiesMixin {
   readonly 'measure_temperature.return': number
   readonly 'measure_temperature.return_zone1': number
   readonly 'measure_temperature.return_zone2': number
-  readonly 'measure_temperature.tank_water_mixing': number
+  readonly 'measure_temperature.tank_water_commong': number
 }
 
 interface ReportCapabilitiesAta {
@@ -309,7 +309,7 @@ export type PostData<T extends MELCloudDriver> = SetDeviceData<T> & {
   readonly HasPendingCommand: true
 }
 
-interface ListDeviceDataMixin {
+interface ListDeviceDataCommon {
   readonly CanCool: boolean
   readonly DeviceType: number
   readonly HasZone2: boolean
@@ -321,14 +321,14 @@ interface ListDeviceDataAta
       GetDeviceDataAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     >,
-    ListDeviceDataMixin {
+    ListDeviceDataCommon {
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
   readonly VaneHorizontalDirection: number
   readonly VaneVerticalDirection: number
 }
 
-interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataMixin {
+interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
@@ -341,7 +341,7 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataMixin {
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
   readonly LastLegionellaActivationTime: string
-  readonly MixingTankWaterTemperature: number
+  readonly CommongTankWaterTemperature: number
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number
   readonly ReturnTemperatureZone2: number
@@ -532,8 +532,8 @@ export const getCapabilityMappingAtw: Record<
   },
 } as const
 
-const listCapabilityMappingMixin: Record<
-  keyof ListCapabilitiesMixin,
+const listCapabilityMappingCommon: Record<
+  keyof ListCapabilitiesCommon,
   ListCapabilityMapping<MELCloudDriver>
 > = {
   'measure_power.wifi': {
@@ -545,7 +545,7 @@ export const listCapabilityMappingAta: Record<
   ListCapability<MELCloudDriverAta>,
   ListCapabilityMapping<MELCloudDriverAta>
 > = {
-  ...listCapabilityMappingMixin,
+  ...listCapabilityMappingCommon,
   fan_power: {
     tag: 'FanSpeed',
   },
@@ -564,7 +564,7 @@ export const listCapabilityMappingAtw: Record<
   ListCapability<MELCloudDriverAtw>,
   ListCapabilityMapping<MELCloudDriverAtw>
 > = {
-  ...listCapabilityMappingMixin,
+  ...listCapabilityMappingCommon,
   'alarm_generic.booster_heater1': {
     tag: 'BoosterHeater1Status',
   },
@@ -610,8 +610,8 @@ export const listCapabilityMappingAtw: Record<
   'measure_temperature.return_zone2': {
     tag: 'ReturnTemperatureZone2',
   },
-  'measure_temperature.tank_water_mixing': {
-    tag: 'MixingTankWaterTemperature',
+  'measure_temperature.tank_water_commong': {
+    tag: 'CommongTankWaterTemperature',
   },
 } as const
 
