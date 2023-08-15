@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import MELCloudDeviceMixin from '../../mixins/device_mixin'
+import BaseMELCloudDevice from '../../base/device'
 import type MELCloudDriverAtw from './driver'
 import type {
   Capability,
@@ -26,7 +26,7 @@ function getOtherCapabilityZone(capability: string): string {
     : capability.replace(/.zone2$/, '.zone1')
 }
 
-export = class MELCloudDeviceAtw extends MELCloudDeviceMixin {
+export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   declare driver: MELCloudDriverAtw
 
   declare diff: Map<SetCapability<MELCloudDriverAtw>, CapabilityValue>

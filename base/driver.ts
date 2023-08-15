@@ -20,7 +20,7 @@ import type {
   Store,
 } from '../types'
 
-export default abstract class MELCloudDriverMixin extends Driver {
+export default abstract class BaseMELCloudDriver extends Driver {
   app!: MELCloudApp
 
   deviceType!: number

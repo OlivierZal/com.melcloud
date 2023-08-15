@@ -1,4 +1,4 @@
-import MELCloudDriverMixin from '../../mixins/driver_mixin'
+import BaseMELCloudDriver from '../../base/driver'
 import type MELCloudDeviceAtw from './device'
 import {
   getCapabilityMappingAtw,
@@ -13,7 +13,7 @@ import type {
   Store,
 } from '../../types'
 
-export = class MELCloudDriverAtw extends MELCloudDriverMixin {
+export = class MELCloudDriverAtw extends BaseMELCloudDriver {
   capabilitiesAtw: (SetCapabilityAtw | GetCapabilityAtw | ListCapabilityAtw)[] =
     [
       'measure_power.heat_pump_frequency',

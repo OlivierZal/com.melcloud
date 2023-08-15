@@ -31,7 +31,7 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default abstract class MELCloudDeviceMixin extends Device {
+export default abstract class BaseMELCloudDevice extends Device {
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
@@ -681,7 +681,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
-      `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
+      `${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()}`,
       'will run every',
       duration.shiftTo(...units).toHuman(),
       'starting',
@@ -701,7 +701,7 @@ export default abstract class MELCloudDeviceMixin extends Device {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next',
-      type,
+      type.toLowerCase(),
       'will run in',
       duration.shiftTo(...units).toHuman(),
       'on',

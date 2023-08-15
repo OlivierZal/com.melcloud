@@ -1,4 +1,4 @@
-import MELCloudDriverMixin from '../../mixins/driver_mixin'
+import BaseMELCloudDriver from '../../base/driver'
 import {
   getCapabilityMappingAta,
   listCapabilityMappingAta,
@@ -24,7 +24,7 @@ function getCapabilityArg(
   return args[capability]
 }
 
-export = class MELCloudDriverAta extends MELCloudDriverMixin {
+export = class MELCloudDriverAta extends BaseMELCloudDriver {
   async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 0

@@ -495,7 +495,7 @@ export = class MELCloudApp extends App {
   ): NodeJS.Timeout {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
-      `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
+      `${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()}`,
       'will run every',
       duration.shiftTo(...units).toHuman(),
       'starting',
@@ -515,7 +515,7 @@ export = class MELCloudApp extends App {
     const duration: Duration = Duration.fromDurationLike(interval)
     this.log(
       'Next',
-      type,
+      type.toLowerCase(),
       'will run in',
       duration.shiftTo(...units).toHuman(),
       'on',

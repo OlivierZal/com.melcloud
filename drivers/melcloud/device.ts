@@ -1,4 +1,4 @@
-import MELCloudDeviceMixin from '../../mixins/device_mixin'
+import BaseMELCloudDevice from '../../base/device'
 import type MELCloudDriverAta from './driver'
 import type {
   Capability,
@@ -62,7 +62,7 @@ const horizontalFromDevice: Record<number, string> = {
 const horizontalToDevice: Record<string, string> =
   reverseMapping(horizontalFromDevice)
 
-export = class MELCloudDeviceAta extends MELCloudDeviceMixin {
+export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   declare driver: MELCloudDriverAta
 
   declare diff: Map<SetCapability<MELCloudDriverAta>, CapabilityValue>
