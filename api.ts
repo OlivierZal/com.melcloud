@@ -89,7 +89,6 @@ export = {
         building1.Name.localeCompare(building2.Name)
       )
   },
-
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)
       .getDevices()
@@ -112,7 +111,6 @@ export = {
         return newDeviceSettings
       }, {})
   },
-
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
@@ -144,7 +142,6 @@ export = {
             )
         )
     )
-
     const settingsLogin: DriverSetting[] = app.manifest.drivers.flatMap(
       (driver: ManifestDriver): DriverSetting[] => {
         const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
@@ -189,7 +186,6 @@ export = {
     )
     return [...settings, ...settingsLogin]
   },
-
   async getFrostProtectionSettings({
     homey,
     params,
@@ -201,7 +197,6 @@ export = {
       Number(params.buildingId)
     )
   },
-
   async getHolidayModeSettings({
     homey,
     params,
@@ -218,11 +213,9 @@ export = {
       HMEndDate: fromUTCtoLocal(data.HMEndDate),
     }
   },
-
   getLanguage({ homey }: { homey: Homey }): string {
     return (homey.app as MELCloudApp).getLanguage()
   },
-
   async getUnitErrorLog({
     homey,
     query,
@@ -233,7 +226,6 @@ export = {
     const app: MELCloudApp = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
     const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
-
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
     return {
       Errors: data
@@ -262,7 +254,6 @@ export = {
       NextToDate: NextToDate.toISODate() ?? '',
     }
   },
-
   async login({
     homey,
     body,
@@ -272,7 +263,6 @@ export = {
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).login(body)
   },
-
   async setDeviceSettings({
     homey,
     body,
@@ -322,7 +312,6 @@ export = {
       throw new Error(error instanceof Error ? error.message : String(error))
     }
   },
-
   async updateFrostProtectionSettings({
     homey,
     params,
@@ -337,7 +326,6 @@ export = {
       body
     )
   },
-
   async updateHolidayModeSettings({
     homey,
     params,
