@@ -3,3 +3,6 @@
 /node_modules/*
 !/node_modules/@tsconfig
 /.homeybuild
+!/.vscode
+/.vscode/*
+!/.vscode/settings.json
