@@ -75,11 +75,11 @@ export default abstract class BaseMELCloudDriver extends Driver {
   onPair(session: PairSession): void {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.app.login(data)
+      (data: LoginCredentials): Promise<boolean> => this.app.login(data)
     )
     session.setHandler(
       'list_devices',
-      async (): Promise<DeviceDetails[]> => this.discoverDevices()
+      (): Promise<DeviceDetails[]> => this.discoverDevices()
     )
   }
 
@@ -114,7 +114,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
   onRepair(session: PairSession): void {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.app.login(data)
+      (data: LoginCredentials): Promise<boolean> => this.app.login(data)
     )
   }
 }

@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Device } from 'homey'
-import axios from 'axios'
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
 import WithCustomLogging from '../mixin'
@@ -84,20 +83,14 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         HasPendingCommand: true,
         ...updateData,
       }
-      this.log('Syncing with device...\n', postData)
-      const { data } = await axios.post<GetDeviceData<T>>(
+      const { data } = await this.axios.post<GetDeviceData<T>>(
         `/Device/Set${this.driver.heatPumpType}`,
         postData
       )
-      this.log('Syncing with device:\n', data)
       return data
     } catch (error: unknown) {
-      this.error(
-        'Syncing with device:',
-        error instanceof Error ? error.message : error
-      )
+      return null
     }
-    return null
   }
 
   async reportEnergyCost<T extends MELCloudDriver>(
@@ -111,20 +104,14 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
       }
-      this.log('Reporting energy...\n', postData)
-      const { data } = await axios.post<ReportData<T>>(
+      const { data } = await this.axios.post<ReportData<T>>(
         '/EnergyCost/Report',
         postData
       )
-      this.log('Reporting energy:\n', data)
       return data
     } catch (error: unknown) {
-      this.error(
-        'Reporting energy:',
-        error instanceof Error ? error.message : error
-      )
+      return null
     }
-    return null
   }
 
   isDiff(): boolean {
@@ -637,8 +624,8 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         .then((): void => {
           this.log('Adding capability', capability)
         })
-        .catch((err: Error): void => {
-          this.error(err.message)
+        .catch((error: Error): void => {
+          this.error(error.message)
         })
     }
   }
@@ -650,8 +637,8 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         .then((): void => {
           this.log('Removing capability', capability)
         })
-        .catch((err: Error): void => {
-          this.error(err.message)
+        .catch((error: Error): void => {
+          this.error(error.message)
         })
     }
   }
@@ -669,8 +656,8 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         .then((): void => {
           this.log('Capability', capability, 'is', value)
         })
-        .catch((err: Error): void => {
-          this.error(err.message)
+        .catch((error: Error): void => {
+          this.error(error.message)
         })
     }
   }
