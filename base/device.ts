@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Device } from 'homey'
+import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
 import WithAPIAndLogging from '../mixin'

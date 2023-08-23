@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Device } from 'homey'
+import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import type {
   AxiosError,

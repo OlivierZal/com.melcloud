@@ -355,8 +355,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       intMaxValueMap.set(element, maxValue)
     }
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
-      // eslint-disable-next-line no-param-reassign
-      element.value = ''
+      element.value = '' // eslint-disable-line no-param-reassign
       const labelElement: HTMLLabelElement | null = document.querySelector(
         `label[for="${element.id}"]`
       )

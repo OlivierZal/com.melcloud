@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { Driver } from 'homey'
+import { Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
 import type MELCloudDriverAta from '../drivers/melcloud/driver'
