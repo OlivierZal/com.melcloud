@@ -27,6 +27,8 @@ import type {
   SyncFromMode,
 } from './types'
 
+axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
+
 function handleFailure(data: FailureData): never {
   const errorMessage: string = Object.entries(data.AttributeErrors)
     .map(
@@ -44,8 +46,6 @@ function handleResponse(data: SuccessData | FailureData): void {
 }
 
 export = class MELCloudApp extends WithCustomLogging(App) {
-  buildings: Record<number, string> = {}
-
   deviceList: ListDeviceAny[] = []
 
   deviceIds: Record<number, string> = {}
@@ -59,10 +59,6 @@ export = class MELCloudApp extends WithCustomLogging(App) {
   async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
-    axios.defaults.headers.common['X-MitsContextKey'] =
-      this.homey.settings.get('ContextKey') ?? ''
-
     await this.refreshLogin()
     await this.listDevices()
   }
@@ -80,20 +76,17 @@ export = class MELCloudApp extends WithCustomLogging(App) {
         Password: password,
         Persist: true,
       }
-      this.log('Login...')
-      const { data } = await axios.post<LoginData>(
+      const { data } = await this.axios.post<LoginData>(
         '/Login/ClientLogin',
         postData
       )
-      this.log('Login:\n', data)
       if (data.LoginData?.ContextKey === undefined) {
         return false
       }
-      axios.defaults.headers.common['X-MitsContextKey'] =
-        data.LoginData.ContextKey
+      const { ContextKey, Expiry } = data.LoginData
       this.setSettings({
-        ContextKey: data.LoginData.ContextKey,
-        Expiry: data.LoginData.Expiry,
+        ContextKey,
+        Expiry,
         username,
         password,
       })
@@ -101,10 +94,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       await this.refreshLogin()
       return true
     } catch (error: unknown) {
-      const errorMessage: string =
-        error instanceof Error ? error.message : String(error)
-      this.error('Login:', errorMessage)
-      throw new Error(errorMessage)
+      throw new Error(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -129,8 +119,8 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       this.loginTimeout = this.setTimeout(
         'login refresh',
         async (): Promise<void> => {
-          await this.login(loginCredentials).catch((err: Error): void => {
-            this.error(err.message)
+          await this.login(loginCredentials).catch((error: Error): void => {
+            this.error(error.message)
           })
         },
         interval,
@@ -138,8 +128,8 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       )
       return
     }
-    await this.login(loginCredentials).catch((err: Error): void => {
-      this.error(err.message)
+    await this.login(loginCredentials).catch((error: Error): void => {
+      this.error(error.message)
     })
   }
 
@@ -223,11 +213,9 @@ export = class MELCloudApp extends WithCustomLogging(App) {
     const buildingData: {
       deviceIds: Record<number, string>
       deviceList: ListDeviceAny[]
-      newBuildings: Record<number, string>
     } = buildings.reduce<{
       deviceIds: Record<number, string>
       deviceList: ListDeviceAny[]
-      newBuildings: Record<number, string>
     }>(
       (acc, building: Building) => {
         const buildingDevices: ListDeviceAny[] = [
@@ -248,10 +236,9 @@ export = class MELCloudApp extends WithCustomLogging(App) {
           )
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
         acc.deviceList.push(...buildingDevices)
-        acc.newBuildings[building.ID] = building.Name
         return acc
       },
-      { deviceIds: {}, deviceList: [], newBuildings: {} }
+      { deviceIds: {}, deviceList: [] }
     )
     let { deviceList } = buildingData
     if (deviceType !== undefined) {
@@ -261,10 +248,9 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       )
     }
     this.deviceList = deviceList
-    this.buildings = buildingData.newBuildings
     this.deviceIds = buildingData.deviceIds
-    await this.syncDevicesFromList(syncMode).catch((err: Error): void => {
-      this.error(err.message)
+    await this.syncDevicesFromList(syncMode).catch((error: Error): void => {
+      this.error(error.message)
     })
     this.planSyncFromDevices()
     return deviceList
@@ -279,15 +265,10 @@ export = class MELCloudApp extends WithCustomLogging(App) {
 
   async getBuildings(): Promise<Building[]> {
     try {
-      this.log('Searching for buildings...')
-      const { data } = await axios.get<Building[]>('/User/ListDevices')
-      this.log('Searching for buildings:\n', data)
+      const { data } = await this.axios.get<Building[]>('/User/ListDevices')
       return data
     } catch (error: unknown) {
-      const errorMessage: string =
-        error instanceof Error ? error.message : String(error)
-      this.error('Searching for buildings:', errorMessage)
-      throw new Error(errorMessage)
+      throw new Error(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -328,12 +309,10 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
     }
-    this.log('Reporting error log...\n', postData)
-    const { data } = await axios.post<ErrorLogData[] | FailureData>(
+    const { data } = await this.axios.post<ErrorLogData[] | FailureData>(
       '/Report/GetUnitErrorLog2',
       postData
     )
-    this.log('Reporting error log:\n', data)
     if ('AttributeErrors' in data) {
       handleFailure(data)
     }
@@ -343,23 +322,11 @@ export = class MELCloudApp extends WithCustomLogging(App) {
   async getFrostProtectionSettings(
     buildingId: number
   ): Promise<FrostProtectionData> {
-    const buildingName: string = this.getBuildingName(buildingId)
-    this.log(
-      'Getting frost protection settings for building',
-      buildingName,
-      '...'
-    )
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
-    const { data } = await axios.get<FrostProtectionData>(
+    const { data } = await this.axios.get<FrostProtectionData>(
       `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
-    )
-    this.log(
-      'Getting frost protection settings for building',
-      buildingName,
-      ':\n',
-      data
     )
     return data
   }
@@ -368,44 +335,23 @@ export = class MELCloudApp extends WithCustomLogging(App) {
     buildingId: number,
     settings: FrostProtectionSettings
   ): Promise<void> {
-    const buildingName: string = this.getBuildingName(buildingId)
     const postData: FrostProtectionPostData = {
       ...settings,
       BuildingIds: [buildingId],
     }
-    this.log(
-      'Updating frost protection settings for building',
-      buildingName,
-      '...\n',
-      postData
-    )
-    const { data } = await axios.post<SuccessData | FailureData>(
+    const { data } = await this.axios.post<SuccessData | FailureData>(
       '/FrostProtection/Update',
       postData
-    )
-    this.log(
-      'Updating frost protection settings for building',
-      buildingName,
-      ':\n',
-      data
     )
     handleResponse(data)
   }
 
   async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
-    const buildingName: string = this.getBuildingName(buildingId)
-    this.log('Getting holiday mode settings for building', buildingName, '...')
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
-    const { data } = await axios.get<HolidayModeData>(
+    const { data } = await this.axios.get<HolidayModeData>(
       `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
-    )
-    this.log(
-      'Getting holiday mode settings for building',
-      buildingName,
-      ':\n',
-      data
     )
     return data
   }
@@ -414,7 +360,6 @@ export = class MELCloudApp extends WithCustomLogging(App) {
     buildingId: number,
     settings: HolidayModeSettings
   ): Promise<void> {
-    const buildingName: string = this.getBuildingName(buildingId)
     const { Enabled, StartDate, EndDate } = settings
     if (Enabled && (StartDate === '' || EndDate === '')) {
       throw new Error(this.homey.__('app.holiday_mode.date_missing'))
@@ -451,30 +396,11 @@ export = class MELCloudApp extends WithCustomLogging(App) {
           : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
     }
-    this.log(
-      'Updating holiday mode settings for building',
-      buildingName,
-      '...\n',
-      postData
-    )
-    const { data } = await axios.post<SuccessData | FailureData>(
+    const { data } = await this.axios.post<SuccessData | FailureData>(
       '/HolidayMode/Update',
       postData
     )
-    this.log(
-      'Updating holiday mode settings for building',
-      buildingName,
-      ':\n',
-      data
-    )
     handleResponse(data)
-  }
-
-  getBuildingName(buildingId: number): string {
-    if (!(buildingId in this.buildings)) {
-      throw new Error(this.homey.__('app.building.not_found', { buildingId }))
-    }
-    return this.buildings[buildingId]
   }
 
   setSettings(settings: Settings): void {
