@@ -618,27 +618,23 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
 
   async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
-      await super
-        .addCapability(capability)
-        .then((): void => {
-          this.log('Adding capability', capability)
-        })
-        .catch((error: Error): void => {
-          this.error(error.message)
-        })
+      try {
+        await super.addCapability(capability)
+        this.log('Adding capability', capability)
+      } catch (error: unknown) {
+        this.error(error instanceof Error ? error.message : error)
+      }
     }
   }
 
   async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
-      await super
-        .removeCapability(capability)
-        .then((): void => {
-          this.log('Removing capability', capability)
-        })
-        .catch((error: Error): void => {
-          this.error(error.message)
-        })
+      try {
+        await super.removeCapability(capability)
+        this.log('Removing capability', capability)
+      } catch (error: unknown) {
+        this.error(error instanceof Error ? error.message : error)
+      }
     }
   }
 
@@ -650,14 +646,12 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       this.hasCapability(capability) &&
       value !== this.getCapabilityValue(capability)
     ) {
-      await super
-        .setCapabilityValue(capability, value)
-        .then((): void => {
-          this.log('Capability', capability, 'is', value)
-        })
-        .catch((error: Error): void => {
-          this.error(error.message)
-        })
+      try {
+        await super.setCapabilityValue(capability, value)
+        this.log('Capability', capability, 'is', value)
+      } catch (error: unknown) {
+        this.error(error instanceof Error ? error.message : error)
+      }
     }
   }
 }

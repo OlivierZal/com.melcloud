@@ -293,9 +293,8 @@ export = {
               {}
             )
             try {
-              await device.setSettings(deviceSettings).then((): void => {
-                device.log('Setting:', deviceSettings)
-              })
+              await device.setSettings(deviceSettings)
+              device.log('Settings:', deviceSettings)
               await device.onSettings({
                 newSettings: device.getSettings(),
                 changedKeys: deviceChangedKeys,
@@ -303,7 +302,7 @@ export = {
             } catch (error: unknown) {
               const errorMessage: string =
                 error instanceof Error ? error.message : String(error)
-              device.error(errorMessage)
+              device.error('Settings:', errorMessage)
               throw new Error(errorMessage)
             }
           })
