@@ -27,24 +27,24 @@ type TimerClass = new (...args: any[]) => {
   }
 }
 
-export default function WithCustomLogging<T extends TimerClass>(Base: T) {
+export default function WithAPIAndLogging<T extends TimerClass>(Base: T) {
   return class extends Base {
-    axios: AxiosInstance
+    api: AxiosInstance
 
     constructor(...args: any[]) {
       super(...args)
-      this.axios = axios.create()
+      this.api = axios.create()
       this.setupAxiosInterceptors()
     }
 
     setupAxiosInterceptors() {
-      this.axios.interceptors.request.use(
+      this.api.interceptors.request.use(
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig =>
           this.handleRequest(config),
         (error: AxiosError): Promise<AxiosError> =>
           this.handleError('request', error)
       )
-      this.axios.interceptors.response.use(
+      this.api.interceptors.response.use(
         (response: AxiosResponse): AxiosResponse =>
           this.handleResponse(response),
         (error: AxiosError): Promise<AxiosError> =>

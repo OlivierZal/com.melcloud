@@ -2,7 +2,7 @@
 import { Device } from 'homey'
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import WithCustomLogging from '../mixin'
+import WithAPIAndLogging from '../mixin'
 import type {
   Capability,
   CapabilityValue,
@@ -30,7 +30,7 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default abstract class BaseMELCloudDevice extends WithCustomLogging(
+export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   Device
 ) {
   app!: MELCloudApp
@@ -83,7 +83,7 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         HasPendingCommand: true,
         ...updateData,
       }
-      const { data } = await this.axios.post<GetDeviceData<T>>(
+      const { data } = await this.api.post<GetDeviceData<T>>(
         `/Device/Set${this.driver.heatPumpType}`,
         postData
       )
@@ -104,7 +104,7 @@ export default abstract class BaseMELCloudDevice extends WithCustomLogging(
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
       }
-      const { data } = await this.axios.post<ReportData<T>>(
+      const { data } = await this.api.post<ReportData<T>>(
         '/EnergyCost/Report',
         postData
       )

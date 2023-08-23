@@ -4,7 +4,7 @@ import { App } from 'homey'
 import type { Driver } from 'homey'
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import WithCustomLogging from './mixin'
+import WithAPIAndLogging from './mixin'
 import type {
   Building,
   ErrorLogData,
@@ -45,7 +45,7 @@ function handleResponse(data: SuccessData | FailureData): void {
   }
 }
 
-export = class MELCloudApp extends WithCustomLogging(App) {
+export = class MELCloudApp extends WithAPIAndLogging(App) {
   deviceList: ListDeviceAny[] = []
 
   deviceIds: Record<number, string> = {}
@@ -76,7 +76,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
         Password: password,
         Persist: true,
       }
-      const { data } = await this.axios.post<LoginData>(
+      const { data } = await this.api.post<LoginData>(
         '/Login/ClientLogin',
         postData
       )
@@ -265,7 +265,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
 
   async getBuildings(): Promise<Building[]> {
     try {
-      const { data } = await this.axios.get<Building[]>('/User/ListDevices')
+      const { data } = await this.api.get<Building[]>('/User/ListDevices')
       return data
     } catch (error: unknown) {
       throw new Error(error instanceof Error ? error.message : String(error))
@@ -309,7 +309,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
     }
-    const { data } = await this.axios.post<ErrorLogData[] | FailureData>(
+    const { data } = await this.api.post<ErrorLogData[] | FailureData>(
       '/Report/GetUnitErrorLog2',
       postData
     )
@@ -325,7 +325,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
-    const { data } = await this.axios.get<FrostProtectionData>(
+    const { data } = await this.api.get<FrostProtectionData>(
       `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
     return data
@@ -339,7 +339,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
       ...settings,
       BuildingIds: [buildingId],
     }
-    const { data } = await this.axios.post<SuccessData | FailureData>(
+    const { data } = await this.api.post<SuccessData | FailureData>(
       '/FrostProtection/Update',
       postData
     )
@@ -350,7 +350,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
-    const { data } = await this.axios.get<HolidayModeData>(
+    const { data } = await this.api.get<HolidayModeData>(
       `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
     )
     return data
@@ -396,7 +396,7 @@ export = class MELCloudApp extends WithCustomLogging(App) {
           : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
     }
-    const { data } = await this.axios.post<SuccessData | FailureData>(
+    const { data } = await this.api.post<SuccessData | FailureData>(
       '/HolidayMode/Update',
       postData
     )
