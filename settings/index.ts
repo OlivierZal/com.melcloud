@@ -823,9 +823,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   authenticateElement.addEventListener('click', (): void => {
     authenticateElement.classList.add('is-disabled')
-    login().catch(async (err): Promise<void> => {
+    login().catch(async (error): Promise<void> => {
       // @ts-expect-error bug
-      await homey.alert(err.message)
+      await homey.alert(error.message)
     })
   })
 
