@@ -153,17 +153,21 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       ...this.driver.getRequiredCapabilities(this.getStore()),
       ...this.getDashboardCapabilities(),
     ]
-    await Promise.all(
-      requiredCapabilities.map(async (capability: string): Promise<void> => {
-        await this.addCapability(capability)
-      })
+    await requiredCapabilities.reduce<Promise<void>>(
+      async (previousPromise, capability: string) => {
+        await previousPromise
+        return this.addCapability(capability)
+      },
+      Promise.resolve()
     )
-    await Promise.all(
-      this.getCapabilities().map(async (capability: string): Promise<void> => {
+    await this.getCapabilities().reduce<Promise<void>>(
+      async (previousPromise, capability: string) => {
+        await previousPromise
         if (!requiredCapabilities.includes(capability)) {
           await this.removeCapability(capability)
         }
-      })
+      },
+      Promise.resolve()
     )
   }
 
@@ -578,14 +582,16 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     newSettings: Settings,
     changedCapabilities: string[]
   ): Promise<void> {
-    await Promise.all(
-      changedCapabilities.map(async (capability: string): Promise<void> => {
+    await changedCapabilities.reduce<Promise<void>>(
+      async (previousPromise, capability: string) => {
+        await previousPromise
         if (newSettings[capability] === true) {
           await this.addCapability(capability)
           return
         }
         await this.removeCapability(capability)
-      })
+      },
+      Promise.resolve()
     )
   }
 
