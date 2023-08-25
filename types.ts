@@ -14,7 +14,7 @@ export type CapabilityValue = boolean | number | string
 export type SettingValue = boolean | number | string | null | undefined
 
 export interface Settings extends Record<string, SettingValue> {
-  always_on?: boolean
+  readonly always_on?: boolean
 }
 
 export interface Store {
@@ -29,7 +29,10 @@ export interface ManifestDriverSettingData {
   readonly min?: number
   readonly type: string
   readonly units?: string
-  readonly values?: { id: string; label: Record<string, string> }[]
+  readonly values?: {
+    readonly id: string
+    readonly label: Record<string, string>
+  }[]
 }
 
 export interface ManifestDriverSetting {
@@ -39,7 +42,7 @@ export interface ManifestDriverSetting {
 }
 
 export interface PairSetting {
-  id: string
+  readonly id: string
 }
 
 export interface LoginSetting extends PairSetting {
@@ -73,7 +76,7 @@ export interface DriverSetting {
   title: string
   readonly type: string
   readonly units?: string
-  readonly values?: { id: string; label: string }[]
+  readonly values?: { readonly id: string; readonly label: string }[]
 }
 
 export type DeviceSetting = Record<string, SettingValue[]>
