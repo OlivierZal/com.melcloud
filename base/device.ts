@@ -426,11 +426,11 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       fromDate,
       toDate
     )
-    await this.processData(data, toDate, reportCapabilities)
+    await this.updateReportCapabilities(data, toDate, reportCapabilities)
     this.planEnergyReport(total)
   }
 
-  async processData<T extends MELCloudDriver>(
+  async updateReportCapabilities<T extends MELCloudDriver>(
     data: ReportData<T> | null,
     toDate: DateTime,
     reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>
