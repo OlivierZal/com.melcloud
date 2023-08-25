@@ -4,8 +4,7 @@ import {
   listCapabilityMappingAta,
   setCapabilityMappingAta,
   reportCapabilityMappingAta,
-} from '../../types'
-import type { FlowArgsAta, SetCapabilityAta } from '../../types'
+type  FlowArgsAta,type  SetCapabilityAta } from '../../types'
 
 const flowCapabilities: SetCapabilityAta[] = [
   'operation_mode',

@@ -5,13 +5,11 @@ import {
   listCapabilityMappingAtw,
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
-} from '../../types'
-import type {
-  GetCapabilityAtw,
-  ListCapabilityAtw,
-  SetCapabilityAtw,
-  Store,
-} from '../../types'
+type 
+  GetCapabilityAtw,type 
+  ListCapabilityAtw,type 
+  SetCapabilityAtw,type 
+  Store} from '../../types'
 
 export = class MELCloudDriverAtw extends BaseMELCloudDriver {
   capabilitiesAtw: (SetCapabilityAtw | GetCapabilityAtw | ListCapabilityAtw)[] =

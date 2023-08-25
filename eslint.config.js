@@ -37,8 +37,14 @@ const jsCustomRules = {
   ],
 }
 const tsCustomRules = {
-  '@typescript-eslint/consistent-type-exports': 'error',
-  '@typescript-eslint/consistent-type-imports': 'error',
+  '@typescript-eslint/consistent-type-exports': [
+    'error',
+    { fixMixedExportsWithInlineTypeSpecifier: true },
+  ],
+  '@typescript-eslint/consistent-type-imports': [
+    'error',
+    { fixStyle: 'inline-type-imports' },
+  ],
   '@typescript-eslint/no-explicit-any': [
     'error',
     {
@@ -56,7 +62,6 @@ const tsCustomRules = {
       varsIgnorePattern: 'onHomeyReady',
     },
   ],
-  'import/consistent-type-specifier-style': 'error',
   'import/extensions': [
     'error',
     'ignorePackages',
@@ -71,6 +76,7 @@ const tsCustomRules = {
       cts: 'never',
     },
   ],
+  'import/no-duplicates': ['error', { 'prefer-inline': true }],
 }
 
 module.exports = [

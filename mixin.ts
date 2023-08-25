@@ -1,13 +1,11 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
-import axios from 'axios'
-import type {
-  AxiosError,
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
 } from 'axios'
-import { DateTime, Duration } from 'luxon'
-import type { DurationLikeObject } from 'luxon'
+import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 
 type TimerFunction = (
   callback: () => Promise<void>,
