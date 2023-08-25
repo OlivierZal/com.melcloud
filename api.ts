@@ -225,27 +225,29 @@ export = {
   }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
-    const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
     const NextToDate: DateTime = fromDate.minus({ days: 1 })
+    const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
     return {
       Errors: data
-        .reduce<ErrorDetails[]>((errors, errorData: ErrorLogData) => {
-          const date: string =
-            DateTime.fromISO(errorData.StartDate).year > 1
-              ? fromUTCtoLocal(errorData.StartDate, app.getLanguage())
-              : ''
-          const error: string = errorData.ErrorMessage?.trim() ?? ''
-          if (date !== '' && error !== '') {
-            errors.push({
-              Device:
-                app.getDevice(errorData.DeviceId)?.getName() ??
-                app.deviceIds[errorData.DeviceId],
-              Date: date,
-              Error: error,
-            })
-          }
-          return errors
-        }, [])
+        .reduce<ErrorDetails[]>(
+          (errors, { DeviceId, ErrorMessage, StartDate }) => {
+            const date: string =
+              DateTime.fromISO(StartDate).year > 1
+                ? fromUTCtoLocal(StartDate, app.getLanguage())
+                : ''
+            const error: string = ErrorMessage?.trim() ?? ''
+            if (date !== '' && error !== '') {
+              errors.push({
+                Device:
+                  app.getDevice(DeviceId)?.getName() ?? app.deviceIds[DeviceId],
+                Date: date,
+                Error: error,
+              })
+            }
+            return errors
+          },
+          []
+        )
         .reverse(),
       FromDateHuman: fromDate
         .setLocale(app.getLanguage())

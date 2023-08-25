@@ -152,17 +152,15 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     buildingId?: number
     driverId?: string
   } = {}): number[] {
-    return this.getDevices({ buildingId, driverId }).map(
-      (device: MELCloudDevice): number => device.id
-    )
+    return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
   }
 
   getDevice(
-    id: number,
+    deviceId: number,
     { buildingId, driverId }: { buildingId?: number; driverId?: string } = {}
   ): MELCloudDevice | undefined {
     return this.getDevices({ buildingId, driverId }).find(
-      (device: MELCloudDevice): boolean => device.id === id
+      ({ id }): boolean => id === deviceId
     )
   }
 
@@ -183,7 +181,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     )
     if (buildingId !== undefined) {
       devices = devices.filter(
-        (device: MELCloudDevice): boolean => device.buildingid === buildingId
+        ({ buildingid }): boolean => buildingid === buildingId
       )
     }
     return devices
@@ -215,13 +213,13 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
       deviceIds: Record<number, string>
       deviceList: ListDeviceAny[]
     }>(
-      (acc, building: Building) => {
+      (acc, { Structure: { Devices, Areas, Floors } }) => {
         const buildingDevices: ListDeviceAny[] = [
-          ...building.Structure.Devices,
-          ...building.Structure.Areas.flatMap((area) => area.Devices),
-          ...building.Structure.Floors.flatMap((floor) => [
+          ...Devices,
+          ...Areas.flatMap((area): ListDeviceAny[] => area.Devices),
+          ...Floors.flatMap((floor): ListDeviceAny[] => [
             ...floor.Devices,
-            ...floor.Areas.flatMap((area) => area.Devices),
+            ...floor.Areas.flatMap((area): ListDeviceAny[] => area.Devices),
           ]),
         ]
         const buildingDeviceIds: Record<number, string> =

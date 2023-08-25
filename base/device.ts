@@ -357,11 +357,10 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       }
     }
 
-    const processCapability = async (
-      capability: NonReportCapability<T>,
-      tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>,
-      effectiveFlag?: bigint
-    ): Promise<void> => {
+    const processCapability = async ([capability, { tag, effectiveFlag }]: [
+      NonReportCapability<T>,
+      ListCapabilityMapping<T>
+    ]): Promise<void> => {
       if (shouldProcess(capability, effectiveFlag)) {
         await this.convertFromDevice(capability, data[tag] as boolean | number)
       }
@@ -370,16 +369,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     const processCapabilities = async (
       capabilitiesArray: [NonReportCapability<T>, ListCapabilityMapping<T>][]
     ): Promise<void> => {
-      await Promise.all(
-        capabilitiesArray.map(
-          async ([capability, { tag, effectiveFlag }]: [
-            NonReportCapability<T>,
-            ListCapabilityMapping<T>
-          ]): Promise<void> => {
-            await processCapability(capability, tag, effectiveFlag)
-          }
-        )
-      )
+      await Promise.all(capabilitiesArray.map(processCapability))
     }
 
     await processCapabilities(regularCapabilities)
@@ -422,7 +412,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     total = false
   ): Promise<void> {
     const reportCapabilities: Record<
-      string,
+      ReportCapability<T>,
       ReportCapabilityMapping<T>
     > = this.getReportCapabilities(total)
     if (Object.keys(reportCapabilities).length === 0) {
@@ -439,52 +429,42 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
         'UsageDisclaimerPercentages' in data
           ? data.UsageDisclaimerPercentages.split(',').length
           : 1
-      await Promise.all(
-        Object.entries(reportCapabilities).map(
-          async ([capability, tags]: [
-            string,
-            ReportCapabilityMapping<T>
-          ]): Promise<void> => {
-            await this.updateReportCapability(
-              data,
-              capability as ReportCapability<T>,
-              tags,
-              deviceCount,
-              toDate
+
+      const updateReportCapability = async ([capability, tags]: [
+        ReportCapability<T>,
+        ReportCapabilityMapping<T>
+      ]): Promise<void> => {
+        const reportValue = (): number => {
+          if (capability.includes('cop')) {
+            return (
+              (data[tags[0]] as number) /
+              (tags.length > 1 ? (data[tags[1]] as number) : 1)
             )
           }
-        )
+          return (
+            tags.reduce<number>(
+              (sum, tag: keyof ReportData<T>) =>
+                sum +
+                (capability.includes('measure_power')
+                  ? (data[tag] as number[])[toDate.hour] * 1000
+                  : (data[tag] as number)),
+              0
+            ) / deviceCount
+          )
+        }
+        await this.setCapabilityValue(capability, reportValue())
+      }
+
+      await Promise.all(
+        (
+          Object.entries(reportCapabilities) as [
+            ReportCapability<T>,
+            ReportCapabilityMapping<T>
+          ][]
+        ).map(updateReportCapability)
       )
     }
     this.planEnergyReport(total)
-  }
-
-  async updateReportCapability<T extends MELCloudDriver>(
-    data: ReportData<T>,
-    capability: ReportCapability<T>,
-    tags: ReportCapabilityMapping<T>,
-    deviceCount: number,
-    toDate: DateTime
-  ): Promise<void> {
-    const reportValue = (): number => {
-      if (capability.includes('cop')) {
-        return (
-          (data[tags[0]] as number) /
-          (tags.length > 1 ? (data[tags[1]] as number) : 1)
-        )
-      }
-      return (
-        tags.reduce<number>(
-          (sum, tag: keyof ReportData<T>) =>
-            sum +
-            (capability.includes('measure_power')
-              ? (data[tag] as number[])[toDate.hour] * 1000
-              : (data[tag] as number)),
-          0
-        ) / deviceCount
-      )
-    }
-    await this.setCapabilityValue(capability, reportValue())
   }
 
   planEnergyReport(total = false): void {
