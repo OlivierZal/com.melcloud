@@ -160,7 +160,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     { buildingId, driverId }: { buildingId?: number; driverId?: string } = {}
   ): MELCloudDevice | undefined {
     return this.getDevices({ buildingId, driverId }).find(
-      ({ id }): boolean => id === deviceId
+      ({ id }) => id === deviceId
     )
   }
 
@@ -180,9 +180,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
         driver.getDevices() as MELCloudDevice[]
     )
     if (buildingId !== undefined) {
-      devices = devices.filter(
-        ({ buildingid }): boolean => buildingid === buildingId
-      )
+      devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
     return devices
   }
@@ -222,14 +220,12 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
             ...floor.Areas.flatMap((area): ListDeviceAny[] => area.Devices),
           ]),
         ]
-        const buildingDeviceIds: Record<number, string> =
-          buildingDevices.reduce<Record<number, string>>(
-            (ids, device: ListDeviceAny) => ({
-              ...ids,
-              [device.DeviceID]: device.DeviceName,
-            }),
-            {}
-          )
+        const buildingDeviceIds: Record<number, string> = Object.fromEntries(
+          buildingDevices.map((device: ListDeviceAny): [number, string] => [
+            device.DeviceID,
+            device.DeviceName,
+          ])
+        )
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
         acc.deviceList.push(...buildingDevices)
         return acc
@@ -239,8 +235,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     let { deviceList } = buildingData
     if (deviceType !== undefined) {
       deviceList = deviceList.filter(
-        (device: ListDeviceAny): boolean =>
-          deviceType === device.Device.DeviceType
+        (device: ListDeviceAny) => deviceType === device.Device.DeviceType
       )
     }
     this.deviceList = deviceList
@@ -270,15 +265,12 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
 
   async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
     await Promise.all(
-      this.getDevices().reduce<Promise<void>[]>(
-        (syncDevices, device: MELCloudDevice) => {
-          if (!device.isDiff()) {
-            syncDevices.push(device.syncDeviceFromList(syncMode))
-          }
-          return syncDevices
-        },
-        []
-      )
+      this.getDevices()
+        .filter((device: MELCloudDevice) => !device.isDiff())
+        .map(
+          (device: MELCloudDevice): Promise<void> =>
+            device.syncDeviceFromList(syncMode)
+        )
     )
   }
 

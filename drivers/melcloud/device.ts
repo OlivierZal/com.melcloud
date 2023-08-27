@@ -14,12 +14,13 @@ function isThermostatMode(value: string): boolean {
 function reverseMapping(
   mapping: Record<number | string, string>
 ): Record<string, string> {
-  return Object.entries(mapping).reduce<Record<string, string>>(
-    (reversedMapping, [deviceValue, capabilityValue]: [string, string]) => ({
-      ...reversedMapping,
-      [capabilityValue]: deviceValue,
-    }),
-    {}
+  return Object.fromEntries(
+    Object.entries(mapping).map(
+      ([deviceValue, capabilityValue]: [string, string]): [string, string] => [
+        capabilityValue,
+        deviceValue,
+      ]
+    )
   )
 }
 
