@@ -145,8 +145,9 @@ export = {
     const settingsLogin: DriverSetting[] = app.manifest.drivers.flatMap(
       (driver: ManifestDriver): DriverSetting[] => {
         const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
-          (pairSetting: PairSetting): boolean => pairSetting.id === 'login'
-        ) as LoginSetting | undefined
+          (pairSetting: PairSetting): pairSetting is LoginSetting =>
+            pairSetting.id === 'login'
+        )
         if (driverLoginSetting === undefined) {
           return []
         }
@@ -284,7 +285,7 @@ export = {
           .getDevices({ driverId: query?.driverId })
           .map(async (device: MELCloudDevice): Promise<void> => {
             const deviceChangedKeys: string[] = changedKeys.filter(
-              (changedKey: string): boolean =>
+              (changedKey: string) =>
                 body[changedKey] !== device.getSetting(changedKey)
             )
             if (deviceChangedKeys.length === 0) {
