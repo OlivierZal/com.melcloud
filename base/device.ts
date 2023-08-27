@@ -126,25 +126,17 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   getReportCapabilities<T extends MELCloudDriver>(
     total = false
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
-    return Object.entries(this.driver.reportCapabilityMapping).reduce<
-      Partial<Record<ReportCapability<T>, ReportCapabilityMapping<T>>>
-    >(
-      (
-        reportCapabilities,
-        [capability, tags]: [string, ReportCapabilityMapping<T>]
-      ) => {
-        const newReportCapabilities: Partial<
-          Record<ReportCapability<T>, ReportCapabilityMapping<T>>
-        > = { ...reportCapabilities }
-        if (
-          this.hasCapability(capability) &&
-          capability.includes('total') === total
-        ) {
-          newReportCapabilities[capability as ReportCapability<T>] = tags
-        }
-        return newReportCapabilities
-      },
-      {}
+    return Object.fromEntries(
+      Object.entries(this.driver.reportCapabilityMapping)
+        .filter(
+          ([capability]: [string, ReportCapabilityMapping<T>]) =>
+            this.hasCapability(capability) &&
+            capability.includes('total') === total
+        )
+        .map(([capability, tags]: [string, ReportCapabilityMapping<T>]) => [
+          capability as ReportCapability<T>,
+          tags,
+        ])
     ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   }
 
@@ -154,16 +146,16 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       ...this.getDashboardCapabilities(),
     ]
     await requiredCapabilities.reduce<Promise<void>>(
-      async (previousPromise, capability: string) => {
-        await previousPromise
+      async (acc, capability: string) => {
+        await acc
         return this.addCapability(capability)
       },
       Promise.resolve()
     )
     await this.getCapabilities().reduce<Promise<void>>(
-      async (previousPromise, capability: string) => {
+      async (acc, capability: string) => {
         if (!requiredCapabilities.includes(capability)) {
-          await previousPromise
+          await acc
           await this.removeCapability(capability)
         }
       },
@@ -245,18 +237,20 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
         acc,
         [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>]
       ) => {
-        if (!this.hasCapability(capability)) {
-          return acc
-        }
-        acc[tag] = this.convertToDevice(
-          capability as SetCapability<T>,
-          this.diff.get(capability as SetCapability<T>)
-        ) as SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
-        if (this.diff.has(capability as SetCapability<T>)) {
-          this.diff.delete(capability as SetCapability<T>)
-          acc.EffectiveFlags = Number(
-            BigInt(acc.EffectiveFlags) | effectiveFlag
-          )
+        if (this.hasCapability(capability)) {
+          acc[tag] = this.convertToDevice(
+            capability as SetCapability<T>,
+            this.diff.get(capability as SetCapability<T>)
+          ) as SetDeviceData<T>[Exclude<
+            keyof SetDeviceData<T>,
+            'EffectiveFlags'
+          >]
+          if (this.diff.has(capability as SetCapability<T>)) {
+            this.diff.delete(capability as SetCapability<T>)
+            acc.EffectiveFlags = Number(
+              BigInt(acc.EffectiveFlags) | effectiveFlag
+            )
+          }
         }
         return acc
       },
@@ -460,8 +454,8 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
         }
         return (
           tags.reduce<number>(
-            (sum, tag: keyof ReportData<T>) =>
-              sum +
+            (acc, tag: keyof ReportData<T>) =>
+              acc +
               (capability.includes('measure_power')
                 ? (data[tag] as number[])[toDate.hour] * 1000
                 : (data[tag] as number)),
@@ -576,8 +570,8 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     changedCapabilities: string[]
   ): Promise<void> {
     await changedCapabilities.reduce<Promise<void>>(
-      async (previousPromise, capability: string) => {
-        await previousPromise
+      async (acc, capability: string) => {
+        await acc
         if (newSettings[capability] === true) {
           await this.addCapability(capability)
         } else {

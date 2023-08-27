@@ -75,40 +75,37 @@ export = {
     const app: MELCloudApp = homey.app as MELCloudApp
     const buildings: Building[] = await app.getBuildings()
     return buildings
-      .reduce<Building[]>((buildingSettings, building: Building) => {
-        if (app.getDevices({ buildingId: building.ID }).length > 0) {
-          buildingSettings.push({
-            ...building,
-            HMStartDate: fromUTCtoLocal(building.HMStartDate),
-            HMEndDate: fromUTCtoLocal(building.HMEndDate),
-          })
-        }
-        return buildingSettings
-      }, [])
-      .sort((building1: Building, building2: Building): number =>
+      .filter(({ ID }) => app.getDevices({ buildingId: ID }).length > 0)
+      .map(
+        (building: Building): Building => ({
+          ...building,
+          HMStartDate: fromUTCtoLocal(building.HMStartDate),
+          HMEndDate: fromUTCtoLocal(building.HMEndDate),
+        })
+      )
+      .sort((building1: Building, building2: Building) =>
         building1.Name.localeCompare(building2.Name)
       )
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)
       .getDevices()
-      .reduce<DeviceSettings>((deviceSettings, device) => {
+      .reduce<DeviceSettings>((acc, device) => {
         const driverId: string = device.driver.id
-        const newDeviceSettings: DeviceSettings = { ...deviceSettings }
-        if (!(driverId in newDeviceSettings)) {
-          newDeviceSettings[driverId] = {}
+        if (!(driverId in acc)) {
+          acc[driverId] = {}
         }
         Object.entries(device.getSettings() as Settings).forEach(
           ([settingId, value]: [string, SettingValue]): void => {
-            if (!(settingId in newDeviceSettings[driverId])) {
-              newDeviceSettings[driverId][settingId] = []
+            if (!(settingId in acc[driverId])) {
+              acc[driverId][settingId] = []
             }
-            if (!newDeviceSettings[driverId][settingId].includes(value)) {
-              newDeviceSettings[driverId][settingId].push(value)
+            if (!acc[driverId][settingId].includes(value)) {
+              acc[driverId][settingId].push(value)
             }
           }
         )
-        return newDeviceSettings
+        return acc
       }, {})
   },
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
@@ -154,34 +151,28 @@ export = {
         return Object.values(
           Object.entries(driverLoginSetting.options).reduce<
             Record<string, DriverSetting>
-          >(
-            (
-              driverLoginSettings,
-              [option, label]: [string, Record<string, string>]
-            ) => {
-              const isPassword: boolean = option.startsWith('password')
-              const key: keyof LoginCredentials = isPassword
-                ? 'password'
-                : 'username'
-              const newDriverLoginSettings: Record<string, DriverSetting> = {
-                ...driverLoginSettings,
+          >((acc, [option, label]: [string, Record<string, string>]) => {
+            const isPassword: boolean = option.startsWith('password')
+            const key: keyof LoginCredentials = isPassword
+              ? 'password'
+              : 'username'
+            const newDriverLoginSettings: Record<string, DriverSetting> = {
+              ...acc,
+            }
+            if (!(key in newDriverLoginSettings)) {
+              newDriverLoginSettings[key] = {
+                groupId: 'login',
+                id: key,
+                title: '',
+                type: isPassword ? 'password' : 'text',
+                driverId: driver.id,
               }
-              if (!(key in newDriverLoginSettings)) {
-                newDriverLoginSettings[key] = {
-                  groupId: 'login',
-                  id: key,
-                  title: '',
-                  type: isPassword ? 'password' : 'text',
-                  driverId: driver.id,
-                }
-              }
-              newDriverLoginSettings[key][
-                option.endsWith('Placeholder') ? 'placeholder' : 'title'
-              ] = label[language]
-              return newDriverLoginSettings
-            },
-            {}
-          )
+            }
+            newDriverLoginSettings[key][
+              option.endsWith('Placeholder') ? 'placeholder' : 'title'
+            ] = label[language]
+            return newDriverLoginSettings
+          }, {})
         )
       }
     )
@@ -231,21 +222,21 @@ export = {
     return {
       Errors: data
         .reduce<ErrorDetails[]>(
-          (errors, { DeviceId, ErrorMessage, StartDate }) => {
+          (acc, { DeviceId, ErrorMessage, StartDate }) => {
             const date: string =
               DateTime.fromISO(StartDate).year > 1
                 ? fromUTCtoLocal(StartDate, app.getLanguage())
                 : ''
             const error: string = ErrorMessage?.trim() ?? ''
             if (date !== '' && error !== '') {
-              errors.push({
+              acc.push({
                 Device:
                   app.getDevice(DeviceId)?.getName() ?? app.deviceIds[DeviceId],
                 Date: date,
                 Error: error,
               })
             }
-            return errors
+            return acc
           },
           []
         )
@@ -291,9 +282,11 @@ export = {
             if (deviceChangedKeys.length === 0) {
               return
             }
-            const deviceSettings: Settings = deviceChangedKeys.reduce<Settings>(
-              (settings, key: string) => ({ ...settings, [key]: body[key] }),
-              {}
+            const deviceSettings: Settings = Object.fromEntries(
+              deviceChangedKeys.map((key: string): [string, SettingValue] => [
+                key,
+                body[key],
+              ])
             )
             try {
               await device.setSettings(deviceSettings)

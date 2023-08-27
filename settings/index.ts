@@ -63,18 +63,17 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     return Object.values(deviceSettings).reduce<DeviceSetting>(
       (flatDeviceSettings, settings: DeviceSetting) =>
         Object.entries(settings).reduce<DeviceSetting>(
-          (merged, [settingId, settingValues]: [string, SettingValue[]]) => {
-            const newMerged: DeviceSetting = { ...merged }
-            if (!(settingId in newMerged)) {
-              newMerged[settingId] = []
+          (acc, [settingId, settingValues]: [string, SettingValue[]]) => {
+            if (!(settingId in acc)) {
+              acc[settingId] = []
             }
-            newMerged[settingId].push(
+            acc[settingId].push(
               ...settingValues.filter(
                 (settingValue: SettingValue) =>
-                  !newMerged[settingId].includes(settingValue)
+                  !acc[settingId].includes(settingValue)
               )
             )
-            return newMerged
+            return acc
           },
           flatDeviceSettings
         ),
@@ -411,13 +410,13 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     }
 
     return settings.reduce<Settings>(
-      (body, element: HTMLInputElement | HTMLSelectElement) => {
+      (acc, element: HTMLInputElement | HTMLSelectElement) => {
         const settingValue: SettingValue = processSettingValue(element)
         const settingId: string = element.id.split('--')[0]
-        if (!shouldUpdate(settingValue, settingId)) {
-          return body
+        if (shouldUpdate(settingValue, settingId)) {
+          return { ...acc, [settingId]: settingValue }
         }
-        return { ...body, [settingId]: settingValue }
+        return acc
       },
       {}
     )
