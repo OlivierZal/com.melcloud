@@ -156,11 +156,8 @@ export = {
             const key: keyof LoginCredentials = isPassword
               ? 'password'
               : 'username'
-            const newDriverLoginSettings: Record<string, DriverSetting> = {
-              ...acc,
-            }
-            if (!(key in newDriverLoginSettings)) {
-              newDriverLoginSettings[key] = {
+            if (!(key in acc)) {
+              acc[key] = {
                 groupId: 'login',
                 id: key,
                 title: '',
@@ -168,10 +165,9 @@ export = {
                 driverId: driver.id,
               }
             }
-            newDriverLoginSettings[key][
-              option.endsWith('Placeholder') ? 'placeholder' : 'title'
-            ] = label[language]
-            return newDriverLoginSettings
+            acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+              label[language]
+            return acc
           }, {})
         )
       }
