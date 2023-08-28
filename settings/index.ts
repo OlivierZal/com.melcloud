@@ -35,6 +35,23 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
+  async function getHomeySettings(): Promise<Settings> {
+    return new Promise<Settings>((resolve, reject) => {
+      // @ts-expect-error: homey is partially typed
+      homey.get(
+        async (error: Error | null, settings: Settings): Promise<void> => {
+          if (error !== null) {
+            // @ts-expect-error: homey is partially typed
+            await homey.alert(error.message)
+            reject(error)
+            return
+          }
+          resolve(settings)
+        }
+      )
+    })
+  }
+
   async function getDeviceSettings(): Promise<DeviceSettings> {
     return new Promise<DeviceSettings>((resolve, reject) => {
       // @ts-expect-error: homey is partially typed
@@ -103,6 +120,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     })
   }
 
+  const homeySettings: Settings = await getHomeySettings()
+
   const deviceSettings: DeviceSettings = await getDeviceSettings()
   let flatDeviceSettings: DeviceSetting = flattenDeviceSettings(deviceSettings)
 
@@ -137,23 +156,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       driverSettings: {},
     }
   )
-
-  async function getHomeySettings(): Promise<Settings> {
-    return new Promise<Settings>((resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
-      homey.get(
-        async (error: Error | null, settings: Settings): Promise<void> => {
-          if (error !== null) {
-            // @ts-expect-error: homey is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
-          }
-          resolve(settings)
-        }
-      )
-    })
-  }
 
   const intMinValueMap = new WeakMap<HTMLInputElement, number>()
   const intMaxValueMap = new WeakMap<HTMLInputElement, number>()
@@ -627,8 +629,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   function generateCommonChildrenElements(): void {
     driverSettingsCommon
-      .filter(
-        (setting: DriverSetting) => ['checkbox', 'dropdown'].includes(setting.type)
+      .filter((setting: DriverSetting) =>
+        ['checkbox', 'dropdown'].includes(setting.type)
       )
       .forEach((setting: DriverSetting): void => {
         const divElement: HTMLDivElement = document.createElement('div')
@@ -735,9 +737,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     generateErrorLog()
   }
 
-  async function needsAuthentication(value = true): Promise<void> {
+  function needsAuthentication(value = true): void {
     if (loginElement.childElementCount === 0) {
-      const homeySettings: Settings = await getHomeySettings()
       const credentialKeys: string[] = ['username', 'password']
       ;[usernameElement, passwordElement] = credentialKeys.map(
         (credentialKey: string): HTMLInputElement | null => {
@@ -795,7 +796,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           return
         }
         await generate()
-        await needsAuthentication(false)
+        needsAuthentication(false)
       }
     )
   }
@@ -806,7 +807,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     try {
       await generate()
     } catch (error: unknown) {
-      await needsAuthentication()
+      needsAuthentication()
     }
   }
 
@@ -986,5 +987,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
+  if (homeySettings.ContextKey === undefined) {
+    needsAuthentication()
+    return
+  }
   await load()
 }
