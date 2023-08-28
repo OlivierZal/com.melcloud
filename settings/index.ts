@@ -739,8 +739,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   function needsAuthentication(value = true): void {
     if (loginElement.childElementCount === 0) {
-      const credentialKeys: string[] = ['username', 'password']
-      ;[usernameElement, passwordElement] = credentialKeys.map(
+      ;[usernameElement, passwordElement] = ['username', 'password'].map(
         (credentialKey: string): HTMLInputElement | null => {
           const driverSetting: DriverSetting | undefined =
             driverSettingsAll.find(
