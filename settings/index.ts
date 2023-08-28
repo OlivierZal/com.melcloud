@@ -681,49 +681,48 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       document.createElement('fieldset')
     fieldSetElement.className = 'homey-form-checkbox-set'
     let previousGroupLabel: string | undefined
-    driverSettings[driverId].forEach((setting: DriverSetting): void => {
-      if (setting.type !== 'checkbox') {
-        return
-      }
-      if (setting.groupLabel !== previousGroupLabel) {
-        previousGroupLabel = setting.groupLabel
-        const legendElement: HTMLLegendElement =
-          document.createElement('legend')
-        legendElement.className = 'homey-form-checkbox-set-title'
-        legendElement.innerText = setting.groupLabel ?? ''
-        fieldSetElement.appendChild(legendElement)
-      }
-      const labelElement: HTMLLabelElement = document.createElement('label')
-      labelElement.className = 'homey-form-checkbox'
-      const inputElement: HTMLInputElement = document.createElement('input')
-      inputElement.className = 'homey-form-checkbox-input'
-      inputElement.id = `${setting.id}--settings-${driverId}`
-      labelElement.htmlFor = inputElement.id
-      inputElement.type = 'checkbox'
-      const checked: boolean[] = deviceSettings[driverId][
-        setting.id
-      ] as boolean[]
-      if (checked.length === 1) {
-        ;[inputElement.checked] = checked
-      } else {
-        inputElement.indeterminate = true
-        inputElement.addEventListener('change', (): void => {
-          if (inputElement.indeterminate) {
-            inputElement.indeterminate = false
-          }
-        })
-      }
-      const checkmarkSpanElement: HTMLSpanElement =
-        document.createElement('span')
-      checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
-      const textSpanElement: HTMLSpanElement = document.createElement('span')
-      textSpanElement.className = 'homey-form-checkbox-text'
-      textSpanElement.innerText = setting.title
-      labelElement.appendChild(inputElement)
-      labelElement.appendChild(checkmarkSpanElement)
-      labelElement.appendChild(textSpanElement)
-      fieldSetElement.appendChild(labelElement)
-    })
+    driverSettings[driverId]
+      .filter((setting: DriverSetting) => setting.type !== 'checkbox')
+      .forEach((setting: DriverSetting): void => {
+        if (setting.groupLabel !== previousGroupLabel) {
+          previousGroupLabel = setting.groupLabel
+          const legendElement: HTMLLegendElement =
+            document.createElement('legend')
+          legendElement.className = 'homey-form-checkbox-set-title'
+          legendElement.innerText = setting.groupLabel ?? ''
+          fieldSetElement.appendChild(legendElement)
+        }
+        const labelElement: HTMLLabelElement = document.createElement('label')
+        labelElement.className = 'homey-form-checkbox'
+        const inputElement: HTMLInputElement = document.createElement('input')
+        inputElement.className = 'homey-form-checkbox-input'
+        inputElement.id = `${setting.id}--settings-${driverId}`
+        labelElement.htmlFor = inputElement.id
+        inputElement.type = 'checkbox'
+        const checked: boolean[] = deviceSettings[driverId][
+          setting.id
+        ] as boolean[]
+        if (checked.length === 1) {
+          ;[inputElement.checked] = checked
+        } else {
+          inputElement.indeterminate = true
+          inputElement.addEventListener('change', (): void => {
+            if (inputElement.indeterminate) {
+              inputElement.indeterminate = false
+            }
+          })
+        }
+        const checkmarkSpanElement: HTMLSpanElement =
+          document.createElement('span')
+        checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
+        const textSpanElement: HTMLSpanElement = document.createElement('span')
+        textSpanElement.className = 'homey-form-checkbox-text'
+        textSpanElement.innerText = setting.title
+        labelElement.appendChild(inputElement)
+        labelElement.appendChild(checkmarkSpanElement)
+        labelElement.appendChild(textSpanElement)
+        fieldSetElement.appendChild(labelElement)
+      })
     settingsElement.appendChild(fieldSetElement)
     addSettingsEventListener(
       document.getElementById(
