@@ -628,8 +628,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   function generateCommonChildrenElements(): void {
     driverSettingsCommon
       .filter(
-        (setting: DriverSetting) =>
-          !['checkbox', 'dropdown'].includes(setting.type)
+        (setting: DriverSetting) => ['checkbox', 'dropdown'].includes(setting.type)
       )
       .forEach((setting: DriverSetting): void => {
         const divElement: HTMLDivElement = document.createElement('div')
@@ -679,7 +678,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     fieldSetElement.className = 'homey-form-checkbox-set'
     let previousGroupLabel: string | undefined
     driverSettings[driverId]
-      .filter((setting: DriverSetting) => setting.type !== 'checkbox')
+      .filter((setting: DriverSetting) => setting.type === 'checkbox')
       .forEach((setting: DriverSetting): void => {
         if (setting.groupLabel !== previousGroupLabel) {
           previousGroupLabel = setting.groupLabel
