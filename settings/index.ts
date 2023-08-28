@@ -802,11 +802,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   async function load(): Promise<void> {
+    generateCommonChildrenElements()
     if (homeySettings.ContextKey === undefined) {
       needsAuthentication()
       return
     }
-    generateCommonChildrenElements()
     Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
     try {
       await generate()
