@@ -152,15 +152,14 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       },
       Promise.resolve()
     )
-    await this.getCapabilities().reduce<Promise<void>>(
-      async (acc, capability: string) => {
-        if (!requiredCapabilities.includes(capability)) {
-          await acc
-          await this.removeCapability(capability)
-        }
-      },
-      Promise.resolve()
-    )
+    await this.getCapabilities()
+      .filter(
+        (capability: string) => !requiredCapabilities.includes(capability)
+      )
+      .reduce<Promise<void>>(async (acc, capability: string) => {
+        await acc
+        await this.removeCapability(capability)
+      }, Promise.resolve())
   }
 
   registerCapabilityListeners<T extends MELCloudDriver>(): void {
