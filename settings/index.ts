@@ -276,12 +276,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     if (errors.length === 0) {
       return
     }
-    if (errorLogTBodyElement === null) {
-      errorLogTBodyElement = generateErrorLogTable(Object.keys(errors[0]))
-    }
     errors.forEach((error: ErrorDetails): void => {
       if (errorLogTBodyElement === null) {
-        return
+        errorLogTBodyElement = generateErrorLogTable(Object.keys(errors[0]))
       }
       const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
       Object.values(error).forEach((value: string): void => {
