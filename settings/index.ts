@@ -772,16 +772,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     unhide(authenticatingElement, value)
   }
 
-  async function load(): Promise<void> {
-    generateCommonChildrenElements()
-    Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
-    try {
-      await generate()
-    } catch (error: unknown) {
-      await needsAuthentication()
-    }
-  }
-
   async function login(): Promise<void> {
     const username: string = usernameElement?.value ?? ''
     const password: string = passwordElement?.value ?? ''
@@ -809,6 +799,16 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         await needsAuthentication(false)
       }
     )
+  }
+
+  async function load(): Promise<void> {
+    generateCommonChildrenElements()
+    Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
+    try {
+      await generate()
+    } catch (error: unknown) {
+      await needsAuthentication()
+    }
   }
 
   authenticateElement.addEventListener('click', (): void => {
