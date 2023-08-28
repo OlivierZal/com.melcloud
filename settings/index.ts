@@ -629,41 +629,44 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function generateCommonChildrenElements(): void {
-    driverSettingsCommon.forEach((setting: DriverSetting): void => {
-      if (!['checkbox', 'dropdown'].includes(setting.type)) {
-        return
-      }
-      const divElement: HTMLDivElement = document.createElement('div')
-      divElement.className = 'homey-form-group'
-      const labelElement = document.createElement('label')
-      labelElement.className = 'homey-form-label'
-      labelElement.innerText = setting.title
-      const selectElement = document.createElement('select')
-      selectElement.className = 'homey-form-select'
-      selectElement.id = `${setting.id}--setting`
-      labelElement.htmlFor = selectElement.id
-      ;[
-        { id: '' },
-        ...(setting.type === 'checkbox'
-          ? [{ id: 'false' }, { id: 'true' }]
-          : setting.values ?? []),
-      ].forEach(({ id, label }: { id: string; label?: string }): void => {
-        const optionElement: HTMLOptionElement =
-          document.createElement('option')
-        optionElement.value = id
-        if (id !== '') {
-          optionElement.innerText = label ?? homey.__(`settings.boolean.${id}`)
+    driverSettingsCommon
+      .filter(
+        (setting: DriverSetting) =>
+          !['checkbox', 'dropdown'].includes(setting.type)
+      )
+      .forEach((setting: DriverSetting): void => {
+        const divElement: HTMLDivElement = document.createElement('div')
+        divElement.className = 'homey-form-group'
+        const labelElement = document.createElement('label')
+        labelElement.className = 'homey-form-label'
+        labelElement.innerText = setting.title
+        const selectElement = document.createElement('select')
+        selectElement.className = 'homey-form-select'
+        selectElement.id = `${setting.id}--setting`
+        labelElement.htmlFor = selectElement.id
+        ;[
+          { id: '' },
+          ...(setting.type === 'checkbox'
+            ? [{ id: 'false' }, { id: 'true' }]
+            : setting.values ?? []),
+        ].forEach(({ id, label }: { id: string; label?: string }): void => {
+          const optionElement: HTMLOptionElement =
+            document.createElement('option')
+          optionElement.value = id
+          if (id !== '') {
+            optionElement.innerText =
+              label ?? homey.__(`settings.boolean.${id}`)
+          }
+          selectElement.appendChild(optionElement)
+        })
+        const values: SettingValue[] = flatDeviceSettings[setting.id]
+        if (values.length === 1) {
+          selectElement.value = String(values[0])
         }
-        selectElement.appendChild(optionElement)
+        divElement.appendChild(labelElement)
+        divElement.appendChild(selectElement)
+        settingsCommonElement.appendChild(divElement)
       })
-      const values: SettingValue[] = flatDeviceSettings[setting.id]
-      if (values.length === 1) {
-        selectElement.value = String(values[0])
-      }
-      divElement.appendChild(labelElement)
-      divElement.appendChild(selectElement)
-      settingsCommonElement.appendChild(divElement)
-    })
     addSettingsEventListener(
       applySettingsCommonElement,
       Array.from(settingsCommonElement.querySelectorAll('select'))
