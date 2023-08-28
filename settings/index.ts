@@ -438,6 +438,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       async (error: Error | null, data: HolidayModeData): Promise<void> => {
         refreshHolidayModeElement.classList.remove('is-disabled')
+        updateHolidayModeElement.classList.remove('is-disabled')
         if (error !== null) {
           // @ts-expect-error: homey is partially typed
           await homey.alert(error.message)
@@ -473,6 +474,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       async (error: Error | null, data: FrostProtectionData): Promise<void> => {
         refreshFrostProtectionElement.classList.remove('is-disabled')
+        updateFrostProtectionElement.classList.remove('is-disabled')
         if (error !== null) {
           // @ts-expect-error: homey is partially typed
           await homey.alert(error.message)
@@ -888,10 +890,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   refreshHolidayModeElement.addEventListener('click', (): void => {
     refreshHolidayModeElement.classList.add('is-disabled')
+    updateHolidayModeElement.classList.add('is-disabled')
     getBuildingHolidayModeSettings()
   })
 
   updateHolidayModeElement.addEventListener('click', (): void => {
+    refreshHolidayModeElement.classList.add('is-disabled')
     updateHolidayModeElement.classList.add('is-disabled')
     const Enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
@@ -905,6 +909,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
       body,
       async (error: Error | null): Promise<void> => {
+        refreshHolidayModeElement.classList.remove('is-disabled')
         updateHolidayModeElement.classList.remove('is-disabled')
         if (error !== null) {
           getBuildingHolidayModeSettings()
@@ -938,10 +943,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   refreshFrostProtectionElement.addEventListener('click', (): void => {
     refreshFrostProtectionElement.classList.add('is-disabled')
+    updateFrostProtectionElement.classList.add('is-disabled')
     getBuildingFrostProtectionSettings()
   })
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
+    refreshFrostProtectionElement.classList.add('is-disabled')
     updateFrostProtectionElement.classList.add('is-disabled')
     let MinimumTemperature = 0
     let MaximumTemperature = 0
@@ -949,6 +956,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       MinimumTemperature = int(frostProtectionMinimumTemperatureElement)
       MaximumTemperature = int(frostProtectionMaximumTemperatureElement)
     } catch (error: unknown) {
+      refreshFrostProtectionElement.classList.remove('is-disabled')
       updateFrostProtectionElement.classList.remove('is-disabled')
       getBuildingFrostProtectionSettings()
       // @ts-expect-error: homey is partially typed
@@ -977,6 +985,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       `/buildings/${buildingElement.value}/settings/frost_protection`,
       body,
       async (error: Error | null): Promise<void> => {
+        refreshFrostProtectionElement.classList.remove('is-disabled')
         updateFrostProtectionElement.classList.remove('is-disabled')
         if (error !== null) {
           getBuildingFrostProtectionSettings()
