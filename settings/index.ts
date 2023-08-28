@@ -812,7 +812,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   async function run(): Promise<void> {
-    if (homeySettings.token === undefined) {
+    if (homeySettings.ContextKey === undefined) {
       needsAuthentication()
       return
     }
