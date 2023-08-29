@@ -256,7 +256,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function unhide(element: HTMLDivElement, value = true): void {
-    element.classList.toggle('hidden', !value)
+    hide(element, !value)
   }
 
   function generateErrorLogTable(keys: string[]): HTMLTableSectionElement {
