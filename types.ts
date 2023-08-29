@@ -80,7 +80,6 @@ export interface DriverSetting {
 }
 
 export type DeviceSetting = Record<string, SettingValue[]>
-
 export type DeviceSettings = Record<string, DeviceSetting>
 
 export interface SuccessData {

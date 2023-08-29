@@ -399,12 +399,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       settingValue: SettingValue
     ): boolean => {
       if (settingValue !== null) {
-        const deviceSetting: SettingValue[] | undefined =
-          driverId !== undefined
+        const deviceSetting: SettingValue[] | undefined = (
+          driverId !== undefined && driverId in deviceSettings
             ? deviceSettings[driverId][settingId]
             : flatDeviceSettings[settingId]
+        ) as SettingValue[] | undefined
         return (
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           deviceSetting !== undefined &&
           (deviceSetting.length !== 1 || settingValue !== deviceSetting[0])
         )
@@ -551,7 +551,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function updateDeviceSettings(body: Settings, driverId?: string): void {
-    if (driverId !== undefined) {
+    if (driverId !== undefined && driverId in deviceSettings) {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, SettingValue]): void => {
           deviceSettings[driverId][settingId] = [settingValue]
@@ -561,8 +561,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     } else {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, SettingValue]): void => {
-          Object.keys(deviceSettings).forEach((id: string): void => {
-            deviceSettings[id][settingId] = [settingValue]
+          Object.keys(deviceSettings).forEach((driver: string): void => {
+            deviceSettings[driver][settingId] = [settingValue]
           })
           flatDeviceSettings[settingId] = [settingValue]
         }
@@ -670,9 +670,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           }
           selectElement.appendChild(optionElement)
         })
-        const values: SettingValue[] | undefined =
-          flatDeviceSettings[setting.id]
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        const values: SettingValue[] | undefined = flatDeviceSettings[
+          setting.id
+        ] as SettingValue[] | undefined
         if (values !== undefined && values.length === 1) {
           selectElement.value = String(values[0])
         }
@@ -712,10 +712,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         inputElement.id = `${setting.id}--settings-${driverId}`
         labelElement.htmlFor = inputElement.id
         inputElement.type = 'checkbox'
-        const checked: boolean[] = deviceSettings[driverId][
-          setting.id
-        ] as boolean[]
-        if (checked.length === 1) {
+        const checked: boolean[] | null =
+          driverId in deviceSettings
+            ? (deviceSettings[driverId][setting.id] as boolean[])
+            : null
+        if (checked !== null && checked.length === 1) {
           ;[inputElement.checked] = checked
         } else {
           inputElement.indeterminate = true
