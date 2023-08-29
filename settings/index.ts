@@ -395,8 +395,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     driverId?: string
   ): Settings {
     const shouldUpdate = (
-      settingValue: SettingValue,
-      settingId: string
+      settingId: string,
+      settingValue: SettingValue
     ): boolean => {
       if (settingValue !== null) {
         const deviceSetting: SettingValue[] | undefined =
@@ -412,16 +412,22 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       return false
     }
 
-    return settings.reduce<Settings>(
-      (acc, element: HTMLInputElement | HTMLSelectElement) => {
-        const settingValue: SettingValue = processSettingValue(element)
-        const settingId: string = element.id.split('--')[0]
-        if (shouldUpdate(settingValue, settingId)) {
-          return { ...acc, [settingId]: settingValue }
-        }
-        return acc
-      },
-      {}
+    return Object.fromEntries(
+      settings
+        .map(
+          (
+            element: HTMLInputElement | HTMLSelectElement
+          ): [string, SettingValue] | [null] => {
+            const settingId: string = element.id.split('--')[0]
+            const settingValue: SettingValue = processSettingValue(element)
+            return shouldUpdate(settingId, settingValue)
+              ? [settingId, settingValue]
+              : [null]
+          }
+        )
+        .filter(
+          ([settingId]: [string, SettingValue] | [null]) => settingId !== null
+        )
     )
   }
 

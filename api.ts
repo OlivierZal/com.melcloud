@@ -217,25 +217,20 @@ export = {
     const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
     return {
       Errors: data
-        .reduce<ErrorDetails[]>(
-          (acc, { DeviceId, ErrorMessage, StartDate }) => {
-            const date: string =
-              DateTime.fromISO(StartDate).year > 1
-                ? fromUTCtoLocal(StartDate, app.getLanguage())
-                : ''
-            const error: string = ErrorMessage?.trim() ?? ''
-            if (date !== '' && error !== '') {
-              acc.push({
-                Device:
-                  app.getDevice(DeviceId)?.getName() ?? app.deviceIds[DeviceId],
-                Date: date,
-                Error: error,
-              })
-            }
-            return acc
-          },
-          []
-        )
+        .map(({ DeviceId, ErrorMessage, StartDate }): ErrorDetails => {
+          const date: string =
+            DateTime.fromISO(StartDate).year > 1
+              ? fromUTCtoLocal(StartDate, app.getLanguage())
+              : ''
+          const error: string = ErrorMessage?.trim() ?? ''
+          return {
+            Device:
+              app.getDevice(DeviceId)?.getName() ?? app.deviceIds[DeviceId],
+            Date: date,
+            Error: error,
+          }
+        })
+        .filter(({ Date, Error }) => Date !== '' && Error !== '')
         .reverse(),
       FromDateHuman: fromDate
         .setLocale(app.getLanguage())
