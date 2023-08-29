@@ -641,10 +641,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       .forEach((setting: DriverSetting): void => {
         const divElement: HTMLDivElement = document.createElement('div')
         divElement.className = 'homey-form-group'
-        const labelElement = document.createElement('label')
+        const labelElement: HTMLLabelElement = document.createElement('label')
         labelElement.className = 'homey-form-label'
         labelElement.innerText = setting.title
-        const selectElement = document.createElement('select')
+        const selectElement: HTMLSelectElement =
+          document.createElement('select')
         selectElement.className = 'homey-form-select'
         selectElement.id = `${setting.id}--setting`
         labelElement.htmlFor = selectElement.id
