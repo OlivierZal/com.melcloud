@@ -230,7 +230,9 @@ export = {
             Error: error,
           }
         })
-        .filter(({ Date, Error }) => Date !== '' && Error !== '')
+        .filter(
+          (error: ErrorDetails) => error.Date !== '' && error.Error !== ''
+        )
         .reverse(),
       FromDateHuman: fromDate
         .setLocale(app.getLanguage())
