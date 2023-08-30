@@ -546,7 +546,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          buildingMapping = {}
           buildings.forEach((building: Building): void => {
             const { ID, Name } = building
             buildingMapping[ID] = {
@@ -829,8 +828,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   async function generate(): Promise<void> {
-    buildingMapping = await getBuildings()
     generateErrorLog()
+    buildingMapping = await getBuildings()
   }
 
   function needsAuthentication(value = true): void {
