@@ -767,9 +767,9 @@ export interface FrostProtectionPostData extends FrostProtectionSettings {
 }
 
 export interface FrostProtectionData {
-  readonly FPEnabled: boolean
-  readonly FPMaxTemperature: number
-  readonly FPMinTemperature: number
+  FPEnabled: boolean
+  FPMaxTemperature: number
+  FPMinTemperature: number
 }
 
 export interface HolidayModeSettings {
@@ -804,9 +804,9 @@ export interface HolidayModePostData {
 }
 
 export interface HolidayModeData {
-  readonly HMEnabled: boolean
-  readonly HMEndDate: string | null
-  readonly HMStartDate: string | null
+  HMEnabled: boolean
+  HMEndDate: string | null
+  HMStartDate: string | null
 }
 
 interface BaseListDevice {
@@ -836,7 +836,9 @@ export interface Structure {
   }[]
 }
 
-export interface Building extends FrostProtectionData, HolidayModeData {
+export interface BuildingData extends FrostProtectionData, HolidayModeData {}
+
+export interface Building extends Readonly<BuildingData> {
   readonly ID: number
   readonly Name: string
   readonly Structure: Structure
