@@ -30,7 +30,6 @@
         "end_date": "Einddatum",
         "start_date": "Begindatum"
       },
-      "refresh": "Herladen",
       "update": "Updaten"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "sinds"
     },
     "int_error": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "refresh": "Herladen",
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen"
   },

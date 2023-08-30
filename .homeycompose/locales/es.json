@@ -30,7 +30,6 @@
         "end_date": "Fecha de finalización",
         "start_date": "Fecha de inicio"
       },
-      "refresh": "Recargar",
       "update": "Actualizar"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "desde el"
     },
     "int_error": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "refresh": "Recargar",
     "success": "Actualización exitosa.",
     "title": "Configuración de MELCloud"
   },

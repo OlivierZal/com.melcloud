@@ -30,7 +30,6 @@
         "start_date": "Date de début"
       },
       "legend": "Paramètres des bâtiments",
-      "refresh": "Rafraîchir",
       "update": "Mettre à jour"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "depuis le"
     },
     "int_error": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
     "title": "Paramètres MELCloud"
   },

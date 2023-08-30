@@ -30,7 +30,6 @@
         "end_date": "Slutdatum",
         "start_date": "Startdatum"
       },
-      "refresh": "Ladda om",
       "update": "Uppdatera"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "sedan"
     },
     "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar"
   },

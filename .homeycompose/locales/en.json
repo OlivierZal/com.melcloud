@@ -30,7 +30,6 @@
         "end_date": "End date",
         "start_date": "Start date"
       },
-      "refresh": "Refresh",
       "update": "Update"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "since"
     },
     "int_error": "__name__: must be an integer between __min__ and __max__.",
+    "refresh": "Refresh",
     "success": "Update successful.",
     "title": "MELCloud Settings"
   },

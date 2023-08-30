@@ -30,7 +30,6 @@
         "end_date": "Slutdatum",
         "start_date": "Startdatum"
       },
-      "refresh": "Ladda om",
       "update": "Uppdatera"
     },
     "devices": {
@@ -56,13 +55,19 @@
         "Error": "Fel"
       },
       "error": "Välj ett datum före\n__fromDateHuman__.",
-      "error_count": { "0": "fel", "1": "fel", "234": "fel", "plural": "fel" },
+      "error_count": {
+        "0": "fel",
+        "1": "fel",
+        "234": "fel",
+        "plural": "fel"
+      },
       "legend": "Fellogg",
       "period": "Sedan __fromDateHuman__:",
       "see": "Se alla fel",
       "since": "sedan"
     },
     "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar"
   },

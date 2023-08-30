@@ -30,7 +30,6 @@
         "start_date": "Startdato"
       },
       "legend": "Bygningsindstillinger",
-      "refresh": "Genindlæs",
       "update": "Opdater"
     },
     "devices": {
@@ -68,6 +67,7 @@
       "since": "siden den"
     },
     "int_error": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "refresh": "Genindlæs",
     "success": "Opdatering lykkedes.",
     "title": "MELCloud-indstillinger"
   },
