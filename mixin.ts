@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios, {
   type AxiosError,

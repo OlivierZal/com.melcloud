@@ -24,6 +24,7 @@ import type {
   SetDeviceData,
   Settings,
   SettingValue,
+  Store,
   SyncFromMode,
   SyncMode,
   UpdateDeviceData,
@@ -142,7 +143,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
 
   async handleCapabilities(): Promise<void> {
     const requiredCapabilities: string[] = [
-      ...this.driver.getRequiredCapabilities(this.getStore()),
+      ...this.driver.getRequiredCapabilities(this.getStore() as Store),
       ...this.getDashboardCapabilities(),
     ]
     await requiredCapabilities.reduce<Promise<void>>(
