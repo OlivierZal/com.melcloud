@@ -6,41 +6,35 @@ const {
 } = require('eslint-config-airbnb-base')
 const prettier = require('eslint-config-prettier')
 const importPlugin = require('eslint-plugin-import')
-const globals = require('globals')
+const envs = require('globals')
 
-const envs = {
+const envMapping = {
   es6: 'es2015',
-}
-const plugins = {
-  import: importPlugin,
+  node: 'node',
 }
 
 function convertIntoEslintFlatConfig(config) {
-  const newConfig = { ...config, languageOptions: {} }
-  if ('env' in newConfig) {
-    newConfig.languageOptions.globals = Object.keys(newConfig.env)
-      .filter((key) => newConfig.env[key] === true)
-      .reduce((acc, key) => {
-        if (key in globals) {
-          return { ...acc, ...globals[key] }
-        }
-        if (key in envs && envs[key] in globals) {
-          return { ...acc, ...globals[envs[key]] }
-        }
-        return acc
-      }, {})
-    delete newConfig.env
+  const { env, globals, plugins, parserOptions, ...oldConfig } = config
+  return {
+    ...oldConfig,
+    languageOptions: {
+      ...('env' in config && {
+        globals: Object.fromEntries(
+          Object.keys(env)
+            .filter(
+              (key) =>
+                env[key] === true &&
+                key in envMapping &&
+                envMapping[key] in envs
+            )
+            .flatMap((key) => Object.entries(envs[envMapping[key]]))
+        ),
+        ...('parserOptions' in config && {
+          parserOptions,
+        }),
+      }),
+    },
   }
-  if ('parserOptions' in newConfig) {
-    newConfig.languageOptions.parserOptions = newConfig.parserOptions
-    delete newConfig.parserOptions
-  }
-  if ('plugins' in newConfig) {
-    newConfig.plugins = Object.fromEntries(
-      newConfig.plugins.map((plugin) => [plugin, plugins[plugin]])
-    )
-  }
-  return newConfig
 }
 
 const jsCustomRules = {
@@ -100,6 +94,11 @@ module.exports = [
     rules: jsCustomRules,
   },
   {
+    plugins: {
+      import: importPlugin,
+    },
+  },
+  {
     files: ['eslint.config.js'],
     rules: {
       'global-require': 'off',
@@ -128,9 +127,6 @@ module.exports = [
   {
     languageOptions: {
       ecmaVersion: 'latest',
-      globals: {
-        ...globals.node,
-      },
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
