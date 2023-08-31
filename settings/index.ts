@@ -440,7 +440,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           }
         )
         .filter(
-          ([settingId]: [string, SettingValue] | [null]) => settingId !== null
+          (
+            entry: [string, SettingValue] | [null]
+          ): entry is [string, SettingValue] => entry[0] !== null
         )
     )
   }
