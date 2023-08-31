@@ -1,31 +1,47 @@
 const tsParser = require('@typescript-eslint/parser')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
-const airbnbBestPractices = require('eslint-config-airbnb-base/rules/best-practices')
-const airbnbErrors = require('eslint-config-airbnb-base/rules/errors')
-const airbnbES6 = require('eslint-config-airbnb-base/rules/es6')
-const airbnbImports = require('eslint-config-airbnb-base/rules/imports')
-const airbnbNode = require('eslint-config-airbnb-base/rules/node')
-const airbnbStrict = require('eslint-config-airbnb-base/rules/strict')
-const airbnbStyle = require('eslint-config-airbnb-base/rules/style')
-const airbnbVariables = require('eslint-config-airbnb-base/rules/variables')
+const {
+  extends: airbnbRules,
+  ...airbnbConfig
+} = require('eslint-config-airbnb-base')
 const prettier = require('eslint-config-prettier')
 const importPlugin = require('eslint-plugin-import')
 const globals = require('globals')
 
-airbnbES6.languageOptions = {
-  parserOptions: airbnbES6.parserOptions,
+const envs = {
+  es6: 'es2015',
 }
-delete airbnbES6.env
-delete airbnbES6.parserOptions
-
-airbnbImports.languageOptions = {
-  parserOptions: airbnbImports.parserOptions,
+const plugins = {
+  import: importPlugin,
 }
-delete airbnbImports.env
-delete airbnbImports.parserOptions
-delete airbnbImports.plugins
 
-delete airbnbNode.env
+function convertIntoEslintFlatConfig(config) {
+  const newConfig = { ...config, languageOptions: {} }
+  if ('env' in newConfig) {
+    newConfig.languageOptions.globals = Object.keys(newConfig.env)
+      .filter((key) => newConfig.env[key] === true)
+      .reduce((acc, key) => {
+        if (key in globals) {
+          return { ...acc, ...globals[key] }
+        }
+        if (key in envs && envs[key] in globals) {
+          return { ...acc, ...globals[envs[key]] }
+        }
+        return acc
+      }, {})
+    delete newConfig.env
+  }
+  if ('parserOptions' in newConfig) {
+    newConfig.languageOptions.parserOptions = newConfig.parserOptions
+    delete newConfig.parserOptions
+  }
+  if ('plugins' in newConfig) {
+    newConfig.plugins = Object.fromEntries(
+      newConfig.plugins.map((plugin) => [plugin, plugins[plugin]])
+    )
+  }
+  return newConfig
+}
 
 const jsCustomRules = {
   'no-bitwise': 'off',
@@ -83,17 +99,16 @@ module.exports = [
   {
     ignores: ['.homeybuild/'],
   },
-  airbnbBestPractices,
-  airbnbErrors,
-  airbnbNode,
-  airbnbStyle,
-  airbnbVariables,
-  airbnbES6,
-  airbnbImports,
-  airbnbStrict,
+  ...airbnbRules.map((rule) => convertIntoEslintFlatConfig(require(rule))),
+  convertIntoEslintFlatConfig(airbnbConfig),
+  {
+    rules: jsCustomRules,
+  },
   {
     files: ['eslint.config.js'],
     rules: {
+      'global-require': 'off',
+      'import/no-dynamic-require': 'off',
       'import/no-extraneous-dependencies': [
         'error',
         {
@@ -104,6 +119,9 @@ module.exports = [
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
     rules: {
       ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
       ...tsPlugin.configs['strict-type-checked'].rules,
@@ -112,10 +130,6 @@ module.exports = [
     },
   },
   importPlugin.configs.typescript,
-  {
-    rules: jsCustomRules,
-  },
-  prettier,
   {
     languageOptions: {
       ecmaVersion: 'latest',
@@ -131,10 +145,6 @@ module.exports = [
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-      import: importPlugin,
-    },
     settings: {
       'import/resolver': {
         typescript: {
@@ -143,4 +153,5 @@ module.exports = [
       },
     },
   },
+  prettier,
 ]
