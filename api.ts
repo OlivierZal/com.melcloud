@@ -111,67 +111,68 @@ export = {
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
-    const settings: DriverSetting[] = app.manifest.drivers.flatMap(
-      (driver: ManifestDriver): DriverSetting[] =>
-        (driver.settings ?? []).flatMap(
-          (setting: ManifestDriverSetting): DriverSetting[] =>
-            (setting.children ?? []).map(
-              (child: ManifestDriverSettingData): DriverSetting => ({
-                id: child.id,
-                title: child.label[language],
-                type: child.type,
-                min: child.min,
-                max: child.max,
-                units: child.units,
-                values: child.values?.map(
-                  (value: {
-                    id: string
-                    label: Record<string, string>
-                  }): { id: string; label: string } => ({
-                    id: value.id,
-                    label: value.label[language],
-                  })
-                ),
-                driverId: driver.id,
-                groupId: setting.id,
-                groupLabel: setting.label[language],
-              })
-            )
-        )
+    const settings: DriverSetting[] = (
+      app.manifest.drivers as ManifestDriver[]
+    ).flatMap((driver: ManifestDriver): DriverSetting[] =>
+      (driver.settings ?? []).flatMap(
+        (setting: ManifestDriverSetting): DriverSetting[] =>
+          (setting.children ?? []).map(
+            (child: ManifestDriverSettingData): DriverSetting => ({
+              id: child.id,
+              title: child.label[language],
+              type: child.type,
+              min: child.min,
+              max: child.max,
+              units: child.units,
+              values: child.values?.map(
+                (value: {
+                  id: string
+                  label: Record<string, string>
+                }): { id: string; label: string } => ({
+                  id: value.id,
+                  label: value.label[language],
+                })
+              ),
+              driverId: driver.id,
+              groupId: setting.id,
+              groupLabel: setting.label[language],
+            })
+          )
+      )
     )
-    const settingsLogin: DriverSetting[] = app.manifest.drivers.flatMap(
-      (driver: ManifestDriver): DriverSetting[] => {
-        const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
-          (pairSetting: PairSetting): pairSetting is LoginSetting =>
-            pairSetting.id === 'login'
-        )
-        if (driverLoginSetting === undefined) {
-          return []
-        }
-        return Object.values(
-          Object.entries(driverLoginSetting.options).reduce<
-            Record<string, DriverSetting>
-          >((acc, [option, label]: [string, Record<string, string>]) => {
-            const isPassword: boolean = option.startsWith('password')
-            const key: keyof LoginCredentials = isPassword
-              ? 'password'
-              : 'username'
-            if (!(key in acc)) {
-              acc[key] = {
-                groupId: 'login',
-                id: key,
-                title: '',
-                type: isPassword ? 'password' : 'text',
-                driverId: driver.id,
-              }
-            }
-            acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-              label[language]
-            return acc
-          }, {})
-        )
+    const settingsLogin: DriverSetting[] = (
+      app.manifest.drivers as ManifestDriver[]
+    ).flatMap((driver: ManifestDriver): DriverSetting[] => {
+      const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
+        (pairSetting: PairSetting): pairSetting is LoginSetting =>
+          pairSetting.id === 'login'
+      )
+      if (driverLoginSetting === undefined) {
+        return []
       }
-    )
+      return Object.values(
+        Object.entries(driverLoginSetting.options).reduce<
+          Record<string, DriverSetting>
+        >((acc, [option, label]: [string, Record<string, string>]) => {
+          const isPassword: boolean = option.startsWith('password')
+          const key: keyof LoginCredentials = isPassword
+            ? 'password'
+            : 'username'
+          if (!(key in acc)) {
+            acc[key] = {
+              groupId: 'login',
+              id: key,
+              title: '',
+              type: isPassword ? 'password' : 'text',
+              driverId: driver.id,
+            }
+          }
+          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+            label[language]
+          return acc
+        }, {})
+      )
+    })
     return [...settings, ...settingsLogin]
   },
   async getFrostProtectionSettings({

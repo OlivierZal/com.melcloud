@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type Homey from 'homey/lib/Homey'
 import type {
   Building,
