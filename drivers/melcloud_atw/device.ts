@@ -7,6 +7,7 @@ import type {
   ExtendedSetCapability,
   MELCloudDriver,
   SetCapability,
+  Store,
   ListDeviceData,
 } from '../../types'
 
@@ -18,7 +19,7 @@ const operationModeFromDevice: string[] = [
   'defrost',
   'standby',
   'legionella',
-]
+] as const
 
 function getOtherCapabilityZone(capability: string): string {
   return capability.endsWith('.zone1')
@@ -55,15 +56,15 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue
   ): Promise<void> {
-    const { canCool, hasZone2 } = this.getStore()
-    if (hasZone2 === true) {
+    const { canCool, hasZone2 } = this.getStore() as Store
+    if (hasZone2) {
       const zoneValue = Number(value)
       const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(
           capability
         ) as ExtendedSetCapability<MELCloudDriverAtw>
       let otherZoneValue = Number(this.getCapabilityValue(otherZone))
-      if (canCool === true) {
+      if (canCool) {
         if (zoneValue > 2) {
           if (otherZoneValue < 3) {
             otherZoneValue = Math.min(otherZoneValue + 3, 4)
@@ -82,7 +83,9 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
 
   convertToDevice(
     capability: SetCapability<MELCloudDriverAtw>,
-    value: CapabilityValue = this.getCapabilityValue(capability)
+    value: CapabilityValue = this.getCapabilityValue(
+      capability
+    ) as CapabilityValue
   ): boolean | number {
     switch (capability) {
       case 'operation_mode_zone.zone1':
@@ -118,7 +121,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         newValue =
           newValue === true
             ? 'idle'
-            : this.getCapabilityValue('operation_mode_state')
+            : (this.getCapabilityValue('operation_mode_state') as string)
         break
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
@@ -140,7 +143,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     if (data === null) {
       return
     }
-    const { canCool, hasZone2 } = this.getStore()
+    const { canCool, hasZone2 } = this.getStore() as Store
     const { CanCool, HasZone2 } = data
     if (canCool !== CanCool || hasZone2 !== HasZone2) {
       if (canCool !== CanCool) {

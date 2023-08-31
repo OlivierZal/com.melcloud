@@ -5,6 +5,7 @@ import WithAPIAndLogging from '../mixin'
 import type {
   Capability,
   CapabilityValue,
+  DeviceDetails,
   ExtendedCapability,
   ExtendedSetCapability,
   GetDeviceData,
@@ -62,7 +63,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   async onInit<T extends MELCloudDriver>(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
 
-    const { id, buildingid } = this.getData()
+    const { id, buildingid } = this.getData() as DeviceDetails['data']
     this.id = id
     this.buildingid = buildingid
     this.diff = new Map<SetCapability<T>, CapabilityValue>()
@@ -118,7 +119,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     return this.diff.size > 0
   }
 
-  getDashboardCapabilities(settings: Settings = this.getSettings()): string[] {
+  getDashboardCapabilities(settings: Settings = this.getSettings() as Settings): string[] {
     return Object.keys(settings).filter(
       (setting: string) => settings[setting] === true
     )
@@ -260,7 +261,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
 
   convertToDevice(
     capability: SetCapability<MELCloudDriver>,
-    value: CapabilityValue = this.getCapabilityValue(capability)
+    value: CapabilityValue = this.getCapabilityValue(capability) as CapabilityValue
   ): boolean | number {
     if (capability === 'onoff') {
       return this.getSetting('always_on') === true ? true : (value as boolean)

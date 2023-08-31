@@ -102,7 +102,9 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
 
   convertToDevice(
     capability: SetCapability<MELCloudDriverAta>,
-    value: CapabilityValue = this.getCapabilityValue(capability)
+    value: CapabilityValue = this.getCapabilityValue(
+      capability
+    ) as CapabilityValue
   ): boolean | number {
     switch (capability) {
       case 'operation_mode':
@@ -137,8 +139,10 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   async updateThermostatMode(): Promise<void> {
-    const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: string = this.getCapabilityValue('operation_mode')
+    const isOn: boolean = this.getCapabilityValue('onoff') as boolean
+    const operationMode: string = this.getCapabilityValue(
+      'operation_mode'
+    ) as string
     await this.setCapabilityValue(
       'thermostat_mode',
       isOn && isThermostatMode(operationMode) ? operationMode : 'off'
