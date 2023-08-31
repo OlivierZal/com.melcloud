@@ -61,6 +61,8 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     this.getCapabilityMapping = getCapabilityMappingAtw
     this.listCapabilityMapping = listCapabilityMappingAtw
     this.reportCapabilityMapping = reportCapabilityMappingAtw
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     ;(this.manifest.capabilities as SetCapabilityAtw[]).forEach(
       (capability: SetCapabilityAtw): void => {
         if (capability.startsWith('operation_mode_state')) {
