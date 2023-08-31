@@ -546,22 +546,36 @@ async function onHomeyReady(homey: Homey): Promise<void> {
             reject(error)
             return
           }
-          buildings.forEach((building: Building): void => {
-            const { ID, Name } = building
-            buildingMapping[ID] = {
-              HMEnabled: building.HMEnabled,
-              HMStartDate: building.HMStartDate,
-              HMEndDate: building.HMEndDate,
-              FPEnabled: building.FPEnabled,
-              FPMinTemperature: building.FPMinTemperature,
-              FPMaxTemperature: building.FPMaxTemperature,
-            }
-            const optionElement: HTMLOptionElement =
-              document.createElement('option')
-            optionElement.value = String(ID)
-            optionElement.innerText = Name
-            buildingElement.appendChild(optionElement)
-          })
+          buildingMapping = Object.fromEntries(
+            buildings.map((building: Building): [string, BuildingData] => {
+              const {
+                ID,
+                Name,
+                FPEnabled,
+                FPMinTemperature,
+                FPMaxTemperature,
+                HMEnabled,
+                HMStartDate,
+                HMEndDate,
+              } = building
+              const optionElement: HTMLOptionElement =
+                document.createElement('option')
+              optionElement.value = String(ID)
+              optionElement.innerText = Name
+              buildingElement.appendChild(optionElement)
+              return [
+                String(ID),
+                {
+                  FPEnabled,
+                  FPMinTemperature,
+                  FPMaxTemperature,
+                  HMEnabled,
+                  HMStartDate,
+                  HMEndDate,
+                },
+              ]
+            })
+          )
           refreshBuildingSettings()
           resolve(buildingMapping)
         }
