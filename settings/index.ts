@@ -674,17 +674,39 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     })
   }
 
+  function updateCommonChildrenElement(element: HTMLSelectElement): void {
+    const values: SettingValue[] | undefined = flatDeviceSettings[
+      element.id.split('--')[0]
+    ] as SettingValue[] | undefined
+    if (values !== undefined && values.length === 1) {
+      element.value = String(values[0]) // eslint-disable-line no-param-reassign
+    }
+  }
+
   function addRefreshSettingsCommonEventListener(
     elements: HTMLSelectElement[]
   ): void {
-    elements.forEach((element: HTMLSelectElement): void => {
-      const values: SettingValue[] | undefined = flatDeviceSettings[
-        element.id.split('--')[0]
-      ] as SettingValue[] | undefined
-      if (values !== undefined && values.length === 1) {
-        element.value = String(values[0]) // eslint-disable-line no-param-reassign
-      }
-    })
+    elements.forEach(updateCommonChildrenElement)
+  }
+
+  function updateCheckboxChildrenElement(
+    element: HTMLInputElement,
+    driverId: string
+  ): void {
+    const checked: boolean[] | undefined =
+      driverId in deviceSettings
+        ? (deviceSettings[driverId][element.id.split('--')[0]] as boolean[])
+        : undefined
+    if (checked !== undefined && checked.length === 1) {
+      ;[element.checked] = checked // eslint-disable-line no-param-reassign
+    } else {
+      element.indeterminate = true // eslint-disable-line no-param-reassign
+      element.addEventListener('change', (): void => {
+        if (element.indeterminate) {
+          element.indeterminate = false // eslint-disable-line no-param-reassign
+        }
+      })
+    }
   }
 
   function addRefreshSettingsDriverEventListener(
@@ -692,20 +714,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     driverId: string
   ): void {
     elements.forEach((element: HTMLInputElement): void => {
-      const checked: boolean[] | undefined =
-        driverId in deviceSettings
-          ? (deviceSettings[driverId][element.id.split('--')[0]] as boolean[])
-          : undefined
-      if (checked !== undefined && checked.length === 1) {
-        ;[element.checked] = checked // eslint-disable-line no-param-reassign
-      } else {
-        element.indeterminate = true // eslint-disable-line no-param-reassign
-        element.addEventListener('change', (): void => {
-          if (element.indeterminate) {
-            element.indeterminate = false // eslint-disable-line no-param-reassign
-          }
-        })
-      }
+      updateCheckboxChildrenElement(element, driverId)
     })
   }
 
@@ -770,12 +779,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           }
           selectElement.appendChild(optionElement)
         })
-        const values: SettingValue[] | undefined = flatDeviceSettings[
-          setting.id
-        ] as SettingValue[] | undefined
-        if (values !== undefined && values.length === 1) {
-          selectElement.value = String(values[0])
-        }
+        updateCommonChildrenElement(selectElement)
         divElement.appendChild(labelElement)
         divElement.appendChild(selectElement)
         settingsCommonElement.appendChild(divElement)
@@ -811,20 +815,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         inputElement.id = `${setting.id}--settings-${driverId}`
         labelElement.htmlFor = inputElement.id
         inputElement.type = 'checkbox'
-        const checked: boolean[] | undefined =
-          driverId in deviceSettings
-            ? (deviceSettings[driverId][setting.id] as boolean[])
-            : undefined
-        if (checked !== undefined && checked.length === 1) {
-          ;[inputElement.checked] = checked
-        } else {
-          inputElement.indeterminate = true
-          inputElement.addEventListener('change', (): void => {
-            if (inputElement.indeterminate) {
-              inputElement.indeterminate = false
-            }
-          })
-        }
+        updateCheckboxChildrenElement(inputElement, driverId)
         const checkmarkSpanElement: HTMLSpanElement =
           document.createElement('span')
         checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
