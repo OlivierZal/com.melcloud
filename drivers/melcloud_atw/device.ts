@@ -19,7 +19,7 @@ const operationModeFromDevice: string[] = [
   'defrost',
   'standby',
   'legionella',
-] as const
+]
 
 function getOtherCapabilityZone(capability: string): string {
   return capability.endsWith('.zone1')
