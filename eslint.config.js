@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const tsParser = require('@typescript-eslint/parser')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 const {
@@ -88,6 +89,7 @@ module.exports = [
   {
     ignores: ['.homeybuild/'],
   },
+  // eslint-disable-next-line global-require, import/no-dynamic-require
   ...airbnbRules.map((rule) => convertIntoEslintFlatConfig(require(rule))),
   convertIntoEslintFlatConfig(airbnbConfig),
   {
@@ -96,19 +98,6 @@ module.exports = [
   {
     plugins: {
       import: importPlugin,
-    },
-  },
-  {
-    files: ['eslint.config.js'],
-    rules: {
-      'global-require': 'off',
-      'import/no-dynamic-require': 'off',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: true,
-        },
-      ],
     },
   },
   {
