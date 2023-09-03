@@ -414,11 +414,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       settingValue: SettingValue
     ): boolean => {
       if (settingValue !== null) {
-        const deviceSetting: SettingValue[] | undefined = (
-          driverId !== undefined && driverId in deviceSettings
-            ? deviceSettings[driverId][settingId]
+        const deviceSetting: SettingValue[] | undefined =
+          driverId !== undefined
+            ? (deviceSettings[driverId] as DeviceSetting | undefined)?.[
+                settingId
+              ]
             : flatDeviceSettings[settingId]
-        ) as SettingValue[] | undefined
         return (
           deviceSetting !== undefined &&
           (deviceSetting.length !== 1 || settingValue !== deviceSetting[0])
@@ -693,11 +694,10 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     element: HTMLInputElement,
     driverId: string
   ): void {
-    const checked: boolean[] | undefined =
-      driverId in deviceSettings
-        ? (deviceSettings[driverId][element.id.split('--')[0]] as boolean[])
-        : undefined
-    if (checked !== undefined && checked.length === 1) {
+    const checked: boolean[] = deviceSettings[driverId][
+      element.id.split('--')[0]
+    ] as boolean[]
+    if (checked.length === 1) {
       ;[element.checked] = checked // eslint-disable-line no-param-reassign
     } else {
       element.indeterminate = true // eslint-disable-line no-param-reassign
