@@ -38,7 +38,7 @@ function convertIntoEslintFlatConfig(config) {
   }
 }
 
-const jsCustomRules = {
+const customRules = {
   'no-bitwise': 'off',
   'no-underscore-dangle': [
     'error',
@@ -68,20 +68,7 @@ const tsCustomRules = {
       varsIgnorePattern: 'onHomeyReady',
     },
   ],
-  'import/extensions': [
-    'error',
-    'ignorePackages',
-    {
-      js: 'ignorePackages',
-      jsx: 'ignorePackages',
-      mjs: 'ignorePackages',
-      cjs: 'ignorePackages',
-      ts: 'never',
-      tsx: 'never',
-      mts: 'never',
-      cts: 'never',
-    },
-  ],
+  'import/extensions': 'off',
   'import/no-duplicates': ['error', { 'prefer-inline': true }],
 }
 
@@ -93,12 +80,7 @@ module.exports = [
   ...airbnbRules.map((rule) => convertIntoEslintFlatConfig(require(rule))),
   convertIntoEslintFlatConfig(airbnbConfig),
   {
-    rules: jsCustomRules,
-  },
-  {
-    plugins: {
-      import: importPlugin,
-    },
+    rules: customRules,
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
@@ -110,6 +92,11 @@ module.exports = [
       ...tsPlugin.configs['strict-type-checked'].rules,
       ...tsPlugin.configs['stylistic-type-checked'].rules,
       ...tsCustomRules,
+    },
+  },
+  {
+    plugins: {
+      import: importPlugin,
     },
   },
   importPlugin.configs.typescript,
