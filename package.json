@@ -7,7 +7,6 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
-  "type": "commonjs",
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",
