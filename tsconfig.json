@@ -3,6 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
+    "module": "NodeNext",
     "outDir": ".homeybuild/",
     "target": "ESNext",
     "skipLibCheck": true,
