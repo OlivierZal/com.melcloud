@@ -121,5 +121,8 @@
   },
   "20.0.0": {
     "en": "Use new eslint config."
+  },
+  "21.0.0": {
+    "en": "Reshaped code."
   }
 }
