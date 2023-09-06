@@ -71,7 +71,8 @@ export default abstract class BaseMELCloudDriver extends Driver {
     this.app = this.homey.app as MELCloudApp
   }
 
-  onPair(session: PairSession): void {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
       (data: LoginCredentials): Promise<boolean> => this.app.login(data)
@@ -110,7 +111,8 @@ export default abstract class BaseMELCloudDriver extends Driver {
 
   abstract getRequiredCapabilities(store: Store): string[]
 
-  onRepair(session: PairSession): void {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
       (data: LoginCredentials): Promise<boolean> => this.app.login(data)
