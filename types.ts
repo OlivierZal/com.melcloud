@@ -18,10 +18,10 @@ export interface Settings extends Record<string, SettingValue> {
 }
 
 export interface HomeySettings extends Record<string, SettingValue> {
-  readonly username?: string
-  readonly password?: string
-  readonly ContextKey?: string
-  readonly Expiry?: string
+  readonly username?: string | null
+  readonly password?: string | null
+  readonly ContextKey?: string | null
+  readonly Expiry?: string | null
 }
 
 export interface Store {
