@@ -1,7 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import WithAPIAndLogging from '../mixin'
+import { WithAPIAndLogging } from '../mixins'
 import type {
   Capability,
   CapabilityValue,

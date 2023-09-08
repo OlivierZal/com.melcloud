@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import WithAPIAndLogging from './mixin'
+import { WithAPIAndLogging } from './mixins'
 import type {
   Building,
   ErrorLogData,
