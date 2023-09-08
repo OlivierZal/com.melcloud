@@ -148,9 +148,4 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
       isOn && isThermostatMode(operationMode) ? operationMode : 'off'
     )
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  async updateStore(): Promise<void> {
-    // Not implemented.
-  }
 }

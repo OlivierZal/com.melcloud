@@ -186,15 +186,14 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
       )
   }
 
-  getRequiredCapabilities(store: Store): string[] {
-    const { canCool, hasZone2 } = store
+  getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
     return [
       ...this.capabilitiesAtw,
-      ...(canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
-      ...(hasZone2
+      ...(CanCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
+      ...(HasZone2
         ? [
             ...this.zone2CapabilitiesAtw,
-            ...(canCool
+            ...(CanCool
               ? this.coolZone2CapabilitiesAtw
               : this.notCoolZone2CapabilitiesAtw),
           ]

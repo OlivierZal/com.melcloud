@@ -13,6 +13,7 @@ import type {
   FrostProtectionSettings,
   HolidayModeData,
   HolidayModeSettings,
+  HomeySettings,
   LoginCredentials,
   Settings,
   SettingValue,
@@ -37,11 +38,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
-  const homeySettings: Settings = await new Promise<Settings>(
+  const homeySettings: HomeySettings = await new Promise<HomeySettings>(
     (resolve, reject) => {
       // @ts-expect-error: homey is partially typed
       homey.get(
-        async (error: Error | null, settings: Settings): Promise<void> => {
+        async (error: Error | null, settings: HomeySettings): Promise<void> => {
           if (error !== null) {
             // @ts-expect-error: homey is partially typed
             await homey.alert(error.message)

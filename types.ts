@@ -17,9 +17,16 @@ export interface Settings extends Record<string, SettingValue> {
   readonly always_on?: boolean
 }
 
+export interface HomeySettings extends Record<string, SettingValue> {
+  readonly username?: string
+  readonly password?: string
+  readonly ContextKey?: string
+  readonly Expiry?: string
+}
+
 export interface Store {
-  readonly canCool: boolean
-  readonly hasZone2: boolean
+  readonly CanCool: boolean
+  readonly HasZone2: boolean
 }
 
 export interface ManifestDriverSettingData {

@@ -119,7 +119,9 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     return this.diff.size > 0
   }
 
-  getDashboardCapabilities(settings: Settings = this.getSettings() as Settings): string[] {
+  getDashboardCapabilities(
+    settings: Settings = this.getSettings() as Settings
+  ): string[] {
     return Object.keys(settings).filter(
       (setting: string) => settings[setting] === true
     )
@@ -261,7 +263,9 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
 
   convertToDevice(
     capability: SetCapability<MELCloudDriver>,
-    value: CapabilityValue = this.getCapabilityValue(capability) as CapabilityValue
+    value: CapabilityValue = this.getCapabilityValue(
+      capability
+    ) as CapabilityValue
   ): boolean | number {
     if (capability === 'onoff') {
       return this.getSetting('always_on') === true ? true : (value as boolean)
@@ -398,9 +402,28 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     ) as ListDevice<T> | undefined
   }
 
-  abstract updateStore<T extends MELCloudDriver>(
+  async updateStore<T extends MELCloudDriver>(
     data: ListDeviceData<T> | null
-  ): Promise<void>
+  ): Promise<void> {
+    if (data === null) {
+      return
+    }
+    const store = this.getStore() as Store
+    const updates = await Promise.all(
+      Object.entries(store)
+        .filter(
+          ([key]: [string, boolean]) =>
+            store[key as keyof Store] !== data[key as keyof Store]
+        )
+        .map(async ([key, value]: [string, boolean]): Promise<boolean> => {
+          await this.setStoreValue(key, value)
+          return true
+        })
+    )
+    if (updates.some(Boolean)) {
+      await this.handleCapabilities()
+    }
+  }
 
   async runEnergyReports(): Promise<void> {
     await this.runEnergyReport()

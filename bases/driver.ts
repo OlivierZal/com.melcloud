@@ -95,10 +95,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
         BuildingID,
         Device: { CanCool, HasZone2 },
       }): DeviceDetails => {
-        const store: Store = {
-          canCool: CanCool,
-          hasZone2: HasZone2,
-        }
+        const store: Store = { CanCool, HasZone2 }
         return {
           name: DeviceName,
           data: { id: DeviceID, buildingid: BuildingID },

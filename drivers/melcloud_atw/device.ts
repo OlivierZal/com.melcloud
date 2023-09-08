@@ -5,10 +5,8 @@ import type {
   Capability,
   CapabilityValue,
   ExtendedSetCapability,
-  MELCloudDriver,
   SetCapability,
   Store,
-  ListDeviceData,
 } from '../../types'
 
 const operationModeFromDevice: string[] = [
@@ -56,15 +54,15 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue
   ): Promise<void> {
-    const { canCool, hasZone2 } = this.getStore() as Store
-    if (hasZone2) {
+    const { CanCool, HasZone2 } = this.getStore() as Store
+    if (HasZone2) {
       const zoneValue = Number(value)
       const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(
           capability
         ) as ExtendedSetCapability<MELCloudDriverAtw>
       let otherZoneValue = Number(this.getCapabilityValue(otherZone))
-      if (canCool) {
+      if (CanCool) {
         if (zoneValue > 2) {
           if (otherZoneValue < 3) {
             otherZoneValue = Math.min(otherZoneValue + 3, 4)
@@ -135,25 +133,6 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       default:
     }
     await this.setCapabilityValue(capability, newValue)
-  }
-
-  async updateStore<T extends MELCloudDriver>(
-    data: ListDeviceData<T> | null
-  ): Promise<void> {
-    if (data === null) {
-      return
-    }
-    const { canCool, hasZone2 } = this.getStore() as Store
-    const { CanCool, HasZone2 } = data
-    if (canCool !== CanCool || hasZone2 !== HasZone2) {
-      if (canCool !== CanCool) {
-        await this.setStoreValue('canCool', CanCool)
-      }
-      if (hasZone2 !== HasZone2) {
-        await this.setStoreValue('hasZone2', HasZone2)
-      }
-      await this.handleCapabilities()
-    }
   }
 
   // eslint-disable-next-line class-methods-use-this
