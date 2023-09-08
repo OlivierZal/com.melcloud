@@ -1,4 +1,4 @@
-import BaseMELCloudDriver from '../../base/driver'
+import BaseMELCloudDriver from '../../bases/driver'
 import type MELCloudDeviceAtw from './device'
 import {
   getCapabilityMappingAtw,

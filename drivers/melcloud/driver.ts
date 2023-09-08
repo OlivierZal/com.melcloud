@@ -1,10 +1,12 @@
-import BaseMELCloudDriver from '../../base/driver'
+import BaseMELCloudDriver from '../../bases/driver'
 import {
   getCapabilityMappingAta,
   listCapabilityMappingAta,
   setCapabilityMappingAta,
   reportCapabilityMappingAta,
-type  FlowArgsAta,type  SetCapabilityAta } from '../../types'
+  type FlowArgsAta,
+  type SetCapabilityAta,
+} from '../../types'
 
 const flowCapabilities: SetCapabilityAta[] = [
   'operation_mode',

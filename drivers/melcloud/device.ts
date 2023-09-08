@@ -1,4 +1,4 @@
-import BaseMELCloudDevice from '../../base/device'
+import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAta from './driver'
 import type {
   Capability,

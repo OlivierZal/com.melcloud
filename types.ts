@@ -7,7 +7,7 @@ export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
 
 export type SyncFromMode = 'syncFrom'
-export type SyncMode = 'syncTo' | SyncFromMode
+export type SyncMode = SyncFromMode | 'syncTo'
 
 export type CapabilityValue = boolean | number | string
 

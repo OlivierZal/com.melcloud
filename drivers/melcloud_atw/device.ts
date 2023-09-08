@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import BaseMELCloudDevice from '../../base/device'
+import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAtw from './driver'
 import type {
   Capability,
