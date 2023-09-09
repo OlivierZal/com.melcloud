@@ -7,6 +7,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
+import type { HomeySettingValue } from './types'
 
 type TimerFunction = (
   callback: () => Promise<void>,
@@ -20,7 +21,7 @@ type TimerClass = new (...args: any[]) => {
     setInterval: TimerFunction
     setTimeout: TimerFunction
     settings: {
-      get(key: string): string | null
+      get(key: string): HomeySettingValue
     }
   }
 }

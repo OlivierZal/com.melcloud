@@ -11,18 +11,23 @@ export type SyncMode = SyncFromMode | 'syncTo'
 
 export type CapabilityValue = boolean | number | string
 
-export type SettingValue = boolean | number | string | null | undefined
+type ValueOf<T> = T[keyof T]
 
-export interface Settings extends Record<string, SettingValue> {
+export interface Settings
+  extends Record<string, boolean | number | string | null | undefined> {
   readonly always_on?: boolean
 }
 
-export interface HomeySettings extends Record<string, SettingValue> {
-  readonly username?: string | null
-  readonly password?: string | null
-  readonly ContextKey?: string | null
-  readonly Expiry?: string | null
+export type SettingValue = ValueOf<Settings>
+
+export interface HomeySettings {
+  readonly username: string | null
+  readonly password: string | null
+  readonly ContextKey: string | null
+  readonly Expiry: string | null
 }
+
+export type HomeySettingValue = ValueOf<HomeySettings>
 
 export interface Store {
   readonly CanCool: boolean
@@ -84,6 +89,15 @@ export interface DriverSetting {
   readonly type: string
   readonly units?: string
   readonly values?: { readonly id: string; readonly label: string }[]
+}
+
+export interface LoginCredentials {
+  password: string
+  username: string
+}
+
+export interface LoginDriverSetting extends DriverSetting {
+  readonly id: keyof LoginCredentials
 }
 
 export type DeviceSetting = Record<string, SettingValue[]>
@@ -742,11 +756,6 @@ export interface DeviceDetails {
 export interface FlowArgsAta
   extends Record<Readonly<SetCapability<MELCloudDriverAta>>, string> {
   readonly device: MELCloudDeviceAta
-}
-
-export interface LoginCredentials {
-  password: string
-  username: string
 }
 
 export interface LoginPostData {

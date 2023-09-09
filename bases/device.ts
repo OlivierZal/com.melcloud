@@ -537,8 +537,8 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     newSettings,
     changedKeys,
   }: {
-    changedKeys: string[]
     newSettings: Settings
+    changedKeys: string[]
   }): Promise<void> {
     if (
       changedKeys.some((setting: string) => !['always_on'].includes(setting))

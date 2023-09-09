@@ -15,12 +15,12 @@ import type {
   HolidayModePostData,
   HolidayModeSettings,
   HomeySettings,
+  HomeySettingValue,
   ListDeviceAny,
   LoginCredentials,
   LoginData,
   LoginPostData,
   MELCloudDevice,
-  SettingValue,
   SuccessData,
   SyncFromMode,
 } from './types'
@@ -391,13 +391,13 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     handleResponse(data)
   }
 
-  setSettings(settings: HomeySettings): void {
+  setSettings(settings: Partial<HomeySettings>): void {
     Object.entries(settings)
       .filter(
-        ([setting, value]: [string, SettingValue]) =>
+        ([setting, value]: [string, HomeySettingValue]) =>
           value !== this.homey.settings.get(setting)
       )
-      .forEach(([setting, value]: [string, SettingValue]): void => {
+      .forEach(([setting, value]: [string, HomeySettingValue]): void => {
         this.homey.settings.set(setting, value)
       })
   }

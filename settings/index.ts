@@ -15,6 +15,7 @@ import type {
   HolidayModeSettings,
   HomeySettings,
   LoginCredentials,
+  LoginDriverSetting,
   Settings,
   SettingValue,
 } from '../types'
@@ -38,22 +39,25 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
-  const homeySettings: HomeySettings = await new Promise<HomeySettings>(
-    (resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
-      homey.get(
-        async (error: Error | null, settings: HomeySettings): Promise<void> => {
-          if (error !== null) {
-            // @ts-expect-error: homey is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
-          }
-          resolve(settings)
+  const homeySettings: Partial<HomeySettings> = await new Promise<
+    Partial<HomeySettings>
+  >((resolve, reject) => {
+    // @ts-expect-error: homey is partially typed
+    homey.get(
+      async (
+        error: Error | null,
+        settings: Partial<HomeySettings>
+      ): Promise<void> => {
+        if (error !== null) {
+          // @ts-expect-error: homey is partially typed
+          await homey.alert(error.message)
+          reject(error)
+          return
         }
-      )
-    }
-  )
+        resolve(settings)
+      }
+    )
+  })
 
   const deviceSettings: DeviceSettings = await new Promise<DeviceSettings>(
     (resolve, reject) => {
@@ -843,15 +847,21 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   function needsAuthentication(value = true): void {
     if (loginElement.childElementCount === 0) {
-      ;[usernameElement, passwordElement] = ['username', 'password'].map(
-        (credentialKey: string): HTMLInputElement | null => {
-          const driverSetting: DriverSetting | undefined =
+      const credentialKeys: (keyof LoginCredentials)[] = [
+        'username',
+        'password',
+      ]
+      ;[usernameElement, passwordElement] = credentialKeys.map(
+        (credentialKey: keyof LoginCredentials): HTMLInputElement | null => {
+          const driverSetting: LoginDriverSetting | undefined =
             driverSettingsAll.find(
-              (setting: DriverSetting) => setting.id === credentialKey
+              (setting): setting is LoginDriverSetting =>
+                setting.id === credentialKey
             )
           if (driverSetting === undefined) {
             return null
           }
+          const { id } = driverSetting
           const divElement: HTMLDivElement = document.createElement('div')
           divElement.classList.add('homey-form-group')
           const labelElement: HTMLLabelElement = document.createElement('label')
@@ -861,9 +871,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           inputElement.classList.add('homey-form-input')
           inputElement.type = driverSetting.type
           inputElement.placeholder = driverSetting.placeholder ?? ''
-          inputElement.value =
-            (homeySettings[driverSetting.id] as string | undefined) ?? ''
-          inputElement.id = driverSetting.id
+          inputElement.value = (homeySettings[id] as string | undefined) ?? ''
+          inputElement.id = id
           labelElement.htmlFor = inputElement.id
           loginElement.appendChild(labelElement)
           loginElement.appendChild(inputElement)
