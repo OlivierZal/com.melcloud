@@ -127,7 +127,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         newValue = String(newValue)
         break
       case 'alarm_generic.defrost_mode':
-        newValue = Boolean(newValue)
+        newValue = !!newValue
         break
       default:
     }

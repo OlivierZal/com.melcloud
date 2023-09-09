@@ -116,7 +116,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   }
 
   isDiff(): boolean {
-    return this.diff.size > 0
+    return !!this.diff.size
   }
 
   getDashboardCapabilities(
@@ -348,8 +348,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       switch (syncMode) {
         case 'syncTo':
           return (
-            effectiveFlag === undefined ||
-            Boolean(effectiveFlag & effectiveFlags)
+            effectiveFlag === undefined || !!(effectiveFlag & effectiveFlags)
           )
         case 'syncFrom':
           return !(capability in combinedCapabilities)
@@ -435,7 +434,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       ReportCapability<T>,
       ReportCapabilityMapping<T>
     > = this.getReportCapabilities(total)
-    if (Object.keys(reportCapabilities).length === 0) {
+    if (!Object.keys(reportCapabilities).length) {
       return
     }
     const toDate: DateTime = DateTime.now().minus(
@@ -561,7 +560,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     const changedEnergyKeys: string[] = changedKeys.filter(
       (setting: string) => setting in this.driver.reportCapabilityMapping
     )
-    if (changedEnergyKeys.length === 0) {
+    if (!changedEnergyKeys.length) {
       return
     }
     await Promise.all(
@@ -569,7 +568,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
         const changed: string[] = changedEnergyKeys.filter(
           (setting: string) => setting.includes('total') === total
         )
-        if (changed.length === 0) {
+        if (!changed.length) {
           return
         }
         if (changed.some((setting: string) => newSettings[setting])) {

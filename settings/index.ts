@@ -295,7 +295,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function generateErrorLogTableData(errors: ErrorDetails[]): void {
-    if (errors.length === 0) {
+    if (!errors.length) {
       return
     }
     errors.forEach((error: ErrorDetails): void => {
@@ -311,7 +311,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function getErrorCountText(count: number): string {
-    if (count === 0) {
+    if (!count) {
       return homey.__('settings.error_log.error_count.0')
     }
     if (count === 1) {
@@ -446,7 +446,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         .filter(
           (
             entry: [string, SettingValue] | [null]
-          ): entry is [string, SettingValue] => Boolean(entry[0])
+          ): entry is [string, SettingValue] => !!entry[0]
         )
     )
   }
@@ -653,7 +653,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         homey.alert(error instanceof Error ? error.message : String(error))
         return
       }
-      if (Object.keys(body).length === 0) {
+      if (!Object.keys(body).length) {
         // @ts-expect-error: homey is partially typed
         homey.alert(homey.__('settings.devices.apply.nothing'))
         return
@@ -842,7 +842,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function needsAuthentication(value = true): void {
-    if (loginElement.childElementCount === 0) {
+    if (!loginElement.childElementCount) {
       const credentialKeys: (keyof LoginCredentials)[] = [
         'username',
         'password',

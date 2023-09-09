@@ -110,7 +110,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     const ms: number = expiry
       ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
       : 0
-    if (ms > 0) {
+    if (ms) {
       const maxTimeout: number = 2 ** 31 - 1
       const interval: number = Math.min(ms, maxTimeout)
       this.loginTimeout = this.setTimeout(
@@ -138,7 +138,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     driverId?: string
   } = {}): number {
     const deviceIds = this.getDeviceIds({ buildingId, driverId })
-    if (deviceIds.length === 0) {
+    if (!deviceIds.length) {
       throw new Error(this.homey.__('app.building.no_device', { buildingId }))
     }
     return deviceIds[0]

@@ -69,7 +69,7 @@ export = {
     const app: MELCloudApp = homey.app as MELCloudApp
     const buildings: Building[] = await app.getBuildings()
     return buildings
-      .filter(({ ID }) => app.getDevices({ buildingId: ID }).length > 0)
+      .filter(({ ID }) => app.getDevices({ buildingId: ID }).length)
       .map(
         (building: Building): Building => ({
           ...building,
@@ -258,7 +258,7 @@ export = {
     query?: { driverId: string }
   }): Promise<void> {
     const changedKeys: string[] = Object.keys(body)
-    if (changedKeys.length === 0) {
+    if (!changedKeys.length) {
       return
     }
     try {
@@ -270,7 +270,7 @@ export = {
               (changedKey: string) =>
                 body[changedKey] !== device.getSetting(changedKey)
             )
-            if (deviceChangedKeys.length === 0) {
+            if (!deviceChangedKeys.length) {
               return
             }
             const deviceSettings: Settings = Object.fromEntries(
