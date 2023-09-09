@@ -122,9 +122,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   getDashboardCapabilities(
     settings: Settings = this.getSettings() as Settings
   ): string[] {
-    return Object.keys(settings).filter(
-      (setting: string) => settings[setting] === true
-    )
+    return Object.keys(settings).filter((setting: string) => settings[setting])
   }
 
   getReportCapabilities<T extends MELCloudDriver>(
@@ -204,7 +202,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   }
 
   async setAlwaysOnWarning(): Promise<void> {
-    if (this.getSetting('always_on') === true) {
+    if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
       await this.setWarning(null)
     }
@@ -268,7 +266,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     ) as CapabilityValue
   ): boolean | number {
     if (capability === 'onoff') {
-      return this.getSetting('always_on') === true ? true : (value as boolean)
+      return this.getSetting('always_on') ? true : (value as boolean)
     }
     return value as boolean | number
   }
@@ -548,7 +546,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       await this.setWarning(null)
     }
 
-    if (changedKeys.includes('always_on') && newSettings.always_on === true) {
+    if (changedKeys.includes('always_on') && newSettings.always_on) {
       await this.onCapability('onoff', true)
     } else if (
       changedKeys.some(
@@ -574,13 +572,12 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
         if (changed.length === 0) {
           return
         }
-        if (changed.some((setting: string) => newSettings[setting] === true)) {
+        if (changed.some((setting: string) => newSettings[setting])) {
           await this.runEnergyReport(total)
         } else if (
           Object.entries(newSettings).every(
             ([setting, value]: [string, SettingValue]) =>
-              !(setting in this.driver.reportCapabilityMapping) ||
-              value === false
+              !(setting in this.driver.reportCapabilityMapping) || !value
           )
         ) {
           this.clearEnergyReportPlan(total)
@@ -596,7 +593,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     await changedCapabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
         await acc
-        if (newSettings[capability] === true) {
+        if (newSettings[capability]) {
           await this.addCapability(capability)
         } else {
           await this.removeCapability(capability)

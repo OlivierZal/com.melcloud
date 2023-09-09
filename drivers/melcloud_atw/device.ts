@@ -116,10 +116,9 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         break
       case 'operation_mode_state.zone1':
       case 'operation_mode_state.zone2':
-        newValue =
-          newValue === true
-            ? 'idle'
-            : (this.getCapabilityValue('operation_mode_state') as string)
+        newValue = newValue
+          ? 'idle'
+          : (this.getCapabilityValue('operation_mode_state') as string)
         break
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
