@@ -286,7 +286,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode
   ): Promise<void> {
-    if (data?.EffectiveFlags === undefined) {
+    if (!data?.EffectiveFlags) {
       return
     }
     const effectiveFlags = BigInt(data.EffectiveFlags)
@@ -403,7 +403,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   async updateStore<T extends MELCloudDriver>(
     data: ListDeviceData<T> | null
   ): Promise<void> {
-    if (data === null) {
+    if (!data) {
       return
     }
     const store = this.getStore() as Store
@@ -455,7 +455,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
     toDate: DateTime,
     reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   ): Promise<void> {
-    if (data === null) {
+    if (!data) {
       return
     }
     const deviceCount: number =
@@ -500,7 +500,7 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
 
   planEnergyReport(total = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
-    if (this.reportTimeout[totalString] !== null) {
+    if (this.reportTimeout[totalString]) {
       return
     }
     const type = `${total ? 'total' : 'regular'} energy report`

@@ -38,7 +38,7 @@ function handleFailure(data: FailureData): never {
 }
 
 function handleResponse(data: SuccessData | FailureData): void {
-  if (data.AttributeErrors !== null) {
+  if (data.AttributeErrors) {
     handleFailure(data)
   }
 }
@@ -65,7 +65,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     this.clearLoginRefresh()
     try {
       const { username, password } = loginCredentials
-      if (username === '' || password === '') {
+      if (!username || !password) {
         return false
       }
       const postData: LoginPostData = {
@@ -78,7 +78,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
         '/Login/ClientLogin',
         postData
       )
-      if (data.LoginData?.ContextKey === undefined) {
+      if (!data.LoginData?.ContextKey) {
         return false
       }
       const { ContextKey, Expiry } = data.LoginData
@@ -107,10 +107,9 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
       password: this.homey.settings.get('password') ?? '',
     }
     const expiry: string | null = this.homey.settings.get('Expiry')
-    const ms: number =
-      expiry !== null
-        ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-        : 0
+    const ms: number = expiry
+      ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+      : 0
     if (ms > 0) {
       const maxTimeout: number = 2 ** 31 - 1
       const interval: number = Math.min(ms, maxTimeout)
@@ -172,14 +171,14 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     driverId?: string
   } = {}): MELCloudDevice[] {
     let devices: MELCloudDevice[] = (
-      driverId !== undefined
+      driverId
         ? [this.homey.drivers.getDriver(driverId)]
         : Object.values(this.homey.drivers.getDrivers())
     ).flatMap(
       (driver: Driver): MELCloudDevice[] =>
         driver.getDevices() as MELCloudDevice[]
     )
-    if (buildingId !== undefined) {
+    if (buildingId) {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
     return devices
@@ -233,7 +232,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
       { deviceIds: {}, deviceList: [] }
     )
     let { deviceList } = buildingData
-    if (deviceType !== undefined) {
+    if (deviceType) {
       deviceList = deviceList.filter(
         (device: ListDeviceAny) => deviceType === device.Device.DeviceType
       )
@@ -275,7 +274,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
   }
 
   planSyncFromDevices(): void {
-    if (this.syncInterval !== null) {
+    if (this.syncInterval) {
       return
     }
     this.syncInterval = this.setInterval(
@@ -349,7 +348,7 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
     settings: HolidayModeSettings
   ): Promise<void> {
     const { Enabled, StartDate, EndDate } = settings
-    if (Enabled && (StartDate === '' || EndDate === '')) {
+    if (Enabled && (!StartDate || !EndDate)) {
       throw new Error(this.homey.__('app.holiday_mode.date_missing'))
     }
     const utcStartDate: DateTime | null = Enabled
@@ -360,28 +359,26 @@ export = class MELCloudApp extends WithAPIAndLogging(App) {
       : null
     const postData: HolidayModePostData = {
       Enabled,
-      StartDate:
-        utcStartDate !== null
-          ? {
-              Year: utcStartDate.year,
-              Month: utcStartDate.month,
-              Day: utcStartDate.day,
-              Hour: utcStartDate.hour,
-              Minute: utcStartDate.minute,
-              Second: utcStartDate.second,
-            }
-          : null,
-      EndDate:
-        utcEndDate !== null
-          ? {
-              Year: utcEndDate.year,
-              Month: utcEndDate.month,
-              Day: utcEndDate.day,
-              Hour: utcEndDate.hour,
-              Minute: utcEndDate.minute,
-              Second: utcEndDate.second,
-            }
-          : null,
+      StartDate: utcStartDate
+        ? {
+            Year: utcStartDate.year,
+            Month: utcStartDate.month,
+            Day: utcStartDate.day,
+            Hour: utcStartDate.hour,
+            Minute: utcStartDate.minute,
+            Second: utcStartDate.second,
+          }
+        : null,
+      EndDate: utcEndDate
+        ? {
+            Year: utcEndDate.year,
+            Month: utcEndDate.month,
+            Day: utcEndDate.day,
+            Hour: utcEndDate.hour,
+            Minute: utcEndDate.minute,
+            Second: utcEndDate.second,
+          }
+        : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
     }
     const { data } = await this.api.post<SuccessData | FailureData>(

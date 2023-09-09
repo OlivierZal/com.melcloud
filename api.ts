@@ -25,7 +25,7 @@ import type {
 } from './types'
 
 function fromUTCtoLocal(utcDate: string | null, language?: string): string {
-  if (utcDate === null) {
+  if (!utcDate) {
     return ''
   }
   const localDate: DateTime = DateTime.fromISO(utcDate, {
@@ -33,7 +33,7 @@ function fromUTCtoLocal(utcDate: string | null, language?: string): string {
     locale: language,
   }).toLocal()
   return (
-    (language !== undefined
+    (language
       ? localDate.toLocaleString(DateTime.DATETIME_MED)
       : localDate.toISO({ includeOffset: false })) ?? ''
   )
@@ -46,22 +46,16 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
 } {
   const defaultLimit = 1
   const defaultOffset = 0
-  const from: DateTime | null =
-    query.from !== undefined && query.from !== ''
-      ? DateTime.fromISO(query.from)
-      : null
-  const to: DateTime =
-    query.to !== undefined && query.to !== ''
-      ? DateTime.fromISO(query.to)
-      : DateTime.now()
+  const from: DateTime | null = query.from ? DateTime.fromISO(query.from) : null
+  const to: DateTime = query.to ? DateTime.fromISO(query.to) : DateTime.now()
 
   let period: number = Number.parseInt(String(query.limit), 10)
   period = !Number.isNaN(period) ? period : defaultLimit
 
   let offset: number = Number.parseInt(String(query.offset), 10)
-  offset = from === null && !Number.isNaN(offset) ? offset : defaultOffset
+  offset = !from && !Number.isNaN(offset) ? offset : defaultOffset
 
-  const limit: number = from === null ? period : defaultLimit
+  const limit: number = !from ? period : defaultLimit
   const days: number = limit * offset + offset
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
@@ -150,7 +144,7 @@ export = {
               (pairSetting: PairSetting): pairSetting is LoginSetting =>
                 pairSetting.id === 'login'
             )
-          if (driverLoginSetting === undefined) {
+          if (!driverLoginSetting) {
             return []
           }
           return Object.values(
@@ -236,9 +230,7 @@ export = {
             Error: error,
           }
         })
-        .filter(
-          (error: ErrorDetails) => error.Date !== '' && error.Error !== ''
-        )
+        .filter((error: ErrorDetails) => error.Date && error.Error)
         .reverse(),
       FromDateHuman: fromDate
         .setLocale(app.getLanguage())
