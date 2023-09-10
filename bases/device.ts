@@ -1,7 +1,8 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import { WithAPIAndLogging } from '../mixins'
+import WithAPI from '../mixins/api'
+import WithTimers from '../mixins/timers'
 import type {
   Capability,
   CapabilityValue,
@@ -31,8 +32,8 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
-  Device
+export default abstract class BaseMELCloudDevice extends WithAPI(
+  WithTimers(Device)
 ) {
   app!: MELCloudApp
 
@@ -122,7 +123,9 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
   getDashboardCapabilities(
     settings: Settings = this.getSettings() as Settings
   ): string[] {
-    return Object.keys(settings).filter((setting: string) => settings[setting])
+    return Object.keys(settings).filter(
+      (setting: string) => settings[setting] === true
+    )
   }
 
   getReportCapabilities<T extends MELCloudDriver>(
@@ -658,4 +661,18 @@ export default abstract class BaseMELCloudDevice extends WithAPIAndLogging(
       }
     }
   }
+
+  /* eslint-disable @typescript-eslint/no-unsafe-argument */
+  error(...args: any[]): void {
+    this.customLog('error', ...args)
+  }
+
+  log(...args: any[]): void {
+    this.customLog('log', ...args)
+  }
+
+  customLog(method: 'log' | 'error', ...args: any[]): void {
+    super[method](this.getName(), '-', ...args)
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-argument */
 }

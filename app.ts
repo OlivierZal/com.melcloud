@@ -2,7 +2,8 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import { WithAPIAndLogging } from './mixins'
+import WithAPI from './mixins/api'
+import WithTimers from './mixins/timers'
 import type {
   Building,
   ErrorLogData,
@@ -43,7 +44,7 @@ function handleResponse(data: SuccessData | FailureData): void {
   }
 }
 
-export = class MELCloudApp extends WithAPIAndLogging(App) {
+export = class MELCloudApp extends WithAPI(WithTimers(App)) {
   deviceList: ListDeviceAny[] = []
 
   deviceIds: Record<number, string> = {}
