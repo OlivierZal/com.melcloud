@@ -582,7 +582,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
               ]
             })
           )
-          refreshBuildingSettings()
           resolve(buildingMapping)
         }
       )
@@ -839,6 +838,16 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   async function generate(): Promise<void> {
     generateErrorLog()
     buildingMapping = await getBuildings()
+    if (!Object.keys(buildingMapping).length) {
+      seeElement.classList.add('is-disabled')
+      disableButtons('frost-protection')
+      disableButtons('holiday-mode')
+      disableButtons('settings-common')
+      // @ts-expect-error: homey is partially typed
+      await homey.alert(homey.__('settings.devices.none'))
+      return
+    }
+    refreshBuildingSettings()
   }
 
   function needsAuthentication(value = true): void {

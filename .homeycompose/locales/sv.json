@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Byggnaden __buildingId__ har ingen enhet.",
-      "not_found": "Byggnaden __buildingId__ kunde inte hittas."
+      "no_device": "Byggnaden __buildingId__ har ingen enhet."
     },
     "holiday_mode": {
       "date_missing": "Startdatum och/eller slutdatum saknas."
@@ -19,7 +18,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "legend": "Byggnadsinställningar",
       "frost_protection": {
         "enabled": "Aktivera <strong>frostskydd</strong>",
         "max": "Maximal temperatur",
@@ -30,6 +28,7 @@
         "end_date": "Slutdatum",
         "start_date": "Startdatum"
       },
+      "legend": "Byggnadsinställningar",
       "update": "Uppdatera"
     },
     "devices": {
@@ -38,7 +37,8 @@
         "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?",
         "nothing": "Ingen ändring att tillämpa."
       },
-      "legend": "Enhetsinställningar"
+      "legend": "Enhetsinställningar",
+      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
     },
     "devices_ata": {
       "auto_adjust": "Autojustera luftkonditioneringstemperaturen",

@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Le bâtiment __buildingId__ n'a pas d'appareil.",
-      "not_found": "Le bâtiment __buildingId__ est introuvable."
+      "no_device": "Le bâtiment __buildingId__ n'a pas d'appareil."
     },
     "holiday_mode": {
       "date_missing": "La date de début et/ou la date de fin sont manquantes."
@@ -38,7 +37,8 @@
         "confirm": "Êtes-vous sûr de vouloir appliquer ces paramètres à tous vos appareils ?",
         "nothing": "Aucun changement à appliquer."
       },
-      "legend": "Paramètres des appareils"
+      "legend": "Paramètres des appareils",
+      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
     },
     "devices_ata": {
       "auto_adjust": "Auto-ajuster la température de la climatisation",

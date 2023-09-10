@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Gebouw __buildingId__ heeft geen apparaat.",
-      "not_found": "Gebouw __buildingId__ kan niet worden gevonden."
+      "no_device": "Gebouw __buildingId__ heeft geen apparaat."
     },
     "holiday_mode": {
       "date_missing": "Startdatum en/of einddatum ontbreekt."
@@ -19,7 +18,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "legend": "Gebouwinstellingen",
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
         "max": "Maximale temperatuur",
@@ -30,6 +28,7 @@
         "end_date": "Einddatum",
         "start_date": "Begindatum"
       },
+      "legend": "Gebouwinstellingen",
       "update": "Updaten"
     },
     "devices": {
@@ -38,7 +37,8 @@
         "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
         "nothing": "Geen wijziging om toe te passen."
       },
-      "legend": "Apparaatinstellingen"
+      "legend": "Apparaatinstellingen",
+      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
     "devices_ata": {
       "auto_adjust": "Auto-afstellen airco-temperatuur",

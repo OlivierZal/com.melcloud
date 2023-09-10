@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Building __buildingId__ has no device.",
-      "not_found": "Building __buildingId__ cannot be found."
+      "no_device": "Building __buildingId__ has no device."
     },
     "holiday_mode": {
       "date_missing": "Start Date and/or End Date are missing."
@@ -19,7 +18,6 @@
       "true": "Yes"
     },
     "buildings": {
-      "legend": "Building Settings",
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
         "max": "Maximum temperature",
@@ -30,6 +28,7 @@
         "end_date": "End date",
         "start_date": "Start date"
       },
+      "legend": "Building Settings",
       "update": "Update"
     },
     "devices": {
@@ -38,7 +37,8 @@
         "confirm": "Are you sure you want to apply these settings to all devices?",
         "nothing": "No change to apply."
       },
-      "legend": "Device Settings"
+      "legend": "Device Settings",
+      "none": "Add a device to unlock all the app's settings!"
     },
     "devices_ata": {
       "auto_adjust": "Auto-adjust air conditioning temperature",

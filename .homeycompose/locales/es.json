@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "El edificio __buildingId__ no tiene dispositivos.",
-      "not_found": "No se puede encontrar el edificio __buildingId__."
+      "no_device": "El edificio __buildingId__ no tiene dispositivos."
     },
     "holiday_mode": {
       "date_missing": "Falta la fecha de inicio y/o de finalización."
@@ -19,7 +18,6 @@
       "true": "Sí"
     },
     "buildings": {
-      "legend": "Configuración de los edificios",
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
         "max": "Temperatura máxima",
@@ -30,6 +28,7 @@
         "end_date": "Fecha de finalización",
         "start_date": "Fecha de inicio"
       },
+      "legend": "Configuración de los edificios",
       "update": "Actualizar"
     },
     "devices": {
@@ -38,7 +37,8 @@
         "confirm": "¿Está seguro de que desea aplicar estos ajustes a todos los dispositivos?",
         "nothing": "No hay cambios que aplicar."
       },
-      "legend": "Configuración de los dispositivos"
+      "legend": "Configuración de los dispositivos",
+      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
     },
     "devices_ata": {
       "auto_adjust": "Autoajustar la temperatura del enfriamiento",

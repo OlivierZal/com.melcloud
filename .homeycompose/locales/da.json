@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Bygningen __buildingId__ har ingen enhed.",
-      "not_found": "Bygningen __buildingId__ blev ikke fundet."
+      "no_device": "Bygningen __buildingId__ har ingen enhed."
     },
     "holiday_mode": {
       "date_missing": "Startdato og/eller slutdato mangler."
@@ -38,7 +37,8 @@
         "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?",
         "nothing": "Ingen ændringer at anvende."
       },
-      "legend": "Enhedsindstillinger"
+      "legend": "Enhedsindstillinger",
+      "none": "Tilføj en enhed for at låse alle appens indstillinger op!"
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",

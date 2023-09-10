@@ -1,8 +1,7 @@
 {
   "app": {
     "building": {
-      "no_device": "Bygningen __buildingId__ har ingen enhet.",
-      "not_found": "Bygningen __buildingId__ ble ikke funnet."
+      "no_device": "Bygningen __buildingId__ har ingen enhet."
     },
     "holiday_mode": {
       "date_missing": "Startdato og/eller sluttdato mangler."
@@ -19,7 +18,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "legend": "Byggingsinnstillinger",
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
         "max": "Maksimal temperatur",
@@ -30,6 +28,7 @@
         "end_date": "Sluttdato",
         "start_date": "Startdato"
       },
+      "legend": "Byggingsinnstillinger",
       "update": "Oppdater"
     },
     "devices": {
@@ -38,7 +37,8 @@
         "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
         "nothing": "Ingen endring å bruke."
       },
-      "legend": "Enhetsinnstillinger"
+      "legend": "Enhetsinnstillinger",
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
     "devices_ata": {
       "auto_adjust": "Autojuster aircondition-temperaturen",
