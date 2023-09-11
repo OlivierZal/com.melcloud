@@ -62,6 +62,14 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   async onInit<T extends MELCloudDriver>(): Promise<void> {
+    // Migration
+    if (!this.getStoreValue('CanCool')) {
+      await this.setStoreValue('CanCool', this.getStoreValue('canCool'))
+    }
+    if (!this.getStoreValue('HasZone2')) {
+      await this.setStoreValue('HasZone2', this.getStoreValue('hasZone2'))
+    }
+
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData() as DeviceDetails['data']
@@ -289,7 +297,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode
   ): Promise<void> {
-    if (!data?.EffectiveFlags) {
+    if (data?.EffectiveFlags === undefined) {
       return
     }
     const effectiveFlags = BigInt(data.EffectiveFlags)
