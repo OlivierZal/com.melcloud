@@ -545,7 +545,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     ) {
       await this.handleDashboardCapabilities(
         newSettings,
-        changedKeys.filter((setting) => this.isCapability(setting))
+        changedKeys.filter((setting: string) => this.isCapability(setting))
       )
       await this.setWarning(this.homey.__('warnings.dashboard'))
       await this.setWarning(null)
