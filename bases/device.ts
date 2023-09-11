@@ -408,9 +408,9 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     if (!data) {
       return
     }
-    const store = this.getStore() as Store
+    const { CanCool, HasZone2 } = this.getStore() as Store
     const updates = await Promise.all(
-      Object.entries(store)
+      Object.entries({ CanCool, HasZone2 })
         .filter(
           ([key, value]: [string, boolean]) =>
             value !== data[key as keyof Store]
