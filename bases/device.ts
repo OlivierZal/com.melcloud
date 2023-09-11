@@ -540,13 +540,11 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     newSettings: Settings
     changedKeys: string[]
   }): Promise<void> {
-    if (
-      changedKeys.some((setting: string) => !['always_on'].includes(setting))
-    ) {
-      await this.handleDashboardCapabilities(
-        newSettings,
-        changedKeys.filter((setting: string) => this.isCapability(setting))
-      )
+    const changedCapabilities: string[] = changedKeys.filter(
+      (setting: string) => this.isCapability(setting)
+    )
+    if (changedCapabilities.length) {
+      await this.handleDashboardCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
       await this.setWarning(null)
     }
