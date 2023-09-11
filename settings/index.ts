@@ -364,9 +364,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     element: HTMLInputElement,
     value: number = Number.parseInt(element.value, 10)
   ): number {
-    let minValue = intMinValueMap.get(element)
-    let maxValue = intMaxValueMap.get(element)
-    if (!minValue || !maxValue) {
+    let minValue: number | undefined = intMinValueMap.get(element)
+    let maxValue: number | undefined = intMaxValueMap.get(element)
+    if (minValue === undefined || maxValue === undefined) {
       minValue = Number(element.min)
       maxValue = Number(element.max)
       intMinValueMap.set(element, minValue)

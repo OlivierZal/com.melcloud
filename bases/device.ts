@@ -62,14 +62,6 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   async onInit<T extends MELCloudDriver>(): Promise<void> {
-    // Migration
-    if (!this.getStoreValue('CanCool')) {
-      await this.setStoreValue('CanCool', this.getStoreValue('canCool'))
-    }
-    if (!this.getStoreValue('HasZone2')) {
-      await this.setStoreValue('HasZone2', this.getStoreValue('hasZone2'))
-    }
-
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData() as DeviceDetails['data']
@@ -132,7 +124,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     settings: Settings = this.getSettings() as Settings
   ): string[] {
     return Object.keys(settings).filter(
-      (setting: string) => settings[setting] === true
+      (setting: string) => this.isCapability(setting) && settings[setting]
     )
   }
 
@@ -420,11 +412,11 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     const updates = await Promise.all(
       Object.entries(store)
         .filter(
-          ([key]: [string, boolean]) =>
-            store[key as keyof Store] !== data[key as keyof Store]
+          ([key, value]: [string, boolean]) =>
+            value !== data[key as keyof Store]
         )
-        .map(async ([key, value]: [string, boolean]): Promise<boolean> => {
-          await this.setStoreValue(key, value)
+        .map(async ([key]: [string, boolean]): Promise<boolean> => {
+          await this.setStoreValue(key, data[key as keyof Store])
           return true
         })
     )
@@ -551,7 +543,10 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     if (
       changedKeys.some((setting: string) => !['always_on'].includes(setting))
     ) {
-      await this.handleDashboardCapabilities(newSettings, changedKeys)
+      await this.handleDashboardCapabilities(
+        newSettings,
+        changedKeys.filter((setting) => this.isCapability(setting))
+      )
       await this.setWarning(this.homey.__('warnings.dashboard'))
       await this.setWarning(null)
     }
@@ -632,24 +627,26 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   async addCapability(capability: string): Promise<void> {
-    if (!this.hasCapability(capability)) {
-      try {
-        await super.addCapability(capability)
-        this.log('Adding capability', capability)
-      } catch (error: unknown) {
-        this.error(error instanceof Error ? error.message : error)
-      }
+    if (this.hasCapability(capability)) {
+      return
+    }
+    try {
+      await super.addCapability(capability)
+      this.log('Adding capability', capability)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
     }
   }
 
   async removeCapability(capability: string): Promise<void> {
-    if (this.hasCapability(capability)) {
-      try {
-        await super.removeCapability(capability)
-        this.log('Removing capability', capability)
-      } catch (error: unknown) {
-        this.error(error instanceof Error ? error.message : error)
-      }
+    if (!this.hasCapability(capability)) {
+      return
+    }
+    try {
+      await super.removeCapability(capability)
+      this.log('Removing capability', capability)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
     }
   }
 
@@ -668,6 +665,11 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         this.error(error instanceof Error ? error.message : error)
       }
     }
+  }
+
+  isCapability(setting: string): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    return this.driver.manifest.capabilities.includes(setting)
   }
 
   /* eslint-disable @typescript-eslint/no-unsafe-argument */

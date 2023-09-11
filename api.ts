@@ -28,15 +28,14 @@ function fromUTCtoLocal(utcDate: string | null, language?: string): string {
   if (!utcDate) {
     return ''
   }
-  const localDate: DateTime = DateTime.fromISO(utcDate, {
+  const localDateTime: DateTime = DateTime.fromISO(utcDate, {
     zone: 'utc',
     locale: language,
   }).toLocal()
-  return (
-    (language
-      ? localDate.toLocaleString(DateTime.DATETIME_MED)
-      : localDate.toISO({ includeOffset: false })) ?? ''
-  )
+  const localDate: string | null = language
+    ? localDateTime.toLocaleString(DateTime.DATETIME_MED)
+    : localDateTime.toISO({ includeOffset: false })
+  return localDate ?? ''
 }
 
 function handleErrorLogQuery(query: ErrorLogQuery): {
