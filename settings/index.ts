@@ -431,7 +431,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       settingId: string,
       settingValue: SettingValue
     ): boolean => {
-      if (!settingValue) {
+      if (settingValue === null) {
         return false
       }
       const deviceSetting: SettingValue[] | undefined = driverId
