@@ -426,7 +426,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         : flatDeviceSettings[settingId]
       return (
         deviceSetting !== undefined &&
-        (deviceSetting.length !== 1 || settingValue !== deviceSetting[0])
+        (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
       )
     }
 
@@ -681,7 +681,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       element.id.split('--')[0]
     ] as SettingValue[] | undefined
     // eslint-disable-next-line no-param-reassign
-    element.value = values && values.length === 1 ? String(values[0]) : ''
+    element.value =
+      values && new Set(values).size === 1 ? String(values[0]) : ''
   }
 
   function addRefreshSettingsCommonEventListener(
@@ -694,11 +695,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     element: HTMLInputElement,
     driverId: string
   ): void {
-    const checked: boolean[] = deviceSettings[driverId][
+    const values: boolean[] = deviceSettings[driverId][
       element.id.split('--')[0]
     ] as boolean[]
-    if (checked.length === 1) {
-      ;[element.checked] = checked // eslint-disable-line no-param-reassign
+    if (new Set(values).size === 1) {
+      ;[element.checked] = values // eslint-disable-line no-param-reassign
     } else {
       element.indeterminate = true // eslint-disable-line no-param-reassign
       element.addEventListener('change', (): void => {
