@@ -80,6 +80,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       )
     }
   )
+  const driverIds: string[] = Object.keys(deviceSettings)
 
   function flattenDeviceSettings(): DeviceSetting {
     return Object.values(deviceSettings).reduce<DeviceSetting>(
@@ -251,18 +252,30 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   let fromDateHuman = ''
   let to = ''
 
+  function disableButton(elementId: string, value = true): void {
+    const element: HTMLButtonElement | null = document.getElementById(
+      elementId
+    ) as HTMLButtonElement | null
+    if (!element) {
+      return
+    }
+    if (value) {
+      element.classList.add('is-disabled')
+    } else {
+      element.classList.remove('is-disabled')
+    }
+  }
+
   function disableButtons(setting: string, value = true): void {
+    const [baseSetting, suffix]: string[] = setting.split('-')
     ;['apply', 'refresh'].forEach((action: string): void => {
-      const element: HTMLButtonElement | null = document.getElementById(
-        `${action}-${setting}`
-      ) as HTMLButtonElement | null
-      if (!element) {
-        return
-      }
-      if (value) {
-        element.classList.add('is-disabled')
+      disableButton(`${action}-${setting}`, value)
+      if (suffix === 'common') {
+        driverIds.forEach((driverId: string): void => {
+          disableButton(`${action}-${baseSetting}-${driverId}`, value)
+        })
       } else {
-        element.classList.remove('is-disabled')
+        disableButton(`${action}-${baseSetting}-common`, value)
       }
     })
   }
