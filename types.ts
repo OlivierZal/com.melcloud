@@ -11,6 +11,9 @@ export type SyncMode = SyncFromMode | 'syncTo'
 
 export type CapabilityValue = boolean | number | string
 
+export type SetDeviceValue = boolean | number
+export type DeviceValue = boolean | number | string
+
 type ValueOf<T> = T[keyof T]
 
 export interface Settings
@@ -264,7 +267,7 @@ export type NonReportCapability<T extends MELCloudDriver> =
   | GetCapability<T>
   | ListCapability<T>
 
-export type Capability<T extends MELCloudDriver> =
+type Capability<T extends MELCloudDriver> =
   | NonReportCapability<T>
   | ReportCapability<T>
 
@@ -274,7 +277,7 @@ export type ExtendedCapability<T extends MELCloudDriver> =
 
 interface BaseDeviceData {
   EffectiveFlags: number
-  readonly Power?: number
+  readonly Power?: boolean
 }
 
 interface UpdateDeviceDataAta extends BaseDeviceData {

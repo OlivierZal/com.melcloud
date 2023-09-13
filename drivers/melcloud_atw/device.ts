@@ -2,10 +2,12 @@ import { DateTime } from 'luxon'
 import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAtw from './driver'
 import type {
-  Capability,
   CapabilityValue,
+  DeviceValue,
+  ExtendedCapability,
   ExtendedSetCapability,
   SetCapability,
+  SetDeviceValue,
   Store,
 } from '../../types'
 
@@ -84,54 +86,49 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     value: CapabilityValue = this.getCapabilityValue(
       capability
     ) as CapabilityValue
-  ): boolean | number {
+  ): SetDeviceValue {
     switch (capability) {
+      case 'onoff':
+        return this.getSetting('always_on') ? true : (value as boolean)
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
         return Number(value)
       default:
-        return super.convertToDevice(capability, value)
+        return value as SetDeviceValue
     }
   }
 
-  async convertFromDevice(
-    capability: Capability<MELCloudDriverAtw>,
-    value: boolean | number | string
-  ): Promise<void> {
-    let newValue: CapabilityValue = value
+  convertFromDevice(
+    capability: ExtendedCapability<MELCloudDriverAtw>,
+    value: DeviceValue
+  ): CapabilityValue {
     switch (capability) {
       case 'last_legionella':
-        newValue = DateTime.fromISO(value as string, {
+        return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
         }).toLocaleString(DateTime.DATE_HUGE)
-        break
       case 'measure_power':
       case 'measure_power.produced':
-        ;(newValue as number) *= 1000
-        break
+        return (value as number) * 1000
       case 'operation_mode_state':
-        newValue = operationModeFromDevice[newValue as number]
-        break
+        return operationModeFromDevice[value as number]
       case 'operation_mode_state.zone1':
       case 'operation_mode_state.zone2':
-        newValue = newValue
+        return value
           ? 'idle'
           : (this.getCapabilityValue('operation_mode_state') as string)
-        break
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        newValue = String(newValue)
-        break
+        return String(value)
       case 'alarm_generic.defrost_mode':
-        newValue = !!newValue
-        break
+        return !!value
       default:
+        return value
     }
-    await this.setCapabilityValue(capability, newValue)
   }
 
   // eslint-disable-next-line class-methods-use-this

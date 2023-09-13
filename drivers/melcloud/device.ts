@@ -1,10 +1,12 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAta from './driver'
 import type {
-  Capability,
   CapabilityValue,
+  DeviceValue,
+  ExtendedCapability,
   ExtendedSetCapability,
   SetCapability,
+  SetDeviceValue,
 } from '../../types'
 
 function isThermostatMode(value: string): boolean {
@@ -105,8 +107,10 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     value: CapabilityValue = this.getCapabilityValue(
       capability
     ) as CapabilityValue
-  ): boolean | number {
+  ): SetDeviceValue {
     switch (capability) {
+      case 'onoff':
+        return this.getSetting('always_on') ? true : (value as boolean)
       case 'operation_mode':
         return Number(operationModeToDevice[value as string])
       case 'vertical':
@@ -114,28 +118,25 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
       case 'horizontal':
         return Number(horizontalToDevice[value as string])
       default:
-        return super.convertToDevice(capability, value)
+        return value as SetDeviceValue
     }
   }
 
-  async convertFromDevice(
-    capability: Capability<MELCloudDriverAta>,
-    value: boolean | number
-  ): Promise<void> {
-    let newValue: CapabilityValue = value
+  // eslint-disable-next-line class-methods-use-this
+  convertFromDevice(
+    capability: ExtendedCapability<MELCloudDriverAta>,
+    value: DeviceValue
+  ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
-        newValue = operationModeFromDevice[newValue as number]
-        break
+        return operationModeFromDevice[value as number]
       case 'vertical':
-        newValue = verticalFromDevice[newValue as number]
-        break
+        return verticalFromDevice[value as number]
       case 'horizontal':
-        newValue = horizontalFromDevice[newValue as number]
-        break
+        return horizontalFromDevice[value as number]
       default:
+        return value
     }
-    await this.setCapabilityValue(capability, newValue)
   }
 
   async updateThermostatMode(): Promise<void> {

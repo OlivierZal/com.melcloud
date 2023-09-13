@@ -4,9 +4,9 @@ import type MELCloudApp from '../app'
 import WithAPI from '../mixins/api'
 import WithTimers from '../mixins/timers'
 import type {
-  Capability,
   CapabilityValue,
   DeviceDetails,
+  DeviceValue,
   ExtendedCapability,
   ExtendedSetCapability,
   GetDeviceData,
@@ -24,6 +24,7 @@ import type {
   SetCapability,
   SetCapabilityMapping,
   SetDeviceData,
+  SetDeviceValue,
   Settings,
   SettingValue,
   Store,
@@ -262,17 +263,10 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     ) as SetDeviceData<T>
   }
 
-  convertToDevice(
+  abstract convertToDevice(
     capability: SetCapability<MELCloudDriver>,
-    value: CapabilityValue = this.getCapabilityValue(
-      capability
-    ) as CapabilityValue
-  ): boolean | number {
-    if (capability === 'onoff') {
-      return this.getSetting('always_on') ? true : (value as boolean)
-    }
-    return value as boolean | number
-  }
+    value?: CapabilityValue
+  ): SetDeviceValue
 
   async endSync<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
@@ -365,7 +359,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       ListCapabilityMapping<T>
     ]): Promise<void> => {
       if (shouldProcess(capability, effectiveFlag)) {
-        await this.convertFromDevice(capability, data[tag] as boolean | number)
+        await this.setCapabilityValue(capability, data[tag] as DeviceValue)
       }
     }
 
@@ -380,9 +374,9 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   abstract convertFromDevice(
-    capability: Capability<MELCloudDriver>,
-    value: boolean | number
-  ): Promise<void>
+    capability: ExtendedCapability<MELCloudDriver>,
+    value: DeviceValue
+  ): CapabilityValue
 
   abstract updateThermostatMode(): Promise<void>
 
@@ -657,7 +651,10 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       value !== this.getCapabilityValue(capability)
     ) {
       try {
-        await super.setCapabilityValue(capability, value)
+        await super.setCapabilityValue(
+          capability,
+          this.convertFromDevice(capability, value)
+        )
         this.log('Capability', capability, 'is', value)
       } catch (error: unknown) {
         this.error(error instanceof Error ? error.message : error)
