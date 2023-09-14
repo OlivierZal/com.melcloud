@@ -77,13 +77,14 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     await this.runEnergyReports()
   }
 
-  async setDeviceData<T extends MELCloudDriver>(
-  ): Promise<GetDeviceData<T> | null> {
+  async setDeviceData<
+    T extends MELCloudDriver
+  >(): Promise<GetDeviceData<T> | null> {
     try {
       const postData: PostData<T> = {
         DeviceID: this.id,
         HasPendingCommand: true,
-        ...this.buildUpdateData(),
+        ...(this.buildUpdateData() as SetDeviceData<T>),
       }
       const { data } = await this.api.post<GetDeviceData<T>>(
         `/Device/Set${this.driver.heatPumpType}`,
