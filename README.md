@@ -13,4 +13,4 @@ This app integrates MELCloud into Homey to control:
 
 1. You must have a Homey Pro.
 2. Install the [MELCloud Homey app](https://homey.app/a/com.mecloud) from the Homey App Store.
-3. Pair your devices!
+3. Pair your devices.
