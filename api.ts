@@ -74,10 +74,10 @@ export = {
           ...building,
           HMStartDate: fromUTCtoLocal(building.HMStartDate),
           HMEndDate: fromUTCtoLocal(building.HMEndDate),
-        })
+        }),
       )
       .sort((building1: Building, building2: Building) =>
-        building1.Name.localeCompare(building2.Name)
+        building1.Name.localeCompare(building2.Name),
       )
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
@@ -96,7 +96,7 @@ export = {
             if (!acc[driverId][settingId].includes(value)) {
               acc[driverId][settingId].push(value)
             }
-          }
+          },
         )
         return acc
       }, {})
@@ -125,14 +125,14 @@ export = {
                     }): { id: string; label: string } => ({
                       id: value.id,
                       label: value.label[language],
-                    })
+                    }),
                   ),
                   driverId: driver.id,
                   groupId: setting.id,
                   groupLabel: setting.label[language],
-                })
-              )
-          )
+                }),
+              ),
+          ),
       )
     const settingsLogin: DriverSetting[] =
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -141,7 +141,7 @@ export = {
           const driverLoginSetting: LoginSetting | undefined =
             driver.pair?.find(
               (pairSetting: PairSetting): pairSetting is LoginSetting =>
-                pairSetting.id === 'login'
+                pairSetting.id === 'login',
             )
           if (!driverLoginSetting) {
             return []
@@ -167,9 +167,9 @@ export = {
                 option.endsWith('Placeholder') ? 'placeholder' : 'title'
               ] = label[language]
               return acc
-            }, {})
+            }, {}),
           )
-        }
+        },
       )
     return [...settings, ...settingsLogin]
   },
@@ -181,7 +181,7 @@ export = {
     params: { buildingId: number }
   }): Promise<FrostProtectionData> {
     return (homey.app as MELCloudApp).getFrostProtectionSettings(
-      Number(params.buildingId)
+      Number(params.buildingId),
     )
   },
   async getHolidayModeSettings({
@@ -267,7 +267,7 @@ export = {
           .map(async (device: MELCloudDevice): Promise<void> => {
             const deviceChangedKeys: string[] = changedKeys.filter(
               (changedKey: string) =>
-                body[changedKey] !== device.getSetting(changedKey)
+                body[changedKey] !== device.getSetting(changedKey),
             )
             if (!deviceChangedKeys.length) {
               return
@@ -276,7 +276,7 @@ export = {
               deviceChangedKeys.map((key: string): [string, SettingValue] => [
                 key,
                 body[key],
-              ])
+              ]),
             )
             try {
               await device.setSettings(deviceSettings)
@@ -291,7 +291,7 @@ export = {
               device.error('Settings:', errorMessage)
               throw new Error(errorMessage)
             }
-          })
+          }),
       )
     } catch (error: unknown) {
       throw new Error(error instanceof Error ? error.message : String(error))
@@ -308,7 +308,7 @@ export = {
   }): Promise<void> {
     await (homey.app as MELCloudApp).updateFrostProtectionSettings(
       Number(params.buildingId),
-      body
+      body,
     )
   },
   async updateHolidayModeSettings({
@@ -322,7 +322,7 @@ export = {
   }): Promise<void> {
     await (homey.app as MELCloudApp).updateHolidayModeSettings(
       Number(params.buildingId),
-      body
+      body,
     )
   },
 }

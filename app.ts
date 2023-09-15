@@ -32,7 +32,7 @@ function handleFailure(data: FailureData): never {
   const errorMessage: string = Object.entries(data.AttributeErrors)
     .map(
       ([error, messages]: [string, string[]]): string =>
-        `${error}: ${messages.join(', ')}`
+        `${error}: ${messages.join(', ')}`,
     )
     .join('\n')
   throw new Error(errorMessage)
@@ -77,7 +77,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       }
       const { data } = await this.api.post<LoginData>(
         '/Login/ClientLogin',
-        postData
+        postData,
       )
       if (!data.LoginData?.ContextKey) {
         return false
@@ -122,7 +122,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
           })
         },
         interval,
-        'days'
+        'days',
       )
       return
     }
@@ -157,10 +157,10 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
 
   getDevice(
     deviceId: number,
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {}
+    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
   ): MELCloudDevice | undefined {
     return this.getDevices({ buildingId, driverId }).find(
-      ({ id }) => id === deviceId
+      ({ id }) => id === deviceId,
     )
   }
 
@@ -177,7 +177,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         : Object.values(this.homey.drivers.getDrivers())
     ).flatMap(
       (driver: Driver): MELCloudDevice[] =>
-        driver.getDevices() as MELCloudDevice[]
+        driver.getDevices() as MELCloudDevice[],
     )
     if (buildingId) {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
@@ -193,16 +193,16 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         await this.listDevices(deviceType, syncMode)
       },
       { seconds: 1 },
-      'seconds'
+      'seconds',
     )
   }
 
   async listDevices(
     deviceType?: number,
-    syncMode?: SyncFromMode
+    syncMode?: SyncFromMode,
   ): Promise<ListDeviceAny[]> {
     const buildings: Building[] = await this.getBuildings().catch(
-      (): Building[] => []
+      (): Building[] => [],
     )
     const buildingData: {
       deviceIds: Record<number, string>
@@ -224,18 +224,18 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
           buildingDevices.map((device: ListDeviceAny): [number, string] => [
             device.DeviceID,
             device.DeviceName,
-          ])
+          ]),
         )
         acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
         acc.deviceList.push(...buildingDevices)
         return acc
       },
-      { deviceIds: {}, deviceList: [] }
+      { deviceIds: {}, deviceList: [] },
     )
     let { deviceList } = buildingData
     if (deviceType) {
       deviceList = deviceList.filter(
-        (device: ListDeviceAny) => deviceType === device.Device.DeviceType
+        (device: ListDeviceAny) => deviceType === device.Device.DeviceType,
       )
     }
     this.deviceList = deviceList
@@ -269,8 +269,8 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         .filter((device: MELCloudDevice) => !device.isDiff())
         .map(
           (device: MELCloudDevice): Promise<void> =>
-            device.syncDeviceFromList(syncMode)
-        )
+            device.syncDeviceFromList(syncMode),
+        ),
     )
   }
 
@@ -284,13 +284,13 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         await this.listDevices()
       },
       { minutes: 3 },
-      'minutes'
+      'minutes',
     )
   }
 
   async getUnitErrorLog(
     fromDate: DateTime,
-    toDate: DateTime
+    toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const postData: ErrorLogPostData = {
       DeviceIDs: Object.keys(this.deviceIds),
@@ -299,7 +299,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
     const { data } = await this.api.post<ErrorLogData[] | FailureData>(
       '/Report/GetUnitErrorLog2',
-      postData
+      postData,
     )
     if ('AttributeErrors' in data) {
       handleFailure(data)
@@ -308,20 +308,20 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
   }
 
   async getFrostProtectionSettings(
-    buildingId: number
+    buildingId: number,
   ): Promise<FrostProtectionData> {
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
     const { data } = await this.api.get<FrostProtectionData>(
-      `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
+      `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
     )
     return data
   }
 
   async updateFrostProtectionSettings(
     buildingId: number,
-    settings: FrostProtectionSettings
+    settings: FrostProtectionSettings,
   ): Promise<void> {
     const postData: FrostProtectionPostData = {
       ...settings,
@@ -329,7 +329,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
     const { data } = await this.api.post<SuccessData | FailureData>(
       '/FrostProtection/Update',
-      postData
+      postData,
     )
     handleResponse(data)
   }
@@ -339,14 +339,14 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       buildingId,
     })
     const { data } = await this.api.get<HolidayModeData>(
-      `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`
+      `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
     )
     return data
   }
 
   async updateHolidayModeSettings(
     buildingId: number,
-    settings: HolidayModeSettings
+    settings: HolidayModeSettings,
   ): Promise<void> {
     const { Enabled, StartDate, EndDate } = settings
     if (Enabled && (!StartDate || !EndDate)) {
@@ -384,7 +384,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
     const { data } = await this.api.post<SuccessData | FailureData>(
       '/HolidayMode/Update',
-      postData
+      postData,
     )
     handleResponse(data)
   }
@@ -393,7 +393,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     Object.entries(settings)
       .filter(
         ([setting, value]: [string, HomeySettingValue]) =>
-          value !== this.homey.settings.get(setting)
+          value !== this.homey.settings.get(setting),
       )
       .forEach(([setting, value]: [string, HomeySettingValue]): void => {
         this.homey.settings.set(setting, value)

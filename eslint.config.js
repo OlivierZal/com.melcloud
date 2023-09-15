@@ -23,9 +23,9 @@ function convertIntoEslintFlatConfig(config) {
         globals: Object.fromEntries(
           Object.keys(env)
             .filter(
-              (key) => env[key] && key in envMapping && envMapping[key] in envs
+              (key) => env[key] && key in envMapping && envMapping[key] in envs,
             )
-            .flatMap((key) => Object.entries(envs[envMapping[key]]))
+            .flatMap((key) => Object.entries(envs[envMapping[key]])),
         ),
         ...('parserOptions' in config && {
           parserOptions,

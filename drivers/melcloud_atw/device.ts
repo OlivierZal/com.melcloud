@@ -44,7 +44,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
 
   async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void> {
     this.diff.set(capability, value)
     if (capability.startsWith('operation_mode_zone')) {
@@ -54,14 +54,14 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
 
   async handleOperationModeZones(
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void> {
     const { CanCool, HasZone2 } = this.getStore() as Store
     if (HasZone2) {
       const zoneValue = Number(value)
       const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(
-          capability
+          capability,
         ) as ExtendedSetCapability<MELCloudDriverAtw>
       let otherZoneValue = Number(this.getCapabilityValue(otherZone))
       if (CanCool) {
@@ -84,8 +84,8 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   convertToDevice(
     capability: SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue = this.getCapabilityValue(
-      capability
-    ) as CapabilityValue
+      capability,
+    ) as CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
@@ -102,7 +102,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
 
   convertFromDevice(
     capability: ExtendedCapability<MELCloudDriverAtw>,
-    value: DeviceValue
+    value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {
       case 'last_legionella':

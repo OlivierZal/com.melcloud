@@ -810,7 +810,7 @@ export interface HolidayModePostData {
   readonly HMTimeZones: [
     {
       readonly Buildings: [number]
-    }
+    },
   ]
   readonly StartDate: {
     readonly Day: number

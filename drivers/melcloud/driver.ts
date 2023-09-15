@@ -17,7 +17,7 @@ const flowCapabilities: SetCapabilityAta[] = [
 
 function getCapabilityArg(
   args: FlowArgsAta,
-  capability: SetCapabilityAta
+  capability: SetCapabilityAta,
 ): number | string {
   if (capability === 'fan_power') {
     return Number(args[capability])
@@ -42,14 +42,14 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
         .registerRunListener(
           (args: FlowArgsAta): boolean =>
             getCapabilityArg(args, capability) ===
-            args.device.getCapabilityValue(capability)
+            args.device.getCapabilityValue(capability),
         )
       this.homey.flow
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
           await args.device.onCapability(
             capability,
-            getCapabilityArg(args, capability)
+            getCapabilityArg(args, capability),
           )
         })
     })

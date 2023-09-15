@@ -14,15 +14,15 @@ function isThermostatMode(value: string): boolean {
 }
 
 function reverseMapping(
-  mapping: Record<number | string, string>
+  mapping: Record<number | string, string>,
 ): Record<string, string> {
   return Object.fromEntries(
     Object.entries(mapping).map(
       ([deviceValue, capabilityValue]: [string, string]): [string, string] => [
         capabilityValue,
         deviceValue,
-      ]
-    )
+      ],
+    ),
   )
 }
 
@@ -35,7 +35,7 @@ const operationModeFromDevice: Record<number, string> = {
 } as const
 
 const operationModeToDevice: Record<string, string> = reverseMapping(
-  operationModeFromDevice
+  operationModeFromDevice,
 )
 
 const verticalFromDevice: Record<number, string> = {
@@ -82,7 +82,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
 
   async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriverAta>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
       this.diff.set('onoff', value !== 'off')
@@ -105,8 +105,8 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   convertToDevice(
     capability: SetCapability<MELCloudDriverAta>,
     value: CapabilityValue = this.getCapabilityValue(
-      capability
-    ) as CapabilityValue
+      capability,
+    ) as CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
@@ -125,7 +125,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   // eslint-disable-next-line class-methods-use-this
   convertFromDevice(
     capability: ExtendedCapability<MELCloudDriverAta>,
-    value: DeviceValue
+    value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
@@ -142,11 +142,11 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff') as boolean
     const operationMode: string = this.getCapabilityValue(
-      'operation_mode'
+      'operation_mode',
     ) as string
     await this.setCapabilityValue(
       'thermostat_mode',
-      isOn && isThermostatMode(operationMode) ? operationMode : 'off'
+      isOn && isThermostatMode(operationMode) ? operationMode : 'off',
     )
   }
 }

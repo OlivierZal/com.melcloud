@@ -32,18 +32,18 @@ export default function WithAPI<T extends APIClass>(Base: T) {
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig =>
           this.handleRequest(config),
         (error: AxiosError): Promise<AxiosError> =>
-          this.handleError('request', error)
+          this.handleError('request', error),
       )
       this.api.interceptors.response.use(
         (response: AxiosResponse): AxiosResponse =>
           this.handleResponse(response),
         (error: AxiosError): Promise<AxiosError> =>
-          this.handleError('response', error)
+          this.handleError('response', error),
       )
     }
 
     handleRequest(
-      config: InternalAxiosRequestConfig
+      config: InternalAxiosRequestConfig,
     ): InternalAxiosRequestConfig {
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
       updatedConfig.headers['X-MitsContextKey'] =
@@ -51,7 +51,7 @@ export default function WithAPI<T extends APIClass>(Base: T) {
       this.log(
         'Sending request:',
         updatedConfig.url,
-        updatedConfig.method === 'post' ? updatedConfig.data : ''
+        updatedConfig.method === 'post' ? updatedConfig.data : '',
       )
       return updatedConfig
     }
@@ -63,12 +63,12 @@ export default function WithAPI<T extends APIClass>(Base: T) {
 
     handleError(
       type: 'request' | 'response',
-      error: AxiosError
+      error: AxiosError,
     ): Promise<AxiosError> {
       this.error(
         `Error in ${type}:`,
         error.config?.url,
-        error.response ? error.response.data : error
+        error.response ? error.response.data : error,
       )
       return Promise.reject(error)
     }

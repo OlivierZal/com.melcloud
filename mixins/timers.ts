@@ -2,7 +2,7 @@ import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 
 type TimerFunction = (
   callback: () => Promise<void>,
-  duration: number
+  duration: number,
 ) => NodeJS.Timeout
 
 type TimerClass = new (...args: any[]) => {
@@ -35,7 +35,7 @@ export default function WithTimers<T extends TimerClass>(Base: T) {
         timerWords[1],
         DateTime.now()
           .plus(duration)
-          .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS)
+          .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
       )
       return this.homey[timerType](callback, Number(duration))
     }
@@ -52,7 +52,7 @@ export default function WithTimers<T extends TimerClass>(Base: T) {
         'setInterval',
         callback,
         interval,
-        ...units
+        ...units,
       )
     }
 
@@ -68,7 +68,7 @@ export default function WithTimers<T extends TimerClass>(Base: T) {
         'setTimeout',
         callback,
         interval,
-        ...units
+        ...units,
       )
     }
   }

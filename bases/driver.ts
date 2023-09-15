@@ -75,18 +75,18 @@ export default abstract class BaseMELCloudDriver extends Driver {
   async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      (data: LoginCredentials): Promise<boolean> => this.app.login(data)
+      (data: LoginCredentials): Promise<boolean> => this.app.login(data),
     )
     session.setHandler(
       'list_devices',
-      (): Promise<DeviceDetails[]> => this.discoverDevices()
+      (): Promise<DeviceDetails[]> => this.discoverDevices(),
     )
   }
 
   async discoverDevices<T extends MELCloudDriver>(): Promise<DeviceDetails[]> {
     this.app.clearListDevicesRefresh()
     const devices: ListDevice<T>[] = (await this.app.listDevices(
-      this.deviceType
+      this.deviceType,
     )) as ListDevice<T>[]
     return devices.map(
       ({
@@ -102,7 +102,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
           store,
           capabilities: this.getRequiredCapabilities(store),
         }
-      }
+      },
     )
   }
 
@@ -112,7 +112,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
   async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      (data: LoginCredentials): Promise<boolean> => this.app.login(data)
+      (data: LoginCredentials): Promise<boolean> => this.app.login(data),
     )
   }
 }

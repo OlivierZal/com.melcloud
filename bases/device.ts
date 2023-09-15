@@ -34,7 +34,7 @@ import type {
 } from '../types'
 
 export default abstract class BaseMELCloudDevice extends WithAPI(
-  WithTimers(Device)
+  WithTimers(Device),
 ) {
   app!: MELCloudApp
 
@@ -78,7 +78,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   async setDeviceData<
-    T extends MELCloudDriver
+    T extends MELCloudDriver,
   >(): Promise<GetDeviceData<T> | null> {
     try {
       const postData: PostData<T> = {
@@ -88,7 +88,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       }
       const { data } = await this.api.post<GetDeviceData<T>>(
         `/Device/Set${this.driver.heatPumpType}`,
-        postData
+        postData,
       )
       return data
     } catch (error: unknown) {
@@ -98,7 +98,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   async reportEnergyCost<T extends MELCloudDriver>(
     fromDate: DateTime,
-    toDate: DateTime
+    toDate: DateTime,
   ): Promise<ReportData<T> | null> {
     try {
       const postData: ReportPostData = {
@@ -109,7 +109,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       }
       const { data } = await this.api.post<ReportData<T>>(
         '/EnergyCost/Report',
-        postData
+        postData,
       )
       return data
     } catch (error: unknown) {
@@ -122,27 +122,27 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   getDashboardCapabilities(
-    settings: Settings = this.getSettings() as Settings
+    settings: Settings = this.getSettings() as Settings,
   ): string[] {
     return Object.keys(settings).filter(
-      (setting: string) => this.isCapability(setting) && settings[setting]
+      (setting: string) => this.isCapability(setting) && settings[setting],
     )
   }
 
   getReportCapabilities<T extends MELCloudDriver>(
-    total = false
+    total = false,
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
     return Object.fromEntries(
       Object.entries(this.driver.reportCapabilityMapping)
         .filter(
           ([capability]: [string, ReportCapabilityMapping<T>]) =>
             this.hasCapability(capability) &&
-            capability.includes('total') === total
+            capability.includes('total') === total,
         )
         .map(([capability, tags]: [string, ReportCapabilityMapping<T>]) => [
           capability as ReportCapability<T>,
           tags,
-        ])
+        ]),
     ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   }
 
@@ -156,11 +156,11 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         await acc
         return this.addCapability(capability)
       },
-      Promise.resolve()
+      Promise.resolve(),
     )
     await this.getCapabilities()
       .filter(
-        (capability: string) => !requiredCapabilities.includes(capability)
+        (capability: string) => !requiredCapabilities.includes(capability),
       )
       .reduce<Promise<void>>(async (acc, capability: string) => {
         await acc
@@ -177,14 +177,14 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         capability,
         async (value: CapabilityValue): Promise<void> => {
           await this.onCapability(capability as ExtendedSetCapability<T>, value)
-        }
+        },
       )
     })
   }
 
   async onCapability<T extends MELCloudDriver>(
     capability: ExtendedSetCapability<T>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void> {
     this.clearSync()
     if (capability === 'onoff') {
@@ -196,7 +196,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   abstract specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriver>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void>
 
   clearSync(): void {
@@ -224,7 +224,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         await this.syncToDevice()
       },
       { seconds: 1 },
-      'seconds'
+      'seconds',
     )
   }
 
@@ -239,12 +239,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     >(
       (
         acc,
-        [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>]
+        [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>],
       ) => {
         if (this.hasCapability(capability)) {
           acc[tag] = this.convertToDevice(
             capability as SetCapability<T>,
-            this.diff.get(capability as SetCapability<T>)
+            this.diff.get(capability as SetCapability<T>),
           ) as SetDeviceData<T>[Exclude<
             keyof SetDeviceData<T>,
             'EffectiveFlags'
@@ -252,24 +252,24 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
           if (this.diff.has(capability as SetCapability<T>)) {
             this.diff.delete(capability as SetCapability<T>)
             acc.EffectiveFlags = Number(
-              BigInt(acc.EffectiveFlags) | effectiveFlag
+              BigInt(acc.EffectiveFlags) | effectiveFlag,
             )
           }
         }
         return acc
       },
-      { EffectiveFlags: 0 }
+      { EffectiveFlags: 0 },
     ) as SetDeviceData<T>
   }
 
   abstract convertToDevice(
     capability: SetCapability<MELCloudDriver>,
-    value?: CapabilityValue
+    value?: CapabilityValue,
   ): SetDeviceValue
 
   async endSync<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
-    syncMode?: SyncMode
+    syncMode?: SyncMode,
   ): Promise<void> {
     await this.updateCapabilities(data, syncMode)
     await this.updateThermostatMode()
@@ -280,7 +280,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   async updateCapabilities<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
-    syncMode?: SyncMode
+    syncMode?: SyncMode,
   ): Promise<void> {
     if (data?.EffectiveFlags === undefined) {
       return
@@ -308,7 +308,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     const capabilities: [NonReportCapability<T>, ListCapabilityMapping<T>][] =
       Object.entries(capabilitiesToProcess()) as [
         NonReportCapability<T>,
-        ListCapabilityMapping<T>
+        ListCapabilityMapping<T>,
       ][]
     const keysToProcessLast: string[] = [
       'operation_mode_state.zone1',
@@ -316,7 +316,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     ]
     const [regularCapabilities, lastCapabilities]: [
       NonReportCapability<T>,
-      ListCapabilityMapping<T>
+      ListCapabilityMapping<T>,
     ][][] = capabilities.reduce<
       [NonReportCapability<T>, ListCapabilityMapping<T>][][]
     >(
@@ -324,8 +324,8 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         acc,
         [capability, capabilityData]: [
           NonReportCapability<T>,
-          ListCapabilityMapping<T>
-        ]
+          ListCapabilityMapping<T>,
+        ],
       ) => {
         if (keysToProcessLast.includes(capability)) {
           acc[1].push([capability, capabilityData])
@@ -334,12 +334,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         }
         return acc
       },
-      [[], []]
+      [[], []],
     )
 
     const shouldProcess = (
       capability: NonReportCapability<T>,
-      effectiveFlag?: bigint
+      effectiveFlag?: bigint,
     ): boolean => {
       switch (syncMode) {
         case 'syncTo':
@@ -355,7 +355,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
     const processCapability = async ([capability, { tag, effectiveFlag }]: [
       NonReportCapability<T>,
-      ListCapabilityMapping<T>
+      ListCapabilityMapping<T>,
     ]): Promise<void> => {
       if (shouldProcess(capability, effectiveFlag)) {
         await this.setCapabilityValue(capability, data[tag] as DeviceValue)
@@ -363,7 +363,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     }
 
     const processCapabilities = async (
-      capabilitiesArray: [NonReportCapability<T>, ListCapabilityMapping<T>][]
+      capabilitiesArray: [NonReportCapability<T>, ListCapabilityMapping<T>][],
     ): Promise<void> => {
       await Promise.all(capabilitiesArray.map(processCapability))
     }
@@ -374,13 +374,13 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   abstract convertFromDevice(
     capability: ExtendedCapability<MELCloudDriver>,
-    value: DeviceValue
+    value: DeviceValue,
   ): CapabilityValue
 
   abstract updateThermostatMode(): Promise<void>
 
   async syncDeviceFromList<T extends MELCloudDriver>(
-    syncMode?: SyncFromMode
+    syncMode?: SyncFromMode,
   ): Promise<void> {
     const deviceFromList: ListDevice<T> | undefined = this.getDeviceFromList()
     const data: ListDeviceData<T> | null = deviceFromList?.Device ?? null
@@ -391,12 +391,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   getDeviceFromList<T extends MELCloudDriver>(): ListDevice<T> | undefined {
     return this.app.deviceList.find(
-      (device: ListDeviceAny) => device.DeviceID === this.id
+      (device: ListDeviceAny) => device.DeviceID === this.id,
     ) as ListDevice<T> | undefined
   }
 
   async updateStore<T extends MELCloudDriver>(
-    data: ListDeviceData<T> | null
+    data: ListDeviceData<T> | null,
   ): Promise<void> {
     if (!data) {
       return
@@ -406,12 +406,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       Object.entries({ CanCool, HasZone2 })
         .filter(
           ([key, value]: [string, boolean]) =>
-            value !== data[key as keyof Store]
+            value !== data[key as keyof Store],
         )
         .map(async ([key]: [string, boolean]): Promise<boolean> => {
           await this.setStoreValue(key, data[key as keyof Store])
           return true
-        })
+        }),
     )
     if (updates.some(Boolean)) {
       await this.handleCapabilities()
@@ -424,7 +424,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   async runEnergyReport<T extends MELCloudDriver>(
-    total = false
+    total = false,
   ): Promise<void> {
     const reportCapabilities: Record<
       ReportCapability<T>,
@@ -434,12 +434,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       return
     }
     const toDate: DateTime = DateTime.now().minus(
-      this.reportPlanParameters.minus
+      this.reportPlanParameters.minus,
     )
     const fromDate: DateTime = total ? DateTime.local(1970) : toDate
     const data: ReportData<T> | null = await this.reportEnergyCost(
       fromDate,
-      toDate
+      toDate,
     )
     await this.updateReportCapabilities(data, toDate, reportCapabilities)
     this.planEnergyReport(total)
@@ -448,7 +448,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   async updateReportCapabilities<T extends MELCloudDriver>(
     data: ReportData<T> | null,
     toDate: DateTime,
-    reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>
+    reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>,
   ): Promise<void> {
     if (!data) {
       return
@@ -460,7 +460,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
     const updateReportCapability = async ([capability, tags]: [
       ReportCapability<T>,
-      ReportCapabilityMapping<T>
+      ReportCapabilityMapping<T>,
     ]): Promise<void> => {
       const reportValue = (): number => {
         if (capability.includes('cop')) {
@@ -476,7 +476,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
               (capability.includes('measure_power')
                 ? (data[tag] as number[])[toDate.hour] * 1000
                 : (data[tag] as number)),
-            0
+            0,
           ) / deviceCount
         )
       }
@@ -487,9 +487,9 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       (
         Object.entries(reportCapabilities) as [
           ReportCapability<T>,
-          ReportCapabilityMapping<T>
+          ReportCapabilityMapping<T>,
         ][]
-      ).map(updateReportCapability)
+      ).map(updateReportCapability),
     )
   }
 
@@ -517,12 +517,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
           },
           interval,
           'days',
-          'hours'
+          'hours',
         )
       },
       DateTime.now().plus(duration).set(values).diffNow(),
       'hours',
-      'minutes'
+      'minutes',
     )
   }
 
@@ -534,7 +534,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     changedKeys: string[]
   }): Promise<void> {
     const changedCapabilities: string[] = changedKeys.filter(
-      (setting: string) => this.isCapability(setting)
+      (setting: string) => this.isCapability(setting),
     )
     if (changedCapabilities.length) {
       await this.handleDashboardCapabilities(newSettings, changedCapabilities)
@@ -548,14 +548,14 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       changedKeys.some(
         (setting: string) =>
           setting !== 'always_on' &&
-          !(setting in this.driver.reportCapabilityMapping)
+          !(setting in this.driver.reportCapabilityMapping),
       )
     ) {
       this.app.applySyncFromDevices()
     }
 
     const changedEnergyKeys: string[] = changedKeys.filter(
-      (setting: string) => setting in this.driver.reportCapabilityMapping
+      (setting: string) => setting in this.driver.reportCapabilityMapping,
     )
     if (!changedEnergyKeys.length) {
       return
@@ -563,7 +563,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     await Promise.all(
       [false, true].map(async (total: boolean): Promise<void> => {
         const changed: string[] = changedEnergyKeys.filter(
-          (setting: string) => setting.includes('total') === total
+          (setting: string) => setting.includes('total') === total,
         )
         if (!changed.length) {
           return
@@ -573,18 +573,18 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
         } else if (
           Object.entries(newSettings).every(
             ([setting, value]: [string, SettingValue]) =>
-              !(setting in this.driver.reportCapabilityMapping) || !value
+              !(setting in this.driver.reportCapabilityMapping) || !value,
           )
         ) {
           this.clearEnergyReportPlan(total)
         }
-      })
+      }),
     )
   }
 
   async handleDashboardCapabilities(
     newSettings: Settings,
-    changedCapabilities: string[]
+    changedCapabilities: string[],
   ): Promise<void> {
     await changedCapabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
@@ -595,7 +595,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
           await this.removeCapability(capability)
         }
       },
-      Promise.resolve()
+      Promise.resolve(),
     )
   }
 
@@ -643,7 +643,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
 
   async setCapabilityValue<T extends MELCloudDriver>(
     capability: ExtendedCapability<T>,
-    value: CapabilityValue
+    value: CapabilityValue,
   ): Promise<void> {
     if (
       this.hasCapability(capability) &&
@@ -652,7 +652,7 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
       try {
         await super.setCapabilityValue(
           capability,
-          this.convertFromDevice(capability, value)
+          this.convertFromDevice(capability, value),
         )
         this.log('Capability', capability, 'is', value)
       } catch (error: unknown) {

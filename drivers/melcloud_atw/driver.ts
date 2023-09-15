@@ -74,7 +74,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 operation_mode_state: string
               }): boolean =>
                 args.operation_mode_state ===
-                args.device.getCapabilityValue('operation_mode_state')
+                args.device.getCapabilityValue('operation_mode_state'),
             )
         } else if (
           capability.startsWith('alarm_generic') ||
@@ -84,7 +84,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
             .getConditionCard(`${capability}_condition`)
             .registerRunListener(
               (args: { device: MELCloudDeviceAtw }): boolean =>
-                args.device.getCapabilityValue(capability)
+                args.device.getCapabilityValue(capability),
             )
           if (capability.startsWith('onoff')) {
             this.homey.flow
@@ -96,9 +96,9 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 }): Promise<void> => {
                   await args.device.onCapability(
                     capability,
-                    args.onoff === 'true'
+                    args.onoff === 'true',
                   )
-                }
+                },
               )
           }
         } else if (capability.startsWith('operation_mode_zone')) {
@@ -114,7 +114,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 operation_mode_zone: string
               }): boolean =>
                 args.operation_mode_zone ===
-                args.device.getCapabilityValue(capability)
+                args.device.getCapabilityValue(capability),
             )
           this.homey.flow
             .getActionCard(`${flowPrefix}_action`)
@@ -125,9 +125,9 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               }): Promise<void> => {
                 await args.device.onCapability(
                   capability,
-                  args.operation_mode_zone
+                  args.operation_mode_zone,
                 )
-              }
+              },
             )
         } else if (capability.startsWith('target_temperature.')) {
           this.homey.flow
@@ -139,12 +139,12 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               }): Promise<void> => {
                 await args.device.onCapability(
                   capability,
-                  args.target_temperature
+                  args.target_temperature,
                 )
-              }
+              },
             )
         }
-      }
+      },
     )
 
     // Deprecated
@@ -156,7 +156,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
           onoff_forced_hot_water: 'true' | 'false'
         }): boolean =>
           args.onoff_forced_hot_water ===
-          String(args.device.getCapabilityValue('onoff.forced_hot_water'))
+          String(args.device.getCapabilityValue('onoff.forced_hot_water')),
       )
     this.homey.flow
       .getActionCard('onoff_forced_hot_water_action')
@@ -167,9 +167,9 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
         }): Promise<void> => {
           await args.device.onCapability(
             'onoff.forced_hot_water',
-            args.onoff_forced_hot_water === 'true'
+            args.onoff_forced_hot_water === 'true',
           )
-        }
+        },
       )
     this.homey.flow
       .getActionCard('target_temperature_tank_water')
@@ -180,9 +180,9 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
         }): Promise<void> => {
           await args.device.onCapability(
             'target_temperature.tank_water',
-            args.target_temperature
+            args.target_temperature,
           )
-        }
+        },
       )
   }
 
