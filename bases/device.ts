@@ -1,6 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
+import logName from '../decorators'
 import WithAPI from '../mixins/api'
 import WithTimers from '../mixins/timers'
 import type {
@@ -662,21 +663,23 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   isCapability(setting: string): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    /* eslint-disable-next-line
+      @typescript-eslint/no-unsafe-call,
+      @typescript-eslint/no-unsafe-member-access,
+      @typescript-eslint/no-unsafe-return
+    */
     return this.driver.manifest.capabilities.includes(setting)
   }
 
   /* eslint-disable @typescript-eslint/no-unsafe-argument */
+  @logName
   error(...args: any[]): void {
-    this.customLog('error', ...args)
+    super.error(...args)
   }
 
+  @logName
   log(...args: any[]): void {
-    this.customLog('log', ...args)
-  }
-
-  customLog(method: 'log' | 'error', ...args: any[]): void {
-    super[method](this.getName(), '-', ...args)
+    super.log(...args)
   }
   /* eslint-enable @typescript-eslint/no-unsafe-argument */
 }

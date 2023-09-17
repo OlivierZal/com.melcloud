@@ -920,7 +920,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       'POST',
       '/login',
       body,
-      async (_: Error | null, loggedIn: boolean): Promise<void> => {
+      async (_error: Error | null, loggedIn: boolean): Promise<void> => {
         if (!loggedIn) {
           // @ts-expect-error: homey is partially typed
           await homey.alert(homey.__('settings.authenticate.failure'))
