@@ -1,6 +1,6 @@
 /* eslint-disable
-  @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-explicit-any
+  @typescript-eslint/no-explicit-any,
+  @typescript-eslint/no-unsafe-assignment
 */
 interface HasGetName {
   getName(): string
