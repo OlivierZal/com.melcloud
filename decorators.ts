@@ -5,7 +5,7 @@
   @typescript-eslint/no-unsafe-return,
   @typescript-eslint/no-unused-vars
 */
-export default function logName(
+export default function logName<This, Args extends any[], Return>(
   originalMethod: any,
   _context: ClassMethodDecoratorContext,
 ) {
