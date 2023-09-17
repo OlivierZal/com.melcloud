@@ -14,8 +14,8 @@ type TimerClass = new (...args: any[]) => {
   }
 }
 
-export default function WithTimers<T extends TimerClass>(Base: T) {
-  return class extends Base {
+export default function WithTimers<T extends TimerClass>(BaseClass: T) {
+  return class extends BaseClass {
     setTimer(
       actionType: string,
       timerWords: [string, string],
