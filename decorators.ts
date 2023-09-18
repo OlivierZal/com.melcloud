@@ -14,7 +14,7 @@ export default function logName<
     This,
     (this: This, ...args: any[]) => Return
   >,
-) {
+): (this: This, ...args: Args) => Return {
   function replacementMethod(this: This, ...args: Args) {
     return originalMethod.call(this, this.getName(), '-', ...args)
   }
