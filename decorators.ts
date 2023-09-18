@@ -1,22 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-interface HasGetName {
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+interface GetNameClass {
   getName(): string
 }
 
-export default function logName<
-  This extends HasGetName,
-  Args extends [string, '-', ...any[]],
-  Return,
->(
-  originalMethod: (this: This, ...args: any[]) => Return,
+export default function logName<T extends GetNameClass>(
+  originalMethod: (this: T, ...args: any[]) => void,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _context: ClassMethodDecoratorContext<
-    This,
-    (this: This, ...args: any[]) => Return
-  >,
-): (this: This, ...args: Args) => Return {
-  function replacementMethod(this: This, ...args: Args) {
-    return originalMethod.call(this, this.getName(), '-', ...args)
+  _context: ClassMethodDecoratorContext,
+): (this: T, ...args: any[]) => void {
+  function replacementMethod(this: T, ...args: any[]) {
+    originalMethod.call(this, this.getName(), '-', ...args)
   }
   return replacementMethod
 }
