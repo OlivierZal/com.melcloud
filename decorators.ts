@@ -4,7 +4,7 @@ interface GetNameClass {
 }
 
 export default function logName<T extends GetNameClass>(
-  originalMethod: (this: T, ...args: any[]) => void,
+  originalMethod: (...args: any[]) => void,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _context: unknown,
 ) {
