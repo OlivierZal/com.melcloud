@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-interface GetNameClass {
+interface HasGetNameClass {
   getName(): string
 }
 
-export default function logName<T extends GetNameClass>(
+export default function logName<T extends HasGetNameClass>(
   originalMethod: (...args: any[]) => void,
   _context: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
 ) {
