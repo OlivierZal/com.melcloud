@@ -117,18 +117,22 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       this.loginTimeout = this.setTimeout(
         'login refresh',
         async (): Promise<void> => {
-          await this.login(loginCredentials).catch((error: Error): void => {
-            this.error(error.message)
-          })
+          await this.tryLogin(loginCredentials)
         },
         interval,
         'days',
       )
       return
     }
-    await this.login(loginCredentials).catch((error: Error): void => {
-      this.error(error.message)
-    })
+    await this.tryLogin(loginCredentials)
+  }
+
+  async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
+    try {
+      await this.login(loginCredentials)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : String(error))
+    }
   }
 
   getFirstDeviceId({
