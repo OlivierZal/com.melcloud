@@ -62,6 +62,39 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     await this.listDevices()
   }
 
+  async refreshLogin(): Promise<void> {
+    const loginCredentials: LoginCredentials = {
+      username: this.homey.settings.get('username') ?? '',
+      password: this.homey.settings.get('password') ?? '',
+    }
+    const expiry: string | null = this.homey.settings.get('Expiry')
+    const ms: number = expiry
+      ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+      : 0
+    if (ms) {
+      const maxTimeout: number = 2 ** 31 - 1
+      const interval: number = Math.min(ms, maxTimeout)
+      this.loginTimeout = this.setTimeout(
+        'login refresh',
+        async (): Promise<void> => {
+          await this.tryLogin(loginCredentials)
+        },
+        interval,
+        'days',
+      )
+      return
+    }
+    await this.tryLogin(loginCredentials)
+  }
+
+  async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
+    try {
+      await this.login(loginCredentials)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : String(error))
+    }
+  }
+
   async login(loginCredentials: LoginCredentials): Promise<boolean> {
     this.clearLoginRefresh()
     try {
@@ -100,39 +133,6 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
   clearLoginRefresh(): void {
     this.homey.clearTimeout(this.loginTimeout)
     this.log('Login refresh has been paused')
-  }
-
-  async refreshLogin(): Promise<void> {
-    const loginCredentials: LoginCredentials = {
-      username: this.homey.settings.get('username') ?? '',
-      password: this.homey.settings.get('password') ?? '',
-    }
-    const expiry: string | null = this.homey.settings.get('Expiry')
-    const ms: number = expiry
-      ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-      : 0
-    if (ms) {
-      const maxTimeout: number = 2 ** 31 - 1
-      const interval: number = Math.min(ms, maxTimeout)
-      this.loginTimeout = this.setTimeout(
-        'login refresh',
-        async (): Promise<void> => {
-          await this.tryLogin(loginCredentials)
-        },
-        interval,
-        'days',
-      )
-      return
-    }
-    await this.tryLogin(loginCredentials)
-  }
-
-  async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
-    try {
-      await this.login(loginCredentials)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : String(error))
-    }
   }
 
   getFirstDeviceId({
