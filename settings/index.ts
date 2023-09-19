@@ -662,7 +662,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         body = buildSettingsBody(elements, driverId)
       } catch (error: unknown) {
         // @ts-expect-error: homey is partially typed
-        homey.alert(error instanceof Error ? error.message : error)
+        homey.alert(error instanceof Error ? error.message : String(error))
         return
       }
       if (!Object.keys(body).length) {
@@ -1110,7 +1110,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       })
       enableButtons('frost-protection')
       // @ts-expect-error: homey is partially typed
-      homey.alert(error instanceof Error ? error.message : error)
+      homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
     if (MinimumTemperature > MaximumTemperature) {
