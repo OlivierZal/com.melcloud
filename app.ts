@@ -91,7 +91,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     try {
       await this.login(loginCredentials)
     } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : String(error))
+      this.error(error instanceof Error ? error.message : error)
     }
   }
 
@@ -205,9 +205,12 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     deviceType?: number,
     syncMode?: SyncFromMode,
   ): Promise<ListDeviceAny[]> {
-    const buildings: Building[] = await this.getBuildings().catch(
-      (): Building[] => [],
-    )
+    let buildings: Building[] = []
+    try {
+      buildings = await this.getBuildings()
+    } catch (error: unknown) {
+      return []
+    }
     const buildingData: {
       deviceIds: Record<number, string>
       deviceList: ListDeviceAny[]
@@ -244,9 +247,11 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
     this.deviceList = deviceList
     this.deviceIds = buildingData.deviceIds
-    await this.syncDevicesFromList(syncMode).catch((error: Error): void => {
-      this.error(error.message)
-    })
+    try {
+      await this.syncDevicesFromList(syncMode)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
+    }
     this.planSyncFromDevices()
     return deviceList
   }
