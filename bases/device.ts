@@ -1,7 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import logName from '../decorators'
+import addToLog from '../decorators'
 import WithAPI from '../mixins/api'
 import WithTimers from '../mixins/timers'
 import type {
@@ -648,7 +648,8 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   ): Promise<void> {
     if (
       this.hasCapability(capability) &&
-      value !== this.getCapabilityValue(capability)
+      this.convertFromDevice(capability, value) !==
+        this.getCapabilityValue(capability)
     ) {
       try {
         await super.setCapabilityValue(
@@ -672,12 +673,12 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
   }
 
   /* eslint-disable @typescript-eslint/no-unsafe-argument */
-  @logName
+  @addToLog('getName()')
   error(...args: any[]): void {
     super.error(...args)
   }
 
-  @logName
+  @addToLog('getName()')
   log(...args: any[]): void {
     super.log(...args)
   }
