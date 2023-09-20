@@ -12,14 +12,17 @@ export default function addToLog(...logs: string[]) {
         this,
         ...logs
           .filter((log: string) => log)
-          .map((log: string): string => {
+          .flatMap((log: string): [any, '-'] => {
             if (log.endsWith('()')) {
               const func: string = log.slice(0, -2)
               if (typeof this[func] === 'function' && !this[func].length) {
-                return `${this[func]()} -`
+                return [this[func](), '-']
               }
             }
-            return `${log} -`
+            if (log in this) {
+              return [this[log], '-']
+            }
+            return [log, '-']
           }),
         ...args,
       )
