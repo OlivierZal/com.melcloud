@@ -646,20 +646,18 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     capability: ExtendedCapability<T>,
     value: CapabilityValue,
   ): Promise<void> {
-    if (
-      this.hasCapability(capability) &&
-      this.convertFromDevice(capability, value) !==
-        this.getCapabilityValue(capability)
-    ) {
-      try {
-        await super.setCapabilityValue(
-          capability,
-          this.convertFromDevice(capability, value),
-        )
-        this.log('Capability', capability, 'is', value)
-      } catch (error: unknown) {
-        this.error(error instanceof Error ? error.message : error)
-      }
+    if (!this.hasCapability(capability)) {
+      return
+    }
+    const newValue: CapabilityValue = this.convertFromDevice(capability, value)
+    if (newValue === this.getCapabilityValue(capability)) {
+      return
+    }
+    try {
+      await super.setCapabilityValue(capability, newValue)
+      this.log('Capability', capability, 'is', newValue)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
     }
   }
 
