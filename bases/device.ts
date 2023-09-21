@@ -1,7 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import addToLog from '../decorators'
+import addDeviceNameToLogs from '../decorators'
 import WithAPI from '../mixins/api'
 import WithTimers from '../mixins/timers'
 import type {
@@ -34,9 +34,8 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-export default abstract class BaseMELCloudDevice extends WithAPI(
-  WithTimers(Device),
-) {
+@addDeviceNameToLogs
+abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
@@ -669,16 +668,6 @@ export default abstract class BaseMELCloudDevice extends WithAPI(
     */
     return this.driver.manifest.capabilities.includes(setting)
   }
-
-  /* eslint-disable @typescript-eslint/no-unsafe-argument */
-  @addToLog('getName()')
-  error(...args: any[]): void {
-    super.error(...args)
-  }
-
-  @addToLog('getName()')
-  log(...args: any[]): void {
-    super.log(...args)
-  }
-  /* eslint-enable @typescript-eslint/no-unsafe-argument */
 }
+
+export default BaseMELCloudDevice
