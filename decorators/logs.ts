@@ -12,16 +12,16 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
     BaseClass: T,
     _context: ClassDecoratorContext, // eslint-disable-line @typescript-eslint/no-unused-vars
   ) {
-    abstract class ExtendedLogs extends BaseClass {
+    abstract class Logs extends BaseClass {
       error(...args: any[]): void {
-        this.extendedLog('error', ...args)
+        this.commonLog('error', ...args)
       }
 
       log(...args: any[]): void {
-        this.extendedLog('log', ...args)
+        this.commonLog('log', ...args)
       }
 
-      extendedLog(logType: 'error' | 'log', ...args: any[]): void {
+      commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
           ...logs
             .filter((log: string) => log)
@@ -44,6 +44,6 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
         )
       }
     }
-    return ExtendedLogs
+    return Logs
   }
 }
