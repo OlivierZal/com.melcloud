@@ -1,7 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import addNameToLogs from '../decorators/logs'
+import addToLogs from '../decorators/logs'
 import WithAPI from '../mixins/api'
 import WithTimers from '../mixins/timers'
 import type {
@@ -34,7 +34,7 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-@addNameToLogs
+@addToLogs('getName()')
 abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
   app!: MELCloudApp
 
