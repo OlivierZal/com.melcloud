@@ -124,5 +124,8 @@
   },
   "21.0.0": {
     "en": "Reshaped code."
+  },
+  "22.0.0": {
+    "en": "Use decorator."
   }
 }
