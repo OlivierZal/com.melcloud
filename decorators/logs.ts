@@ -8,11 +8,9 @@ type LogClass = abstract new (...args: any[]) => {
 }
 
 export default function addToLogs<T extends LogClass>(...logs: string[]) {
-  return function actualDecorator(
-    BaseClass: T,
-    _context: ClassDecoratorContext, // eslint-disable-line @typescript-eslint/no-unused-vars
-  ) {
-    abstract class MELCloudLogsDecorator extends BaseClass {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return function actualDecorator(Base: T, _context: ClassDecoratorContext) {
+    abstract class MELCloudLogsDecorator extends Base {
       error(...args: any[]): void {
         this.commonLog('error', ...args)
       }
