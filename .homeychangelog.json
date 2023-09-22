@@ -120,7 +120,10 @@
     "en": "Updated modules."
   },
   "20.0.0": {
-    "en": "Use new eslint config."
+    "en": "Use eslint flat config."
+  },
+  "20.1.0": {
+    "en": "Use mixins."
   },
   "21.0.0": {
     "en": "Reshaped code."
