@@ -24,7 +24,6 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
       commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
           ...logs
-            .filter((log: string) => log)
             .flatMap((log: string): [any, '-'] => {
               if (log.endsWith('()')) {
                 const funcName: string = log.slice(0, -2)
