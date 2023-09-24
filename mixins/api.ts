@@ -1,20 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+import type Homey from 'homey/lib/Homey'
 import axios, {
   type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
-import type { HomeySettingValue } from '../types'
+import { type HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => {
   error(...errorArgs: any[]): void
   log(...logArgs: any[]): void
-  homey: {
-    settings: {
-      get(key: string): HomeySettingValue
-    }
-  }
+  homey: Homey
 }
 
 export default function WithAPI<T extends APIClass>(Base: T) {
@@ -47,7 +44,9 @@ export default function WithAPI<T extends APIClass>(Base: T) {
     ): InternalAxiosRequestConfig {
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
       updatedConfig.headers['X-MitsContextKey'] =
-        this.homey.settings.get('ContextKey') ?? ''
+        (this.homey.settings.get(
+          'ContextKey',
+        ) as HomeySettings['ContextKey']) ?? ''
       this.log(
         'Sending request:',
         updatedConfig.url,

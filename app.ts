@@ -64,10 +64,16 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
 
   async refreshLogin(): Promise<void> {
     const loginCredentials: LoginCredentials = {
-      username: this.homey.settings.get('username') ?? '',
-      password: this.homey.settings.get('password') ?? '',
+      username:
+        (this.homey.settings.get('username') as HomeySettings['username']) ??
+        '',
+      password:
+        (this.homey.settings.get('password') as HomeySettings['password']) ??
+        '',
     }
-    const expiry: string | null = this.homey.settings.get('Expiry')
+    const expiry: string | null = this.homey.settings.get(
+      'Expiry',
+    ) as HomeySettings['Expiry']
     const ms: number = expiry
       ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
       : 0

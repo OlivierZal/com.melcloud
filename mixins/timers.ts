@@ -1,17 +1,10 @@
+import type Homey from 'homey/lib/Homey'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
-
-type TimerFunction = (
-  callback: () => Promise<void>,
-  duration: number,
-) => NodeJS.Timeout
 
 type TimerClass = new (...args: any[]) => {
   error(...errorArgs: any[]): void
   log(...logArgs: any[]): void
-  homey: {
-    setInterval: TimerFunction
-    setTimeout: TimerFunction
-  }
+  homey: Homey
 }
 
 export default function WithTimers<T extends TimerClass>(Base: T) {
