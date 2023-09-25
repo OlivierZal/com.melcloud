@@ -1,9 +1,9 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import addToLogs from '../decorators/logs'
-import WithAPI from '../mixins/api'
-import WithTimers from '../mixins/timers'
+import addToLogs from '../decorators/addToLogs'
+import WithAPI from '../mixins/WithApi'
+import WithTimers from '../mixins/WithTimers'
 import type {
   CapabilityValue,
   DeviceDetails,

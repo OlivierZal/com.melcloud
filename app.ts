@@ -2,8 +2,8 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import WithAPI from './mixins/api'
-import WithTimers from './mixins/timers'
+import WithAPI from './mixins/WithApi'
+import WithTimers from './mixins/WithTimers'
 import type {
   Building,
   ErrorLogData,
