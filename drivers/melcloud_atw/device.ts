@@ -28,10 +28,6 @@ function getOtherCapabilityZone(capability: string): string {
 }
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
-  declare driver: MELCloudDriverAtw
-
-  declare diff: Map<SetCapability<MELCloudDriverAtw>, CapabilityValue>
-
   async onInit(): Promise<void> {
     this.reportPlanParameters = {
       minus: { days: 1 },
@@ -42,7 +38,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     await super.onInit()
   }
 
-  async specificOnCapability(
+  protected async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue,
   ): Promise<void> {
@@ -52,7 +48,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     }
   }
 
-  async handleOperationModeZones(
+  protected async handleOperationModeZones(
     capability: ExtendedSetCapability<MELCloudDriverAtw>,
     value: CapabilityValue,
   ): Promise<void> {
@@ -81,7 +77,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     }
   }
 
-  convertToDevice(
+  protected convertToDevice(
     capability: SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue = this.getCapabilityValue(
       capability,
@@ -100,7 +96,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     }
   }
 
-  convertFromDevice(
+  protected convertFromDevice(
     capability: ExtendedCapability<MELCloudDriverAtw>,
     value: DeviceValue,
   ): CapabilityValue {
@@ -132,7 +128,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async updateThermostatMode(): Promise<void> {
+  protected async updateThermostatMode(): Promise<void> {
     // Not implemented.
   }
 }

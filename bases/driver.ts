@@ -20,9 +20,9 @@ import type {
 } from '../types'
 
 export default abstract class BaseMELCloudDriver extends Driver {
-  app!: MELCloudApp
+  protected deviceType!: number
 
-  deviceType!: number
+  app!: MELCloudApp
 
   heatPumpType!: string
 
@@ -83,7 +83,9 @@ export default abstract class BaseMELCloudDriver extends Driver {
     )
   }
 
-  async discoverDevices<T extends MELCloudDriver>(): Promise<DeviceDetails[]> {
+  private async discoverDevices<T extends MELCloudDriver>(): Promise<
+    DeviceDetails[]
+  > {
     this.app.clearListDevicesRefresh()
     const devices: ListDevice<T>[] = (await this.app.listDevices(
       this.deviceType,

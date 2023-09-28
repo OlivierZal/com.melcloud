@@ -36,6 +36,24 @@ import type {
 
 @addToLogs('getName()')
 abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
+  #syncTimeout!: NodeJS.Timeout
+
+  #reportTimeout: {
+    false: NodeJS.Timeout | null
+    true: NodeJS.Timeout | null
+  } = { true: null, false: null }
+
+  #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
+
+  protected diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
+
+  protected reportPlanParameters!: {
+    duration: object
+    interval: object
+    minus: object
+    values: object
+  }
+
   app!: MELCloudApp
 
   declare driver: MELCloudDriver
@@ -43,24 +61,6 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
   id!: number
 
   buildingid!: number
-
-  diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
-
-  syncTimeout!: NodeJS.Timeout
-
-  reportTimeout: {
-    false: NodeJS.Timeout | null
-    true: NodeJS.Timeout | null
-  } = { true: null, false: null }
-
-  reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
-
-  reportPlanParameters!: {
-    duration: object
-    interval: object
-    minus: object
-    values: object
-  }
 
   async onInit<T extends MELCloudDriver>(): Promise<void> {
     this.app = this.homey.app as MELCloudApp
@@ -77,7 +77,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     await this.runEnergyReports()
   }
 
-  async setDeviceData<
+  private async setDeviceData<
     T extends MELCloudDriver,
   >(): Promise<GetDeviceData<T> | null> {
     try {
@@ -96,7 +96,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     }
   }
 
-  async reportEnergyCost<T extends MELCloudDriver>(
+  private async reportEnergyCost<T extends MELCloudDriver>(
     fromDate: DateTime,
     toDate: DateTime,
   ): Promise<ReportData<T> | null> {
@@ -121,7 +121,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     return !!this.diff.size
   }
 
-  getDashboardCapabilities(
+  private getDashboardCapabilities(
     settings: Settings = this.getSettings() as Settings,
   ): string[] {
     return Object.keys(settings).filter(
@@ -129,7 +129,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     )
   }
 
-  getReportCapabilities<T extends MELCloudDriver>(
+  private getReportCapabilities<T extends MELCloudDriver>(
     total = false,
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
     return Object.fromEntries(
@@ -146,7 +146,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   }
 
-  async handleCapabilities(): Promise<void> {
+  private async handleCapabilities(): Promise<void> {
     const requiredCapabilities: string[] = [
       ...this.driver.getRequiredCapabilities(this.getStore() as Store),
       ...this.getDashboardCapabilities(),
@@ -168,7 +168,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
       }, Promise.resolve())
   }
 
-  registerCapabilityListeners<T extends MELCloudDriver>(): void {
+  private registerCapabilityListeners<T extends MELCloudDriver>(): void {
     ;[
       ...Object.keys(this.driver.setCapabilityMapping),
       'thermostat_mode',
@@ -194,31 +194,31 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     this.applySyncToDevice()
   }
 
-  abstract specificOnCapability(
+  protected abstract specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriver>,
     value: CapabilityValue,
   ): Promise<void>
 
-  clearSync(): void {
+  private clearSync(): void {
     this.app.clearListDevicesRefresh()
-    this.homey.clearTimeout(this.syncTimeout)
+    this.homey.clearTimeout(this.#syncTimeout)
     this.log('Sync with device has been paused')
   }
 
-  async setAlwaysOnWarning(): Promise<void> {
+  protected async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
       await this.setWarning(null)
     }
   }
 
-  async setDisplayErrorWarning(): Promise<void> {
+  protected async setDisplayErrorWarning(): Promise<void> {
     await this.setWarning(this.homey.__('warnings.display_error'))
     await this.setWarning(null)
   }
 
-  applySyncToDevice(): void {
-    this.syncTimeout = this.setTimeout(
+  private applySyncToDevice(): void {
+    this.#syncTimeout = this.setTimeout(
       'sync with device',
       async (): Promise<void> => {
         await this.syncToDevice()
@@ -228,12 +228,12 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     )
   }
 
-  async syncToDevice<T extends MELCloudDriver>(): Promise<void> {
+  private async syncToDevice<T extends MELCloudDriver>(): Promise<void> {
     const data: GetDeviceData<T> | null = await this.setDeviceData()
     await this.endSync(data, 'syncTo')
   }
 
-  buildUpdateData<T extends MELCloudDriver>(): SetDeviceData<T> {
+  private buildUpdateData<T extends MELCloudDriver>(): SetDeviceData<T> {
     return Object.entries(this.driver.setCapabilityMapping).reduce<
       UpdateDeviceData<T>
     >(
@@ -262,12 +262,12 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     ) as SetDeviceData<T>
   }
 
-  abstract convertToDevice(
+  protected abstract convertToDevice(
     capability: SetCapability<MELCloudDriver>,
     value?: CapabilityValue,
   ): SetDeviceValue
 
-  async endSync<T extends MELCloudDriver>(
+  private async endSync<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode,
   ): Promise<void> {
@@ -278,7 +278,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     }
   }
 
-  async updateCapabilities<T extends MELCloudDriver>(
+  private async updateCapabilities<T extends MELCloudDriver>(
     data: Partial<ListDeviceData<T>> | null,
     syncMode?: SyncMode,
   ): Promise<void> {
@@ -372,12 +372,12 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     await processCapabilities(lastCapabilities)
   }
 
-  abstract convertFromDevice(
+  protected abstract convertFromDevice(
     capability: ExtendedCapability<MELCloudDriver>,
     value: DeviceValue,
   ): CapabilityValue
 
-  abstract updateThermostatMode(): Promise<void>
+  protected abstract updateThermostatMode(): Promise<void>
 
   async syncDeviceFromList<T extends MELCloudDriver>(
     syncMode?: SyncFromMode,
@@ -389,13 +389,15 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     await this.endSync(data, syncMode)
   }
 
-  getDeviceFromList<T extends MELCloudDriver>(): ListDevice<T> | undefined {
+  private getDeviceFromList<T extends MELCloudDriver>():
+    | ListDevice<T>
+    | undefined {
     return this.app.deviceList.find(
       (device: ListDeviceAny) => device.DeviceID === this.id,
     ) as ListDevice<T> | undefined
   }
 
-  async updateStore<T extends MELCloudDriver>(
+  private async updateStore<T extends MELCloudDriver>(
     data: ListDeviceData<T> | null,
   ): Promise<void> {
     if (!data) {
@@ -418,12 +420,12 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     }
   }
 
-  async runEnergyReports(): Promise<void> {
+  private async runEnergyReports(): Promise<void> {
     await this.runEnergyReport()
     await this.runEnergyReport(true)
   }
 
-  async runEnergyReport<T extends MELCloudDriver>(
+  private async runEnergyReport<T extends MELCloudDriver>(
     total = false,
   ): Promise<void> {
     const reportCapabilities: Record<
@@ -445,7 +447,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     this.planEnergyReport(total)
   }
 
-  async updateReportCapabilities<T extends MELCloudDriver>(
+  private async updateReportCapabilities<T extends MELCloudDriver>(
     data: ReportData<T> | null,
     toDate: DateTime,
     reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>,
@@ -493,9 +495,9 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     )
   }
 
-  planEnergyReport(total = false): void {
+  private planEnergyReport(total = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
-    if (this.reportTimeout[totalString]) {
+    if (this.#reportTimeout[totalString]) {
       return
     }
     const type = `${total ? 'total' : 'regular'} energy report`
@@ -506,11 +508,11 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
           values: { hour: 1, minute: 5, second: 0, millisecond: 0 },
         }
       : this.reportPlanParameters
-    this.reportTimeout[totalString] = this.setTimeout(
+    this.#reportTimeout[totalString] = this.setTimeout(
       type,
       async (): Promise<void> => {
         await this.runEnergyReport(total)
-        this.reportInterval[totalString] = this.setInterval(
+        this.#reportInterval[totalString] = this.setInterval(
           type,
           async (): Promise<void> => {
             await this.runEnergyReport(total)
@@ -582,7 +584,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     )
   }
 
-  async handleDashboardCapabilities(
+  private async handleDashboardCapabilities(
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
@@ -599,16 +601,16 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     )
   }
 
-  clearEnergyReportPlans(): void {
+  private clearEnergyReportPlans(): void {
     this.clearEnergyReportPlan()
     this.clearEnergyReportPlan(true)
   }
 
-  clearEnergyReportPlan(total = false): void {
+  private clearEnergyReportPlan(total = false): void {
     const totalString: 'true' | 'false' = total ? 'true' : 'false'
-    this.homey.clearTimeout(this.reportTimeout[totalString])
-    this.homey.clearInterval(this.reportInterval[totalString])
-    this.reportTimeout[totalString] = null
+    this.homey.clearTimeout(this.#reportTimeout[totalString])
+    this.homey.clearInterval(this.#reportInterval[totalString])
+    this.#reportTimeout[totalString] = null
     this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
   }
 
@@ -660,7 +662,7 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     }
   }
 
-  isCapability(setting: string): boolean {
+  private isCapability(setting: string): boolean {
     /* eslint-disable-next-line
       @typescript-eslint/no-unsafe-call,
       @typescript-eslint/no-unsafe-member-access,

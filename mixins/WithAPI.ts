@@ -18,13 +18,13 @@ export default function WithAPI<T extends APIClass>(Base: T) {
   return class extends Base {
     api: AxiosInstance
 
-    constructor(...args: any[]) {
+    private constructor(...args: any[]) {
       super(...args)
       this.api = axios.create()
       this.setupAxiosInterceptors()
     }
 
-    setupAxiosInterceptors() {
+    private setupAxiosInterceptors() {
       this.api.interceptors.request.use(
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig =>
           this.handleRequest(config),
@@ -39,7 +39,7 @@ export default function WithAPI<T extends APIClass>(Base: T) {
       )
     }
 
-    handleRequest(
+    private handleRequest(
       config: InternalAxiosRequestConfig,
     ): InternalAxiosRequestConfig {
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
@@ -55,12 +55,12 @@ export default function WithAPI<T extends APIClass>(Base: T) {
       return updatedConfig
     }
 
-    handleResponse(response: AxiosResponse): AxiosResponse {
+    private handleResponse(response: AxiosResponse): AxiosResponse {
       this.log('Received response:', response.config.url, response.data)
       return response
     }
 
-    handleError(
+    private handleError(
       type: 'request' | 'response',
       error: AxiosError,
     ): Promise<AxiosError> {

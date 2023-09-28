@@ -45,15 +45,15 @@ function handleResponse(data: SuccessData | FailureData): void {
 }
 
 export = class MELCloudApp extends WithAPI(WithTimers(App)) {
+  #loginTimeout!: NodeJS.Timeout
+
+  #syncInterval: NodeJS.Timeout | null = null
+
+  #syncTimeout!: NodeJS.Timeout
+
   deviceList: ListDeviceAny[] = []
 
   deviceIds: Record<number, string> = {}
-
-  loginTimeout!: NodeJS.Timeout
-
-  syncInterval: NodeJS.Timeout | null = null
-
-  syncTimeout!: NodeJS.Timeout
 
   async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
@@ -62,7 +62,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     await this.listDevices()
   }
 
-  async refreshLogin(): Promise<void> {
+  private async refreshLogin(): Promise<void> {
     const loginCredentials: LoginCredentials = {
       username:
         (this.homey.settings.get('username') as HomeySettings['username']) ??
@@ -80,7 +80,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     if (ms) {
       const maxTimeout: number = 2 ** 31 - 1
       const interval: number = Math.min(ms, maxTimeout)
-      this.loginTimeout = this.setTimeout(
+      this.#loginTimeout = this.setTimeout(
         'login refresh',
         async (): Promise<void> => {
           await this.tryLogin(loginCredentials)
@@ -93,7 +93,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     await this.tryLogin(loginCredentials)
   }
 
-  async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
+  private async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
     try {
       await this.login(loginCredentials)
     } catch (error: unknown) {
@@ -136,12 +136,12 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
   }
 
-  clearLoginRefresh(): void {
-    this.homey.clearTimeout(this.loginTimeout)
+  private clearLoginRefresh(): void {
+    this.homey.clearTimeout(this.#loginTimeout)
     this.log('Login refresh has been paused')
   }
 
-  getFirstDeviceId({
+  private getFirstDeviceId({
     buildingId,
     driverId,
   }: {
@@ -155,7 +155,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     return deviceIds[0]
   }
 
-  getDeviceIds({
+  private getDeviceIds({
     buildingId,
     driverId,
   }: {
@@ -197,7 +197,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
 
   applySyncFromDevices(deviceType?: number, syncMode?: SyncFromMode): void {
     this.clearListDevicesRefresh()
-    this.syncTimeout = this.setTimeout(
+    this.#syncTimeout = this.setTimeout(
       'sync with device',
       async (): Promise<void> => {
         await this.listDevices(deviceType, syncMode)
@@ -263,9 +263,9 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
   }
 
   clearListDevicesRefresh(): void {
-    this.homey.clearTimeout(this.syncTimeout)
-    this.homey.clearInterval(this.syncInterval)
-    this.syncInterval = null
+    this.homey.clearTimeout(this.#syncTimeout)
+    this.homey.clearInterval(this.#syncInterval)
+    this.#syncInterval = null
     this.log('Device list refresh has been paused')
   }
 
@@ -278,7 +278,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
   }
 
-  async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
+  private async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
     await Promise.all(
       this.getDevices()
         .filter((device: MELCloudDevice) => !device.isDiff())
@@ -289,11 +289,11 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     )
   }
 
-  planSyncFromDevices(): void {
-    if (this.syncInterval) {
+  private planSyncFromDevices(): void {
+    if (this.#syncInterval) {
       return
     }
-    this.syncInterval = this.setInterval(
+    this.#syncInterval = this.setInterval(
       'device list refresh',
       async (): Promise<void> => {
         await this.listDevices()
@@ -404,7 +404,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     handleResponse(data)
   }
 
-  setSettings(settings: Partial<HomeySettings>): void {
+  private setSettings(settings: Partial<HomeySettings>): void {
     Object.entries(settings)
       .filter(
         ([setting, value]: [string, HomeySettingValue]) =>

@@ -9,7 +9,7 @@ type TimerClass = new (...args: any[]) => {
 
 export default function WithTimers<T extends TimerClass>(Base: T) {
   return class extends Base {
-    setTimer(
+    private setTimer(
       actionType: string,
       timerWords: [string, string],
       timerType: 'setInterval' | 'setTimeout',
@@ -33,7 +33,7 @@ export default function WithTimers<T extends TimerClass>(Base: T) {
       return this.homey[timerType](callback, Number(duration))
     }
 
-    setInterval(
+    protected setInterval(
       actionType: string,
       callback: () => Promise<void>,
       interval: number | DurationLikeObject,
@@ -49,7 +49,7 @@ export default function WithTimers<T extends TimerClass>(Base: T) {
       )
     }
 
-    setTimeout(
+    protected setTimeout(
       actionType: string,
       callback: () => Promise<void>,
       interval: number | DurationLikeObject,

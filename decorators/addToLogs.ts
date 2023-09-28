@@ -18,7 +18,7 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
         this.commonLog('log', ...args)
       }
 
-      commonLog(logType: 'error' | 'log', ...args: any[]): void {
+      private commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
           ...logs.flatMap((log: string): [any, '-'] => {
             if (log.endsWith('()')) {

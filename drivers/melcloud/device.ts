@@ -66,10 +66,6 @@ const horizontalToDevice: Record<string, string> =
   reverseMapping(horizontalFromDevice)
 
 export = class MELCloudDeviceAta extends BaseMELCloudDevice {
-  declare driver: MELCloudDriverAta
-
-  declare diff: Map<SetCapability<MELCloudDriverAta>, CapabilityValue>
-
   async onInit(): Promise<void> {
     this.reportPlanParameters = {
       minus: { hours: 1 },
@@ -80,7 +76,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     await super.onInit()
   }
 
-  async specificOnCapability(
+  protected async specificOnCapability(
     capability: ExtendedSetCapability<MELCloudDriverAta>,
     value: CapabilityValue,
   ): Promise<void> {
@@ -102,7 +98,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     }
   }
 
-  convertToDevice(
+  protected convertToDevice(
     capability: SetCapability<MELCloudDriverAta>,
     value: CapabilityValue = this.getCapabilityValue(
       capability,
@@ -123,7 +119,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  convertFromDevice(
+  protected convertFromDevice(
     capability: ExtendedCapability<MELCloudDriverAta>,
     value: DeviceValue,
   ): CapabilityValue {
@@ -139,7 +135,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     }
   }
 
-  async updateThermostatMode(): Promise<void> {
+  protected async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff') as boolean
     const operationMode: string = this.getCapabilityValue(
       'operation_mode',
