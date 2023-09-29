@@ -850,7 +850,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   async function generate(): Promise<void> {
-    generateErrorLog()
     buildingMapping = await getBuildings()
     if (!Object.keys(buildingMapping).length) {
       seeElement.classList.add('is-disabled')
@@ -862,6 +861,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       return
     }
     refreshBuildingSettings()
+    generateErrorLog()
   }
 
   function needsAuthentication(value = true): void {
