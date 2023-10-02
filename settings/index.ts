@@ -711,16 +711,18 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const values: boolean[] = deviceSettings[driverId][
       element.id.split('--')[0]
     ] as boolean[]
+    /* eslint-disable no-param-reassign */
     if (new Set(values).size === 1) {
-      ;[element.checked] = values // eslint-disable-line no-param-reassign
+      ;[element.checked] = values
     } else {
-      element.indeterminate = true // eslint-disable-line no-param-reassign
+      element.indeterminate = true
       element.addEventListener('change', (): void => {
         if (element.indeterminate) {
-          element.indeterminate = false // eslint-disable-line no-param-reassign
+          element.indeterminate = false
         }
       })
     }
+    /* eslint-enable no-param-reassign */
   }
 
   function addRefreshSettingsDriverEventListener(
