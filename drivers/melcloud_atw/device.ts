@@ -11,7 +11,7 @@ import type {
   Store,
 } from '../../types'
 
-const operationModeFromDevice: string[] = [
+const operationModeFromDevice: readonly string[] = [
   'idle',
   'dhw',
   'heating',
@@ -19,7 +19,7 @@ const operationModeFromDevice: string[] = [
   'defrost',
   'standby',
   'legionella',
-]
+] as const
 
 function getOtherCapabilityZone(capability: string): string {
   return capability.endsWith('.zone1')
