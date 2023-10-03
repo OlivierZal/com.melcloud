@@ -59,12 +59,14 @@ const tsCustomRules = {
       ignoreRestArgs: true,
     },
   ],
+  '@typescript-eslint/no-magic-numbers': 'off',
   '@typescript-eslint/no-unused-vars': [
     'error',
     {
       varsIgnorePattern: 'onHomeyReady',
     },
   ],
+  '@typescript-eslint/prefer-readonly-parameter-types': 'off',
   'import/extensions': 'off',
   'import/no-duplicates': ['error', { 'prefer-inline': true }],
 }
@@ -86,8 +88,7 @@ module.exports = [
     },
     rules: {
       ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
-      ...tsPlugin.configs['strict-type-checked'].rules,
-      ...tsPlugin.configs['stylistic-type-checked'].rules,
+      ...tsPlugin.configs.all.rules,
       ...tsCustomRules,
     },
   },
