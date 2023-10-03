@@ -45,6 +45,8 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
 
   #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
 
+  protected app!: MELCloudApp
+
   protected diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
 
   protected reportPlanParameters!: {
@@ -53,8 +55,6 @@ abstract class BaseMELCloudDevice extends WithAPI(WithTimers(Device)) {
     minus: object
     values: object
   }
-
-  app!: MELCloudApp
 
   declare driver: MELCloudDriver
 

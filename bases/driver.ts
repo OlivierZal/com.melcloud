@@ -20,9 +20,9 @@ import type {
 } from '../types'
 
 export default abstract class BaseMELCloudDriver extends Driver {
-  protected deviceType!: number
+  #app!: MELCloudApp
 
-  app!: MELCloudApp
+  protected deviceType!: number
 
   heatPumpType!: string
 
@@ -68,14 +68,14 @@ export default abstract class BaseMELCloudDriver extends Driver {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async onInit(): Promise<void> {
-    this.app = this.homey.app as MELCloudApp
+    this.#app = this.homey.app as MELCloudApp
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      (data: LoginCredentials): Promise<boolean> => this.app.login(data),
+      (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
     )
     session.setHandler(
       'list_devices',
@@ -86,8 +86,8 @@ export default abstract class BaseMELCloudDriver extends Driver {
   private async discoverDevices<T extends MELCloudDriver>(): Promise<
     DeviceDetails[]
   > {
-    this.app.clearListDevicesRefresh()
-    const devices: ListDevice<T>[] = (await this.app.listDevices(
+    this.#app.clearListDevicesRefresh()
+    const devices: ListDevice<T>[] = (await this.#app.listDevices(
       this.deviceType,
     )) as ListDevice<T>[]
     return devices.map(
@@ -114,7 +114,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
   async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      (data: LoginCredentials): Promise<boolean> => this.app.login(data),
+      (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
     )
   }
 }
