@@ -1,31 +1,16 @@
-import type Homey from 'homey/lib/Homey'
 import axios, {
   type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
-import type { HomeySettings } from '../types'
-
-/* eslint-disable
-  @typescript-eslint/method-signature-style,
-  @typescript-eslint/no-explicit-any
-*/
-type APIClass = new (...args: any[]) => {
-  homey: Homey
-  error(...errorArgs: any[]): void
-  log(...logArgs: any[]): void
-}
-/* eslint-enable
-  @typescript-eslint/method-signature-style,
-  @typescript-eslint/no-explicit-any
-*/
+import type { HomeyClass, HomeySettings } from '../types'
 
 /* eslint-disable-next-line
   @typescript-eslint/explicit-function-return-type,
   @typescript-eslint/explicit-module-boundary-types
 */
-export default function withAPI<T extends APIClass>(Base: T) {
+export default function withAPI<T extends HomeyClass>(Base: T) {
   return class extends Base {
     protected api: AxiosInstance
 

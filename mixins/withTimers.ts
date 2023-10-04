@@ -1,25 +1,11 @@
-import type Homey from 'homey/lib/Homey'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
-
-/* eslint-disable
-  @typescript-eslint/method-signature-style,
-  @typescript-eslint/no-explicit-any
-*/
-type TimerClass = new (...args: any[]) => {
-  homey: Homey
-  error(...errorArgs: any[]): void
-  log(...logArgs: any[]): void
-}
-/* eslint-enable
-  @typescript-eslint/method-signature-style,
-  @typescript-eslint/no-explicit-any
-*/
+import type { HomeyClass } from '../types'
 
 /* eslint-disable-next-line
   @typescript-eslint/explicit-function-return-type,
   @typescript-eslint/explicit-module-boundary-types
 */
-export default function withTimers<T extends TimerClass>(base: T) {
+export default function withTimers<T extends HomeyClass>(base: T) {
   return class extends base {
     protected setInterval(
       actionType: string,

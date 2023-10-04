@@ -2,12 +2,7 @@
   @typescript-eslint/no-explicit-any,
   @typescript-eslint/no-unsafe-argument
 */
-type LogClass = abstract new (...args: any[]) => {
-  /* eslint-disable @typescript-eslint/method-signature-style */
-  error(...errorArgs: any[]): void
-  log(...logArgs: any[]): void
-  /* eslint-enable @typescript-eslint/method-signature-style */
-}
+import type { LogClass } from '../types'
 
 export default function addToLogs<T extends LogClass>(...logs: string[]) {
   return function actualDecorator(
