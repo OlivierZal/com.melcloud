@@ -45,14 +45,6 @@ const customRules = {
   ],
 }
 const tsCustomRules = {
-  '@typescript-eslint/consistent-type-exports': [
-    'error',
-    { fixMixedExportsWithInlineTypeSpecifier: true },
-  ],
-  '@typescript-eslint/consistent-type-imports': [
-    'error',
-    { fixStyle: 'inline-type-imports' },
-  ],
   '@typescript-eslint/naming-convention': 'off',
   '@typescript-eslint/no-explicit-any': [
     'error',
