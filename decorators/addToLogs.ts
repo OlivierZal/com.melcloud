@@ -1,10 +1,11 @@
 import type { LogClass } from '../types'
 
 export default function addToLogs<T extends LogClass>(...logs: string[]) {
-  return function actualDecorator(
-    target: T,
-    context: ClassDecoratorContext,
-  ): LogClass & T {
+  /* eslint-disable-next-line
+    @typescript-eslint/explicit-function-return-type,
+    @typescript-eslint/explicit-module-boundary-types
+  */
+  return function actualDecorator(target: T, context: ClassDecoratorContext) {
     abstract class LogsDecorator extends target {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       public error(...args: any[]): void {
