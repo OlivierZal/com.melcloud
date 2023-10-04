@@ -648,12 +648,8 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   private isCapability(setting: string): boolean {
-    /* eslint-disable-next-line
-      @typescript-eslint/no-unsafe-call,
-      @typescript-eslint/no-unsafe-member-access,
-      @typescript-eslint/no-unsafe-return
-    */
-    return this.driver.manifest.capabilities.includes(setting)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return (this.driver.manifest.capabilities as string[]).includes(setting)
   }
 
   protected abstract specificOnCapability(
