@@ -46,12 +46,6 @@ const customRules = {
 }
 const tsCustomRules = {
   '@typescript-eslint/naming-convention': 'off',
-  '@typescript-eslint/no-explicit-any': [
-    'error',
-    {
-      ignoreRestArgs: true,
-    },
-  ],
   '@typescript-eslint/no-magic-numbers': 'off',
   '@typescript-eslint/no-unused-vars': [
     'error',

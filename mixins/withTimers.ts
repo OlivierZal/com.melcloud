@@ -1,13 +1,19 @@
 import type Homey from 'homey/lib/Homey'
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 
+/* eslint-disable
+  @typescript-eslint/method-signature-style,
+  @typescript-eslint/no-explicit-any
+*/
 type TimerClass = new (...args: any[]) => {
   homey: Homey
-  /* eslint-disable @typescript-eslint/method-signature-style */
   error(...errorArgs: any[]): void
   log(...logArgs: any[]): void
-  /* eslint-enable @typescript-eslint/method-signature-style */
 }
+/* eslint-enable
+  @typescript-eslint/method-signature-style,
+  @typescript-eslint/no-explicit-any
+*/
 
 /* eslint-disable-next-line
   @typescript-eslint/explicit-function-return-type,
