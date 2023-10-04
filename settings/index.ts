@@ -434,9 +434,10 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       if (settingValue === null) {
         return false
       }
-      const deviceSetting: SettingValue[] | undefined = driverId
-        ? (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-        : flatDeviceSettings[settingId]
+      const deviceSetting: SettingValue[] | undefined =
+        driverId !== undefined
+          ? (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
+          : flatDeviceSettings[settingId]
       return (
         deviceSetting !== undefined &&
         (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
@@ -448,7 +449,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         .map(
           (
             element: HTMLInputElement | HTMLSelectElement,
-          ): [string, SettingValue] | [null] => {
+          ): [null] | [string, SettingValue] => {
             const settingId: string = element.id.split('--')[0]
             const settingValue: SettingValue = processSettingValue(element)
             return shouldUpdate(settingId, settingValue)
@@ -458,8 +459,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         )
         .filter(
           (
-            entry: [string, SettingValue] | [null],
-          ): entry is [string, SettingValue] => !!entry[0],
+            entry: [null] | [string, SettingValue],
+          ): entry is [string, SettingValue] => entry[0] !== null,
         ),
     )
   }
@@ -602,7 +603,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function updateDeviceSettings(body: Settings, driverId?: string): void {
-    if (driverId) {
+    if (driverId !== undefined) {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, SettingValue]): void => {
           deviceSettings[driverId][settingId] = [settingValue]
@@ -623,7 +624,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   function setDeviceSettings(body: Settings, driverId?: string): void {
     let endPoint = '/devices/settings'
-    if (driverId) {
+    if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
         driverId,
       }).toString()
@@ -651,7 +652,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   function addApplySettingsEventListener(
     elements: (HTMLInputElement | HTMLSelectElement)[],
     driverId?: string,
-  ) {
+  ): void {
     const settings = `settings-${driverId ?? 'common'}`
     const buttonElement: HTMLButtonElement = document.getElementById(
       `apply-${settings}`,
@@ -737,14 +738,14 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   function addRefreshSettingsEventListener(
     elements: (HTMLInputElement | HTMLSelectElement)[],
     driverId?: string,
-  ) {
+  ): void {
     const settings = `settings-${driverId ?? 'common'}`
     const buttonElement: HTMLButtonElement = document.getElementById(
       `refresh-${settings}`,
     ) as HTMLButtonElement
     buttonElement.addEventListener('click', (): void => {
       disableButtons(settings)
-      if (driverId) {
+      if (driverId !== undefined) {
         addRefreshSettingsDriverEventListener(
           elements as HTMLInputElement[],
           driverId,
@@ -812,7 +813,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const fieldSetElement: HTMLFieldSetElement =
       document.createElement('fieldset')
     fieldSetElement.className = 'homey-form-checkbox-set'
-    let previousGroupLabel: string | undefined
+    let previousGroupLabel: string | undefined = ''
     driverSettings[driverId]
       .filter((setting: DriverSetting) => setting.type === 'checkbox')
       .forEach((setting: DriverSetting): void => {
@@ -936,7 +937,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   async function load(): Promise<void> {
     generateCommonChildrenElements()
-    if (!homeySettings.ContextKey) {
+    if (homeySettings.ContextKey === undefined) {
       needsAuthentication()
       return
     }

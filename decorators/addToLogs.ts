@@ -3,18 +3,23 @@
   @typescript-eslint/no-unsafe-argument
 */
 type LogClass = abstract new (...args: any[]) => {
+  /* eslint-disable @typescript-eslint/method-signature-style */
   error(...errorArgs: any[]): void
   log(...logArgs: any[]): void
+  /* eslint-enable @typescript-eslint/method-signature-style */
 }
 
 export default function addToLogs<T extends LogClass>(...logs: string[]) {
-  return function actualDecorator(Base: T, context: ClassDecoratorContext) {
-    abstract class LogsDecorator extends Base {
-      error(...args: any[]): void {
+  return function actualDecorator(
+    target: T,
+    context: ClassDecoratorContext,
+  ): LogClass & T {
+    abstract class LogsDecorator extends target {
+      public error(...args: any[]): void {
         this.commonLog('error', ...args)
       }
 
-      log(...args: any[]): void {
+      public log(...args: any[]): void {
         this.commonLog('log', ...args)
       }
 

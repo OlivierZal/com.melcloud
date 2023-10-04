@@ -20,13 +20,9 @@ import type {
 } from '../types'
 
 export default abstract class BaseMELCloudDriver extends Driver {
-  #app!: MELCloudApp
+  public heatPumpType!: string
 
-  protected deviceType!: number
-
-  heatPumpType!: string
-
-  setCapabilityMapping!:
+  public setCapabilityMapping!:
     | Record<
         SetCapability<MELCloudDriverAta>,
         SetCapabilityMapping<MELCloudDriverAta>
@@ -36,7 +32,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
         SetCapabilityMapping<MELCloudDriverAtw>
       >
 
-  getCapabilityMapping!:
+  public getCapabilityMapping!:
     | Record<
         GetCapability<MELCloudDriverAta>,
         GetCapabilityMapping<MELCloudDriverAta>
@@ -46,7 +42,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
         GetCapabilityMapping<MELCloudDriverAtw>
       >
 
-  listCapabilityMapping!:
+  public listCapabilityMapping!:
     | Record<
         ListCapability<MELCloudDriverAta>,
         ListCapabilityMapping<MELCloudDriverAta>
@@ -56,7 +52,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
         ListCapabilityMapping<MELCloudDriverAtw>
       >
 
-  reportCapabilityMapping!:
+  public reportCapabilityMapping!:
     | Record<
         ReportCapability<MELCloudDriverAta>,
         ReportCapabilityMapping<MELCloudDriverAta>
@@ -66,20 +62,32 @@ export default abstract class BaseMELCloudDriver extends Driver {
         ReportCapabilityMapping<MELCloudDriverAtw>
       >
 
+  protected deviceType!: number
+
+  #app!: MELCloudApp
+
   // eslint-disable-next-line @typescript-eslint/require-await
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     this.#app = this.homey.app as MELCloudApp
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async onPair(session: PairSession): Promise<void> {
+  public async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
+      async (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
     )
     session.setHandler(
       'list_devices',
-      (): Promise<DeviceDetails[]> => this.discoverDevices(),
+      async (): Promise<DeviceDetails[]> => this.discoverDevices(),
+    )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public async onRepair(session: PairSession): Promise<void> {
+    session.setHandler(
+      'login',
+      async (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
     )
   }
 
@@ -108,13 +116,5 @@ export default abstract class BaseMELCloudDriver extends Driver {
     )
   }
 
-  abstract getRequiredCapabilities(store: Store): string[]
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async onRepair(session: PairSession): Promise<void> {
-    session.setHandler(
-      'login',
-      (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
-    )
-  }
+  public abstract getRequiredCapabilities(store: Store): string[]
 }

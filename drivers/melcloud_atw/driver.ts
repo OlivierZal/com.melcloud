@@ -12,30 +12,35 @@ import {
 } from '../../types'
 
 export = class MELCloudDriverAtw extends BaseMELCloudDriver {
-  capabilitiesAtw: (SetCapabilityAtw | GetCapabilityAtw | ListCapabilityAtw)[] =
-    [
-      'measure_power.heat_pump_frequency',
-      'measure_temperature',
-      'measure_temperature.outdoor',
-      'measure_temperature.flow',
-      'measure_temperature.return',
-      'measure_temperature.tank_water',
-      'onoff',
-      'onoff.forced_hot_water',
-      'operation_mode_state',
-      'target_temperature',
-      'target_temperature.tank_water',
-      'target_temperature.zone1_flow_heat',
-    ]
+  public capabilitiesAtw: (
+    | GetCapabilityAtw
+    | ListCapabilityAtw
+    | SetCapabilityAtw
+  )[] = [
+    'measure_power.heat_pump_frequency',
+    'measure_temperature',
+    'measure_temperature.outdoor',
+    'measure_temperature.flow',
+    'measure_temperature.return',
+    'measure_temperature.tank_water',
+    'onoff',
+    'onoff.forced_hot_water',
+    'operation_mode_state',
+    'target_temperature',
+    'target_temperature.tank_water',
+    'target_temperature.zone1_flow_heat',
+  ]
 
-  coolCapabilitiesAtw: SetCapabilityAtw[] = [
+  public coolCapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone_with_cool.zone1',
     'target_temperature.zone1_flow_cool',
   ]
 
-  notCoolCapabilitiesAtw: SetCapabilityAtw[] = ['operation_mode_zone.zone1']
+  public notCoolCapabilitiesAtw: SetCapabilityAtw[] = [
+    'operation_mode_zone.zone1',
+  ]
 
-  zone2CapabilitiesAtw: (SetCapabilityAtw | GetCapabilityAtw)[] = [
+  public zone2CapabilitiesAtw: (GetCapabilityAtw | SetCapabilityAtw)[] = [
     'measure_temperature.zone2',
     'operation_mode_state.zone1',
     'operation_mode_state.zone2',
@@ -43,16 +48,16 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     'target_temperature.zone2_flow_heat',
   ]
 
-  coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
+  public coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone_with_cool.zone2',
     'target_temperature.zone2_flow_cool',
   ]
 
-  notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
+  public notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone.zone2',
   ]
 
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 1
     this.heatPumpType = 'Atw'
@@ -92,7 +97,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               .registerRunListener(
                 async (args: {
                   device: MELCloudDeviceAtw
-                  onoff: 'true' | 'false'
+                  onoff: 'false' | 'true'
                 }): Promise<void> => {
                   await args.device.onCapability(
                     capability,
@@ -153,7 +158,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
       .registerRunListener(
         (args: {
           device: MELCloudDeviceAtw
-          onoff_forced_hot_water: 'true' | 'false'
+          onoff_forced_hot_water: 'false' | 'true'
         }): boolean =>
           args.onoff_forced_hot_water ===
           String(args.device.getCapabilityValue('onoff.forced_hot_water')),
@@ -163,7 +168,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
       .registerRunListener(
         async (args: {
           device: MELCloudDeviceAtw
-          onoff_forced_hot_water: 'true' | 'false'
+          onoff_forced_hot_water: 'false' | 'true'
         }): Promise<void> => {
           await args.device.onCapability(
             'onoff.forced_hot_water',
@@ -186,7 +191,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
       )
   }
 
-  getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
+  public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
     return [
       ...this.capabilitiesAtw,
       ...(CanCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),

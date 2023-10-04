@@ -28,7 +28,7 @@ function getOtherCapabilityZone(capability: string): string {
 }
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     this.reportPlanParameters = {
       minus: { days: 1 },
       interval: { days: 1 },
@@ -85,7 +85,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') ? true : (value as boolean)
+        return this.getSetting('always_on') === true ? true : (value as boolean)
       case 'operation_mode_zone.zone1':
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
@@ -112,7 +112,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         return operationModeFromDevice[value as number]
       case 'operation_mode_state.zone1':
       case 'operation_mode_state.zone2':
-        return value
+        return (value as boolean)
           ? 'idle'
           : (this.getCapabilityValue('operation_mode_state') as string)
       case 'operation_mode_zone.zone1':
@@ -121,13 +121,13 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone_with_cool.zone2':
         return String(value)
       case 'alarm_generic.defrost_mode':
-        return !!value
+        return Boolean(value)
       default:
         return value
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected async updateThermostatMode(): Promise<void> {
     // Not implemented.
   }

@@ -2,8 +2,8 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import WithAPI from './mixins/WithAPI'
-import WithTimers from './mixins/WithTimers'
+import withAPI from './mixins/withAPI'
+import withTimers from './mixins/withTimers'
 import type {
   Building,
   ErrorLogData,
@@ -38,70 +38,31 @@ function handleFailure(data: FailureData): never {
   throw new Error(errorMessage)
 }
 
-function handleResponse(data: SuccessData | FailureData): void {
+function handleResponse(data: FailureData | SuccessData): void {
   if (data.AttributeErrors) {
     handleFailure(data)
   }
 }
 
-export = class MELCloudApp extends WithAPI(WithTimers(App)) {
+export = class MELCloudApp extends withAPI(withTimers(App)) {
+  public deviceList: ListDeviceAny[] = []
+
+  public deviceIds: Record<number, string> = {}
+
   #loginTimeout!: NodeJS.Timeout
 
   #syncInterval: NodeJS.Timeout | null = null
 
   #syncTimeout!: NodeJS.Timeout
 
-  deviceList: ListDeviceAny[] = []
-
-  deviceIds: Record<number, string> = {}
-
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     await this.refreshLogin()
     await this.listDevices()
   }
 
-  private async refreshLogin(): Promise<void> {
-    const loginCredentials: LoginCredentials = {
-      username:
-        (this.homey.settings.get('username') as HomeySettings['username']) ??
-        '',
-      password:
-        (this.homey.settings.get('password') as HomeySettings['password']) ??
-        '',
-    }
-    const expiry: string | null = this.homey.settings.get(
-      'Expiry',
-    ) as HomeySettings['Expiry']
-    const ms: number = expiry
-      ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-      : 0
-    if (ms) {
-      const maxTimeout: number = 2 ** 31 - 1
-      const interval: number = Math.min(ms, maxTimeout)
-      this.#loginTimeout = this.setTimeout(
-        'login refresh',
-        async (): Promise<void> => {
-          await this.tryLogin(loginCredentials)
-        },
-        interval,
-        'days',
-      )
-      return
-    }
-    await this.tryLogin(loginCredentials)
-  }
-
-  private async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
-    try {
-      await this.login(loginCredentials)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
-    }
-  }
-
-  async login(loginCredentials: LoginCredentials): Promise<boolean> {
+  public async login(loginCredentials: LoginCredentials): Promise<boolean> {
     this.clearLoginRefresh()
     try {
       const { username, password } = loginCredentials
@@ -118,7 +79,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         '/Login/ClientLogin',
         postData,
       )
-      if (!data.LoginData?.ContextKey) {
+      if (data.LoginData?.ContextKey === undefined) {
         return false
       }
       const { ContextKey, Expiry } = data.LoginData
@@ -136,36 +97,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
   }
 
-  private clearLoginRefresh(): void {
-    this.homey.clearTimeout(this.#loginTimeout)
-    this.log('Login refresh has been paused')
-  }
-
-  private getFirstDeviceId({
-    buildingId,
-    driverId,
-  }: {
-    buildingId?: number
-    driverId?: string
-  } = {}): number {
-    const deviceIds = this.getDeviceIds({ buildingId, driverId })
-    if (!deviceIds.length) {
-      throw new Error(this.homey.__('app.building.no_device', { buildingId }))
-    }
-    return deviceIds[0]
-  }
-
-  private getDeviceIds({
-    buildingId,
-    driverId,
-  }: {
-    buildingId?: number
-    driverId?: string
-  } = {}): number[] {
-    return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
-  }
-
-  getDevice(
+  public getDevice(
     deviceId: number,
     { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
   ): MELCloudDevice | undefined {
@@ -174,7 +106,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     )
   }
 
-  getDevices({
+  public getDevices({
     buildingId,
     driverId,
   }: {
@@ -182,20 +114,23 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     driverId?: string
   } = {}): MELCloudDevice[] {
     let devices: MELCloudDevice[] = (
-      driverId
+      driverId !== undefined
         ? [this.homey.drivers.getDriver(driverId)]
         : Object.values(this.homey.drivers.getDrivers())
     ).flatMap(
       (driver: Driver): MELCloudDevice[] =>
         driver.getDevices() as MELCloudDevice[],
     )
-    if (buildingId) {
+    if (buildingId !== undefined) {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
     return devices
   }
 
-  applySyncFromDevices(deviceType?: number, syncMode?: SyncFromMode): void {
+  public applySyncFromDevices(
+    deviceType?: number,
+    syncMode?: SyncFromMode,
+  ): void {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
       'sync with device',
@@ -207,7 +142,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     )
   }
 
-  async listDevices(
+  public async listDevices(
     deviceType?: number,
     syncMode?: SyncFromMode,
   ): Promise<ListDeviceAny[]> {
@@ -246,7 +181,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       { deviceIds: {}, deviceList: [] },
     )
     let { deviceList } = buildingData
-    if (deviceType) {
+    if (deviceType !== undefined) {
       deviceList = deviceList.filter(
         (device: ListDeviceAny) => deviceType === device.Device.DeviceType,
       )
@@ -262,14 +197,14 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     return deviceList
   }
 
-  clearListDevicesRefresh(): void {
+  public clearListDevicesRefresh(): void {
     this.homey.clearTimeout(this.#syncTimeout)
     this.homey.clearInterval(this.#syncInterval)
     this.#syncInterval = null
     this.log('Device list refresh has been paused')
   }
 
-  async getBuildings(): Promise<Building[]> {
+  public async getBuildings(): Promise<Building[]> {
     try {
       const { data } = await this.api.get<Building[]>('/User/ListDevices')
       return data
@@ -278,32 +213,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     }
   }
 
-  private async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
-    await Promise.all(
-      this.getDevices()
-        .filter((device: MELCloudDevice) => !device.isDiff())
-        .map(
-          (device: MELCloudDevice): Promise<void> =>
-            device.syncDeviceFromList(syncMode),
-        ),
-    )
-  }
-
-  private planSyncFromDevices(): void {
-    if (this.#syncInterval) {
-      return
-    }
-    this.#syncInterval = this.setInterval(
-      'device list refresh',
-      async (): Promise<void> => {
-        await this.listDevices()
-      },
-      { minutes: 3 },
-      'minutes',
-    )
-  }
-
-  async getUnitErrorLog(
+  public async getUnitErrorLog(
     fromDate: DateTime,
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
@@ -322,7 +232,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     return data
   }
 
-  async getFrostProtectionSettings(
+  public async getFrostProtectionSettings(
     buildingId: number,
   ): Promise<FrostProtectionData> {
     const buildingDeviceId: number = this.getFirstDeviceId({
@@ -334,7 +244,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     return data
   }
 
-  async updateFrostProtectionSettings(
+  public async updateFrostProtectionSettings(
     buildingId: number,
     settings: FrostProtectionSettings,
   ): Promise<void> {
@@ -342,14 +252,16 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       ...settings,
       BuildingIds: [buildingId],
     }
-    const { data } = await this.api.post<SuccessData | FailureData>(
+    const { data } = await this.api.post<FailureData | SuccessData>(
       '/FrostProtection/Update',
       postData,
     )
     handleResponse(data)
   }
 
-  async getHolidayModeSettings(buildingId: number): Promise<HolidayModeData> {
+  public async getHolidayModeSettings(
+    buildingId: number,
+  ): Promise<HolidayModeData> {
     const buildingDeviceId: number = this.getFirstDeviceId({
       buildingId,
     })
@@ -359,7 +271,7 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
     return data
   }
 
-  async updateHolidayModeSettings(
+  public async updateHolidayModeSettings(
     buildingId: number,
     settings: HolidayModeSettings,
   ): Promise<void> {
@@ -397,11 +309,109 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
         : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
     }
-    const { data } = await this.api.post<SuccessData | FailureData>(
+    const { data } = await this.api.post<FailureData | SuccessData>(
       '/HolidayMode/Update',
       postData,
     )
     handleResponse(data)
+  }
+
+  public getLanguage(): string {
+    return this.homey.i18n.getLanguage()
+  }
+
+  private async refreshLogin(): Promise<void> {
+    const loginCredentials: LoginCredentials = {
+      username:
+        (this.homey.settings.get('username') as HomeySettings['username']) ??
+        '',
+      password:
+        (this.homey.settings.get('password') as HomeySettings['password']) ??
+        '',
+    }
+    const expiry: string | null = this.homey.settings.get(
+      'Expiry',
+    ) as HomeySettings['Expiry']
+    const ms: number =
+      expiry !== null
+        ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+        : 0
+    if (ms) {
+      const maxTimeout: number = 2 ** 31 - 1
+      const interval: number = Math.min(ms, maxTimeout)
+      this.#loginTimeout = this.setTimeout(
+        'login refresh',
+        async (): Promise<void> => {
+          await this.tryLogin(loginCredentials)
+        },
+        interval,
+        'days',
+      )
+      return
+    }
+    await this.tryLogin(loginCredentials)
+  }
+
+  private async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
+    try {
+      await this.login(loginCredentials)
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
+    }
+  }
+
+  private clearLoginRefresh(): void {
+    this.homey.clearTimeout(this.#loginTimeout)
+    this.log('Login refresh has been paused')
+  }
+
+  private getFirstDeviceId({
+    buildingId,
+    driverId,
+  }: {
+    buildingId?: number
+    driverId?: string
+  } = {}): number {
+    const deviceIds = this.getDeviceIds({ buildingId, driverId })
+    if (!deviceIds.length) {
+      throw new Error(this.homey.__('app.building.no_device', { buildingId }))
+    }
+    return deviceIds[0]
+  }
+
+  private getDeviceIds({
+    buildingId,
+    driverId,
+  }: {
+    buildingId?: number
+    driverId?: string
+  } = {}): number[] {
+    return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
+  }
+
+  private async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
+    await Promise.all(
+      this.getDevices()
+        .filter((device: MELCloudDevice) => !device.isDiff())
+        .map(
+          async (device: MELCloudDevice): Promise<void> =>
+            device.syncDeviceFromList(syncMode),
+        ),
+    )
+  }
+
+  private planSyncFromDevices(): void {
+    if (this.#syncInterval) {
+      return
+    }
+    this.#syncInterval = this.setInterval(
+      'device list refresh',
+      async (): Promise<void> => {
+        await this.listDevices()
+      },
+      { minutes: 3 },
+      'minutes',
+    )
   }
 
   private setSettings(settings: Partial<HomeySettings>): void {
@@ -413,9 +423,5 @@ export = class MELCloudApp extends WithAPI(WithTimers(App)) {
       .forEach(([setting, value]: [string, HomeySettingValue]): void => {
         this.homey.settings.set(setting, value)
       })
-  }
-
-  getLanguage(): string {
-    return this.homey.i18n.getLanguage()
   }
 }

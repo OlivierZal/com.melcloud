@@ -26,7 +26,7 @@ function getCapabilityArg(
 }
 
 export = class MELCloudDriverAta extends BaseMELCloudDriver {
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 0
     this.heatPumpType = 'Ata'
@@ -55,7 +55,7 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
     })
   }
 
-  getRequiredCapabilities(): string[] {
+  public getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
         ...this.setCapabilityMapping,

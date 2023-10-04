@@ -263,9 +263,9 @@ export type ReportCapability<T extends MELCloudDriver> =
     : keyof ReportCapabilitiesAta
 
 export type NonReportCapability<T extends MELCloudDriver> =
-  | SetCapability<T>
   | GetCapability<T>
   | ListCapability<T>
+  | SetCapability<T>
 
 type Capability<T extends MELCloudDriver> =
   | NonReportCapability<T>

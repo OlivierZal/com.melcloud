@@ -53,6 +53,7 @@ const tsCustomRules = {
     'error',
     { fixStyle: 'inline-type-imports' },
   ],
+  '@typescript-eslint/naming-convention': 'off',
   '@typescript-eslint/no-explicit-any': [
     'error',
     {

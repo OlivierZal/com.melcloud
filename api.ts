@@ -25,16 +25,17 @@ import type {
 } from './types'
 
 function fromUTCtoLocal(utcDate: string | null, language?: string): string {
-  if (!utcDate) {
+  if (utcDate === null) {
     return ''
   }
   const localDateTime: DateTime = DateTime.fromISO(utcDate, {
     zone: 'utc',
     locale: language,
   }).toLocal()
-  const localDate: string | null = language
-    ? localDateTime.toLocaleString(DateTime.DATETIME_MED)
-    : localDateTime.toISO({ includeOffset: false })
+  const localDate: string | null =
+    language !== undefined
+      ? localDateTime.toLocaleString(DateTime.DATETIME_MED)
+      : localDateTime.toISO({ includeOffset: false })
   return localDate ?? ''
 }
 
@@ -45,8 +46,10 @@ function handleErrorLogQuery(query: ErrorLogQuery): {
 } {
   const defaultLimit = 1
   const defaultOffset = 0
-  const from: DateTime | null = query.from ? DateTime.fromISO(query.from) : null
-  const to: DateTime = query.to ? DateTime.fromISO(query.to) : DateTime.now()
+  const from: DateTime | null =
+    query.from !== undefined ? DateTime.fromISO(query.from) : null
+  const to: DateTime =
+    query.to !== undefined ? DateTime.fromISO(query.to) : DateTime.now()
 
   let period: number = Number.parseInt(String(query.limit), 10)
   period = !Number.isNaN(period) ? period : defaultLimit

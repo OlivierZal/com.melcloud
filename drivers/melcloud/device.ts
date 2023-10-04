@@ -66,7 +66,7 @@ const horizontalToDevice: Record<string, string> =
   reverseMapping(horizontalFromDevice)
 
 export = class MELCloudDeviceAta extends BaseMELCloudDevice {
-  async onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     this.reportPlanParameters = {
       minus: { hours: 1 },
       interval: { hours: 1 },
@@ -106,7 +106,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') ? true : (value as boolean)
+        return this.getSetting('always_on') === true ? true : (value as boolean)
       case 'operation_mode':
         return Number(operationModeToDevice[value as string])
       case 'vertical':
@@ -118,7 +118,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     }
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice(
     capability: ExtendedCapability<MELCloudDriverAta>,
     value: DeviceValue,
