@@ -6,8 +6,10 @@ import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Loggable {
-  error: (...errorArgs: any[]) => void
-  log: (...logArgs: any[]) => void
+  /* eslint-disable @typescript-eslint/method-signature-style */
+  error(...errorArgs: any[]): void
+  log(...logArgs: any[]): void
+  /* eslint-enable @typescript-eslint/method-signature-style */
 }
 
 export type LogClass = abstract new (...args: any[]) => Loggable

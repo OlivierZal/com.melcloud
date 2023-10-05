@@ -11,11 +11,11 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
   */
   return function actualDecorator(target: T, context: ClassDecoratorContext) {
     abstract class LogsDecorator extends target {
-      public error = (...args: any[]): void => {
+      public error(...args: any[]): void {
         this.commonLog('error', ...args)
       }
 
-      public log = (...args: any[]): void => {
+      public log(...args: any[]): void {
         this.commonLog('log', ...args)
       }
 
