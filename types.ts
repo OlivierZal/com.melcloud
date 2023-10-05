@@ -4,26 +4,18 @@ import type MELCloudDriverAta from './drivers/melcloud/driver'
 import type MELCloudDeviceAtw from './drivers/melcloud_atw/device'
 import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Loggable {
-  /* eslint-disable
-    @typescript-eslint/method-signature-style,
-    @typescript-eslint/no-explicit-any
-  */
-  error(...errorArgs: any[]): void
-  log(...logArgs: any[]): void
-  /* eslint-enable
-    @typescript-eslint/method-signature-style,
-    @typescript-eslint/no-explicit-any
-  */
+  error: (...errorArgs: any[]) => void
+  log: (...logArgs: any[]) => void
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LogClass = abstract new (...args: any[]) => Loggable
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HomeyClass = new (...args: any[]) => Loggable & {
   homey: Homey
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type MELCloudDevice = MELCloudDeviceAta | MELCloudDeviceAtw
 export type MELCloudDriver = MELCloudDriverAta | MELCloudDriverAtw
