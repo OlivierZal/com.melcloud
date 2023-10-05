@@ -10,8 +10,8 @@ import type { HomeyClass, HomeySettings } from '../types'
   @typescript-eslint/explicit-function-return-type,
   @typescript-eslint/explicit-module-boundary-types
 */
-export default function withAPI<T extends HomeyClass>(Base: T) {
-  return class extends Base {
+export default function withAPI<T extends HomeyClass>(base: T) {
+  return class extends base {
     protected api: AxiosInstance
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
