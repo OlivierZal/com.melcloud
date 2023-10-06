@@ -1,3 +1,7 @@
+/* eslint-disable
+  @typescript-eslint/no-explicit-any,
+  @typescript-eslint/no-unsafe-argument
+*/
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -6,17 +10,16 @@ import axios, {
 } from 'axios'
 import type { HomeyClass, HomeySettings } from '../types'
 
-/* eslint-disable-next-line
-  @typescript-eslint/explicit-function-return-type,
-  @typescript-eslint/explicit-module-boundary-types
-*/
-export default function withAPI<T extends HomeyClass>(base: T) {
-  return class extends base {
-    protected api: AxiosInstance
+type APIClass = new (...args: any[]) => {
+  api: AxiosInstance
+}
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private constructor(...args: any[]) {
-      super(...args) // eslint-disable-line @typescript-eslint/no-unsafe-argument
+export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
+  return class extends base {
+    public api: AxiosInstance
+
+    public constructor(...args: any[]) {
+      super(...args)
       this.api = axios.create()
       this.setupAxiosInterceptors()
     }

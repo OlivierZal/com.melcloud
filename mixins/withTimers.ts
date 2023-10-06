@@ -1,13 +1,27 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import type { HomeyClass } from '../types'
 
-/* eslint-disable-next-line
-  @typescript-eslint/explicit-function-return-type,
-  @typescript-eslint/explicit-module-boundary-types
-*/
-export default function withTimers<T extends HomeyClass>(base: T) {
+type TimerClass = new (...args: any[]) => {
+  setInterval: (
+    actionType: string,
+    callback: () => Promise<void>,
+    interval: DurationLikeObject | number,
+    ...units: (keyof DurationLikeObject)[]
+  ) => NodeJS.Timeout
+  setTimeout: (
+    actionType: string,
+    callback: () => Promise<void>,
+    interval: DurationLikeObject | number,
+    ...units: (keyof DurationLikeObject)[]
+  ) => NodeJS.Timeout
+}
+
+export default function withTimers<T extends HomeyClass>(
+  base: T,
+): T & TimerClass {
   return class extends base {
-    protected setInterval(
+    public setInterval(
       actionType: string,
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
@@ -23,7 +37,7 @@ export default function withTimers<T extends HomeyClass>(base: T) {
       )
     }
 
-    protected setTimeout(
+    public setTimeout(
       actionType: string,
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
