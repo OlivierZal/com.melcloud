@@ -44,6 +44,7 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
     Object.defineProperty(LogsDecorator, 'name', {
       value: context.name,
     })
+
     return LogsDecorator
   }
 }
