@@ -64,7 +64,7 @@ export default function withAPI<T extends HomeyClass>(base: T) {
       this.error(
         `Error in ${type}:`,
         error.config?.url,
-        error.response ? error.response.data : error,
+        error.response?.data ?? error,
       )
       return Promise.reject(error)
     }
