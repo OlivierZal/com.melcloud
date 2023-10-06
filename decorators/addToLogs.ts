@@ -7,7 +7,7 @@ import type { LogClass } from '../types'
 export default function addToLogs<T extends LogClass>(...logs: string[]) {
   return function actualDecorator(
     target: T,
-    context: ClassDecoratorContext,
+    context: ClassDecoratorContext<T>,
   ): T {
     abstract class LogsDecorator extends target {
       public error(...args: any[]): void {
