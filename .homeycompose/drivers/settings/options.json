@@ -1,0 +1,37 @@
+{
+  "type": "group",
+  "label": {
+    "en": "Options",
+    "fr": "Options",
+    "nl": "Opties",
+    "sv": "Alternativ",
+    "no": "Alternativer",
+    "da": "Indstillinger",
+    "es": "Opciones"
+  },
+  "children": [
+    {
+      "id": "always_on",
+      "type": "checkbox",
+      "label": {
+        "en": "Disable shutdown from Homey",
+        "fr": "Désactiver l'extinction depuis Homey",
+        "nl": "Schakel uitschakeling van Homey uit",
+        "sv": "Inaktivera avstängning från Homey",
+        "no": "Deaktiver avstenging fra Homey",
+        "da": "Deaktiver slukning fra Homey",
+        "es": "Desactivar apagado desde Homey"
+      },
+      "value": false,
+      "hint": {
+        "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
+        "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
+        "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
+        "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
+        "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey, den kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
+        "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
+        "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
+      }
+    }
+  ]
+}
