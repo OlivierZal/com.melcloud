@@ -1,6 +1,6 @@
 [
   {
-    "$extends": "options"
+    "$extends": ["options"]
   },
   {
     "type": "group",
