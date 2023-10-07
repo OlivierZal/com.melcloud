@@ -1,0 +1,100 @@
+{
+  "title": {
+    "en": "The fan speed !{{is|is not}}",
+    "fr": "La vitesse du ventilateur !{{est|n'est pas}}",
+    "nl": "De ventilatiesnelheid !{{is|is niet}}",
+    "sv": "Fläkthastigheten !{{är|är inte}}",
+    "no": "Viftehastigheten !{{er|er ikke}}",
+    "da": "Blæserhastigheden !{{er|er ikke}}",
+    "es": "La velocidad del ventilador !{{está|no está}}"
+  },
+  "titleFormatted": {
+    "en": "The fan speed !{{is|is not}} [[fan_power]]",
+    "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]",
+    "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
+    "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
+    "no": "Viftehastigheten !{{er|er ikke}} [[fan_power]]",
+    "da": "Blæserhastigheden !{{er|er ikke}} [[fan_power]]",
+    "es": "La velocidad del ventilador !{{está|no está}} [[fan_power]]"
+  },
+  "args": [
+    {
+      "name": "fan_power",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Very slow",
+            "fr": "Très lente",
+            "nl": "Zeer langzaam",
+            "sv": "Mycket långsam",
+            "no": "Veldig sakte",
+            "da": "Meget langsom",
+            "es": "Muy lento"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Slow",
+            "fr": "Lente",
+            "nl": "Langzaam",
+            "sv": "Långsam",
+            "no": "Sakte",
+            "da": "Langsom",
+            "es": "Lento"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Medium",
+            "fr": "Moyenne",
+            "nl": "Medium",
+            "sv": "Medium",
+            "no": "Medium",
+            "da": "Medium",
+            "es": "Medio"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Fast",
+            "fr": "Rapide",
+            "nl": "Snel",
+            "sv": "Snabb",
+            "no": "Rask",
+            "da": "Hurtig",
+            "es": "Rápido"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Very fast",
+            "fr": "Très rapide",
+            "nl": "Zeer snel",
+            "sv": "Mycket snabb",
+            "no": "Veldig rask",
+            "da": "Meget hurtig",
+            "es": "Muy rápido"
+          }
+        }
+      ]
+    }
+  ]
+}

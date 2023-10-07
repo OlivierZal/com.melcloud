@@ -1,0 +1,27 @@
+{
+  "title": {
+    "en": "The fan speed has changed",
+    "fr": "La vitesse du ventilateur a été modifiée",
+    "nl": "De ventilatiesnelheid is veranderd",
+    "sv": "Fläkthastigheten ändrades",
+    "no": "Viftehastigheten ble endret",
+    "da": "Blæserhastigheden er blevet ændret",
+    "es": "La velocidad del ventilador ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "fan_power",
+      "type": "number",
+      "title": {
+        "en": "Fan speed",
+        "fr": "Vitesse du ventilateur",
+        "nl": "Ventilatiesnelheid",
+        "sv": "Fläkthastighet",
+        "no": "Viftehastighet",
+        "da": "Blæserhastighed",
+        "es": "Velocidad del ventilador"
+      },
+      "example": 5
+    }
+  ]
+}

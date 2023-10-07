@@ -1,0 +1,111 @@
+{
+  "title": {
+    "en": "Set the vertical vane",
+    "fr": "Définir le soufflage d'air vertical",
+    "nl": "Stel de uitblaasrichting verticaal in",
+    "sv": "Ställ in vertikal luftflödesriktningen",
+    "no": "Innstill vertikal luftflødesretningen",
+    "da": "Indstil den vertikale luftflødesretningen",
+    "es": "Configurar la discarga de aire vertical"
+  },
+  "titleFormatted": {
+    "en": "Set the vertical vane to [[vertical]]",
+    "fr": "Définir le soufflage d'air vertical à [[vertical]]",
+    "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
+    "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
+    "no": "Innstill den vertikale luftflødesretningen til [[vertical]]",
+    "es": "Configurar la discarga de aire vertical a [[vertical]]"
+  },
+  "args": [
+    {
+      "name": "vertical",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        },
+        {
+          "id": "top",
+          "title": {
+            "en": "Upwards",
+            "fr": "Haut",
+            "nl": "Omhoog",
+            "sv": "Uppåt",
+            "no": "Oppover",
+            "da": "Opad",
+            "es": "Arriba"
+          }
+        },
+        {
+          "id": "middletop",
+          "title": {
+            "en": "Mid-high",
+            "fr": "Milieu haut",
+            "nl": "Midden-hoog",
+            "sv": "Mellanhög",
+            "no": "Mellomhøy",
+            "da": "Mellemhøj",
+            "es": "Medio alto"
+          }
+        },
+        {
+          "id": "middle",
+          "title": {
+            "en": "Middle",
+            "fr": "Milieu",
+            "nl": "Midden",
+            "sv": "Mitten",
+            "no": "Midten",
+            "da": "Midten",
+            "es": "Medio"
+          }
+        },
+        {
+          "id": "middlebottom",
+          "title": {
+            "en": "Mid-low",
+            "fr": "Milieu bas",
+            "nl": "Midden-laag",
+            "sv": "Mellanlåg",
+            "no": "Mellomlav",
+            "da": "Mellemlav",
+            "es": "Medio bajo"
+          }
+        },
+        {
+          "id": "bottom",
+          "title": {
+            "en": "Downwards",
+            "fr": "Bas",
+            "nl": "Omlaag",
+            "sv": "Nedåt",
+            "no": "Nedover",
+            "da": "Nedad",
+            "es": "Abajo"
+          }
+        },
+        {
+          "id": "swing",
+          "title": {
+            "en": "Swing",
+            "fr": "Balayage",
+            "nl": "Swing",
+            "sv": "Svängning",
+            "no": "Sving",
+            "da": "Sving",
+            "es": "Oscilación"
+          }
+        }
+      ]
+    }
+  ]
+}
