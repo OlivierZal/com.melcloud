@@ -1,0 +1,29 @@
+{
+  "$filter": "capabilities=target_temperature.zone2_flow_heat",
+  "title": {
+    "en": "Set the flow temperature in zone 2",
+    "fr": "Définir la température du flux dans la zone 2",
+    "nl": "Stel de aanvoertemperatuur in in zone 2",
+    "sv": "Ställ in framledningstemperaturen i zon 2",
+    "no": "Innstill fremløpstemperaturen i sone 2",
+    "da": "Indstil fremledningstemperaturen i zone 2",
+    "es": "Configurar la temperatura del flujo en zona 2"
+  },
+  "titleFormatted": {
+    "en": "Set the flow temperature to [[target_temperature]] in zone 2",
+    "fr": "Définir la température du flux à [[target_temperature]] dans la zone 2",
+    "nl": "Stel de aanvoertemperatuur in op [[target_temperature]] in zone 2",
+    "sv": "Ställ in framledningstemperaturen till [[target_temperature]] i zon 2",
+    "no": "Innstill fremløpstemperaturen til [[target_temperature]] i sone 2",
+    "da": "Indstil fremledningstemperaturen til [[target_temperature]] i zone 2",
+    "es": "Configurar la temperatura del flujo a [[target_temperature]] en zona 2"
+  },
+  "args": [
+    {
+      "name": "target_temperature",
+      "type": "number",
+      "min": 25,
+      "max": 60
+    }
+  ]
+}

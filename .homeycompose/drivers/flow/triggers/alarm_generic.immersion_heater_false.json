@@ -1,0 +1,12 @@
+{
+  "$filter": "capabilities=alarm_generic.immersion_heater",
+  "title": {
+    "en": "The immersion heater turned off",
+    "fr": "Le chauffe-eau électrique s'est désactivé",
+    "nl": "De dompelelement ging uit",
+    "sv": "Doppvärmaren är inaktiverad",
+    "no": "Nedsenkbar varmekolbe er deaktivert",
+    "da": "Dyppvarmeren blev deaktiveret",
+    "es": "El calentador eléctrico sumergible se ha desactivado"
+  }
+}

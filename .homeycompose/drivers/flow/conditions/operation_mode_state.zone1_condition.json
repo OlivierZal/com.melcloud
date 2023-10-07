@@ -1,0 +1,113 @@
+{
+  "$filter": "capabilities=operation_mode_state.zone1",
+  "title": {
+    "en": "The current operation !{{is|is not}} in zone 1",
+    "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 2",
+    "nl": "De huidige bedrijf !{{is|is niet}} in zone 1",
+    "sv": "Aktuell drift !{{är|är inte}} i zon 1",
+    "no": "Gjeldende drift !{{er|er ikke}} i sone 1",
+    "da": "Aktuel drift !{{er|er ikke}} i zone 1",
+    "es": "La operación actual !{{está|no está}} en zona 1"
+  },
+  "titleFormatted": {
+    "en": "The current operation !{{is|is not}} [[operation_mode_state]] in zone 1",
+    "fr": "L'opération en cours !{{est|n'est pas}} [[operation_mode_state]] dans la zone 2",
+    "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] in zone 1",
+    "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] i zon 1",
+    "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] i sone 1",
+    "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] i zone 1",
+    "es": "La operación actual !{{está|no está}} [[operation_mode_state]] en zona 1"
+  },
+  "args": [
+    {
+      "name": "operation_mode_state",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "idle",
+          "title": {
+            "en": "Idle",
+            "fr": "Inactif",
+            "nl": "Inactief",
+            "sv": "Inaktiv",
+            "no": "Inaktiv",
+            "da": "Inaktiv",
+            "es": "Inactivo"
+          }
+        },
+        {
+          "id": "dhw",
+          "title": {
+            "en": "Domestic hot water",
+            "fr": "Eau chaude sanitaire",
+            "nl": "Sanitair warm water",
+            "sv": "Varmvattenladdning",
+            "no": "Varmvannslastning",
+            "da": "Varmtvandsindlæsning",
+            "es": "Agua caliente sanitaria"
+          }
+        },
+        {
+          "id": "heating",
+          "title": {
+            "en": "Heating",
+            "fr": "Chauffage",
+            "nl": "Verwarming",
+            "sv": "Uppvärmning",
+            "no": "Oppvarming",
+            "da": "Opvarmning",
+            "es": "Calefacción"
+          }
+        },
+        {
+          "id": "cooling",
+          "title": {
+            "en": "Cooling",
+            "fr": "Refroidissement",
+            "nl": "Koeling",
+            "sv": "Kylning",
+            "no": "Kjøling",
+            "da": "Køling",
+            "es": "Enfriamiento"
+          }
+        },
+        {
+          "id": "defrost",
+          "title": {
+            "en": "Defrost",
+            "fr": "Dégivrage",
+            "nl": "Ontdooien",
+            "sv": "Avfrostning",
+            "no": "Avfrosting",
+            "da": "Afrimning",
+            "es": "Descongelación"
+          }
+        },
+        {
+          "id": "standby",
+          "title": {
+            "en": "Standby",
+            "fr": "En veille",
+            "nl": "Standby",
+            "sv": "Vänteläge",
+            "no": "Ventemodus",
+            "da": "Ventetilstand",
+            "es": "En espera"
+          }
+        },
+        {
+          "id": "legionella",
+          "title": {
+            "en": "Legionella",
+            "fr": "Legionella",
+            "nl": "Legionella",
+            "sv": "Legionella",
+            "no": "Legionella",
+            "da": "Legionella",
+            "es": "Legionella"
+          }
+        }
+      ]
+    }
+  ]
+}

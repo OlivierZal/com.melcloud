@@ -1,0 +1,89 @@
+{
+  "$filter": "capabilities=operation_mode_zone_with_cool.zone2",
+  "title": {
+    "en": "The operation mode !{{is|is not}} in zone 2",
+    "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
+    "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
+    "sv": "Driftläget !{{är|är inte}} i zon 2",
+    "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
+    "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
+    "es": "El modo de operación !{{está|no está}} en zona 2"
+  },
+  "titleFormatted": {
+    "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
+    "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
+    "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
+    "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
+    "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
+    "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
+    "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
+  },
+  "args": [
+    {
+      "name": "operation_mode_zone",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Indoor temperature",
+            "fr": "Température intérieure",
+            "nl": "Binnentemperatuur",
+            "sv": "Inomhusgivare",
+            "no": "Innendørs føler",
+            "da": "Indendørs føler",
+            "es": "Temperatura interior"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Fixed flow temperature",
+            "fr": "Température de flux fixe",
+            "nl": "Vaste aanvoertemperatuur",
+            "sv": "Fast framledningstemperatur",
+            "no": "Fast fremløpstemperatur",
+            "da": "Fast fremledningstemperatur",
+            "es": "Temperatura de flujo fija"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Weather compensation curve",
+            "fr": "Courbe de compensation météo",
+            "nl": "Weerscompensatiecurve",
+            "sv": "Värmekurva",
+            "no": "Varmekurve",
+            "da": "Varmekurve",
+            "es": "Curva de compensación climática"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Indoor temperature - cooling",
+            "fr": "Température intérieure - refroidissement",
+            "nl": "Binnentemperatuur - koeling",
+            "sv": "Inomhusgivare - kylning",
+            "no": "Innendørs føler - kjøling",
+            "da": "Indendørs føler - køling",
+            "es": "Temperatura interior - enfriamiento"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Fixed flow temperature - cooling",
+            "fr": "Température de flux fixe - refroidissement",
+            "nl": "Vaste aanvoertemperatuur - koeling",
+            "sv": "Fast framledningstemperatur - kylning",
+            "no": "Fast fremløpstemperatur - kjøling",
+            "da": "Fast fremledningstemperatur - køling",
+            "es": "Temperatura de flujo fija - enfriamiento"
+          }
+        }
+      ]
+    }
+  ]
+}

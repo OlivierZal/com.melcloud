@@ -1,0 +1,29 @@
+{
+  "$filter": "capabilities=target_temperature.zone1_flow_cool",
+  "title": {
+    "en": "Set the cool flow temperature",
+    "fr": "Définir la température du flux de refroidissement",
+    "nl": "Stel de aanvoertemperatuur voor koeling in",
+    "sv": "Ställ in framledningstemperaturen för kylning",
+    "no": "Innstill fremløpstemperaturen for kjøling",
+    "da": "Indstil fremledningstemperaturen for køling",
+    "es": "Configurar la temperatura del flujo de enfriamiento"
+  },
+  "titleFormatted": {
+    "en": "Set the cool flow temperature to [[target_temperature]]",
+    "fr": "Définir la température du flux de refroidissement à [[target_temperature]]",
+    "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]]",
+    "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]]",
+    "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]]",
+    "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]]",
+    "es": "Configurar la temperatura del flujo de enfriamiento a [[target_temperature]]"
+  },
+  "args": [
+    {
+      "name": "target_temperature",
+      "type": "number",
+      "min": 10,
+      "max": 30
+    }
+  ]
+}

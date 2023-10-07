@@ -1,0 +1,28 @@
+{
+  "title": {
+    "en": "Set the flow temperature",
+    "fr": "Définir la température du flux",
+    "nl": "Stel de aanvoertemperatuur in",
+    "sv": "Ställ in framledningstemperaturen",
+    "no": "Innstill fremløpstemperaturen",
+    "da": "Indstil fremledningstemperaturen",
+    "es": "Configurar la temperatura del flujo"
+  },
+  "titleFormatted": {
+    "en": "Set the flow temperature to [[target_temperature]]",
+    "fr": "Définir la température du flux à [[target_temperature]]",
+    "nl": "Stel de aanvoertemperatuur in op [[target_temperature]]",
+    "sv": "Ställ in framledningstemperaturen till [[target_temperature]]",
+    "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
+    "da": "Indstil fremledningstemperaturen til [[target_temperature]]",
+    "es": "Configurar la temperatura del flujo a [[target_temperature]]"
+  },
+  "args": [
+    {
+      "name": "target_temperature",
+      "type": "number",
+      "min": 25,
+      "max": 60
+    }
+  ]
+}

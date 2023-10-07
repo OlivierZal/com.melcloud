@@ -151,44 +151,6 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
         }
       },
     )
-
-    // Deprecated
-    this.homey.flow
-      .getConditionCard('onoff_forced_hot_water_condition')
-      .registerRunListener(
-        (args: {
-          device: MELCloudDeviceAtw
-          onoff_forced_hot_water: 'false' | 'true'
-        }): boolean =>
-          args.onoff_forced_hot_water ===
-          String(args.device.getCapabilityValue('onoff.forced_hot_water')),
-      )
-    this.homey.flow
-      .getActionCard('onoff_forced_hot_water_action')
-      .registerRunListener(
-        async (args: {
-          device: MELCloudDeviceAtw
-          onoff_forced_hot_water: 'false' | 'true'
-        }): Promise<void> => {
-          await args.device.onCapability(
-            'onoff.forced_hot_water',
-            args.onoff_forced_hot_water === 'true',
-          )
-        },
-      )
-    this.homey.flow
-      .getActionCard('target_temperature_tank_water')
-      .registerRunListener(
-        async (args: {
-          device: MELCloudDeviceAtw
-          target_temperature: number
-        }): Promise<void> => {
-          await args.device.onCapability(
-            'target_temperature.tank_water',
-            args.target_temperature,
-          )
-        },
-      )
   }
 
   public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {

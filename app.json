@@ -2202,41 +2202,6 @@
             ]
           }
         ]
-      },
-      {
-        "id": "onoff_forced_hot_water_condition",
-        "deprecated": true,
-        "title": {
-          "en": "Forced Hot Water !{{is|is not}}"
-        },
-        "titleFormatted": {
-          "en": "Forced Hot Water !{{is|is not}} [[onoff_forced_hot_water]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "onoff_forced_hot_water",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "title": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "title": {
-                  "en": "Off"
-                }
-              }
-            ]
-          }
-        ]
       }
     ],
     "actions": [
@@ -3273,64 +3238,6 @@
             "name": "target_temperature",
             "type": "number",
             "min": 25,
-            "max": 60
-          }
-        ]
-      },
-      {
-        "id": "onoff_forced_hot_water_action",
-        "deprecated": true,
-        "title": {
-          "en": "Turn Forced Hot Water"
-        },
-        "titleFormatted": {
-          "en": "Turn Forced Hot Water [[onoff_forced_hot_water]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "onoff_forced_hot_water",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "title": {
-                  "en": "On"
-                }
-              },
-              {
-                "id": "false",
-                "title": {
-                  "en": "Off"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_tank_water",
-        "deprecated": true,
-        "title": {
-          "en": "Set Water Tank Target Temperature"
-        },
-        "titleFormatted": {
-          "en": "Set Water Tank Target Temperature to [[target_temperature]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 40,
             "max": 60
           }
         ]

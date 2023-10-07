@@ -1,0 +1,12 @@
+{
+  "$filter": "capabilities=alarm_generic.defrost_mode",
+  "title": {
+    "en": "The defrost mode is !{{on|off}}",
+    "fr": "Le mode dégivrage est !{{en marche|arrêté}}",
+    "nl": "De ontdooimodus is !{{aan|uit}}",
+    "sv": "Avfrostningsläget är !{{på|av}}",
+    "no": "Avfrostingsmodusen er !{{på|av}}",
+    "da": "Afrimningsfunktionen er !{{tændt|slukket}}",
+    "es": "El modo de descongelación está !{{activada|desactivada}}"
+  }
+}
