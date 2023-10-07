@@ -1765,7 +1765,7 @@
           "nl": "De huidige bedrijf !{{is|is niet}} in zone 2",
           "sv": "Aktuell drift !{{är|är inte}} i zon 2",
           "no": "Gjeldende drift !{{er|er ikke}} i sone 2",
-          "da": "Aktuel drift !{{er|er ikke}} in zone 2",
+          "da": "Aktuel drift !{{er|er ikke}} i zone 2",
           "es": "La operación actual !{{está|no está}} en zona 2"
         },
         "titleFormatted": {
@@ -1774,7 +1774,7 @@
           "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] in zone 2",
           "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] i zon 2",
           "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] i sone 2",
-          "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] in zone 2",
+          "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] i zone 2",
           "es": "La operación actual !{{está|no está}} [[operation_mode_state]] en zona 2"
         },
         "args": [
