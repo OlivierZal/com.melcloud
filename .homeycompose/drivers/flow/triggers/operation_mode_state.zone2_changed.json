@@ -11,7 +11,7 @@
   },
   "tokens": [
     {
-      "name": "operation_mode_state",
+      "name": "operation_mode_state.zone2",
       "type": "string",
       "title": {
         "en": "Current operation",
