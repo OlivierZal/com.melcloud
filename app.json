@@ -267,13 +267,7 @@
               "es": "Modo de operación"
             },
             "example": {
-              "en": "Automatic",
-              "fr": "Automatique",
-              "nl": "Automatisch",
-              "sv": "Automatiskt",
-              "no": "Automatisk",
-              "da": "Automatisk",
-              "es": "Automático"
+              "en": "auto"
             }
           }
         ],
@@ -310,13 +304,7 @@
               "es": "Descarga de aire vertical"
             },
             "example": {
-              "en": "Automatic",
-              "fr": "Automatique",
-              "nl": "Automatisch",
-              "sv": "Automatiskt",
-              "no": "Automatisk",
-              "da": "Automatisk",
-              "es": "Automático"
+              "en": "auto"
             }
           }
         ],
@@ -353,13 +341,7 @@
               "es": "Descarga de aire horizontal"
             },
             "example": {
-              "en": "Automatic",
-              "fr": "Automatique",
-              "nl": "Automatisch",
-              "sv": "Automatiskt",
-              "no": "Automatisk",
-              "da": "Automatisk",
-              "es": "Automático"
+              "en": "auto"
             }
           }
         ],
@@ -662,13 +644,7 @@
               "es": "Operación actual"
             },
             "example": {
-              "en": "Heating",
-              "fr": "Chauffage",
-              "nl": "Verwarming",
-              "sv": "Uppvärmning",
-              "no": "Oppvarming",
-              "da": "Opvarmning",
-              "es": "Calefacción"
+              "en": "heating"
             }
           }
         ],
@@ -693,7 +669,7 @@
         },
         "tokens": [
           {
-            "name": "operation_mode_state",
+            "name": "operation_mode_state.zone1",
             "type": "string",
             "title": {
               "en": "Current operation",
@@ -705,13 +681,7 @@
               "es": "Operación actual"
             },
             "example": {
-              "en": "Heating",
-              "fr": "Chauffage",
-              "nl": "Verwarming",
-              "sv": "Uppvärmning",
-              "no": "Oppvarming",
-              "da": "Opvarmning",
-              "es": "Calefacción"
+              "en": "heating"
             }
           }
         ],
@@ -736,7 +706,7 @@
         },
         "tokens": [
           {
-            "name": "operation_mode_state",
+            "name": "operation_mode_state.zone2",
             "type": "string",
             "title": {
               "en": "Current operation",
@@ -748,13 +718,7 @@
               "es": "Operación actual"
             },
             "example": {
-              "en": "Heating",
-              "fr": "Chauffage",
-              "nl": "Verwarming",
-              "sv": "Uppvärmning",
-              "no": "Oppvarming",
-              "da": "Opvarmning",
-              "es": "Calefacción"
+              "en": "heating"
             }
           }
         ],
@@ -791,13 +755,7 @@
               "es": "Modo de operación"
             },
             "example": {
-              "en": "Weather compensation curve",
-              "fr": "Courbe de compensation météo",
-              "nl": "Weerscompensatiecurve",
-              "sv": "Värmekurva",
-              "no": "Varmekurve",
-              "da": "Varmekurve",
-              "es": "Curva de compensación climática"
+              "en": "2"
             }
           }
         ],
@@ -834,13 +792,7 @@
               "es": "Modo de operación en zona 2"
             },
             "example": {
-              "en": "Weather compensation curve",
-              "fr": "Courbe de compensation météo",
-              "nl": "Weerscompensatiecurve",
-              "sv": "Värmekurva",
-              "no": "Varmekurve",
-              "da": "Varmekurve",
-              "es": "Curva de compensación climática"
+              "en": "2"
             }
           }
         ],
@@ -877,13 +829,7 @@
               "es": "Modo de operación"
             },
             "example": {
-              "en": "Weather compensation curve",
-              "fr": "Courbe de compensation météo",
-              "nl": "Weerscompensatiecurve",
-              "sv": "Värmekurva",
-              "no": "Varmekurve",
-              "da": "Varmekurve",
-              "es": "Curva de compensación climática"
+              "en": "2"
             }
           }
         ],
@@ -920,13 +866,7 @@
               "es": "Modo de operación en zona 2"
             },
             "example": {
-              "en": "Weather compensation curve",
-              "fr": "Courbe de compensation météo",
-              "nl": "Weerscompensatiecurve",
-              "sv": "Värmekurva",
-              "no": "Varmekurve",
-              "da": "Varmekurve",
-              "es": "Curva de compensación climática"
+              "en": "2"
             }
           }
         ],

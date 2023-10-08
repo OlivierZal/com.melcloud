@@ -23,13 +23,7 @@
         "es": "Modo de operación"
       },
       "example": {
-        "en": "Weather compensation curve",
-        "fr": "Courbe de compensation météo",
-        "nl": "Weerscompensatiecurve",
-        "sv": "Värmekurva",
-        "no": "Varmekurve",
-        "da": "Varmekurve",
-        "es": "Curva de compensación climática"
+        "en": "2"
       }
     }
   ]

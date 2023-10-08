@@ -22,13 +22,7 @@
         "es": "Descarga de aire vertical"
       },
       "example": {
-        "en": "Automatic",
-        "fr": "Automatique",
-        "nl": "Automatisch",
-        "sv": "Automatiskt",
-        "no": "Automatisk",
-        "da": "Automatisk",
-        "es": "Automático"
+        "en": "auto"
       }
     }
   ]

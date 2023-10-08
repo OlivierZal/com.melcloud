@@ -22,13 +22,7 @@
         "es": "Operación actual"
       },
       "example": {
-        "en": "Heating",
-        "fr": "Chauffage",
-        "nl": "Verwarming",
-        "sv": "Uppvärmning",
-        "no": "Oppvarming",
-        "da": "Opvarmning",
-        "es": "Calefacción"
+        "en": "heating"
       }
     }
   ]
