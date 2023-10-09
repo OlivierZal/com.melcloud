@@ -1,0 +1,12 @@
+{
+  "filter": "driver_id=melcloud_atw",
+  "title": {
+    "en": "Forced domestic hot water turned on",
+    "fr": "Eau chaude sanitaire forcée activée",
+    "nl": "Gedwongen sanitair warm water aangezet",
+    "sv": "Tvingad varmvattenladdning aktiverad",
+    "no": "Tvungen varmvannslastning slått på",
+    "da": "Tvungen varmtvandsindlæsning tændt",
+    "es": "Agua caliente sanitaria forzada encendida"
+  }
+}

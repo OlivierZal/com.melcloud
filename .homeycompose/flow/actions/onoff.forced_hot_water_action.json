@@ -1,0 +1,53 @@
+{
+  "filter": "driver_id=melcloud_atw",
+  "title": {
+    "en": "Turn on / off the forced domestic hot water",
+    "fr": "Activer / désactiver l'eau chaude sanitaire forcée",
+    "nl": "Zet aan / uit de gedwongen sanitair warm water",
+    "sv": "Aktivera / stäng av tvingad varmvattenladdning",
+    "no": "Slå på / av tvungen varmvannslastning",
+    "da": "Tændt / slukket tvungen varmtvandsindlæsning",
+    "es": "Encender / apagar el agua caliente sanitaria forzada"
+  },
+  "titleFormatted": {
+    "en": "Turn [[onoff]] the forced domestic hot water",
+    "fr": "[[onoff]] l'eau chaude sanitaire forcée",
+    "nl": "Zet [[onoff]] de gedwongen sanitair warm water",
+    "sv": "[[onoff]] tvingad varmvattenladdning",
+    "no": "[[onoff]] tvungen varmvannslastning",
+    "da": "[[onoff]] tvungen varmtvandsindlæsning",
+    "es": "[[onoff]] el agua caliente sanitaria forzada"
+  },
+  "args": [
+    {
+      "name": "onoff",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "true",
+          "title": {
+            "en": "on",
+            "fr": "Activer",
+            "nl": "aan",
+            "sv": "Aktivera",
+            "no": "på",
+            "da": "Tændt",
+            "es": "Encender"
+          }
+        },
+        {
+          "id": "false",
+          "title": {
+            "en": "off",
+            "fr": "Désactiver",
+            "nl": "uit",
+            "sv": "Stäng av",
+            "no": "av",
+            "da": "Slukket",
+            "es": "Apagar"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "filter": "driver_id=melcloud_atw",
+  "title": {
+    "en": "The current operation has changed",
+    "fr": "L'opération en cours a été modifiée",
+    "nl": "De huidige bedrijf is veranderd",
+    "sv": "Aktuell drift ändrades",
+    "no": "Gjeldende drift ble endret",
+    "da": "Den aktuelle drift er blevet ændret",
+    "es": "La operación actual ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "operation_mode_state",
+      "type": "string",
+      "title": {
+        "en": "Current operation",
+        "fr": "Opération en cours",
+        "nl": "Huidige bedrijf",
+        "sv": "Aktuell drift",
+        "no": "Gjeldende drift",
+        "da": "Aktuel drift",
+        "es": "Operación actual"
+      },
+      "example": {
+        "en": "heating"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1",
+  "title": {
+    "en": "The booster heater 1 turned off",
+    "fr": "Le chauffage d'appoint 1 s'est désactivé",
+    "nl": "De boosterverwarmingselement 1 ging uit",
+    "sv": "Tillskottsvärmaren 1 är inaktiverad",
+    "no": "Tilleggsvarmen 1 er deaktivert",
+    "da": "Tilførselsvarme 1 blev deaktiveret",
+    "es": "El calentador de refuerzo 1 se ha desactivado"
+  }
+}

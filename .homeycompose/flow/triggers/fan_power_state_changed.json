@@ -1,0 +1,28 @@
+{
+  "filter": "driver_id=melcloud",
+  "title": {
+    "en": "The current fan speed has changed",
+    "fr": "La vitesse actuelle du ventilateur a été modifiée",
+    "nl": "De huidige ventilatiesnelheid is veranderd",
+    "sv": "Aktuell fläkthastigheten ändrades",
+    "no": "Aktuell viftehastigheten ble endret",
+    "da": "Den aktuelle blæserhastighed er blevet ændret",
+    "es": "La velocidad actual del ventilador ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "fan_power",
+      "type": "number",
+      "title": {
+        "en": "Current fan speed",
+        "fr": "Vitesse actuelle du ventilateur",
+        "nl": "Huidige ventilatiesnelheid",
+        "sv": "Aktuell fläkthastighet",
+        "no": "Aktuell viftehastighet",
+        "da": "Aktuel blæserhastighed",
+        "es": "Velocidad actual del ventilador"
+      },
+      "example": 5
+    }
+  ]
+}

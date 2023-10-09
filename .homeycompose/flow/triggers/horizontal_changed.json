@@ -1,0 +1,30 @@
+{
+  "filter": "driver_id=melcloud",
+  "title": {
+    "en": "The horizontal vane has changed",
+    "fr": "Le soufflage d'air horizontal a été modifié",
+    "nl": "De uitblaasrichting horizontaal is veranderd",
+    "sv": "Horisontell luftflödesriktningen ändrades",
+    "no": "Horisontal luftflødesretningen ble endret",
+    "da": "Den horisontale luftflødesretningen er blevet ændret",
+    "es": "La descarga de aire horizontal ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "horizontal",
+      "type": "string",
+      "title": {
+        "en": "Horizontal vane",
+        "fr": "Soufflage d'air horizontal",
+        "nl": "Uitblaasrichting horizontaal",
+        "sv": "Horisontell luftflödesriktning",
+        "no": "Horisontal luftflødesretning",
+        "da": "Horisontal luftflødesretning",
+        "es": "Descarga de aire horizontal"
+      },
+      "example": {
+        "en": "auto"
+      }
+    }
+  ]
+}

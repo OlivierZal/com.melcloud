@@ -173,7 +173,163 @@
   "flow": {
     "triggers": [
       {
-        "id": "fan_power_changed",
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1",
+        "title": {
+          "en": "The booster heater 1 turned off",
+          "fr": "Le chauffage d'appoint 1 s'est désactivé",
+          "nl": "De boosterverwarmingselement 1 ging uit",
+          "sv": "Tillskottsvärmaren 1 är inaktiverad",
+          "no": "Tilleggsvarmen 1 er deaktivert",
+          "da": "Tilførselsvarme 1 blev deaktiveret",
+          "es": "El calentador de refuerzo 1 se ha desactivado"
+        },
+        "id": "alarm_generic.booster_heater1_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1",
+        "title": {
+          "en": "The booster heater 1 turned on",
+          "fr": "Le chauffage d'appoint 1 s'est activé",
+          "nl": "De boosterverwarmingselement 1 gaat aan",
+          "sv": "Tillskottsvärmaren 1 är aktiverad",
+          "no": "Tilleggsvarmen 1 er aktivert",
+          "da": "Tilførselsvarme 1 blev aktiveret",
+          "es": "El calentador de refuerzo 1 se ha activado"
+        },
+        "id": "alarm_generic.booster_heater1_true"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2",
+        "title": {
+          "en": "The booster heater 2 turned off",
+          "fr": "Le chauffage d'appoint 2 s'est désactivé",
+          "nl": "De boosterverwarmingselement 2 ging uit",
+          "sv": "Tillskottsvärmaren 2 är inaktiverad",
+          "no": "Tilleggsvarmen 2 er deaktivert",
+          "da": "Tilførselsvarme 2 blev deaktiveret",
+          "es": "El calentador de refuerzo 2 se ha desactivado"
+        },
+        "id": "alarm_generic.booster_heater2_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus",
+        "title": {
+          "en": "The booster heater 2+ turned off",
+          "fr": "Le chauffage d'appoint 2+ s'est désactivé",
+          "nl": "De boosterverwarmingselement 2+ ging uit",
+          "sv": "Tillskottsvärmaren 2+ är inaktiverad",
+          "no": "Tilleggsvarmen 2+ er deaktivert",
+          "da": "Tilførselsvarme 2+ blev deaktiveret",
+          "es": "El calentador de refuerzo 2+ se ha desactivado"
+        },
+        "id": "alarm_generic.booster_heater2_plus_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus",
+        "title": {
+          "en": "The booster heater 2+ turned on",
+          "fr": "Le chauffage d'appoint 2+ s'est activé",
+          "nl": "De boosterverwarmingselement 2+ gaat aan",
+          "sv": "Tillskottsvärmaren 2+ är aktiverad",
+          "no": "Tilleggsvarmen 2+ er aktivert",
+          "da": "Tilførselsvarme 2+ blev aktiveret",
+          "es": "El calentador de refuerzo 2+ se ha activado"
+        },
+        "id": "alarm_generic.booster_heater2_plus_true"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2",
+        "title": {
+          "en": "The booster heater 2 turned on",
+          "fr": "Le chauffage d'appoint 2 s'est activé",
+          "nl": "De boosterverwarmingselement 2 gaat aan",
+          "sv": "Tillskottsvärmaren 2 är aktiverad",
+          "no": "Tilleggsvarmen 2 er aktivert",
+          "da": "Tilførselsvarme 2 blev aktiveret",
+          "es": "El calentador de refuerzo 2 se ha activado"
+        },
+        "id": "alarm_generic.booster_heater2_true"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode",
+        "title": {
+          "en": "The defrost mode turned off",
+          "fr": "Le mode dégivrage s'est désactivé",
+          "nl": "De ontdooimodus ging uit",
+          "sv": "Avfrostningsläget är inaktiverat",
+          "no": "Avfrostingsmodusen er deaktivert",
+          "da": "Afrimningsfunktionen blev deaktiveret",
+          "es": "El modo de descongelación se ha desactivado"
+        },
+        "id": "alarm_generic.defrost_mode_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode",
+        "title": {
+          "en": "The defrost mode turned on",
+          "fr": "Le mode dégivrage s'est activé",
+          "nl": "De ontdooimodus gaat aan",
+          "sv": "Avfrostningsläget är aktiverat",
+          "no": "Avfrostingsmodusen er aktivert",
+          "da": "Afrimningsfunktionen blev aktiveret",
+          "es": "El modo de descongelación se ha activado"
+        },
+        "id": "alarm_generic.defrost_mode_true"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water",
+        "title": {
+          "en": "The eco domestic hot water turned off",
+          "fr": "L'eau chaude sanitaire éco s'est désactivée",
+          "nl": "De eco sanitair warm water ging uit",
+          "sv": "Eco-läge för varmvattenladdning är inaktiverat",
+          "no": "Eco-modus for varmvannslastning er deaktivert",
+          "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
+          "es": "El agua caliente sanitaria eco se ha desactivado"
+        },
+        "id": "alarm_generic.eco_hot_water_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water",
+        "title": {
+          "en": "The eco domestic hot water turned on",
+          "fr": "L'eau chaude sanitaire éco s'est activée",
+          "nl": "De eco sanitair warm water gaat aan",
+          "sv": "Eco-läge för varmvattenladdning är aktiverat",
+          "no": "Eco-modus for varmvannslastning er aktivert",
+          "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
+          "es": "El agua caliente sanitaria eco se ha activado"
+        },
+        "id": "alarm_generic.eco_hot_water_true"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater",
+        "title": {
+          "en": "The immersion heater turned off",
+          "fr": "Le chauffe-eau électrique s'est désactivé",
+          "nl": "De dompelelement ging uit",
+          "sv": "Doppvärmaren är inaktiverad",
+          "no": "Nedsenkbar varmekolbe er deaktivert",
+          "da": "Dyppvarmeren blev deaktiveret",
+          "es": "El calentador eléctrico sumergible se ha desactivado"
+        },
+        "id": "alarm_generic.immersion_heater_false"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater",
+        "title": {
+          "en": "The immersion heater turned on",
+          "fr": "Le chauffe-eau électrique s'est activé",
+          "nl": "De dompelelement gaat aan",
+          "sv": "Doppvärmaren är aktiverad",
+          "no": "Nedsenkbar varmekolbe er aktivert",
+          "da": "Dyppvarmeren blev aktiveret",
+          "es": "El calentador eléctrico sumergible se ha activado"
+        },
+        "id": "alarm_generic.immersion_heater_true"
+      },
+      {
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "The fan speed has changed",
           "fr": "La vitesse du ventilateur a été modifiée",
@@ -199,16 +355,10 @@
             "example": 5
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ]
+        "id": "fan_power_changed"
       },
       {
-        "id": "fan_power_state_changed",
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "The current fan speed has changed",
           "fr": "La vitesse actuelle du ventilateur a été modifiée",
@@ -234,90 +384,10 @@
             "example": 5
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ]
+        "id": "fan_power_state_changed"
       },
       {
-        "id": "operation_mode_changed",
-        "title": {
-          "en": "The operation mode has changed",
-          "fr": "Le mode opérationnel a été modifié",
-          "nl": "De bedrijfsmodus is veranderd",
-          "sv": "Driftläget ändrades",
-          "no": "Driftsmodusen ble endret",
-          "da": "Driftstilstanden er blevet ændret",
-          "es": "El modo de operación ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode",
-            "type": "string",
-            "title": {
-              "en": "Operation mode",
-              "fr": "Mode opérationnel",
-              "nl": "Bedrijfsmodus",
-              "sv": "Driftläge",
-              "no": "Driftsmodus",
-              "da": "Driftstilstand",
-              "es": "Modo de operación"
-            },
-            "example": {
-              "en": "auto"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ]
-      },
-      {
-        "id": "vertical_changed",
-        "title": {
-          "en": "The vertical vane has changed",
-          "fr": "Le soufflage d'air vertical a été modifié",
-          "nl": "De uitblaasrichting verticaal is veranderd",
-          "sv": "Vertikal luftflödesriktningen ändrades",
-          "no": "Vertikal luftflødesretningen ble endret",
-          "da": "Den vertikale luftflødesretningen er blevet ændret",
-          "es": "La descarga de aire vertical ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "vertical",
-            "type": "string",
-            "title": {
-              "en": "Vertical vane",
-              "fr": "Soufflage d'air vertical",
-              "nl": "Uitblaasrichting verticaal",
-              "sv": "Vertikal luftflödesriktning",
-              "no": "Vertikal luftflødesretning",
-              "da": "Vertikal luftflødesretning",
-              "es": "Descarga de aire vertical"
-            },
-            "example": {
-              "en": "auto"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ]
-      },
-      {
-        "id": "horizontal_changed",
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "The horizontal vane has changed",
           "fr": "Le soufflage d'air horizontal a été modifié",
@@ -345,263 +415,10 @@
             }
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ]
+        "id": "horizontal_changed"
       },
       {
-        "id": "alarm_generic.booster_heater1_true",
-        "title": {
-          "en": "The booster heater 1 turned on",
-          "fr": "Le chauffage d'appoint 1 s'est activé",
-          "nl": "De boosterverwarmingselement 1 gaat aan",
-          "sv": "Tillskottsvärmaren 1 är aktiverad",
-          "no": "Tilleggsvarmen 1 er aktivert",
-          "da": "Tilførselsvarme 1 blev aktiveret",
-          "es": "El calentador de refuerzo 1 se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater1_false",
-        "title": {
-          "en": "The booster heater 1 turned off",
-          "fr": "Le chauffage d'appoint 1 s'est désactivé",
-          "nl": "De boosterverwarmingselement 1 ging uit",
-          "sv": "Tillskottsvärmaren 1 är inaktiverad",
-          "no": "Tilleggsvarmen 1 er deaktivert",
-          "da": "Tilførselsvarme 1 blev deaktiveret",
-          "es": "El calentador de refuerzo 1 se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_true",
-        "title": {
-          "en": "The booster heater 2 turned on",
-          "fr": "Le chauffage d'appoint 2 s'est activé",
-          "nl": "De boosterverwarmingselement 2 gaat aan",
-          "sv": "Tillskottsvärmaren 2 är aktiverad",
-          "no": "Tilleggsvarmen 2 er aktivert",
-          "da": "Tilførselsvarme 2 blev aktiveret",
-          "es": "El calentador de refuerzo 2 se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_false",
-        "title": {
-          "en": "The booster heater 2 turned off",
-          "fr": "Le chauffage d'appoint 2 s'est désactivé",
-          "nl": "De boosterverwarmingselement 2 ging uit",
-          "sv": "Tillskottsvärmaren 2 är inaktiverad",
-          "no": "Tilleggsvarmen 2 er deaktivert",
-          "da": "Tilførselsvarme 2 blev deaktiveret",
-          "es": "El calentador de refuerzo 2 se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_plus_true",
-        "title": {
-          "en": "The booster heater 2+ turned on",
-          "fr": "Le chauffage d'appoint 2+ s'est activé",
-          "nl": "De boosterverwarmingselement 2+ gaat aan",
-          "sv": "Tillskottsvärmaren 2+ är aktiverad",
-          "no": "Tilleggsvarmen 2+ er aktivert",
-          "da": "Tilførselsvarme 2+ blev aktiveret",
-          "es": "El calentador de refuerzo 2+ se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_plus_false",
-        "title": {
-          "en": "The booster heater 2+ turned off",
-          "fr": "Le chauffage d'appoint 2+ s'est désactivé",
-          "nl": "De boosterverwarmingselement 2+ ging uit",
-          "sv": "Tillskottsvärmaren 2+ är inaktiverad",
-          "no": "Tilleggsvarmen 2+ er deaktivert",
-          "da": "Tilførselsvarme 2+ blev deaktiveret",
-          "es": "El calentador de refuerzo 2+ se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.defrost_mode_true",
-        "title": {
-          "en": "The defrost mode turned on",
-          "fr": "Le mode dégivrage s'est activé",
-          "nl": "De ontdooimodus gaat aan",
-          "sv": "Avfrostningsläget är aktiverat",
-          "no": "Avfrostingsmodusen er aktivert",
-          "da": "Afrimningsfunktionen blev aktiveret",
-          "es": "El modo de descongelación se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.defrost_mode_false",
-        "title": {
-          "en": "The defrost mode turned off",
-          "fr": "Le mode dégivrage s'est désactivé",
-          "nl": "De ontdooimodus ging uit",
-          "sv": "Avfrostningsläget är inaktiverat",
-          "no": "Avfrostingsmodusen er deaktivert",
-          "da": "Afrimningsfunktionen blev deaktiveret",
-          "es": "El modo de descongelación se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.eco_hot_water_true",
-        "title": {
-          "en": "The eco domestic hot water turned on",
-          "fr": "L'eau chaude sanitaire éco s'est activée",
-          "nl": "De eco sanitair warm water gaat aan",
-          "sv": "Eco-läge för varmvattenladdning är aktiverat",
-          "no": "Eco-modus for varmvannslastning er aktivert",
-          "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
-          "es": "El agua caliente sanitaria eco se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.eco_hot_water_false",
-        "title": {
-          "en": "The eco domestic hot water turned off",
-          "fr": "L'eau chaude sanitaire éco s'est désactivée",
-          "nl": "De eco sanitair warm water ging uit",
-          "sv": "Eco-läge för varmvattenladdning är inaktiverat",
-          "no": "Eco-modus for varmvannslastning er deaktivert",
-          "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
-          "es": "El agua caliente sanitaria eco se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.immersion_heater_true",
-        "title": {
-          "en": "The immersion heater turned on",
-          "fr": "Le chauffe-eau électrique s'est activé",
-          "nl": "De dompelelement gaat aan",
-          "sv": "Doppvärmaren är aktiverad",
-          "no": "Nedsenkbar varmekolbe er aktivert",
-          "da": "Dyppvarmeren blev aktiveret",
-          "es": "El calentador eléctrico sumergible se ha activado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.immersion_heater_false",
-        "title": {
-          "en": "The immersion heater turned off",
-          "fr": "Le chauffe-eau électrique s'est désactivé",
-          "nl": "De dompelelement ging uit",
-          "sv": "Doppvärmaren är inaktiverad",
-          "no": "Nedsenkbar varmekolbe er deaktivert",
-          "da": "Dyppvarmeren blev deaktiveret",
-          "es": "El calentador eléctrico sumergible se ha desactivado"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
-          }
-        ]
-      },
-      {
-        "id": "onoff.forced_hot_water_true",
-        "title": {
-          "en": "Forced domestic hot water turned on",
-          "fr": "Eau chaude sanitaire forcée activée",
-          "nl": "Gedwongen sanitair warm water aangezet",
-          "sv": "Tvingad varmvattenladdning aktiverad",
-          "no": "Tvungen varmvannslastning slått på",
-          "da": "Tvungen varmtvandsindlæsning tændt",
-          "es": "Agua caliente sanitaria forzada encendida"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
-      },
-      {
-        "id": "onoff.forced_hot_water_false",
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "Forced domestic hot water turned off",
           "fr": "Eau chaude sanitaire forcée désactivée",
@@ -611,16 +428,54 @@
           "da": "Tvungen varmtvandsindlæsning slukket",
           "es": "Agua caliente sanitaria forzada apagada"
         },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
+        "id": "onoff.forced_hot_water_false"
       },
       {
-        "id": "operation_mode_state_changed",
+        "filter": "driver_id=melcloud_atw",
+        "title": {
+          "en": "Forced domestic hot water turned on",
+          "fr": "Eau chaude sanitaire forcée activée",
+          "nl": "Gedwongen sanitair warm water aangezet",
+          "sv": "Tvingad varmvattenladdning aktiverad",
+          "no": "Tvungen varmvannslastning slått på",
+          "da": "Tvungen varmtvandsindlæsning tændt",
+          "es": "Agua caliente sanitaria forzada encendida"
+        },
+        "id": "onoff.forced_hot_water_true"
+      },
+      {
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "The operation mode has changed",
+          "fr": "Le mode opérationnel a été modifié",
+          "nl": "De bedrijfsmodus is veranderd",
+          "sv": "Driftläget ändrades",
+          "no": "Driftsmodusen ble endret",
+          "da": "Driftstilstanden er blevet ændret",
+          "es": "El modo de operación ha cambiado"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode",
+            "type": "string",
+            "title": {
+              "en": "Operation mode",
+              "fr": "Mode opérationnel",
+              "nl": "Bedrijfsmodus",
+              "sv": "Driftläge",
+              "no": "Driftsmodus",
+              "da": "Driftstilstand",
+              "es": "Modo de operación"
+            },
+            "example": {
+              "en": "auto"
+            }
+          }
+        ],
+        "id": "operation_mode_changed"
+      },
+      {
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "The current operation has changed",
           "fr": "L'opération en cours a été modifiée",
@@ -648,16 +503,10 @@
             }
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
+        "id": "operation_mode_state_changed"
       },
       {
-        "id": "operation_mode_state.zone1_changed",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1",
         "title": {
           "en": "The current operation has changed in zone 1",
           "fr": "L'opération en cours a été modifiée dans la zone 2",
@@ -685,16 +534,10 @@
             }
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
-          }
-        ]
+        "id": "operation_mode_state.zone1_changed"
       },
       {
-        "id": "operation_mode_state.zone2_changed",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2",
         "title": {
           "en": "The current operation has changed in zone 2",
           "fr": "L'opération en cours a été modifiée dans la zone 2",
@@ -722,90 +565,10 @@
             }
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2"
-          }
-        ]
+        "id": "operation_mode_state.zone2_changed"
       },
       {
-        "id": "operation_mode_zone.zone1_changed",
-        "title": {
-          "en": "The operation mode has changed",
-          "fr": "Le mode opérationnel a été modifié",
-          "nl": "De bedrijfsmodus is veranderd",
-          "sv": "Driftläget ändrades",
-          "no": "Driftsmodusen ble endret",
-          "da": "Driftstilstanden er blevet ændret",
-          "es": "El modo de operación ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode_zone.zone1",
-            "type": "string",
-            "title": {
-              "en": "Operation mode",
-              "fr": "Mode opérationnel",
-              "nl": "Bedrijfsmodus",
-              "sv": "Driftläge",
-              "no": "Driftsmodus",
-              "da": "Driftstilstand",
-              "es": "Modo de operación"
-            },
-            "example": {
-              "en": "2"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone.zone2_changed",
-        "title": {
-          "en": "The operation mode has changed in zone 2",
-          "fr": "Le mode opérationnel a été modifié dans la zone 2",
-          "nl": "De bedrijfsmodus is veranderd in zone 2",
-          "sv": "Driftläget ändrades i zon 2",
-          "no": "Driftsmodusen ble endret i sone 2",
-          "da": "Driftstilstanden er blevet ændret i zone 2",
-          "es": "El modo de operación ha cambiado en zona 2"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode_zone.zone2",
-            "type": "string",
-            "title": {
-              "en": "Operation mode in zone 2",
-              "fr": "Mode opérationnel dans la zone 2",
-              "nl": "Bedrijfsmodus in zone 2",
-              "sv": "Driftläge i zon 2",
-              "no": "Driftsmodus i sone 2",
-              "da": "Driftstilstand i zone 2",
-              "es": "Modo de operación en zona 2"
-            },
-            "example": {
-              "en": "2"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone_with_cool.zone1_changed",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1",
         "title": {
           "en": "The operation mode has changed",
           "fr": "Le mode opérationnel a été modifié",
@@ -833,16 +596,10 @@
             }
           }
         ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
-          }
-        ]
+        "id": "operation_mode_zone_with_cool.zone1_changed"
       },
       {
-        "id": "operation_mode_zone_with_cool.zone2_changed",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2",
         "title": {
           "en": "The operation mode has changed in zone 2",
           "fr": "Le mode opérationnel a été modifié dans la zone 2",
@@ -870,18 +627,183 @@
             }
           }
         ],
-        "args": [
+        "id": "operation_mode_zone_with_cool.zone2_changed"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1",
+        "title": {
+          "en": "The operation mode has changed",
+          "fr": "Le mode opérationnel a été modifié",
+          "nl": "De bedrijfsmodus is veranderd",
+          "sv": "Driftläget ändrades",
+          "no": "Driftsmodusen ble endret",
+          "da": "Driftstilstanden er blevet ændret",
+          "es": "El modo de operación ha cambiado"
+        },
+        "tokens": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+            "name": "operation_mode_zone.zone1",
+            "type": "string",
+            "title": {
+              "en": "Operation mode",
+              "fr": "Mode opérationnel",
+              "nl": "Bedrijfsmodus",
+              "sv": "Driftläge",
+              "no": "Driftsmodus",
+              "da": "Driftstilstand",
+              "es": "Modo de operación"
+            },
+            "example": {
+              "en": "2"
+            }
           }
-        ]
+        ],
+        "id": "operation_mode_zone.zone1_changed"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2",
+        "title": {
+          "en": "The operation mode has changed in zone 2",
+          "fr": "Le mode opérationnel a été modifié dans la zone 2",
+          "nl": "De bedrijfsmodus is veranderd in zone 2",
+          "sv": "Driftläget ändrades i zon 2",
+          "no": "Driftsmodusen ble endret i sone 2",
+          "da": "Driftstilstanden er blevet ændret i zone 2",
+          "es": "El modo de operación ha cambiado en zona 2"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_zone.zone2",
+            "type": "string",
+            "title": {
+              "en": "Operation mode in zone 2",
+              "fr": "Mode opérationnel dans la zone 2",
+              "nl": "Bedrijfsmodus in zone 2",
+              "sv": "Driftläge i zon 2",
+              "no": "Driftsmodus i sone 2",
+              "da": "Driftstilstand i zone 2",
+              "es": "Modo de operación en zona 2"
+            },
+            "example": {
+              "en": "2"
+            }
+          }
+        ],
+        "id": "operation_mode_zone.zone2_changed"
+      },
+      {
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "The vertical vane has changed",
+          "fr": "Le soufflage d'air vertical a été modifié",
+          "nl": "De uitblaasrichting verticaal is veranderd",
+          "sv": "Vertikal luftflödesriktningen ändrades",
+          "no": "Vertikal luftflødesretningen ble endret",
+          "da": "Den vertikale luftflødesretningen er blevet ændret",
+          "es": "La descarga de aire vertical ha cambiado"
+        },
+        "tokens": [
+          {
+            "name": "vertical",
+            "type": "string",
+            "title": {
+              "en": "Vertical vane",
+              "fr": "Soufflage d'air vertical",
+              "nl": "Uitblaasrichting verticaal",
+              "sv": "Vertikal luftflödesriktning",
+              "no": "Vertikal luftflødesretning",
+              "da": "Vertikal luftflødesretning",
+              "es": "Descarga de aire vertical"
+            },
+            "example": {
+              "en": "auto"
+            }
+          }
+        ],
+        "id": "vertical_changed"
       }
     ],
     "conditions": [
       {
-        "id": "fan_power_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1",
+        "title": {
+          "en": "The booster heater 1 is !{{on|off}}",
+          "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
+          "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
+          "sv": "Tillskottsvärmaren 1 är !{{på|av}}",
+          "no": "Tilleggsvarmen 1 er !{{på|av}}",
+          "da": "Tilførselsvarmen 1 er !{{tændt|slukket}}",
+          "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}"
+        },
+        "id": "alarm_generic.booster_heater1_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2",
+        "title": {
+          "en": "The booster heater 2 is !{{on|off}}",
+          "fr": "Le chauffage d'appoint 2 est !{{en marche|arrêté}}",
+          "nl": "De boosterverwarmingselement 2 is !{{aan|uit}}",
+          "sv": "Tillskottsvärmaren 2 är !{{på|av}}",
+          "no": "Tilleggsvarmen 2 er !{{på|av}}",
+          "da": "Tilførselsvarmen 2 er !{{tændt|slukket}}",
+          "es": "El calentador de refuerzo 2 está !{{activada|desactivada}}"
+        },
+        "id": "alarm_generic.booster_heater2_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus",
+        "title": {
+          "en": "The booster heater 2+ is !{{on|off}}",
+          "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
+          "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
+          "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
+          "no": "Tilleggsvarmen 2+ er !{{på|av}}",
+          "da": "Tilførselsvarmen 2+ er !{{tændt|slukket}}",
+          "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
+        },
+        "id": "alarm_generic.booster_heater2_plus_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode",
+        "title": {
+          "en": "The defrost mode is !{{on|off}}",
+          "fr": "Le mode dégivrage est !{{en marche|arrêté}}",
+          "nl": "De ontdooimodus is !{{aan|uit}}",
+          "sv": "Avfrostningsläget är !{{på|av}}",
+          "no": "Avfrostingsmodusen er !{{på|av}}",
+          "da": "Afrimningsfunktionen er !{{tændt|slukket}}",
+          "es": "El modo de descongelación está !{{activada|desactivada}}"
+        },
+        "id": "alarm_generic.defrost_mode_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water",
+        "title": {
+          "en": "The eco domestic hot water is !{{on|off}}",
+          "fr": "L'eau chaude sanitaire forcée est !{{en marche|arrêté}}",
+          "nl": "De eco sanitair warm water is !{{aan|uit}}",
+          "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
+          "no": "Eco-modus for varmvannslastning er !{{på|av}}",
+          "da": "Eco-tilstand for varmtvandsindlæsning er !{{tændt|slukket}}",
+          "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}"
+        },
+        "id": "alarm_generic.eco_hot_water_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater",
+        "title": {
+          "en": "The immersion heater is !{{on|off}}",
+          "fr": "Le chauffe-eau électrique est !{{en marche|arrêté}}",
+          "nl": "De dompelelement is !{{aan|uit}}",
+          "sv": "Doppvärmaren är !{{på|av}}",
+          "no": "Nedsenkbar varmekolbe er !{{på|av}}",
+          "da": "Dyppvarmeren er !{{tændt|slukket}}",
+          "es": "El calentador eléctrico sumergible está !{{activado|desactivado}}"
+        },
+        "id": "alarm_generic.immersion_heater_condition"
+      },
+      {
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "The fan speed !{{is|is not}}",
           "fr": "La vitesse du ventilateur !{{est|n'est pas}}",
@@ -901,11 +823,6 @@
           "es": "La velocidad del ventilador !{{está|no está}} [[fan_power]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
           {
             "name": "fan_power",
             "type": "dropdown",
@@ -984,222 +901,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "fan_power_condition"
       },
       {
-        "id": "operation_mode_condition",
-        "title": {
-          "en": "The operation mode !{{is|is not}}",
-          "fr": "Le mode opérationnel !{{est|n'est pas}}",
-          "nl": "De bedrijfsmodus !{{is|is niet}}",
-          "sv": "Driftläget !{{är|är inte}}",
-          "no": "Driftsmodusen !{{er|er ikke}}",
-          "da": "Driftstilstanden !{{er|er ikke}}",
-          "es": "El modo de operación !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode]]",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode]]",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode]]",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode]]",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode]]",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "operation_mode",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heating",
-                  "fr": "Chauffage",
-                  "nl": "Verwarming",
-                  "sv": "Uppvärmning",
-                  "no": "Oppvarming",
-                  "da": "Opvarmning",
-                  "es": "Calefacción"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry",
-                  "fr": "Déshumidification",
-                  "nl": "Droging",
-                  "sv": "Avfuktning",
-                  "no": "Avfukting",
-                  "da": "Affugtning",
-                  "es": "Desumidificación"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cooling",
-                  "fr": "Refroidissement",
-                  "nl": "Koeling",
-                  "sv": "Kylning",
-                  "no": "Kjøling",
-                  "da": "Køling",
-                  "es": "Enfriamiento"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan",
-                  "fr": "Ventilateur",
-                  "nl": "Ventilator",
-                  "sv": "Fläkt",
-                  "no": "Vifte",
-                  "da": "Blæser",
-                  "es": "Ventilador"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "vertical_condition",
-        "title": {
-          "en": "The vertical vane !{{is|is not}}",
-          "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
-          "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
-          "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
-          "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
-          "da": "Den vertikale luftflødesretningen !{{er|er ikke}}",
-          "es": "La descarga de aire vertical !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The vertical vane !{{is|is not}} [[vertical]]",
-          "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
-          "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
-          "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
-          "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
-          "da": "Den vertikale luftflødesretningen !{{er|er ikke}} [[vertical]]",
-          "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Upwards",
-                  "fr": "Haut",
-                  "nl": "Omhoog",
-                  "sv": "Uppåt",
-                  "no": "Oppover",
-                  "da": "Opad",
-                  "es": "Arriba"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Mid-high",
-                  "fr": "Milieu haut",
-                  "nl": "Midden-hoog",
-                  "sv": "Mellanhög",
-                  "no": "Mellomhøy",
-                  "da": "Mellemhøj",
-                  "es": "Medio alto"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle",
-                  "fr": "Milieu",
-                  "nl": "Midden",
-                  "sv": "Mitten",
-                  "no": "Midten",
-                  "da": "Midten",
-                  "es": "Medio"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Mid-low",
-                  "fr": "Milieu bas",
-                  "nl": "Midden-laag",
-                  "sv": "Mellanlåg",
-                  "no": "Mellomlav",
-                  "da": "Mellemlav",
-                  "es": "Medio bajo"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Downwards",
-                  "fr": "Bas",
-                  "nl": "Omlaag",
-                  "sv": "Nedåt",
-                  "no": "Nedover",
-                  "da": "Nedad",
-                  "es": "Abajo"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing",
-                  "fr": "Balayage",
-                  "nl": "Swing",
-                  "sv": "Svängning",
-                  "no": "Sving",
-                  "da": "Sving",
-                  "es": "Oscilación"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "horizontal_condition",
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "The horizontal vane !{{is|is not}}",
           "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
@@ -1219,11 +925,6 @@
           "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
           {
             "name": "horizontal",
             "type": "dropdown",
@@ -1326,124 +1027,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "horizontal_condition"
       },
       {
-        "id": "alarm_generic.booster_heater1_condition",
-        "title": {
-          "en": "The booster heater 1 is !{{on|off}}",
-          "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
-          "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
-          "sv": "Tillskottsvärmaren 1 är !{{på|av}}",
-          "no": "Tilleggsvarmen 1 er !{{på|av}}",
-          "da": "Tilførselsvarmen 1 er !{{tændt|slukket}}",
-          "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_condition",
-        "title": {
-          "en": "The booster heater 2 is !{{on|off}}",
-          "fr": "Le chauffage d'appoint 2 est !{{en marche|arrêté}}",
-          "nl": "De boosterverwarmingselement 2 is !{{aan|uit}}",
-          "sv": "Tillskottsvärmaren 2 är !{{på|av}}",
-          "no": "Tilleggsvarmen 2 er !{{på|av}}",
-          "da": "Tilførselsvarmen 2 er !{{tændt|slukket}}",
-          "es": "El calentador de refuerzo 2 está !{{activada|desactivada}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.booster_heater2_plus_condition",
-        "title": {
-          "en": "The booster heater 2+ is !{{on|off}}",
-          "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
-          "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
-          "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
-          "no": "Tilleggsvarmen 2+ er !{{på|av}}",
-          "da": "Tilførselsvarmen 2+ er !{{tændt|slukket}}",
-          "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.defrost_mode_condition",
-        "title": {
-          "en": "The defrost mode is !{{on|off}}",
-          "fr": "Le mode dégivrage est !{{en marche|arrêté}}",
-          "nl": "De ontdooimodus is !{{aan|uit}}",
-          "sv": "Avfrostningsläget är !{{på|av}}",
-          "no": "Avfrostingsmodusen er !{{på|av}}",
-          "da": "Afrimningsfunktionen er !{{tændt|slukket}}",
-          "es": "El modo de descongelación está !{{activada|desactivada}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.eco_hot_water_condition",
-        "title": {
-          "en": "The eco domestic hot water is !{{on|off}}",
-          "fr": "L'eau chaude sanitaire forcée est !{{en marche|arrêté}}",
-          "nl": "De eco sanitair warm water is !{{aan|uit}}",
-          "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
-          "no": "Eco-modus for varmvannslastning er !{{på|av}}",
-          "da": "Eco-tilstand for varmtvandsindlæsning er !{{tændt|slukket}}",
-          "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
-          }
-        ]
-      },
-      {
-        "id": "alarm_generic.immersion_heater_condition",
-        "title": {
-          "en": "The immersion heater is !{{on|off}}",
-          "fr": "Le chauffe-eau électrique est !{{en marche|arrêté}}",
-          "nl": "De dompelelement is !{{aan|uit}}",
-          "sv": "Doppvärmaren är !{{på|av}}",
-          "no": "Nedsenkbar varmekolbe er !{{på|av}}",
-          "da": "Dyppvarmeren er !{{tændt|slukket}}",
-          "es": "El calentador eléctrico sumergible está !{{activado|desactivado}}"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
-          }
-        ]
-      },
-      {
-        "id": "onoff.forced_hot_water_condition",
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "The forced domestic hot water is turned !{{on|off}}",
           "fr": "L'eau chaude sanitaire forcée est !{{activée|désactivée}}",
@@ -1453,16 +1041,100 @@
           "da": "Tvungen varmtvandsindlæsning er !{{tændt|slukket}}",
           "es": "El agua caliente sanitaria forzada está !{{encendida|apagada}}"
         },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          }
-        ]
+        "id": "onoff.forced_hot_water_condition"
       },
       {
-        "id": "operation_mode_state_condition",
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "The operation mode !{{is|is not}}",
+          "fr": "Le mode opérationnel !{{est|n'est pas}}",
+          "nl": "De bedrijfsmodus !{{is|is niet}}",
+          "sv": "Driftläget !{{är|är inte}}",
+          "no": "Driftsmodusen !{{er|er ikke}}",
+          "da": "Driftstilstanden !{{er|er ikke}}",
+          "es": "El modo de operación !{{está|no está}}"
+        },
+        "titleFormatted": {
+          "en": "The operation mode !{{is|is not}} [[operation_mode]]",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]",
+          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode]]",
+          "sv": "Driftläget !{{är|är inte}} [[operation_mode]]",
+          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode]]",
+          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode]]",
+          "es": "El modo de operación !{{está|no está}} [[operation_mode]]"
+        },
+        "args": [
+          {
+            "name": "operation_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating",
+                  "fr": "Chauffage",
+                  "nl": "Verwarming",
+                  "sv": "Uppvärmning",
+                  "no": "Oppvarming",
+                  "da": "Opvarmning",
+                  "es": "Calefacción"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry",
+                  "fr": "Déshumidification",
+                  "nl": "Droging",
+                  "sv": "Avfuktning",
+                  "no": "Avfukting",
+                  "da": "Affugtning",
+                  "es": "Desumidificación"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Refroidissement",
+                  "nl": "Koeling",
+                  "sv": "Kylning",
+                  "no": "Kjøling",
+                  "da": "Køling",
+                  "es": "Enfriamiento"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan",
+                  "fr": "Ventilateur",
+                  "nl": "Ventilator",
+                  "sv": "Fläkt",
+                  "no": "Vifte",
+                  "da": "Blæser",
+                  "es": "Ventilador"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Automatic",
+                  "fr": "Automatique",
+                  "nl": "Automatisch",
+                  "sv": "Automatiskt",
+                  "no": "Automatisk",
+                  "da": "Automatisk",
+                  "es": "Automático"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "operation_mode_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "The current operation !{{is|is not}}",
           "fr": "L'opération en cours !{{est|n'est pas}}",
@@ -1483,11 +1155,6 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
             "name": "operation_mode_state",
             "type": "dropdown",
             "values": [
@@ -1577,10 +1244,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_state_condition"
       },
       {
-        "id": "operation_mode_state.zone1_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1",
         "title": {
           "en": "The current operation !{{is|is not}} in zone 1",
           "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 2",
@@ -1601,11 +1269,6 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
-          },
-          {
             "name": "operation_mode_state",
             "type": "dropdown",
             "values": [
@@ -1695,10 +1358,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_state.zone1_condition"
       },
       {
-        "id": "operation_mode_state.zone2_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2",
         "title": {
           "en": "The current operation !{{is|is not}} i zone 2",
           "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 2",
@@ -1719,11 +1383,6 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2"
-          },
-          {
             "name": "operation_mode_state",
             "type": "dropdown",
             "values": [
@@ -1813,10 +1472,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_state.zone2_condition"
       },
       {
-        "id": "operation_mode_zone1_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1",
         "title": {
           "en": "The operation mode !{{is|is not}}",
           "fr": "Le mode opérationnel !{{est|n'est pas}}",
@@ -1836,11 +1496,6 @@
           "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
-          },
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -1883,80 +1538,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone1_condition"
       },
       {
-        "id": "operation_mode_zone2_condition",
-        "title": {
-          "en": "The operation mode !{{is|is not}} in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
-          "sv": "Driftläget !{{är|är inte}} i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
-          "es": "El modo de operación !{{está|no está}} en zona 2"
-        },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone1_with_cool_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1",
         "title": {
           "en": "The operation mode !{{is|is not}}",
           "fr": "Le mode opérationnel !{{est|n'est pas}}",
@@ -1976,11 +1562,6 @@
           "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
-          },
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -2047,10 +1628,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone1_with_cool_condition"
       },
       {
-        "id": "operation_mode_zone2_with_cool_condition",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2",
         "title": {
           "en": "The operation mode !{{is|is not}} in zone 2",
           "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
@@ -2071,10 +1653,71 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Indoor temperature",
+                  "fr": "Température intérieure",
+                  "nl": "Binnentemperatuur",
+                  "sv": "Inomhusgivare",
+                  "no": "Innendørs føler",
+                  "da": "Indendørs føler",
+                  "es": "Temperatura interior"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Fixed flow temperature",
+                  "fr": "Température de flux fixe",
+                  "nl": "Vaste aanvoertemperatuur",
+                  "sv": "Fast framledningstemperatur",
+                  "no": "Fast fremløpstemperatur",
+                  "da": "Fast fremledningstemperatur",
+                  "es": "Temperatura de flujo fija"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Weather compensation curve",
+                  "fr": "Courbe de compensation météo",
+                  "nl": "Weerscompensatiecurve",
+                  "sv": "Värmekurva",
+                  "no": "Varmekurve",
+                  "da": "Varmekurve",
+                  "es": "Curva de compensación climática"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "operation_mode_zone2_condition"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2",
+        "title": {
+          "en": "The operation mode !{{is|is not}} in zone 2",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
+          "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
+          "sv": "Driftläget !{{är|är inte}} i zon 2",
+          "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
+          "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
+          "es": "El modo de operación !{{está|no está}} en zona 2"
+        },
+        "titleFormatted": {
+          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
+          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
+          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
+          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
+          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
+          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
+          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
+        },
+        "args": [
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -2141,12 +1784,127 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone2_with_cool_condition"
+      },
+      {
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "The vertical vane !{{is|is not}}",
+          "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
+          "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
+          "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
+          "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
+          "da": "Den vertikale luftflødesretningen !{{er|er ikke}}",
+          "es": "La descarga de aire vertical !{{está|no está}}"
+        },
+        "titleFormatted": {
+          "en": "The vertical vane !{{is|is not}} [[vertical]]",
+          "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
+          "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
+          "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
+          "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
+          "da": "Den vertikale luftflødesretningen !{{er|er ikke}} [[vertical]]",
+          "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
+        },
+        "args": [
+          {
+            "name": "vertical",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Automatic",
+                  "fr": "Automatique",
+                  "nl": "Automatisch",
+                  "sv": "Automatiskt",
+                  "no": "Automatisk",
+                  "da": "Automatisk",
+                  "es": "Automático"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Upwards",
+                  "fr": "Haut",
+                  "nl": "Omhoog",
+                  "sv": "Uppåt",
+                  "no": "Oppover",
+                  "da": "Opad",
+                  "es": "Arriba"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Mid-high",
+                  "fr": "Milieu haut",
+                  "nl": "Midden-hoog",
+                  "sv": "Mellanhög",
+                  "no": "Mellomhøy",
+                  "da": "Mellemhøj",
+                  "es": "Medio alto"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle",
+                  "fr": "Milieu",
+                  "nl": "Midden",
+                  "sv": "Mitten",
+                  "no": "Midten",
+                  "da": "Midten",
+                  "es": "Medio"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Mid-low",
+                  "fr": "Milieu bas",
+                  "nl": "Midden-laag",
+                  "sv": "Mellanlåg",
+                  "no": "Mellomlav",
+                  "da": "Mellemlav",
+                  "es": "Medio bajo"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Downwards",
+                  "fr": "Bas",
+                  "nl": "Omlaag",
+                  "sv": "Nedåt",
+                  "no": "Nedover",
+                  "da": "Nedad",
+                  "es": "Abajo"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing",
+                  "fr": "Balayage",
+                  "nl": "Swing",
+                  "sv": "Svängning",
+                  "no": "Sving",
+                  "da": "Sving",
+                  "es": "Oscilación"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "vertical_condition"
       }
     ],
     "actions": [
       {
-        "id": "fan_power_action",
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "Set the fan speed",
           "fr": "Définir la vitesse du ventilateur",
@@ -2166,11 +1924,6 @@
           "es": "Configurar la velocidad del ventilador a [[fan_power]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
           {
             "name": "fan_power",
             "type": "dropdown",
@@ -2249,221 +2002,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "fan_power_action"
       },
       {
-        "id": "operation_mode_action",
-        "title": {
-          "en": "Set the operation mode",
-          "fr": "Définir le mode opérationnel",
-          "nl": "Stel de bedrijfsmodus in",
-          "sv": "Ställ in driftläget",
-          "no": "Innstill driftsmodusen",
-          "da": "Indstil driftstilstanden",
-          "es": "Configurar el modo de operación"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode]]",
-          "fr": "Définir le mode opérationnel à [[operation_mode]]",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode]]",
-          "sv": "Ställ in driftläget till [[operation_mode]]",
-          "no": "Innstill driftsmodusen til [[operation_mode]]",
-          "da": "Indstil driftstilstanden til [[operation_mode]]",
-          "es": "Configurar el modo de operación a [[operation_mode]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "operation_mode",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heating",
-                  "fr": "Chauffage",
-                  "nl": "Verwarming",
-                  "sv": "Uppvärmning",
-                  "no": "Oppvarming",
-                  "da": "Opvarmning",
-                  "es": "Calefacción"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry",
-                  "fr": "Déshumidification",
-                  "nl": "Droging",
-                  "sv": "Avfuktning",
-                  "no": "Avfukting",
-                  "da": "Affugtning",
-                  "es": "Desumidificación"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cooling",
-                  "fr": "Refroidissement",
-                  "nl": "Koeling",
-                  "sv": "Kylning",
-                  "no": "Kjøling",
-                  "da": "Køling",
-                  "es": "Enfriamiento"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan",
-                  "fr": "Ventilateur",
-                  "nl": "Ventilator",
-                  "sv": "Fläkt",
-                  "no": "Vifte",
-                  "da": "Blæser",
-                  "es": "Ventilador"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "vertical_action",
-        "title": {
-          "en": "Set the vertical vane",
-          "fr": "Définir le soufflage d'air vertical",
-          "nl": "Stel de uitblaasrichting verticaal in",
-          "sv": "Ställ in vertikal luftflödesriktningen",
-          "no": "Innstill vertikal luftflødesretningen",
-          "da": "Indstil den vertikale luftflødesretningen",
-          "es": "Configurar la discarga de aire vertical"
-        },
-        "titleFormatted": {
-          "en": "Set the vertical vane to [[vertical]]",
-          "fr": "Définir le soufflage d'air vertical à [[vertical]]",
-          "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
-          "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
-          "no": "Innstill den vertikale luftflødesretningen til [[vertical]]",
-          "es": "Configurar la discarga de aire vertical a [[vertical]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "vertical",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              },
-              {
-                "id": "top",
-                "title": {
-                  "en": "Upwards",
-                  "fr": "Haut",
-                  "nl": "Omhoog",
-                  "sv": "Uppåt",
-                  "no": "Oppover",
-                  "da": "Opad",
-                  "es": "Arriba"
-                }
-              },
-              {
-                "id": "middletop",
-                "title": {
-                  "en": "Mid-high",
-                  "fr": "Milieu haut",
-                  "nl": "Midden-hoog",
-                  "sv": "Mellanhög",
-                  "no": "Mellomhøy",
-                  "da": "Mellemhøj",
-                  "es": "Medio alto"
-                }
-              },
-              {
-                "id": "middle",
-                "title": {
-                  "en": "Middle",
-                  "fr": "Milieu",
-                  "nl": "Midden",
-                  "sv": "Mitten",
-                  "no": "Midten",
-                  "da": "Midten",
-                  "es": "Medio"
-                }
-              },
-              {
-                "id": "middlebottom",
-                "title": {
-                  "en": "Mid-low",
-                  "fr": "Milieu bas",
-                  "nl": "Midden-laag",
-                  "sv": "Mellanlåg",
-                  "no": "Mellomlav",
-                  "da": "Mellemlav",
-                  "es": "Medio bajo"
-                }
-              },
-              {
-                "id": "bottom",
-                "title": {
-                  "en": "Downwards",
-                  "fr": "Bas",
-                  "nl": "Omlaag",
-                  "sv": "Nedåt",
-                  "no": "Nedover",
-                  "da": "Nedad",
-                  "es": "Abajo"
-                }
-              },
-              {
-                "id": "swing",
-                "title": {
-                  "en": "Swing",
-                  "fr": "Balayage",
-                  "nl": "Swing",
-                  "sv": "Svängning",
-                  "no": "Sving",
-                  "da": "Sving",
-                  "es": "Oscilación"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "horizontal_action",
+        "filter": "driver_id=melcloud",
         "title": {
           "en": "Set the horizontal vane",
           "fr": "Définir le soufflage d'air horizontal",
@@ -2483,11 +2026,6 @@
           "es": "Configurar la descarga de aire horizontal a [[horizontal]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
           {
             "name": "horizontal",
             "type": "dropdown",
@@ -2590,10 +2128,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "horizontal_action"
       },
       {
-        "id": "onoff.forced_hot_water_action",
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "Turn on / off the forced domestic hot water",
           "fr": "Activer / désactiver l'eau chaude sanitaire forcée",
@@ -2613,11 +2152,6 @@
           "es": "[[onoff]] el agua caliente sanitaria forzada"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
           {
             "name": "onoff",
             "type": "dropdown",
@@ -2648,10 +2182,101 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "onoff.forced_hot_water_action"
       },
       {
-        "id": "operation_mode_zone1_action",
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "Set the operation mode",
+          "fr": "Définir le mode opérationnel",
+          "nl": "Stel de bedrijfsmodus in",
+          "sv": "Ställ in driftläget",
+          "no": "Innstill driftsmodusen",
+          "da": "Indstil driftstilstanden",
+          "es": "Configurar el modo de operación"
+        },
+        "titleFormatted": {
+          "en": "Set the operation mode to [[operation_mode]]",
+          "fr": "Définir le mode opérationnel à [[operation_mode]]",
+          "nl": "Stel de bedrijfsmodus in op [[operation_mode]]",
+          "sv": "Ställ in driftläget till [[operation_mode]]",
+          "no": "Innstill driftsmodusen til [[operation_mode]]",
+          "da": "Indstil driftstilstanden til [[operation_mode]]",
+          "es": "Configurar el modo de operación a [[operation_mode]]"
+        },
+        "args": [
+          {
+            "name": "operation_mode",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "heat",
+                "title": {
+                  "en": "Heating",
+                  "fr": "Chauffage",
+                  "nl": "Verwarming",
+                  "sv": "Uppvärmning",
+                  "no": "Oppvarming",
+                  "da": "Opvarmning",
+                  "es": "Calefacción"
+                }
+              },
+              {
+                "id": "dry",
+                "title": {
+                  "en": "Dry",
+                  "fr": "Déshumidification",
+                  "nl": "Droging",
+                  "sv": "Avfuktning",
+                  "no": "Avfukting",
+                  "da": "Affugtning",
+                  "es": "Desumidificación"
+                }
+              },
+              {
+                "id": "cool",
+                "title": {
+                  "en": "Cooling",
+                  "fr": "Refroidissement",
+                  "nl": "Koeling",
+                  "sv": "Kylning",
+                  "no": "Kjøling",
+                  "da": "Køling",
+                  "es": "Enfriamiento"
+                }
+              },
+              {
+                "id": "fan",
+                "title": {
+                  "en": "Fan",
+                  "fr": "Ventilateur",
+                  "nl": "Ventilator",
+                  "sv": "Fläkt",
+                  "no": "Vifte",
+                  "da": "Blæser",
+                  "es": "Ventilador"
+                }
+              },
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Automatic",
+                  "fr": "Automatique",
+                  "nl": "Automatisch",
+                  "sv": "Automatiskt",
+                  "no": "Automatisk",
+                  "da": "Automatisk",
+                  "es": "Automático"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "operation_mode_action"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1",
         "title": {
           "en": "Set the operation mode",
           "fr": "Définir le mode opérationnel",
@@ -2671,11 +2296,6 @@
           "es": "Configurar el modo de operación a [[operation_mode_zone]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
-          },
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -2718,80 +2338,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone1_action"
       },
       {
-        "id": "operation_mode_zone2_action",
-        "title": {
-          "en": "Set the operation mode in zone 2",
-          "fr": "Définir le mode opérationnel dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in in zone 2",
-          "sv": "Ställ in driftläget i zon 2",
-          "no": "Innstill driftsmodusen i sone 2",
-          "da": "Indstil driftstilstanden i zone 2",
-          "es": "Configurar el modo de operación en zona 2"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
-          "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
-          "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
-          "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
-          "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
-          "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "0",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "1",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "operation_mode_zone1_with_cool_action",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1",
         "title": {
           "en": "Set the operation mode",
           "fr": "Définir le mode opérationnel",
@@ -2811,11 +2362,6 @@
           "es": "Configurar el modo de operación a [[operation_mode_zone]]"
         },
         "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone1"
-          },
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -2882,10 +2428,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone1_with_cool_action"
       },
       {
-        "id": "operation_mode_zone2_with_cool_action",
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2",
         "title": {
           "en": "Set the operation mode in zone 2",
           "fr": "Définir le mode opérationnel dans la zone 2",
@@ -2906,10 +2453,71 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
+            "name": "operation_mode_zone",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Indoor temperature",
+                  "fr": "Température intérieure",
+                  "nl": "Binnentemperatuur",
+                  "sv": "Inomhusgivare",
+                  "no": "Innendørs føler",
+                  "da": "Indendørs føler",
+                  "es": "Temperatura interior"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Fixed flow temperature",
+                  "fr": "Température de flux fixe",
+                  "nl": "Vaste aanvoertemperatuur",
+                  "sv": "Fast framledningstemperatur",
+                  "no": "Fast fremløpstemperatur",
+                  "da": "Fast fremledningstemperatur",
+                  "es": "Temperatura de flujo fija"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Weather compensation curve",
+                  "fr": "Courbe de compensation météo",
+                  "nl": "Weerscompensatiecurve",
+                  "sv": "Värmekurva",
+                  "no": "Varmekurve",
+                  "da": "Varmekurve",
+                  "es": "Curva de compensación climática"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "operation_mode_zone2_action"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2",
+        "title": {
+          "en": "Set the operation mode in zone 2",
+          "fr": "Définir le mode opérationnel dans la zone 2",
+          "nl": "Stel de bedrijfsmodus in in zone 2",
+          "sv": "Ställ in driftläget i zon 2",
+          "no": "Innstill driftsmodusen i sone 2",
+          "da": "Indstil driftstilstanden i zone 2",
+          "es": "Configurar el modo de operación en zona 2"
+        },
+        "titleFormatted": {
+          "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
+          "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
+          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
+          "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
+          "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
+          "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
+          "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
+        },
+        "args": [
           {
             "name": "operation_mode_zone",
             "type": "dropdown",
@@ -2976,10 +2584,11 @@
               }
             ]
           }
-        ]
+        ],
+        "id": "operation_mode_zone2_with_cool_action"
       },
       {
-        "id": "target_temperature_tank_water_action",
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "Set the hot water temperature",
           "fr": "Définir la température de l'eau chaude",
@@ -3000,54 +2609,16 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
             "name": "target_temperature",
             "type": "number",
             "min": 40,
             "max": 60
           }
-        ]
+        ],
+        "id": "target_temperature_tank_water_action"
       },
       {
-        "id": "target_temperature_zone2_action",
-        "title": {
-          "en": "Set the temperature in zone 2",
-          "fr": "Définir la température dans la zone 2",
-          "nl": "Stel de temperatuur in in zone 2",
-          "sv": "Ställ in temperaturen i zon 2",
-          "no": "Innstill temperaturen i sone 2",
-          "da": "Indstil temperaturen i zone 2",
-          "es": "Configurar la temperatura en zona 2"
-        },
-        "titleFormatted": {
-          "en": "Set the temperature to [[target_temperature]] in zone 2",
-          "fr": "Définir la température à [[target_temperature]] dans la zone 2",
-          "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
-          "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2",
-          "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
-          "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
-          "es": "Configurar la temperatura a [[target_temperature]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2"
-          },
-          {
-            "name": "target_temperature",
-            "type": "number",
-            "min": 10,
-            "max": 30
-          }
-        ]
-      },
-      {
-        "id": "target_temperature_zone1_flow_cool_action",
+        "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone1_flow_cool",
         "title": {
           "en": "Set the cool flow temperature",
           "fr": "Définir la température du flux de refroidissement",
@@ -3068,20 +2639,16 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone1_flow_cool"
-          },
-          {
             "name": "target_temperature",
             "type": "number",
             "min": 10,
             "max": 30
           }
-        ]
+        ],
+        "id": "target_temperature_zone1_flow_cool_action"
       },
       {
-        "id": "target_temperature_zone1_flow_heat_action",
+        "filter": "driver_id=melcloud_atw",
         "title": {
           "en": "Set the flow temperature",
           "fr": "Définir la température du flux",
@@ -3102,20 +2669,46 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw"
-          },
-          {
             "name": "target_temperature",
             "type": "number",
             "min": 25,
             "max": 60
           }
-        ]
+        ],
+        "id": "target_temperature_zone1_flow_heat_action"
       },
       {
-        "id": "target_temperature_zone2_flow_cool_action",
+        "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2",
+        "title": {
+          "en": "Set the temperature in zone 2",
+          "fr": "Définir la température dans la zone 2",
+          "nl": "Stel de temperatuur in in zone 2",
+          "sv": "Ställ in temperaturen i zon 2",
+          "no": "Innstill temperaturen i sone 2",
+          "da": "Indstil temperaturen i zone 2",
+          "es": "Configurar la temperatura en zona 2"
+        },
+        "titleFormatted": {
+          "en": "Set the temperature to [[target_temperature]] in zone 2",
+          "fr": "Définir la température à [[target_temperature]] dans la zone 2",
+          "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
+          "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2",
+          "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
+          "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
+          "es": "Configurar la temperatura a [[target_temperature]] en zona 2"
+        },
+        "args": [
+          {
+            "name": "target_temperature",
+            "type": "number",
+            "min": 10,
+            "max": 30
+          }
+        ],
+        "id": "target_temperature_zone2_action"
+      },
+      {
+        "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_cool",
         "title": {
           "en": "Set the cool flow temperature in zone 2",
           "fr": "Définir la température du flux de refroidissement dans la zone 2",
@@ -3136,20 +2729,16 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_cool"
-          },
-          {
             "name": "target_temperature",
             "type": "number",
             "min": 10,
             "max": 30
           }
-        ]
+        ],
+        "id": "target_temperature_zone2_flow_cool_action"
       },
       {
-        "id": "target_temperature_zone2_flow_heat_action",
+        "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_heat",
         "title": {
           "en": "Set the flow temperature in zone 2",
           "fr": "Définir la température du flux dans la zone 2",
@@ -3170,17 +2759,126 @@
         },
         "args": [
           {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_heat"
-          },
-          {
             "name": "target_temperature",
             "type": "number",
             "min": 25,
             "max": 60
           }
-        ]
+        ],
+        "id": "target_temperature_zone2_flow_heat_action"
+      },
+      {
+        "filter": "driver_id=melcloud",
+        "title": {
+          "en": "Set the vertical vane",
+          "fr": "Définir le soufflage d'air vertical",
+          "nl": "Stel de uitblaasrichting verticaal in",
+          "sv": "Ställ in vertikal luftflödesriktningen",
+          "no": "Innstill vertikal luftflødesretningen",
+          "da": "Indstil den vertikale luftflødesretningen",
+          "es": "Configurar la discarga de aire vertical"
+        },
+        "titleFormatted": {
+          "en": "Set the vertical vane to [[vertical]]",
+          "fr": "Définir le soufflage d'air vertical à [[vertical]]",
+          "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
+          "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]",
+          "no": "Innstill den vertikale luftflødesretningen til [[vertical]]",
+          "es": "Configurar la discarga de aire vertical a [[vertical]]"
+        },
+        "args": [
+          {
+            "name": "vertical",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Automatic",
+                  "fr": "Automatique",
+                  "nl": "Automatisch",
+                  "sv": "Automatiskt",
+                  "no": "Automatisk",
+                  "da": "Automatisk",
+                  "es": "Automático"
+                }
+              },
+              {
+                "id": "top",
+                "title": {
+                  "en": "Upwards",
+                  "fr": "Haut",
+                  "nl": "Omhoog",
+                  "sv": "Uppåt",
+                  "no": "Oppover",
+                  "da": "Opad",
+                  "es": "Arriba"
+                }
+              },
+              {
+                "id": "middletop",
+                "title": {
+                  "en": "Mid-high",
+                  "fr": "Milieu haut",
+                  "nl": "Midden-hoog",
+                  "sv": "Mellanhög",
+                  "no": "Mellomhøy",
+                  "da": "Mellemhøj",
+                  "es": "Medio alto"
+                }
+              },
+              {
+                "id": "middle",
+                "title": {
+                  "en": "Middle",
+                  "fr": "Milieu",
+                  "nl": "Midden",
+                  "sv": "Mitten",
+                  "no": "Midten",
+                  "da": "Midten",
+                  "es": "Medio"
+                }
+              },
+              {
+                "id": "middlebottom",
+                "title": {
+                  "en": "Mid-low",
+                  "fr": "Milieu bas",
+                  "nl": "Midden-laag",
+                  "sv": "Mellanlåg",
+                  "no": "Mellomlav",
+                  "da": "Mellemlav",
+                  "es": "Medio bajo"
+                }
+              },
+              {
+                "id": "bottom",
+                "title": {
+                  "en": "Downwards",
+                  "fr": "Bas",
+                  "nl": "Omlaag",
+                  "sv": "Nedåt",
+                  "no": "Nedover",
+                  "da": "Nedad",
+                  "es": "Abajo"
+                }
+              },
+              {
+                "id": "swing",
+                "title": {
+                  "en": "Swing",
+                  "fr": "Balayage",
+                  "nl": "Swing",
+                  "sv": "Svängning",
+                  "no": "Sving",
+                  "da": "Sving",
+                  "es": "Oscilación"
+                }
+              }
+            ]
+          }
+        ],
+        "id": "vertical_action"
       }
     ]
   },
