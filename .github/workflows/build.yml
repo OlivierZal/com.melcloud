@@ -3,24 +3,30 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '.github/workflows/build.yml'
   pull_request:
     types: [opened, synchronize, reopened]
+    paths-ignore:
+      - '.github/workflows/build.yml'
 
 jobs:
-  setup:
-    name: Setup and Install Dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Dependencies
-        run: npm install
-
   lint:
     name: Lint
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
       - name: Linting and Auto-fix
         run: npm run lint:fix
       - name: Commit Lint Fixes
@@ -28,28 +34,50 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git commit -m "Automated lint fixes" || echo "No changes to commit"
+          git commit -m "Automated lint fixes" && git push origin HEAD:${{ github.ref }} && exit 0 || echo "No changes to commit"
         continue-on-error: true
-      - name: Check Remaining Linting Errors
-        run: npm run lint
 
   typescript:
     name: TypeScript Build
-    needs: setup
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
       - name: TypeScript Compilation
         run: npm run build
 
   sonarcloud:
     name: SonarCloud Analysis
-    needs: setup
+    needs: typescript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
