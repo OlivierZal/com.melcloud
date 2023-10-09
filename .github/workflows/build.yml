@@ -15,8 +15,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Cache node modules
+      - uses: actions/checkout@v4
+      - name: Cache Node Modules
         id: cache
         uses: actions/cache@v3
         with:
@@ -43,11 +43,11 @@ jobs:
         run: npm run lint
 
   typescript:
-    name: TypeScript Build
+    name: TypeScript
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Cache node modules
+      - uses: actions/checkout@v4
+      - name: Cache Node Modules
         id: cache
         uses: actions/cache@v3
         with:
@@ -58,17 +58,17 @@ jobs:
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
-      - name: TypeScript Compilation
+      - name: TypeScript Build
         run: npm run build
 
   sonarcloud:
-    name: SonarCloud Analysis
+    name: SonarCloud
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Cache node modules
+      - name: Cache Node Modules
         id: cache
         uses: actions/cache@v3
         with:
