@@ -623,7 +623,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function setDeviceSettings(body: Settings, driverId?: string): void {
-    let endPoint = '/devices/settings'
+    let endPoint: string = '/devices/settings'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
         driverId,
@@ -635,7 +635,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       'POST',
       endPoint,
       body,
-      async (error: Error | null): Promise<void> => {
+      async (error: Error       | null): Promise<void> => {
         if (error) {
           // @ts-expect-error: homey is partially typed
           await homey.alert(error.message)

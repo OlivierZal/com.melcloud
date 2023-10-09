@@ -5,18 +5,73 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  update-and-validate:
+    name: Update, Validate, Lint, and Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          ref: ${{ github.head_ref }}
+      - name: Install jq
+        run: sudo apt-get install jq
+      - name: Bump Version
+        run: |
+          APP_VERSION=$(jq -r .version .homeycompose/app.json)
+          jq ".version=\"$APP_VERSION\"" package.json > package.json.tmp
+          mv package.json.tmp package.json
+      - name: Check Dependency Updates
+        run: |
+          npm install -g npm-check-updates
+          npx ncu -u
+      - name: Install Dependencies
+        run: npm install
+      - name: Validate App # Compile TypeScript
+        run: |
+          npm install -g homey
+          npx homey app validate --level publish
+      - name: Lint and Fix Errors
+        run: npm run lint:fix
+      - name: Format Code
+        run: npm run format:fix
+      - name: Commit Changes
+        run: |
+          git config --local user.name 'GitHub Actions'
+          git config --local user.email 'actions@github.com'
+          git add -A
+          if ! git diff --cached --exit-code; then
+            git commit -m "Automated changes"
+            if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
+                sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+                sudo apt-add-repository https://cli.github.com/packages
+                sudo apt update
+                sudo apt install gh
+                echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+                BRANCH_NAME="automated-updates-$(date +'%Y%m%d%H%M%S')"
+                git checkout -b $BRANCH_NAME
+                git push origin $BRANCH_NAME
+                gh pr create --base main --head $BRANCH_NAME --title "Automated PR" --body "This is an automated PR."
+              else
+                git pull origin ${{ github.head_ref }} --rebase
+                git push origin HEAD:${{ github.head_ref }}
+              fi
+            else
+              echo "No changes to commit."
+            fi
+
+  sonarcloud:
+    name: SonarCloud
+    needs: [update-and-validate]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install Dependencies
         run: npm install
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
