@@ -623,7 +623,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function setDeviceSettings(body: Settings, driverId?: string): void {
-    let endPoint: string = '/devices/settings'
+    let endPoint = '/devices/settings'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({
         driverId,
