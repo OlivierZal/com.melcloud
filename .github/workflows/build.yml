@@ -5,16 +5,49 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  setup:
+    name: Setup and Install Dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install Dependencies
         run: npm install
+
+  lint:
+    name: Lint
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Linting and Auto-fix
+        run: npm run lint:fix
+      - name: Commit Lint Fixes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Automated lint fixes" || echo "No changes to commit"
+        continue-on-error: true
+      - name: Check Remaining Linting Errors
+        run: npm run lint
+
+  typescript:
+    name: TypeScript Build
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: TypeScript Compilation
+        run: npm run build
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
