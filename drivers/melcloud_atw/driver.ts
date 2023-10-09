@@ -60,7 +60,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
   public async onInit(): Promise<void> {
     await super.onInit()
     this.deviceType = 1
-    this.heatPumpType = 'Atw' as number
+    this.heatPumpType = 'Atw'
 
     this.setCapabilityMapping = setCapabilityMappingAtw
     this.getCapabilityMapping = getCapabilityMappingAtw

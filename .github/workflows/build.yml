@@ -15,7 +15,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Cache node modules
         id: cache
         uses: actions/cache@v3
@@ -39,13 +39,14 @@ jobs:
           git push origin HEAD:${{ github.head_ref }}
           exit 0 || echo "No changes to commit"
         continue-on-error: true
+      - name: Check Remaining Linting Errors
+        run: npm run lint
 
   typescript:
     name: TypeScript Build
-    needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Cache node modules
         id: cache
         uses: actions/cache@v3
@@ -62,10 +63,9 @@ jobs:
 
   sonarcloud:
     name: SonarCloud Analysis
-    needs: typescript
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Cache node modules
