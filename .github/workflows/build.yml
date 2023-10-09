@@ -34,7 +34,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
-          git commit -m "Automated lint fixes" && git push origin HEAD:${{ github.ref }} && exit 0 || echo "No changes to commit"
+          git commit -m "Automated lint fixes"
+          git push origin HEAD:${{ github.head_ref }}
+          exit 0 || echo "No changes to commit"
         continue-on-error: true
 
   typescript:
