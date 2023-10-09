@@ -15,7 +15,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Cache node modules
         id: cache
         uses: actions/cache@v3
@@ -46,7 +46,7 @@ jobs:
     name: TypeScript Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - name: Cache node modules
         id: cache
         uses: actions/cache@v3
@@ -65,7 +65,7 @@ jobs:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Cache node modules
