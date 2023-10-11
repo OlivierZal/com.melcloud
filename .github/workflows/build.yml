@@ -43,15 +43,13 @@ jobs:
           if ! git diff --cached --exit-code; then
             git commit -m "Automated changes"
             if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-                sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-                sudo apt-add-repository https://cli.github.com/packages
-                sudo apt update
-                sudo apt install gh
-                echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-                BRANCH_NAME="automated-updates-$(date +'%Y%m%d%H%M%S')"
-                git checkout -b $BRANCH_NAME
-                git push origin $BRANCH_NAME
-                gh pr create --base main --head $BRANCH_NAME --title "Automated PR" --body "This is an automated PR."
+              sudo apt-get update
+              sudo apt-get install gh
+              echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+              BRANCH_NAME="automated-updates-$(date +'%Y%m%d%H%M%S')"
+              git checkout -b $BRANCH_NAME
+              git push origin $BRANCH_NAME
+              gh pr create --base main --head $BRANCH_NAME --title "Automated PR" --body "This is an automated PR."
               else
                 git pull origin ${{ github.head_ref }} --rebase
                 git push origin HEAD:${{ github.head_ref }}
