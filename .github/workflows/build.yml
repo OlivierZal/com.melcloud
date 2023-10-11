@@ -50,13 +50,13 @@ jobs:
               git checkout -b $BRANCH_NAME
               git push origin $BRANCH_NAME
               gh pr create --base main --head $BRANCH_NAME --title "Automated PR" --body "This is an automated PR."
-              else
-                git pull origin ${{ github.head_ref }} --rebase
-                git push origin HEAD:${{ github.head_ref }}
-              fi
             else
-              echo "No changes to commit."
+              git pull origin ${{ github.head_ref }} --rebase
+              git push origin HEAD:${{ github.head_ref }}
             fi
+          else
+            echo "No changes to commit."
+          fi
 
   sonarcloud:
     name: SonarCloud
