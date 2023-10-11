@@ -1,0 +1,79 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Gebouw __buildingId__ heeft geen apparaat."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdatum en/of einddatum ontbreekt."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Inloggen",
+      "failure": "Authenticatie mislukt.",
+      "legend": "Referenties"
+    },
+    "boolean": {
+      "false": "Nee",
+      "true": "Ja"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
+        "max": "Maximale temperatuur",
+        "min": "Minimale temperatuur"
+      },
+      "holiday_mode": {
+        "enabled": "<strong>Vakantiemodus</strong> inschakelen",
+        "end_date": "Einddatum",
+        "start_date": "Begindatum"
+      },
+      "legend": "Gebouwinstellingen",
+      "update": "Updaten"
+    },
+    "devices": {
+      "apply": {
+        "button": "Toepassen op alle apparaten",
+        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
+        "nothing": "Geen wijziging om toe te passen."
+      },
+      "legend": "Apparaatinstellingen",
+      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
+    },
+    "devices_ata": {
+      "auto_adjust": "Auto-afstellen airco-temperatuur",
+      "configure": "Configureren",
+      "legend": "Lucht-lucht apparaatinstellingen"
+    },
+    "devices_atw": {
+      "legend": "Lucht-water apparaatinstellingen"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Datum",
+        "Device": "Apparaat",
+        "Error": "Fout"
+      },
+      "error": "Kies een datum voor\n__fromDateHuman__.",
+      "error_count": {
+        "0": "fout",
+        "1": "fout",
+        "234": "fouten",
+        "plural": "fouten"
+      },
+      "legend": "Foutenlogboek",
+      "period": "Sinds __fromDateHuman__:",
+      "see": "Bekijk alle fouten",
+      "since": "sinds"
+    },
+    "int_error": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "refresh": "Herladen",
+    "success": "Update geslaagd.",
+    "title": "MELCloud-instellingen"
+  },
+  "warnings": {
+    "always_on": "De uitschakeling vanuit Homey is uitgeschakeld.",
+    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
+    "display_error": "Update geslaagd (zelfs als er een andere waarde wordt weergegeven)."
+  }
+}
