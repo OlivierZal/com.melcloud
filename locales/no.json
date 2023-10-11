@@ -1,0 +1,79 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Bygningen __buildingId__ har ingen enhet."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdato og/eller sluttdato mangler."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Logg inn",
+      "failure": "Autentisering mislyktes.",
+      "legend": "Innloggingsinformasjon"
+    },
+    "boolean": {
+      "false": "Nei",
+      "true": "Ja"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+        "max": "Maksimal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktiver <strong>feriemodus</strong>",
+        "end_date": "Sluttdato",
+        "start_date": "Startdato"
+      },
+      "legend": "Byggingsinnstillinger",
+      "update": "Oppdater"
+    },
+    "devices": {
+      "apply": {
+        "button": "Bruk på alle enheter",
+        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
+        "nothing": "Ingen endring å bruke."
+      },
+      "legend": "Enhetsinnstillinger",
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autojuster aircondition-temperaturen",
+      "configure": "Konfigurer",
+      "legend": "Luft-luft enhetsinnstillinger"
+    },
+    "devices_atw": {
+      "legend": "Luft-vann enhetsinnstillinger"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Dato",
+        "Device": "Enhet",
+        "Error": "Feil"
+      },
+      "error": "Velg en dato før\n__fromDateHuman__.",
+      "error_count": {
+        "0": "feil",
+        "1": "feil",
+        "234": "feil",
+        "plural": "feil"
+      },
+      "legend": "Feillogg",
+      "period": "Siden __fromDateHuman__:",
+      "see": "Se alle feil",
+      "since": "siden"
+    },
+    "int_error": "__name__: må være et heltall mellom __min__ og __max__.",
+    "refresh": "Gjenta",
+    "success": "Oppdatering vellykket.",
+    "title": "MELCloud-innstillinger"
+  },
+  "warnings": {
+    "always_on": "Avstenging fra Homey er deaktivert.",
+    "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
+    "display_error": "Oppdatering vellykket (selv om en annen verdi vises)."
+  }
+}

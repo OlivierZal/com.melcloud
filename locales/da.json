@@ -1,0 +1,79 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Bygningen __buildingId__ har ingen enhed."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdato og/eller slutdato mangler."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Log ind",
+      "failure": "Godkendelse mislykkedes.",
+      "legend": "Brugernavn og adgangskode"
+    },
+    "boolean": {
+      "false": "Nej",
+      "true": "Ja"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+        "max": "Maksimal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktiver <strong>ferietilstand</strong>",
+        "end_date": "Slutdato",
+        "start_date": "Startdato"
+      },
+      "legend": "Bygningsindstillinger",
+      "update": "Opdater"
+    },
+    "devices": {
+      "apply": {
+        "button": "Anvend på alle enheder",
+        "confirm": "Er du sikker på, at du vil anvende disse indstillinger på alle dine enheder?",
+        "nothing": "Ingen ændringer at anvende."
+      },
+      "legend": "Enhedsindstillinger",
+      "none": "Tilføj en enhed for at låse alle appens indstillinger op!"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autojuster aircondition-temperaturen",
+      "configure": "Konfigurer",
+      "legend": "Luft-luft enhedsindstillinger"
+    },
+    "devices_atw": {
+      "legend": "Luft-vand enhedsindstillinger"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Dato",
+        "Device": "Enhed",
+        "Error": "Fejl"
+      },
+      "error": "Vælg en dato før\n__fromDateHuman__.",
+      "error_count": {
+        "0": "fejl",
+        "1": "fejl",
+        "234": "fejl",
+        "plural": "fejl"
+      },
+      "legend": "Fejllog",
+      "period": "Siden __fromDateHuman__:",
+      "see": "Se alle fejl",
+      "since": "siden den"
+    },
+    "int_error": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "refresh": "Genindlæs",
+    "success": "Opdatering lykkedes.",
+    "title": "MELCloud-indstillinger"
+  },
+  "warnings": {
+    "always_on": "Slukning fra Homey er blevet deaktiveret.",
+    "dashboard": "Forlad enheden og vend tilbage for at opdatere dit instrumentbræt.",
+    "display_error": "Opdatering lykkedes (selvom en anden værdi vises)."
+  }
+}
