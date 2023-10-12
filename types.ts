@@ -15,7 +15,7 @@ interface Loggable {
 export type LogClass = abstract new (...args: any[]) => Loggable
 
 export type HomeyClass = new (...args: any[]) => Loggable & {
-  homey: Homey
+  readonly homey: Homey
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
