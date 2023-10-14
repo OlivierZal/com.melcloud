@@ -27,10 +27,18 @@ jobs:
           npx ncu -u
       - name: Install Dependencies
         run: npm install
+      - name: Set Up
+        run: |
+          echo '{}' > app.json
+          mkdir locales
       - name: Validate App # Compile TypeScript
         run: |
           npm install -g homey
           npx homey app validate --level publish
+      - name: Clean Up
+        run: |
+          rm app.json
+          rm -rf locales
       - name: Lint and Fix Errors
         run: npm run lint:fix
       - name: Format Code
