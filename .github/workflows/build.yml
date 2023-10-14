@@ -7,38 +7,27 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  update-and-validate:
-    name: Update, Validate, Lint, and Format
+  npm:
+    name: npm
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
       - name: Install jq
-        run: sudo apt-get install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq
       - name: Bump Version
         run: |
           APP_VERSION=$(jq -r .version .homeycompose/app.json)
           jq ".version=\"$APP_VERSION\"" package.json > package.json.tmp
           mv package.json.tmp package.json
-      - name: Check Dependency Updates
+      - name: Update Dependencies
         run: |
           npm install -g npm-check-updates
           npx ncu -u
-      - name: Install Dependencies
-        run: npm install
-      - name: Set Up
-        run: |
-          echo '{}' > app.json
-          mkdir locales
-      - name: Validate App # Compile TypeScript
-        run: |
-          npm install -g homey
-          npx homey app validate --level publish
-      - name: Clean Up
-        run: |
-          rm app.json
-          rm -rf locales
+          npm install
       - name: Lint and Fix Errors
         run: npm run lint:fix
       - name: Format Code
@@ -49,15 +38,14 @@ jobs:
           git config --local user.email 'actions@github.com'
           git add -A
           if ! git diff --cached --exit-code; then
-            git commit -m "Automated changes"
+            git commit -m "Code maintenance: bump version, update dependencies, lint & format"
             if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-              sudo apt-get update
-              sudo apt-get install gh
+              sudo apt install gh
               echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-              BRANCH_NAME="automated-updates-$(date +'%Y%m%d%H%M%S')"
+              BRANCH_NAME="npm-maintenance-$(date +'%Y%m%d')"
               git checkout -b $BRANCH_NAME
               git push origin $BRANCH_NAME
-              gh pr create --base main --head $BRANCH_NAME --title "Automated PR" --body "This is an automated PR."
+              gh pr create --base main --head $BRANCH_NAME --title "Maintenance PR" --body "Automatic code maintenance: bump version, update dependencies, lint and format."
             else
               git pull origin ${{ github.head_ref }} --rebase
               git push origin HEAD:${{ github.head_ref }}
@@ -65,6 +53,22 @@ jobs:
           else
             echo "No changes to commit."
           fi
+
+  homey:
+    name: Homey
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm ci
+      - name: Set Up
+        run: |
+          echo '{}' > app.json
+          mkdir locales
+      - name: Validate App # Compile TypeScript
+        run: |
+          npm install -g homey
+          npx homey app validate --level publish
 
   sonarcloud:
     name: SonarCloud
@@ -74,8 +78,8 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Dependencies
-        run: npm install
-      - name: SonarCloud Scan
+        run: npm ci
+      - name: Scan Code
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
