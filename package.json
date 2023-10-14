@@ -7,7 +7,7 @@
     "singleQuote": true
   },
   "scripts": {
-    "build": "tsc",
+    "build": "homey app validate --level publish",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
@@ -26,6 +26,7 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.28.1",
     "globals": "^13.23.0",
+    "homey": "^3.0.7",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },

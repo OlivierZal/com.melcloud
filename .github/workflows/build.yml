@@ -42,7 +42,7 @@ jobs:
             if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
               sudo apt install gh
               echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-              BRANCH_NAME="npm-maintenance-$(date +'%Y%m%d')"
+              BRANCH_NAME="maintenance-$(date +'%Y%m%d')"
               git checkout -b $BRANCH_NAME
               git push origin $BRANCH_NAME
               gh pr create --base main --head $BRANCH_NAME --title "Maintenance PR" --body "Automatic code maintenance: bump version, update dependencies, lint and format."
@@ -65,10 +65,8 @@ jobs:
         run: |
           echo '{}' > app.json
           mkdir locales
-      - name: Validate App # Compile TypeScript
-        run: |
-          npm install -g homey
-          npx homey app validate --level publish
+      - name: Build App
+        run: npm run build
 
   sonarcloud:
     name: SonarCloud
