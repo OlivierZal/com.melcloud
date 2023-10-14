@@ -68,7 +68,6 @@ jobs:
 
   sonarcloud:
     name: SonarCloud
-    needs: [update-and-validate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
