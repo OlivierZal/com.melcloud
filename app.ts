@@ -349,7 +349,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       )
       return
     }
-    await this.tryLogin(loginCredentials)
+    await  this.tryLogin(loginCredentials)
   }
 
   private async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
