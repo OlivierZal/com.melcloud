@@ -6,9 +6,33 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  npm:
-    name: npm
+  homey:
+    name: Homey
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build App # Compile TypeScript
+        run: |
+          echo '{}' > app.json
+          mkdir locales
+          npm run build
+
+  npm-scripts:
+    name: npm Scripts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,11 +47,15 @@ jobs:
           APP_VERSION=$(jq -r .version .homeycompose/app.json)
           jq ".version=\"$APP_VERSION\"" package.json > package.json.tmp
           mv package.json.tmp package.json
-      - name: Update Dependencies
-        run: |
-          npm install -g npm-check-updates
-          npx ncu -u
-          npm install
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+      - name: Install Dependencies
+        run: npm ci
       - name: Lint and Fix Errors
         run: npm run lint:fix
       - name: Format Code
@@ -40,7 +68,6 @@ jobs:
           if ! git diff --cached --exit-code; then
             git commit -m "Code maintenance: bump version, update dependencies, lint & format"
             if [[ "${{ github.ref }}" == 'refs/heads/main' ]]; then
-              sudo apt install gh
               echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
               BRANCH_NAME="maintenance-$(date +'%Y%m%d')"
               git checkout -b $BRANCH_NAME
@@ -70,14 +97,25 @@ jobs:
             ${{ runner.os }}-node-modules-
       - name: Install Dependencies
         run: npm ci
-      - name: Set Up
-        run: |
-          echo '{}' > app.json
-          mkdir locales
-      - name: Build App
-        run: npm run build
       - name: Scan Code
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  dependabot:
+    name: Dependabot
+    needs: [homey, npm-scripts, sonarcloud]
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Fetch Metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Auto-Merge
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
