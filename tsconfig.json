@@ -1,7 +1,9 @@
 {
   "extends": "@tsconfig/node20/tsconfig.json",
   "compilerOptions": {
-    "lib": ["es2023", "dom"],
+    "lib": ["ESNext", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": ".homeybuild/",
     "sourceMap": true
   }
