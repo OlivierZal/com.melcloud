@@ -1,0 +1,33 @@
+{
+  "title": {
+    "en": "Set the hot water temperature",
+    "fr": "Définir la température de l'eau chaude",
+    "nl": "Stel de warmwatertemperatuur in",
+    "sv": "Ställ in varmvattentemperaturen",
+    "no": "Innstill varmtvanntemperaturen",
+    "da": "Indstil varmtvandstemperaturen",
+    "es": "Configurar la temperatura del agua caliente"
+  },
+  "titleFormatted": {
+    "en": "Set the tank water temperature to [[target_temperature]]",
+    "fr": "Définir la température de l'eau chaude à [[target_temperature]]",
+    "nl": "Stel de warmwatertemperatuur in op [[target_temperature]]",
+    "sv": "Ställ in varmvattentemperaturen till [[target_temperature]]",
+    "no": "Innstill varmtvanntemperaturen til [[target_temperature]]",
+    "da": "Indstil varmtvandstemperaturen til [[target_temperature]]",
+    "es": "Configurar la temperatura del agua caliente a [[target_temperature]]"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw"
+    },
+    {
+      "name": "target_temperature",
+      "type": "number",
+      "min": 40,
+      "max": 60
+    }
+  ]
+}

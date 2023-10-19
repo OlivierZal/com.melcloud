@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The booster heater 2+ is !{{on|off}}",
+    "fr": "Le chauffage d'appoint 2+ est !{{en marche|arrêté}}",
+    "nl": "De boosterverwarmingselement 2+ is !{{aan|uit}}",
+    "sv": "Tillskottsvärmaren 2+ är !{{på|av}}",
+    "no": "Tilleggsvarmen 2+ er !{{på|av}}",
+    "da": "Tilførselsvarmen 2+ er !{{tændt|slukket}}",
+    "es": "El calentador de refuerzo 2+ está !{{activada|desactivada}}"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2_plus"
+    }
+  ]
+}

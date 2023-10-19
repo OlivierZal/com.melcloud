@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The eco domestic hot water is !{{on|off}}",
+    "fr": "L'eau chaude sanitaire forcée est !{{en marche|arrêté}}",
+    "nl": "De eco sanitair warm water is !{{aan|uit}}",
+    "sv": "Eco-läge för varmvattenladdning är !{{på|av}}",
+    "no": "Eco-modus for varmvannslastning er !{{på|av}}",
+    "da": "Eco-tilstand for varmtvandsindlæsning er !{{tændt|slukket}}",
+    "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The eco domestic hot water turned off",
+    "fr": "L'eau chaude sanitaire éco s'est désactivée",
+    "nl": "De eco sanitair warm water ging uit",
+    "sv": "Eco-läge för varmvattenladdning är inaktiverat",
+    "no": "Eco-modus for varmvannslastning er deaktivert",
+    "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
+    "es": "El agua caliente sanitaria eco se ha desactivado"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
+    }
+  ]
+}

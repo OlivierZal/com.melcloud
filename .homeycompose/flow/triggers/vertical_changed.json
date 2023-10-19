@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "The vertical vane has changed",
+    "fr": "Le soufflage d'air vertical a été modifié",
+    "nl": "De uitblaasrichting verticaal is veranderd",
+    "sv": "Vertikal luftflödesriktningen ändrades",
+    "no": "Vertikal luftflødesretningen ble endret",
+    "da": "Den vertikale luftflødesretningen er blevet ændret",
+    "es": "La descarga de aire vertical ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "vertical",
+      "type": "string",
+      "title": {
+        "en": "Vertical vane",
+        "fr": "Soufflage d'air vertical",
+        "nl": "Uitblaasrichting verticaal",
+        "sv": "Vertikal luftflödesriktning",
+        "no": "Vertikal luftflødesretning",
+        "da": "Vertikal luftflødesretning",
+        "es": "Descarga de aire vertical"
+      },
+      "example": {
+        "en": "auto"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud"
+    }
+  ]
+}

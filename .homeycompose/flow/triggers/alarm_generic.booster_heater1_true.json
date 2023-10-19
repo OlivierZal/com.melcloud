@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The booster heater 1 turned on",
+    "fr": "Le chauffage d'appoint 1 s'est activé",
+    "nl": "De boosterverwarmingselement 1 gaat aan",
+    "sv": "Tillskottsvärmaren 1 är aktiverad",
+    "no": "Tilleggsvarmen 1 er aktivert",
+    "da": "Tilførselsvarme 1 blev aktiveret",
+    "es": "El calentador de refuerzo 1 se ha activado"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater1"
+    }
+  ]
+}
