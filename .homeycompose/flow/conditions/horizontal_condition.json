@@ -1,0 +1,129 @@
+{
+  "title": {
+    "en": "The horizontal vane !{{is|is not}}",
+    "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
+    "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
+    "sv": "Horisontell luftflödesriktningen !{{är|är inte}}",
+    "no": "Horisontal luftflødesretningen !{{er|er ikke}}",
+    "da": "Den horisontale luftflødesretningen !{{er|er ikke}}",
+    "es": "La descarga de aire horizontal !{{está|no está}}"
+  },
+  "titleFormatted": {
+    "en": "The horizontal vane !{{is|is not}} [[horizontal]]",
+    "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
+    "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
+    "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]",
+    "no": "Horisontal luftflødesretningen !{{er|er ikke}} [[horizontal]]",
+    "da": "Den horisontale luftflødesretningen !{{er|er ikke}} [[horizontal]]",
+    "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud"
+    },
+    {
+      "name": "horizontal",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        },
+        {
+          "id": "left",
+          "title": {
+            "en": "Leftward",
+            "fr": "Gauche",
+            "nl": "Links",
+            "sv": "Vänster",
+            "no": "Venstre",
+            "da": "Venstre",
+            "es": "Izquierda"
+          }
+        },
+        {
+          "id": "middleleft",
+          "title": {
+            "en": "Center-left",
+            "fr": "Centre-gauche",
+            "nl": "Midden-links",
+            "sv": "Mitten-vänster",
+            "no": "Middelvenstre",
+            "da": "Midt-venstre",
+            "es": "Centro-izquierda"
+          }
+        },
+        {
+          "id": "middle",
+          "title": {
+            "en": "Center",
+            "fr": "Centre",
+            "nl": "Midden",
+            "sv": "Mitten",
+            "no": "Midten",
+            "da": "Midten",
+            "es": "Centro"
+          }
+        },
+        {
+          "id": "middleright",
+          "title": {
+            "en": "Center-right",
+            "fr": "Centre-droite",
+            "nl": "Midden-rechts",
+            "sv": "Mitten-höger",
+            "no": "Middelhøyre",
+            "da": "Midt-højre",
+            "es": "Centro-derecha"
+          }
+        },
+        {
+          "id": "right",
+          "title": {
+            "en": "Rightwards",
+            "fr": "Droite",
+            "nl": "Rechts",
+            "sv": "Höger",
+            "no": "Høyre",
+            "da": "Højre",
+            "es": "Derecha"
+          }
+        },
+        {
+          "id": "split",
+          "title": {
+            "en": "Split",
+            "fr": "Divisé",
+            "nl": "Gesplitst",
+            "sv": "Delad",
+            "no": "Delt",
+            "da": "Delt",
+            "es": "Dividida"
+          }
+        },
+        {
+          "id": "swing",
+          "title": {
+            "en": "Swing",
+            "fr": "Balayage",
+            "nl": "Swing",
+            "sv": "Svängning",
+            "no": "Sving",
+            "da": "Sving",
+            "es": "Oscilación"
+          }
+        }
+      ]
+    }
+  ]
+}

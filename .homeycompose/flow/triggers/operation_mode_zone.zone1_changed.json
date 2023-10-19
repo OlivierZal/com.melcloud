@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "The operation mode has changed",
+    "fr": "Le mode opérationnel a été modifié",
+    "nl": "De bedrijfsmodus is veranderd",
+    "sv": "Driftläget ändrades",
+    "no": "Driftsmodusen ble endret",
+    "da": "Driftstilstanden er blevet ændret",
+    "es": "El modo de operación ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "operation_mode_zone.zone1",
+      "type": "string",
+      "title": {
+        "en": "Operation mode",
+        "fr": "Mode opérationnel",
+        "nl": "Bedrijfsmodus",
+        "sv": "Driftläge",
+        "no": "Driftsmodus",
+        "da": "Driftstilstand",
+        "es": "Modo de operación"
+      },
+      "example": {
+        "en": "2"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+    }
+  ]
+}

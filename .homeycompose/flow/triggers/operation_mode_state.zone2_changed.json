@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "The current operation has changed in zone 2",
+    "fr": "L'opération en cours a été modifiée dans la zone 2",
+    "nl": "De huidige bedrijf is veranderd in zone 2",
+    "sv": "Aktuell drift ändrades i zon 2",
+    "no": "Gjeldende drift ble endret i sone 2",
+    "da": "Den aktuelle drift er blevet ændret i zone 2",
+    "es": "La operación actual ha cambiado en zona 2"
+  },
+  "tokens": [
+    {
+      "name": "operation_mode_state.zone2",
+      "type": "string",
+      "title": {
+        "en": "Current operation",
+        "fr": "Opération en cours",
+        "nl": "Huidige bedrijf",
+        "sv": "Aktuell drift",
+        "no": "Gjeldende drift",
+        "da": "Aktuel drift",
+        "es": "Operación actual"
+      },
+      "example": {
+        "en": "heating"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone2"
+    }
+  ]
+}

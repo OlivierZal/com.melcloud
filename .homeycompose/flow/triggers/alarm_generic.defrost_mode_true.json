@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The defrost mode turned on",
+    "fr": "Le mode dégivrage s'est activé",
+    "nl": "De ontdooimodus gaat aan",
+    "sv": "Avfrostningsläget är aktiverat",
+    "no": "Avfrostingsmodusen er aktivert",
+    "da": "Afrimningsfunktionen blev aktiveret",
+    "es": "El modo de descongelación se ha activado"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
+    }
+  ]
+}

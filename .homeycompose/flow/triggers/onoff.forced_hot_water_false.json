@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "Forced domestic hot water turned off",
+    "fr": "Eau chaude sanitaire forcée désactivée",
+    "nl": "Gedwongen sanitair warm water uitgezet",
+    "sv": "Tvingad varmvattenladdning inaktiverad",
+    "no": "Tvungen varmvannslastning slått av",
+    "da": "Tvungen varmtvandsindlæsning slukket",
+    "es": "Agua caliente sanitaria forzada apagada"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw"
+    }
+  ]
+}
