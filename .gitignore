@@ -1,5 +1,4 @@
 /.homeybuild/
-!/.vscode
 /.vscode/*
 !/.vscode/settings.json
 /locales/
