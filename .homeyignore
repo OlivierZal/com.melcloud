@@ -1,5 +1,4 @@
-/docs/
-/eslint.config.js
-/LICENSE
-/README.md
-/sonar-project.properties
+eslint.config.js
+LICENSE
+README.md
+sonar-project.properties
