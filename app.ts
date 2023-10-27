@@ -133,12 +133,11 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   ): void {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
-      'sync with device',
       async (): Promise<void> => {
         await this.listDevices(deviceType, syncMode)
       },
       { seconds: 1 },
-      'seconds',
+      { actionType: 'sync with device', units: ['seconds'] },
     )
   }
 
@@ -340,12 +339,11 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       const maxTimeout: number = 2 ** 31 - 1
       const interval: number = Math.min(ms, maxTimeout)
       this.#loginTimeout = this.setTimeout(
-        'login refresh',
         async (): Promise<void> => {
           await this.tryLogin(loginCredentials)
         },
         interval,
-        'days',
+        { actionType: 'login refresh', units: ['days'] },
       )
       return
     }
@@ -405,12 +403,11 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       return
     }
     this.#syncInterval = this.setInterval(
-      'device list refresh',
       async (): Promise<void> => {
         await this.listDevices()
       },
       { minutes: 3 },
-      'minutes',
+      { actionType: 'device list refresh', units: ['minutes'] },
     )
   }
 

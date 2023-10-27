@@ -2,18 +2,26 @@
 import { DateTime, Duration, type DurationLikeObject } from 'luxon'
 import type { HomeyClass } from '../types'
 
+interface BaseTimerOptions {
+  actionType: string
+  units: (keyof DurationLikeObject)[]
+}
+
+interface TimerOptions extends BaseTimerOptions {
+  timerWords: [string, string]
+  timerType: 'setInterval' | 'setTimeout'
+}
+
 type TimerClass = new (...args: any[]) => {
   setInterval: (
-    actionType: string,
     callback: () => Promise<void>,
     interval: DurationLikeObject | number,
-    ...units: (keyof DurationLikeObject)[]
+    options: BaseTimerOptions,
   ) => NodeJS.Timeout
   setTimeout: (
-    actionType: string,
     callback: () => Promise<void>,
     interval: DurationLikeObject | number,
-    ...units: (keyof DurationLikeObject)[]
+    options: BaseTimerOptions,
   ) => NodeJS.Timeout
 }
 
@@ -22,45 +30,39 @@ export default function withTimers<T extends HomeyClass>(
 ): T & TimerClass {
   return class extends base {
     public setInterval(
-      actionType: string,
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
-      ...units: (keyof DurationLikeObject)[]
+      options: BaseTimerOptions,
     ): NodeJS.Timeout {
-      return this.setTimer(
+      const { actionType, units } = options
+      return this.setTimer(callback, interval, {
         actionType,
-        ['every', 'starting'],
-        'setInterval',
-        callback,
-        interval,
-        ...units,
-      )
+        timerWords: ['every', 'starting'],
+        timerType: 'setInterval',
+        units,
+      })
     }
 
     public setTimeout(
-      actionType: string,
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
-      ...units: (keyof DurationLikeObject)[]
+      options: BaseTimerOptions,
     ): NodeJS.Timeout {
-      return this.setTimer(
+      const { actionType, units } = options
+      return this.setTimer(callback, interval, {
         actionType,
-        ['in', 'on'],
-        'setTimeout',
-        callback,
-        interval,
-        ...units,
-      )
+        timerWords: ['in', 'on'],
+        timerType: 'setTimeout',
+        units,
+      })
     }
 
     private setTimer(
-      actionType: string,
-      timerWords: [string, string],
-      timerType: 'setInterval' | 'setTimeout',
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
-      ...units: (keyof DurationLikeObject)[]
+      options: TimerOptions,
     ): NodeJS.Timeout {
+      const { actionType, timerWords, timerType, units } = options
       const duration: Duration = Duration.fromDurationLike(interval)
       this.log(
         `${actionType.charAt(0).toUpperCase()}${actionType

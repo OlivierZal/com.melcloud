@@ -435,12 +435,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
   private applySyncToDevice(): void {
     this.#syncTimeout = this.setTimeout(
-      'sync with device',
       async (): Promise<void> => {
         await this.syncToDevice()
       },
       { seconds: 1 },
-      'seconds',
+      { actionType: 'sync with device', units: ['seconds'] },
     )
   }
 
@@ -589,7 +588,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     if (this.#reportTimeout[totalString]) {
       return
     }
-    const type = `${total ? 'total' : 'regular'} energy report`
+    const actionType = `${total ? 'total' : 'regular'} energy report`
     const { interval, duration, values } = total
       ? {
           interval: { days: 1 },
@@ -598,22 +597,24 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         }
       : this.reportPlanParameters
     this.#reportTimeout[totalString] = this.setTimeout(
-      type,
       async (): Promise<void> => {
         await this.runEnergyReport(total)
         this.#reportInterval[totalString] = this.setInterval(
-          type,
           async (): Promise<void> => {
             await this.runEnergyReport(total)
           },
           interval,
-          'days',
-          'hours',
+          {
+            actionType,
+            units: ['days', 'hours'],
+          },
         )
       },
       DateTime.now().plus(duration).set(values).diffNow(),
-      'hours',
-      'minutes',
+      {
+        actionType,
+        units: ['hours', 'minutes'],
+      },
     )
   }
 
