@@ -21,14 +21,14 @@
         "da": "Blæserhastighed",
         "es": "Velocidad del ventilador"
       },
-      "example": 5
+      "example": 1
     }
   ],
   "args": [
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud"
+      "filter": "driver_id=melcloud|melcloud_erv"
     }
   ]
 }

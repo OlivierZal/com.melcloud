@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "The ventilation mode has changed",
+    "fr": "Le mode de ventilation a été modifié",
+    "nl": "De ventilatiemodus is veranderd",
+    "sv": "Ventilationsläget ändrades",
+    "no": "Ventilasjonsmodusen ble endret",
+    "da": "Ventilationstilstanden er blevet ændret",
+    "es": "El modo de ventilación ha cambiado"
+  },
+  "tokens": [
+    {
+      "name": "ventilation_mode",
+      "type": "string",
+      "title": {
+        "en": "Ventilation mode",
+        "fr": "Mode de ventilation",
+        "nl": "Ventilatiemodus",
+        "sv": "Ventilationsläge",
+        "no": "Ventilasjonsmodus",
+        "da": "Ventilationstilstand",
+        "es": "Modo de ventilación"
+      },
+      "example": {
+        "en": "auto"
+      }
+    }
+  ],
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_erv"
+    }
+  ]
+}

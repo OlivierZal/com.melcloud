@@ -5,11 +5,10 @@ import addToLogs from '../decorators/addToLogs'
 import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
 import type {
+  Capability,
   CapabilityValue,
   DeviceDetails,
   DeviceValue,
-  ExtendedCapability,
-  ExtendedSetCapability,
   GetDeviceData,
   ListCapabilityMapping,
   ListDevice,
@@ -46,12 +45,12 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
   protected diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
 
-  protected reportPlanParameters!: {
+  protected reportPlanParameters: {
     duration: object
     interval: object
     minus: object
     values: object
-  }
+  } | null = null
 
   #syncTimeout!: NodeJS.Timeout
 
@@ -82,7 +81,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public async onCapability<T extends MELCloudDriver>(
-    capability: ExtendedSetCapability<T>,
+    capability: SetCapability<T> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void> {
     this.clearSync()
@@ -125,14 +124,15 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       changedKeys.some(
         (setting: string) =>
           setting !== 'always_on' &&
-          !(setting in this.driver.reportCapabilityMapping),
+          !(setting in (this.driver.reportCapabilityMapping ?? {})),
       )
     ) {
       this.app.applySyncFromDevices()
     }
 
     const changedEnergyKeys: string[] = changedKeys.filter(
-      (setting: string) => setting in this.driver.reportCapabilityMapping,
+      (setting: string) =>
+        setting in (this.driver.reportCapabilityMapping ?? {}),
     )
     if (!changedEnergyKeys.length) {
       return
@@ -150,7 +150,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         } else if (
           Object.entries(newSettings).every(
             ([setting, value]: [string, SettingValue]) =>
-              !(setting in this.driver.reportCapabilityMapping) ||
+              !(setting in (this.driver.reportCapabilityMapping ?? {})) ||
               value !== true,
           )
         ) {
@@ -190,7 +190,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public async setCapabilityValue<T extends MELCloudDriver>(
-    capability: ExtendedCapability<T>,
+    capability: Capability<T> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void> {
     if (!this.hasCapability(capability)) {
@@ -218,6 +218,57 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   protected async setDisplayErrorWarning(): Promise<void> {
     await this.setWarning(this.homey.__('warnings.display_error'))
     await this.setWarning(null)
+  }
+
+  protected async handleCapabilities(): Promise<void> {
+    const requiredCapabilities: string[] = [
+      ...this.driver.getRequiredCapabilities(this.getStore() as Store),
+      ...this.getDashboardCapabilities(),
+    ]
+    await requiredCapabilities.reduce<Promise<void>>(
+      async (acc, capability: string) => {
+        await acc
+        return this.addCapability(capability)
+      },
+      Promise.resolve(),
+    )
+    await this.getCapabilities()
+      .filter(
+        (capability: string) => !requiredCapabilities.includes(capability),
+      )
+      .reduce<Promise<void>>(async (acc, capability: string) => {
+        await acc
+        await this.removeCapability(capability)
+      }, Promise.resolve())
+  }
+
+  protected async updateStore<T extends MELCloudDriver>(
+    data: ListDeviceData<T> | null,
+  ): Promise<void> {
+    if (!data) {
+      return
+    }
+    const updates = await Promise.all(
+      Object.entries(this.getStore() as Store)
+        .filter(
+          ([key, value]: [string, boolean]) =>
+            key in data && value !== data[key as keyof ListDeviceData<T>],
+        )
+        .map(async ([key]: [string, boolean]): Promise<boolean> => {
+          await this.setStoreValue(key, data[key as keyof ListDeviceData<T>])
+          return true
+        }),
+    )
+    if (updates.some(Boolean)) {
+      await this.handleCapabilities()
+    }
+  }
+
+  protected getRequestedOrCurrentValue<T extends MELCloudDriver>(
+    capability: SetCapability<T>,
+  ): CapabilityValue {
+    return (this.diff.get(capability) ??
+      this.getCapabilityValue(capability)) as CapabilityValue
   }
 
   private async setDeviceData<
@@ -272,7 +323,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     total = false,
   ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
     return Object.fromEntries(
-      Object.entries(this.driver.reportCapabilityMapping)
+      Object.entries(this.driver.reportCapabilityMapping ?? {})
         .filter(
           ([capability]: [string, ReportCapabilityMapping<T>]) =>
             this.hasCapability(capability) &&
@@ -285,28 +336,6 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
   }
 
-  private async handleCapabilities(): Promise<void> {
-    const requiredCapabilities: string[] = [
-      ...this.driver.getRequiredCapabilities(this.getStore() as Store),
-      ...this.getDashboardCapabilities(),
-    ]
-    await requiredCapabilities.reduce<Promise<void>>(
-      async (acc, capability: string) => {
-        await acc
-        return this.addCapability(capability)
-      },
-      Promise.resolve(),
-    )
-    await this.getCapabilities()
-      .filter(
-        (capability: string) => !requiredCapabilities.includes(capability),
-      )
-      .reduce<Promise<void>>(async (acc, capability: string) => {
-        await acc
-        await this.removeCapability(capability)
-      }, Promise.resolve())
-  }
-
   private registerCapabilityListeners<T extends MELCloudDriver>(): void {
     ;[
       ...Object.keys(this.driver.setCapabilityMapping),
@@ -315,7 +344,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       this.registerCapabilityListener(
         capability,
         async (value: CapabilityValue): Promise<void> => {
-          await this.onCapability(capability as ExtendedSetCapability<T>, value)
+          await this.onCapability(
+            capability as SetCapability<T> | 'thermostat_mode',
+            value,
+          )
         },
       )
     })
@@ -459,7 +491,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         if (this.hasCapability(capability)) {
           acc[tag] = this.convertToDevice(
             capability as SetCapability<T>,
-            this.diff.get(capability as SetCapability<T>),
+            this.getRequestedOrCurrentValue(capability as SetCapability<T>),
           ) as SetDeviceData<T>[Exclude<
             keyof SetDeviceData<T>,
             'EffectiveFlags'
@@ -485,29 +517,6 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     ) as ListDevice<T> | undefined
   }
 
-  private async updateStore<T extends MELCloudDriver>(
-    data: ListDeviceData<T> | null,
-  ): Promise<void> {
-    if (!data) {
-      return
-    }
-    const { CanCool, HasZone2 } = this.getStore() as Store
-    const updates = await Promise.all(
-      Object.entries({ CanCool, HasZone2 })
-        .filter(
-          ([key, value]: [string, boolean]) =>
-            value !== data[key as keyof Store],
-        )
-        .map(async ([key]: [string, boolean]): Promise<boolean> => {
-          await this.setStoreValue(key, data[key as keyof Store])
-          return true
-        }),
-    )
-    if (updates.some(Boolean)) {
-      await this.handleCapabilities()
-    }
-  }
-
   private async runEnergyReports(): Promise<void> {
     await this.runEnergyReport()
     await this.runEnergyReport(true)
@@ -520,7 +529,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       ReportCapability<T>,
       ReportCapabilityMapping<T>
     > = this.getReportCapabilities(total)
-    if (!Object.keys(reportCapabilities).length) {
+    if (!this.reportPlanParameters || !Object.keys(reportCapabilities).length) {
       return
     }
     const toDate: DateTime = DateTime.now().minus(
@@ -585,7 +594,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
   private planEnergyReport(total = false): void {
     const totalString: 'false' | 'true' = total ? 'true' : 'false'
-    if (this.#reportTimeout[totalString]) {
+    if (!this.reportPlanParameters || this.#reportTimeout[totalString]) {
       return
     }
     const actionType = `${total ? 'total' : 'regular'} energy report`
@@ -654,17 +663,17 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   protected abstract specificOnCapability(
-    capability: ExtendedSetCapability<MELCloudDriver>,
+    capability: SetCapability<MELCloudDriver> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void>
 
   protected abstract convertToDevice(
     capability: SetCapability<MELCloudDriver>,
-    value?: CapabilityValue,
+    value: CapabilityValue,
   ): SetDeviceValue
 
   protected abstract convertFromDevice(
-    capability: ExtendedCapability<MELCloudDriver>,
+    capability: Capability<MELCloudDriver> | 'thermostat_mode',
     value: DeviceValue,
   ): CapabilityValue
 

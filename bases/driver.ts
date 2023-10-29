@@ -1,66 +1,28 @@
 import { Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
-import type MELCloudDriverAta from '../drivers/melcloud/driver'
-import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver'
 import type {
   DeviceDetails,
-  GetCapability,
-  GetCapabilityMapping,
-  ListCapability,
-  ListCapabilityMapping,
+  GetCapabilityMappingAny,
+  ListCapabilityMappingAny,
   ListDevice,
   LoginCredentials,
   MELCloudDriver,
-  ReportCapability,
-  ReportCapabilityMapping,
-  SetCapability,
-  SetCapabilityMapping,
+  ReportCapabilityMappingAny,
+  SetCapabilityMappingAny,
   Store,
 } from '../types'
 
 export default abstract class BaseMELCloudDriver extends Driver {
   public heatPumpType!: string
 
-  public setCapabilityMapping!:
-    | Record<
-        SetCapability<MELCloudDriverAta>,
-        SetCapabilityMapping<MELCloudDriverAta>
-      >
-    | Record<
-        SetCapability<MELCloudDriverAtw>,
-        SetCapabilityMapping<MELCloudDriverAtw>
-      >
+  public setCapabilityMapping!: SetCapabilityMappingAny
 
-  public getCapabilityMapping!:
-    | Record<
-        GetCapability<MELCloudDriverAta>,
-        GetCapabilityMapping<MELCloudDriverAta>
-      >
-    | Record<
-        GetCapability<MELCloudDriverAtw>,
-        GetCapabilityMapping<MELCloudDriverAtw>
-      >
+  public getCapabilityMapping!: GetCapabilityMappingAny
 
-  public listCapabilityMapping!:
-    | Record<
-        ListCapability<MELCloudDriverAta>,
-        ListCapabilityMapping<MELCloudDriverAta>
-      >
-    | Record<
-        ListCapability<MELCloudDriverAtw>,
-        ListCapabilityMapping<MELCloudDriverAtw>
-      >
+  public listCapabilityMapping!: ListCapabilityMappingAny
 
-  public reportCapabilityMapping!:
-    | Record<
-        ReportCapability<MELCloudDriverAta>,
-        ReportCapabilityMapping<MELCloudDriverAta>
-      >
-    | Record<
-        ReportCapability<MELCloudDriverAtw>,
-        ReportCapabilityMapping<MELCloudDriverAtw>
-      >
+  public reportCapabilityMapping: ReportCapabilityMappingAny = null
 
   protected deviceType!: number
 
@@ -69,6 +31,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
     this.#app = this.homey.app as MELCloudApp
+    this.registerFlowListeners()
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -99,13 +62,14 @@ export default abstract class BaseMELCloudDriver extends Driver {
       this.deviceType,
     )) as ListDevice<T>[]
     return devices.map(
-      ({
-        DeviceName,
-        DeviceID,
-        BuildingID,
-        Device: { CanCool, HasZone2 },
-      }): DeviceDetails => {
-        const store: Store = { CanCool, HasZone2 }
+      ({ DeviceName, DeviceID, BuildingID, Device }): DeviceDetails => {
+        const store: Store = {
+          CanCool: 'CanCool' in Device ? Device.CanCool : false,
+          HasCO2Sensor: 'HasCO2Sensor' in Device ? Device.HasCO2Sensor : false,
+          HasPM25Sensor:
+            'HasPM25Sensor' in Device ? Device.HasPM25Sensor : false,
+          HasZone2: 'HasZone2' in Device ? Device.HasZone2 : false,
+        }
         return {
           name: DeviceName,
           data: { id: DeviceID, buildingid: BuildingID },
@@ -117,4 +81,6 @@ export default abstract class BaseMELCloudDriver extends Driver {
   }
 
   public abstract getRequiredCapabilities(store: Store): string[]
+
+  protected abstract registerFlowListeners(): void
 }

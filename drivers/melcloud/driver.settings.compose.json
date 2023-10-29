@@ -3,35 +3,6 @@
     "$extends": ["options"]
   },
   {
-    "id": "dashboard",
-    "type": "group",
-    "label": {
-      "en": "Dashboard display",
-      "fr": "Affichage sur le tableau de bord",
-      "nl": "Dashboardweergave",
-      "sv": "Instrumentpanelens visning",
-      "no": "Dashbordvisning",
-      "da": "Instrumentbrætvisning",
-      "es": "Visualización del panel de control"
-    },
-    "children": [
-      {
-        "id": "measure_power.wifi",
-        "type": "checkbox",
-        "label": {
-          "en": "Wifi signal strength",
-          "fr": "Puissance du signal wifi",
-          "nl": "Wifi signaalsterkte",
-          "sv": "Wifi signalstyrka",
-          "no": "Wifi signalstyrke",
-          "da": "Wifi signalstyrke",
-          "es": "Potencia de señal wifi"
-        },
-        "value": false
-      }
-    ]
-  },
-  {
     "type": "group",
     "label": {
       "en": "Power display",

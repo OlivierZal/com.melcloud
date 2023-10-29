@@ -31,6 +31,8 @@
       "air to water",
       "conditioned air",
       "ecodan",
+      "erv",
+      "energy recovery ventilator",
       "heat pump",
       "melcloud",
       "mitsubishi"
@@ -44,7 +46,9 @@
       "ecodan",
       "melcloud",
       "mitsubishi",
-      "pompe à chaleur"
+      "pompe à chaleur",
+      "ventilateur récupérateur d'énergie",
+      "vre"
     ],
     "nl": [
       "airco",
@@ -56,34 +60,42 @@
       "lucht water",
       "melcloud",
       "mitsubishi",
-      "warmtepomp"
+      "warmtepomp",
+      "warmteterugwinning",
+      "wtw"
     ],
     "sv": [
       "ecodan",
+      "erv",
       "luft luft",
       "luft vatten",
       "luftkonditionering",
       "melcloud",
       "mitsubishi",
+      "värmeåtervinning",
       "värmepump"
     ],
     "no": [
       "ecodan",
+      "erv",
       "luft luft",
       "luft vann",
       "luftkondisjonering",
       "melcloud",
       "mitsubishi",
+      "varmegjenvinning",
       "varmepumpe"
     ],
     "da": [
       "aircondition",
       "ecodan",
+      "erv",
       "klimaanlæg",
       "luft luft",
       "luft vand",
       "melcloud",
       "mitsubishi",
+      "varmegenvinding",
       "varmepumpe"
     ],
     "es": [
@@ -92,8 +104,10 @@
       "aire aire",
       "bomba de calor",
       "ecodan",
+      "erv",
       "melcloud",
-      "mitsubishi"
+      "mitsubishi",
+      "ventilador recuperador de energía"
     ]
   },
   "images": {

@@ -1,0 +1,60 @@
+{
+  "$extends": ["defaults"],
+  "class": "fan",
+  "name": {
+    "en": "Energy Recovery Ventilator (ERV)",
+    "fr": "Ventilateur récupérateur d'énergie (VRE)",
+    "nl": "Ventilator med warmteterugwinning (WTW)",
+    "sv": "Ventilator med värmeåtervinning (ERV)",
+    "no": "Ventilator med varmegjenvinning (ERV)",
+    "da": "Ventilator med varmegenvinding (ERV)",
+    "es": "Ventilador recuperador de energía (ERV)"
+  },
+  "capabilities": [
+    "fan_power",
+    "measure_co2",
+    "measure_pm25",
+    "measure_power.wifi",
+    "measure_temperature",
+    "measure_temperature.outdoor",
+    "onoff",
+    "ventilation_mode"
+  ],
+  "capabilitiesOptions": {
+    "fan_power": {
+      "min": 1,
+      "max": 4
+    },
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wifi signal strength",
+        "fr": "Puissance du signal wifi",
+        "nl": "Wifi signaalsterkte",
+        "sv": "Wifi signalstyrka",
+        "no": "Wifi signalstyrke",
+        "da": "Wifi signalstyrke",
+        "es": "Potencia de señal wifi"
+      },
+      "units": {
+        "en": "dBm",
+        "fr": "dBm",
+        "nl": "dBm",
+        "sv": "dBm",
+        "no": "dBm",
+        "da": "dBm",
+        "es": "dBm"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
+      }
+    }
+  }
+}

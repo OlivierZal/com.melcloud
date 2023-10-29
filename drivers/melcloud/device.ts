@@ -1,29 +1,16 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAta from './driver'
 import type {
+  Capability,
   CapabilityValue,
   DeviceValue,
-  ExtendedCapability,
-  ExtendedSetCapability,
   SetCapability,
   SetDeviceValue,
 } from '../../types'
+import reverseMapping from '../../utils/reverseMapping'
 
 function isThermostatMode(value: string): boolean {
   return !['dry', 'fan'].includes(value)
-}
-
-function reverseMapping(
-  mapping: Record<number | string, string>,
-): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(mapping).map(
-      ([deviceValue, capabilityValue]: [string, string]): [string, string] => [
-        capabilityValue,
-        deviceValue,
-      ],
-    ),
-  )
 }
 
 const operationModeFromDevice: Record<number, string> = {
@@ -34,7 +21,7 @@ const operationModeFromDevice: Record<number, string> = {
   8: 'auto',
 } as const
 
-const operationModeToDevice: Record<string, string> = reverseMapping(
+const operationModeToDevice: Record<string, number> = reverseMapping(
   operationModeFromDevice,
 )
 
@@ -48,7 +35,7 @@ const verticalFromDevice: Record<number, string> = {
   7: 'swing',
 } as const
 
-const verticalToDevice: Record<string, string> =
+const verticalToDevice: Record<string, number> =
   reverseMapping(verticalFromDevice)
 
 const horizontalFromDevice: Record<number, string> = {
@@ -58,11 +45,10 @@ const horizontalFromDevice: Record<number, string> = {
   3: 'middle',
   4: 'middleright',
   5: 'right',
-  8: 'split',
   12: 'swing',
 } as const
 
-const horizontalToDevice: Record<string, string> =
+const horizontalToDevice: Record<string, number> =
   reverseMapping(horizontalFromDevice)
 
 export = class MELCloudDeviceAta extends BaseMELCloudDevice {
@@ -77,7 +63,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   protected async specificOnCapability(
-    capability: ExtendedSetCapability<MELCloudDriverAta>,
+    capability: SetCapability<MELCloudDriverAta> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
@@ -100,19 +86,17 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
 
   protected convertToDevice(
     capability: SetCapability<MELCloudDriverAta>,
-    value: CapabilityValue = this.getCapabilityValue(
-      capability,
-    ) as CapabilityValue,
+    value: CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') === true ? true : (value as boolean)
       case 'operation_mode':
-        return Number(operationModeToDevice[value as string])
+        return operationModeToDevice[value as string]
       case 'vertical':
-        return Number(verticalToDevice[value as string])
+        return verticalToDevice[value as string]
       case 'horizontal':
-        return Number(horizontalToDevice[value as string])
+        return horizontalToDevice[value as string]
       default:
         return value as SetDeviceValue
     }
@@ -120,7 +104,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice(
-    capability: ExtendedCapability<MELCloudDriverAta>,
+    capability: Capability<MELCloudDriverAta> | 'thermostat_mode',
     value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {
@@ -144,5 +128,10 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
       'thermostat_mode',
       isOn && isThermostatMode(operationMode) ? operationMode : 'off',
     )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected async updateStore(): Promise<void> {
+    // Not implemented.
   }
 }
