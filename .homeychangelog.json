@@ -130,5 +130,8 @@
   },
   "22.0.0": {
     "en": "Use decorator."
+  },
+  "23.0.0": {
+    "en": "Introduce ERV devices in Homey."
   }
 }
