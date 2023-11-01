@@ -1,0 +1,69 @@
+{
+  "title": {
+    "en": "The ventilation mode !{{is|is not}}",
+    "fr": "Le mode de ventilation !{{est|n'est pas}}",
+    "nl": "De ventilatiemodus !{{is|is niet}}",
+    "sv": "Ventilationsläget !{{är|är inte}}",
+    "no": "Ventilasjonsmodusen !{{er|er ikke}}",
+    "da": "Ventilationstilstanden !{{er|er ikke}}",
+    "es": "El modo de ventilación !{{está|no está}}"
+  },
+  "titleFormatted": {
+    "en": "The ventilation mode !{{is|is not}} [[ventilation_mode]]",
+    "fr": "Le mode de ventilation !{{est|n'est pas}} [[ventilation_mode]]",
+    "nl": "De ventilatiemodus !{{is|is niet}} [[ventilation_mode]]",
+    "sv": "Ventilationsläget !{{är|är inte}} [[ventilation_mode]]",
+    "no": "Ventilasjonsmodusen !{{er|er ikke}} [[ventilation_mode]]",
+    "da": "Ventilationstilstanden !{{er|er ikke}} [[ventilation_mode]]",
+    "es": "El modo de ventilación !{{está|no está}} [[ventilation_mode]]"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_erv"
+    },
+    {
+      "name": "ventilation_mode",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "recovery",
+          "title": {
+            "en": "Energy Recovery",
+            "fr": "Récupération d'énergie",
+            "nl": "Warmteterugwinning",
+            "sv": "Värmeåtervinning",
+            "no": "Varmegjenvinning",
+            "da": "Varmegenvinding",
+            "es": "Recuperación de energía"
+          }
+        },
+        {
+          "id": "bypass",
+          "title": {
+            "en": "Bypass",
+            "fr": "Bypass",
+            "nl": "Bypass",
+            "sv": "Bypass",
+            "no": "Bypass",
+            "da": "Bypass",
+            "es": "Bypass"
+          }
+        },
+        {
+          "id": "auto",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        }
+      ]
+    }
+  ]
+}

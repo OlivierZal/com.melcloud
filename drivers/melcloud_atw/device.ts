@@ -2,16 +2,15 @@ import { DateTime } from 'luxon'
 import BaseMELCloudDevice from '../../bases/device'
 import type MELCloudDriverAtw from './driver'
 import type {
+  Capability,
   CapabilityValue,
   DeviceValue,
-  ExtendedCapability,
-  ExtendedSetCapability,
   SetCapability,
   SetDeviceValue,
   Store,
 } from '../../types'
 
-const operationModeFromDevice: readonly string[] = [
+const operationModes: readonly string[] = [
   'idle',
   'dhw',
   'heating',
@@ -19,6 +18,14 @@ const operationModeFromDevice: readonly string[] = [
   'defrost',
   'standby',
   'legionella',
+] as const
+
+const operationModeZoneFromDevice: readonly string[] = [
+  'room',
+  'flow',
+  'cool',
+  'room_cool',
+  'flow_cool',
 ] as const
 
 function getOtherCapabilityZone(capability: string): string {
@@ -39,27 +46,27 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   protected async specificOnCapability(
-    capability: ExtendedSetCapability<MELCloudDriverAtw>,
+    capability: SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue,
   ): Promise<void> {
     this.diff.set(capability, value)
     if (capability.startsWith('operation_mode_zone')) {
-      await this.handleOperationModeZones(capability, value)
+      await this.handleOperationModeZones(capability, value as string)
     }
   }
 
   protected async handleOperationModeZones(
-    capability: ExtendedSetCapability<MELCloudDriverAtw>,
-    value: CapabilityValue,
+    capability: SetCapability<MELCloudDriverAtw>,
+    value: string,
   ): Promise<void> {
     const { CanCool, HasZone2 } = this.getStore() as Store
     if (HasZone2) {
-      const zoneValue = Number(value)
-      const otherZone: ExtendedSetCapability<MELCloudDriverAtw> =
-        getOtherCapabilityZone(
-          capability,
-        ) as ExtendedSetCapability<MELCloudDriverAtw>
-      let otherZoneValue = Number(this.getCapabilityValue(otherZone))
+      const zoneValue: number = operationModeZoneFromDevice.indexOf(value)
+      const otherZoneCapability: SetCapability<MELCloudDriverAtw> =
+        getOtherCapabilityZone(capability) as SetCapability<MELCloudDriverAtw>
+      let otherZoneValue: number = operationModeZoneFromDevice.indexOf(
+        this.getRequestedOrCurrentValue(otherZoneCapability) as string,
+      )
       if (CanCool) {
         if (zoneValue > 2) {
           if (otherZoneValue < 3) {
@@ -72,16 +79,17 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
         otherZoneValue += 1
       }
-      this.diff.set(otherZone, String(otherZoneValue))
+      this.diff.set(
+        otherZoneCapability,
+        operationModeZoneFromDevice[otherZoneValue],
+      )
       await this.setDisplayErrorWarning()
     }
   }
 
   protected convertToDevice(
     capability: SetCapability<MELCloudDriverAtw>,
-    value: CapabilityValue = this.getCapabilityValue(
-      capability,
-    ) as CapabilityValue,
+    value: CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
@@ -90,14 +98,14 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        return Number(value)
+        return operationModeZoneFromDevice.indexOf(value as string)
       default:
         return value as SetDeviceValue
     }
   }
 
   protected convertFromDevice(
-    capability: ExtendedCapability<MELCloudDriverAtw>,
+    capability: Capability<MELCloudDriverAtw>,
     value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {
@@ -109,7 +117,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'measure_power.produced':
         return (value as number) * 1000
       case 'operation_mode_state':
-        return operationModeFromDevice[value as number]
+        return operationModes[value as number]
       case 'operation_mode_state.zone1':
       case 'operation_mode_state.zone2':
         return (value as boolean)
@@ -119,7 +127,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        return String(value)
+        return operationModeZoneFromDevice[value as number]
       case 'alarm_generic.defrost_mode':
         return Boolean(value)
       default:

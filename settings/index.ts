@@ -807,9 +807,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   function generateCheckboxChildrenElements(driverId: string): void {
-    const settingsElement: HTMLDivElement = document.getElementById(
+    const settingsElement: HTMLDivElement | null = document.getElementById(
       `settings-${driverId}`,
-    ) as HTMLDivElement
+    ) as HTMLDivElement | null
+    if (!settingsElement) {
+      return
+    }
     const fieldSetElement: HTMLFieldSetElement =
       document.createElement('fieldset')
     fieldSetElement.className = 'homey-form-checkbox-set'

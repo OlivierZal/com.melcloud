@@ -241,20 +241,6 @@
           "es": "Última operación legionella"
         },
         "value": true
-      },
-      {
-        "id": "measure_power.wifi",
-        "type": "checkbox",
-        "label": {
-          "en": "Wifi signal strength",
-          "fr": "Puissance du signal wifi",
-          "nl": "Wifi signaalsterkte",
-          "sv": "Wifi signalstyrka",
-          "no": "Wifi signalstyrke",
-          "da": "Wifi signalstyrke",
-          "es": "Potencia de señal wifi"
-        },
-        "value": false
       }
     ]
   },

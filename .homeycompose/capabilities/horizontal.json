@@ -87,18 +87,6 @@
       }
     },
     {
-      "id": "split",
-      "title": {
-        "en": "Split",
-        "fr": "Divisé",
-        "nl": "Gesplitst",
-        "sv": "Delad",
-        "no": "Delt",
-        "da": "Delt",
-        "es": "Dividida"
-      }
-    },
-    {
       "id": "swing",
       "title": {
         "en": "Swing",

@@ -7,7 +7,8 @@
 This app integrates MELCloud into Homey to control:
 
 - air-to-air heat pumps;
-- air-to-water heat pumps.
+- air-to-water heat pumps;
+- energy recovery ventilators (ERV).
 
 ## Usage
 

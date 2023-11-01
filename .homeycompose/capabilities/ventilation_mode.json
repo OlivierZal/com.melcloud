@@ -1,0 +1,55 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Ventilation mode",
+    "fr": "Mode de ventilation",
+    "nl": "Ventilatiemodus",
+    "sv": "Ventilationsläge",
+    "no": "Ventilasjonsmodus",
+    "da": "Ventilationstilstand",
+    "es": "Modo de ventilación"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "uiQuickAction": false,
+  "insights": true,
+  "values": [
+    {
+      "id": "recovery",
+      "title": {
+        "en": "Energy Recovery",
+        "fr": "Récupération d'énergie",
+        "nl": "Warmteterugwinning",
+        "sv": "Värmeåtervinning",
+        "no": "Varmegjenvinning",
+        "da": "Varmegenvinding",
+        "es": "Recuperación de energía"
+      }
+    },
+    {
+      "id": "bypass",
+      "title": {
+        "en": "Bypass",
+        "fr": "Bypass",
+        "nl": "Bypass",
+        "sv": "Bypass",
+        "no": "Bypass",
+        "da": "Bypass",
+        "es": "Bypass"
+      }
+    },
+    {
+      "id": "auto",
+      "title": {
+        "en": "Automatic",
+        "fr": "Automatique",
+        "nl": "Automatisch",
+        "sv": "Automatiskt",
+        "no": "Automatisk",
+        "da": "Automatisk",
+        "es": "Automático"
+      }
+    }
+  ]
+}

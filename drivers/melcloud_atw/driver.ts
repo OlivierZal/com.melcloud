@@ -58,7 +58,6 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
   ]
 
   public async onInit(): Promise<void> {
-    await super.onInit()
     this.deviceType = 1
     this.heatPumpType = 'Atw'
 
@@ -67,6 +66,28 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     this.listCapabilityMapping = listCapabilityMappingAtw
     this.reportCapabilityMapping = reportCapabilityMappingAtw
 
+    await super.onInit()
+  }
+
+  public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
+    return [
+      ...this.capabilitiesAtw,
+      ...(CanCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
+      ...(HasZone2
+        ? [
+            ...this.zone2CapabilitiesAtw,
+            ...(CanCool
+              ? this.coolZone2CapabilitiesAtw
+              : this.notCoolZone2CapabilitiesAtw),
+          ]
+        : []),
+      'measure_power',
+      'measure_power.produced',
+      'measure_power.wifi',
+    ]
+  }
+
+  protected registerFlowListeners(): void {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     ;(this.manifest.capabilities as SetCapabilityAtw[]).forEach(
       (capability: SetCapabilityAtw): void => {
@@ -79,7 +100,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 operation_mode_state: string
               }): boolean =>
                 args.operation_mode_state ===
-                args.device.getCapabilityValue('operation_mode_state'),
+                args.device.getCapabilityValue(capability),
             )
         } else if (
           capability.startsWith('alarm_generic') ||
@@ -151,22 +172,5 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
         }
       },
     )
-  }
-
-  public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
-    return [
-      ...this.capabilitiesAtw,
-      ...(CanCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
-      ...(HasZone2
-        ? [
-            ...this.zone2CapabilitiesAtw,
-            ...(CanCool
-              ? this.coolZone2CapabilitiesAtw
-              : this.notCoolZone2CapabilitiesAtw),
-          ]
-        : []),
-      'measure_power',
-      'measure_power.produced',
-    ]
   }
 }

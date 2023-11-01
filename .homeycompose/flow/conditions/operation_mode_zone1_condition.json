@@ -28,7 +28,7 @@
       "type": "dropdown",
       "values": [
         {
-          "id": "0",
+          "id": "room",
           "title": {
             "en": "Indoor temperature",
             "fr": "Température intérieure",
@@ -40,7 +40,7 @@
           }
         },
         {
-          "id": "1",
+          "id": "flow",
           "title": {
             "en": "Fixed flow temperature",
             "fr": "Température de flux fixe",
@@ -52,7 +52,7 @@
           }
         },
         {
-          "id": "2",
+          "id": "curve",
           "title": {
             "en": "Weather compensation curve",
             "fr": "Courbe de compensation météo",
