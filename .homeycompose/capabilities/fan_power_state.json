@@ -9,10 +9,9 @@
     "da": "Aktuel blæserhastighed",
     "es": "Velocidad actual del ventilador"
   },
-  "uiComponent": "sensor",
-  "insights": true,
   "getable": true,
   "setable": false,
-  "uiQuickAction": false,
+  "insights": true,
+  "uiComponent": "sensor",
   "icon": "/assets/fan_power_state.svg"
 }

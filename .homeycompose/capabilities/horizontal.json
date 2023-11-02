@@ -12,7 +12,6 @@
   "getable": true,
   "setable": true,
   "uiComponent": "picker",
-  "uiQuickAction": false,
   "values": [
     {
       "id": "auto",

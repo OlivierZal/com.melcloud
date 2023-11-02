@@ -11,9 +11,8 @@
   },
   "getable": true,
   "setable": true,
-  "uiComponent": "picker",
-  "uiQuickAction": false,
   "insights": true,
+  "uiComponent": "picker",
   "values": [
     {
       "id": "heat",

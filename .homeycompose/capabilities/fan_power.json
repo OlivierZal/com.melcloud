@@ -9,10 +9,10 @@
     "da": "Blæserhastighed",
     "es": "Velocidad del ventilador"
   },
-  "uiComponent": "slider",
-  "insights": true,
   "getable": true,
   "setable": true,
+  "insights": true,
+  "uiComponent": "slider",
   "min": 0,
   "max": 5,
   "step": 1

@@ -9,10 +9,9 @@
     "da": "Seneste legionella-drift",
     "es": "Última operación legionella"
   },
-  "uiComponent": "sensor",
-  "insights": true,
   "getable": true,
   "setable": false,
-  "uiQuickAction": false,
+  "insights": true,
+  "uiComponent": "sensor",
   "icon": "/assets/last_legionella.svg"
 }
