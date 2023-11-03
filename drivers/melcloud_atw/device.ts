@@ -112,7 +112,11 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
-        }).toLocaleString(DateTime.DATE_HUGE)
+        }).toLocaleString({
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+        })
       case 'measure_power':
       case 'measure_power.produced':
         return (value as number) * 1000
