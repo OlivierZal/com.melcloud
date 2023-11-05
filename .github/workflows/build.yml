@@ -41,13 +41,13 @@ jobs:
           git config --local user.email "actions@github.com"
           git add -A
           if ! git diff --cached --exit-code; then
-            git commit -m "Code maintenance: bump version, update dependencies, lint & format"
+            git commit -m "Code maintenance: bump version, lint & format"
             if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
               echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
               BRANCH_NAME="maintenance-$(date +'%Y%m%d%H%M%S')"
               git checkout -b $BRANCH_NAME
               git push origin $BRANCH_NAME
-              gh pr create --base main --head $BRANCH_NAME --title "Maintenance PR" --body "Automatic code maintenance: bump version, update dependencies, lint and format."
+              gh pr create --base main --head $BRANCH_NAME --title "Maintenance PR" --body "Automatic code maintenance: bump version, lint and format."
               gh pr merge --auto --squash ${{ github.event.pull_request.html_url }}
             else
               git pull origin ${{ github.head_ref }} --rebase
