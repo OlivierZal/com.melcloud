@@ -102,7 +102,9 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true ? true : (value as boolean)
+        return (this.getSetting('always_on') as boolean)
+          ? true
+          : (value as boolean)
       case 'operation_mode':
         return operationModeToDevice[value as string]
       case 'vertical':

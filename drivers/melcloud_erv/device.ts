@@ -29,7 +29,9 @@ export = class MELCloudDeviceErv extends BaseMELCloudDevice {
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true ? true : (value as boolean)
+        return (this.getSetting('always_on') as boolean)
+          ? true
+          : (value as boolean)
       case 'ventilation_mode':
         return ventilationModes.indexOf(value as string)
       default:

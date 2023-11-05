@@ -151,7 +151,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
           Object.entries(newSettings).every(
             ([setting, value]: [string, SettingValue]) =>
               !(setting in (this.driver.reportCapabilityMapping ?? {})) ||
-              value !== true,
+              (typeof value === 'boolean' && !(value as boolean)),
           )
         ) {
           this.clearEnergyReportPlan(total)
@@ -209,7 +209,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   protected async setAlwaysOnWarning(): Promise<void> {
-    if (this.getSetting('always_on') === true) {
+    if (this.getSetting('always_on') as boolean) {
       await this.setWarning(this.homey.__('warnings.always_on'))
       await this.setWarning(null)
     }
@@ -631,17 +631,18 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
-    await changedCapabilities.reduce<Promise<void>>(
-      async (acc, capability: string) => {
+    await changedCapabilities
+      .filter(
+        (capability: string) => typeof newSettings[capability] === 'boolean',
+      )
+      .reduce<Promise<void>>(async (acc, capability: string) => {
         await acc
-        if (newSettings[capability] === true) {
+        if (newSettings[capability] as boolean) {
           await this.addCapability(capability)
         } else {
           await this.removeCapability(capability)
         }
-      },
-      Promise.resolve(),
-    )
+      }, Promise.resolve())
   }
 
   private clearEnergyReportPlans(): void {
