@@ -69,7 +69,15 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
         error.config?.url,
         error.response?.data ?? error,
       )
+      await this.setErrorWarning(error)
       return Promise.reject(error)
+    }
+
+    private async setErrorWarning(error: AxiosError): Promise<void> {
+      if (!this.setWarning) {
+        return
+      }
+      await this.setWarning(error.message)
     }
   }
 }
