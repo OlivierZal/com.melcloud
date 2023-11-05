@@ -60,7 +60,7 @@ export = class MELCloudDriverErv extends BaseMELCloudDriver {
         .getActionCard(`${capability}_erv_action`)
         .registerRunListener(
           async (args: FlowArgs<MELCloudDriverErv>): Promise<void> => {
-            await args.device.onCapability(
+            await args.device.triggerCapabilityListener(
               capability,
               getCapabilityArg(args, capability),
             )

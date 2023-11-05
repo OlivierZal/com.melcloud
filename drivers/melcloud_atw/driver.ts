@@ -120,7 +120,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                   device: MELCloudDeviceAtw
                   onoff: 'false' | 'true'
                 }): Promise<void> => {
-                  await args.device.onCapability(
+                  await args.device.triggerCapabilityListener(
                     capability,
                     args.onoff === 'true',
                   )
@@ -149,7 +149,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 device: MELCloudDeviceAtw
                 operation_mode_zone: string
               }): Promise<void> => {
-                await args.device.onCapability(
+                await args.device.triggerCapabilityListener(
                   capability,
                   args.operation_mode_zone,
                 )
@@ -163,7 +163,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 device: MELCloudDeviceAtw
                 target_temperature: number
               }): Promise<void> => {
-                await args.device.onCapability(
+                await args.device.triggerCapabilityListener(
                   capability,
                   args.target_temperature,
                 )

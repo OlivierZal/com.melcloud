@@ -63,7 +63,7 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
         .getActionCard(`${capability}_action`)
         .registerRunListener(
           async (args: FlowArgs<MELCloudDriverAta>): Promise<void> => {
-            await args.device.onCapability(
+            await args.device.triggerCapabilityListener(
               capability,
               getCapabilityArg(args, capability),
             )
