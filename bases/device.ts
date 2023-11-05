@@ -26,7 +26,6 @@ import type {
   SetDeviceData,
   SetDeviceValue,
   Settings,
-  SettingValue,
   Store,
   SyncFromMode,
   SyncMode,
@@ -118,7 +117,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       await this.setWarning(null)
     }
 
-    if (changedKeys.includes('always_on') && newSettings.always_on === true) {
+    if (
+      changedKeys.includes('always_on') &&
+      newSettings.always_on === true &&
+      !(this.getCapabilityValue('onoff') as boolean)
+    ) {
       await this.onCapability('onoff', true)
     } else if (
       changedKeys.some(
@@ -130,9 +133,13 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       this.app.applySyncFromDevices()
     }
 
-    const changedEnergyKeys: string[] = changedKeys.filter(
+    const settingsEnergyKeys: string[] = Object.keys(newSettings).filter(
       (setting: string) =>
+        typeof newSettings[setting] === 'boolean' &&
         setting in (this.driver.reportCapabilityMapping ?? {}),
+    )
+    const changedEnergyKeys: string[] = changedKeys.filter((setting: string) =>
+      settingsEnergyKeys.includes(setting),
     )
     if (!changedEnergyKeys.length) {
       return
@@ -148,10 +155,8 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         if (changed.some((setting: string) => newSettings[setting])) {
           await this.runEnergyReport(total)
         } else if (
-          Object.entries(newSettings).every(
-            ([setting, value]: [string, SettingValue]) =>
-              !(setting in (this.driver.reportCapabilityMapping ?? {})) ||
-              (typeof value === 'boolean' && !(value as boolean)),
+          settingsEnergyKeys.every(
+            (setting: string) => !(newSettings[setting] as boolean),
           )
         ) {
           this.clearEnergyReportPlan(total)
