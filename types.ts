@@ -47,12 +47,16 @@ export interface Settings
 
 export type SettingValue = ValueOf<Settings>
 
-export interface HomeySettings {
-  readonly username: string | null
-  readonly password: string | null
-  readonly ContextKey: string | null
-  readonly Expiry: string | null
+interface BaseHomeySettingValue<T> {
+  readonly username: T
+  readonly password: T
+  readonly ContextKey: T
+  readonly Expiry: T
 }
+
+export type HomeySettings = BaseHomeySettingValue<string | null>
+
+export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
 
 export type HomeySettingValue = ValueOf<HomeySettings>
 
