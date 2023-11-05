@@ -114,7 +114,6 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     if (changedCapabilities.length) {
       await this.handleDashboardCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
-      await this.setWarning(null)
     }
 
     if (
@@ -213,16 +212,19 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     }
   }
 
+  public async setWarning(warning: string | null): Promise<void> {
+    await this.unsetWarning()
+    await super.setWarning(warning)
+  }
+
   protected async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on') as boolean) {
       await this.setWarning(this.homey.__('warnings.always_on'))
-      await this.setWarning(null)
     }
   }
 
   protected async setDisplayErrorWarning(): Promise<void> {
     await this.setWarning(this.homey.__('warnings.display_error'))
-    await this.setWarning(null)
   }
 
   protected async handleCapabilities(): Promise<void> {
