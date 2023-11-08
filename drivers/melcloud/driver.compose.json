@@ -296,9 +296,6 @@
     "target_temperature": {
       "min": 10,
       "max": 38
-    },
-    "thermostat_mode": {
-      "insights": true
     }
   }
 }
