@@ -121,7 +121,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       newSettings.always_on === true &&
       !(this.getCapabilityValue('onoff') as boolean)
     ) {
-      await this.onCapability('onoff', true)
+      await this.triggerCapabilityListener('onoff', true)
     } else if (
       changedKeys.some(
         (setting: string) =>
