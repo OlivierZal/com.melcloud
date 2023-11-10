@@ -8,11 +8,11 @@ import type {
   SetDeviceValue,
 } from '../../types'
 
-const ventilationModes: readonly string[] = [
-  'recovery',
-  'bypass',
-  'auto',
-] as const
+enum VentilationMode {
+  recovery = 0,
+  bypass = 1,
+  auto = 2,
+}
 
 export = class MELCloudDeviceErv extends BaseMELCloudDevice {
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -33,7 +33,7 @@ export = class MELCloudDeviceErv extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'ventilation_mode':
-        return ventilationModes.indexOf(value as string)
+        return VentilationMode[value as keyof typeof VentilationMode]
       default:
         return value as SetDeviceValue
     }
@@ -45,7 +45,7 @@ export = class MELCloudDeviceErv extends BaseMELCloudDevice {
     value: DeviceValue,
   ): CapabilityValue {
     if (capability === 'ventilation_mode') {
-      return ventilationModes[value as number]
+      return VentilationMode[value as number]
     }
     return value
   }

@@ -8,60 +8,37 @@ import type {
   SetDeviceValue,
 } from '../../types'
 
-function reverseMapping(
-  mapping: Record<number, string>,
-): Record<string, number> {
-  return Object.fromEntries(
-    Object.entries(mapping).map(
-      ([deviceValue, capabilityValue]: [string, string]): [string, number] => [
-        capabilityValue,
-        Number(deviceValue),
-      ],
-    ),
-  )
-}
-
 function isThermostatMode(value: string): boolean {
   return !['dry', 'fan'].includes(value)
 }
 
-const operationModeFromDevice: Record<number, string> = {
-  1: 'heat',
-  2: 'dry',
-  3: 'cool',
-  7: 'fan',
-  8: 'auto',
-} as const
+enum OperationMode {
+  heat = 1,
+  dry = 2,
+  cool = 3,
+  fan = 7,
+  auto = 8,
+}
 
-const operationModeToDevice: Record<string, number> = reverseMapping(
-  operationModeFromDevice,
-)
+enum Vertical {
+  auto = 0,
+  top = 1,
+  middletop = 2,
+  middle = 3,
+  middlebottom = 4,
+  bottom = 5,
+  swing = 7,
+}
 
-const verticalFromDevice: Record<number, string> = {
-  0: 'auto',
-  1: 'top',
-  2: 'middletop',
-  3: 'middle',
-  4: 'middlebottom',
-  5: 'bottom',
-  7: 'swing',
-} as const
-
-const verticalToDevice: Record<string, number> =
-  reverseMapping(verticalFromDevice)
-
-const horizontalFromDevice: Record<number, string> = {
-  0: 'auto',
-  1: 'left',
-  2: 'middleleft',
-  3: 'middle',
-  4: 'middleright',
-  5: 'right',
-  12: 'swing',
-} as const
-
-const horizontalToDevice: Record<string, number> =
-  reverseMapping(horizontalFromDevice)
+enum Horizontal {
+  auto = 0,
+  left = 1,
+  middleleft = 2,
+  middle = 3,
+  middleright = 4,
+  right = 5,
+  swing = 12,
+}
 
 export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   public async onInit(): Promise<void> {
@@ -106,11 +83,11 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'operation_mode':
-        return operationModeToDevice[value as string]
+        return OperationMode[value as keyof typeof OperationMode]
       case 'vertical':
-        return verticalToDevice[value as string]
+        return Vertical[value as keyof typeof Vertical]
       case 'horizontal':
-        return horizontalToDevice[value as string]
+        return Horizontal[value as keyof typeof Horizontal]
       default:
         return value as SetDeviceValue
     }
@@ -123,11 +100,11 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
-        return operationModeFromDevice[value as number]
+        return OperationMode[value as number]
       case 'vertical':
-        return verticalFromDevice[value as number]
+        return Vertical[value as number]
       case 'horizontal':
-        return horizontalFromDevice[value as number]
+        return Horizontal[value as number]
       default:
         return value
     }

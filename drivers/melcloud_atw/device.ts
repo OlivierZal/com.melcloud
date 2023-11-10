@@ -10,23 +10,23 @@ import type {
   Store,
 } from '../../types'
 
-const operationModes: readonly string[] = [
-  'idle',
-  'dhw',
-  'heating',
-  'cooling',
-  'defrost',
-  'standby',
-  'legionella',
-] as const
+enum OperationMode {
+  idle = 0,
+  dhw = 1,
+  heating = 2,
+  cooling = 3,
+  defrost = 4,
+  standby = 5,
+  legionella = 6,
+}
 
-const operationModeZoneFromDevice: readonly string[] = [
-  'room',
-  'flow',
-  'cool',
-  'room_cool',
-  'flow_cool',
-] as const
+enum OperationModeZone {
+  room = 0,
+  flow = 1,
+  cool = 2,
+  room_cool = 3,
+  flow_cool = 4,
+}
 
 function getOtherCapabilityZone(capability: string): string {
   return capability.endsWith('.zone1')
@@ -61,12 +61,16 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   ): Promise<void> {
     const { CanCool, HasZone2 } = this.getStore() as Store
     if (HasZone2) {
-      const zoneValue: number = operationModeZoneFromDevice.indexOf(value)
+      const zoneValue: number =
+        OperationModeZone[value as keyof typeof OperationModeZone]
       const otherZoneCapability: SetCapability<MELCloudDriverAtw> =
         getOtherCapabilityZone(capability) as SetCapability<MELCloudDriverAtw>
-      let otherZoneValue: number = operationModeZoneFromDevice.indexOf(
-        this.getRequestedOrCurrentValue(otherZoneCapability) as string,
-      )
+      let otherZoneValue: number =
+        OperationModeZone[
+          this.getRequestedOrCurrentValue(
+            otherZoneCapability,
+          ) as keyof typeof OperationModeZone
+        ]
       if (CanCool) {
         if (zoneValue > 2) {
           if (otherZoneValue < 3) {
@@ -79,10 +83,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
         otherZoneValue += 1
       }
-      this.diff.set(
-        otherZoneCapability,
-        operationModeZoneFromDevice[otherZoneValue],
-      )
+      this.diff.set(otherZoneCapability, OperationModeZone[otherZoneValue])
       await this.setDisplayErrorWarning()
     }
   }
@@ -100,7 +101,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        return operationModeZoneFromDevice.indexOf(value as string)
+        return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
         return value as SetDeviceValue
     }
@@ -123,7 +124,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'measure_power.produced':
         return (value as number) * 1000
       case 'operation_mode_state':
-        return operationModes[value as number]
+        return OperationMode[value as number]
       case 'operation_mode_state.zone1':
       case 'operation_mode_state.zone2':
         return (value as boolean)
@@ -133,7 +134,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone.zone2':
       case 'operation_mode_zone_with_cool.zone1':
       case 'operation_mode_zone_with_cool.zone2':
-        return operationModeZoneFromDevice[value as number]
+        return OperationModeZone[value as number]
       case 'alarm_generic.defrost_mode':
         return Boolean(value)
       default:
