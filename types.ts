@@ -295,8 +295,8 @@ export type SetCapability<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
     ? SetCapabilityAtw
     : T extends MELCloudDriverAta
-    ? SetCapabilityAta
-    : SetCapabilityErv
+      ? SetCapabilityAta
+      : SetCapabilityErv
 
 type GetCapabilityAta = keyof GetCapabilitiesAta
 
@@ -307,8 +307,8 @@ export type GetCapabilityAtw = keyof GetCapabilitiesAtw
 type GetCapability<T extends MELCloudDriver> = T extends MELCloudDriverAtw
   ? GetCapabilityAtw
   : T extends MELCloudDriverAta
-  ? GetCapabilityAta
-  : GetCapabilityErv
+    ? GetCapabilityAta
+    : GetCapabilityErv
 
 type ListCapabilityAta = keyof ListCapabilitiesAta
 
@@ -319,8 +319,8 @@ export type ListCapabilityAtw = keyof ListCapabilitiesAtw
 type ListCapability<T extends MELCloudDriver> = T extends MELCloudDriverAtw
   ? ListCapabilityAtw
   : T extends MELCloudDriverAta
-  ? ListCapabilityAta
-  : ListCapabilityErv
+    ? ListCapabilityAta
+    : ListCapabilityErv
 
 type ReportCapabilityAta = keyof ReportCapabilitiesAta
 
@@ -330,8 +330,8 @@ export type ReportCapability<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
     ? ReportCapabilityAtw
     : T extends MELCloudDriverAta
-    ? ReportCapabilityAta
-    : never
+      ? ReportCapabilityAta
+      : never
 
 export type NonReportCapability<T extends MELCloudDriver> =
   | GetCapability<T>
@@ -378,8 +378,8 @@ export type UpdateDeviceData<T extends MELCloudDriver> = T & {
 } extends MELCloudDriverAtw
   ? UpdateDeviceDataAtw
   : T extends MELCloudDriverAta
-  ? UpdateDeviceDataAta
-  : UpdateDeviceDataErv
+    ? UpdateDeviceDataAta
+    : UpdateDeviceDataErv
 
 type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
 
@@ -416,8 +416,8 @@ export type GetDeviceData<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
     ? GetDeviceDataAtw
     : T extends MELCloudDriverAta
-    ? GetDeviceDataAta
-    : GetDeviceDataErv
+      ? GetDeviceDataAta
+      : GetDeviceDataErv
 
 export type PostData<T extends MELCloudDriver> = SetDeviceData<T> & {
   readonly DeviceID: number
@@ -472,8 +472,8 @@ export type ListDeviceData<T extends MELCloudDriver> =
   T extends MELCloudDriverAtw
     ? ListDeviceDataAtw
     : T extends MELCloudDriverErv
-    ? ListDeviceDataErv
-    : ListDeviceDataAta
+      ? ListDeviceDataErv
+      : ListDeviceDataAta
 
 export interface ReportPostData {
   readonly DeviceID: number
@@ -968,8 +968,8 @@ export type FlowArgs<T extends MELCloudDriver> = Record<
   readonly device: T extends MELCloudDriverAtw
     ? MELCloudDeviceAtw
     : T extends MELCloudDriverAta
-    ? MELCloudDeviceAta
-    : MELCloudDeviceErv
+      ? MELCloudDeviceAta
+      : MELCloudDeviceErv
 }
 
 export interface LoginPostData {
