@@ -18,6 +18,16 @@ export function getAPIErrorMessage(error: AxiosError): string {
   return error.message
 }
 
+export function getErrorMessage(error: unknown): string {
+  let errorMessage = String(error)
+  if (axios.isAxiosError(error)) {
+    errorMessage = getAPIErrorMessage(error)
+  } else if (error instanceof Error) {
+    errorMessage = error.message
+  }
+  return errorMessage
+}
+
 export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
   return class extends base {
     public api: AxiosInstance
