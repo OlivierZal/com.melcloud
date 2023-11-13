@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "axios": "^1.6.1",
-    "luxon": "^3.4.3",
+    "luxon": "^3.4.4",
     "source-map-support": "^0.5.21"
   }
 }
