@@ -187,11 +187,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     }
     this.deviceList = deviceList
     this.deviceIds = buildingData.deviceIds
-    try {
-      await this.syncDevicesFromList(syncMode)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
-    }
+    await this.syncDevicesFromList(syncMode)
     this.planSyncFromDevices()
     return deviceList
   }
@@ -354,7 +350,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     try {
       await this.login(loginCredentials)
     } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
+      // Logged by `withAPI`
     }
   }
 
