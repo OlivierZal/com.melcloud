@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
-import withAPI from './mixins/withAPI'
+import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 import type {
   Building,
@@ -93,7 +93,13 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       await this.refreshLogin()
       return true
     } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : String(error))
+      let errorMessage = String(error)
+      if (axios.isAxiosError(error)) {
+        errorMessage = getErrorMessage(error)
+      } else if (error instanceof Error) {
+        errorMessage = error.message
+      }
+      throw new Error(errorMessage)
     }
   }
 
@@ -204,7 +210,13 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       const { data } = await this.api.get<Building[]>('/User/ListDevices')
       return data
     } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : String(error))
+      let errorMessage = String(error)
+      if (axios.isAxiosError(error)) {
+        errorMessage = getErrorMessage(error)
+      } else if (error instanceof Error) {
+        errorMessage = error.message
+      }
+      throw new Error(errorMessage)
     }
   }
 

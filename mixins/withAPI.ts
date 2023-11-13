@@ -14,7 +14,7 @@ type APIClass = new (...args: any[]) => {
   api: AxiosInstance
 }
 
-function getErrorMessage(error: AxiosError): string {
+export function getErrorMessage(error: AxiosError): string {
   return error.message
 }
 
