@@ -79,18 +79,6 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     return this.diff.size > 0
   }
 
-  public async onCapability<T extends MELCloudDriver>(
-    capability: SetCapability<T> | 'thermostat_mode',
-    value: CapabilityValue,
-  ): Promise<void> {
-    this.clearSync()
-    if (capability === 'onoff') {
-      await this.setAlwaysOnWarning()
-    }
-    await this.specificOnCapability(capability, value)
-    this.applySyncToDevice()
-  }
-
   public async syncDeviceFromList<T extends MELCloudDriver>(
     syncMode?: SyncFromMode,
   ): Promise<void> {
@@ -276,6 +264,18 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): CapabilityValue {
     return (this.diff.get(capability) ??
       this.getCapabilityValue(capability)) as CapabilityValue
+  }
+
+  private async onCapability<T extends MELCloudDriver>(
+    capability: SetCapability<T> | 'thermostat_mode',
+    value: CapabilityValue,
+  ): Promise<void> {
+    this.clearSync()
+    if (capability === 'onoff') {
+      await this.setAlwaysOnWarning()
+    }
+    await this.specificOnCapability(capability, value)
+    this.applySyncToDevice()
   }
 
   private async setDeviceData<
