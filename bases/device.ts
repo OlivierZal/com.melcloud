@@ -61,6 +61,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
 
   public async onInit<T extends MELCloudDriver>(): Promise<void> {
+    await this.setWarning(null)
     this.app = this.homey.app as MELCloudApp
 
     const { id, buildingid } = this.getData() as DeviceDetails['data']
@@ -201,7 +202,9 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public async setWarning(warning: string | null): Promise<void> {
-    await super.setWarning(warning)
+    if (warning !== null && warning) {
+      await super.setWarning(warning)
+    }
     await super.setWarning(null)
   }
 
