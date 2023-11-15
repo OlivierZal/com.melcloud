@@ -202,7 +202,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public async setWarning(warning: string | null): Promise<void> {
-    if (warning !== null && warning) {
+    if (warning !== null) {
       await super.setWarning(warning)
     }
     await super.setWarning(null)
