@@ -11,7 +11,7 @@ import axios, {
 import type { HomeyClass, HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => {
-  api: AxiosInstance
+  readonly api: AxiosInstance
 }
 
 function getAPIErrorMessage(error: AxiosError): string {
@@ -85,10 +85,9 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
     }
 
     private async setErrorWarning(warning: string | null): Promise<void> {
-      if (!this.setWarning) {
-        return
+      if (this.setWarning) {
+        await this.setWarning(warning)
       }
-      await this.setWarning(warning)
     }
   }
 }
