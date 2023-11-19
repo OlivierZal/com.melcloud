@@ -79,19 +79,18 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         '/Login/ClientLogin',
         postData,
       )
-      if (data.LoginData?.ContextKey === undefined) {
-        return false
+      if (data.LoginData !== null) {
+        const { ContextKey, Expiry } = data.LoginData
+        this.setSettings({
+          ContextKey,
+          Expiry,
+          username,
+          password,
+        })
+        this.applySyncFromDevices()
+        await this.refreshLogin()
       }
-      const { ContextKey, Expiry } = data.LoginData
-      this.setSettings({
-        ContextKey,
-        Expiry,
-        username,
-        password,
-      })
-      this.applySyncFromDevices()
-      await this.refreshLogin()
-      return true
+      return data.LoginData !== null
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error))
     }

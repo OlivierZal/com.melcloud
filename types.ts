@@ -980,10 +980,10 @@ export interface LoginPostData {
 }
 
 export interface LoginData {
-  readonly LoginData?: {
+  readonly LoginData: {
     readonly ContextKey: string
     readonly Expiry: string
-  }
+  } | null
 }
 
 export interface FrostProtectionSettings {
