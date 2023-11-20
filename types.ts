@@ -512,92 +512,147 @@ export type ReportData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
   ? ReportDataAtw
   : ReportDataAta
 
-interface SetCapabilityMappingAta {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
-}
-
-interface SetCapabilityMappingErv {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
-}
-
-interface SetCapabilityMappingAtw {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
-}
-
-export type SetCapabilityMappingAny =
-  | Record<SetCapabilityAta, SetCapabilityMappingAta>
-  | Record<SetCapabilityAtw, SetCapabilityMappingAtw>
-  | Record<SetCapabilityErv, SetCapabilityMappingErv>
-
-export interface SetCapabilityMapping<T extends MELCloudDriver> {
+export interface SetCapabilityAttributes<T extends MELCloudDriver> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
 }
 
-interface GetCapabilityMappingAta {
-  readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'>
+interface SetCapabilityAttributesAta {
+  readonly effectiveFlag: bigint
+  readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
 }
 
-interface GetCapabilityMappingErv {
-  readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'>
+interface SetCapabilityAttributesErv {
+  readonly effectiveFlag: bigint
+  readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
 }
 
-interface GetCapabilityMappingAtw {
-  readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'>
+interface SetCapabilityAttributesAtw {
+  readonly effectiveFlag: bigint
+  readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
 }
 
-export type GetCapabilityMappingAny =
-  | Record<GetCapabilityAta, GetCapabilityMappingAta>
-  | Record<GetCapabilityAtw, GetCapabilityMappingAtw>
-  | Record<GetCapabilityErv, GetCapabilityMappingErv>
+export type SetCapabilityMappingAta = Record<
+  SetCapabilityAta,
+  SetCapabilityAttributesAta
+>
 
-export interface GetCapabilityMapping<T extends MELCloudDriver> {
+export type SetCapabilityMappingErv = Record<
+  SetCapabilityErv,
+  SetCapabilityAttributesErv
+>
+
+export type SetCapabilityMappingAtw = Record<
+  SetCapabilityAtw,
+  SetCapabilityAttributesAtw
+>
+
+export type SetCapabilityMappingAny =
+  | SetCapabilityMappingAta
+  | SetCapabilityMappingAtw
+  | SetCapabilityMappingErv
+
+export interface GetCapabilityAttributes<T extends MELCloudDriver> {
   readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
 }
 
-interface ListCapabilityMappingAta {
-  readonly effectiveFlag?: bigint
-  readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
+interface GetCapabilityAttributesAta {
+  readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'>
 }
 
-interface ListCapabilityMappingErv {
-  readonly effectiveFlag?: bigint
-  readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'>
+interface GetCapabilityAttributesErv {
+  readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'>
 }
 
-interface ListCapabilityMappingAtw {
-  readonly effectiveFlag?: bigint
-  readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'>
+interface GetCapabilityAttributesAtw {
+  readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'>
 }
 
-export type ListCapabilityMappingAny =
-  | Record<ListCapabilityAta, ListCapabilityMappingAta>
-  | Record<ListCapabilityAtw, ListCapabilityMappingAtw>
-  | Record<ListCapabilityErv, ListCapabilityMappingErv>
+export type GetCapabilityMappingAta = Record<
+  GetCapabilityAta,
+  GetCapabilityAttributesAta
+>
 
-export interface ListCapabilityMapping<T extends MELCloudDriver> {
+export type GetCapabilityMappingErv = Record<
+  GetCapabilityErv,
+  GetCapabilityAttributesErv
+>
+
+export type GetCapabilityMappingAtw = Record<
+  GetCapabilityAtw,
+  GetCapabilityAttributesAtw
+>
+
+export type GetCapabilityMappingAny =
+  | GetCapabilityMappingAta
+  | GetCapabilityMappingAtw
+  | GetCapabilityMappingErv
+
+export interface ListCapabilityAttributes<T extends MELCloudDriver> {
   readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
 
-type ReportCapabilityMappingAta = readonly (keyof ReportDataAta)[]
+interface ListCapabilityAttributesAta {
+  readonly effectiveFlag?: bigint
+  readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
+}
 
-type ReportCapabilityMappingAtw = readonly (keyof ReportDataAtw)[]
+interface ListCapabilityAttributesErv {
+  readonly effectiveFlag?: bigint
+  readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'>
+}
+
+interface ListCapabilityAttributesAtw {
+  readonly effectiveFlag?: bigint
+  readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'>
+}
+
+export type ListCapabilityMappingAta = Record<
+  ListCapabilityAta,
+  ListCapabilityAttributesAta
+>
+
+export type ListCapabilityMappingErv = Record<
+  ListCapabilityErv,
+  ListCapabilityAttributesErv
+>
+
+export type ListCapabilityMappingAtw = Record<
+  ListCapabilityAtw,
+  ListCapabilityAttributesAtw
+>
+
+export type ListCapabilityMappingAny =
+  | ListCapabilityMappingAta
+  | ListCapabilityMappingAtw
+  | ListCapabilityMappingErv
+
+export type ReportCapabilityAttributes<T extends MELCloudDriver> =
+  (keyof ReportData<T>)[]
+
+type ReportCapabilityAttributesAta = readonly (keyof ReportDataAta)[]
+
+type ReportCapabilityAttributesAtw = readonly (keyof ReportDataAtw)[]
+
+export type ReportCapabilityMappingAta = Record<
+  ReportCapabilityAta,
+  ReportCapabilityAttributesAta
+>
+
+export type ReportCapabilityMappingAtw = Record<
+  ReportCapabilityAtw,
+  ReportCapabilityAttributesAtw
+>
 
 export type ReportCapabilityMappingAny =
-  | Record<ReportCapabilityAta, ReportCapabilityMappingAta>
-  | Record<ReportCapabilityAtw, ReportCapabilityMappingAtw>
+  | ReportCapabilityMappingAta
+  | ReportCapabilityMappingAtw
   | null
-
-export type ReportCapabilityMapping<T extends MELCloudDriver> =
-  (keyof ReportData<T>)[]
 
 export const setCapabilityMappingAta: Record<
   SetCapabilityAta,
-  SetCapabilityMappingAta
+  SetCapabilityAttributesAta
 > = {
   onoff: {
     tag: 'Power',
@@ -627,7 +682,7 @@ export const setCapabilityMappingAta: Record<
 
 export const setCapabilityMappingErv: Record<
   SetCapabilityErv,
-  SetCapabilityMappingErv
+  SetCapabilityAttributesErv
 > = {
   onoff: {
     tag: 'Power',
@@ -645,7 +700,7 @@ export const setCapabilityMappingErv: Record<
 
 export const setCapabilityMappingAtw: Record<
   SetCapabilityAtw,
-  SetCapabilityMappingAtw
+  SetCapabilityAttributesAtw
 > = {
   onoff: {
     tag: 'Power',
@@ -703,7 +758,7 @@ export const setCapabilityMappingAtw: Record<
 
 export const getCapabilityMappingAta: Record<
   GetCapabilityAta,
-  GetCapabilityMappingAta
+  GetCapabilityAttributesAta
 > = {
   measure_temperature: {
     tag: 'RoomTemperature',
@@ -712,7 +767,7 @@ export const getCapabilityMappingAta: Record<
 
 export const getCapabilityMappingErv: Record<
   GetCapabilityErv,
-  GetCapabilityMappingErv
+  GetCapabilityAttributesErv
 > = {
   measure_co2: {
     tag: 'RoomCO2Level',
@@ -727,7 +782,7 @@ export const getCapabilityMappingErv: Record<
 
 export const getCapabilityMappingAtw: Record<
   GetCapabilityAtw,
-  GetCapabilityMappingAtw
+  GetCapabilityAttributesAtw
 > = {
   'alarm_generic.eco_hot_water': {
     tag: 'EcoHotWater',
@@ -758,7 +813,7 @@ export const getCapabilityMappingAtw: Record<
 
 export const listCapabilityMappingAta: Record<
   ListCapabilityAta,
-  ListCapabilityMappingAta
+  ListCapabilityAttributesAta
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -779,7 +834,7 @@ export const listCapabilityMappingAta: Record<
 
 export const listCapabilityMappingErv: Record<
   ListCapabilityErv,
-  ListCapabilityMappingErv
+  ListCapabilityAttributesErv
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -791,7 +846,7 @@ export const listCapabilityMappingErv: Record<
 
 export const listCapabilityMappingAtw: Record<
   ListCapabilityAtw,
-  ListCapabilityMappingAtw
+  ListCapabilityAttributesAtw
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -848,7 +903,7 @@ export const listCapabilityMappingAtw: Record<
 
 export const reportCapabilityMappingAta: Record<
   ReportCapabilityAta,
-  ReportCapabilityMappingAta
+  ReportCapabilityAttributesAta
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -889,7 +944,7 @@ export const reportCapabilityMappingAta: Record<
 
 export const reportCapabilityMappingAtw: Record<
   ReportCapabilityAtw,
-  ReportCapabilityMappingAtw
+  ReportCapabilityAttributesAtw
 > = {
   'meter_power.daily_cop': ['CoP'],
   'meter_power.daily_cop_cooling': [

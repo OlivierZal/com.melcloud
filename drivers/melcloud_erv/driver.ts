@@ -4,23 +4,26 @@ import {
   listCapabilityMappingErv,
   setCapabilityMappingErv,
   type FlowArgs,
+  type GetCapabilityMappingErv,
+  type ListCapabilityMappingErv,
   type SetCapabilityErv,
+  type SetCapabilityMappingErv,
   type Store,
 } from '../../types'
 
 const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 
 export = class MELCloudDriverErv extends BaseMELCloudDriver {
-  public async onInit(): Promise<void> {
-    this.deviceType = 3
-    this.heatPumpType = 'Erv'
+  public heatPumpType = 'Erv'
 
-    this.setCapabilityMapping = setCapabilityMappingErv
-    this.getCapabilityMapping = getCapabilityMappingErv
-    this.listCapabilityMapping = listCapabilityMappingErv
+  public setCapabilityMapping: SetCapabilityMappingErv = setCapabilityMappingErv
 
-    await super.onInit()
-  }
+  public getCapabilityMapping: GetCapabilityMappingErv = getCapabilityMappingErv
+
+  public listCapabilityMapping: ListCapabilityMappingErv =
+    listCapabilityMappingErv
+
+  protected deviceType = 3
 
   public getRequiredCapabilities({
     HasCO2Sensor,

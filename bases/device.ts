@@ -10,7 +10,7 @@ import type {
   DeviceDetails,
   DeviceValue,
   GetDeviceData,
-  ListCapabilityMapping,
+  ListCapabilityAttributes,
   ListDevice,
   ListDeviceAny,
   ListDeviceData,
@@ -18,11 +18,11 @@ import type {
   NonReportCapability,
   PostData,
   ReportCapability,
-  ReportCapabilityMapping,
+  ReportCapabilityAttributes,
   ReportData,
   ReportPostData,
   SetCapability,
-  SetCapabilityMapping,
+  SetCapabilityAttributes,
   SetDeviceData,
   SetDeviceValue,
   Settings,
@@ -331,19 +331,19 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
   private getReportCapabilities<T extends MELCloudDriver>(
     total = false,
-  ): Record<ReportCapability<T>, ReportCapabilityMapping<T>> {
+  ): Record<ReportCapability<T>, ReportCapabilityAttributes<T>> {
     return Object.fromEntries(
       Object.entries(this.driver.reportCapabilityMapping ?? {})
         .filter(
-          ([capability]: [string, ReportCapabilityMapping<T>]) =>
+          ([capability]: [string, ReportCapabilityAttributes<T>]) =>
             this.hasCapability(capability) &&
             capability.includes('total') === total,
         )
-        .map(([capability, tags]: [string, ReportCapabilityMapping<T>]) => [
+        .map(([capability, tags]: [string, ReportCapabilityAttributes<T>]) => [
           capability as ReportCapability<T>,
           tags,
         ]),
-    ) as Record<ReportCapability<T>, ReportCapabilityMapping<T>>
+    ) as Record<ReportCapability<T>, ReportCapabilityAttributes<T>>
   }
 
   private registerCapabilityListeners<T extends MELCloudDriver>(): void {
@@ -408,26 +408,28 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       }
     }
 
-    const capabilities: [NonReportCapability<T>, ListCapabilityMapping<T>][] =
-      Object.entries(capabilitiesToProcess()) as [
-        NonReportCapability<T>,
-        ListCapabilityMapping<T>,
-      ][]
+    const capabilities: [
+      NonReportCapability<T>,
+      ListCapabilityAttributes<T>,
+    ][] = Object.entries(capabilitiesToProcess()) as [
+      NonReportCapability<T>,
+      ListCapabilityAttributes<T>,
+    ][]
     const keysToProcessLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
     const [regularCapabilities, lastCapabilities]: [
       NonReportCapability<T>,
-      ListCapabilityMapping<T>,
+      ListCapabilityAttributes<T>,
     ][][] = capabilities.reduce<
-      [NonReportCapability<T>, ListCapabilityMapping<T>][][]
+      [NonReportCapability<T>, ListCapabilityAttributes<T>][][]
     >(
       (
         acc,
         [capability, capabilityData]: [
           NonReportCapability<T>,
-          ListCapabilityMapping<T>,
+          ListCapabilityAttributes<T>,
         ],
       ) => {
         if (keysToProcessLast.includes(capability)) {
@@ -458,7 +460,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
     const processCapability = async ([capability, { tag, effectiveFlag }]: [
       NonReportCapability<T>,
-      ListCapabilityMapping<T>,
+      ListCapabilityAttributes<T>,
     ]): Promise<void> => {
       if (shouldProcess(capability, effectiveFlag)) {
         await this.setCapabilityValue(capability, data[tag] as DeviceValue)
@@ -466,7 +468,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     }
 
     const processCapabilities = async (
-      capabilitiesArray: [NonReportCapability<T>, ListCapabilityMapping<T>][],
+      capabilitiesArray: [
+        NonReportCapability<T>,
+        ListCapabilityAttributes<T>,
+      ][],
     ): Promise<void> => {
       await Promise.all(capabilitiesArray.map(processCapability))
     }
@@ -496,7 +501,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     >(
       (
         acc,
-        [capability, { tag, effectiveFlag }]: [string, SetCapabilityMapping<T>],
+        [capability, { tag, effectiveFlag }]: [
+          string,
+          SetCapabilityAttributes<T>,
+        ],
       ) => {
         if (this.hasCapability(capability)) {
           acc[tag] = this.convertToDevice(
@@ -537,7 +545,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): Promise<void> {
     const reportCapabilities: Record<
       ReportCapability<T>,
-      ReportCapabilityMapping<T>
+      ReportCapabilityAttributes<T>
     > = this.getReportCapabilities(total)
     if (!this.reportPlanParameters || !Object.keys(reportCapabilities).length) {
       return
@@ -557,7 +565,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   private async updateReportCapabilities<T extends MELCloudDriver>(
     data: ReportData<T> | null,
     toDate: DateTime,
-    reportCapabilities: Record<ReportCapability<T>, ReportCapabilityMapping<T>>,
+    reportCapabilities: Record<
+      ReportCapability<T>,
+      ReportCapabilityAttributes<T>
+    >,
   ): Promise<void> {
     if (!data) {
       return
@@ -569,7 +580,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
     const updateReportCapability = async ([capability, tags]: [
       ReportCapability<T>,
-      ReportCapabilityMapping<T>,
+      ReportCapabilityAttributes<T>,
     ]): Promise<void> => {
       const reportValue = (): number => {
         if (capability.includes('cop')) {
@@ -596,7 +607,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       (
         Object.entries(reportCapabilities) as [
           ReportCapability<T>,
-          ReportCapabilityMapping<T>,
+          ReportCapabilityAttributes<T>,
         ][]
       ).map(updateReportCapability),
     )

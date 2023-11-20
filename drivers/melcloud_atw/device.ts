@@ -35,14 +35,16 @@ function getOtherCapabilityZone(capability: string): string {
 }
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
-  public async onInit(): Promise<void> {
-    this.reportPlanParameters = {
-      minus: { days: 1 },
-      interval: { days: 1 },
-      duration: { days: 1 },
-      values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
-    }
-    await super.onInit()
+  protected reportPlanParameters: {
+    duration: object
+    interval: object
+    minus: object
+    values: object
+  } = {
+    minus: { days: 1 },
+    interval: { days: 1 },
+    duration: { days: 1 },
+    values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
   }
 
   protected async specificOnCapability(

@@ -41,14 +41,16 @@ enum Horizontal {
 }
 
 export = class MELCloudDeviceAta extends BaseMELCloudDevice {
-  public async onInit(): Promise<void> {
-    this.reportPlanParameters = {
-      minus: { hours: 1 },
-      interval: { hours: 1 },
-      duration: { hours: 1 },
-      values: { minute: 5, second: 0, millisecond: 0 },
-    }
-    await super.onInit()
+  protected reportPlanParameters: {
+    duration: object
+    interval: object
+    minus: object
+    values: object
+  } = {
+    minus: { hours: 1 },
+    interval: { hours: 1 },
+    duration: { hours: 1 },
+    values: { minute: 5, second: 0, millisecond: 0 },
   }
 
   protected async specificOnCapability(

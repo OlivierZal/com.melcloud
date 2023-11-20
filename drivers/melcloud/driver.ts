@@ -5,7 +5,11 @@ import {
   setCapabilityMappingAta,
   reportCapabilityMappingAta,
   type FlowArgs,
+  type GetCapabilityMappingAta,
+  type ListCapabilityMappingAta,
+  type ReportCapabilityMappingAta,
   type SetCapabilityAta,
+  type SetCapabilityMappingAta,
 } from '../../types'
 
 const flowCapabilities: SetCapabilityAta[] = [
@@ -16,17 +20,19 @@ const flowCapabilities: SetCapabilityAta[] = [
 ]
 
 export = class MELCloudDriverAta extends BaseMELCloudDriver {
-  public async onInit(): Promise<void> {
-    this.deviceType = 0
-    this.heatPumpType = 'Ata'
+  public heatPumpType = 'Ata'
 
-    this.setCapabilityMapping = setCapabilityMappingAta
-    this.getCapabilityMapping = getCapabilityMappingAta
-    this.listCapabilityMapping = listCapabilityMappingAta
-    this.reportCapabilityMapping = reportCapabilityMappingAta
+  public setCapabilityMapping: SetCapabilityMappingAta = setCapabilityMappingAta
 
-    await super.onInit()
-  }
+  public getCapabilityMapping: GetCapabilityMappingAta = getCapabilityMappingAta
+
+  public listCapabilityMapping: ListCapabilityMappingAta =
+    listCapabilityMappingAta
+
+  public reportCapabilityMapping: ReportCapabilityMappingAta =
+    reportCapabilityMappingAta
+
+  protected deviceType = 0
 
   public getRequiredCapabilities(): string[] {
     return [

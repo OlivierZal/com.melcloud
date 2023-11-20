@@ -6,8 +6,12 @@ import {
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
   type GetCapabilityAtw,
+  type GetCapabilityMappingAtw,
   type ListCapabilityAtw,
+  type ListCapabilityMappingAtw,
+  type ReportCapabilityMappingAtw,
   type SetCapabilityAtw,
+  type SetCapabilityMappingAtw,
   type Store,
 } from '../../types'
 
@@ -57,17 +61,19 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     'operation_mode_zone.zone2',
   ]
 
-  public async onInit(): Promise<void> {
-    this.deviceType = 1
-    this.heatPumpType = 'Atw'
+  public heatPumpType = 'Atw'
 
-    this.setCapabilityMapping = setCapabilityMappingAtw
-    this.getCapabilityMapping = getCapabilityMappingAtw
-    this.listCapabilityMapping = listCapabilityMappingAtw
-    this.reportCapabilityMapping = reportCapabilityMappingAtw
+  public setCapabilityMapping: SetCapabilityMappingAtw = setCapabilityMappingAtw
 
-    await super.onInit()
-  }
+  public getCapabilityMapping: GetCapabilityMappingAtw = getCapabilityMappingAtw
+
+  public listCapabilityMapping: ListCapabilityMappingAtw =
+    listCapabilityMappingAtw
+
+  public reportCapabilityMapping: ReportCapabilityMappingAtw =
+    reportCapabilityMappingAtw
+
+  protected deviceType = 1
 
   public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
     return [
