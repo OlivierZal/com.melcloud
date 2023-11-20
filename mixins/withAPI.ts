@@ -30,11 +30,10 @@ export function getErrorMessage(error: unknown): string {
 
 export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
   return class extends base {
-    public api: AxiosInstance
+    public api: AxiosInstance = axios.create()
 
     public constructor(...args: any[]) {
       super(...args)
-      this.api = axios.create()
       this.setupAxiosInterceptors()
     }
 
