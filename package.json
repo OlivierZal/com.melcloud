@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "23.1.0",
+  "version": "24.0.0",
   "main": "app.ts",
   "prettier": {
     "semi": false,
