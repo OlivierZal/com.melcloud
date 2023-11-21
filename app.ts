@@ -151,7 +151,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         await this.listDevices(undefined, syncMode)
       },
       interval ?? { seconds: 1 },
-      { actionType: 'sync with device', units: ['seconds'] },
+      { actionType: 'sync with device', units: ['minutes', 'seconds'] },
     )
   }
 
