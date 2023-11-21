@@ -61,7 +61,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.login()
+    await this.planRefreshLogin()
   }
 
   public async login(
@@ -96,8 +96,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           username,
           password,
         })
-        this.applySyncFromDevices()
-        this.refreshLogin()
+        await this.planRefreshLogin()
       }
       return !!data.LoginData
     } catch (error: unknown) {
@@ -328,22 +327,23 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     return this.homey.i18n.getLanguage()
   }
 
-  private refreshLogin(): void {
+  private async planRefreshLogin(): Promise<void> {
     const expiry: string =
       (this.homey.settings.get('Expiry') as HomeySettings['Expiry']) ?? ''
     const ms = Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-    if (Number.isNaN(ms)) {
+    if (ms > 0) {
+      this.applySyncFromDevices()
+      const maxTimeout: number = 2 ** 31 - 1
+      this.#loginTimeout = this.setTimeout(
+        async (): Promise<void> => {
+          await this.login()
+        },
+        Math.min(ms, maxTimeout),
+        { actionType: 'login refresh', units: ['days'] },
+      )
       return
     }
-    const maxTimeout: number = 2 ** 31 - 1
-    const interval: number = Math.min(ms, maxTimeout)
-    this.#loginTimeout = this.setTimeout(
-      async (): Promise<void> => {
-        await this.login()
-      },
-      interval,
-      { actionType: 'login refresh', units: ['days'] },
-    )
+    await this.login()
   }
 
   private clearLoginRefresh(): void {
