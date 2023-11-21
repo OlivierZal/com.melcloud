@@ -98,16 +98,10 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
           },
           Duration.fromObject({ minutes: 1 }).as('milliseconds'),
         )
-        const loggedIn: boolean = await (this.homey.app as MELCloudApp).login({
-          username:
-            (this.homey.settings.get(
-              'username',
-            ) as HomeySettings['username']) ?? '',
-          password:
-            (this.homey.settings.get(
-              'password',
-            ) as HomeySettings['password']) ?? '',
-        })
+        const loggedIn: boolean = await (this.homey.app as MELCloudApp).login(
+          undefined,
+          false,
+        )
         if (loggedIn && error.config) {
           return this.api.request(error.config)
         }
