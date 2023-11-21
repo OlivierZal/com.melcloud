@@ -1,7 +1,11 @@
 import 'source-map-support/register'
 import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import axios from 'axios'
-import { DateTime, Settings as LuxonSettings } from 'luxon'
+import {
+  DateTime,
+  Settings as LuxonSettings,
+  type DurationLikeObject,
+} from 'luxon'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 import {
@@ -51,8 +55,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public deviceIds: Record<number, string> = {}
 
   #loginTimeout!: NodeJS.Timeout
-
-  #syncInterval: NodeJS.Timeout | null = null
 
   #syncTimeout!: NodeJS.Timeout
 
@@ -136,16 +138,19 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     return devices
   }
 
-  public applySyncFromDevices(
-    deviceType?: number,
-    syncMode?: SyncFromMode,
-  ): void {
+  public applySyncFromDevices({
+    syncMode,
+    interval,
+  }: {
+    syncMode?: SyncFromMode
+    interval?: DurationLikeObject
+  } = {}): void {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.listDevices(deviceType, syncMode)
+        await this.listDevices(undefined, syncMode)
       },
-      { seconds: 1 },
+      interval ?? { seconds: 1 },
       { actionType: 'sync with device', units: ['seconds'] },
     )
   }
@@ -154,6 +159,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     deviceType?: number,
     syncMode?: SyncFromMode,
   ): Promise<ListDeviceAny[]> {
+    this.clearListDevicesRefresh()
     try {
       const buildings = await this.getBuildings()
       const buildingData: {
@@ -197,14 +203,12 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     } catch (error: unknown) {
       return []
     } finally {
-      this.planSyncFromDevices()
+      this.applySyncFromDevices({ interval: { minutes: 3 } })
     }
   }
 
   public clearListDevicesRefresh(): void {
     this.homey.clearTimeout(this.#syncTimeout)
-    this.homey.clearInterval(this.#syncInterval)
-    this.#syncInterval = null
     this.log('Device list refresh has been paused')
   }
 
@@ -384,19 +388,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           async (device: MELCloudDevice): Promise<void> =>
             device.syncDeviceFromList(syncMode),
         ),
-    )
-  }
-
-  private planSyncFromDevices(): void {
-    if (this.#syncInterval) {
-      return
-    }
-    this.#syncInterval = this.setInterval(
-      async (): Promise<void> => {
-        await this.listDevices()
-      },
-      { minutes: 3 },
-      { actionType: 'device list refresh', units: ['minutes'] },
     )
   }
 
