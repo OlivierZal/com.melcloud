@@ -62,7 +62,17 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     await this.listDevices()
   }
 
-  public async login(loginCredentials: LoginCredentials): Promise<boolean> {
+  public async login(
+    loginCredentials: LoginCredentials = {
+      username:
+        (this.homey.settings.get('username') as HomeySettings['username']) ??
+        '',
+      password:
+        (this.homey.settings.get('password') as HomeySettings['password']) ??
+        '',
+    },
+    raise = true,
+  ): Promise<boolean> {
     this.clearLoginRefresh()
     try {
       const { username, password } = loginCredentials
@@ -92,7 +102,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       }
       return data.LoginData !== null
     } catch (error: unknown) {
-      throw new Error(getErrorMessage(error))
+      if (raise) {
+        throw new Error(getErrorMessage(error))
+      }
+      return false
     }
   }
 
@@ -315,14 +328,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   }
 
   private async refreshLogin(): Promise<void> {
-    const loginCredentials: LoginCredentials = {
-      username:
-        (this.homey.settings.get('username') as HomeySettings['username']) ??
-        '',
-      password:
-        (this.homey.settings.get('password') as HomeySettings['password']) ??
-        '',
-    }
     const expiry: string | null = this.homey.settings.get(
       'Expiry',
     ) as HomeySettings['Expiry']
@@ -335,22 +340,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       const interval: number = Math.min(ms, maxTimeout)
       this.#loginTimeout = this.setTimeout(
         async (): Promise<void> => {
-          await this.tryLogin(loginCredentials)
+          await this.login(undefined, false)
         },
         interval,
         { actionType: 'login refresh', units: ['days'] },
       )
       return
     }
-    await this.tryLogin(loginCredentials)
-  }
-
-  private async tryLogin(loginCredentials: LoginCredentials): Promise<void> {
-    try {
-      await this.login(loginCredentials)
-    } catch (error: unknown) {
-      // Logged by `withAPI`
-    }
+    await this.login(undefined, false)
   }
 
   private clearLoginRefresh(): void {

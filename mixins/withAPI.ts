@@ -8,6 +8,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
+import type MELCloudApp from '../app'
 import type { HomeyClass, HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => {
@@ -31,6 +32,10 @@ export function getErrorMessage(error: unknown): string {
 export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
   return class extends base {
     public api: AxiosInstance = axios.create()
+
+    #retry = true
+
+    readonly #retryTimeout!: NodeJS.Timeout
 
     public constructor(...args: any[]) {
       super(...args)
@@ -79,6 +84,26 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
     ): Promise<AxiosError> {
       const errorMessage: string = getAPIErrorMessage(error)
       this.error(`Error in ${type}:`, error.config?.url, errorMessage)
+      if (error.response?.status === 401 && this.#retry) {
+        this.#retry = false
+        this.homey.clearTimeout(this.#retryTimeout)
+        this.homey.setTimeout(() => {
+          this.#retry = true
+        }, 10000)
+        const loggedIn: boolean = await (this.homey.app as MELCloudApp).login({
+          username:
+            (this.homey.settings.get(
+              'username',
+            ) as HomeySettings['username']) ?? '',
+          password:
+            (this.homey.settings.get(
+              'password',
+            ) as HomeySettings['password']) ?? '',
+        })
+        if (loggedIn && error.config) {
+          return this.api.request(error.config)
+        }
+      }
       await this.setErrorWarning(errorMessage)
       return Promise.reject(error)
     }
