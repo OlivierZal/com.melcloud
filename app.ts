@@ -329,14 +329,9 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   }
 
   private refreshLogin(): void {
-    const expiry: string | null = this.homey.settings.get(
-      'Expiry',
-    ) as HomeySettings['Expiry']
-    const ms = Number(
-      DateTime.fromISO(expiry ?? '')
-        .minus({ days: 1 })
-        .diffNow(),
-    )
+    const expiry: string =
+      (this.homey.settings.get('Expiry') as HomeySettings['Expiry']) ?? ''
+    const ms = Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
     if (Number.isNaN(ms)) {
       return
     }
