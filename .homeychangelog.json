@@ -133,5 +133,8 @@
   },
   "23.0.0": {
     "en": "Introduce ERV devices in Homey."
+  },
+  "24.0.0": {
+    "en": "Implemented session refresh in case of failure."
   }
 }
