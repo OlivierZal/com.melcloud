@@ -85,7 +85,11 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
     ): Promise<AxiosError> {
       const errorMessage: string = getAPIErrorMessage(error)
       this.error(`Error in ${type}:`, error.config?.url, errorMessage)
-      if (error.response?.status === 401 && this.#retry) {
+      if (
+        error.response?.status === 401 &&
+        this.#retry &&
+        error.config?.url !== loginURL
+      ) {
         this.#retry = false
         this.homey.clearTimeout(this.#retryTimeout)
         this.homey.setTimeout(
@@ -104,7 +108,7 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
               'password',
             ) as HomeySettings['password']) ?? '',
         })
-        if (loggedIn && error.config && error.config.url !== loginURL) {
+        if (loggedIn && error.config) {
           return this.api.request(error.config)
         }
       }
