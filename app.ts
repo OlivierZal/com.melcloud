@@ -61,7 +61,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.login(undefined, false)
+    await this.login()
   }
 
   public async login(
@@ -73,7 +73,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         (this.homey.settings.get('password') as HomeySettings['password']) ??
         '',
     },
-    raise = true,
+    raise = false,
   ): Promise<boolean> {
     this.clearLoginRefresh()
     try {
@@ -97,7 +97,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           password,
         })
         this.applySyncFromDevices()
-        await this.refreshLogin()
+        this.refreshLogin()
       }
       return !!data.LoginData
     } catch (error: unknown) {
@@ -328,27 +328,27 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     return this.homey.i18n.getLanguage()
   }
 
-  private async refreshLogin(): Promise<void> {
+  private refreshLogin(): void {
     const expiry: string | null = this.homey.settings.get(
       'Expiry',
     ) as HomeySettings['Expiry']
-    const ms: number =
-      expiry !== null
-        ? Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
-        : 0
-    if (ms) {
-      const maxTimeout: number = 2 ** 31 - 1
-      const interval: number = Math.min(ms, maxTimeout)
-      this.#loginTimeout = this.setTimeout(
-        async (): Promise<void> => {
-          await this.login(undefined, false)
-        },
-        interval,
-        { actionType: 'login refresh', units: ['days'] },
-      )
+    const ms = Number(
+      DateTime.fromISO(expiry ?? '')
+        .minus({ days: 1 })
+        .diffNow(),
+    )
+    if (Number.isNaN(ms)) {
       return
     }
-    await this.login(undefined, false)
+    const maxTimeout: number = 2 ** 31 - 1
+    const interval: number = Math.min(ms, maxTimeout)
+    this.#loginTimeout = this.setTimeout(
+      async (): Promise<void> => {
+        await this.login()
+      },
+      interval,
+      { actionType: 'login refresh', units: ['days'] },
+    )
   }
 
   private clearLoginRefresh(): void {
