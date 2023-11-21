@@ -24,7 +24,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await homey.ready()
 
   await new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       '/language',
@@ -41,14 +41,14 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const homeySettings: HomeySettingsUI = await new Promise<HomeySettingsUI>(
     (resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.get(
         async (
           error: Error | null,
           settings: HomeySettingsUI,
         ): Promise<void> => {
           if (error) {
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             reject(error)
             return
@@ -61,7 +61,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const deviceSettings: DeviceSettings = await new Promise<DeviceSettings>(
     (resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
         '/devices/settings',
@@ -70,7 +70,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           settings: DeviceSettings,
         ): Promise<void> => {
           if (error) {
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             reject(error)
             return
@@ -108,7 +108,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const driverSettingsAll: DriverSetting[] = await new Promise<DriverSetting[]>(
     (resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
         '/drivers/settings',
@@ -117,7 +117,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           driverSettings: DriverSetting[],
         ): Promise<void> => {
           if (error) {
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             reject(error)
             return
@@ -346,14 +346,14 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const queryString: string = new URLSearchParams(
       query as Record<string, string>,
     ).toString()
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       `/error_log?${queryString}`,
       async (error: Error | null, data: ErrorLog): Promise<void> => {
         seeElement.classList.remove('is-disabled')
         if (error) {
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
@@ -483,7 +483,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   async function getBuildingHolidayModeSettings(raise = false): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
         `/buildings/${buildingElement.value}/settings/holiday_mode`,
@@ -494,7 +494,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
               reject(new Error(error.message))
               return
             }
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             resolve()
             return
@@ -520,7 +520,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     raise = false,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
         `/buildings/${buildingElement.value}/settings/frost_protection`,
@@ -534,7 +534,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
               reject(new Error(error.message))
               return
             }
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             resolve()
             return
@@ -555,13 +555,13 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   async function getBuildings(): Promise<Record<string, BuildingData>> {
     return new Promise<Record<string, BuildingData>>((resolve, reject) => {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
         '/buildings',
         async (error: Error | null, buildings: Building[]): Promise<void> => {
           if (error) {
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             reject(error)
             return
@@ -630,20 +630,20 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }).toString()
       endPoint += `?${queryString}`
     }
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
       endPoint,
       body,
       async (error: Error | null): Promise<void> => {
         if (error) {
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
         updateDeviceSettings(body, driverId)
         enableButtons(`settings-${driverId ?? 'common'}`)
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
       },
     )
@@ -662,22 +662,22 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       try {
         body = buildSettingsBody(elements, driverId)
       } catch (error: unknown) {
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         homey.alert(error instanceof Error ? error.message : String(error))
         return
       }
       if (!Object.keys(body).length) {
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         homey.alert(homey.__('settings.devices.apply.nothing'))
         return
       }
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.confirm(
         homey.__('settings.devices.apply.confirm'),
         null,
         async (error: Error | null, ok: boolean): Promise<void> => {
           if (error) {
-            // @ts-expect-error: homey is partially typed
+            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             return
           }
@@ -862,7 +862,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       disableButtons('frost-protection')
       disableButtons('holiday-mode')
       disableButtons('settings-common')
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       await homey.alert(homey.__('settings.devices.none'))
       return
     }
@@ -913,7 +913,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const username: string = usernameElement?.value ?? ''
     const password: string = passwordElement?.value ?? ''
     if (!username || !password) {
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       await homey.alert(homey.__('settings.authenticate.failure'))
       return
     }
@@ -921,14 +921,19 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       username,
       password,
     }
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
       '/login',
       body,
       async (error: Error | null, loggedIn: boolean): Promise<void> => {
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          return
+        }
         if (!loggedIn) {
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(homey.__('settings.authenticate.failure'))
           return
         }
@@ -956,7 +961,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     authenticateElement.classList.add('is-disabled')
     login()
       .catch(async (error: Error): Promise<void> => {
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
       })
       .finally((): void => {
@@ -971,7 +976,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       Date.parse(sinceElement.value) > Date.parse(to)
     ) {
       sinceElement.value = to
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.alert(homey.__('settings.error_log.error', { fromDateHuman }))
     }
   })
@@ -982,7 +987,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   })
 
   autoAdjustElement.addEventListener('click', (): void => {
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.openURL('https://homey.app/a/com.mecloud.extension')
   })
 
@@ -1025,7 +1030,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     disableButtons('holiday-mode')
     getBuildingHolidayModeSettings().catch(
       async (error: Error): Promise<void> => {
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
       },
     )
@@ -1041,7 +1046,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       StartDate: Enabled ? holidayModeStartDateElement.value : '',
       EndDate: Enabled ? holidayModeEndDateElement.value : '',
     }
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
       `/buildings/${buildingElement.value}/settings/holiday_mode`,
@@ -1056,16 +1061,16 @@ async function onHomeyReady(homey: Homey): Promise<void> {
             HMStartDate,
             HMEndDate,
           })
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
           return
         }
         if (error) {
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
       },
     )
@@ -1093,7 +1098,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     disableButtons('frost-protection')
     getBuildingFrostProtectionSettings().catch(
       async (error: Error): Promise<void> => {
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
       },
     )
@@ -1115,7 +1120,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         FPMaxTemperature,
       })
       enableButtons('frost-protection')
-      // @ts-expect-error: homey is partially typed
+      // @ts-expect-error: `homey` is partially typed
       homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
@@ -1135,7 +1140,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       MinimumTemperature,
       MaximumTemperature,
     }
-    // @ts-expect-error: homey is partially typed
+    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
       `/buildings/${buildingElement.value}/settings/frost_protection`,
@@ -1150,16 +1155,16 @@ async function onHomeyReady(homey: Homey): Promise<void> {
             FPMinTemperature,
             FPMaxTemperature,
           })
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
           return
         }
         if (error) {
-          // @ts-expect-error: homey is partially typed
+          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
-        // @ts-expect-error: homey is partially typed
+        // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
       },
     )
