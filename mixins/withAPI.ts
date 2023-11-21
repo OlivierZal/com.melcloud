@@ -8,8 +8,9 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios'
+import { Duration } from 'luxon'
 import type MELCloudApp from '../app'
-import type { HomeyClass, HomeySettings } from '../types'
+import { loginURL, type HomeyClass, type HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => {
   readonly api: AxiosInstance
@@ -87,9 +88,12 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
       if (error.response?.status === 401 && this.#retry) {
         this.#retry = false
         this.homey.clearTimeout(this.#retryTimeout)
-        this.homey.setTimeout(() => {
-          this.#retry = true
-        }, 10000)
+        this.homey.setTimeout(
+          () => {
+            this.#retry = true
+          },
+          Duration.fromObject({ minutes: 1 }).as('milliseconds'),
+        )
         const loggedIn: boolean = await (this.homey.app as MELCloudApp).login({
           username:
             (this.homey.settings.get(
@@ -100,7 +104,7 @@ export default function withAPI<T extends HomeyClass>(base: T): APIClass & T {
               'password',
             ) as HomeySettings['password']) ?? '',
         })
-        if (loggedIn && error.config) {
+        if (loggedIn && error.config && error.config.url !== loginURL) {
           return this.api.request(error.config)
         }
       }

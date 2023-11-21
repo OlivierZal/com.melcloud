@@ -112,7 +112,10 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
     }
   }
 
-  protected async updateThermostatMode(): Promise<void> {
+  protected async updateThermostatMode(success: boolean): Promise<void> {
+    if (!success) {
+      return
+    }
     const isOn: boolean = this.getCapabilityValue('onoff') as boolean
     const operationMode: string = this.getCapabilityValue(
       'operation_mode',

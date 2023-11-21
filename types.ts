@@ -6,6 +6,8 @@ import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
 import type MELCloudDeviceErv from './drivers/melcloud_erv/device'
 import type MELCloudDriverErv from './drivers/melcloud_erv/driver'
 
+export const loginURL = '/Login/ClientLogin'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Loggable {
   /* eslint-disable @typescript-eslint/method-signature-style */

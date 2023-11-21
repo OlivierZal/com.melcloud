@@ -4,26 +4,27 @@ import axios from 'axios'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
-import type {
-  Building,
-  ErrorLogData,
-  ErrorLogPostData,
-  FailureData,
-  FrostProtectionData,
-  FrostProtectionPostData,
-  FrostProtectionSettings,
-  HolidayModeData,
-  HolidayModePostData,
-  HolidayModeSettings,
-  HomeySettings,
-  HomeySettingValue,
-  ListDeviceAny,
-  LoginCredentials,
-  LoginData,
-  LoginPostData,
-  MELCloudDevice,
-  SuccessData,
-  SyncFromMode,
+import {
+  loginURL,
+  type Building,
+  type ErrorLogData,
+  type ErrorLogPostData,
+  type FailureData,
+  type FrostProtectionData,
+  type FrostProtectionPostData,
+  type FrostProtectionSettings,
+  type HolidayModeData,
+  type HolidayModePostData,
+  type HolidayModeSettings,
+  type HomeySettings,
+  type HomeySettingValue,
+  type ListDeviceAny,
+  type LoginCredentials,
+  type LoginData,
+  type LoginPostData,
+  type MELCloudDevice,
+  type SuccessData,
+  type SyncFromMode,
 } from './types'
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
@@ -85,10 +86,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         Password: password,
         Persist: true,
       }
-      const { data } = await this.api.post<LoginData>(
-        '/Login/ClientLogin',
-        postData,
-      )
+      const { data } = await this.api.post<LoginData>(loginURL, postData)
       if (data.LoginData !== null) {
         const { ContextKey, Expiry } = data.LoginData
         this.setSettings({
@@ -157,51 +155,51 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     deviceType?: number,
     syncMode?: SyncFromMode,
   ): Promise<ListDeviceAny[]> {
-    let buildings: Building[] = []
     try {
-      buildings = await this.getBuildings()
+      const buildings = await this.getBuildings()
+      const buildingData: {
+        deviceIds: Record<number, string>
+        deviceList: ListDeviceAny[]
+      } = buildings.reduce<{
+        deviceIds: Record<number, string>
+        deviceList: ListDeviceAny[]
+      }>(
+        (acc, { Structure: { Devices, Areas, Floors } }) => {
+          const buildingDevices: ListDeviceAny[] = [
+            ...Devices,
+            ...Areas.flatMap((area): ListDeviceAny[] => area.Devices),
+            ...Floors.flatMap((floor): ListDeviceAny[] => [
+              ...floor.Devices,
+              ...floor.Areas.flatMap((area): ListDeviceAny[] => area.Devices),
+            ]),
+          ]
+          const buildingDeviceIds: Record<number, string> = Object.fromEntries(
+            buildingDevices.map((device: ListDeviceAny): [number, string] => [
+              device.DeviceID,
+              device.DeviceName,
+            ]),
+          )
+          acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
+          acc.deviceList.push(...buildingDevices)
+          return acc
+        },
+        { deviceIds: {}, deviceList: [] },
+      )
+      let { deviceList } = buildingData
+      if (deviceType !== undefined) {
+        deviceList = deviceList.filter(
+          (device: ListDeviceAny) => deviceType === device.Device.DeviceType,
+        )
+      }
+      this.deviceList = deviceList
+      this.deviceIds = buildingData.deviceIds
+      await this.syncDevicesFromList(syncMode)
+      return deviceList
     } catch (error: unknown) {
       return []
+    } finally {
+      this.planSyncFromDevices()
     }
-    const buildingData: {
-      deviceIds: Record<number, string>
-      deviceList: ListDeviceAny[]
-    } = buildings.reduce<{
-      deviceIds: Record<number, string>
-      deviceList: ListDeviceAny[]
-    }>(
-      (acc, { Structure: { Devices, Areas, Floors } }) => {
-        const buildingDevices: ListDeviceAny[] = [
-          ...Devices,
-          ...Areas.flatMap((area): ListDeviceAny[] => area.Devices),
-          ...Floors.flatMap((floor): ListDeviceAny[] => [
-            ...floor.Devices,
-            ...floor.Areas.flatMap((area): ListDeviceAny[] => area.Devices),
-          ]),
-        ]
-        const buildingDeviceIds: Record<number, string> = Object.fromEntries(
-          buildingDevices.map((device: ListDeviceAny): [number, string] => [
-            device.DeviceID,
-            device.DeviceName,
-          ]),
-        )
-        acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
-        acc.deviceList.push(...buildingDevices)
-        return acc
-      },
-      { deviceIds: {}, deviceList: [] },
-    )
-    let { deviceList } = buildingData
-    if (deviceType !== undefined) {
-      deviceList = deviceList.filter(
-        (device: ListDeviceAny) => deviceType === device.Device.DeviceType,
-      )
-    }
-    this.deviceList = deviceList
-    this.deviceIds = buildingData.deviceIds
-    await this.syncDevicesFromList(syncMode)
-    this.planSyncFromDevices()
-    return deviceList
   }
 
   public clearListDevicesRefresh(): void {

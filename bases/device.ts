@@ -374,7 +374,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     syncMode?: SyncMode,
   ): Promise<void> {
     await this.updateCapabilities(data, syncMode)
-    await this.updateThermostatMode()
+    await this.updateThermostatMode(!!data)
     if (syncMode === 'syncTo' && !this.isDiff()) {
       this.app.applySyncFromDevices(undefined, 'syncFrom')
     }
@@ -699,7 +699,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     value: DeviceValue,
   ): CapabilityValue
 
-  protected abstract updateThermostatMode(): Promise<void>
+  protected abstract updateThermostatMode(success: boolean): Promise<void>
 }
 
 export default BaseMELCloudDevice

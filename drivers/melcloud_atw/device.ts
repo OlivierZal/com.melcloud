@@ -138,7 +138,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
       case 'operation_mode_zone_with_cool.zone2':
         return OperationModeZone[value as number]
       case 'alarm_generic.defrost_mode':
-        return Boolean(value)
+        return !!(value as number)
       default:
         return value
     }
