@@ -3,6 +3,7 @@ import { App, type Driver } from 'homey' // eslint-disable-line import/no-extran
 import axios from 'axios'
 import {
   DateTime,
+  Duration,
   Settings as LuxonSettings,
   type DurationLikeObject,
 } from 'luxon'
@@ -50,6 +51,8 @@ function handleResponse(data: FailureData | SuccessData): void {
 }
 
 export = class MELCloudApp extends withAPI(withTimers(App)) {
+  public retry = true
+
   public deviceList: ListDeviceAny[] = []
 
   public deviceIds: Record<number, string> = {}
@@ -57,6 +60,8 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   #loginTimeout!: NodeJS.Timeout
 
   #syncTimeout!: NodeJS.Timeout
+
+  readonly #retryTimeout!: NodeJS.Timeout
 
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
@@ -325,6 +330,17 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   public getLanguage(): string {
     return this.homey.i18n.getLanguage()
+  }
+
+  public handleRetry(): void {
+    this.retry = false
+    this.homey.clearTimeout(this.#retryTimeout)
+    this.homey.setTimeout(
+      () => {
+        this.retry = true
+      },
+      Duration.fromObject({ minutes: 1 }).as('milliseconds'),
+    )
   }
 
   private async planRefreshLogin(): Promise<void> {
