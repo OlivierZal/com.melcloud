@@ -10,13 +10,13 @@
     "es": "Bombas de calor de aire a aire"
   },
   "capabilities": [
+    "operation_mode",
     "fan_power",
     "fan_power_state",
     "vertical",
     "horizontal",
     "measure_temperature",
     "onoff",
-    "operation_mode",
     "target_temperature",
     "thermostat_mode",
     "measure_power",
