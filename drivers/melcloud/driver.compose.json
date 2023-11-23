@@ -26,7 +26,6 @@
     "measure_power.fan",
     "measure_power.heating",
     "measure_power.other",
-    "measure_power.wifi",
     "meter_power",
     "meter_power.consumed_auto",
     "meter_power.consumed_cooling",
@@ -40,7 +39,8 @@
     "meter_power.daily_consumed_dry",
     "meter_power.daily_consumed_fan",
     "meter_power.daily_consumed_heating",
-    "meter_power.daily_consumed_other"
+    "meter_power.daily_consumed_other",
+    "measure_power.wifi"
   ],
   "capabilitiesOptions": {
     "measure_power": {
