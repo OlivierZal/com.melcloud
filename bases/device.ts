@@ -337,7 +337,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         .filter(
           ([capability]: [string, ReportCapabilityAttributes<T>]) =>
             this.hasCapability(capability) &&
-            capability.includes('total') === total,
+            !capability.includes('daily') === total,
         )
         .map(([capability, tags]: [string, ReportCapabilityAttributes<T>]) => [
           capability as ReportCapability<T>,
@@ -583,22 +583,33 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       ReportCapabilityAttributes<T>,
     ]): Promise<void> => {
       const reportValue = (): number => {
-        if (capability.includes('cop')) {
-          return (
-            (data[tags[0]] as number) /
-            (tags.length > 1 ? (data[tags[1]] as number) : 1)
-          )
+        switch (true) {
+          case capability.includes('cop'):
+            return (
+              (data[tags[0]] as number) /
+              (tags.length > 1 ? (data[tags[1]] as number) : 1)
+            )
+          case capability === 'meter_power':
+            return tags.reduce<number>(
+              (acc, tag: keyof ReportData<T>) =>
+                acc +
+                ((tag as string).endsWith('Consumed')
+                  ? (data[tag] as number)
+                  : -(data[tag] as number)),
+              0,
+            )
+          default:
+            return (
+              tags.reduce<number>(
+                (acc, tag: keyof ReportData<T>) =>
+                  acc +
+                  (capability.startsWith('measure_power')
+                    ? (data[tag] as number[])[toDate.hour] * 1000
+                    : (data[tag] as number)),
+                0,
+              ) / deviceCount
+            )
         }
-        return (
-          tags.reduce<number>(
-            (acc, tag: keyof ReportData<T>) =>
-              acc +
-              (capability.includes('measure_power')
-                ? (data[tag] as number[])[toDate.hour] * 1000
-                : (data[tag] as number)),
-            0,
-          ) / deviceCount
-        )
       }
       await this.setCapabilityValue(capability, reportValue())
     }

@@ -117,6 +117,118 @@
   {
     "type": "group",
     "label": {
+      "en": "Total energy usage display",
+      "fr": "Affichage de la conso d'énergie totale",
+      "nl": "Totaalenergie verbruik weergeven",
+      "sv": "Total energianvändning visning",
+      "no": "Total energiforbruk visning",
+      "da": "Total energiforbrug visning",
+      "es": "Visualización del uso de energía total"
+    },
+    "children": [
+      {
+        "id": "meter_power",
+        "type": "checkbox",
+        "label": {
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "no": "Alle moduser",
+          "da": "Alle tilstande",
+          "es": "Todos los modos"
+        },
+        "value": true
+      },
+      {
+        "id": "meter_power.consumed_auto",
+        "type": "checkbox",
+        "label": {
+          "en": "Automatic",
+          "fr": "Automatique",
+          "nl": "Automatisch",
+          "sv": "Automatiskt",
+          "no": "Automatisk",
+          "da": "Automatisk",
+          "es": "Automático"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "no": "Kjøling",
+          "da": "Køling",
+          "es": "Enfriamiento"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_dry",
+        "type": "checkbox",
+        "label": {
+          "en": "Dry",
+          "fr": "Déshumidification",
+          "nl": "Droging",
+          "sv": "Avfuktning",
+          "no": "Avfukting",
+          "da": "Affugtning",
+          "es": "Desumidificación"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_fan",
+        "type": "checkbox",
+        "label": {
+          "en": "Fan",
+          "fr": "Ventilateur",
+          "nl": "Ventilator",
+          "sv": "Fläkt",
+          "no": "Vifte",
+          "da": "Blæser",
+          "es": "Ventilador"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "no": "Oppvarming",
+          "da": "Opvarmning",
+          "es": "Calefacción"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_other",
+        "type": "checkbox",
+        "label": {
+          "en": "Other",
+          "fr": "Autre",
+          "nl": "Andere",
+          "sv": "Övrigt",
+          "no": "Annet",
+          "da": "Andet",
+          "es": "Otro"
+        },
+        "value": false
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
       "en": "Daily energy usage display",
       "fr": "Affichage de la conso d'énergie quotidienne",
       "nl": "Dagelijkse energie verbruik weergeven",
@@ -212,118 +324,6 @@
       },
       {
         "id": "meter_power.daily_consumed_other",
-        "type": "checkbox",
-        "label": {
-          "en": "Other",
-          "fr": "Autre",
-          "nl": "Andere",
-          "sv": "Övrigt",
-          "no": "Annet",
-          "da": "Andet",
-          "es": "Otro"
-        },
-        "value": false
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Total energy usage display",
-      "fr": "Affichage de la conso d'énergie totale",
-      "nl": "Totaal energie verbruik weergeven",
-      "sv": "Total energianvändning visning",
-      "no": "Total energiforbruk visning",
-      "da": "Total energiforbrug visning",
-      "es": "Visualización del consumo total"
-    },
-    "children": [
-      {
-        "id": "meter_power.total_consumed",
-        "type": "checkbox",
-        "label": {
-          "en": "All modes",
-          "fr": "Tous modes",
-          "nl": "Alle modi",
-          "sv": "Alla lägen",
-          "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_auto",
-        "type": "checkbox",
-        "label": {
-          "en": "Automatic",
-          "fr": "Automatique",
-          "nl": "Automatisch",
-          "sv": "Automatiskt",
-          "no": "Automatisk",
-          "da": "Automatisk",
-          "es": "Automático"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_cooling",
-        "type": "checkbox",
-        "label": {
-          "en": "Cooling",
-          "fr": "Refroidissement",
-          "nl": "Koeling",
-          "sv": "Kylning",
-          "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_dry",
-        "type": "checkbox",
-        "label": {
-          "en": "Dry",
-          "fr": "Déshumidification",
-          "nl": "Droging",
-          "sv": "Avfuktning",
-          "no": "Avfukting",
-          "da": "Affugtning",
-          "es": "Desumidificación"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_fan",
-        "type": "checkbox",
-        "label": {
-          "en": "Fan",
-          "fr": "Ventilateur",
-          "nl": "Ventilator",
-          "sv": "Fläkt",
-          "no": "Vifte",
-          "da": "Blæser",
-          "es": "Ventilador"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_heating",
-        "type": "checkbox",
-        "label": {
-          "en": "Heating",
-          "fr": "Chauffage",
-          "nl": "Verwarming",
-          "sv": "Uppvärmning",
-          "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_other",
         "type": "checkbox",
         "label": {
           "en": "Other",

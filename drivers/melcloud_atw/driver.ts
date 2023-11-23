@@ -97,84 +97,89 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     ;(this.manifest.capabilities as SetCapabilityAtw[]).forEach(
       (capability: SetCapabilityAtw): void => {
-        if (capability.startsWith('operation_mode_state')) {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: {
-                device: MELCloudDeviceAtw
-                operation_mode_state: string
-              }): boolean =>
-                args.operation_mode_state ===
-                args.device.getCapabilityValue(capability),
-            )
-        } else if (
-          capability.startsWith('alarm_generic') ||
-          capability.startsWith('onoff.')
-        ) {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: { device: MELCloudDeviceAtw }): boolean =>
-                args.device.getCapabilityValue(capability),
-            )
-          if (capability.startsWith('onoff')) {
+        let flowPrefix = ''
+        switch (true) {
+          case capability.startsWith('operation_mode_state'):
             this.homey.flow
-              .getActionCard(`${capability}_action`)
+              .getConditionCard(`${capability}_condition`)
+              .registerRunListener(
+                (args: {
+                  device: MELCloudDeviceAtw
+                  operation_mode_state: string
+                }): boolean =>
+                  args.operation_mode_state ===
+                  args.device.getCapabilityValue(capability),
+              )
+            break
+          case capability.startsWith('alarm_generic') ||
+            capability.startsWith('onoff.'):
+            this.homey.flow
+              .getConditionCard(`${capability}_condition`)
+              .registerRunListener(
+                (args: { device: MELCloudDeviceAtw }): boolean =>
+                  args.device.getCapabilityValue(capability),
+              )
+            if (capability.startsWith('onoff')) {
+              this.homey.flow
+                .getActionCard(`${capability}_action`)
+                .registerRunListener(
+                  async (args: {
+                    device: MELCloudDeviceAtw
+                    onoff: 'false' | 'true'
+                  }): Promise<void> => {
+                    await args.device.triggerCapabilityListener(
+                      capability,
+                      args.onoff === 'true',
+                    )
+                  },
+                )
+            }
+            break
+          case capability.startsWith('operation_mode_zone'):
+            flowPrefix = `operation_mode_zone${capability.slice(-1)}`
+            if (capability.includes('with_cool')) {
+              flowPrefix += '_with_cool'
+            }
+            this.homey.flow
+              .getConditionCard(`${flowPrefix}_condition`)
+              .registerRunListener(
+                (args: {
+                  device: MELCloudDeviceAtw
+                  operation_mode_zone: string
+                }): boolean =>
+                  args.operation_mode_zone ===
+                  args.device.getCapabilityValue(capability),
+              )
+            this.homey.flow
+              .getActionCard(`${flowPrefix}_action`)
               .registerRunListener(
                 async (args: {
                   device: MELCloudDeviceAtw
-                  onoff: 'false' | 'true'
+                  operation_mode_zone: string
                 }): Promise<void> => {
                   await args.device.triggerCapabilityListener(
                     capability,
-                    args.onoff === 'true',
+                    args.operation_mode_zone,
                   )
                 },
               )
-          }
-        } else if (capability.startsWith('operation_mode_zone')) {
-          let flowPrefix = `operation_mode_zone${capability.slice(-1)}`
-          if (capability.includes('with_cool')) {
-            flowPrefix += '_with_cool'
-          }
-          this.homey.flow
-            .getConditionCard(`${flowPrefix}_condition`)
-            .registerRunListener(
-              (args: {
-                device: MELCloudDeviceAtw
-                operation_mode_zone: string
-              }): boolean =>
-                args.operation_mode_zone ===
-                args.device.getCapabilityValue(capability),
-            )
-          this.homey.flow
-            .getActionCard(`${flowPrefix}_action`)
-            .registerRunListener(
-              async (args: {
-                device: MELCloudDeviceAtw
-                operation_mode_zone: string
-              }): Promise<void> => {
-                await args.device.triggerCapabilityListener(
-                  capability,
-                  args.operation_mode_zone,
-                )
-              },
-            )
-        } else if (capability.startsWith('target_temperature.')) {
-          this.homey.flow
-            .getActionCard(`${capability.replace(/\./g, '_')}_action`)
-            .registerRunListener(
-              async (args: {
-                device: MELCloudDeviceAtw
-                target_temperature: number
-              }): Promise<void> => {
-                await args.device.triggerCapabilityListener(
-                  capability,
-                  args.target_temperature,
-                )
-              },
-            )
+            break
+          case capability.startsWith('target_temperature.'):
+            this.homey.flow
+              .getActionCard(`${capability.replace(/\./g, '_')}_action`)
+              .registerRunListener(
+                async (args: {
+                  device: MELCloudDeviceAtw
+                  target_temperature: number
+                }): Promise<void> => {
+                  await args.device.triggerCapabilityListener(
+                    capability,
+                    args.target_temperature,
+                  )
+                },
+              )
+            break
+          default:
         }
       },
     )
