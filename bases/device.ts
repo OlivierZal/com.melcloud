@@ -593,7 +593,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
           tags.reduce<number>((acc, tag: keyof ReportData<T>) => {
             let value = 0
             switch (true) {
-              case capability.startsWith('measure_power'):
+              case Array.isArray(data[tag]):
                 value = (data[tag] as number[])[toDate.hour] * 1000
                 break
               case (tag as string).endsWith('Produced'):
