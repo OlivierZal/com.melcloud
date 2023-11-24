@@ -135,7 +135,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     await Promise.all(
       [false, true].map(async (total: boolean): Promise<void> => {
         const changed: string[] = changedEnergyKeys.filter(
-          (setting: string) => setting.includes('total') === total,
+          (setting: string) => !setting.includes('daily') === total,
         )
         if (!changed.length) {
           return
