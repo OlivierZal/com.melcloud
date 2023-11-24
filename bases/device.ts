@@ -583,28 +583,32 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       ReportCapabilityAttributes<T>,
     ]): Promise<void> => {
       const reportValue = (): number => {
-        if (capability.includes('cop')) {
-          return (
-            (data[tags[0]] as number) /
-            (tags.length > 1 ? (data[tags[1]] as number) : 1)
-          )
+        switch (true) {
+          case capability.includes('cop'):
+            return (
+              (data[tags[0]] as number) /
+              (tags.length > 1 ? (data[tags[1]] as number) : 1)
+            )
+          case capability.startsWith('measure_power'):
+            return (
+              tags.reduce<number>(
+                (acc, tag: keyof ReportData<T>) =>
+                  acc + (data[tag] as number[])[toDate.hour] * 1000,
+                0,
+              ) / deviceCount
+            )
+          default:
+            return (
+              tags.reduce<number>(
+                (acc, tag: keyof ReportData<T>) =>
+                  acc +
+                  ((tag as string).endsWith('Produced')
+                    ? -(data[tag] as number)
+                    : (data[tag] as number)),
+                0,
+              ) / deviceCount
+            )
         }
-        return (
-          tags.reduce<number>((acc, tag: keyof ReportData<T>) => {
-            let value = 0
-            switch (true) {
-              case Array.isArray(data[tag]):
-                value = (data[tag] as number[])[toDate.hour] * 1000
-                break
-              case (tag as string).endsWith('Produced'):
-                value = -(data[tag] as number)
-                break
-              default:
-                value = data[tag] as number
-            }
-            return acc + value
-          }, 0) / deviceCount
-        )
       }
       await this.setCapabilityValue(capability, reportValue())
     }
