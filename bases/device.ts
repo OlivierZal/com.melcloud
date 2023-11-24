@@ -337,7 +337,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         .filter(
           ([capability]: [string, ReportCapabilityAttributes<T>]) =>
             this.hasCapability(capability) &&
-            capability.includes('total') === total,
+            !capability.includes('daily') === total,
         )
         .map(([capability, tags]: [string, ReportCapabilityAttributes<T>]) => [
           capability as ReportCapability<T>,
@@ -590,14 +590,20 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
           )
         }
         return (
-          tags.reduce<number>(
-            (acc, tag: keyof ReportData<T>) =>
-              acc +
-              (capability.includes('measure_power')
-                ? (data[tag] as number[])[toDate.hour] * 1000
-                : (data[tag] as number)),
-            0,
-          ) / deviceCount
+          tags.reduce<number>((acc, tag: keyof ReportData<T>) => {
+            let value = 0
+            switch (true) {
+              case capability.startsWith('measure_power'):
+                value = (data[tag] as number[])[toDate.hour] * 1000
+                break
+              case (tag as string).endsWith('Produced'):
+                value = -(data[tag] as number)
+                break
+              default:
+                value = data[tag] as number
+            }
+            return acc + value
+          }, 0) / deviceCount
         )
       }
       await this.setCapabilityValue(capability, reportValue())

@@ -26,7 +26,13 @@
     "measure_power.fan",
     "measure_power.heating",
     "measure_power.other",
-    "measure_power.wifi",
+    "meter_power",
+    "meter_power.consumed_auto",
+    "meter_power.consumed_cooling",
+    "meter_power.consumed_dry",
+    "meter_power.consumed_fan",
+    "meter_power.consumed_heating",
+    "meter_power.consumed_other",
     "meter_power.daily_consumed",
     "meter_power.daily_consumed_auto",
     "meter_power.daily_consumed_cooling",
@@ -34,13 +40,7 @@
     "meter_power.daily_consumed_fan",
     "meter_power.daily_consumed_heating",
     "meter_power.daily_consumed_other",
-    "meter_power.total_consumed",
-    "meter_power.total_consumed_auto",
-    "meter_power.total_consumed_cooling",
-    "meter_power.total_consumed_dry",
-    "meter_power.total_consumed_fan",
-    "meter_power.total_consumed_heating",
-    "meter_power.total_consumed_other"
+    "measure_power.wifi"
   ],
   "capabilitiesOptions": {
     "measure_power": {
@@ -132,6 +132,72 @@
         "es": "Potencia - otro"
       }
     },
+    "meter_power.consumed_auto": {
+      "title": {
+        "en": "Total energy usage - automatic",
+        "fr": "Conso d'énergie totale - automatique",
+        "nl": "Totaalenergie verbruik - automatische",
+        "sv": "Total energianvändning - automatiskt",
+        "no": "Total energiforbruk - automatisk",
+        "da": "Total energiforbrug - automatisk",
+        "es": "Uso de energía total - automático"
+      }
+    },
+    "meter_power.consumed_cooling": {
+      "title": {
+        "en": "Total energy usage - cooling",
+        "fr": "Conso d'énergie totale - refroidissement",
+        "nl": "Totaalenergie verbruik - koeling",
+        "sv": "Total energianvändning - kylning",
+        "no": "Total energiforbruk - kjøling",
+        "da": "Total energiforbrug - køling",
+        "es": "Uso de energía total - enfriamiento"
+      }
+    },
+    "meter_power.consumed_dry": {
+      "title": {
+        "en": "Total energy usage - dry",
+        "fr": "Conso d'énergie totale - déshumidification",
+        "nl": "Totaalenergie verbruik - droging",
+        "sv": "Total energianvändning - avfuktning",
+        "no": "Total energiforbruk - avfukting",
+        "da": "Total energiforbrug - affugtning",
+        "es": "Uso de energía total - desumidificación"
+      }
+    },
+    "meter_power.consumed_fan": {
+      "title": {
+        "en": "Total energy usage - fan",
+        "fr": "Conso d'énergie totale - ventilateur",
+        "nl": "Totaalenergie verbruik - ventilator",
+        "sv": "Total energianvändning - fläkt",
+        "no": "Total energiforbruk - vifte",
+        "da": "Total energiforbrug - blæser",
+        "es": "Uso de energía total - ventilador"
+      }
+    },
+    "meter_power.consumed_heating": {
+      "title": {
+        "en": "Total energy usage - heating",
+        "fr": "Conso d'énergie totale - chauffage",
+        "nl": "Totaalenergie verbruik - verwarming",
+        "sv": "Total energianvändning - uppvärmning",
+        "no": "Total energiforbruk - oppvarming",
+        "da": "Total energiforbrug - opvarmning",
+        "es": "Uso de energía total - calefacción"
+      }
+    },
+    "meter_power.consumed_other": {
+      "title": {
+        "en": "Total energy usage - other",
+        "fr": "Conso d'énergie totale - autre",
+        "nl": "Totaalenergie verbruik - andere",
+        "sv": "Total energianvändning - övrigt",
+        "no": "Total energiforbruk - annet",
+        "da": "Total energiforbrug - andet",
+        "es": "Uso de energía total - otro"
+      }
+    },
     "meter_power.daily_consumed": {
       "title": {
         "en": "Daily energy usage",
@@ -208,90 +274,6 @@
         "da": "Daglig energiforbrug - andet",
         "es": "Uso de energía diario - otro"
       }
-    },
-    "meter_power.total_consumed": {
-      "title": {
-        "en": "Total energy usage",
-        "fr": "Conso d'énergie totale",
-        "nl": "Totaal energie verbruik",
-        "sv": "Total energianvändning",
-        "no": "Total energiforbruk",
-        "da": "Total energiforbrug",
-        "es": "Uso de energía total"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_auto": {
-      "title": {
-        "en": "Total energy usage - automatic",
-        "fr": "Conso d'énergie totale - automatique",
-        "nl": "Totaal energie verbruik - automatische",
-        "sv": "Total energianvändning - automatiskt",
-        "no": "Total energiforbruk - automatisk",
-        "da": "Total energiforbrug - automatisk",
-        "es": "Uso de energía total - automático"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_cooling": {
-      "title": {
-        "en": "Total energy usage - cooling",
-        "fr": "Conso d'énergie totale - refroidissement",
-        "nl": "Totaal energie verbruik - koeling",
-        "sv": "Total energianvändning - kylning",
-        "no": "Total energiforbruk - kjøling",
-        "da": "Total energiforbrug - køling",
-        "es": "Uso de energía total - enfriamiento"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_dry": {
-      "title": {
-        "en": "Total energy usage - dry",
-        "fr": "Conso d'énergie totale - déshumidification",
-        "nl": "Totaal energie verbruik - droging",
-        "sv": "Total energianvändning - avfuktning",
-        "no": "Total energiforbruk - avfukting",
-        "da": "Total energiforbrug - affugtning",
-        "es": "Uso de energía total - desumidificación"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_fan": {
-      "title": {
-        "en": "Total energy usage - fan",
-        "fr": "Conso d'énergie totale - ventilateur",
-        "nl": "Totaal energie verbruik - ventilator",
-        "sv": "Total energianvändning - fläkt",
-        "no": "Total energiforbruk - vifte",
-        "da": "Total energiforbrug - blæser",
-        "es": "Uso de energía total - ventilador"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_heating": {
-      "title": {
-        "en": "Total energy usage - heating",
-        "fr": "Conso d'énergie totale - chauffage",
-        "nl": "Totaal energie verbruik - verwarming",
-        "sv": "Total energianvändning - uppvärmning",
-        "no": "Total energiforbruk - oppvarming",
-        "da": "Total energiforbrug - opvarmning",
-        "es": "Uso de energía total - calefacción"
-      },
-      "decimals": 0
-    },
-    "meter_power.total_consumed_other": {
-      "title": {
-        "en": "Total energy usage - other",
-        "fr": "Conso d'énergie totale - autre",
-        "nl": "Totaal energie verbruik - andere",
-        "sv": "Total energianvändning - övrigt",
-        "no": "Total energiforbruk - annet",
-        "da": "Total energiforbrug - andet",
-        "es": "Uso de energía total - otro"
-      },
-      "decimals": 0
     },
     "target_temperature": {
       "min": 10,

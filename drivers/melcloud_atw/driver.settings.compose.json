@@ -247,6 +247,244 @@
   {
     "type": "group",
     "label": {
+      "en": "Total CoP display",
+      "fr": "Affichage du CoP total",
+      "nl": "Totale CoP weergeven",
+      "sv": "Total CoP visning",
+      "no": "Total CoP visning",
+      "da": "Total CoP visning",
+      "es": "Visualización del CoP total"
+    },
+    "children": [
+      {
+        "id": "meter_power.cop",
+        "type": "checkbox",
+        "label": {
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "no": "Alle moduser",
+          "da": "Alle tilstande",
+          "es": "Todos los modos"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.cop_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "no": "Kjøling",
+          "da": "Køling",
+          "es": "Enfriamiento"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.cop_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "no": "Oppvarming",
+          "da": "Opvarmning",
+          "es": "Calefacción"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.cop_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
+          "sv": "Varmvattenladdning",
+          "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
+          "es": "Agua caliente sanitaria"
+        },
+        "value": false
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Energy balance display",
+      "fr": "Affichage du solde d'énergie",
+      "nl": "Energie saldo weergeven",
+      "sv": "Energibalans visning",
+      "no": "Energibalanse visning",
+      "da": "Energibalance visning",
+      "es": "Visualización del saldo de energía"
+    },
+    "children": [
+      {
+        "id": "meter_power",
+        "type": "checkbox",
+        "label": {
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "no": "Alle moduser",
+          "da": "Alle tilstande",
+          "es": "Todos los modos"
+        },
+        "value": true
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total energy usage display",
+      "fr": "Affichage de la conso d'énergie totale",
+      "nl": "Totaalenergie verbruik weergeven",
+      "sv": "Total energianvändning visning",
+      "no": "Total energiforbruk visning",
+      "da": "Total energiforbrug visning",
+      "es": "Visualización del uso de energía total"
+    },
+    "children": [
+      {
+        "id": "meter_power.consumed",
+        "type": "checkbox",
+        "label": {
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "no": "Alle moduser",
+          "da": "Alle tilstande",
+          "es": "Todos los modos"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "no": "Kjøling",
+          "da": "Køling",
+          "es": "Enfriamiento"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "no": "Oppvarming",
+          "da": "Opvarmning",
+          "es": "Calefacción"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.consumed_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
+          "sv": "Varmvattenladdning",
+          "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
+          "es": "Agua caliente sanitaria"
+        },
+        "value": false
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Total energy production display",
+      "fr": "Affichage de la prod d'énergie totale",
+      "nl": "Totale energie productie weergeven",
+      "sv": "Total energiproduktion visning",
+      "no": "Total energiproduksjon visning",
+      "da": "Total energiproduktion visning",
+      "es": "Visualización de la producción de energía total"
+    },
+    "children": [
+      {
+        "id": "meter_power.produced",
+        "type": "checkbox",
+        "label": {
+          "en": "All modes",
+          "fr": "Tous modes",
+          "nl": "Alle modi",
+          "sv": "Alla lägen",
+          "no": "Alle moduser",
+          "da": "Alle tilstande",
+          "es": "Todos los modos"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.produced_cooling",
+        "type": "checkbox",
+        "label": {
+          "en": "Cooling",
+          "fr": "Refroidissement",
+          "nl": "Koeling",
+          "sv": "Kylning",
+          "no": "Kjøling",
+          "da": "Køling",
+          "es": "Enfriamiento"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.produced_heating",
+        "type": "checkbox",
+        "label": {
+          "en": "Heating",
+          "fr": "Chauffage",
+          "nl": "Verwarming",
+          "sv": "Uppvärmning",
+          "no": "Oppvarming",
+          "da": "Opvarmning",
+          "es": "Calefacción"
+        },
+        "value": false
+      },
+      {
+        "id": "meter_power.produced_hotwater",
+        "type": "checkbox",
+        "label": {
+          "en": "Domestic hot water",
+          "fr": "Eau chaude sanitaire",
+          "nl": "Sanitair warm water",
+          "sv": "Varmvattenladdning",
+          "no": "Varmvannslastning",
+          "da": "Varmtvandsindlæsning",
+          "es": "Agua caliente sanitaria"
+        },
+        "value": false
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
       "en": "Daily CoP display",
       "fr": "Affichage du CoP quotidien",
       "nl": "Dagelijkse CoP weergeven",
@@ -440,216 +678,6 @@
       },
       {
         "id": "meter_power.daily_produced_hotwater",
-        "type": "checkbox",
-        "label": {
-          "en": "Domestic hot water",
-          "fr": "Eau chaude sanitaire",
-          "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
-          "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
-        },
-        "value": false
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Total CoP display",
-      "fr": "Affichage du CoP total",
-      "nl": "Totale CoP weergeven",
-      "sv": "Total CoP visning",
-      "no": "Total CoP visning",
-      "da": "Total CoP visning",
-      "es": "Visualización del CoP total"
-    },
-    "children": [
-      {
-        "id": "meter_power.total_cop",
-        "type": "checkbox",
-        "label": {
-          "en": "All modes",
-          "fr": "Tous modes",
-          "nl": "Alle modi",
-          "sv": "Alla lägen",
-          "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_cop_cooling",
-        "type": "checkbox",
-        "label": {
-          "en": "Cooling",
-          "fr": "Refroidissement",
-          "nl": "Koeling",
-          "sv": "Kylning",
-          "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_cop_heating",
-        "type": "checkbox",
-        "label": {
-          "en": "Heating",
-          "fr": "Chauffage",
-          "nl": "Verwarming",
-          "sv": "Uppvärmning",
-          "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_cop_hotwater",
-        "type": "checkbox",
-        "label": {
-          "en": "Domestic hot water",
-          "fr": "Eau chaude sanitaire",
-          "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
-          "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
-        },
-        "value": false
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Total energy usage display",
-      "fr": "Affichage de la conso d'énergie totale",
-      "nl": "Totaalenergie verbruik weergeven",
-      "sv": "Total energianvändning visning",
-      "no": "Total energiforbruk visning",
-      "da": "Total energiforbrug visning",
-      "es": "Visualización del uso de energía total"
-    },
-    "children": [
-      {
-        "id": "meter_power.total_consumed",
-        "type": "checkbox",
-        "label": {
-          "en": "All modes",
-          "fr": "Tous modes",
-          "nl": "Alle modi",
-          "sv": "Alla lägen",
-          "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_cooling",
-        "type": "checkbox",
-        "label": {
-          "en": "Cooling",
-          "fr": "Refroidissement",
-          "nl": "Koeling",
-          "sv": "Kylning",
-          "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_heating",
-        "type": "checkbox",
-        "label": {
-          "en": "Heating",
-          "fr": "Chauffage",
-          "nl": "Verwarming",
-          "sv": "Uppvärmning",
-          "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_consumed_hotwater",
-        "type": "checkbox",
-        "label": {
-          "en": "Domestic hot water",
-          "fr": "Eau chaude sanitaire",
-          "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
-          "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
-        },
-        "value": false
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Total energy production display",
-      "fr": "Affichage de la prod d'énergie totale",
-      "nl": "Totale energie productie weergeven",
-      "sv": "Total energiproduktion visning",
-      "no": "Total energiproduksjon visning",
-      "da": "Total energiproduktion visning",
-      "es": "Visualización de la producción de energía total"
-    },
-    "children": [
-      {
-        "id": "meter_power.total_produced",
-        "type": "checkbox",
-        "label": {
-          "en": "All modes",
-          "fr": "Tous modes",
-          "nl": "Alle modi",
-          "sv": "Alla lägen",
-          "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_produced_cooling",
-        "type": "checkbox",
-        "label": {
-          "en": "Cooling",
-          "fr": "Refroidissement",
-          "nl": "Koeling",
-          "sv": "Kylning",
-          "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_produced_heating",
-        "type": "checkbox",
-        "label": {
-          "en": "Heating",
-          "fr": "Chauffage",
-          "nl": "Verwarming",
-          "sv": "Uppvärmning",
-          "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
-        },
-        "value": false
-      },
-      {
-        "id": "meter_power.total_produced_hotwater",
         "type": "checkbox",
         "label": {
           "en": "Domestic hot water",
