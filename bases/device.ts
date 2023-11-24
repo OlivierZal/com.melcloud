@@ -602,9 +602,8 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
               tags.reduce<number>(
                 (acc, tag: keyof ReportData<T>) =>
                   acc +
-                  ((tag as string).endsWith('Produced')
-                    ? -(data[tag] as number)
-                    : (data[tag] as number)),
+                  ((tag as string).endsWith('Produced') ? -1 : 1) *
+                    (data[tag] as number),
                 0,
               ) / deviceCount
             )
