@@ -10,7 +10,7 @@
   },
   "tokens": [
     {
-      "name": "fan_power",
+      "name": "fan_power_state",
       "type": "number",
       "title": {
         "en": "Current fan speed",
