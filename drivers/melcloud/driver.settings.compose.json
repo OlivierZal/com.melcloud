@@ -141,7 +141,7 @@
         "value": true
       },
       {
-        "id": "meter_power.consumed_auto",
+        "id": "meter_power.auto",
         "type": "checkbox",
         "label": {
           "en": "Automatic",
@@ -155,7 +155,7 @@
         "value": false
       },
       {
-        "id": "meter_power.consumed_cooling",
+        "id": "meter_power.cooling",
         "type": "checkbox",
         "label": {
           "en": "Cooling",
@@ -169,7 +169,7 @@
         "value": false
       },
       {
-        "id": "meter_power.consumed_dry",
+        "id": "meter_power.dry",
         "type": "checkbox",
         "label": {
           "en": "Dry",
@@ -183,7 +183,7 @@
         "value": false
       },
       {
-        "id": "meter_power.consumed_fan",
+        "id": "meter_power.fan",
         "type": "checkbox",
         "label": {
           "en": "Fan",
@@ -197,7 +197,7 @@
         "value": false
       },
       {
-        "id": "meter_power.consumed_heating",
+        "id": "meter_power.heating",
         "type": "checkbox",
         "label": {
           "en": "Heating",
@@ -211,7 +211,7 @@
         "value": false
       },
       {
-        "id": "meter_power.consumed_other",
+        "id": "meter_power.other",
         "type": "checkbox",
         "label": {
           "en": "Other",
@@ -239,7 +239,7 @@
     },
     "children": [
       {
-        "id": "meter_power.daily_consumed",
+        "id": "meter_power.daily",
         "type": "checkbox",
         "label": {
           "en": "All modes",
@@ -253,7 +253,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_auto",
+        "id": "meter_power.daily_auto",
         "type": "checkbox",
         "label": {
           "en": "Automatic",
@@ -267,7 +267,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_cooling",
+        "id": "meter_power.daily_cooling",
         "type": "checkbox",
         "label": {
           "en": "Cooling",
@@ -281,7 +281,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_dry",
+        "id": "meter_power.daily_dry",
         "type": "checkbox",
         "label": {
           "en": "Dry",
@@ -295,7 +295,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_fan",
+        "id": "meter_power.daily_fan",
         "type": "checkbox",
         "label": {
           "en": "Fan",
@@ -309,7 +309,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_heating",
+        "id": "meter_power.daily_heating",
         "type": "checkbox",
         "label": {
           "en": "Heating",
@@ -323,7 +323,7 @@
         "value": false
       },
       {
-        "id": "meter_power.daily_consumed_other",
+        "id": "meter_power.daily_other",
         "type": "checkbox",
         "label": {
           "en": "Other",

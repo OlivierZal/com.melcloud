@@ -244,48 +244,47 @@ interface ReportCapabilitiesAta {
   'measure_power.fan'?: number
   'measure_power.heating'?: number
   'measure_power.other'?: number
-  'meter_power.daily_consumed'?: number
-  'meter_power.daily_consumed_auto'?: number
-  'meter_power.daily_consumed_cooling'?: number
-  'meter_power.daily_consumed_dry'?: number
-  'meter_power.daily_consumed_fan'?: number
-  'meter_power.daily_consumed_heating'?: number
-  'meter_power.daily_consumed_other'?: number
   meter_power?: number
-  'meter_power.consumed_auto'?: number
-  'meter_power.consumed_cooling'?: number
-  'meter_power.consumed_dry'?: number
-  'meter_power.consumed_fan'?: number
-  'meter_power.consumed_heating'?: number
-  'meter_power.consumed_other'?: number
+  'meter_power.auto'?: number
+  'meter_power.cooling'?: number
+  'meter_power.dry'?: number
+  'meter_power.fan'?: number
+  'meter_power.heating'?: number
+  'meter_power.other'?: number
+  'meter_power.daily'?: number
+  'meter_power.daily_auto'?: number
+  'meter_power.daily_cooling'?: number
+  'meter_power.daily_dry'?: number
+  'meter_power.daily_fan'?: number
+  'meter_power.daily_heating'?: number
+  'meter_power.daily_other'?: number
 }
 
 interface ReportCapabilitiesAtw {
-  'meter_power.daily_consumed'?: number
-  'meter_power.daily_consumed_cooling'?: number
-  'meter_power.daily_consumed_heating'?: number
-  'meter_power.daily_consumed_hotwater'?: number
-  'meter_power.daily_cop'?: number
-  'meter_power.daily_cop_cooling'?: number
-  'meter_power.daily_cop_heating'?: number
-  'meter_power.daily_cop_hotwater'?: number
-  'meter_power.daily_produced'?: number
-  'meter_power.daily_produced_cooling'?: number
-  'meter_power.daily_produced_heating'?: number
-  'meter_power.daily_produced_hotwater'?: number
   meter_power?: number
-  'meter_power.consumed'?: number
-  'meter_power.consumed_cooling'?: number
-  'meter_power.consumed_heating'?: number
-  'meter_power.consumed_hotwater'?: number
-  'meter_power.cop'?: number
-  'meter_power.cop_cooling'?: number
-  'meter_power.cop_heating'?: number
-  'meter_power.cop_hotwater'?: number
+  'meter_power.cooling'?: number
+  'meter_power.heating'?: number
+  'meter_power.hotwater'?: number
   'meter_power.produced'?: number
   'meter_power.produced_cooling'?: number
   'meter_power.produced_heating'?: number
   'meter_power.produced_hotwater'?: number
+  'meter_power.cop'?: number
+  'meter_power.cop_cooling'?: number
+  'meter_power.cop_heating'?: number
+  'meter_power.cop_hotwater'?: number
+  'meter_power.daily'?: number
+  'meter_power.daily_cooling'?: number
+  'meter_power.daily_heating'?: number
+  'meter_power.daily_hotwater'?: number
+  'meter_power.produced_daily'?: number
+  'meter_power.produced_daily_cooling'?: number
+  'meter_power.produced_daily_heating'?: number
+  'meter_power.produced_daily_hotwater'?: number
+  'meter_power.cop_daily'?: number
+  'meter_power.cop_daily_cooling'?: number
+  'meter_power.cop_daily_heating'?: number
+  'meter_power.cop_daily_hotwater'?: number
 }
 
 export type SetCapabilityAta = keyof SetCapabilitiesAta
@@ -915,20 +914,6 @@ export const reportCapabilityMappingAta: Record<
   'measure_power.fan': ['Fan'],
   'measure_power.heating': ['Heating'],
   'measure_power.other': ['Other'],
-  'meter_power.daily_consumed': [
-    'TotalAutoConsumed',
-    'TotalCoolingConsumed',
-    'TotalDryConsumed',
-    'TotalFanConsumed',
-    'TotalHeatingConsumed',
-    'TotalOtherConsumed',
-  ],
-  'meter_power.daily_consumed_auto': ['TotalAutoConsumed'],
-  'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
-  'meter_power.daily_consumed_dry': ['TotalDryConsumed'],
-  'meter_power.daily_consumed_fan': ['TotalFanConsumed'],
-  'meter_power.daily_consumed_heating': ['TotalHeatingConsumed'],
-  'meter_power.daily_consumed_other': ['TotalOtherConsumed'],
   meter_power: [
     'TotalAutoConsumed',
     'TotalCoolingConsumed',
@@ -937,70 +922,40 @@ export const reportCapabilityMappingAta: Record<
     'TotalHeatingConsumed',
     'TotalOtherConsumed',
   ],
-  'meter_power.consumed_auto': ['TotalAutoConsumed'],
-  'meter_power.consumed_cooling': ['TotalCoolingConsumed'],
-  'meter_power.consumed_dry': ['TotalDryConsumed'],
-  'meter_power.consumed_fan': ['TotalFanConsumed'],
-  'meter_power.consumed_heating': ['TotalHeatingConsumed'],
-  'meter_power.consumed_other': ['TotalOtherConsumed'],
+  'meter_power.auto': ['TotalAutoConsumed'],
+  'meter_power.cooling': ['TotalCoolingConsumed'],
+  'meter_power.dry': ['TotalDryConsumed'],
+  'meter_power.fan': ['TotalFanConsumed'],
+  'meter_power.heating': ['TotalHeatingConsumed'],
+  'meter_power.other': ['TotalOtherConsumed'],
+  'meter_power.daily': [
+    'TotalAutoConsumed',
+    'TotalCoolingConsumed',
+    'TotalDryConsumed',
+    'TotalFanConsumed',
+    'TotalHeatingConsumed',
+    'TotalOtherConsumed',
+  ],
+  'meter_power.daily_auto': ['TotalAutoConsumed'],
+  'meter_power.daily_cooling': ['TotalCoolingConsumed'],
+  'meter_power.daily_dry': ['TotalDryConsumed'],
+  'meter_power.daily_fan': ['TotalFanConsumed'],
+  'meter_power.daily_heating': ['TotalHeatingConsumed'],
+  'meter_power.daily_other': ['TotalOtherConsumed'],
 } as const
 
 export const reportCapabilityMappingAtw: Record<
   ReportCapabilityAtw,
   ReportCapabilityAttributesAtw
 > = {
-  'meter_power.daily_cop': ['CoP'],
-  'meter_power.daily_cop_cooling': [
-    'TotalCoolingProduced',
-    'TotalCoolingConsumed',
-  ],
-  'meter_power.daily_cop_heating': [
-    'TotalHeatingProduced',
-    'TotalHeatingConsumed',
-  ],
-  'meter_power.daily_cop_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily_consumed': [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily_consumed_cooling': ['TotalCoolingConsumed'],
-  'meter_power.daily_consumed_heating': ['TotalHeatingConsumed'],
-  'meter_power.daily_consumed_hotwater': ['TotalHotWaterConsumed'],
-  'meter_power.daily_produced': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-  ],
-  'meter_power.daily_produced_cooling': ['TotalCoolingProduced'],
-  'meter_power.daily_produced_heating': ['TotalHeatingProduced'],
-  'meter_power.daily_produced_hotwater': ['TotalHotWaterProduced'],
-  'meter_power.cop': ['CoP'],
-  'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
-  'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
-  'meter_power.cop_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
   meter_power: [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
     'TotalHotWaterConsumed',
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
   ],
-  'meter_power.consumed': [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.consumed_cooling': ['TotalCoolingConsumed'],
-  'meter_power.consumed_heating': ['TotalHeatingConsumed'],
-  'meter_power.consumed_hotwater': ['TotalHotWaterConsumed'],
+  'meter_power.cooling': ['TotalCoolingConsumed'],
+  'meter_power.heating': ['TotalHeatingConsumed'],
+  'meter_power.hotwater': ['TotalHotWaterConsumed'],
   'meter_power.produced': [
     'TotalCoolingProduced',
     'TotalHeatingProduced',
@@ -1009,6 +964,42 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.produced_cooling': ['TotalCoolingProduced'],
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
+  'meter_power.cop': ['CoP'],
+  'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
+  'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
+  'meter_power.cop_hotwater': [
+    'TotalHotWaterProduced',
+    'TotalHotWaterConsumed',
+  ],
+  'meter_power.daily': [
+    'TotalCoolingConsumed',
+    'TotalHeatingConsumed',
+    'TotalHotWaterConsumed',
+  ],
+  'meter_power.daily_cooling': ['TotalCoolingConsumed'],
+  'meter_power.daily_heating': ['TotalHeatingConsumed'],
+  'meter_power.daily_hotwater': ['TotalHotWaterConsumed'],
+  'meter_power.produced_daily': [
+    'TotalCoolingProduced',
+    'TotalHeatingProduced',
+    'TotalHotWaterProduced',
+  ],
+  'meter_power.produced_daily_cooling': ['TotalCoolingProduced'],
+  'meter_power.produced_daily_heating': ['TotalHeatingProduced'],
+  'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
+  'meter_power.cop_daily': ['CoP'],
+  'meter_power.cop_daily_cooling': [
+    'TotalCoolingProduced',
+    'TotalCoolingConsumed',
+  ],
+  'meter_power.cop_daily_heating': [
+    'TotalHeatingProduced',
+    'TotalHeatingConsumed',
+  ],
+  'meter_power.cop_daily_hotwater': [
+    'TotalHotWaterProduced',
+    'TotalHotWaterConsumed',
+  ],
 } as const
 
 export interface DeviceDetails {

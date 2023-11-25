@@ -10,14 +10,14 @@
     "es": "Bombas de calor de aire a aire"
   },
   "capabilities": [
+    "onoff",
+    "measure_temperature",
+    "target_temperature",
     "operation_mode",
     "fan_power",
     "fan_power_state",
     "vertical",
     "horizontal",
-    "measure_temperature",
-    "onoff",
-    "target_temperature",
     "thermostat_mode",
     "measure_power",
     "measure_power.auto",
@@ -27,44 +27,28 @@
     "measure_power.heating",
     "measure_power.other",
     "meter_power",
-    "meter_power.consumed_auto",
-    "meter_power.consumed_cooling",
-    "meter_power.consumed_dry",
-    "meter_power.consumed_fan",
-    "meter_power.consumed_heating",
-    "meter_power.consumed_other",
-    "meter_power.daily_consumed",
-    "meter_power.daily_consumed_auto",
-    "meter_power.daily_consumed_cooling",
-    "meter_power.daily_consumed_dry",
-    "meter_power.daily_consumed_fan",
-    "meter_power.daily_consumed_heating",
-    "meter_power.daily_consumed_other",
+    "meter_power.auto",
+    "meter_power.cooling",
+    "meter_power.dry",
+    "meter_power.fan",
+    "meter_power.heating",
+    "meter_power.other",
+    "meter_power.daily",
+    "meter_power.daily_auto",
+    "meter_power.daily_cooling",
+    "meter_power.daily_dry",
+    "meter_power.daily_fan",
+    "meter_power.daily_heating",
+    "meter_power.daily_other",
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
+    "target_temperature": {
+      "min": 10,
+      "max": 38
+    },
     "measure_power": {
       "approximated": true
-    },
-    "measure_power.wifi": {
-      "title": {
-        "en": "Wifi signal strength",
-        "fr": "Puissance du signal wifi",
-        "nl": "Wifi signaalsterkte",
-        "sv": "Wifi signalstyrka",
-        "no": "Wifi signalstyrke",
-        "da": "Wifi signalstyrke",
-        "es": "Potencia de señal wifi"
-      },
-      "units": {
-        "en": "dBm",
-        "fr": "dBm",
-        "nl": "dBm",
-        "sv": "dBm",
-        "no": "dBm",
-        "da": "dBm",
-        "es": "dBm"
-      }
     },
     "measure_power.auto": {
       "title": {
@@ -132,7 +116,7 @@
         "es": "Potencia - otro"
       }
     },
-    "meter_power.consumed_auto": {
+    "meter_power.auto": {
       "title": {
         "en": "Total energy usage - automatic",
         "fr": "Conso d'énergie totale - automatique",
@@ -143,7 +127,7 @@
         "es": "Uso de energía total - automático"
       }
     },
-    "meter_power.consumed_cooling": {
+    "meter_power.cooling": {
       "title": {
         "en": "Total energy usage - cooling",
         "fr": "Conso d'énergie totale - refroidissement",
@@ -154,7 +138,7 @@
         "es": "Uso de energía total - enfriamiento"
       }
     },
-    "meter_power.consumed_dry": {
+    "meter_power.dry": {
       "title": {
         "en": "Total energy usage - dry",
         "fr": "Conso d'énergie totale - déshumidification",
@@ -165,7 +149,7 @@
         "es": "Uso de energía total - desumidificación"
       }
     },
-    "meter_power.consumed_fan": {
+    "meter_power.fan": {
       "title": {
         "en": "Total energy usage - fan",
         "fr": "Conso d'énergie totale - ventilateur",
@@ -176,7 +160,7 @@
         "es": "Uso de energía total - ventilador"
       }
     },
-    "meter_power.consumed_heating": {
+    "meter_power.heating": {
       "title": {
         "en": "Total energy usage - heating",
         "fr": "Conso d'énergie totale - chauffage",
@@ -187,7 +171,7 @@
         "es": "Uso de energía total - calefacción"
       }
     },
-    "meter_power.consumed_other": {
+    "meter_power.other": {
       "title": {
         "en": "Total energy usage - other",
         "fr": "Conso d'énergie totale - autre",
@@ -198,7 +182,7 @@
         "es": "Uso de energía total - otro"
       }
     },
-    "meter_power.daily_consumed": {
+    "meter_power.daily": {
       "title": {
         "en": "Daily energy usage",
         "fr": "Conso d'énergie quotidienne",
@@ -209,7 +193,7 @@
         "es": "Uso de energía diario"
       }
     },
-    "meter_power.daily_consumed_auto": {
+    "meter_power.daily_auto": {
       "title": {
         "en": "Daily energy usage - automatic",
         "fr": "Conso d'énergie quotidienne - automatique",
@@ -220,7 +204,7 @@
         "es": "Uso de energía diario - automático"
       }
     },
-    "meter_power.daily_consumed_cooling": {
+    "meter_power.daily_cooling": {
       "title": {
         "en": "Daily energy usage - cooling",
         "fr": "Conso d'énergie quotidienne - refroidissement",
@@ -231,7 +215,7 @@
         "es": "Uso de energía diario - enfriamiento"
       }
     },
-    "meter_power.daily_consumed_dry": {
+    "meter_power.daily_dry": {
       "title": {
         "en": "Daily energy usage - dry",
         "fr": "Conso d'énergie quotidienne - déshumidification",
@@ -242,7 +226,7 @@
         "es": "Uso de energía diario - desumidificación"
       }
     },
-    "meter_power.daily_consumed_fan": {
+    "meter_power.daily_fan": {
       "title": {
         "en": "Daily energy usage - fan",
         "fr": "Conso d'énergie quotidienne - ventilateur",
@@ -253,7 +237,7 @@
         "es": "Uso de energía diario - ventilación"
       }
     },
-    "meter_power.daily_consumed_heating": {
+    "meter_power.daily_heating": {
       "title": {
         "en": "Daily energy usage - heating",
         "fr": "Conso d'énergie quotidienne - chauffage",
@@ -264,7 +248,7 @@
         "es": "Uso de energía diario - calefacción"
       }
     },
-    "meter_power.daily_consumed_other": {
+    "meter_power.daily_other": {
       "title": {
         "en": "Daily energy usage - other",
         "fr": "Conso d'énergie quotidienne - autre",
@@ -275,9 +259,25 @@
         "es": "Uso de energía diario - otro"
       }
     },
-    "target_temperature": {
-      "min": 10,
-      "max": 38
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wifi signal strength",
+        "fr": "Puissance du signal wifi",
+        "nl": "Wifi signaalsterkte",
+        "sv": "Wifi signalstyrka",
+        "no": "Wifi signalstyrke",
+        "da": "Wifi signalstyrke",
+        "es": "Potencia de señal wifi"
+      },
+      "units": {
+        "en": "dBm",
+        "fr": "dBm",
+        "nl": "dBm",
+        "sv": "dBm",
+        "no": "dBm",
+        "da": "dBm",
+        "es": "dBm"
+      }
     }
   }
 }
