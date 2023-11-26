@@ -135,7 +135,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     await Promise.all(
       [false, true].map(async (total: boolean): Promise<void> => {
         const changed: string[] = changedEnergyKeys.filter(
-          (setting: string) => !setting.includes('daily') === total,
+          (setting: string) => {
+            const condition: boolean =
+              setting.startsWith('measure_power') || setting.includes('daily')
+            return total ? !condition : condition
+          },
         )
         if (!changed.length) {
           return
@@ -334,11 +338,14 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): Record<ReportCapability<T>, ReportCapabilityAttributes<T>> {
     return Object.fromEntries(
       Object.entries(this.driver.reportCapabilityMapping ?? {})
-        .filter(
-          ([capability]: [string, ReportCapabilityAttributes<T>]) =>
-            this.hasCapability(capability) &&
-            !capability.includes('daily') === total,
-        )
+        .filter(([capability]: [string, ReportCapabilityAttributes<T>]) => {
+          const condition: boolean =
+            capability.startsWith('measure_power') ||
+            capability.includes('daily')
+          return (
+            this.hasCapability(capability) && (total ? !condition : condition)
+          )
+        })
         .map(([capability, tags]: [string, ReportCapabilityAttributes<T>]) => [
           capability as ReportCapability<T>,
           tags,
