@@ -168,7 +168,7 @@
         "sv": "Måltemperatur för värmekurva",
         "no": "Ønsket temperatur for varmekurve",
         "da": "Måltemperatur for varmekurve",
-        "es": "Temperatura configurada de la curva de compensación climática"
+        "es": "Temperatura configurada de la curva de compensación"
       }
     },
     "measure_temperature.target_curve_zone2": {
@@ -179,7 +179,7 @@
         "sv": "Måltemperatur för värmekurva - zon 2",
         "no": "Ønsket temperatur for varmekurve - sone 2",
         "da": "Måltemperatur for varmekurve - zone 2",
-        "es": "Temperatura configurada de la curva de compensación climática - zona 2"
+        "es": "Temperatura configurada de la curva de compensación - zona 2"
       }
     },
     "measure_temperature.return": {
