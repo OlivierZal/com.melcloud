@@ -124,7 +124,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                 (args: { device: MELCloudDeviceAtw }): boolean =>
                   args.device.getCapabilityValue(capability),
               )
-            if (capability.startsWith('onoff')) {
+            if (capability.startsWith('onoff.')) {
               this.homey.flow
                 .getActionCard(`${capability}_action`)
                 .registerRunListener(
