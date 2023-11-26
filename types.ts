@@ -514,39 +514,39 @@ export type ReportData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
   ? ReportDataAtw
   : ReportDataAta
 
-export interface SetCapabilityAttributes<T extends MELCloudDriver> {
+export interface SetCapabilityKeys<T extends MELCloudDriver> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
 }
 
-interface SetCapabilityAttributesAta {
+interface SetCapabilityKeysAta {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
 }
 
-interface SetCapabilityAttributesErv {
+interface SetCapabilityKeysErv {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
 }
 
-interface SetCapabilityAttributesAtw {
+interface SetCapabilityKeysAtw {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
 }
 
 export type SetCapabilityMappingAta = Record<
   SetCapabilityAta,
-  SetCapabilityAttributesAta
+  SetCapabilityKeysAta
 >
 
 export type SetCapabilityMappingErv = Record<
   SetCapabilityErv,
-  SetCapabilityAttributesErv
+  SetCapabilityKeysErv
 >
 
 export type SetCapabilityMappingAtw = Record<
   SetCapabilityAtw,
-  SetCapabilityAttributesAtw
+  SetCapabilityKeysAtw
 >
 
 export type SetCapabilityMappingAny =
@@ -554,35 +554,35 @@ export type SetCapabilityMappingAny =
   | SetCapabilityMappingAtw
   | SetCapabilityMappingErv
 
-export interface GetCapabilityAttributes<T extends MELCloudDriver> {
+export interface GetCapabilityKeys<T extends MELCloudDriver> {
   readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
 }
 
-interface GetCapabilityAttributesAta {
+interface GetCapabilityKeysAta {
   readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'>
 }
 
-interface GetCapabilityAttributesErv {
+interface GetCapabilityKeysErv {
   readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'>
 }
 
-interface GetCapabilityAttributesAtw {
+interface GetCapabilityKeysAtw {
   readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'>
 }
 
 export type GetCapabilityMappingAta = Record<
   GetCapabilityAta,
-  GetCapabilityAttributesAta
+  GetCapabilityKeysAta
 >
 
 export type GetCapabilityMappingErv = Record<
   GetCapabilityErv,
-  GetCapabilityAttributesErv
+  GetCapabilityKeysErv
 >
 
 export type GetCapabilityMappingAtw = Record<
   GetCapabilityAtw,
-  GetCapabilityAttributesAtw
+  GetCapabilityKeysAtw
 >
 
 export type GetCapabilityMappingAny =
@@ -590,39 +590,39 @@ export type GetCapabilityMappingAny =
   | GetCapabilityMappingAtw
   | GetCapabilityMappingErv
 
-export interface ListCapabilityAttributes<T extends MELCloudDriver> {
+export interface ListCapabilityKeys<T extends MELCloudDriver> {
   readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
 
-interface ListCapabilityAttributesAta {
+interface ListCapabilityKeysAta {
   readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
 }
 
-interface ListCapabilityAttributesErv {
+interface ListCapabilityKeysErv {
   readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'>
 }
 
-interface ListCapabilityAttributesAtw {
+interface ListCapabilityKeysAtw {
   readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'>
 }
 
 export type ListCapabilityMappingAta = Record<
   ListCapabilityAta,
-  ListCapabilityAttributesAta
+  ListCapabilityKeysAta
 >
 
 export type ListCapabilityMappingErv = Record<
   ListCapabilityErv,
-  ListCapabilityAttributesErv
+  ListCapabilityKeysErv
 >
 
 export type ListCapabilityMappingAtw = Record<
   ListCapabilityAtw,
-  ListCapabilityAttributesAtw
+  ListCapabilityKeysAtw
 >
 
 export type ListCapabilityMappingAny =
@@ -630,21 +630,21 @@ export type ListCapabilityMappingAny =
   | ListCapabilityMappingAtw
   | ListCapabilityMappingErv
 
-export type ReportCapabilityAttributes<T extends MELCloudDriver> =
+export type ReportCapabilityKeys<T extends MELCloudDriver> =
   (keyof ReportData<T>)[]
 
-type ReportCapabilityAttributesAta = readonly (keyof ReportDataAta)[]
+type ReportCapabilityKeysAta = readonly (keyof ReportDataAta)[]
 
-type ReportCapabilityAttributesAtw = readonly (keyof ReportDataAtw)[]
+type ReportCapabilityKeysAtw = readonly (keyof ReportDataAtw)[]
 
 export type ReportCapabilityMappingAta = Record<
   ReportCapabilityAta,
-  ReportCapabilityAttributesAta
+  ReportCapabilityKeysAta
 >
 
 export type ReportCapabilityMappingAtw = Record<
   ReportCapabilityAtw,
-  ReportCapabilityAttributesAtw
+  ReportCapabilityKeysAtw
 >
 
 export type ReportCapabilityMappingAny =
@@ -654,7 +654,7 @@ export type ReportCapabilityMappingAny =
 
 export const setCapabilityMappingAta: Record<
   SetCapabilityAta,
-  SetCapabilityAttributesAta
+  SetCapabilityKeysAta
 > = {
   onoff: {
     tag: 'Power',
@@ -684,7 +684,7 @@ export const setCapabilityMappingAta: Record<
 
 export const setCapabilityMappingErv: Record<
   SetCapabilityErv,
-  SetCapabilityAttributesErv
+  SetCapabilityKeysErv
 > = {
   onoff: {
     tag: 'Power',
@@ -702,7 +702,7 @@ export const setCapabilityMappingErv: Record<
 
 export const setCapabilityMappingAtw: Record<
   SetCapabilityAtw,
-  SetCapabilityAttributesAtw
+  SetCapabilityKeysAtw
 > = {
   onoff: {
     tag: 'Power',
@@ -760,7 +760,7 @@ export const setCapabilityMappingAtw: Record<
 
 export const getCapabilityMappingAta: Record<
   GetCapabilityAta,
-  GetCapabilityAttributesAta
+  GetCapabilityKeysAta
 > = {
   measure_temperature: {
     tag: 'RoomTemperature',
@@ -769,7 +769,7 @@ export const getCapabilityMappingAta: Record<
 
 export const getCapabilityMappingErv: Record<
   GetCapabilityErv,
-  GetCapabilityAttributesErv
+  GetCapabilityKeysErv
 > = {
   measure_co2: {
     tag: 'RoomCO2Level',
@@ -784,7 +784,7 @@ export const getCapabilityMappingErv: Record<
 
 export const getCapabilityMappingAtw: Record<
   GetCapabilityAtw,
-  GetCapabilityAttributesAtw
+  GetCapabilityKeysAtw
 > = {
   'alarm_generic.eco_hot_water': {
     tag: 'EcoHotWater',
@@ -815,7 +815,7 @@ export const getCapabilityMappingAtw: Record<
 
 export const listCapabilityMappingAta: Record<
   ListCapabilityAta,
-  ListCapabilityAttributesAta
+  ListCapabilityKeysAta
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -836,7 +836,7 @@ export const listCapabilityMappingAta: Record<
 
 export const listCapabilityMappingErv: Record<
   ListCapabilityErv,
-  ListCapabilityAttributesErv
+  ListCapabilityKeysErv
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -848,7 +848,7 @@ export const listCapabilityMappingErv: Record<
 
 export const listCapabilityMappingAtw: Record<
   ListCapabilityAtw,
-  ListCapabilityAttributesAtw
+  ListCapabilityKeysAtw
 > = {
   'measure_power.wifi': {
     tag: 'WifiSignalStrength',
@@ -905,7 +905,7 @@ export const listCapabilityMappingAtw: Record<
 
 export const reportCapabilityMappingAta: Record<
   ReportCapabilityAta,
-  ReportCapabilityAttributesAta
+  ReportCapabilityKeysAta
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -946,7 +946,7 @@ export const reportCapabilityMappingAta: Record<
 
 export const reportCapabilityMappingAtw: Record<
   ReportCapabilityAtw,
-  ReportCapabilityAttributesAtw
+  ReportCapabilityKeysAtw
 > = {
   meter_power: [
     'TotalCoolingConsumed',
@@ -964,7 +964,14 @@ export const reportCapabilityMappingAtw: Record<
   'meter_power.produced_cooling': ['TotalCoolingProduced'],
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
-  'meter_power.cop': ['CoP'],
+  'meter_power.cop': [
+    'TotalCoolingProduced',
+    'TotalHeatingProduced',
+    'TotalHotWaterProduced',
+    'TotalCoolingConsumed',
+    'TotalHeatingConsumed',
+    'TotalHotWaterConsumed',
+  ],
   'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
   'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
   'meter_power.cop_hotwater': [

@@ -11,19 +11,30 @@
     "es": "Ventilador recuperador de energía (ERV)"
   },
   "capabilities": [
-    "fan_power",
-    "measure_co2",
-    "measure_pm25",
+    "onoff",
     "measure_temperature",
     "measure_temperature.outdoor",
-    "onoff",
+    "measure_co2",
+    "measure_pm25",
     "ventilation_mode",
+    "fan_power",
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
     "fan_power": {
       "min": 1,
       "max": 4
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
+      }
     },
     "measure_power.wifi": {
       "title": {
@@ -43,17 +54,6 @@
         "no": "dBm",
         "da": "dBm",
         "es": "dBm"
-      }
-    },
-    "measure_temperature.outdoor": {
-      "title": {
-        "en": "Outdoor temperature",
-        "fr": "Température extérieure",
-        "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
-        "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
       }
     }
   }

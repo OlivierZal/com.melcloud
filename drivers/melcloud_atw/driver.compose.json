@@ -338,558 +338,558 @@
       },
       "min": 25,
       "max": 60
-    }
-  },
-  "alarm_generic.booster_heater1": {
-    "title": {
-      "en": "Booster heater 1",
-      "fr": "Chauffage d'appoint 1",
-      "nl": "Boosterverwarmingselement 1",
-      "sv": "Tillskottsvärmare 1",
-      "no": "Tilleggsvarme 1",
-      "da": "Tilførselsvarme 1",
-      "es": "Calentador de refuerzo 1"
     },
-    "insightsTitleTrue": {
-      "en": "Booster heater 1 turned on",
-      "fr": "Chauffage d'appoint 1 s'est activé",
-      "nl": "Boosterverwarmingselement 1 ging af",
-      "sv": "Tillskottsvärmare 1 aktiverad",
-      "no": "Tilleggsvarme 1 aktivert",
-      "da": "Tilførselsvarme 1 blev aktiveret",
-      "es": "Calentador de refuerzo 1 activado"
+    "alarm_generic.booster_heater1": {
+      "title": {
+        "en": "Booster heater 1",
+        "fr": "Chauffage d'appoint 1",
+        "nl": "Boosterverwarmingselement 1",
+        "sv": "Tillskottsvärmare 1",
+        "no": "Tilleggsvarme 1",
+        "da": "Tilførselsvarme 1",
+        "es": "Calentador de refuerzo 1"
+      },
+      "insightsTitleTrue": {
+        "en": "Booster heater 1 turned on",
+        "fr": "Chauffage d'appoint 1 s'est activé",
+        "nl": "Boosterverwarmingselement 1 ging af",
+        "sv": "Tillskottsvärmare 1 aktiverad",
+        "no": "Tilleggsvarme 1 aktivert",
+        "da": "Tilførselsvarme 1 blev aktiveret",
+        "es": "Calentador de refuerzo 1 activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Booster heater 1 turned off",
+        "fr": "Chauffage d'appoint 1 s'est désactivé",
+        "nl": "Boosterverwarmingselement 1 ging uit",
+        "sv": "Tillskottsvärmare 1 inaktiverad",
+        "no": "Tilleggsvarme 1 deaktivert",
+        "da": "Tilførselsvarme 1 blev deaktiveret",
+        "es": "Calentador de refuerzo 1 desactivado"
+      }
     },
-    "insightsTitleFalse": {
-      "en": "Booster heater 1 turned off",
-      "fr": "Chauffage d'appoint 1 s'est désactivé",
-      "nl": "Boosterverwarmingselement 1 ging uit",
-      "sv": "Tillskottsvärmare 1 inaktiverad",
-      "no": "Tilleggsvarme 1 deaktivert",
-      "da": "Tilførselsvarme 1 blev deaktiveret",
-      "es": "Calentador de refuerzo 1 desactivado"
-    }
-  },
-  "alarm_generic.booster_heater2": {
-    "title": {
-      "en": "Booster heater 2",
-      "fr": "Chauffage d'appoint 2",
-      "nl": "Boosterverwarmingselement 2",
-      "sv": "Tillskottsvärmare 2",
-      "no": "Tilleggsvarme 2",
-      "da": "Tilførselsvarme 2",
-      "es": "Calentador de refuerzo 2"
+    "alarm_generic.booster_heater2": {
+      "title": {
+        "en": "Booster heater 2",
+        "fr": "Chauffage d'appoint 2",
+        "nl": "Boosterverwarmingselement 2",
+        "sv": "Tillskottsvärmare 2",
+        "no": "Tilleggsvarme 2",
+        "da": "Tilførselsvarme 2",
+        "es": "Calentador de refuerzo 2"
+      },
+      "insightsTitleTrue": {
+        "en": "Booster heater 2 turned on",
+        "fr": "Chauffage d'appoint 2 s'est activé",
+        "nl": "Boosterverwarmingselement 2 ging af",
+        "sv": "Tillskottsvärmare 2 aktiverad",
+        "no": "Tilleggsvarme 2 aktivert",
+        "da": "Tilførselsvarme 2 blev aktiveret",
+        "es": "Calentador de refuerzo 2 activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Booster heater 2 turned off",
+        "fr": "Chauffage d'appoint 2 s'est désactivé",
+        "nl": "Boosterverwarmingselement 2 ging uit",
+        "sv": "Tillskottsvärmare 2 inaktiverad",
+        "no": "Tilleggsvarme 2 deaktivert",
+        "da": "Tilførselsvarme 2 blev deaktiveret",
+        "es": "Calentador de refuerzo 2 desactivado"
+      }
     },
-    "insightsTitleTrue": {
-      "en": "Booster heater 2 turned on",
-      "fr": "Chauffage d'appoint 2 s'est activé",
-      "nl": "Boosterverwarmingselement 2 ging af",
-      "sv": "Tillskottsvärmare 2 aktiverad",
-      "no": "Tilleggsvarme 2 aktivert",
-      "da": "Tilførselsvarme 2 blev aktiveret",
-      "es": "Calentador de refuerzo 2 activado"
+    "alarm_generic.booster_heater2_plus": {
+      "title": {
+        "en": "Booster heater 2+",
+        "fr": "Chauffage d'appoint 2+",
+        "nl": "Boosterverwarmingselement 2+",
+        "sv": "Tillskottsvärmare 2+",
+        "no": "Tilleggsvarme 2+",
+        "da": "Tilførselsvarme 2+",
+        "es": "Calentador de refuerzo 2+"
+      },
+      "insightsTitleTrue": {
+        "en": "Booster heater 2+ turned on",
+        "fr": "Chauffage d'appoint 2+ s'est activé",
+        "nl": "Boosterverwarmingselement 2+ ging af",
+        "sv": "Tillskottsvärmare 2+ aktiverad",
+        "no": "Tilleggsvarme 2+ aktivert",
+        "da": "Tilførselsvarme 2+ blev aktiveret",
+        "es": "Calentador de refuerzo 2+ activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Booster heater 2+ turned off",
+        "fr": "Chauffage d'appoint 2+ s'est désactivé",
+        "nl": "Boosterverwarmingselement 2+ ging uit",
+        "sv": "Tillskottsvärmare 2+ inaktiverad",
+        "no": "Tilleggsvarme 2+ deaktivert",
+        "da": "Tilførselsvarme 2+ blev deaktiveret",
+        "es": "Calentador de refuerzo 2+ desactivado"
+      }
     },
-    "insightsTitleFalse": {
-      "en": "Booster heater 2 turned off",
-      "fr": "Chauffage d'appoint 2 s'est désactivé",
-      "nl": "Boosterverwarmingselement 2 ging uit",
-      "sv": "Tillskottsvärmare 2 inaktiverad",
-      "no": "Tilleggsvarme 2 deaktivert",
-      "da": "Tilførselsvarme 2 blev deaktiveret",
-      "es": "Calentador de refuerzo 2 desactivado"
-    }
-  },
-  "alarm_generic.booster_heater2_plus": {
-    "title": {
-      "en": "Booster heater 2+",
-      "fr": "Chauffage d'appoint 2+",
-      "nl": "Boosterverwarmingselement 2+",
-      "sv": "Tillskottsvärmare 2+",
-      "no": "Tilleggsvarme 2+",
-      "da": "Tilførselsvarme 2+",
-      "es": "Calentador de refuerzo 2+"
+    "alarm_generic.defrost_mode": {
+      "title": {
+        "en": "Defrost mode",
+        "fr": "Mode dégivrage",
+        "nl": "Ontdooimodus",
+        "sv": "Avfrostningsläge",
+        "no": "Avfrostingsmodus",
+        "da": "Afrimningsfunktion",
+        "es": "Modo de descongelación"
+      },
+      "insightsTitleTrue": {
+        "en": "Defrost mode turned on",
+        "fr": "Mode dégivrage s'est activé",
+        "nl": "Ontdooimodus ging af",
+        "sv": "Avfrostningsläge aktiverat",
+        "no": "Avfrostingsmodus aktivert",
+        "da": "Afrimningsfunktion blev aktiveret",
+        "es": "Modo de descongelación activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Defrost mode turned off",
+        "fr": "Mode dégivrage s'est désactivé",
+        "nl": "Ontdooimodus ging uit",
+        "sv": "Avfrostningsläge inaktiverat",
+        "no": "Avfrostingsmodus deaktivert",
+        "da": "Afrimningsfunktion blev deaktiveret",
+        "es": "Modo de descongelación desactivado"
+      }
     },
-    "insightsTitleTrue": {
-      "en": "Booster heater 2+ turned on",
-      "fr": "Chauffage d'appoint 2+ s'est activé",
-      "nl": "Boosterverwarmingselement 2+ ging af",
-      "sv": "Tillskottsvärmare 2+ aktiverad",
-      "no": "Tilleggsvarme 2+ aktivert",
-      "da": "Tilførselsvarme 2+ blev aktiveret",
-      "es": "Calentador de refuerzo 2+ activado"
+    "alarm_generic.eco_hot_water": {
+      "title": {
+        "en": "Eco domestic hot water",
+        "fr": "Eau chaude sanitaire éco",
+        "nl": "Eco sanitair warm water",
+        "sv": "Eco-läge för varmvattenladdning",
+        "no": "Eco-modus for varmvannslastning",
+        "da": "Eco-tilstand af varmtvandsindlæsning",
+        "es": "Agua caliente sanitaria eco"
+      },
+      "insightsTitleTrue": {
+        "en": "Eco hot water turned on",
+        "fr": "Eau chaude éco s'est activée",
+        "nl": "Eco warm water ging af",
+        "sv": "Eco-läge för varmvatten aktiverat",
+        "no": "Eco-modus for varmtvann aktivert",
+        "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
+        "es": "Agua caliente eco activada"
+      },
+      "insightsTitleFalse": {
+        "en": "Eco hot water turned off",
+        "fr": "Eau chaude éco s'est désactivée",
+        "nl": "Eco warm water ging uit",
+        "sv": "Eco-läge för varmvatten inaktiverat",
+        "no": "Eco-modus for varmtvann deaktivert",
+        "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
+        "es": "Agua caliente eco desactivada"
+      }
     },
-    "insightsTitleFalse": {
-      "en": "Booster heater 2+ turned off",
-      "fr": "Chauffage d'appoint 2+ s'est désactivé",
-      "nl": "Boosterverwarmingselement 2+ ging uit",
-      "sv": "Tillskottsvärmare 2+ inaktiverad",
-      "no": "Tilleggsvarme 2+ deaktivert",
-      "da": "Tilførselsvarme 2+ blev deaktiveret",
-      "es": "Calentador de refuerzo 2+ desactivado"
-    }
-  },
-  "alarm_generic.defrost_mode": {
-    "title": {
-      "en": "Defrost mode",
-      "fr": "Mode dégivrage",
-      "nl": "Ontdooimodus",
-      "sv": "Avfrostningsläge",
-      "no": "Avfrostingsmodus",
-      "da": "Afrimningsfunktion",
-      "es": "Modo de descongelación"
+    "alarm_generic.immersion_heater": {
+      "title": {
+        "en": "Immersion heater",
+        "fr": "Chauffe-eau électrique",
+        "nl": "Dompelelement",
+        "sv": "Doppvärmare",
+        "no": "Nedsenkbar varmekolbe",
+        "da": "Dyppvarmer",
+        "es": "Calentador eléctrico sumergible"
+      },
+      "insightsTitleTrue": {
+        "en": "Immersion heater turned on",
+        "fr": "Chauffe-eau électrique s'est activé",
+        "nl": "Dompelelement ging af",
+        "sv": "Doppvärmare aktiverad",
+        "no": "Nedsenkbar varmekolbe aktivert",
+        "da": "Dyppvarmer blev aktiveret",
+        "es": "Calentador eléctrico sumergible activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Immersion heater turned off",
+        "fr": "Chauffe-eau électrique s'est désactivé",
+        "nl": "Dompelelement ging uit",
+        "sv": "Doppvärmare inaktiverad",
+        "no": "Nedsenkbar varmekolbe deaktivert",
+        "da": "Dyppvarmer blev deaktiveret",
+        "es": "Calentador eléctrico sumergible desactivado"
+      }
     },
-    "insightsTitleTrue": {
-      "en": "Defrost mode turned on",
-      "fr": "Mode dégivrage s'est activé",
-      "nl": "Ontdooimodus ging af",
-      "sv": "Avfrostningsläge aktiverat",
-      "no": "Avfrostingsmodus aktivert",
-      "da": "Afrimningsfunktion blev aktiveret",
-      "es": "Modo de descongelación activado"
+    "measure_power": {
+      "approximated": true
     },
-    "insightsTitleFalse": {
-      "en": "Defrost mode turned off",
-      "fr": "Mode dégivrage s'est désactivé",
-      "nl": "Ontdooimodus ging uit",
-      "sv": "Avfrostningsläge inaktiverat",
-      "no": "Avfrostingsmodus deaktivert",
-      "da": "Afrimningsfunktion blev deaktiveret",
-      "es": "Modo de descongelación desactivado"
-    }
-  },
-  "alarm_generic.eco_hot_water": {
-    "title": {
-      "en": "Eco domestic hot water",
-      "fr": "Eau chaude sanitaire éco",
-      "nl": "Eco sanitair warm water",
-      "sv": "Eco-läge för varmvattenladdning",
-      "no": "Eco-modus for varmvannslastning",
-      "da": "Eco-tilstand af varmtvandsindlæsning",
-      "es": "Agua caliente sanitaria eco"
+    "measure_power.produced": {
+      "title": {
+        "en": "Produced power",
+        "fr": "Puissance produite",
+        "nl": "Geproduceerd vermogen",
+        "sv": "Producerad effekt",
+        "no": "Produsert effekt",
+        "da": "Produceret effekt",
+        "es": "Potencia producida"
+      }
     },
-    "insightsTitleTrue": {
-      "en": "Eco hot water turned on",
-      "fr": "Eau chaude éco s'est activée",
-      "nl": "Eco warm water ging af",
-      "sv": "Eco-läge för varmvatten aktiverat",
-      "no": "Eco-modus for varmtvann aktivert",
-      "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
-      "es": "Agua caliente eco activada"
+    "meter_power.cooling": {
+      "title": {
+        "en": "Total energy usage - cooling",
+        "fr": "Conso d'énergie totale - refroidissement",
+        "nl": "Totaalenergie verbruik - koeling",
+        "sv": "Total energianvändning - kylning",
+        "no": "Total energiforbruk - kjøling",
+        "da": "Total energiforbrug - køling",
+        "es": "Uso de energía total - enfriamiento"
+      }
     },
-    "insightsTitleFalse": {
-      "en": "Eco hot water turned off",
-      "fr": "Eau chaude éco s'est désactivée",
-      "nl": "Eco warm water ging uit",
-      "sv": "Eco-läge för varmvatten inaktiverat",
-      "no": "Eco-modus for varmtvann deaktivert",
-      "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
-      "es": "Agua caliente eco desactivada"
-    }
-  },
-  "alarm_generic.immersion_heater": {
-    "title": {
-      "en": "Immersion heater",
-      "fr": "Chauffe-eau électrique",
-      "nl": "Dompelelement",
-      "sv": "Doppvärmare",
-      "no": "Nedsenkbar varmekolbe",
-      "da": "Dyppvarmer",
-      "es": "Calentador eléctrico sumergible"
+    "meter_power.heating": {
+      "title": {
+        "en": "Total energy usage - heating",
+        "fr": "Conso d'énergie totale - chauffage",
+        "nl": "Totaalenergie verbruik - verwarming",
+        "sv": "Total energianvändning - uppvärmning",
+        "no": "Total energiforbruk - oppvarming",
+        "da": "Total energiforbrug - opvarmning",
+        "es": "Uso de energía total - calefacción"
+      }
     },
-    "insightsTitleTrue": {
-      "en": "Immersion heater turned on",
-      "fr": "Chauffe-eau électrique s'est activé",
-      "nl": "Dompelelement ging af",
-      "sv": "Doppvärmare aktiverad",
-      "no": "Nedsenkbar varmekolbe aktivert",
-      "da": "Dyppvarmer blev aktiveret",
-      "es": "Calentador eléctrico sumergible activado"
+    "meter_power.hotwater": {
+      "title": {
+        "en": "Total energy usage - domestic hot water",
+        "fr": "Conso d'énergie totale - eau chaude sanitaire",
+        "nl": "Totaalenergie verbruik - sanitair warm water",
+        "sv": "Total energianvändning - varmvattenladdning",
+        "no": "Total energiforbruk - varmvannslastning",
+        "da": "Total energiforbrug - varmtvandsindlæsning",
+        "es": "Uso de energía total - agua caliente sanitaria"
+      }
     },
-    "insightsTitleFalse": {
-      "en": "Immersion heater turned off",
-      "fr": "Chauffe-eau électrique s'est désactivé",
-      "nl": "Dompelelement ging uit",
-      "sv": "Doppvärmare inaktiverad",
-      "no": "Nedsenkbar varmekolbe deaktivert",
-      "da": "Dyppvarmer blev deaktiveret",
-      "es": "Calentador eléctrico sumergible desactivado"
-    }
-  },
-  "measure_power": {
-    "approximated": true
-  },
-  "measure_power.produced": {
-    "title": {
-      "en": "Produced power",
-      "fr": "Puissance produite",
-      "nl": "Geproduceerd vermogen",
-      "sv": "Producerad effekt",
-      "no": "Produsert effekt",
-      "da": "Produceret effekt",
-      "es": "Potencia producida"
-    }
-  },
-  "meter_power.cooling": {
-    "title": {
-      "en": "Total energy usage - cooling",
-      "fr": "Conso d'énergie totale - refroidissement",
-      "nl": "Totaalenergie verbruik - koeling",
-      "sv": "Total energianvändning - kylning",
-      "no": "Total energiforbruk - kjøling",
-      "da": "Total energiforbrug - køling",
-      "es": "Uso de energía total - enfriamiento"
-    }
-  },
-  "meter_power.heating": {
-    "title": {
-      "en": "Total energy usage - heating",
-      "fr": "Conso d'énergie totale - chauffage",
-      "nl": "Totaalenergie verbruik - verwarming",
-      "sv": "Total energianvändning - uppvärmning",
-      "no": "Total energiforbruk - oppvarming",
-      "da": "Total energiforbrug - opvarmning",
-      "es": "Uso de energía total - calefacción"
-    }
-  },
-  "meter_power.hotwater": {
-    "title": {
-      "en": "Total energy usage - domestic hot water",
-      "fr": "Conso d'énergie totale - eau chaude sanitaire",
-      "nl": "Totaalenergie verbruik - sanitair warm water",
-      "sv": "Total energianvändning - varmvattenladdning",
-      "no": "Total energiforbruk - varmvannslastning",
-      "da": "Total energiforbrug - varmtvandsindlæsning",
-      "es": "Uso de energía total - agua caliente sanitaria"
-    }
-  },
-  "meter_power.produced": {
-    "title": {
-      "en": "Total energy production",
-      "fr": "Prod d'énergie totale",
-      "nl": "Totale energie productie",
-      "sv": "Total energiproduktion",
-      "no": "Total energiproduksjon",
-      "da": "Total energiproduktion",
-      "es": "Producción de energía total"
-    }
-  },
-  "meter_power.produced_cooling": {
-    "title": {
-      "en": "Total energy production - cooling",
-      "fr": "Prod d'énergie totale - refroidissement",
-      "nl": "Totale energie productie - koeling",
-      "sv": "Total energiproduktion - kylning",
-      "no": "Total energiproduksjon - kjøling",
-      "da": "Total energiproduktion - køling",
-      "es": "Producción de energía total - enfriamiento"
-    }
-  },
-  "meter_power.produced_heating": {
-    "title": {
-      "en": "Total energy production - heating",
-      "fr": "Prod d'énergie totale - chauffage",
-      "nl": "Totale energie productie - verwarming",
-      "sv": "Total energiproduktion - uppvärmning",
-      "no": "Total energiproduksjon - oppvarming",
-      "da": "Total energiproduktion - opvarmning",
-      "es": "Producción de energía total - calefacción"
-    }
-  },
-  "meter_power.produced_hotwater": {
-    "title": {
-      "en": "Total energy production - domestic hot water",
-      "fr": "Prod d'énergie totale - eau chaude sanitaire",
-      "nl": "Totale energie productie - sanitair warm water",
-      "sv": "Total energiproduktion - varmvattenladdning",
-      "no": "Total energiproduksjon - varmvannslastning",
-      "da": "Total energiproduktion - varmtvandsindlæsning",
-      "es": "Producción de energía total - agua caliente sanitaria"
-    }
-  },
-  "meter_power.cop": {
-    "title": {
-      "en": "Total CoP",
-      "fr": "CoP total",
-      "nl": "Totale CoP",
-      "sv": "Total CoP",
-      "no": "Total CoP",
-      "da": "Total CoP",
-      "es": "CoP total"
+    "meter_power.produced": {
+      "title": {
+        "en": "Total energy production",
+        "fr": "Prod d'énergie totale",
+        "nl": "Totale energie productie",
+        "sv": "Total energiproduktion",
+        "no": "Total energiproduksjon",
+        "da": "Total energiproduktion",
+        "es": "Producción de energía total"
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_cooling": {
-    "title": {
-      "en": "Total CoP - cooling",
-      "fr": "CoP total - refroidissement",
-      "nl": "Totale CoP - koeling",
-      "sv": "Total CoP - kylning",
-      "no": "Total CoP - kjøling",
-      "da": "Total CoP - køling",
-      "es": "CoP total - enfriamiento"
+    "meter_power.produced_cooling": {
+      "title": {
+        "en": "Total energy production - cooling",
+        "fr": "Prod d'énergie totale - refroidissement",
+        "nl": "Totale energie productie - koeling",
+        "sv": "Total energiproduktion - kylning",
+        "no": "Total energiproduksjon - kjøling",
+        "da": "Total energiproduktion - køling",
+        "es": "Producción de energía total - enfriamiento"
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_heating": {
-    "title": {
-      "en": "Total CoP - heating",
-      "fr": "CoP total - chauffage",
-      "nl": "Totale CoP - verwarming",
-      "sv": "Total CoP - uppvärmning",
-      "no": "Total CoP - oppvarming",
-      "da": "Total CoP - opvarmning",
-      "es": "CoP total - calefacción"
+    "meter_power.produced_heating": {
+      "title": {
+        "en": "Total energy production - heating",
+        "fr": "Prod d'énergie totale - chauffage",
+        "nl": "Totale energie productie - verwarming",
+        "sv": "Total energiproduktion - uppvärmning",
+        "no": "Total energiproduksjon - oppvarming",
+        "da": "Total energiproduktion - opvarmning",
+        "es": "Producción de energía total - calefacción"
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_hotwater": {
-    "title": {
-      "en": "Total hot water CoP - domestic hot water",
-      "fr": "CoP total - eau chaude sanitaire",
-      "nl": "Totale CoP - sanitair warm water",
-      "sv": "Total CoP - varmvattenladdning",
-      "no": "Total CoP - varmvannslastning",
-      "da": "Total CoP - varmtvandsindlæsning",
-      "es": "CoP total - agua caliente sanitaria"
+    "meter_power.produced_hotwater": {
+      "title": {
+        "en": "Total energy production - domestic hot water",
+        "fr": "Prod d'énergie totale - eau chaude sanitaire",
+        "nl": "Totale energie productie - sanitair warm water",
+        "sv": "Total energiproduktion - varmvattenladdning",
+        "no": "Total energiproduksjon - varmvannslastning",
+        "da": "Total energiproduktion - varmtvandsindlæsning",
+        "es": "Producción de energía total - agua caliente sanitaria"
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.daily": {
-    "title": {
-      "en": "Daily energy usage",
-      "fr": "Conso d'énergie quotidienne",
-      "nl": "Dagelijkse energie verbruik",
-      "sv": "Dagliga energianvändning",
-      "no": "Daglige energiforbruk",
-      "da": "Daglige energiforbrug",
-      "es": "Uso de energía diario"
-    }
-  },
-  "meter_power.daily_cooling": {
-    "title": {
-      "en": "Daily energy usage - cooling",
-      "fr": "Conso d'énergie quotidienne - refroidissement",
-      "nl": "Dagelijkse energie verbruik - koeling",
-      "sv": "Dagliga energianvändning - kylning",
-      "no": "Daglige energiforbruk - kjøling",
-      "da": "Daglige energiforbrug - køling",
-      "es": "Uso de energía diario - enfriamiento"
-    }
-  },
-  "meter_power.daily_heating": {
-    "title": {
-      "en": "Daily energy usage - heating",
-      "fr": "Conso d'énergie quotidienne - chauffage",
-      "nl": "Dagelijkse energie verbruik - verwarming",
-      "sv": "Dagliga energianvändning - uppvärmning",
-      "no": "Daglige energiforbruk - oppvarming",
-      "da": "Daglige energiforbrug - opvarmning",
-      "es": "Uso de energía diario - calefacción"
-    }
-  },
-  "meter_power.daily_hotwater": {
-    "title": {
-      "en": "Daily energy usage - domestic hot water",
-      "fr": "Conso d'énergie quotidienne - eau chaude sanitaire",
-      "nl": "Dagelijkse energie verbruik - sanitair warm water",
-      "sv": "Dagliga energianvändning - varmvattenladdning",
-      "no": "Daglige energiforbruk - varmvannslastning",
-      "da": "Daglige energiforbrug - varmtvandslastning",
-      "es": "Uso de energía diario - agua caliente sanitaria"
-    }
-  },
-  "meter_power.produced_daily": {
-    "title": {
-      "en": "Daily energy production",
-      "fr": "Prod d'énergie quotidienne",
-      "nl": "Dagelijkse energie productie",
-      "sv": "Daglig energiproduktion",
-      "no": "Daglige energiproduksjon",
-      "da": "Daglige energiproduktion",
-      "es": "Producción de energía diario"
-    }
-  },
-  "meter_power.produced_daily_cooling": {
-    "title": {
-      "en": "Daily energy production - cooling",
-      "fr": "Prod d'énergie quotidienne - refroidissement",
-      "nl": "Dagelijkse energie productie - koeling",
-      "sv": "Daglig energiproduktion - kylning",
-      "no": "Daglige energiproduksjon - kjøling",
-      "da": "Daglige energiproduktion - køling",
-      "es": "Producción de energía diario - enfriamiento"
-    }
-  },
-  "meter_power.produced_daily_heating": {
-    "title": {
-      "en": "Daily energy production - heating",
-      "fr": "Prod d'énergie quotidienne - chauffage",
-      "nl": "Dagelijkse energie productie - verwarming",
-      "sv": "Daglig energiproduktion - uppvärmning",
-      "no": "Daglige energiproduksjon - oppvarming",
-      "da": "Daglige energiproduktion - opvarmning",
-      "es": "Producción de energía diario - calefacción"
-    }
-  },
-  "meter_power.produced_daily_hotwater": {
-    "title": {
-      "en": "Daily energy production - domestic hot water",
-      "fr": "Prod d'énergie quotidienne - eau chaude sanitaire",
-      "nl": "Dagelijkse energie productie - sanitair warm water",
-      "sv": "Daglig energiproduktion - varmvattenladdning",
-      "no": "Daglige energiproduksjon - varmvannslastning",
-      "da": "Daglige energiproduktion - varmtvandslastning",
-      "es": "Producción de energía diario - agua caliente sanitaria"
-    }
-  },
-  "meter_power.cop_daily": {
-    "title": {
-      "en": "Daily CoP",
-      "fr": "CoP quotidien",
-      "nl": "Dagelijkse CoP",
-      "sv": "Dagliga CoP",
-      "no": "Daglige CoP",
-      "da": "Daglige CoP",
-      "es": "CoP diario"
+    "meter_power.cop": {
+      "title": {
+        "en": "Total CoP",
+        "fr": "CoP total",
+        "nl": "Totale CoP",
+        "sv": "Total CoP",
+        "no": "Total CoP",
+        "da": "Total CoP",
+        "es": "CoP total"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_daily_cooling": {
-    "title": {
-      "en": "Daily CoP - cooling",
-      "fr": "CoP quotidien - refroidissement",
-      "nl": "Dagelijkse CoP - koeling",
-      "sv": "Dagliga CoP - kylning",
-      "no": "Daglige CoP - kjøling",
-      "da": "Daglige CoP - køling",
-      "es": "Último CoP diario - enfriamiento"
+    "meter_power.cop_cooling": {
+      "title": {
+        "en": "Total CoP - cooling",
+        "fr": "CoP total - refroidissement",
+        "nl": "Totale CoP - koeling",
+        "sv": "Total CoP - kylning",
+        "no": "Total CoP - kjøling",
+        "da": "Total CoP - køling",
+        "es": "CoP total - enfriamiento"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_daily_heating": {
-    "title": {
-      "en": "Daily CoP - heating",
-      "fr": "CoP quotidien - chauffage",
-      "nl": "Dagelijkse CoP - verwarming",
-      "sv": "Dagliga CoP - uppvärmning",
-      "no": "Daglige CoP - oppvarming",
-      "da": "Daglige CoP - opvarmning",
-      "es": "CoP diario - calefacción"
+    "meter_power.cop_heating": {
+      "title": {
+        "en": "Total CoP - heating",
+        "fr": "CoP total - chauffage",
+        "nl": "Totale CoP - verwarming",
+        "sv": "Total CoP - uppvärmning",
+        "no": "Total CoP - oppvarming",
+        "da": "Total CoP - opvarmning",
+        "es": "CoP total - calefacción"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "meter_power.cop_daily_hotwater": {
-    "title": {
-      "en": "Daily CoP - domestic hot water",
-      "fr": "CoP quotidien - eau chaude sanitaire",
-      "nl": "Dagelijkse CoP - sanitair warm water",
-      "sv": "Dagliga CoP - varmvattenladdning",
-      "no": "Daglige CoP - varmvannslastning",
-      "da": "Daglige CoP - varmtvandslastning",
-      "es": "CoP diario - agua caliente sanitaria"
+    "meter_power.cop_hotwater": {
+      "title": {
+        "en": "Total hot water CoP - domestic hot water",
+        "fr": "CoP total - eau chaude sanitaire",
+        "nl": "Totale CoP - sanitair warm water",
+        "sv": "Total CoP - varmvattenladdning",
+        "no": "Total CoP - varmvannslastning",
+        "da": "Total CoP - varmtvandsindlæsning",
+        "es": "CoP total - agua caliente sanitaria"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
     },
-    "units": {
-      "en": "",
-      "fr": "",
-      "nl": "",
-      "sv": "",
-      "no": "",
-      "da": "",
-      "es": ""
-    }
-  },
-  "measure_power.heat_pump_frequency": {
-    "title": {
-      "en": "Heat pump frequency",
-      "fr": "Fréquence de la pompe à chaleur",
-      "nl": "Warmtepompfrequentie",
-      "sv": "Värmepumpsfrekvens",
-      "no": "Varmepumpesfrekvens",
-      "da": "Varmepumpefrekvens",
-      "es": "Frecuencia de la bomba de calor"
+    "meter_power.daily": {
+      "title": {
+        "en": "Daily energy usage",
+        "fr": "Conso d'énergie quotidienne",
+        "nl": "Dagelijkse energie verbruik",
+        "sv": "Dagliga energianvändning",
+        "no": "Daglige energiforbruk",
+        "da": "Daglige energiforbrug",
+        "es": "Uso de energía diario"
+      }
     },
-    "units": {
-      "en": "Hz",
-      "fr": "Hz",
-      "nl": "Hz",
-      "sv": "Hz",
-      "no": "Hz",
-      "es": "Hz"
-    }
-  },
-  "measure_power.wifi": {
-    "title": {
-      "en": "Wifi signal strength",
-      "fr": "Puissance du signal wifi",
-      "nl": "Wifi signaalsterkte",
-      "sv": "Wifi signalstyrka",
-      "no": "Wifi signalstyrke",
-      "da": "Wifi signalstyrke",
-      "es": "Potencia de señal wifi"
+    "meter_power.daily_cooling": {
+      "title": {
+        "en": "Daily energy usage - cooling",
+        "fr": "Conso d'énergie quotidienne - refroidissement",
+        "nl": "Dagelijkse energie verbruik - koeling",
+        "sv": "Dagliga energianvändning - kylning",
+        "no": "Daglige energiforbruk - kjøling",
+        "da": "Daglige energiforbrug - køling",
+        "es": "Uso de energía diario - enfriamiento"
+      }
     },
-    "units": {
-      "en": "dBm",
-      "fr": "dBm",
-      "nl": "dBm",
-      "sv": "dBm",
-      "no": "dBm",
-      "da": "dBm",
-      "es": "dBm"
+    "meter_power.daily_heating": {
+      "title": {
+        "en": "Daily energy usage - heating",
+        "fr": "Conso d'énergie quotidienne - chauffage",
+        "nl": "Dagelijkse energie verbruik - verwarming",
+        "sv": "Dagliga energianvändning - uppvärmning",
+        "no": "Daglige energiforbruk - oppvarming",
+        "da": "Daglige energiforbrug - opvarmning",
+        "es": "Uso de energía diario - calefacción"
+      }
+    },
+    "meter_power.daily_hotwater": {
+      "title": {
+        "en": "Daily energy usage - domestic hot water",
+        "fr": "Conso d'énergie quotidienne - eau chaude sanitaire",
+        "nl": "Dagelijkse energie verbruik - sanitair warm water",
+        "sv": "Dagliga energianvändning - varmvattenladdning",
+        "no": "Daglige energiforbruk - varmvannslastning",
+        "da": "Daglige energiforbrug - varmtvandslastning",
+        "es": "Uso de energía diario - agua caliente sanitaria"
+      }
+    },
+    "meter_power.produced_daily": {
+      "title": {
+        "en": "Daily energy production",
+        "fr": "Prod d'énergie quotidienne",
+        "nl": "Dagelijkse energie productie",
+        "sv": "Daglig energiproduktion",
+        "no": "Daglige energiproduksjon",
+        "da": "Daglige energiproduktion",
+        "es": "Producción de energía diario"
+      }
+    },
+    "meter_power.produced_daily_cooling": {
+      "title": {
+        "en": "Daily energy production - cooling",
+        "fr": "Prod d'énergie quotidienne - refroidissement",
+        "nl": "Dagelijkse energie productie - koeling",
+        "sv": "Daglig energiproduktion - kylning",
+        "no": "Daglige energiproduksjon - kjøling",
+        "da": "Daglige energiproduktion - køling",
+        "es": "Producción de energía diario - enfriamiento"
+      }
+    },
+    "meter_power.produced_daily_heating": {
+      "title": {
+        "en": "Daily energy production - heating",
+        "fr": "Prod d'énergie quotidienne - chauffage",
+        "nl": "Dagelijkse energie productie - verwarming",
+        "sv": "Daglig energiproduktion - uppvärmning",
+        "no": "Daglige energiproduksjon - oppvarming",
+        "da": "Daglige energiproduktion - opvarmning",
+        "es": "Producción de energía diario - calefacción"
+      }
+    },
+    "meter_power.produced_daily_hotwater": {
+      "title": {
+        "en": "Daily energy production - domestic hot water",
+        "fr": "Prod d'énergie quotidienne - eau chaude sanitaire",
+        "nl": "Dagelijkse energie productie - sanitair warm water",
+        "sv": "Daglig energiproduktion - varmvattenladdning",
+        "no": "Daglige energiproduksjon - varmvannslastning",
+        "da": "Daglige energiproduktion - varmtvandslastning",
+        "es": "Producción de energía diario - agua caliente sanitaria"
+      }
+    },
+    "meter_power.cop_daily": {
+      "title": {
+        "en": "Daily CoP",
+        "fr": "CoP quotidien",
+        "nl": "Dagelijkse CoP",
+        "sv": "Dagliga CoP",
+        "no": "Daglige CoP",
+        "da": "Daglige CoP",
+        "es": "CoP diario"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
+    },
+    "meter_power.cop_daily_cooling": {
+      "title": {
+        "en": "Daily CoP - cooling",
+        "fr": "CoP quotidien - refroidissement",
+        "nl": "Dagelijkse CoP - koeling",
+        "sv": "Dagliga CoP - kylning",
+        "no": "Daglige CoP - kjøling",
+        "da": "Daglige CoP - køling",
+        "es": "Último CoP diario - enfriamiento"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
+    },
+    "meter_power.cop_daily_heating": {
+      "title": {
+        "en": "Daily CoP - heating",
+        "fr": "CoP quotidien - chauffage",
+        "nl": "Dagelijkse CoP - verwarming",
+        "sv": "Dagliga CoP - uppvärmning",
+        "no": "Daglige CoP - oppvarming",
+        "da": "Daglige CoP - opvarmning",
+        "es": "CoP diario - calefacción"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
+    },
+    "meter_power.cop_daily_hotwater": {
+      "title": {
+        "en": "Daily CoP - domestic hot water",
+        "fr": "CoP quotidien - eau chaude sanitaire",
+        "nl": "Dagelijkse CoP - sanitair warm water",
+        "sv": "Dagliga CoP - varmvattenladdning",
+        "no": "Daglige CoP - varmvannslastning",
+        "da": "Daglige CoP - varmtvandslastning",
+        "es": "CoP diario - agua caliente sanitaria"
+      },
+      "units": {
+        "en": "",
+        "fr": "",
+        "nl": "",
+        "sv": "",
+        "no": "",
+        "da": "",
+        "es": ""
+      }
+    },
+    "measure_power.heat_pump_frequency": {
+      "title": {
+        "en": "Heat pump frequency",
+        "fr": "Fréquence de la pompe à chaleur",
+        "nl": "Warmtepompfrequentie",
+        "sv": "Värmepumpsfrekvens",
+        "no": "Varmepumpesfrekvens",
+        "da": "Varmepumpefrekvens",
+        "es": "Frecuencia de la bomba de calor"
+      },
+      "units": {
+        "en": "Hz",
+        "fr": "Hz",
+        "nl": "Hz",
+        "sv": "Hz",
+        "no": "Hz",
+        "es": "Hz"
+      }
+    },
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wifi signal strength",
+        "fr": "Puissance du signal wifi",
+        "nl": "Wifi signaalsterkte",
+        "sv": "Wifi signalstyrka",
+        "no": "Wifi signalstyrke",
+        "da": "Wifi signalstyrke",
+        "es": "Potencia de señal wifi"
+      },
+      "units": {
+        "en": "dBm",
+        "fr": "dBm",
+        "nl": "dBm",
+        "sv": "dBm",
+        "no": "dBm",
+        "da": "dBm",
+        "es": "dBm"
+      }
     }
   }
 }
