@@ -32,29 +32,35 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     'operation_mode_state',
     'target_temperature',
     'target_temperature.tank_water',
-    'target_temperature.zone1_flow_heat',
+    'target_temperature.flow_heat',
+    'measure_temperature.target_curve',
   ]
 
   public coolCapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone_with_cool.zone1',
-    'target_temperature.zone1_flow_cool',
+    'target_temperature.flow_cool',
   ]
 
   public notCoolCapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone.zone1',
   ]
 
-  public zone2CapabilitiesAtw: (GetCapabilityAtw | SetCapabilityAtw)[] = [
+  public zone2CapabilitiesAtw: (
+    | GetCapabilityAtw
+    | ListCapabilityAtw
+    | SetCapabilityAtw
+  )[] = [
     'measure_temperature.zone2',
     'operation_mode_state.zone1',
     'operation_mode_state.zone2',
     'target_temperature.zone2',
-    'target_temperature.zone2_flow_heat',
+    'target_temperature.flow_heat_zone2',
+    'measure_temperature.target_curve_zone2',
   ]
 
   public coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone_with_cool.zone2',
-    'target_temperature.zone2_flow_cool',
+    'target_temperature.flow_cool_zone2',
   ]
 
   public notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
@@ -97,7 +103,6 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     ;(this.manifest.capabilities as SetCapabilityAtw[]).forEach(
       (capability: SetCapabilityAtw): void => {
-        let flowPrefix = ''
         switch (true) {
           case capability.startsWith('operation_mode_state'):
             this.homey.flow
@@ -136,12 +141,8 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
             }
             break
           case capability.startsWith('operation_mode_zone'):
-            flowPrefix = `operation_mode_zone${capability.slice(-1)}`
-            if (capability.includes('with_cool')) {
-              flowPrefix += '_with_cool'
-            }
             this.homey.flow
-              .getConditionCard(`${flowPrefix}_condition`)
+              .getConditionCard(`${capability}_condition`)
               .registerRunListener(
                 (args: {
                   device: MELCloudDeviceAtw
@@ -151,7 +152,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
                   args.device.getCapabilityValue(capability),
               )
             this.homey.flow
-              .getActionCard(`${flowPrefix}_action`)
+              .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: {
                   device: MELCloudDeviceAtw
@@ -166,7 +167,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
             break
           case capability.startsWith('target_temperature.'):
             this.homey.flow
-              .getActionCard(`${capability.replace(/\./g, '_')}_action`)
+              .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: {
                   device: MELCloudDeviceAtw

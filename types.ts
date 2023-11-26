@@ -173,11 +173,11 @@ interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
   'operation_mode_zone_with_cool.zone2'?: string
   target_temperature?: number
   'target_temperature.tank_water'?: number
-  'target_temperature.zone1_flow_cool'?: number
-  'target_temperature.zone1_flow_heat'?: number
+  'target_temperature.flow_cool'?: number
+  'target_temperature.flow_heat'?: number
   'target_temperature.zone2'?: number
-  'target_temperature.zone2_flow_cool'?: number
-  'target_temperature.zone2_flow_heat'?: number
+  'target_temperature.flow_cool_zone2'?: number
+  'target_temperature.flow_heat_zone2'?: number
 }
 
 interface GetCapabilitiesCommon {
@@ -230,6 +230,8 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
   readonly 'measure_temperature.flow_zone2': number
+  readonly 'measure_temperature.target_curve': number
+  readonly 'measure_temperature.target_curve_zone2': number
   readonly 'measure_temperature.return': number
   readonly 'measure_temperature.return_zone1': number
   readonly 'measure_temperature.return_zone2': number
@@ -468,6 +470,8 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number
   readonly ReturnTemperatureZone2: number
+  readonly TargetHCTemperatureZone1: number
+  readonly TargetHCTemperatureZone2: number
 }
 
 export type ListDeviceData<T extends MELCloudDriver> =
@@ -736,19 +740,19 @@ export const setCapabilityMappingAtw: Record<
     tag: 'SetTemperatureZone2',
     effectiveFlag: 0x800000200n,
   },
-  'target_temperature.zone1_flow_cool': {
+  'target_temperature.flow_cool': {
     tag: 'SetCoolFlowTemperatureZone1',
     effectiveFlag: 0x1000000000000n,
   },
-  'target_temperature.zone1_flow_heat': {
+  'target_temperature.flow_heat': {
     tag: 'SetHeatFlowTemperatureZone1',
     effectiveFlag: 0x1000000000000n,
   },
-  'target_temperature.zone2_flow_cool': {
+  'target_temperature.flow_cool_zone2': {
     tag: 'SetCoolFlowTemperatureZone2',
     effectiveFlag: 0x1000000000000n,
   },
-  'target_temperature.zone2_flow_heat': {
+  'target_temperature.flow_heat_zone2': {
     tag: 'SetHeatFlowTemperatureZone2',
     effectiveFlag: 0x1000000000000n,
   },
@@ -888,6 +892,12 @@ export const listCapabilityMappingAtw: Record<
   },
   'measure_temperature.flow_zone2': {
     tag: 'FlowTemperatureZone2',
+  },
+  'measure_temperature.target_curve': {
+    tag: 'TargetHCTemperatureZone1',
+  },
+  'measure_temperature.target_curve_zone2': {
+    tag: 'TargetHCTemperatureZone2',
   },
   'measure_temperature.return': {
     tag: 'ReturnTemperature',

@@ -29,9 +29,9 @@ enum OperationModeZone {
 }
 
 function getOtherCapabilityZone(capability: string): string {
-  return capability.endsWith('.zone1')
-    ? capability.replace(/.zone1$/, '.zone2')
-    : capability.replace(/.zone2$/, '.zone1')
+  return capability.endsWith('1')
+    ? capability.replace(/1$/, '2')
+    : capability.replace(/2$/, '1')
 }
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {

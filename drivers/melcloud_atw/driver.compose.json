@@ -13,23 +13,25 @@
     "onoff",
     "onoff.forced_hot_water",
     "measure_temperature",
+    "measure_temperature.zone2",
+    "measure_temperature.outdoor",
     "measure_temperature.flow",
     "measure_temperature.flow_zone1",
     "measure_temperature.flow_zone2",
-    "measure_temperature.outdoor",
     "measure_temperature.return",
     "measure_temperature.return_zone1",
     "measure_temperature.return_zone2",
     "measure_temperature.tank_water",
     "measure_temperature.tank_water_mixing",
-    "measure_temperature.zone2",
     "target_temperature",
-    "target_temperature.tank_water",
-    "target_temperature.zone1_flow_cool",
-    "target_temperature.zone1_flow_heat",
     "target_temperature.zone2",
-    "target_temperature.zone2_flow_cool",
-    "target_temperature.zone2_flow_heat",
+    "target_temperature.flow_cool",
+    "target_temperature.flow_cool_zone2",
+    "target_temperature.flow_heat",
+    "target_temperature.flow_heat_zone2",
+    "measure_temperature.target_curve",
+    "measure_temperature.target_curve_zone2",
+    "target_temperature.tank_water",
     "operation_mode_state",
     "operation_mode_state.zone1",
     "operation_mode_state.zone2",
@@ -103,6 +105,28 @@
         "es": "Agua caliente sanitaria forzada apagada"
       }
     },
+    "measure_temperature.zone2": {
+      "title": {
+        "en": "Temperature - zone 2",
+        "fr": "Température - zone 2",
+        "nl": "Temperatuur - zone 2",
+        "sv": "Temperatur - zon 2",
+        "no": "Temperatur - sone 2",
+        "da": "Temperatur - zone 2",
+        "es": "Temperatura - zona 2"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
+      }
+    },
     "measure_temperature.flow": {
       "title": {
         "en": "Flow temperature",
@@ -136,15 +160,26 @@
         "es": "Temperatura de flujo - zona 2 (sensor externo)"
       }
     },
-    "measure_temperature.outdoor": {
+    "measure_temperature.target_curve": {
       "title": {
-        "en": "Outdoor temperature",
-        "fr": "Température extérieure",
-        "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
-        "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
+        "en": "Weather compensation curve target temperature",
+        "fr": "Température cible de la courbe de compensation météo",
+        "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
+        "sv": "Måltemperatur för värmekurva",
+        "no": "Ønsket temperatur for varmekurve",
+        "da": "Måltemperatur for varmekurve",
+        "es": "Temperatura configurada de la curva de compensación climática"
+      }
+    },
+    "measure_temperature.target_curve_zone2": {
+      "title": {
+        "en": "Weather compensation curve target temperature - zone 2",
+        "fr": "Température cible de la courbe de compensation météo - zone 2",
+        "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
+        "sv": "Måltemperatur för värmekurva - zon 2",
+        "no": "Ønsket temperatur for varmekurve - sone 2",
+        "da": "Måltemperatur for varmekurve - zone 2",
+        "es": "Temperatura configurada de la curva de compensación climática - zona 2"
       }
     },
     "measure_temperature.return": {
@@ -202,16 +237,87 @@
         "es": "Temperatura del agua del tanque de mezcla"
       }
     },
-    "measure_temperature.zone2": {
+    "target_temperature": {
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.zone2": {
       "title": {
-        "en": "Temperature - zone 2",
-        "fr": "Température - zone 2",
-        "nl": "Temperatuur - zone 2",
-        "sv": "Temperatur - zon 2",
-        "no": "Temperatur - sone 2",
-        "da": "Temperatur - zone 2",
-        "es": "Temperatura - zona 2"
-      }
+        "en": "Target temperature - zone 2",
+        "fr": "Température cible - zone 2",
+        "nl": "Ingestelde temperatuur - zone 2",
+        "sv": "Måltemperatur - zon 2",
+        "no": "Ønsket temperatur - sone 2",
+        "da": "Måltemperatur - zone 2",
+        "es": "Temperatura configurada - zona 2"
+      },
+      "min": 10,
+      "max": 30
+    },
+    "target_temperature.flow_cool": {
+      "title": {
+        "en": "Cool flow target temperature",
+        "fr": "Température cible du flux de refroidissement",
+        "nl": "Ingestelde aanvoertemperatuur - koeling",
+        "sv": "Måltemperatur för framledning - kylning",
+        "no": "Ønsket temperatur for fremløp - kjøling",
+        "da": "Måltemperatur for fremledning - køling",
+        "es": "Temperatura configurada del flujo de enfriamiento"
+      },
+      "min": 5,
+      "max": 25
+    },
+    "target_temperature.flow_cool_zone2": {
+      "title": {
+        "en": "Cool flow target temperature - zone 2",
+        "fr": "Température cible du flux de refroidissement - zone 2",
+        "nl": "Ingestelde aanvoertemperatuur - koeling - zone 2",
+        "sv": "Måltemperatur för framledning - kylning - zon 2",
+        "no": "Ønsket temperatur for fremløp - kjøling - sone 2",
+        "da": "Måltemperatur for fremledning - køling - zone 2",
+        "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
+      },
+      "min": 5,
+      "max": 25
+    },
+    "target_temperature.flow_heat": {
+      "title": {
+        "en": "Flow target temperature",
+        "fr": "Température cible du flux",
+        "nl": "Ingestelde aanvoertemperatuur",
+        "sv": "Måltemperatur för framledning",
+        "no": "Ønsket temperatur for fremløp",
+        "da": "Måltemperatur for fremledning",
+        "es": "Temperatura configurada del flujo"
+      },
+      "min": 25,
+      "max": 60
+    },
+    "target_temperature.flow_heat_zone2": {
+      "title": {
+        "en": "Flow target temperature - zone 2",
+        "fr": "Température cible du flux - zone 2",
+        "nl": "Ingestelde aanvoertemperatuur - zone 2",
+        "sv": "Måltemperatur för framledning - zon 2",
+        "no": "Ønsket temperatur for fremløp - sone 2",
+        "da": "Måltemperatur for fremledning - zone 2",
+        "es": "Temperatura configurada del flujo - zona 2"
+      },
+      "min": 25,
+      "max": 60
+    },
+    "target_temperature.tank_water": {
+      "title": {
+        "en": "Hot water target temperature",
+        "fr": "Température cible de l'eau chaude",
+        "nl": "Ingestelde warmwatertemperatuur",
+        "sv": "Måltemperatur för varmvatten",
+        "no": "Ønsket temperatur for varmtvann",
+        "da": "Måltemperatur for varmtvand",
+        "es": "Temperatura configurada del agua caliente"
+      },
+      "min": 40,
+      "max": 60
     },
     "operation_mode_state.zone1": {
       "title": {
@@ -256,88 +362,6 @@
         "da": "Driftstillstand - zone 2",
         "es": "Modo de operación - zona 2"
       }
-    },
-    "target_temperature": {
-      "min": 10,
-      "max": 30
-    },
-    "target_temperature.tank_water": {
-      "title": {
-        "en": "Hot water target temperature",
-        "fr": "Température cible de l'eau chaude",
-        "nl": "Ingestelde warmwatertemperatuur",
-        "sv": "Måltemperatur för varmvatten",
-        "no": "Ønsket temperatur for varmtvann",
-        "da": "Måltemperatur for varmtvand",
-        "es": "Temperatura configurada del agua caliente"
-      },
-      "min": 40,
-      "max": 60
-    },
-    "target_temperature.zone1_flow_cool": {
-      "title": {
-        "en": "Cool flow target temperature",
-        "fr": "Température cible du flux de refroidissement",
-        "nl": "Ingestelde aanvoertemperatuur - koeling",
-        "sv": "Måltemperatur för framledning - kylning",
-        "no": "Ønsket temperatur for fremløp - kjøling",
-        "da": "Måltemperatur for fremledning - køling",
-        "es": "Temperatura configurada del flujo de enfriamiento"
-      },
-      "min": 5,
-      "max": 25
-    },
-    "target_temperature.zone1_flow_heat": {
-      "title": {
-        "en": "Flow target temperature",
-        "fr": "Température cible du flux",
-        "nl": "Ingestelde aanvoertemperatuur",
-        "sv": "Måltemperatur för framledning",
-        "no": "Ønsket temperatur for fremløp",
-        "da": "Måltemperatur for fremledning",
-        "es": "Temperatura configurada del flujo"
-      },
-      "min": 25,
-      "max": 60
-    },
-    "target_temperature.zone2": {
-      "title": {
-        "en": "Target temperature - zone 2",
-        "fr": "Température cible - zone 2",
-        "nl": "Ingestelde temperatuur - zone 2",
-        "sv": "Måltemperatur - zon 2",
-        "no": "Ønsket temperatur - sone 2",
-        "da": "Måltemperatur - zone 2",
-        "es": "Temperatura configurada - zona 2"
-      },
-      "min": 10,
-      "max": 30
-    },
-    "target_temperature.zone2_flow_cool": {
-      "title": {
-        "en": "Cool flow target temperature - zone 2",
-        "fr": "Température cible du flux de refroidissement - zone 2",
-        "nl": "Ingestelde anvoertemperatuur - koeling - zone 2",
-        "sv": "Måltemperatur för framledning - kylning - zon 2",
-        "no": "Ønsket temperatur for fremløp - kjøling - sone 2",
-        "da": "Måltemperatur for fremledning - køling - zone 2",
-        "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
-      },
-      "min": 5,
-      "max": 25
-    },
-    "target_temperature.zone2_flow_heat": {
-      "title": {
-        "en": "Flow target temperature - zone 2",
-        "fr": "Température cible du flux - zone 2",
-        "nl": "Ingestelde aanvoertemperatuur - zone 2",
-        "sv": "Måltemperatur för framledning - zon 2",
-        "no": "Ønsket temperatur for fremløp - sone 2",
-        "da": "Måltemperatur for fremledning - zone 2",
-        "es": "Temperatura configurada del flujo - zona 2"
-      },
-      "min": 25,
-      "max": 60
     },
     "alarm_generic.booster_heater1": {
       "title": {

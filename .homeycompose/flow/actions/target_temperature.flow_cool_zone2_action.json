@@ -21,7 +21,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2_flow_cool"
+      "filter": "driver_id=melcloud_atw&capabilities=target_temperature.flow_cool_zone2"
     },
     {
       "name": "target_temperature",
