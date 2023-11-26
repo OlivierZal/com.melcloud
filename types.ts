@@ -230,12 +230,12 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
   readonly 'measure_temperature.flow_zone2': number
-  readonly 'measure_temperature.target_curve': number
-  readonly 'measure_temperature.target_curve_zone2': number
   readonly 'measure_temperature.return': number
   readonly 'measure_temperature.return_zone1': number
   readonly 'measure_temperature.return_zone2': number
   readonly 'measure_temperature.tank_water_mixing': number
+  readonly 'measure_temperature.target_curve': number
+  readonly 'measure_temperature.target_curve_zone2': number
 }
 
 interface ReportCapabilitiesAta {
@@ -893,12 +893,6 @@ export const listCapabilityMappingAtw: Record<
   'measure_temperature.flow_zone2': {
     tag: 'FlowTemperatureZone2',
   },
-  'measure_temperature.target_curve': {
-    tag: 'TargetHCTemperatureZone1',
-  },
-  'measure_temperature.target_curve_zone2': {
-    tag: 'TargetHCTemperatureZone2',
-  },
   'measure_temperature.return': {
     tag: 'ReturnTemperature',
   },
@@ -910,6 +904,12 @@ export const listCapabilityMappingAtw: Record<
   },
   'measure_temperature.tank_water_mixing': {
     tag: 'MixingTankWaterTemperature',
+  },
+  'measure_temperature.target_curve': {
+    tag: 'TargetHCTemperatureZone1',
+  },
+  'measure_temperature.target_curve_zone2': {
+    tag: 'TargetHCTemperatureZone2',
   },
 } as const
 

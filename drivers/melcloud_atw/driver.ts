@@ -21,24 +21,27 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     | ListCapabilityAtw
     | SetCapabilityAtw
   )[] = [
-    'measure_power.heat_pump_frequency',
+    'onoff',
+    'onoff.forced_hot_water',
     'measure_temperature',
     'measure_temperature.outdoor',
     'measure_temperature.flow',
     'measure_temperature.return',
     'measure_temperature.tank_water',
-    'onoff',
-    'onoff.forced_hot_water',
-    'operation_mode_state',
+    'measure_temperature.target_curve',
     'target_temperature',
     'target_temperature.tank_water',
     'target_temperature.flow_heat',
-    'measure_temperature.target_curve',
+    'operation_mode_state',
+    'measure_power.heat_pump_frequency',
+    'measure_power',
+    'measure_power.produced',
+    'measure_power.wifi',
   ]
 
   public coolCapabilitiesAtw: SetCapabilityAtw[] = [
-    'operation_mode_zone_with_cool.zone1',
     'target_temperature.flow_cool',
+    'operation_mode_zone_with_cool.zone1',
   ]
 
   public notCoolCapabilitiesAtw: SetCapabilityAtw[] = [
@@ -51,16 +54,16 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
     | SetCapabilityAtw
   )[] = [
     'measure_temperature.zone2',
-    'operation_mode_state.zone1',
-    'operation_mode_state.zone2',
+    'measure_temperature.target_curve_zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
-    'measure_temperature.target_curve_zone2',
+    'operation_mode_state.zone1',
+    'operation_mode_state.zone2',
   ]
 
   public coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
-    'operation_mode_zone_with_cool.zone2',
     'target_temperature.flow_cool_zone2',
+    'operation_mode_zone_with_cool.zone2',
   ]
 
   public notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
@@ -93,9 +96,6 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               : this.notCoolZone2CapabilitiesAtw),
           ]
         : []),
-      'measure_power',
-      'measure_power.produced',
-      'measure_power.wifi',
     ]
   }
 

@@ -39,10 +39,9 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
       ...Object.keys({
         ...this.setCapabilityMapping,
         ...this.getCapabilityMapping,
+        ...this.listCapabilityMapping,
       }),
       'thermostat_mode',
-      'fan_power_state',
-      'measure_power.wifi',
     ]
   }
 

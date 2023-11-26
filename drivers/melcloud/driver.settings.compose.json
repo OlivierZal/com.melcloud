@@ -7,10 +7,10 @@
     "label": {
       "en": "Power display",
       "fr": "Affichage de la puissance",
-      "nl": "Uurlijkse vermogen weergeven",
-      "sv": "Effekt visning",
-      "no": "Effekt visning",
-      "da": "Effekt visning",
+      "nl": "Vermogensweergave",
+      "sv": "Effektvisning",
+      "no": "Effektvisning",
+      "da": "Effektvisning",
       "es": "Visualización de la potencia"
     },
     "children": [
@@ -119,10 +119,10 @@
     "label": {
       "en": "Energy display",
       "fr": "Affichage de l'énergie",
-      "nl": "Energie weergeven",
-      "sv": "Energi visning",
-      "no": "Energi visning",
-      "da": "Energi visning",
+      "nl": "Energieweergeven",
+      "sv": "Energivisning",
+      "no": "Energivisning",
+      "da": "Energivisning",
       "es": "Visualización de la energía"
     },
     "children": [
@@ -231,11 +231,11 @@
     "label": {
       "en": "Daily energy display",
       "fr": "Affichage de l'énergie quotidienne",
-      "nl": "Dagelijkse energie verbruik weergeven",
-      "sv": "Daglig energi visning",
-      "no": "Daglig energi visning",
-      "da": "Daglig energi visning",
-      "es": "Visualización de la energía"
+      "nl": "Dagelijkse energieweergeven",
+      "sv": "Daglig energivisning",
+      "no": "Daglig energivisning",
+      "da": "Daglig energivisning",
+      "es": "Visualización de la energía daría"
     },
     "children": [
       {

@@ -14,10 +14,10 @@
     "onoff",
     "measure_temperature",
     "measure_temperature.outdoor",
-    "measure_co2",
-    "measure_pm25",
     "ventilation_mode",
     "fan_power",
+    "measure_co2",
+    "measure_pm25",
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
