@@ -233,7 +233,7 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'measure_temperature.return': number
   readonly 'measure_temperature.return_zone1': number
   readonly 'measure_temperature.return_zone2': number
-  readonly 'measure_temperature.tank_water_commong': number
+  readonly 'measure_temperature.tank_water_mixing': number
 }
 
 interface ReportCapabilitiesAta {
@@ -464,7 +464,7 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
   readonly LastLegionellaActivationTime: string
-  readonly CommongTankWaterTemperature: number
+  readonly MixingTankWaterTemperature: number
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number
   readonly ReturnTemperatureZone2: number
@@ -898,8 +898,8 @@ export const listCapabilityMappingAtw: Record<
   'measure_temperature.return_zone2': {
     tag: 'ReturnTemperatureZone2',
   },
-  'measure_temperature.tank_water_commong': {
-    tag: 'CommongTankWaterTemperature',
+  'measure_temperature.tank_water_mixing': {
+    tag: 'MixingTankWaterTemperature',
   },
 } as const
 
