@@ -319,7 +319,7 @@
     "label": {
       "en": "Produced energy display",
       "fr": "Affichage de l'énergie produite",
-      "nl": "Geproduceerd energie weergeven",
+      "nl": "Geproduceerde energie weergeven",
       "sv": "Producerad energi visning",
       "no": "Produsert energi visning",
       "da": "Produceret energi visning",
@@ -460,9 +460,9 @@
       "en": "Daily energy display",
       "fr": "Affichage de l'énergie quotidienne",
       "nl": "Dagelijkse energie weergeven",
-      "sv": "Dagliga energi visning",
-      "no": "Daglige energi visning",
-      "da": "Daglige energi visning",
+      "sv": "Daglig energi visning",
+      "no": "Daglig energi visning",
+      "da": "Daglig energi visning",
       "es": "Visualización de la energía diaria"
     },
     "children": [
@@ -529,10 +529,10 @@
     "label": {
       "en": "Daily produced energy display",
       "fr": "Affichage de l'énergie produite quotidienne",
-      "nl": "Dagelijkse geproduceerd energie weergeven",
-      "sv": "Dagliga producerad energi visning",
-      "no": "Daglige produsert energi visning",
-      "da": "Daglige produceret energi visning",
+      "nl": "Dagelijkse geproduceerde energie weergeven",
+      "sv": "Daglig producerad energi visning",
+      "no": "Daglig produsert energi visning",
+      "da": "Daglig produceret energi visning",
       "es": "Visualización de la energía producida diaria"
     },
     "children": [
@@ -600,9 +600,9 @@
       "en": "Daily CoP display",
       "fr": "Affichage du CoP quotidien",
       "nl": "Dagelijkse CoP weergeven",
-      "sv": "Dagliga CoP visning",
-      "no": "Daglige CoP visning",
-      "da": "Daglige CoP visning",
+      "sv": "Daglig CoP visning",
+      "no": "Daglig CoP visning",
+      "da": "Daglig CoP visning",
       "es": "Visualización del CoP diario"
     },
     "children": [

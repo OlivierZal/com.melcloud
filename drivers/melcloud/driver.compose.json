@@ -188,7 +188,7 @@
         "fr": "Énergie quotidienne",
         "nl": "Dagelijkse energie",
         "sv": "Daglig energi",
-        "no": "Daglige energi",
+        "no": "Daglig energi",
         "da": "Daglig energi",
         "es": "Energía diaria"
       }
@@ -199,7 +199,7 @@
         "fr": "Énergie quotidienne - automatique",
         "nl": "Dagelijkse energie - automatische",
         "sv": "Daglig energi - automatiskt",
-        "no": "Daglige energi - automatisk",
+        "no": "Daglig energi - automatisk",
         "da": "Daglig energi - automatisk",
         "es": "Energía diaria - automático"
       }
@@ -210,7 +210,7 @@
         "fr": "Énergie quotidienne - refroidissement",
         "nl": "Dagelijkse energie - koeling",
         "sv": "Daglig energi - kylning",
-        "no": "Daglige energi - kjøling",
+        "no": "Daglig energi - kjøling",
         "da": "Daglig energi - køling",
         "es": "Energía diaria - enfriamiento"
       }
@@ -221,7 +221,7 @@
         "fr": "Énergie quotidienne - déshumidification",
         "nl": "Dagelijkse energie - droging",
         "sv": "Daglig energi - avfuktning",
-        "no": "Daglige energi - avfukting",
+        "no": "Daglig energi - avfukting",
         "da": "Daglig energi - affugtning",
         "es": "Energía diaria - desumidificación"
       }
@@ -232,7 +232,7 @@
         "fr": "Énergie quotidienne - ventilateur",
         "nl": "Dagelijkse energie - ventilator",
         "sv": "Daglig energi - fläkt",
-        "no": "Daglige energi - vifte",
+        "no": "Daglig energi - vifte",
         "da": "Daglig energi - blæser",
         "es": "Energía diaria - ventilación"
       }
@@ -243,7 +243,7 @@
         "fr": "Énergie quotidienne - chauffage",
         "nl": "Dagelijkse energie - verwarming",
         "sv": "Daglig energi - uppvärmning",
-        "no": "Daglige energi - oppvarming",
+        "no": "Daglig energi - oppvarming",
         "da": "Daglig energi - opvarmning",
         "es": "Energía diaria - calefacción"
       }
@@ -254,7 +254,7 @@
         "fr": "Énergie quotidienne - autre",
         "nl": "Dagelijkse energie - andere",
         "sv": "Daglig energi - övrigt",
-        "no": "Daglige energi - annet",
+        "no": "Daglig energi - annet",
         "da": "Daglig energi - andet",
         "es": "Energía diaria - otro"
       }
