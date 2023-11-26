@@ -32,6 +32,12 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
+function filterEnergyKeys(key: string, total: boolean): boolean {
+  const condition: boolean =
+    key.startsWith('measure_power') || key.includes('daily')
+  return total ? !condition : condition
+}
+
 @addToLogs('getName()')
 abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   public declare driver: MELCloudDriver
@@ -134,12 +140,8 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     }
     await Promise.all(
       [false, true].map(async (total: boolean): Promise<void> => {
-        const changed: string[] = changedEnergyKeys.filter(
-          (setting: string) => {
-            const condition: boolean =
-              setting.startsWith('measure_power') || setting.includes('daily')
-            return total ? !condition : condition
-          },
+        const changed: string[] = changedEnergyKeys.filter((setting: string) =>
+          filterEnergyKeys(setting, total),
         )
         if (!changed.length) {
           return
@@ -338,14 +340,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): Record<ReportCapability<T>, ReportCapabilityAttributes<T>> {
     return Object.fromEntries(
       Object.entries(this.driver.reportCapabilityMapping ?? {})
-        .filter(([capability]: [string, ReportCapabilityAttributes<T>]) => {
-          const condition: boolean =
-            capability.startsWith('measure_power') ||
-            capability.includes('daily')
-          return (
-            this.hasCapability(capability) && (total ? !condition : condition)
-          )
-        })
+        .filter(
+          ([capability]: [string, ReportCapabilityAttributes<T>]) =>
+            this.hasCapability(capability) &&
+            filterEnergyKeys(capability, total),
+        )
         .map(([capability, tags]: [string, ReportCapabilityAttributes<T>]) => [
           capability as ReportCapability<T>,
           tags,
