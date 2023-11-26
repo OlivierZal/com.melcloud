@@ -117,13 +117,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total energy usage display",
-      "fr": "Affichage de la conso d'énergie totale",
-      "nl": "Totaalenergie verbruik weergeven",
-      "sv": "Total energianvändning visning",
-      "no": "Total energiforbruk visning",
-      "da": "Total energiforbrug visning",
-      "es": "Visualización del uso de energía total"
+      "en": "Energy display",
+      "fr": "Affichage de l'énergie",
+      "nl": "Energie weergeven",
+      "sv": "Energi visning",
+      "no": "Energi visning",
+      "da": "Energi visning",
+      "es": "Visualización de la energía"
     },
     "children": [
       {
@@ -229,13 +229,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Daily energy usage display",
-      "fr": "Affichage de la conso d'énergie quotidienne",
+      "en": "Daily energy display",
+      "fr": "Affichage de l'énergie quotidienne",
       "nl": "Dagelijkse energie verbruik weergeven",
-      "sv": "Daglig energianvändning visning",
-      "no": "Daglig energiforbruk visning",
-      "da": "Daglig energiforbrug visning",
-      "es": "Visualización del uso de energía"
+      "sv": "Daglig energi visning",
+      "no": "Daglig energi visning",
+      "da": "Daglig energi visning",
+      "es": "Visualización de la energía"
     },
     "children": [
       {

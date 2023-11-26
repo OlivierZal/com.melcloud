@@ -553,90 +553,90 @@
     },
     "meter_power.cooling": {
       "title": {
-        "en": "Total energy usage - cooling",
-        "fr": "Conso d'énergie totale - refroidissement",
-        "nl": "Totaalenergie verbruik - koeling",
-        "sv": "Total energianvändning - kylning",
-        "no": "Total energiforbruk - kjøling",
-        "da": "Total energiforbrug - køling",
-        "es": "Uso de energía total - enfriamiento"
+        "en": "Energy - cooling",
+        "fr": "Énergie - refroidissement",
+        "nl": "Energie - koeling",
+        "sv": "Energi - kylning",
+        "no": "Energi - kjøling",
+        "da": "Energi - køling",
+        "es": "Energía - enfriamiento"
       }
     },
     "meter_power.heating": {
       "title": {
-        "en": "Total energy usage - heating",
-        "fr": "Conso d'énergie totale - chauffage",
-        "nl": "Totaalenergie verbruik - verwarming",
-        "sv": "Total energianvändning - uppvärmning",
-        "no": "Total energiforbruk - oppvarming",
-        "da": "Total energiforbrug - opvarmning",
-        "es": "Uso de energía total - calefacción"
+        "en": "Energy - heating",
+        "fr": "Énergie - chauffage",
+        "nl": "Energie - verwarming",
+        "sv": "Energi - uppvärmning",
+        "no": "Energi - oppvarming",
+        "da": "Energi - opvarmning",
+        "es": "Energía - calefacción"
       }
     },
     "meter_power.hotwater": {
       "title": {
-        "en": "Total energy usage - domestic hot water",
-        "fr": "Conso d'énergie totale - eau chaude sanitaire",
-        "nl": "Totaalenergie verbruik - sanitair warm water",
-        "sv": "Total energianvändning - varmvattenladdning",
-        "no": "Total energiforbruk - varmvannslastning",
-        "da": "Total energiforbrug - varmtvandsindlæsning",
-        "es": "Uso de energía total - agua caliente sanitaria"
+        "en": "Energy - domestic hot water",
+        "fr": "Énergie - eau chaude sanitaire",
+        "nl": "Energie - sanitair warm water",
+        "sv": "Energi - varmvattenladdning",
+        "no": "Energi - varmvannslastning",
+        "da": "Energi - varmtvandsindlæsning",
+        "es": "Energía - agua caliente sanitaria"
       }
     },
     "meter_power.produced": {
       "title": {
-        "en": "Total energy production",
-        "fr": "Prod d'énergie totale",
-        "nl": "Totale energie productie",
-        "sv": "Total energiproduktion",
-        "no": "Total energiproduksjon",
-        "da": "Total energiproduktion",
-        "es": "Producción de energía total"
+        "en": "Produced energy",
+        "fr": "Énergie produite",
+        "nl": "Geproduceerd energie",
+        "sv": "Producerad energi",
+        "no": "Produsert energi",
+        "da": "Produceret energi",
+        "es": "Energía producida"
       }
     },
     "meter_power.produced_cooling": {
       "title": {
-        "en": "Total energy production - cooling",
-        "fr": "Prod d'énergie totale - refroidissement",
-        "nl": "Totale energie productie - koeling",
-        "sv": "Total energiproduktion - kylning",
-        "no": "Total energiproduksjon - kjøling",
-        "da": "Total energiproduktion - køling",
-        "es": "Producción de energía total - enfriamiento"
+        "en": "Produced energy - cooling",
+        "fr": "Énergie produite - refroidissement",
+        "nl": "Geproduceerd energie - koeling",
+        "sv": "Producerad energi - kylning",
+        "no": "Produsert energi - kjøling",
+        "da": "Produceret energi - køling",
+        "es": "Energía producida - enfriamiento"
       }
     },
     "meter_power.produced_heating": {
       "title": {
-        "en": "Total energy production - heating",
-        "fr": "Prod d'énergie totale - chauffage",
-        "nl": "Totale energie productie - verwarming",
-        "sv": "Total energiproduktion - uppvärmning",
-        "no": "Total energiproduksjon - oppvarming",
-        "da": "Total energiproduktion - opvarmning",
-        "es": "Producción de energía total - calefacción"
+        "en": "Produced energy - heating",
+        "fr": "Énergie produite - chauffage",
+        "nl": "Geproduceerd energie - verwarming",
+        "sv": "Producerad energi - uppvärmning",
+        "no": "Produsert energi - oppvarming",
+        "da": "Produceret energi - opvarmning",
+        "es": "Energía producida - calefacción"
       }
     },
     "meter_power.produced_hotwater": {
       "title": {
-        "en": "Total energy production - domestic hot water",
-        "fr": "Prod d'énergie totale - eau chaude sanitaire",
-        "nl": "Totale energie productie - sanitair warm water",
-        "sv": "Total energiproduktion - varmvattenladdning",
-        "no": "Total energiproduksjon - varmvannslastning",
-        "da": "Total energiproduktion - varmtvandsindlæsning",
-        "es": "Producción de energía total - agua caliente sanitaria"
+        "en": "Produced energy - domestic hot water",
+        "fr": "Énergie produite - eau chaude sanitaire",
+        "nl": "Geproduceerd energie - sanitair warm water",
+        "sv": "Producerad energi - varmvattenladdning",
+        "no": "Produsert energi - varmvannslastning",
+        "da": "Produceret energi - varmtvandsindlæsning",
+        "es": "Energía producida - agua caliente sanitaria"
       }
     },
     "meter_power.cop": {
       "title": {
-        "en": "Total CoP",
-        "fr": "CoP total",
-        "nl": "Totale CoP",
-        "sv": "Total CoP",
-        "no": "Total CoP",
-        "da": "Total CoP",
-        "es": "CoP total"
+        "en": "CoP",
+        "fr": "CoP",
+        "nl": "CoP",
+        "sv": "CoP",
+        "no": "CoP",
+        "da": "CoP",
+        "es": "CoP"
       },
       "units": {
         "en": "",
@@ -650,13 +650,13 @@
     },
     "meter_power.cop_cooling": {
       "title": {
-        "en": "Total CoP - cooling",
-        "fr": "CoP total - refroidissement",
-        "nl": "Totale CoP - koeling",
-        "sv": "Total CoP - kylning",
-        "no": "Total CoP - kjøling",
-        "da": "Total CoP - køling",
-        "es": "CoP total - enfriamiento"
+        "en": "CoP - cooling",
+        "fr": "CoP - refroidissement",
+        "nl": "CoP - koeling",
+        "sv": "CoP - kylning",
+        "no": "CoP - kjøling",
+        "da": "CoP - køling",
+        "es": "CoP - enfriamiento"
       },
       "units": {
         "en": "",
@@ -670,13 +670,13 @@
     },
     "meter_power.cop_heating": {
       "title": {
-        "en": "Total CoP - heating",
-        "fr": "CoP total - chauffage",
-        "nl": "Totale CoP - verwarming",
-        "sv": "Total CoP - uppvärmning",
-        "no": "Total CoP - oppvarming",
-        "da": "Total CoP - opvarmning",
-        "es": "CoP total - calefacción"
+        "en": "CoP - heating",
+        "fr": "CoP - chauffage",
+        "nl": "CoP - verwarming",
+        "sv": "CoP - uppvärmning",
+        "no": "CoP - oppvarming",
+        "da": "CoP - opvarmning",
+        "es": "CoP - calefacción"
       },
       "units": {
         "en": "",
@@ -690,13 +690,13 @@
     },
     "meter_power.cop_hotwater": {
       "title": {
-        "en": "Total hot water CoP - domestic hot water",
-        "fr": "CoP total - eau chaude sanitaire",
-        "nl": "Totale CoP - sanitair warm water",
-        "sv": "Total CoP - varmvattenladdning",
-        "no": "Total CoP - varmvannslastning",
-        "da": "Total CoP - varmtvandsindlæsning",
-        "es": "CoP total - agua caliente sanitaria"
+        "en": "CoP - domestic hot water",
+        "fr": "CoP - eau chaude sanitaire",
+        "nl": "CoP - sanitair warm water",
+        "sv": "CoP - varmvattenladdning",
+        "no": "CoP - varmvannslastning",
+        "da": "CoP - varmtvandsindlæsning",
+        "es": "CoP - agua caliente sanitaria"
       },
       "units": {
         "en": "",
@@ -710,90 +710,90 @@
     },
     "meter_power.daily": {
       "title": {
-        "en": "Daily energy usage",
-        "fr": "Conso d'énergie quotidienne",
+        "en": "Daily energy",
+        "fr": "Énergie quotidienne",
         "nl": "Dagelijkse energie verbruik",
-        "sv": "Dagliga energianvändning",
-        "no": "Daglige energiforbruk",
-        "da": "Daglige energiforbrug",
-        "es": "Uso de energía diario"
+        "sv": "Dagliga energi",
+        "no": "Daglige energi",
+        "da": "Daglige energi",
+        "es": "Energía diaria"
       }
     },
     "meter_power.daily_cooling": {
       "title": {
-        "en": "Daily energy usage - cooling",
-        "fr": "Conso d'énergie quotidienne - refroidissement",
+        "en": "Daily energy - cooling",
+        "fr": "Énergie quotidienne - refroidissement",
         "nl": "Dagelijkse energie verbruik - koeling",
-        "sv": "Dagliga energianvändning - kylning",
-        "no": "Daglige energiforbruk - kjøling",
-        "da": "Daglige energiforbrug - køling",
-        "es": "Uso de energía diario - enfriamiento"
+        "sv": "Dagliga energi - kylning",
+        "no": "Daglige energi - kjøling",
+        "da": "Daglige energi - køling",
+        "es": "Energía diaria - enfriamiento"
       }
     },
     "meter_power.daily_heating": {
       "title": {
-        "en": "Daily energy usage - heating",
-        "fr": "Conso d'énergie quotidienne - chauffage",
+        "en": "Daily energy - heating",
+        "fr": "Énergie quotidienne - chauffage",
         "nl": "Dagelijkse energie verbruik - verwarming",
-        "sv": "Dagliga energianvändning - uppvärmning",
-        "no": "Daglige energiforbruk - oppvarming",
-        "da": "Daglige energiforbrug - opvarmning",
-        "es": "Uso de energía diario - calefacción"
+        "sv": "Dagliga energi - uppvärmning",
+        "no": "Daglige energi - oppvarming",
+        "da": "Daglige energi - opvarmning",
+        "es": "Energía diaria - calefacción"
       }
     },
     "meter_power.daily_hotwater": {
       "title": {
-        "en": "Daily energy usage - domestic hot water",
-        "fr": "Conso d'énergie quotidienne - eau chaude sanitaire",
+        "en": "Daily energy - domestic hot water",
+        "fr": "Énergie quotidienne - eau chaude sanitaire",
         "nl": "Dagelijkse energie verbruik - sanitair warm water",
-        "sv": "Dagliga energianvändning - varmvattenladdning",
-        "no": "Daglige energiforbruk - varmvannslastning",
-        "da": "Daglige energiforbrug - varmtvandslastning",
-        "es": "Uso de energía diario - agua caliente sanitaria"
+        "sv": "Dagliga energi - varmvattenladdning",
+        "no": "Daglige energi - varmvannslastning",
+        "da": "Daglige energi - varmtvandslastning",
+        "es": "Energía diaria - agua caliente sanitaria"
       }
     },
     "meter_power.produced_daily": {
       "title": {
-        "en": "Daily energy production",
-        "fr": "Prod d'énergie quotidienne",
-        "nl": "Dagelijkse energie productie",
-        "sv": "Daglig energiproduktion",
-        "no": "Daglige energiproduksjon",
-        "da": "Daglige energiproduktion",
-        "es": "Producción de energía diario"
+        "en": "Daily produced energy",
+        "fr": "Énergie produite quotidienne",
+        "nl": "Dagelijkse geproduceerd energie",
+        "sv": "Daglig producerad energi",
+        "no": "Daglige produsert energi",
+        "da": "Daglige produceret energi",
+        "es": "Energía producida diaria"
       }
     },
     "meter_power.produced_daily_cooling": {
       "title": {
-        "en": "Daily energy production - cooling",
-        "fr": "Prod d'énergie quotidienne - refroidissement",
-        "nl": "Dagelijkse energie productie - koeling",
-        "sv": "Daglig energiproduktion - kylning",
-        "no": "Daglige energiproduksjon - kjøling",
-        "da": "Daglige energiproduktion - køling",
-        "es": "Producción de energía diario - enfriamiento"
+        "en": "Daily produced energy - cooling",
+        "fr": "Énergie produite quotidienne - refroidissement",
+        "nl": "Dagelijkse geproduceerd energie - koeling",
+        "sv": "Daglig producerad energi - kylning",
+        "no": "Daglige produsert energi - kjøling",
+        "da": "Daglige produceret energi - køling",
+        "es": "Energía producida diaria - enfriamiento"
       }
     },
     "meter_power.produced_daily_heating": {
       "title": {
-        "en": "Daily energy production - heating",
-        "fr": "Prod d'énergie quotidienne - chauffage",
-        "nl": "Dagelijkse energie productie - verwarming",
-        "sv": "Daglig energiproduktion - uppvärmning",
-        "no": "Daglige energiproduksjon - oppvarming",
-        "da": "Daglige energiproduktion - opvarmning",
-        "es": "Producción de energía diario - calefacción"
+        "en": "Daily produced energy - heating",
+        "fr": "Énergie produite quotidienne - chauffage",
+        "nl": "Dagelijkse geproduceerd energie - verwarming",
+        "sv": "Daglig producerad energi - uppvärmning",
+        "no": "Daglige produsert energi - oppvarming",
+        "da": "Daglige produceret energi - opvarmning",
+        "es": "Energía producida diaria - calefacción"
       }
     },
     "meter_power.produced_daily_hotwater": {
       "title": {
-        "en": "Daily energy production - domestic hot water",
-        "fr": "Prod d'énergie quotidienne - eau chaude sanitaire",
-        "nl": "Dagelijkse energie productie - sanitair warm water",
-        "sv": "Daglig energiproduktion - varmvattenladdning",
-        "no": "Daglige energiproduksjon - varmvannslastning",
-        "da": "Daglige energiproduktion - varmtvandslastning",
-        "es": "Producción de energía diario - agua caliente sanitaria"
+        "en": "Daily produced energy - domestic hot water",
+        "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+        "nl": "Dagelijkse geproduceerd energie - sanitair warm water",
+        "sv": "Daglig producerad energi - varmvattenladdning",
+        "no": "Daglige produsert energi - varmvannslastning",
+        "da": "Daglige produceret energi - varmtvandslastning",
+        "es": "Energía producida diaria - agua caliente sanitaria"
       }
     },
     "meter_power.cop_daily": {
@@ -824,7 +824,7 @@
         "sv": "Dagliga CoP - kylning",
         "no": "Daglige CoP - kjøling",
         "da": "Daglige CoP - køling",
-        "es": "Último CoP diario - enfriamiento"
+        "es": "CoP diario - enfriamiento"
       },
       "units": {
         "en": "",
@@ -878,13 +878,13 @@
     },
     "measure_power.heat_pump_frequency": {
       "title": {
-        "en": "Heat pump frequency",
-        "fr": "Fréquence de la pompe à chaleur",
-        "nl": "Warmtepompfrequentie",
-        "sv": "Värmepumpsfrekvens",
-        "no": "Varmepumpesfrekvens",
-        "da": "Varmepumpefrekvens",
-        "es": "Frecuencia de la bomba de calor"
+        "en": "Frequency",
+        "fr": "Fréquence",
+        "nl": "Frequentie",
+        "sv": "Frekvens",
+        "no": "Frekvens",
+        "da": "Frekvens",
+        "es": "Frecuencia"
       },
       "units": {
         "en": "Hz",

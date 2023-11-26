@@ -247,13 +247,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total energy usage display",
-      "fr": "Affichage de la conso d'énergie totale",
-      "nl": "Totaalenergie verbruik weergeven",
-      "sv": "Total energianvändning visning",
-      "no": "Total energiforbruk visning",
-      "da": "Total energiforbrug visning",
-      "es": "Visualización del uso de energía total"
+      "en": "Energy display",
+      "fr": "Affichage de l'énergie",
+      "nl": "Energie weergeven",
+      "sv": "Energi visning",
+      "no": "Energi visning",
+      "da": "Energi visning",
+      "es": "Visualización de la energía"
     },
     "children": [
       {
@@ -317,13 +317,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total energy production display",
-      "fr": "Affichage de la prod d'énergie totale",
-      "nl": "Totale energie productie weergeven",
-      "sv": "Total energiproduktion visning",
-      "no": "Total energiproduksjon visning",
-      "da": "Total energiproduktion visning",
-      "es": "Visualización de la producción de energía total"
+      "en": "Produced energy display",
+      "fr": "Affichage de l'énergie produite",
+      "nl": "Geproduceerd energie weergeven",
+      "sv": "Producerad energi visning",
+      "no": "Produsert energi visning",
+      "da": "Produceret energi visning",
+      "es": "Visualización de la energía producida"
     },
     "children": [
       {
@@ -387,13 +387,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Total CoP display",
-      "fr": "Affichage du CoP total",
-      "nl": "Totale CoP weergeven",
-      "sv": "Total CoP visning",
-      "no": "Total CoP visning",
-      "da": "Total CoP visning",
-      "es": "Visualización del CoP total"
+      "en": "CoP display",
+      "fr": "Affichage du CoP",
+      "nl": "CoP weergeven",
+      "sv": "CoP visning",
+      "no": "CoP visning",
+      "da": "CoP visning",
+      "es": "Visualización del CoP"
     },
     "children": [
       {
@@ -457,13 +457,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Daily energy usage display",
-      "fr": "Affichage de la conso d'énergie quotidienne",
-      "nl": "Dagelijkse energie verbruik weergeven",
-      "sv": "Dagliga energianvändning visning",
-      "no": "Daglige energiforbruk visning",
-      "da": "Daglige energiforbrug visning",
-      "es": "Visualización del uso de energía diario"
+      "en": "Daily energy display",
+      "fr": "Affichage de l'énergie quotidienne",
+      "nl": "Dagelijkse energie weergeven",
+      "sv": "Dagliga energi visning",
+      "no": "Daglige energi visning",
+      "da": "Daglige energi visning",
+      "es": "Visualización de la energía diaria"
     },
     "children": [
       {
@@ -527,13 +527,13 @@
   {
     "type": "group",
     "label": {
-      "en": "Daily energy production display",
-      "fr": "Affichage de la prod d'énergie quotidienne",
-      "nl": "Dagelijkse energie productie weergeven",
-      "sv": "Dagliga energiproduktion visning",
-      "no": "Daglige energiproduksjon visning",
-      "da": "Daglige energiproduktion visning",
-      "es": "Visualización de la producción de energía diaria"
+      "en": "Daily produced energy display",
+      "fr": "Affichage de l'énergie produite quotidienne",
+      "nl": "Dagelijkse geproduceerd energie weergeven",
+      "sv": "Dagliga producerad energi visning",
+      "no": "Daglige produsert energi visning",
+      "da": "Daglige produceret energi visning",
+      "es": "Visualización de la energía producida diaria"
     },
     "children": [
       {
