@@ -578,6 +578,9 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       ReportCapabilityKeys<T>,
     ]): Promise<void> => {
       const reportValue = (): number => {
+        const consumedTags: (keyof ReportData<T>)[] = tags.filter(
+          (tag: keyof ReportData<T>) => (tag as string).endsWith('Consumed'),
+        )
         switch (true) {
           case capability.includes('cop'):
             return (
@@ -591,15 +594,13 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
                     acc + (data[tag] as number),
                   0,
                 ) /
-              (tags
-                .filter((tag: keyof ReportData<T>) =>
-                  (tag as string).endsWith('Consumed'),
-                )
-                .reduce<number>(
-                  (acc, tag: keyof ReportData<T>) =>
-                    acc + (data[tag] as number),
-                  0,
-                ) || 1)
+              (consumedTags.length
+                ? consumedTags.reduce<number>(
+                    (acc, tag: keyof ReportData<T>) =>
+                      acc + (data[tag] as number),
+                    0,
+                  )
+                : 1)
             )
           case capability.startsWith('measure_power'):
             return (
@@ -612,10 +613,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
           default:
             return (
               tags.reduce<number>(
-                (acc, tag: keyof ReportData<T>) =>
-                  acc +
-                  (!(tag as string).endsWith('Consumed') ? -1 : 1) *
-                    (data[tag] as number),
+                (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
                 0,
               ) / deviceCount
             )
