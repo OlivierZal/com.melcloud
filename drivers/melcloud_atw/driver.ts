@@ -41,12 +41,10 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
 
   public coolCapabilitiesAtw: SetCapabilityAtw[] = [
     'target_temperature.flow_cool',
-    'operation_mode_zone_with_cool.zone1',
+    'operation_mode_zone_with_cool',
   ]
 
-  public notCoolCapabilitiesAtw: SetCapabilityAtw[] = [
-    'operation_mode_zone.zone1',
-  ]
+  public notCoolCapabilitiesAtw: SetCapabilityAtw[] = ['operation_mode_zone']
 
   public zone2CapabilitiesAtw: (
     | GetCapabilityAtw

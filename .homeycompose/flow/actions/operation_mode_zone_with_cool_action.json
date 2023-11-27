@@ -21,7 +21,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool"
     },
     {
       "name": "operation_mode_zone",
@@ -61,6 +61,30 @@
             "no": "Varmekurve",
             "da": "Varmekurve",
             "es": "Curva de compensación climática"
+          }
+        },
+        {
+          "id": "room_cool",
+          "title": {
+            "en": "Indoor temperature - cooling",
+            "fr": "Température intérieure - refroidissement",
+            "nl": "Binnentemperatuur - koeling",
+            "sv": "Inomhusgivare - kylning",
+            "no": "Innendørs føler - kjøling",
+            "da": "Indendørs føler - køling",
+            "es": "Temperatura interior - enfriamiento"
+          }
+        },
+        {
+          "id": "flow_cool",
+          "title": {
+            "en": "Fixed flow temperature - cooling",
+            "fr": "Température de flux fixe - refroidissement",
+            "nl": "Vaste aanvoertemperatuur - koeling",
+            "sv": "Fast framledningstemperatur - kylning",
+            "no": "Fast fremløpstemperatur - kjøling",
+            "da": "Fast fremledningstemperatur - køling",
+            "es": "Temperatura de flujo fija - enfriamiento"
           }
         }
       ]

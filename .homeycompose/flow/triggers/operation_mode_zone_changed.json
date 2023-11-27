@@ -10,7 +10,7 @@
   },
   "tokens": [
     {
-      "name": "operation_mode_zone.zone1",
+      "name": "operation_mode_zone",
       "type": "string",
       "title": {
         "en": "Operation mode",
@@ -30,7 +30,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone1"
+      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone"
     }
   ]
 }

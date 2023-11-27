@@ -29,9 +29,9 @@ enum OperationModeZone {
 }
 
 const getOtherCapabilityZone = (capability: string): string =>
-  capability.endsWith('1')
-    ? capability.replace(/1$/, '2')
-    : capability.replace(/2$/, '1')
+  capability.endsWith('.zone2')
+    ? capability.replace(/.zone2$/, '')
+    : `${capability}.zone2`
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   protected reportPlanParameters: {
@@ -98,9 +98,9 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         return (this.getSetting('always_on') as boolean)
           ? true
           : (value as boolean)
-      case 'operation_mode_zone.zone1':
+      case 'operation_mode_zone':
       case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool.zone1':
+      case 'operation_mode_zone_with_cool':
       case 'operation_mode_zone_with_cool.zone2':
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
@@ -131,9 +131,9 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
         return (value as boolean)
           ? 'idle'
           : (this.getCapabilityValue('operation_mode_state') as string)
-      case 'operation_mode_zone.zone1':
+      case 'operation_mode_zone':
       case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool.zone1':
+      case 'operation_mode_zone_with_cool':
       case 'operation_mode_zone_with_cool.zone2':
         return OperationModeZone[value as number]
       case 'alarm_generic.defrost_mode':

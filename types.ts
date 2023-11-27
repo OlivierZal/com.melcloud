@@ -167,9 +167,9 @@ interface SetCapabilitiesErv extends SetCapabilitiesCommon {
 
 interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
   'onoff.forced_hot_water'?: boolean
-  'operation_mode_zone.zone1'?: string
+  operation_mode_zone?: string
+  operation_mode_zone_with_cool?: string
   'operation_mode_zone.zone2'?: string
-  'operation_mode_zone_with_cool.zone1'?: string
   'operation_mode_zone_with_cool.zone2'?: string
   target_temperature?: number
   'target_temperature.tank_water'?: number
@@ -712,11 +712,11 @@ export const setCapabilityMappingAtw: Record<
     tag: 'Power',
     effectiveFlag: 0x1n,
   },
-  'operation_mode_zone.zone1': {
+  operation_mode_zone: {
     tag: 'OperationModeZone1',
     effectiveFlag: 0x8n,
   },
-  'operation_mode_zone_with_cool.zone1': {
+  operation_mode_zone_with_cool: {
     tag: 'OperationModeZone1',
     effectiveFlag: 0x8n,
   },
