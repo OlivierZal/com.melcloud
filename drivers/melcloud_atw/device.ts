@@ -28,11 +28,10 @@ enum OperationModeZone {
   flow_cool = 4,
 }
 
-function getOtherCapabilityZone(capability: string): string {
-  return capability.endsWith('1')
+const getOtherCapabilityZone = (capability: string): string =>
+  capability.endsWith('1')
     ? capability.replace(/1$/, '2')
     : capability.replace(/2$/, '1')
-}
 
 export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   protected reportPlanParameters: {

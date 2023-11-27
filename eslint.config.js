@@ -14,7 +14,7 @@ const envMapping = {
   node: 'node',
 }
 
-function convertIntoEslintFlatConfig(config) {
+const convertIntoEslintFlatConfig = (config) => {
   const { env, globals, plugins, parserOptions, ...oldConfig } = config
   return {
     ...oldConfig,

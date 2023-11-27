@@ -32,7 +32,7 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-function filterEnergyKeys(key: string, total: boolean): boolean {
+const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
     key.startsWith('measure_power') || key.includes('daily')
   return total ? !condition : condition

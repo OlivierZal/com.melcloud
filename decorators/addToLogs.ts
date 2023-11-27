@@ -4,11 +4,8 @@
 */
 import type { LogClass } from '../types'
 
-export default function addToLogs<T extends LogClass>(...logs: string[]) {
-  return function actualDecorator(
-    target: T,
-    context: ClassDecoratorContext<T>,
-  ): T {
+const addToLogs = <T extends LogClass>(...logs: string[]) =>
+  function actualDecorator(target: T, context: ClassDecoratorContext<T>): T {
     abstract class LogsDecorator extends target {
       public error(...args: any[]): void {
         this.commonLog('error', ...args)
@@ -46,4 +43,5 @@ export default function addToLogs<T extends LogClass>(...logs: string[]) {
 
     return LogsDecorator
   }
-}
+
+export default addToLogs

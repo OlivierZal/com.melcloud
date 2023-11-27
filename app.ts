@@ -44,7 +44,7 @@ function handleFailure(data: FailureData): never {
   throw new Error(errorMessage)
 }
 
-function handleResponse(data: FailureData | SuccessData): void {
+const handleResponse = (data: FailureData | SuccessData): void => {
   if (data.AttributeErrors) {
     handleFailure(data)
   }

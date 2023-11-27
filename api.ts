@@ -24,7 +24,7 @@ import type {
   SettingValue,
 } from './types'
 
-function fromUTCtoLocal(utcDate: string | null, language?: string): string {
+const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
   }
@@ -39,11 +39,13 @@ function fromUTCtoLocal(utcDate: string | null, language?: string): string {
   return localDate ?? ''
 }
 
-function handleErrorLogQuery(query: ErrorLogQuery): {
+const handleErrorLogQuery = (
+  query: ErrorLogQuery,
+): {
   fromDate: DateTime
   period: number
   toDate: DateTime
-} {
+} => {
   const defaultLimit = 1
   const defaultOffset = 0
   const from: DateTime | null =

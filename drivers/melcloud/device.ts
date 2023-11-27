@@ -8,9 +8,8 @@ import type {
   SetDeviceValue,
 } from '../../types'
 
-function isThermostatMode(value: string): boolean {
-  return !['dry', 'fan'].includes(value)
-}
+const isThermostatMode = (value: string): boolean =>
+  !['dry', 'fan'].includes(value)
 
 enum OperationMode {
   heat = 1,

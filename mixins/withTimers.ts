@@ -25,10 +25,8 @@ type TimerClass = new (...args: any[]) => {
   ) => NodeJS.Timeout
 }
 
-export default function withTimers<T extends HomeyClass>(
-  base: T,
-): T & TimerClass {
-  return class extends base {
+const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
+  class extends base {
     public setInterval(
       callback: () => Promise<void>,
       interval: DurationLikeObject | number,
@@ -79,4 +77,5 @@ export default function withTimers<T extends HomeyClass>(
       return this.homey[timerType](callback, Number(duration))
     }
   }
-}
+
+export default withTimers
