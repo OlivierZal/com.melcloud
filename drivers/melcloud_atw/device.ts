@@ -93,15 +93,12 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     capability: SetCapability<MELCloudDriverAtw>,
     value: CapabilityValue,
   ): SetDeviceValue {
-    switch (capability) {
-      case 'onoff':
+    switch (true) {
+      case capability === 'onoff':
         return (this.getSetting('always_on') as boolean)
           ? true
           : (value as boolean)
-      case 'operation_mode_zone':
-      case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool':
-      case 'operation_mode_zone_with_cool.zone2':
+      case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
         return value as SetDeviceValue
@@ -112,8 +109,10 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
     capability: Capability<MELCloudDriverAtw>,
     value: DeviceValue,
   ): CapabilityValue {
-    switch (capability) {
-      case 'last_legionella':
+    switch (true) {
+      case capability === 'alarm_generic.defrost_mode':
+        return !!(value as number)
+      case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
         }).toLocaleString({
@@ -121,23 +120,16 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
           day: 'numeric',
           month: 'short',
         })
-      case 'measure_power':
-      case 'measure_power.produced':
+      case capability.startsWith('measure_power'):
         return (value as number) * 1000
-      case 'operation_mode_state':
+      case capability === 'operation_mode_state':
         return OperationMode[value as number]
-      case 'operation_mode_state.zone1':
-      case 'operation_mode_state.zone2':
+      case capability.startsWith('operation_mode_state.zone'):
         return (value as boolean)
           ? 'idle'
           : (this.getCapabilityValue('operation_mode_state') as string)
-      case 'operation_mode_zone':
-      case 'operation_mode_zone.zone2':
-      case 'operation_mode_zone_with_cool':
-      case 'operation_mode_zone_with_cool.zone2':
+      case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as number]
-      case 'alarm_generic.defrost_mode':
-        return !!(value as number)
       default:
         return value
     }
