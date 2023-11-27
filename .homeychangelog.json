@@ -136,5 +136,11 @@
   },
   "24.0.0": {
     "en": "Implemented session refresh in case of failure."
+  },
+  "25.0.0": {
+    "en": "Reshaped power/energy capabilities and added new air-to-water device capabilities."
+  },
+  "26.0.0": {
+    "en": "Use array functions."
   }
 }

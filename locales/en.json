@@ -1,0 +1,79 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Building __buildingId__ has no device."
+    },
+    "holiday_mode": {
+      "date_missing": "Start Date and/or End Date are missing."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Log in",
+      "failure": "Authentication failed.",
+      "legend": "Credentials"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Yes"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "Enable <strong>frost protection</strong>",
+        "max": "Maximum temperature",
+        "min": "Minimum temperature"
+      },
+      "holiday_mode": {
+        "enabled": "Enable <strong>holiday mode</strong>",
+        "end_date": "End date",
+        "start_date": "Start date"
+      },
+      "legend": "Building Settings",
+      "update": "Update"
+    },
+    "devices": {
+      "apply": {
+        "button": "Apply to all devices",
+        "confirm": "Are you sure you want to apply these settings to all devices?",
+        "nothing": "No change to apply."
+      },
+      "legend": "Device Settings",
+      "none": "Add a device to unlock all the app's settings!"
+    },
+    "devices_ata": {
+      "auto_adjust": "Auto-adjust air conditioning temperature",
+      "configure": "Configure",
+      "legend": "Air-to-Air Device Settings"
+    },
+    "devices_atw": {
+      "legend": "Air-to-Water Device Settings"
+    },
+    "error_log": {
+      "columns": {
+        "Date": "Date",
+        "Device": "Device",
+        "Error": "Error"
+      },
+      "error": "Choose a date before\n__fromDateHuman__.",
+      "error_count": {
+        "0": "error",
+        "1": "error",
+        "234": "errors",
+        "plural": "errors"
+      },
+      "legend": "Error Log",
+      "period": "Since __fromDateHuman__:",
+      "see": "See all errors",
+      "since": "since"
+    },
+    "int_error": "__name__: must be an integer between __min__ and __max__.",
+    "refresh": "Refresh",
+    "success": "Update successful.",
+    "title": "MELCloud Settings"
+  },
+  "warnings": {
+    "always_on": "Shutdown from Homey has been disabled.",
+    "dashboard": "Exit the device and return to update your dashboard.",
+    "display_error": "Update successful (even if another value is displayed)."
+  }
+}
