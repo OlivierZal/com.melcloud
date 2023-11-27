@@ -34,7 +34,7 @@ import {
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
-function handleFailure(data: FailureData): never {
+const handleFailure = (data: FailureData): never => {
   const errorMessage: string = Object.entries(data.AttributeErrors)
     .map(
       ([error, messages]: [string, string[]]): string =>
@@ -239,7 +239,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       postData,
     )
     if ('AttributeErrors' in data) {
-      handleFailure(data)
+      return handleFailure(data)
     }
     return data
   }
