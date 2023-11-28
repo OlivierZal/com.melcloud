@@ -897,13 +897,13 @@
     },
     "measure_power.wifi": {
       "title": {
-        "en": "Wifi signal strength",
-        "fr": "Puissance du signal wifi",
-        "nl": "Wifi signaalsterkte",
-        "sv": "Wifi signalstyrka",
-        "no": "Wifi signalstyrke",
-        "da": "Wifi signalstyrke",
-        "es": "Potencia de señal wifi"
+        "en": "Wi-Fi signal strength",
+        "fr": "Puissance du signal Wi-Fi",
+        "nl": "Wi-Fi signaalsterkte",
+        "sv": "Wi-Fi signalstyrka",
+        "no": "Wi-Fi signalstyrke",
+        "da": "Wi-Fi signalstyrke",
+        "es": "Potencia de la señal Wi-Fi"
       },
       "units": {
         "en": "dBm",

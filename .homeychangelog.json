@@ -39,10 +39,10 @@
     "en": "Improved sync by agglomerating requests to MELCloud, reports will be processed every day at 0:00 AM UTC, updated some settings."
   },
   "5.4.0": {
-    "en": "Added back an \"Always On\" option in settings."
+    "en": "Added back an `Always On` option in settings."
   },
   "5.6.0": {
-    "en": "Added wifi signal strength (can be enable from settings)."
+    "en": "Added Wi-Fi signal strength (can be enable from settings)."
   },
   "6.0.0": {
     "en": "Changed request library (axios). Added an always on setting also for air-to-air heat pumps. Added repairing support and daily authentication refresh (some users may need to authenticate again to make it work)."

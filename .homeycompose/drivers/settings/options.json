@@ -32,6 +32,20 @@
         "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
         "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
       }
+    },
+    {
+      "id": "measure_power.wifi",
+      "type": "checkbox",
+      "label": {
+        "en": "Display Wi-Fi signal strength",
+        "fr": "Afficher la puissance du signal Wi-Fi",
+        "nl": "Wi-Fi signaalsterkte weergeven",
+        "sv": "Visa Wi-Fi-signalstyrka",
+        "no": "Vise Wi-Fi-signalstyrke",
+        "da": "Vise Wi-Fi-signalstyrke",
+        "es": "Visualizar la potencia de la señal Wi-Fi"
+      },
+      "value": false
     }
   ]
 }
