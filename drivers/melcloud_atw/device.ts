@@ -78,7 +78,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
             otherZoneValue = Math.min(otherZoneValue + 3, 4)
           }
         } else if (otherZoneValue > 2) {
-          otherZoneValue -= 3
+          otherZoneValue = Math.max(otherZoneValue - 3, 0)
         }
       }
       if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
