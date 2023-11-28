@@ -30,6 +30,48 @@
         "value": true
       },
       {
+        "id": "measure_temperature.condensing",
+        "type": "checkbox",
+        "label": {
+          "en": "Condensing temperature",
+          "fr": "Température de condensation",
+          "nl": "Condensatietemperatuur",
+          "sv": "Kondenseringstemperatur",
+          "no": "Kondenseringstemperatur",
+          "da": "Kondenseringstemperatur",
+          "es": "Temperatura de condensación"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_temperature.target_curve",
+        "type": "checkbox",
+        "label": {
+          "en": "Weather compensation curve target temperature",
+          "fr": "Température cible de la courbe de compensation météo",
+          "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
+          "sv": "Måltemperatur för värmekurva",
+          "no": "Ønsket temperatur for varmekurve",
+          "da": "Måltemperatur for varmekurve",
+          "es": "Temperatura configurada de la curva de compensación"
+        },
+        "value": false
+      },
+      {
+        "id": "measure_temperature.target_curve_zone2",
+        "type": "checkbox",
+        "label": {
+          "en": "Weather compensation curve target temperature - zone 2",
+          "fr": "Température cible de la courbe de compensation météo - zone 2",
+          "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
+          "sv": "Måltemperatur för värmekurva - zon 2",
+          "no": "Ønsket temperatur for varmekurve - sone 2",
+          "da": "Måltemperatur for varmekurve - zone 2",
+          "es": "Temperatura configurada de la curva de compensación - zona 2"
+        },
+        "value": false
+      },
+      {
         "id": "alarm_generic.booster_heater1",
         "type": "checkbox",
         "label": {
@@ -151,29 +193,6 @@
         }
       },
       {
-        "id": "measure_temperature.flow_zone2",
-        "type": "checkbox",
-        "label": {
-          "en": "Flow temperature - zone 2",
-          "fr": "Température de flux - zone 2",
-          "nl": "Aanvoertemperatuur - zone 2",
-          "sv": "Framledningstemperatur - zon 2",
-          "no": "Fremløpstemperatur  - sone 2",
-          "da": "Fremledningstemperatur - zone 2",
-          "es": "Temperatura de flujo - zona 2"
-        },
-        "value": false,
-        "hint": {
-          "en": "THW8",
-          "fr": "THW8",
-          "nl": "THW8",
-          "sv": "THW8",
-          "no": "THW8",
-          "da": "THW8",
-          "es": "THW8"
-        }
-      },
-      {
         "id": "measure_temperature.return_zone1",
         "type": "checkbox",
         "label": {
@@ -194,6 +213,29 @@
           "no": "THW7",
           "da": "THW7",
           "es": "THW7"
+        }
+      },
+      {
+        "id": "measure_temperature.flow_zone2",
+        "type": "checkbox",
+        "label": {
+          "en": "Flow temperature - zone 2",
+          "fr": "Température de flux - zone 2",
+          "nl": "Aanvoertemperatuur - zone 2",
+          "sv": "Framledningstemperatur - zon 2",
+          "no": "Fremløpstemperatur  - sone 2",
+          "da": "Fremledningstemperatur - zone 2",
+          "es": "Temperatura de flujo - zona 2"
+        },
+        "value": false,
+        "hint": {
+          "en": "THW8",
+          "fr": "THW8",
+          "nl": "THW8",
+          "sv": "THW8",
+          "no": "THW8",
+          "da": "THW8",
+          "es": "THW8"
         }
       },
       {
@@ -241,34 +283,6 @@
           "da": "THW10",
           "es": "THW10"
         }
-      },
-      {
-        "id": "measure_temperature.target_curve",
-        "type": "checkbox",
-        "label": {
-          "en": "Weather compensation curve target temperature",
-          "fr": "Température cible de la courbe de compensation météo",
-          "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
-          "sv": "Måltemperatur för värmekurva",
-          "no": "Ønsket temperatur for varmekurve",
-          "da": "Måltemperatur for varmekurve",
-          "es": "Temperatura configurada de la curva de compensación"
-        },
-        "value": false
-      },
-      {
-        "id": "measure_temperature.target_curve_zone2",
-        "type": "checkbox",
-        "label": {
-          "en": "Weather compensation curve target temperature - zone 2",
-          "fr": "Température cible de la courbe de compensation météo - zone 2",
-          "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
-          "sv": "Måltemperatur för värmekurva - zon 2",
-          "no": "Ønsket temperatur for varmekurve - sone 2",
-          "da": "Måltemperatur for varmekurve - zone 2",
-          "es": "Temperatura configurada de la curva de compensación - zona 2"
-        },
-        "value": false
       }
     ]
   },
@@ -646,7 +660,7 @@
           "da": "Alle tilstande",
           "es": "Todos los modos"
         },
-        "value": false
+        "value": true
       },
       {
         "id": "meter_power.cop_daily_cooling",

@@ -15,6 +15,7 @@
     "measure_temperature",
     "measure_temperature.zone2",
     "measure_temperature.outdoor",
+    "measure_temperature.condensing",
     "measure_temperature.flow",
     "measure_temperature.flow_zone1",
     "measure_temperature.flow_zone2",
@@ -125,6 +126,17 @@
         "no": "Utetemperatur",
         "da": "Udendørstemperatur",
         "es": "Temperatura exterior"
+      }
+    },
+    "measure_temperature.condensing": {
+      "title": {
+        "en": "Condensing temperature",
+        "fr": "Température de condensation",
+        "nl": "Condensatietemperatuur",
+        "sv": "Kondenseringstemperatur",
+        "no": "Kondenseringstemperatur",
+        "da": "Kondenseringstemperatur",
+        "es": "Temperatura de condensación"
       }
     },
     "measure_temperature.flow": {
