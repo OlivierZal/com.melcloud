@@ -23,7 +23,7 @@ enum OperationMode {
 enum OperationModeZone {
   room = 0,
   flow = 1,
-  cool = 2,
+  curve = 2,
   room_cool = 3,
   flow_cool = 4,
 }
@@ -120,7 +120,8 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
           day: 'numeric',
           month: 'short',
         })
-      case capability.startsWith('measure_power'):
+      case capability.startsWith('measure_power') &&
+        capability in (this.driver.reportCapabilityMapping ?? {}):
         return (value as number) * 1000
       case capability === 'operation_mode_state':
         return OperationMode[value as number]
