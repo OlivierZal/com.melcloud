@@ -72,10 +72,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
       - name: Build App # Compile TypeScript
-        run: |
-          echo "{}" > app.json
-          mkdir locales
-          npm run build
+        run: npm run build
 
   sonarcloud:
     name: SonarCloud
