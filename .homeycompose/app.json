@@ -20,9 +20,7 @@
     "da": "Tag kontrol over dine varmepumper",
     "es": "Tome el control de sus bombas de calor"
   },
-  "category": [
-    "climate"
-  ],
+  "category": ["climate"],
   "version": "26.0.2",
   "compatibility": ">=5.0.0",
   "tags": {
@@ -180,7 +178,5 @@
       "path": "/drivers/settings"
     }
   },
-  "platforms": [
-    "local"
-  ]
+  "platforms": ["local"]
 }
