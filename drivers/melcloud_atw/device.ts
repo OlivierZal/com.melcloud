@@ -73,12 +73,14 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
           ) as keyof typeof OperationModeZone
         ]
       if (CanCool) {
-        if (zoneValue > 2) {
-          if (otherZoneValue < 3) {
-            otherZoneValue = Math.min(otherZoneValue + 3, 4)
+        if (zoneValue >= 3) {
+          if (otherZoneValue <= 1) {
+            otherZoneValue += 3
+          } else if (otherZoneValue === 2) {
+            otherZoneValue = 3
           }
-        } else if (otherZoneValue > 2) {
-          otherZoneValue = Math.max(otherZoneValue - 3, 0)
+        } else if (otherZoneValue >= 3) {
+          otherZoneValue -= 3
         }
       }
       if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
