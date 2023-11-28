@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "26.0.3",
+  "version": "26.1.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -3944,6 +3944,20 @@
                 "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
                 "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
               }
+            },
+            {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Display Wi-Fi signal strength",
+                "fr": "Afficher la puissance du signal Wi-Fi",
+                "nl": "Wi-Fi signaalsterkte weergeven",
+                "sv": "Visa Wi-Fi-signalstyrka",
+                "no": "Vise Wi-Fi-signalstyrke",
+                "da": "Vise Wi-Fi-signalstyrke",
+                "es": "Visualizar la potencia de la señal Wi-Fi"
+              },
+              "value": false
             }
           ]
         },
@@ -4411,6 +4425,7 @@
         "measure_temperature",
         "measure_temperature.zone2",
         "measure_temperature.outdoor",
+        "measure_temperature.condensing",
         "measure_temperature.flow",
         "measure_temperature.flow_zone1",
         "measure_temperature.flow_zone2",
@@ -4521,6 +4536,17 @@
             "no": "Utetemperatur",
             "da": "Udendørstemperatur",
             "es": "Temperatura exterior"
+          }
+        },
+        "measure_temperature.condensing": {
+          "title": {
+            "en": "Condensing temperature",
+            "fr": "Température de condensation",
+            "nl": "Condensatietemperatuur",
+            "sv": "Kondenseringstemperatur",
+            "no": "Kondenseringstemperatur",
+            "da": "Kondenseringstemperatur",
+            "es": "Temperatura de condensación"
           }
         },
         "measure_temperature.flow": {
@@ -5349,6 +5375,175 @@
                 "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
                 "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
               }
+            },
+            {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Display Wi-Fi signal strength",
+                "fr": "Afficher la puissance du signal Wi-Fi",
+                "nl": "Wi-Fi signaalsterkte weergeven",
+                "sv": "Visa Wi-Fi-signalstyrka",
+                "no": "Vise Wi-Fi-signalstyrke",
+                "da": "Vise Wi-Fi-signalstyrke",
+                "es": "Visualizar la potencia de la señal Wi-Fi"
+              },
+              "value": false
+            }
+          ]
+        },
+        {
+          "id": "dashboard",
+          "type": "group",
+          "label": {
+            "en": "Dashboard display",
+            "fr": "Affichage sur le tableau de bord",
+            "nl": "Dashboardweergave",
+            "sv": "Instrumentpanelvisning",
+            "no": "Dashboardvisning",
+            "da": "Dashboardvisning",
+            "es": "Visualización del panel de control"
+          },
+          "children": [
+            {
+              "id": "last_legionella",
+              "type": "checkbox",
+              "label": {
+                "en": "Last legionella operation",
+                "fr": "Dernière opération legionella",
+                "nl": "Laatste legionella-bedrijf",
+                "sv": "Senaste legionella-drift",
+                "no": "Siste legionella-drift",
+                "da": "Seneste legionella-drift",
+                "es": "Última operación legionella"
+              },
+              "value": true
+            },
+            {
+              "id": "measure_temperature.condensing",
+              "type": "checkbox",
+              "label": {
+                "en": "Condensing temperature",
+                "fr": "Température de condensation",
+                "nl": "Condensatietemperatuur",
+                "sv": "Kondenseringstemperatur",
+                "no": "Kondenseringstemperatur",
+                "da": "Kondenseringstemperatur",
+                "es": "Temperatura de condensación"
+              },
+              "value": false
+            },
+            {
+              "id": "measure_temperature.target_curve",
+              "type": "checkbox",
+              "label": {
+                "en": "Weather compensation curve target temperature",
+                "fr": "Température cible de la courbe de compensation météo",
+                "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
+                "sv": "Måltemperatur för värmekurva",
+                "no": "Ønsket temperatur for varmekurve",
+                "da": "Måltemperatur for varmekurve",
+                "es": "Temperatura configurada de la curva de compensación"
+              },
+              "value": false
+            },
+            {
+              "id": "measure_temperature.target_curve_zone2",
+              "type": "checkbox",
+              "label": {
+                "en": "Weather compensation curve target temperature - zone 2",
+                "fr": "Température cible de la courbe de compensation météo - zone 2",
+                "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
+                "sv": "Måltemperatur för värmekurva - zon 2",
+                "no": "Ønsket temperatur for varmekurve - sone 2",
+                "da": "Måltemperatur for varmekurve - zone 2",
+                "es": "Temperatura configurada de la curva de compensación - zona 2"
+              },
+              "value": false
+            },
+            {
+              "id": "alarm_generic.booster_heater1",
+              "type": "checkbox",
+              "label": {
+                "en": "Booster heater 1",
+                "fr": "Chauffage d'appoint 1",
+                "nl": "Boosterverwarmingselement 1",
+                "sv": "Tillskottsvärmare 1",
+                "no": "Tilleggsvarme 1",
+                "da": "Tilførselsvarme 1",
+                "es": "Calentador de refuerzo 1"
+              },
+              "value": true
+            },
+            {
+              "id": "alarm_generic.booster_heater2",
+              "type": "checkbox",
+              "label": {
+                "en": "Booster heater 2",
+                "fr": "Chauffage d'appoint 2",
+                "nl": "Boosterverwarmingselement 2",
+                "sv": "Tillskottsvärmare 2",
+                "no": "Tilleggsvarme 2",
+                "da": "Tilførselsvarme 2",
+                "es": "Calentador de refuerzo 2"
+              },
+              "value": true
+            },
+            {
+              "id": "alarm_generic.booster_heater2_plus",
+              "type": "checkbox",
+              "label": {
+                "en": "Booster heater 2+",
+                "fr": "Chauffage d'appoint 2+",
+                "nl": "Boosterverwarmingselement 2+",
+                "sv": "Tillskottsvärmare 2+",
+                "no": "Tilleggsvarme 2+",
+                "da": "Tilførselsvarme 2+",
+                "es": "Calentador de refuerzo 2+"
+              },
+              "value": false
+            },
+            {
+              "id": "alarm_generic.defrost_mode",
+              "type": "checkbox",
+              "label": {
+                "en": "Defrost mode",
+                "fr": "Mode dégivrage",
+                "nl": "Ontdooimodus",
+                "sv": "Avfrostningsläge",
+                "no": "Avfrostingsmodus",
+                "da": "Afrimningsfunktion",
+                "es": "Modo de descongelación"
+              },
+              "value": true
+            },
+            {
+              "id": "alarm_generic.eco_hot_water",
+              "type": "checkbox",
+              "label": {
+                "en": "Eco domestic hot water",
+                "fr": "Eau chaude sanitaire éco",
+                "nl": "Sanitair eco warm water",
+                "sv": "Eco-läge för varmvattenladdning",
+                "no": "Eco-modus for varmvannslastning",
+                "da": "Eco-tilstand for varmtvandsindlæsning",
+                "es": "Agua caliente sanitaria eco"
+              },
+              "value": false
+            },
+            {
+              "id": "alarm_generic.immersion_heater",
+              "type": "checkbox",
+              "label": {
+                "en": "Immersion heater",
+                "fr": "Chauffe-eau électrique",
+                "nl": "Dompelelement",
+                "sv": "Doppvärmare",
+                "no": "Nedsenkbar varmekolbe",
+                "da": "Dyppvarmer",
+                "es": "Calentador eléctrico sumergible"
+              },
+              "value": false
             }
           ]
         },
@@ -5478,119 +5673,6 @@
                 "da": "THW10",
                 "es": "THW10"
               }
-            }
-          ]
-        },
-        {
-          "id": "dashboard",
-          "type": "group",
-          "label": {
-            "en": "Dashboard display",
-            "fr": "Affichage sur le tableau de bord",
-            "nl": "Dashboardweergave",
-            "sv": "Instrumentpanelvisning",
-            "no": "Dashboardvisning",
-            "da": "Dashboardvisning",
-            "es": "Visualización del panel de control"
-          },
-          "children": [
-            {
-              "id": "alarm_generic.booster_heater1",
-              "type": "checkbox",
-              "label": {
-                "en": "Booster heater 1",
-                "fr": "Chauffage d'appoint 1",
-                "nl": "Boosterverwarmingselement 1",
-                "sv": "Tillskottsvärmare 1",
-                "no": "Tilleggsvarme 1",
-                "da": "Tilførselsvarme 1",
-                "es": "Calentador de refuerzo 1"
-              },
-              "value": true
-            },
-            {
-              "id": "alarm_generic.booster_heater2",
-              "type": "checkbox",
-              "label": {
-                "en": "Booster heater 2",
-                "fr": "Chauffage d'appoint 2",
-                "nl": "Boosterverwarmingselement 2",
-                "sv": "Tillskottsvärmare 2",
-                "no": "Tilleggsvarme 2",
-                "da": "Tilførselsvarme 2",
-                "es": "Calentador de refuerzo 2"
-              },
-              "value": true
-            },
-            {
-              "id": "alarm_generic.booster_heater2_plus",
-              "type": "checkbox",
-              "label": {
-                "en": "Booster heater 2+",
-                "fr": "Chauffage d'appoint 2+",
-                "nl": "Boosterverwarmingselement 2+",
-                "sv": "Tillskottsvärmare 2+",
-                "no": "Tilleggsvarme 2+",
-                "da": "Tilførselsvarme 2+",
-                "es": "Calentador de refuerzo 2+"
-              },
-              "value": false
-            },
-            {
-              "id": "alarm_generic.defrost_mode",
-              "type": "checkbox",
-              "label": {
-                "en": "Defrost mode",
-                "fr": "Mode dégivrage",
-                "nl": "Ontdooimodus",
-                "sv": "Avfrostningsläge",
-                "no": "Avfrostingsmodus",
-                "da": "Afrimningsfunktion",
-                "es": "Modo de descongelación"
-              },
-              "value": true
-            },
-            {
-              "id": "alarm_generic.eco_hot_water",
-              "type": "checkbox",
-              "label": {
-                "en": "Eco domestic hot water",
-                "fr": "Eau chaude sanitaire éco",
-                "nl": "Sanitair eco warm water",
-                "sv": "Eco-läge för varmvattenladdning",
-                "no": "Eco-modus for varmvannslastning",
-                "da": "Eco-tilstand for varmtvandsindlæsning",
-                "es": "Agua caliente sanitaria eco"
-              },
-              "value": false
-            },
-            {
-              "id": "alarm_generic.immersion_heater",
-              "type": "checkbox",
-              "label": {
-                "en": "Immersion heater",
-                "fr": "Chauffe-eau électrique",
-                "nl": "Dompelelement",
-                "sv": "Doppvärmare",
-                "no": "Nedsenkbar varmekolbe",
-                "da": "Dyppvarmer",
-                "es": "Calentador eléctrico sumergible"
-              },
-              "value": false
-            },
-            {
-              "id": "last_legionella",
-              "type": "checkbox",
-              "label": {
-                "en": "Last legionella operation",
-                "fr": "Dernière opération legionella",
-                "nl": "Laatste legionella-bedrijf",
-                "sv": "Senaste legionella-drift",
-                "no": "Siste legionella-drift",
-                "da": "Seneste legionella-drift",
-                "es": "Última operación legionella"
-              },
-              "value": true
             }
           ]
         },
@@ -5968,7 +6050,7 @@
                 "da": "Alle tilstande",
                 "es": "Todos los modos"
               },
-              "value": false
+              "value": true
             },
             {
               "id": "meter_power.cop_daily_cooling",
@@ -6220,6 +6302,20 @@
                 "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
                 "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
               }
+            },
+            {
+              "id": "measure_power.wifi",
+              "type": "checkbox",
+              "label": {
+                "en": "Display Wi-Fi signal strength",
+                "fr": "Afficher la puissance du signal Wi-Fi",
+                "nl": "Wi-Fi signaalsterkte weergeven",
+                "sv": "Visa Wi-Fi-signalstyrka",
+                "no": "Vise Wi-Fi-signalstyrke",
+                "da": "Vise Wi-Fi-signalstyrke",
+                "es": "Visualizar la potencia de la señal Wi-Fi"
+              },
+              "value": false
             }
           ]
         }
