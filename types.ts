@@ -227,6 +227,7 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly measure_power: number
   readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_power.produced': number
+  readonly 'measure_temperature.condensing': number
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
   readonly 'measure_temperature.flow_zone2': number
@@ -456,6 +457,7 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
   readonly CanCool: boolean
+  readonly CondensingTemperature: number
   readonly CurrentEnergyConsumed: number
   readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
@@ -883,6 +885,9 @@ export const listCapabilityMappingAtw: Record<
   },
   'measure_power.heat_pump_frequency': {
     tag: 'HeatPumpFrequency',
+  },
+  'measure_temperature.condensing': {
+    tag: 'CondensingTemperature',
   },
   'measure_temperature.flow': {
     tag: 'FlowTemperature',
