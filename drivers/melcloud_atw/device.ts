@@ -122,8 +122,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
           day: 'numeric',
           month: 'short',
         })
-      case capability.startsWith('measure_power') &&
-        capability in (this.driver.reportCapabilityMapping ?? {}):
+      case ['measure_power', 'measure_power.produced'].includes(capability):
         return (value as number) * 1000
       case capability === 'operation_mode_state':
         return OperationMode[value as number]
