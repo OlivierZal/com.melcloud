@@ -33,7 +33,9 @@ export = class MELCloudDriverErv extends BaseMELCloudDriver {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       ...(this.manifest.capabilities as string[]).filter(
         (capability: string) =>
-          !['measure_co2', 'measure_pm25'].includes(capability),
+          !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
+            capability,
+          ),
       ),
       ...(HasCO2Sensor ? ['measure_co2'] : []),
       ...(HasPM25Sensor ? ['measure_pm25'] : []),

@@ -225,11 +225,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   protected async handleCapabilities(): Promise<void> {
-    const requiredCapabilities: string[] = [
+    const capabilities: string[] = [
       ...this.driver.getRequiredCapabilities(this.getStore() as Store),
       ...this.getDashboardCapabilities(),
     ]
-    await requiredCapabilities.reduce<Promise<void>>(
+    await capabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
         await acc
         return this.addCapability(capability)
@@ -237,9 +237,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       Promise.resolve(),
     )
     await this.getCapabilities()
-      .filter(
-        (capability: string) => !requiredCapabilities.includes(capability),
-      )
+      .filter((capability: string) => !capabilities.includes(capability))
       .reduce<Promise<void>>(async (acc, capability: string) => {
         await acc
         await this.removeCapability(capability)

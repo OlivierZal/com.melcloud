@@ -40,7 +40,7 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
         ...this.setCapabilityMapping,
         ...this.getCapabilityMapping,
         ...this.listCapabilityMapping,
-      }),
+      }).filter((capability: string) => capability !== 'measure_power.wifi'),
       'thermostat_mode',
     ]
   }
