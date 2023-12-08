@@ -1,3 +1,4 @@
+import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
 import type MELCloudDeviceAta from './drivers/melcloud/device'
 import type MELCloudDriverAta from './drivers/melcloud/driver'
@@ -8,22 +9,11 @@ import type MELCloudDriverErv from './drivers/melcloud_erv/driver'
 
 export const loginURL = '/Login/ClientLogin'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-interface Loggable {
-  /* eslint-disable @typescript-eslint/method-signature-style */
-  error(...errorArgs: any[]): void
-  log(...logArgs: any[]): void
-  /* eslint-enable @typescript-eslint/method-signature-style */
-}
-
-export type LogClass = abstract new (...args: any[]) => Loggable
-
-export type HomeyClass = new (...args: any[]) => Loggable & {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly homey: Homey
-
   readonly setWarning?: (warning: string | null) => Promise<void>
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type MELCloudDevice =
   | MELCloudDeviceAta
