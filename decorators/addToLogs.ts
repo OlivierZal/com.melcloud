@@ -30,7 +30,7 @@ const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
               }
             }
             if (log in this) {
-              return [(this as Record<any, any>)[log], '-']
+              return [this[log as keyof LogsDecorator], '-']
             }
             return [log, '-']
           }),
