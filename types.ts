@@ -135,7 +135,7 @@ export interface SuccessData {
 }
 
 export interface FailureData {
-  readonly AttributeErrors: Record<string, string[]>
+  readonly AttributeErrors: Record<string, readonly string[]>
 }
 
 interface SetCapabilitiesCommon {

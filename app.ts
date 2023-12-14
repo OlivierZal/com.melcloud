@@ -37,7 +37,7 @@ axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 const handleFailure = (data: FailureData): never => {
   const errorMessage: string = Object.entries(data.AttributeErrors)
     .map(
-      ([error, messages]: [string, string[]]): string =>
+      ([error, messages]: [string, readonly string[]]): string =>
         `${error}: ${messages.join(', ')}`,
     )
     .join('\n')
