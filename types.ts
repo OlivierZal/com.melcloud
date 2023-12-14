@@ -68,14 +68,14 @@ export interface ManifestDriverSettingData {
   readonly min?: number
   readonly type: string
   readonly units?: string
-  readonly values?: {
+  readonly values?: readonly {
     readonly id: string
     readonly label: Record<string, string>
   }[]
 }
 
 export interface ManifestDriverSetting {
-  readonly children?: ManifestDriverSettingData[]
+  readonly children?: readonly ManifestDriverSettingData[]
   readonly id?: string
   readonly label: Record<string, string>
 }
@@ -100,8 +100,8 @@ export interface ManifestDriver {
     { readonly title?: Record<string, string> }
   >
   readonly id: string
-  readonly pair?: LoginSetting & PairSetting[]
-  readonly settings?: ManifestDriverSetting[]
+  readonly pair?: LoginSetting & readonly PairSetting[]
+  readonly settings?: readonly ManifestDriverSetting[]
 }
 
 export interface DriverSetting {
@@ -115,7 +115,7 @@ export interface DriverSetting {
   title: string
   readonly type: string
   readonly units?: string
-  readonly values?: { readonly id: string; readonly label: string }[]
+  readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
 export interface LoginCredentials {
@@ -481,12 +481,12 @@ export interface ReportPostData {
 }
 
 interface ReportDataAta {
-  readonly Auto: number[]
-  readonly Cooling: number[]
-  readonly Dry: number[]
-  readonly Fan: number[]
-  readonly Heating: number[]
-  readonly Other: number[]
+  readonly Auto: readonly number[]
+  readonly Cooling: readonly number[]
+  readonly Dry: readonly number[]
+  readonly Fan: readonly number[]
+  readonly Heating: readonly number[]
+  readonly Other: readonly number[]
   readonly TotalAutoConsumed: number
   readonly TotalCoolingConsumed: number
   readonly TotalDryConsumed: number
@@ -497,7 +497,7 @@ interface ReportDataAta {
 }
 
 interface ReportDataAtw {
-  readonly CoP: number[]
+  readonly CoP: readonly number[]
   readonly TotalCoolingConsumed: number
   readonly TotalCoolingProduced: number
   readonly TotalHeatingConsumed: number
@@ -627,7 +627,7 @@ export type ListCapabilityMappingAny =
   | ListCapabilityMappingErv
 
 export type ReportCapabilityKeys<T extends MELCloudDriver> =
-  (keyof ReportData<T>)[]
+  readonly (keyof ReportData<T>)[]
 
 type ReportCapabilityKeysAta = readonly (keyof ReportDataAta)[]
 
@@ -904,7 +904,7 @@ export const reportCapabilityMappingAtw: Record<
 } as const
 
 export interface DeviceDetails {
-  readonly capabilities: string[]
+  readonly capabilities: readonly string[]
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store
@@ -1005,11 +1005,11 @@ export interface Building extends Readonly<BuildingData> {
   readonly ID: number
   readonly Name: string
   readonly Structure: {
-    readonly Areas: { readonly Devices: ListDeviceAny[] }[]
-    readonly Devices: ListDeviceAny[]
-    readonly Floors: {
-      readonly Areas: { readonly Devices: ListDeviceAny[] }[]
-      readonly Devices: ListDeviceAny[]
+    readonly Areas: readonly { readonly Devices: readonly ListDeviceAny[] }[]
+    readonly Devices: readonly ListDeviceAny[]
+    readonly Floors: readonly {
+      readonly Areas: readonly { readonly Devices: readonly ListDeviceAny[] }[]
+      readonly Devices: readonly ListDeviceAny[]
     }[]
   }
 }
@@ -1022,7 +1022,7 @@ export interface ErrorLogQuery {
 }
 
 export interface ErrorLogPostData {
-  readonly DeviceIDs: string[]
+  readonly DeviceIDs: readonly string[]
   readonly FromDate: string
   readonly ToDate: string
 }

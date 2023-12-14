@@ -165,10 +165,12 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         (acc, { Structure: { Devices, Areas, Floors } }) => {
           const buildingDevices: ListDeviceAny[] = [
             ...Devices,
-            ...Areas.flatMap((area): ListDeviceAny[] => area.Devices),
+            ...Areas.flatMap((area): readonly ListDeviceAny[] => area.Devices),
             ...Floors.flatMap((floor): ListDeviceAny[] => [
               ...floor.Devices,
-              ...floor.Areas.flatMap((area): ListDeviceAny[] => area.Devices),
+              ...floor.Areas.flatMap(
+                (area): readonly ListDeviceAny[] => area.Devices,
+              ),
             ]),
           ]
           const buildingDeviceIds: Record<number, string> = Object.fromEntries(
