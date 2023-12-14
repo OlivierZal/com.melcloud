@@ -1,6 +1,5 @@
 /* eslint-disable
-  @typescript-eslint/no-explicit-any,
-  @typescript-eslint/no-unsafe-argument
+  @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
 */
 import type { SimpleClass } from 'homey'
 
@@ -39,9 +38,7 @@ const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
       }
     }
 
-    Object.defineProperty(LogsDecorator, 'name', {
-      value: context.name,
-    })
+    Object.defineProperty(LogsDecorator, 'name', { value: context.name })
 
     return LogsDecorator
   }

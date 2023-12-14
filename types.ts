@@ -652,62 +652,29 @@ export const setCapabilityMappingAta: Record<
   SetCapabilityAta,
   SetCapabilityKeysAta
 > = {
-  onoff: {
-    tag: 'Power',
-    effectiveFlag: 0x1n,
-  },
-  operation_mode: {
-    tag: 'OperationMode',
-    effectiveFlag: 0x2n,
-  },
-  target_temperature: {
-    tag: 'SetTemperature',
-    effectiveFlag: 0x4n,
-  },
-  fan_power: {
-    tag: 'SetFanSpeed',
-    effectiveFlag: 0x8n,
-  },
-  vertical: {
-    tag: 'VaneVertical',
-    effectiveFlag: 0x10n,
-  },
-  horizontal: {
-    tag: 'VaneHorizontal',
-    effectiveFlag: 0x100n,
-  },
+  onoff: { tag: 'Power', effectiveFlag: 0x1n },
+  operation_mode: { tag: 'OperationMode', effectiveFlag: 0x2n },
+  target_temperature: { tag: 'SetTemperature', effectiveFlag: 0x4n },
+  fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
+  vertical: { tag: 'VaneVertical', effectiveFlag: 0x10n },
+  horizontal: { tag: 'VaneHorizontal', effectiveFlag: 0x100n },
 } as const
 
 export const setCapabilityMappingErv: Record<
   SetCapabilityErv,
   SetCapabilityKeysErv
 > = {
-  onoff: {
-    tag: 'Power',
-    effectiveFlag: 0x1n,
-  },
-  ventilation_mode: {
-    tag: 'VentilationMode',
-    effectiveFlag: 0x4n,
-  },
-  fan_power: {
-    tag: 'SetFanSpeed',
-    effectiveFlag: 0x8n,
-  },
+  onoff: { tag: 'Power', effectiveFlag: 0x1n },
+  ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
+  fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
 } as const
 
 export const setCapabilityMappingAtw: Record<
   SetCapabilityAtw,
   SetCapabilityKeysAtw
 > = {
-  onoff: {
-    tag: 'Power',
-    effectiveFlag: 0x1n,
-  },
-  operation_mode_zone: {
-    tag: 'OperationModeZone1',
-    effectiveFlag: 0x8n,
-  },
+  onoff: { tag: 'Power', effectiveFlag: 0x1n },
+  operation_mode_zone: { tag: 'OperationModeZone1', effectiveFlag: 0x8n },
   operation_mode_zone_with_cool: {
     tag: 'OperationModeZone1',
     effectiveFlag: 0x8n,
@@ -757,155 +724,77 @@ export const setCapabilityMappingAtw: Record<
 export const getCapabilityMappingAta: Record<
   GetCapabilityAta,
   GetCapabilityKeysAta
-> = {
-  measure_temperature: {
-    tag: 'RoomTemperature',
-  },
-} as const
+> = { measure_temperature: { tag: 'RoomTemperature' } } as const
 
 export const getCapabilityMappingErv: Record<
   GetCapabilityErv,
   GetCapabilityKeysErv
 > = {
-  measure_co2: {
-    tag: 'RoomCO2Level',
-  },
-  measure_temperature: {
-    tag: 'RoomTemperature',
-  },
-  'measure_temperature.outdoor': {
-    tag: 'OutdoorTemperature',
-  },
+  measure_co2: { tag: 'RoomCO2Level' },
+  measure_temperature: { tag: 'RoomTemperature' },
+  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
 } as const
 
 export const getCapabilityMappingAtw: Record<
   GetCapabilityAtw,
   GetCapabilityKeysAtw
 > = {
-  'alarm_generic.eco_hot_water': {
-    tag: 'EcoHotWater',
-  },
-  measure_temperature: {
-    tag: 'RoomTemperatureZone1',
-  },
-  'measure_temperature.zone2': {
-    tag: 'RoomTemperatureZone2',
-  },
-  'measure_temperature.outdoor': {
-    tag: 'OutdoorTemperature',
-  },
-  'measure_temperature.tank_water': {
-    tag: 'TankWaterTemperature',
-  },
-  operation_mode_state: {
-    tag: 'OperationMode',
-  },
+  'alarm_generic.eco_hot_water': { tag: 'EcoHotWater' },
+  measure_temperature: { tag: 'RoomTemperatureZone1' },
+  'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
+  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
+  'measure_temperature.tank_water': { tag: 'TankWaterTemperature' },
+  operation_mode_state: { tag: 'OperationMode' },
   // Must follow `operation_mode_state`
-  'operation_mode_state.zone1': {
-    tag: 'IdleZone1',
-  },
-  'operation_mode_state.zone2': {
-    tag: 'IdleZone2',
-  },
+  'operation_mode_state.zone1': { tag: 'IdleZone1' },
+  'operation_mode_state.zone2': { tag: 'IdleZone2' },
 } as const
 
 export const listCapabilityMappingAta: Record<
   ListCapabilityAta,
   ListCapabilityKeysAta
 > = {
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength',
-  },
-  fan_power: {
-    tag: 'FanSpeed',
-  },
-  fan_power_state: {
-    tag: 'ActualFanSpeed',
-  },
-  vertical: {
-    tag: 'VaneVerticalDirection',
-  },
-  horizontal: {
-    tag: 'VaneHorizontalDirection',
-  },
+  'measure_power.wifi': { tag: 'WifiSignalStrength' },
+  fan_power: { tag: 'FanSpeed' },
+  fan_power_state: { tag: 'ActualFanSpeed' },
+  vertical: { tag: 'VaneVerticalDirection' },
+  horizontal: { tag: 'VaneHorizontalDirection' },
 } as const
 
 export const listCapabilityMappingErv: Record<
   ListCapabilityErv,
   ListCapabilityKeysErv
 > = {
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength',
-  },
-  measure_pm25: {
-    tag: 'PM25Level',
-  },
+  'measure_power.wifi': { tag: 'WifiSignalStrength' },
+  measure_pm25: { tag: 'PM25Level' },
 } as const
 
 export const listCapabilityMappingAtw: Record<
   ListCapabilityAtw,
   ListCapabilityKeysAtw
 > = {
-  'measure_power.wifi': {
-    tag: 'WifiSignalStrength',
-  },
-  'alarm_generic.booster_heater1': {
-    tag: 'BoosterHeater1Status',
-  },
-  'alarm_generic.booster_heater2': {
-    tag: 'BoosterHeater2Status',
-  },
-  'alarm_generic.booster_heater2_plus': {
-    tag: 'BoosterHeater2PlusStatus',
-  },
-  'alarm_generic.defrost_mode': {
-    tag: 'DefrostMode',
-  },
-  'alarm_generic.immersion_heater': {
-    tag: 'ImmersionHeaterStatus',
-  },
-  last_legionella: {
-    tag: 'LastLegionellaActivationTime',
-  },
-  measure_power: {
-    tag: 'CurrentEnergyConsumed',
-  },
-  'measure_power.produced': {
-    tag: 'CurrentEnergyProduced',
-  },
-  'measure_power.heat_pump_frequency': {
-    tag: 'HeatPumpFrequency',
-  },
-  'measure_temperature.condensing': {
-    tag: 'CondensingTemperature',
-  },
-  'measure_temperature.flow': {
-    tag: 'FlowTemperature',
-  },
-  'measure_temperature.flow_zone1': {
-    tag: 'FlowTemperatureZone1',
-  },
-  'measure_temperature.flow_zone2': {
-    tag: 'FlowTemperatureZone2',
-  },
-  'measure_temperature.return': {
-    tag: 'ReturnTemperature',
-  },
-  'measure_temperature.return_zone1': {
-    tag: 'ReturnTemperatureZone1',
-  },
-  'measure_temperature.return_zone2': {
-    tag: 'ReturnTemperatureZone2',
-  },
+  'measure_power.wifi': { tag: 'WifiSignalStrength' },
+  'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
+  'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
+  'alarm_generic.booster_heater2_plus': { tag: 'BoosterHeater2PlusStatus' },
+  'alarm_generic.defrost_mode': { tag: 'DefrostMode' },
+  'alarm_generic.immersion_heater': { tag: 'ImmersionHeaterStatus' },
+  last_legionella: { tag: 'LastLegionellaActivationTime' },
+  measure_power: { tag: 'CurrentEnergyConsumed' },
+  'measure_power.produced': { tag: 'CurrentEnergyProduced' },
+  'measure_power.heat_pump_frequency': { tag: 'HeatPumpFrequency' },
+  'measure_temperature.condensing': { tag: 'CondensingTemperature' },
+  'measure_temperature.flow': { tag: 'FlowTemperature' },
+  'measure_temperature.flow_zone1': { tag: 'FlowTemperatureZone1' },
+  'measure_temperature.flow_zone2': { tag: 'FlowTemperatureZone2' },
+  'measure_temperature.return': { tag: 'ReturnTemperature' },
+  'measure_temperature.return_zone1': { tag: 'ReturnTemperatureZone1' },
+  'measure_temperature.return_zone2': { tag: 'ReturnTemperatureZone2' },
   'measure_temperature.tank_water_mixing': {
     tag: 'MixingTankWaterTemperature',
   },
-  'measure_temperature.target_curve': {
-    tag: 'TargetHCTemperatureZone1',
-  },
-  'measure_temperature.target_curve_zone2': {
-    tag: 'TargetHCTemperatureZone2',
-  },
+  'measure_temperature.target_curve': { tag: 'TargetHCTemperatureZone1' },
+  'measure_temperature.target_curve_zone2': { tag: 'TargetHCTemperatureZone2' },
 } as const
 
 export const reportCapabilityMappingAta: Record<
@@ -1016,10 +905,7 @@ export const reportCapabilityMappingAtw: Record<
 
 export interface DeviceDetails {
   readonly capabilities: string[]
-  readonly data: {
-    readonly buildingid: number
-    readonly id: number
-  }
+  readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store
 }
@@ -1081,11 +967,7 @@ export interface HolidayModePostData {
     readonly Second: number
     readonly Year: number
   } | null
-  readonly HMTimeZones: [
-    {
-      readonly Buildings: [number]
-    },
-  ]
+  readonly HMTimeZones: [{ readonly Buildings: [number] }]
   readonly StartDate: {
     readonly Day: number
     readonly Hour: number
@@ -1123,14 +1005,10 @@ export interface Building extends Readonly<BuildingData> {
   readonly ID: number
   readonly Name: string
   readonly Structure: {
-    readonly Areas: {
-      readonly Devices: ListDeviceAny[]
-    }[]
+    readonly Areas: { readonly Devices: ListDeviceAny[] }[]
     readonly Devices: ListDeviceAny[]
     readonly Floors: {
-      readonly Areas: {
-        readonly Devices: ListDeviceAny[]
-      }[]
+      readonly Areas: { readonly Devices: ListDeviceAny[] }[]
       readonly Devices: ListDeviceAny[]
     }[]
   }

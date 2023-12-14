@@ -95,12 +95,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       const { data } = await this.api.post<LoginData>(loginURL, postData)
       if (data.LoginData) {
         const { ContextKey, Expiry } = data.LoginData
-        this.setSettings({
-          ContextKey,
-          Expiry,
-          username,
-          password,
-        })
+        this.setSettings({ ContextKey, Expiry, username, password })
         await this.planRefreshLogin()
       }
       return !!data.LoginData
@@ -124,10 +119,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public getDevices({
     buildingId,
     driverId,
-  }: {
-    buildingId?: number
-    driverId?: string
-  } = {}): MELCloudDevice[] {
+  }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
     let devices: MELCloudDevice[] = (
       driverId !== undefined
         ? [this.homey.drivers.getDriver(driverId)]
@@ -145,10 +137,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public applySyncFromDevices({
     syncMode,
     interval,
-  }: {
-    syncMode?: SyncFromMode
-    interval?: DurationLikeObject
-  } = {}): void {
+  }: { syncMode?: SyncFromMode; interval?: DurationLikeObject } = {}): void {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
       async (): Promise<void> => {
@@ -247,9 +236,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async getFrostProtectionSettings(
     buildingId: number,
   ): Promise<FrostProtectionData> {
-    const buildingDeviceId: number = this.getFirstDeviceId({
-      buildingId,
-    })
+    const buildingDeviceId: number = this.getFirstDeviceId({ buildingId })
     const { data } = await this.api.get<FrostProtectionData>(
       `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
     )
@@ -274,9 +261,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async getHolidayModeSettings(
     buildingId: number,
   ): Promise<HolidayModeData> {
-    const buildingDeviceId: number = this.getFirstDeviceId({
-      buildingId,
-    })
+    const buildingDeviceId: number = this.getFirstDeviceId({ buildingId })
     const { data } = await this.api.get<HolidayModeData>(
       `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
     )
@@ -370,10 +355,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   private getFirstDeviceId({
     buildingId,
     driverId,
-  }: {
-    buildingId?: number
-    driverId?: string
-  } = {}): number {
+  }: { buildingId?: number; driverId?: string } = {}): number {
     const deviceIds = this.getDeviceIds({ buildingId, driverId })
     if (!deviceIds.length) {
       throw new Error(this.homey.__('app.building.no_device', { buildingId }))
@@ -384,10 +366,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   private getDeviceIds({
     buildingId,
     driverId,
-  }: {
-    buildingId?: number
-    driverId?: string
-  } = {}): number[] {
+  }: { buildingId?: number; driverId?: string } = {}): number[] {
     return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
   }
 

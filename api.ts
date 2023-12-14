@@ -41,11 +41,7 @@ const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
 
 const handleErrorLogQuery = (
   query: ErrorLogQuery,
-): {
-  fromDate: DateTime
-  period: number
-  toDate: DateTime
-} => {
+): { fromDate: DateTime; period: number; toDate: DateTime } => {
   const defaultLimit = 1
   const defaultOffset = 0
   const from: DateTime | null =

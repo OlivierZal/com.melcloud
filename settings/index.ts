@@ -152,10 +152,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }
       return acc
     },
-    {
-      driverSettingsCommon: [],
-      driverSettings: {},
-    },
+    { driverSettingsCommon: [], driverSettings: {} },
   )
 
   const intMinValueMap = new WeakMap<HTMLInputElement, number>()
@@ -623,9 +620,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const setDeviceSettings = (body: Settings, driverId?: string): void => {
     let endPoint = '/devices/settings'
     if (driverId !== undefined) {
-      const queryString: string = new URLSearchParams({
-        driverId,
-      }).toString()
+      const queryString: string = new URLSearchParams({ driverId }).toString()
       endPoint += `?${queryString}`
     }
     // @ts-expect-error: `homey` is partially typed
@@ -915,10 +910,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       await homey.alert(homey.__('settings.authenticate.failure'))
       return
     }
-    const body: LoginCredentials = {
-      username,
-      password,
-    }
+    const body: LoginCredentials = { username, password }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
