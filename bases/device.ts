@@ -651,17 +651,11 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
             await this.runEnergyReport(total)
           },
           interval,
-          {
-            actionType,
-            units: ['days', 'hours'],
-          },
+          { actionType, units: ['days', 'hours'] },
         )
       },
       DateTime.now().plus(duration).set(values).diffNow(),
-      {
-        actionType,
-        units: ['hours', 'minutes'],
-      },
+      { actionType, units: ['hours', 'minutes'] },
     )
   }
 
