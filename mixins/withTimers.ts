@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DateTime, Duration, type DurationLikeObject } from 'luxon'
+import {
+  DateTime,
+  Duration,
+  type DurationLike,
+  type DurationLikeObject,
+} from 'luxon'
 import type { HomeyClass } from '../types'
 
 interface BaseTimerOptions {
@@ -15,12 +20,12 @@ interface TimerOptions extends BaseTimerOptions {
 type TimerClass = new (...args: any[]) => {
   setInterval: (
     callback: () => Promise<void>,
-    interval: DurationLikeObject | number,
+    interval: DurationLike,
     options: BaseTimerOptions,
   ) => NodeJS.Timeout
   setTimeout: (
     callback: () => Promise<void>,
-    interval: DurationLikeObject | number,
+    interval: DurationLike,
     options: BaseTimerOptions,
   ) => NodeJS.Timeout
 }
@@ -29,7 +34,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
     public setInterval(
       callback: () => Promise<void>,
-      interval: DurationLikeObject | number,
+      interval: DurationLike,
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
       const { actionType, units } = options
@@ -43,7 +48,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
 
     public setTimeout(
       callback: () => Promise<void>,
-      interval: DurationLikeObject | number,
+      interval: DurationLike,
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
       const { actionType, units } = options
@@ -57,7 +62,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
 
     private setTimer(
       callback: () => Promise<void>,
-      interval: DurationLikeObject | number,
+      interval: DurationLike,
       options: TimerOptions,
     ): NodeJS.Timeout {
       const { actionType, timerWords, timerType, units } = options
@@ -74,7 +79,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
           .plus(duration)
           .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
       )
-      return this.homey[timerType](callback, Number(duration))
+      return this.homey[timerType](callback, duration.as('milliseconds'))
     }
   }
 

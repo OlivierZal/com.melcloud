@@ -5,7 +5,7 @@ import {
   DateTime,
   Duration,
   Settings as LuxonSettings,
-  type DurationLikeObject,
+  type DurationLike,
 } from 'luxon'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
@@ -137,7 +137,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public applySyncFromDevices({
     syncMode,
     interval,
-  }: { syncMode?: SyncFromMode; interval?: DurationLikeObject } = {}): void {
+  }: { syncMode?: SyncFromMode; interval?: DurationLike } = {}): void {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
       async (): Promise<void> => {
@@ -333,7 +333,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   private async planRefreshLogin(): Promise<void> {
     const expiry: string =
       (this.homey.settings.get('Expiry') as HomeySettings['Expiry']) ?? ''
-    const ms = Number(DateTime.fromISO(expiry).minus({ days: 1 }).diffNow())
+    const ms = DateTime.fromISO(expiry)
+      .minus({ days: 1 })
+      .diffNow()
+      .as('milliseconds')
     if (ms > 0) {
       this.applySyncFromDevices()
       const maxTimeout: number = 2 ** 31 - 1
