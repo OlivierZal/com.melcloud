@@ -333,7 +333,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   private async planRefreshLogin(): Promise<void> {
     const expiry: string =
       (this.homey.settings.get('Expiry') as HomeySettings['Expiry']) ?? ''
-    const ms = DateTime.fromISO(expiry)
+    const ms: number = DateTime.fromISO(expiry)
       .minus({ days: 1 })
       .diffNow()
       .as('milliseconds')
