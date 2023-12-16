@@ -83,7 +83,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public isDiff(): boolean {
-    return this.diff.size > 0
+    return !!this.diff.size
   }
 
   public async syncDeviceFromList<T extends MELCloudDriver>(
