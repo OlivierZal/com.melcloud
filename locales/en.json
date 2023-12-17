@@ -28,7 +28,7 @@
         "end_date": "End date",
         "start_date": "Start date"
       },
-      "legend": "Building Settings",
+      "legend": "Building settings",
       "update": "Update"
     },
     "devices": {
@@ -37,16 +37,16 @@
         "confirm": "Are you sure you want to apply these settings to all devices?",
         "nothing": "No change to apply."
       },
-      "legend": "Device Settings",
+      "legend": "Device settings",
       "none": "Add a device to unlock all the app's settings!"
     },
     "devices_ata": {
       "auto_adjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "legend": "Air-to-Air Device Settings"
+      "legend": "Air-to-air device settings"
     },
     "devices_atw": {
-      "legend": "Air-to-Water Device Settings"
+      "legend": "Air-to-water device settings"
     },
     "error_log": {
       "columns": {
@@ -61,7 +61,7 @@
         "234": "errors",
         "plural": "errors"
       },
-      "legend": "Error Log",
+      "legend": "Error log",
       "period": "Since __fromDateHuman__:",
       "see": "See all errors",
       "since": "since"
@@ -69,7 +69,7 @@
     "int_error": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
     "success": "Update successful.",
-    "title": "MELCloud Settings"
+    "title": "MELCloud settings"
   },
   "warnings": {
     "always_on": "Shutdown from Homey has been disabled.",
