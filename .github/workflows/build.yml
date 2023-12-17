@@ -12,13 +12,13 @@ permissions:
 
 jobs:
   npm-scripts:
-    name: npm Scripts
+    name: npm scripts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-      - name: Bump Version
+      - name: Bump version
         run: |
           APP_VERSION=$(jq -r .version .homeycompose/app.json)
           jq ".version=\"$APP_VERSION\"" package.json > package.json.tmp
@@ -29,13 +29,13 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm i
-      - name: Lint and Fix Errors
+      - name: Lint and fix errors
         run: npm run lint:fix
-      - name: Format Code
+      - name: Format code
         run: npm run format:fix
-      - name: Commit Changes
+      - name: Commit changes
         run: |
           git config --local user.name "GitHub Actions"
           git config --local user.email "actions@github.com"
@@ -69,9 +69,9 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
-      - name: Build App # Compile TypeScript
+      - name: Build app # Compile TypeScript
         run: npm run build
 
   sonarcloud:
@@ -88,9 +88,9 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
-      - name: Scan Code
+      - name: Scan code
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -102,12 +102,12 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: Fetch Metadata
+      - name: Fetch metadata
         id: metadata
         uses: dependabot/fetch-metadata@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Auto-Merge
+      - name: Auto-merge
         run: gh pr merge --auto --merge $PR_URL
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
