@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import BaseMELCloudDevice from '../../bases/device'
-import type MELCloudDriverAtw from './driver'
+import type AtwDriver from './driver'
 import type {
   Capability,
   CapabilityValue,
@@ -33,7 +33,7 @@ const getOtherCapabilityZone = (capability: string): string =>
     ? capability.replace(/.zone2$/, '')
     : `${capability}.zone2`
 
-export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
+export = class AtwDevice extends BaseMELCloudDevice {
   protected reportPlanParameters: {
     duration: object
     interval: object
@@ -47,7 +47,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   protected async specificOnCapability(
-    capability: SetCapability<MELCloudDriverAtw>,
+    capability: SetCapability<AtwDriver>,
     value: CapabilityValue,
   ): Promise<void> {
     this.diff.set(capability, value)
@@ -57,15 +57,15 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   protected async handleOperationModeZones(
-    capability: SetCapability<MELCloudDriverAtw>,
+    capability: SetCapability<AtwDriver>,
     value: string,
   ): Promise<void> {
     const { CanCool, HasZone2 } = this.getStore() as Store
     if (HasZone2) {
       const zoneValue: number =
         OperationModeZone[value as keyof typeof OperationModeZone]
-      const otherZoneCapability: SetCapability<MELCloudDriverAtw> =
-        getOtherCapabilityZone(capability) as SetCapability<MELCloudDriverAtw>
+      const otherZoneCapability: SetCapability<AtwDriver> =
+        getOtherCapabilityZone(capability) as SetCapability<AtwDriver>
       let otherZoneValue: number =
         OperationModeZone[
           this.getRequestedOrCurrentValue(
@@ -92,7 +92,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   protected convertToDevice(
-    capability: SetCapability<MELCloudDriverAtw>,
+    capability: SetCapability<AtwDriver>,
     value: CapabilityValue,
   ): SetDeviceValue {
     switch (true) {
@@ -108,7 +108,7 @@ export = class MELCloudDeviceAtw extends BaseMELCloudDevice {
   }
 
   protected convertFromDevice(
-    capability: Capability<MELCloudDriverAtw>,
+    capability: Capability<AtwDriver>,
     value: DeviceValue,
   ): CapabilityValue {
     switch (true) {

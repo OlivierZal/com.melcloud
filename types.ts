@@ -1,11 +1,11 @@
 import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
-import type MELCloudDeviceAta from './drivers/melcloud/device'
-import type MELCloudDriverAta from './drivers/melcloud/driver'
-import type MELCloudDeviceAtw from './drivers/melcloud_atw/device'
-import type MELCloudDriverAtw from './drivers/melcloud_atw/driver'
-import type MELCloudDeviceErv from './drivers/melcloud_erv/device'
-import type MELCloudDriverErv from './drivers/melcloud_erv/driver'
+import type AtaDevice from './drivers/melcloud/device'
+import type AtaDriver from './drivers/melcloud/driver'
+import type AtwDevice from './drivers/melcloud_atw/device'
+import type AtwDriver from './drivers/melcloud_atw/driver'
+import type ErvDevice from './drivers/melcloud_erv/device'
+import type ErvDriver from './drivers/melcloud_erv/driver'
 
 export const loginURL = '/Login/ClientLogin'
 
@@ -15,14 +15,8 @@ export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly setWarning?: (warning: string | null) => Promise<void>
 }
 
-export type MELCloudDevice =
-  | MELCloudDeviceAta
-  | MELCloudDeviceAtw
-  | MELCloudDeviceErv
-export type MELCloudDriver =
-  | MELCloudDriverAta
-  | MELCloudDriverAtw
-  | MELCloudDriverErv
+export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
+export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 
 export type SyncFromMode = 'syncFrom'
 export type SyncMode = SyncFromMode | 'syncTo'
@@ -286,12 +280,11 @@ export type SetCapabilityErv = keyof SetCapabilitiesErv
 
 export type SetCapabilityAtw = keyof SetCapabilitiesAtw
 
-export type SetCapability<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? SetCapabilityAtw
-    : T extends MELCloudDriverAta
-      ? SetCapabilityAta
-      : SetCapabilityErv
+export type SetCapability<T extends MELCloudDriver> = T extends AtwDriver
+  ? SetCapabilityAtw
+  : T extends AtaDriver
+    ? SetCapabilityAta
+    : SetCapabilityErv
 
 type GetCapabilityAta = keyof GetCapabilitiesAta
 
@@ -299,9 +292,9 @@ type GetCapabilityErv = keyof GetCapabilitiesErv
 
 export type GetCapabilityAtw = keyof GetCapabilitiesAtw
 
-type GetCapability<T extends MELCloudDriver> = T extends MELCloudDriverAtw
+type GetCapability<T extends MELCloudDriver> = T extends AtwDriver
   ? GetCapabilityAtw
-  : T extends MELCloudDriverAta
+  : T extends AtaDriver
     ? GetCapabilityAta
     : GetCapabilityErv
 
@@ -311,9 +304,9 @@ type ListCapabilityErv = keyof ListCapabilitiesErv
 
 export type ListCapabilityAtw = keyof ListCapabilitiesAtw
 
-type ListCapability<T extends MELCloudDriver> = T extends MELCloudDriverAtw
+type ListCapability<T extends MELCloudDriver> = T extends AtwDriver
   ? ListCapabilityAtw
-  : T extends MELCloudDriverAta
+  : T extends AtaDriver
     ? ListCapabilityAta
     : ListCapabilityErv
 
@@ -321,12 +314,11 @@ type ReportCapabilityAta = keyof ReportCapabilitiesAta
 
 type ReportCapabilityAtw = keyof ReportCapabilitiesAtw
 
-export type ReportCapability<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? ReportCapabilityAtw
-    : T extends MELCloudDriverAta
-      ? ReportCapabilityAta
-      : never
+export type ReportCapability<T extends MELCloudDriver> = T extends AtwDriver
+  ? ReportCapabilityAtw
+  : T extends AtaDriver
+    ? ReportCapabilityAta
+    : never
 
 export type NonReportCapability<T extends MELCloudDriver> =
   | GetCapability<T>
@@ -370,9 +362,9 @@ interface UpdateDeviceDataAtw extends BaseDeviceData {
 
 export type UpdateDeviceData<T extends MELCloudDriver> = T & {
   EffectiveFlags: number
-} extends MELCloudDriverAtw
+} extends AtwDriver
   ? UpdateDeviceDataAtw
-  : T extends MELCloudDriverAta
+  : T extends AtaDriver
     ? UpdateDeviceDataAta
     : UpdateDeviceDataErv
 
@@ -407,12 +399,11 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly TankWaterTemperature: number
 }
 
-export type GetDeviceData<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? GetDeviceDataAtw
-    : T extends MELCloudDriverAta
-      ? GetDeviceDataAta
-      : GetDeviceDataErv
+export type GetDeviceData<T extends MELCloudDriver> = T extends AtwDriver
+  ? GetDeviceDataAtw
+  : T extends AtaDriver
+    ? GetDeviceDataAta
+    : GetDeviceDataErv
 
 export type PostData<T extends MELCloudDriver> = SetDeviceData<T> & {
   readonly DeviceID: number
@@ -466,12 +457,11 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly TargetHCTemperatureZone2: number
 }
 
-export type ListDeviceData<T extends MELCloudDriver> =
-  T extends MELCloudDriverAtw
-    ? ListDeviceDataAtw
-    : T extends MELCloudDriverErv
-      ? ListDeviceDataErv
-      : ListDeviceDataAta
+export type ListDeviceData<T extends MELCloudDriver> = T extends AtwDriver
+  ? ListDeviceDataAtw
+  : T extends ErvDriver
+    ? ListDeviceDataErv
+    : ListDeviceDataAta
 
 export interface ReportPostData {
   readonly DeviceID: number
@@ -506,7 +496,7 @@ interface ReportDataAtw {
   readonly TotalHotWaterProduced: number
 }
 
-export type ReportData<T extends MELCloudDriver> = T extends MELCloudDriverAtw
+export type ReportData<T extends MELCloudDriver> = T extends AtwDriver
   ? ReportDataAtw
   : ReportDataAta
 
@@ -914,11 +904,11 @@ export type FlowArgs<T extends MELCloudDriver> = Record<
   SetCapability<T>,
   string
 > & {
-  readonly device: T extends MELCloudDriverAtw
-    ? MELCloudDeviceAtw
-    : T extends MELCloudDriverAta
-      ? MELCloudDeviceAta
-      : MELCloudDeviceErv
+  readonly device: T extends AtwDriver
+    ? AtwDevice
+    : T extends AtaDriver
+      ? AtaDevice
+      : ErvDevice
 }
 
 export interface LoginPostData {
@@ -995,9 +985,9 @@ export interface ListDevice<T extends MELCloudDriver> extends BaseListDevice {
 }
 
 export type ListDeviceAny =
-  | ListDevice<MELCloudDriverAta>
-  | ListDevice<MELCloudDriverAtw>
-  | ListDevice<MELCloudDriverErv>
+  | ListDevice<AtaDriver>
+  | ListDevice<AtwDriver>
+  | ListDevice<ErvDriver>
 
 export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 

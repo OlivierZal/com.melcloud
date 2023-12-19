@@ -13,7 +13,7 @@ import {
 
 const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 
-export = class MELCloudDriverErv extends BaseMELCloudDriver {
+export = class ErvDriver extends BaseMELCloudDriver {
   public heatPumpType = 'Erv'
 
   public setCapabilityMapping: SetCapabilityMappingErv = setCapabilityMappingErv
@@ -44,7 +44,7 @@ export = class MELCloudDriverErv extends BaseMELCloudDriver {
 
   protected registerFlowListeners(): void {
     const getCapabilityArg = (
-      args: FlowArgs<MELCloudDriverErv>,
+      args: FlowArgs<ErvDriver>,
       capability: SetCapabilityErv,
     ): number | string => {
       if (capability === 'fan_power') {
@@ -57,14 +57,14 @@ export = class MELCloudDriverErv extends BaseMELCloudDriver {
       this.homey.flow
         .getConditionCard(`${capability}_erv_condition`)
         .registerRunListener(
-          (args: FlowArgs<MELCloudDriverErv>): boolean =>
+          (args: FlowArgs<ErvDriver>): boolean =>
             getCapabilityArg(args, capability) ===
             args.device.getCapabilityValue(capability),
         )
       this.homey.flow
         .getActionCard(`${capability}_erv_action`)
         .registerRunListener(
-          async (args: FlowArgs<MELCloudDriverErv>): Promise<void> => {
+          async (args: FlowArgs<ErvDriver>): Promise<void> => {
             await args.device.triggerCapabilityListener(
               capability,
               getCapabilityArg(args, capability),

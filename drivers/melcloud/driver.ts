@@ -19,7 +19,7 @@ const flowCapabilities: SetCapabilityAta[] = [
   'horizontal',
 ]
 
-export = class MELCloudDriverAta extends BaseMELCloudDriver {
+export = class AtaDriver extends BaseMELCloudDriver {
   public heatPumpType = 'Ata'
 
   public setCapabilityMapping: SetCapabilityMappingAta = setCapabilityMappingAta
@@ -47,7 +47,7 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
 
   protected registerFlowListeners(): void {
     const getCapabilityArg = (
-      args: FlowArgs<MELCloudDriverAta>,
+      args: FlowArgs<AtaDriver>,
       capability: SetCapabilityAta,
     ): number | string => {
       if (capability === 'fan_power') {
@@ -60,14 +60,14 @@ export = class MELCloudDriverAta extends BaseMELCloudDriver {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener(
-          (args: FlowArgs<MELCloudDriverAta>): boolean =>
+          (args: FlowArgs<AtaDriver>): boolean =>
             getCapabilityArg(args, capability) ===
             args.device.getCapabilityValue(capability),
         )
       this.homey.flow
         .getActionCard(`${capability}_action`)
         .registerRunListener(
-          async (args: FlowArgs<MELCloudDriverAta>): Promise<void> => {
+          async (args: FlowArgs<AtaDriver>): Promise<void> => {
             await args.device.triggerCapabilityListener(
               capability,
               getCapabilityArg(args, capability),

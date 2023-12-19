@@ -1,5 +1,5 @@
 import BaseMELCloudDriver from '../../bases/driver'
-import type MELCloudDeviceAtw from './device'
+import type AtwDevice from './device'
 import {
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
@@ -15,7 +15,7 @@ import {
   type Store,
 } from '../../types'
 
-export = class MELCloudDriverAtw extends BaseMELCloudDriver {
+export = class AtwDriver extends BaseMELCloudDriver {
   public capabilitiesAtw: (
     | GetCapabilityAtw
     | ListCapabilityAtw
@@ -104,7 +104,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               .getConditionCard(`${capability}_condition`)
               .registerRunListener(
                 (args: {
-                  device: MELCloudDeviceAtw
+                  device: AtwDevice
                   operation_mode_state: string
                 }): boolean =>
                   args.operation_mode_state ===
@@ -115,16 +115,15 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
             capability.startsWith('onoff.'):
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
-              .registerRunListener(
-                (args: { device: MELCloudDeviceAtw }): boolean =>
-                  args.device.getCapabilityValue(capability),
+              .registerRunListener((args: { device: AtwDevice }): boolean =>
+                args.device.getCapabilityValue(capability),
               )
             if (capability.startsWith('onoff.')) {
               this.homey.flow
                 .getActionCard(`${capability}_action`)
                 .registerRunListener(
                   async (args: {
-                    device: MELCloudDeviceAtw
+                    device: AtwDevice
                     onoff: 'false' | 'true'
                   }): Promise<void> => {
                     await args.device.triggerCapabilityListener(
@@ -140,7 +139,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               .getConditionCard(`${capability}_condition`)
               .registerRunListener(
                 (args: {
-                  device: MELCloudDeviceAtw
+                  device: AtwDevice
                   operation_mode_zone: string
                 }): boolean =>
                   args.operation_mode_zone ===
@@ -150,7 +149,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: {
-                  device: MELCloudDeviceAtw
+                  device: AtwDevice
                   operation_mode_zone: string
                 }): Promise<void> => {
                   await args.device.triggerCapabilityListener(
@@ -165,7 +164,7 @@ export = class MELCloudDriverAtw extends BaseMELCloudDriver {
               .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: {
-                  device: MELCloudDeviceAtw
+                  device: AtwDevice
                   target_temperature: number
                 }): Promise<void> => {
                   await args.device.triggerCapabilityListener(

@@ -1,5 +1,5 @@
 import BaseMELCloudDevice from '../../bases/device'
-import type MELCloudDriverErv from './driver'
+import type ErvDriver from './driver'
 import type {
   Capability,
   CapabilityValue,
@@ -14,17 +14,17 @@ enum VentilationMode {
   auto = 2,
 }
 
-export = class MELCloudDeviceErv extends BaseMELCloudDevice {
+export = class ErvDevice extends BaseMELCloudDevice {
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async specificOnCapability(
-    capability: SetCapability<MELCloudDriverErv>,
+    capability: SetCapability<ErvDriver>,
     value: CapabilityValue,
   ): Promise<void> {
     this.diff.set(capability, value)
   }
 
   protected convertToDevice(
-    capability: SetCapability<MELCloudDriverErv>,
+    capability: SetCapability<ErvDriver>,
     value: CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
@@ -41,7 +41,7 @@ export = class MELCloudDeviceErv extends BaseMELCloudDevice {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice(
-    capability: Capability<MELCloudDriverErv>,
+    capability: Capability<ErvDriver>,
     value: DeviceValue,
   ): CapabilityValue {
     if (capability === 'ventilation_mode') {

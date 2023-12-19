@@ -1,5 +1,5 @@
 import BaseMELCloudDevice from '../../bases/device'
-import type MELCloudDriverAta from './driver'
+import type AtaDriver from './driver'
 import type {
   Capability,
   CapabilityValue,
@@ -39,7 +39,7 @@ enum Horizontal {
   swing = 12,
 }
 
-export = class MELCloudDeviceAta extends BaseMELCloudDevice {
+export = class AtaDevice extends BaseMELCloudDevice {
   protected reportPlanParameters: {
     duration: object
     interval: object
@@ -53,7 +53,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   protected async specificOnCapability(
-    capability: SetCapability<MELCloudDriverAta> | 'thermostat_mode',
+    capability: SetCapability<AtaDriver> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
@@ -75,7 +75,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   protected convertToDevice(
-    capability: SetCapability<MELCloudDriverAta>,
+    capability: SetCapability<AtaDriver>,
     value: CapabilityValue,
   ): SetDeviceValue {
     switch (capability) {
@@ -96,7 +96,7 @@ export = class MELCloudDeviceAta extends BaseMELCloudDevice {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice(
-    capability: Capability<MELCloudDriverAta> | 'thermostat_mode',
+    capability: Capability<AtaDriver> | 'thermostat_mode',
     value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {
