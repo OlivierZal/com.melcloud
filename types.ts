@@ -901,7 +901,7 @@ export interface DeviceDetails {
 }
 
 export type FlowArgs<T extends MELCloudDriver> = Record<
-  SetCapability<T>,
+  Capability<T>,
   string
 > & {
   readonly device: T extends AtwDriver

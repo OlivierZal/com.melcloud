@@ -1,10 +1,10 @@
 import BaseMELCloudDriver from '../../bases/driver'
-import type AtwDevice from './device'
 import {
   getCapabilityMappingAtw,
   listCapabilityMappingAtw,
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
+  type FlowArgs,
   type GetCapabilityAtw,
   type GetCapabilityMappingAtw,
   type ListCapabilityAtw,
@@ -103,10 +103,7 @@ export = class AtwDriver extends BaseMELCloudDriver {
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
               .registerRunListener(
-                (args: {
-                  device: AtwDevice
-                  operation_mode_state: string
-                }): boolean =>
+                (args: FlowArgs<AtwDriver>): boolean =>
                   args.operation_mode_state ===
                   args.device.getCapabilityValue(capability),
               )
@@ -115,17 +112,14 @@ export = class AtwDriver extends BaseMELCloudDriver {
             capability.startsWith('onoff.'):
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
-              .registerRunListener((args: { device: AtwDevice }): boolean =>
+              .registerRunListener((args: FlowArgs<AtwDriver>): boolean =>
                 args.device.getCapabilityValue(capability),
               )
             if (capability.startsWith('onoff.')) {
               this.homey.flow
                 .getActionCard(`${capability}_action`)
                 .registerRunListener(
-                  async (args: {
-                    device: AtwDevice
-                    onoff: 'false' | 'true'
-                  }): Promise<void> => {
+                  async (args: FlowArgs<AtwDriver>): Promise<void> => {
                     await args.device.triggerCapabilityListener(
                       capability,
                       args.onoff === 'true',
@@ -138,20 +132,14 @@ export = class AtwDriver extends BaseMELCloudDriver {
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
               .registerRunListener(
-                (args: {
-                  device: AtwDevice
-                  operation_mode_zone: string
-                }): boolean =>
+                (args: FlowArgs<AtwDriver>): boolean =>
                   args.operation_mode_zone ===
                   args.device.getCapabilityValue(capability),
               )
             this.homey.flow
               .getActionCard(`${capability}_action`)
               .registerRunListener(
-                async (args: {
-                  device: AtwDevice
-                  operation_mode_zone: string
-                }): Promise<void> => {
+                async (args: FlowArgs<AtwDriver>): Promise<void> => {
                   await args.device.triggerCapabilityListener(
                     capability,
                     args.operation_mode_zone,
@@ -163,10 +151,7 @@ export = class AtwDriver extends BaseMELCloudDriver {
             this.homey.flow
               .getActionCard(`${capability}_action`)
               .registerRunListener(
-                async (args: {
-                  device: AtwDevice
-                  target_temperature: number
-                }): Promise<void> => {
+                async (args: FlowArgs<AtwDriver>): Promise<void> => {
                   await args.device.triggerCapabilityListener(
                     capability,
                     args.target_temperature,
