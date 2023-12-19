@@ -277,7 +277,8 @@
         "es": "Temperatura configurada del flujo de enfriamiento"
       },
       "min": 5,
-      "max": 25
+      "max": 25,
+      "step": 1
     },
     "target_temperature.flow_cool_zone2": {
       "title": {
@@ -290,7 +291,8 @@
         "es": "Temperatura configurada del flujo de enfriamiento - zona 2"
       },
       "min": 5,
-      "max": 25
+      "max": 25,
+      "step": 1
     },
     "target_temperature.flow_heat": {
       "title": {
@@ -303,7 +305,8 @@
         "es": "Temperatura configurada del flujo"
       },
       "min": 25,
-      "max": 60
+      "max": 60,
+      "step": 1
     },
     "target_temperature.flow_heat_zone2": {
       "title": {
@@ -316,7 +319,8 @@
         "es": "Temperatura configurada del flujo - zona 2"
       },
       "min": 25,
-      "max": 60
+      "max": 60,
+      "step": 1
     },
     "target_temperature.tank_water": {
       "title": {
@@ -329,7 +333,8 @@
         "es": "Temperatura configurada del agua caliente"
       },
       "min": 40,
-      "max": 60
+      "max": 60,
+      "step": 1
     },
     "operation_mode_zone.zone2": {
       "title": {
