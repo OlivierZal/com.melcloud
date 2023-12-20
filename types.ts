@@ -21,6 +21,40 @@ export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type SyncFromMode = 'syncFrom'
 export type SyncMode = SyncFromMode | 'syncTo'
 
+export enum OperationModeAta {
+  heat = 1,
+  dry = 2,
+  cool = 3,
+  fan = 7,
+  auto = 8,
+}
+
+export enum VerticalAta {
+  auto = 0,
+  top = 1,
+  middletop = 2,
+  middle = 3,
+  middlebottom = 4,
+  bottom = 5,
+  swing = 7,
+}
+
+export enum HorizontalAta {
+  auto = 0,
+  left = 1,
+  middleleft = 2,
+  middle = 3,
+  middleright = 4,
+  right = 5,
+  swing = 12,
+}
+
+export enum VentilationModeErv {
+  recovery = 0,
+  bypass = 1,
+  auto = 2,
+}
+
 export enum OperationModeAtw {
   idle = 0,
   dhw = 1,
