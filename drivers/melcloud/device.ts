@@ -11,7 +11,7 @@ import type {
 const isThermostatMode = (value: string): boolean =>
   !['dry', 'fan'].includes(value)
 
-enum OperationMode {
+enum OperationModeAta {
   heat = 1,
   dry = 2,
   cool = 3,
@@ -19,7 +19,7 @@ enum OperationMode {
   auto = 8,
 }
 
-enum Vertical {
+enum VerticalAta {
   auto = 0,
   top = 1,
   middletop = 2,
@@ -29,7 +29,7 @@ enum Vertical {
   swing = 7,
 }
 
-enum Horizontal {
+enum HorizontalAta {
   auto = 0,
   left = 1,
   middleleft = 2,
@@ -84,11 +84,11 @@ export = class AtaDevice extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'operation_mode':
-        return OperationMode[value as keyof typeof OperationMode]
+        return OperationModeAta[value as keyof typeof OperationModeAta]
       case 'vertical':
-        return Vertical[value as keyof typeof Vertical]
+        return VerticalAta[value as keyof typeof VerticalAta]
       case 'horizontal':
-        return Horizontal[value as keyof typeof Horizontal]
+        return HorizontalAta[value as keyof typeof HorizontalAta]
       default:
         return value as SetDeviceValue
     }
@@ -101,11 +101,11 @@ export = class AtaDevice extends BaseMELCloudDevice {
   ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
-        return OperationMode[value as number]
+        return OperationModeAta[value as number]
       case 'vertical':
-        return Vertical[value as number]
+        return VerticalAta[value as number]
       case 'horizontal':
-        return Horizontal[value as number]
+        return HorizontalAta[value as number]
       default:
         return value
     }

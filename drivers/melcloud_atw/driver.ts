@@ -122,7 +122,7 @@ export = class AtwDriver extends BaseMELCloudDriver {
                   async (args: FlowArgs<AtwDriver>): Promise<void> => {
                     await args.device.triggerCapabilityListener(
                       capability,
-                      args.onoff === 'true',
+                      args.onoff,
                     )
                   },
                 )

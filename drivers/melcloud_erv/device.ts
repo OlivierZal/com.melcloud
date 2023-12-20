@@ -8,7 +8,7 @@ import type {
   SetDeviceValue,
 } from '../../types'
 
-enum VentilationMode {
+enum VentilationModeErv {
   recovery = 0,
   bypass = 1,
   auto = 2,
@@ -33,7 +33,7 @@ export = class ErvDevice extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'ventilation_mode':
-        return VentilationMode[value as keyof typeof VentilationMode]
+        return VentilationModeErv[value as keyof typeof VentilationModeErv]
       default:
         return value as SetDeviceValue
     }
@@ -45,7 +45,7 @@ export = class ErvDevice extends BaseMELCloudDevice {
     value: DeviceValue,
   ): CapabilityValue {
     if (capability === 'ventilation_mode') {
-      return VentilationMode[value as number]
+      return VentilationModeErv[value as number]
     }
     return value
   }

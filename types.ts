@@ -21,6 +21,24 @@ export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type SyncFromMode = 'syncFrom'
 export type SyncMode = SyncFromMode | 'syncTo'
 
+export enum OperationModeAtw {
+  idle = 0,
+  dhw = 1,
+  heating = 2,
+  cooling = 3,
+  defrost = 4,
+  standby = 5,
+  legionella = 6,
+}
+
+export enum OperationModeZoneAtw {
+  room = 0,
+  flow = 1,
+  curve = 2,
+  room_cool = 3,
+  flow_cool = 4,
+}
+
 export type CapabilityValue = boolean | number | string
 
 export type SetDeviceValue = boolean | number
@@ -900,16 +918,17 @@ export interface DeviceDetails {
   readonly store: Store
 }
 
-export type FlowArgs<T extends MELCloudDriver> = Record<
-  Capability<T>,
-  string
-> & {
-  readonly device: T extends AtwDriver
-    ? AtwDevice
-    : T extends AtaDriver
-      ? AtaDevice
-      : ErvDevice
-}
+export type FlowArgs<T extends MELCloudDriver> = T extends AtwDriver
+  ? {
+      readonly device: AtwDevice
+      readonly onoff: boolean
+      readonly operation_mode_state: OperationModeAtw
+      readonly operation_mode_zone: OperationModeZoneAtw
+      readonly target_temperature: number
+    }
+  : T extends AtaDriver
+    ? Record<SetCapabilityAta, string> & { readonly device: AtaDevice }
+    : Record<SetCapabilityErv, string> & { readonly device: ErvDevice }
 
 export interface LoginPostData {
   readonly AppVersion: string

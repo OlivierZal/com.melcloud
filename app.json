@@ -2646,22 +2646,22 @@
       },
       {
         "title": {
-          "en": "Turn on / off the forced domestic hot water",
-          "fr": "Activer / désactiver l'eau chaude sanitaire forcée",
-          "nl": "Zet aan / uit de gedwongen sanitair warm water",
-          "sv": "Aktivera / stäng av tvingad varmvattenladdning",
-          "no": "Slå på / av tvungen varmvannslastning",
-          "da": "Tændt / slukket tvungen varmtvandsindlæsning",
-          "es": "Encender / apagar el agua caliente sanitaria forzada"
+          "en": "Set the forced domestic hot water",
+          "fr": "Définir l'eau chaude sanitaire forcée",
+          "nl": "Stel de gedwongen sanitair warm water",
+          "sv": "Ställ in tvingad varmvattenladdning",
+          "no": "Innstill tvungen varmvannslastning",
+          "da": "Indstil tvungen varmtvandsindlæsning",
+          "es": "Configurar el agua caliente sanitaria forzada"
         },
         "titleFormatted": {
-          "en": "Turn [[onoff]] the forced domestic hot water",
-          "fr": "[[onoff]] l'eau chaude sanitaire forcée",
-          "nl": "Zet [[onoff]] de gedwongen sanitair warm water",
-          "sv": "[[onoff]] tvingad varmvattenladdning",
-          "no": "[[onoff]] tvungen varmvannslastning",
-          "da": "[[onoff]] tvungen varmtvandsindlæsning",
-          "es": "[[onoff]] el agua caliente sanitaria forzada"
+          "en": "Set the forced domestic hot water to [[onoff]]",
+          "fr": "Définir l'eau chaude sanitaire forcée à [[onoff]]",
+          "nl": "Stel de gedwongen sanitair warm water in op [[onoff]]",
+          "sv": "Ställ in tvingad varmvattenladdning till [[onoff]]",
+          "no": "Innstill tvungen varmvannslastning til [[onoff]]",
+          "da": "Indstil tvungen varmtvandsindlæsning til [[onoff]]",
+          "es": "Configurar el agua caliente sanitaria forzada a [[onoff]]"
         },
         "args": [
           {
@@ -2671,33 +2671,16 @@
           },
           {
             "name": "onoff",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "true",
-                "title": {
-                  "en": "on",
-                  "fr": "Activer",
-                  "nl": "aan",
-                  "sv": "Aktivera",
-                  "no": "på",
-                  "da": "Tændt",
-                  "es": "Encender"
-                }
-              },
-              {
-                "id": "false",
-                "title": {
-                  "en": "off",
-                  "fr": "Désactiver",
-                  "nl": "uit",
-                  "sv": "Stäng av",
-                  "no": "av",
-                  "da": "Slukket",
-                  "es": "Apagar"
-                }
-              }
-            ]
+            "type": "checkbox",
+            "title": {
+              "en": "Forced domestic hot water",
+              "fr": "Eau chaude sanitaire forcée",
+              "nl": "Gedwongen sanitair warm water",
+              "sv": "Tvingad varmvattenladdning",
+              "no": "Tvungen varmvannslastning",
+              "da": "Tvungen varmtvandsindlæsning",
+              "es": "Agua caliente sanitaria forzada"
+            }
           }
         ],
         "id": "onoff.forced_hot_water_action"
