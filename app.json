@@ -47,7 +47,6 @@
       "climatisation",
       "climatiseur",
       "ecodan",
-      "erv",
       "melcloud",
       "mitsubishi",
       "pompe à chaleur",
@@ -59,7 +58,6 @@
       "airconditioner",
       "airconditioning",
       "ecodan",
-      "erv",
       "geconditioneerde lucht",
       "lucht lucht",
       "lucht water",
@@ -3618,7 +3616,7 @@
         }
       ],
       "name": {
-        "en": "Air-to-Air Heat Pump",
+        "en": "Air-to-air heat pump",
         "fr": "Pompe à chaleur air-air",
         "nl": "Lucht-lucht warmtepomp",
         "sv": "Luft-luft värmepump",
@@ -4401,7 +4399,7 @@
         }
       ],
       "name": {
-        "en": "Air-to-Water Heat Pump",
+        "en": "Air-to-water heat pump",
         "fr": "Pompe à chaleur air-eau",
         "nl": "Lucht-water warmtepomp",
         "sv": "Luft-vatten värmepump",
@@ -6205,7 +6203,7 @@
         }
       ],
       "name": {
-        "en": "Energy Recovery Ventilator (ERV)",
+        "en": "Energy recovery ventilator (ERV)",
         "fr": "Ventilateur récupérateur d'énergie (VRE)",
         "nl": "Ventilator med warmteterugwinning (WTW)",
         "sv": "Ventilator med värmeåtervinning (ERV)",

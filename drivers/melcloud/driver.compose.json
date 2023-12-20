@@ -1,7 +1,7 @@
 {
   "$extends": ["defaults"],
   "name": {
-    "en": "Air-to-Air Heat Pump",
+    "en": "Air-to-air heat pump",
     "fr": "Pompe à chaleur air-air",
     "nl": "Lucht-lucht warmtepomp",
     "sv": "Luft-luft värmepump",

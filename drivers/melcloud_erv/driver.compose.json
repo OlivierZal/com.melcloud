@@ -2,7 +2,7 @@
   "$extends": ["defaults"],
   "class": "fan",
   "name": {
-    "en": "Energy Recovery Ventilator (ERV)",
+    "en": "Energy recovery ventilator (ERV)",
     "fr": "Ventilateur récupérateur d'énergie (VRE)",
     "nl": "Ventilator med warmteterugwinning (WTW)",
     "sv": "Ventilator med värmeåtervinning (ERV)",
