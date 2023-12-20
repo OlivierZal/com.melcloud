@@ -32,6 +32,8 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
+const date1970: DateTime = DateTime.local(1970)
+
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
     key.startsWith('measure_power') || key.includes('daily')
@@ -549,7 +551,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     const toDate: DateTime = DateTime.now().minus(
       this.reportPlanParameters.minus,
     )
-    const fromDate: DateTime = total ? DateTime.local(1970) : toDate
+    const fromDate: DateTime = total ? date1970 : toDate
     const data: ReportData<T> | null = await this.reportEnergyCost(
       fromDate,
       toDate,
