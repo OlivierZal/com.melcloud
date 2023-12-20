@@ -142,5 +142,8 @@
   },
   "26.0.0": {
     "en": "Use array functions."
+  },
+  "27.1.0": {
+    "en": "Air-to-water devices: improved `forced hot water` action flow with new checkbox type: existing cards does not need to be recreated but may need to be updated."
   }
 }
