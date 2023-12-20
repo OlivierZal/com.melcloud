@@ -7,7 +7,7 @@
     "sv": "Luft-luft värmepump",
     "no": "Luft-luft varmepumpe",
     "da": "Luft-luft varmepumpe",
-    "es": "Bombas de calor de aire a aire"
+    "es": "Bombas de calor aire-aire"
   },
   "capabilities": [
     "onoff",
