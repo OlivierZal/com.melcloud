@@ -25,7 +25,7 @@
     },
     {
       "name": "target_temperature",
-      "type": "number",
+      "type": "range",
       "min": 40,
       "max": 60,
       "step": 1
