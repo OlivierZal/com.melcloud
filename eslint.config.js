@@ -9,10 +9,7 @@ const prettier = require('eslint-config-prettier')
 const importPlugin = require('eslint-plugin-import')
 const envs = require('globals')
 
-const envMapping = {
-  es6: 'es2015',
-  node: 'node',
-}
+const envMapping = { es6: 'es2015', node: 'node' }
 
 const convertIntoEslintFlatConfig = (config) => {
   const { env, globals, plugins, parserOptions, ...oldConfig } = config
@@ -27,9 +24,7 @@ const convertIntoEslintFlatConfig = (config) => {
             )
             .flatMap((key) => Object.entries(envs[envMapping[key]])),
         ),
-        ...('parserOptions' in config && {
-          parserOptions,
-        }),
+        ...('parserOptions' in config && { parserOptions }),
       }),
     },
   }
@@ -37,21 +32,14 @@ const convertIntoEslintFlatConfig = (config) => {
 
 const customRules = {
   'no-bitwise': 'off',
-  'no-underscore-dangle': [
-    'error',
-    {
-      allow: ['__'],
-    },
-  ],
+  'no-underscore-dangle': ['error', { allow: ['__'] }],
 }
 const tsCustomRules = {
   '@typescript-eslint/naming-convention': 'off',
   '@typescript-eslint/no-magic-numbers': 'off',
   '@typescript-eslint/no-unused-vars': [
     'error',
-    {
-      varsIgnorePattern: 'onHomeyReady',
-    },
+    { varsIgnorePattern: 'onHomeyReady' },
   ],
   '@typescript-eslint/prefer-readonly-parameter-types': 'off',
   'import/extensions': 'off',
@@ -59,51 +47,31 @@ const tsCustomRules = {
 }
 
 module.exports = [
-  {
-    ignores: ['.homeybuild/'],
-  },
+  { ignores: ['.homeybuild/'] },
   // eslint-disable-next-line global-require, import/no-dynamic-require
   ...airbnbRules.map((rule) => convertIntoEslintFlatConfig(require(rule))),
   convertIntoEslintFlatConfig(airbnbConfig),
-  {
-    rules: customRules,
-  },
+  { rules: customRules },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
+    plugins: { '@typescript-eslint': tsPlugin },
     rules: {
       ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
       ...tsPlugin.configs.all.rules,
       ...tsCustomRules,
     },
   },
-  {
-    plugins: {
-      import: importPlugin,
-    },
-  },
+  { plugins: { import: importPlugin } },
   importPlugin.configs.typescript,
   {
     languageOptions: {
       ecmaVersion: 'latest',
       parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-      },
+      parserOptions: { project: './tsconfig.json' },
       sourceType: 'module',
     },
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-    },
-    settings: {
-      'import/resolver': {
-        typescript: {
-          alwaysTryTypes: true,
-        },
-      },
-    },
+    linterOptions: { reportUnusedDisableDirectives: true },
+    settings: { 'import/resolver': { typescript: { alwaysTryTypes: true } } },
   },
   prettier,
 ]
