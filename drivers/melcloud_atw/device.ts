@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
 import BaseMELCloudDevice from '../../bases/device'
+import {
+  ATW_CURVE_VALUE,
+  K_MULTIPLIER,
+  ATW_ROOM_VALUES,
+  ATW_ROOM_FLOW_GAP,
+  ATW_HEAT_COOL_GAP,
+} from '../../constants'
 import type AtwDriver from './driver'
 import {
   OperationModeAtw,
@@ -7,6 +14,7 @@ import {
   type Capability,
   type CapabilityValue,
   type DeviceValue,
+  type ReportPlanParameters,
   type SetCapability,
   type SetDeviceValue,
   type Store,
@@ -18,12 +26,7 @@ const getOtherCapabilityZone = (capability: string): string =>
     : `${capability}.zone2`
 
 export = class AtwDevice extends BaseMELCloudDevice {
-  protected reportPlanParameters: {
-    duration: object
-    interval: object
-    minus: object
-    values: object
-  } = {
+  protected readonly reportPlanParameters: ReportPlanParameters = {
     minus: { days: 1 },
     interval: { days: 1 },
     duration: { days: 1 },
@@ -44,35 +47,35 @@ export = class AtwDevice extends BaseMELCloudDevice {
     capability: SetCapability<AtwDriver>,
     value: string,
   ): Promise<void> {
-    const { CanCool, HasZone2 } = this.getStore() as Store
-    if (HasZone2) {
-      const zoneValue: number =
-        OperationModeZoneAtw[value as keyof typeof OperationModeZoneAtw]
-      const otherZoneCapability: SetCapability<AtwDriver> =
-        getOtherCapabilityZone(capability) as SetCapability<AtwDriver>
-      let otherZoneValue: number =
-        OperationModeZoneAtw[
-          this.getRequestedOrCurrentValue(
-            otherZoneCapability,
-          ) as keyof typeof OperationModeZoneAtw
-        ]
-      if (CanCool) {
-        if (zoneValue >= 3) {
-          if (otherZoneValue <= 1) {
-            otherZoneValue += 3
-          } else if (otherZoneValue === 2) {
-            otherZoneValue = 3
-          }
-        } else if (otherZoneValue >= 3) {
-          otherZoneValue -= 3
-        }
-      }
-      if ([0, 3].includes(zoneValue) && otherZoneValue === zoneValue) {
-        otherZoneValue += 1
-      }
-      this.diff.set(otherZoneCapability, OperationModeZoneAtw[otherZoneValue])
-      await this.setDisplayErrorWarning()
+    const { canCool, hasZone2 } = this.getStore() as Store
+    if (!hasZone2) {
+      return
     }
+    const zoneValue: number =
+      OperationModeZoneAtw[value as keyof typeof OperationModeZoneAtw]
+    const otherZoneCapability: SetCapability<AtwDriver> =
+      getOtherCapabilityZone(capability) as SetCapability<AtwDriver>
+    let otherZoneValue: number =
+      OperationModeZoneAtw[
+        this.getRequestedOrCurrentValue(
+          otherZoneCapability,
+        ) as keyof typeof OperationModeZoneAtw
+      ]
+    if (canCool) {
+      if (zoneValue > ATW_CURVE_VALUE) {
+        otherZoneValue =
+          otherZoneValue === ATW_CURVE_VALUE
+            ? ATW_HEAT_COOL_GAP
+            : otherZoneValue + ATW_HEAT_COOL_GAP
+      } else if (otherZoneValue > ATW_CURVE_VALUE) {
+        otherZoneValue -= ATW_HEAT_COOL_GAP
+      }
+    }
+    if (ATW_ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
+      otherZoneValue += ATW_ROOM_FLOW_GAP
+    }
+    this.diff.set(otherZoneCapability, OperationModeZoneAtw[otherZoneValue])
+    await this.setDisplayErrorWarning()
   }
 
   protected convertToDevice(
@@ -103,7 +106,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
           locale: this.app.getLanguage(),
         }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
       case ['measure_power', 'measure_power.produced'].includes(capability):
-        return (value as number) * 1000
+        return (value as number) * K_MULTIPLIER
       case capability === 'operation_mode_state':
         return OperationModeAtw[value as number]
       case capability.startsWith('operation_mode_state.zone'):

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type Homey from 'homey/lib/Homey'
+import { GAP_2 } from '../constants'
 import type {
   Building,
   BuildingData,
@@ -326,6 +327,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     if (count === 1) {
       return homey.__('settings.error_log.error_count.1')
     }
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
       return homey.__('settings.error_log.error_count.234')
     }
@@ -353,18 +355,18 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           await homey.alert(error.message)
           return
         }
-        fromDateHuman = data.FromDateHuman
+        ;({ fromDateHuman } = data)
+        const { nextFromDate, nextToDate, errors } = data
         periodLabelElement.innerText = homey.__('settings.error_log.period', {
           fromDateHuman,
         })
-        sinceElement.value = data.NextFromDate
-        to = data.NextToDate
-
-        errorCount += data.Errors.length
+        sinceElement.value = nextFromDate
+        to = nextToDate
+        errorCount += errors.length
         errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(
           errorCount,
         )}`
-        generateErrorLogTableData(data.Errors)
+        generateErrorLogTableData(errors)
       },
     )
   }
@@ -382,7 +384,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       intMaxValueMap.set(element, maxValue)
     }
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
-      element.value = '' // eslint-disable-line no-param-reassign
+      // eslint-disable-next-line no-param-reassign
+      element.value = ''
       const labelElement: HTMLLabelElement | null = document.querySelector(
         `label[for="${element.id}"]`,
       )
@@ -470,13 +473,15 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     }
   }
 
-  const refreshBuildingHolidayModeSettings = (
-    settings: HolidayModeData,
-  ): void => {
-    const { HMEnabled, HMStartDate, HMEndDate } = settings
-    holidayModeEnabledElement.value = String(HMEnabled)
-    holidayModeStartDateElement.value = HMEnabled ? HMStartDate ?? '' : ''
-    holidayModeEndDateElement.value = HMEnabled ? HMEndDate ?? '' : ''
+  const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
+    const {
+      HMEnabled: enabled,
+      HMStartDate: startDate,
+      HMEndDate: endDate,
+    } = data
+    holidayModeEnabledElement.value = String(enabled)
+    holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
+    holidayModeEndDateElement.value = enabled ? endDate ?? '' : ''
   }
 
   const getBuildingHolidayModeSettings = async (raise = false): Promise<void> =>
@@ -505,12 +510,16 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     })
 
   const refreshBuildingFrostProtectionSettings = (
-    settings: FrostProtectionData,
+    data: FrostProtectionData,
   ): void => {
-    const { FPEnabled, FPMinTemperature, FPMaxTemperature } = settings
-    frostProtectionEnabledElement.value = String(FPEnabled)
-    frostProtectionMinimumTemperatureElement.value = String(FPMinTemperature)
-    frostProtectionMaximumTemperatureElement.value = String(FPMaxTemperature)
+    const {
+      FPEnabled: enabled,
+      FPMinTemperature: min,
+      FPMaxTemperature: max,
+    } = data
+    frostProtectionEnabledElement.value = String(enabled)
+    frostProtectionMinimumTemperatureElement.value = String(min)
+    frostProtectionMaximumTemperatureElement.value = String(max)
   }
 
   const getBuildingFrostProtectionSettings = async (
@@ -566,28 +575,30 @@ async function onHomeyReady(homey: Homey): Promise<void> {
             buildings.map((building: Building): [string, BuildingData] => {
               const {
                 ID,
-                Name,
-                FPEnabled,
-                FPMinTemperature,
-                FPMaxTemperature,
-                HMEnabled,
-                HMStartDate,
-                HMEndDate,
+                Name: name,
+                FPEnabled: fpEnabled,
+                FPMinTemperature: fpMin,
+                FPMaxTemperature: fpMax,
+                HMEnabled: hmEnabled,
+                HMStartDate: hmStartDate,
+                HMEndDate: hmEndDate,
               } = building
               const optionElement: HTMLOptionElement =
                 document.createElement('option')
               optionElement.value = String(ID)
-              optionElement.innerText = Name
+              optionElement.innerText = name
               buildingElement.appendChild(optionElement)
               return [
                 String(ID),
                 {
-                  FPEnabled,
-                  FPMinTemperature,
-                  FPMaxTemperature,
-                  HMEnabled,
-                  HMStartDate,
-                  HMEndDate,
+                  /* eslint-disable @typescript-eslint/naming-convention */
+                  FPEnabled: fpEnabled,
+                  FPMinTemperature: fpMin,
+                  FPMaxTemperature: fpMax,
+                  HMEnabled: hmEnabled,
+                  HMStartDate: hmStartDate,
+                  HMEndDate: hmEndDate,
+                  /* eslint-enable @typescript-eslint/naming-convention */
                 },
               ]
             }),
@@ -935,7 +946,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const load = async (): Promise<void> => {
     generateCommonChildrenElements()
-    if (homeySettings.ContextKey === undefined) {
+    if (homeySettings.contextKey === undefined) {
       needsAuthentication()
       return
     }
@@ -1028,13 +1039,18 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   updateHolidayModeElement.addEventListener('click', (): void => {
     disableButtons('holiday-mode')
-    const { HMEnabled, HMStartDate, HMEndDate } =
-      buildingMapping[buildingElement.value]
-    const Enabled: boolean = holidayModeEnabledElement.value === 'true'
+    const {
+      HMEnabled: hmEnabled,
+      HMStartDate: hmStartDate,
+      HMEndDate: hmEndDate,
+    } = buildingMapping[buildingElement.value]
+    const enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
-      Enabled,
-      StartDate: Enabled ? holidayModeStartDateElement.value : '',
-      EndDate: Enabled ? holidayModeEndDateElement.value : '',
+      /* eslint-disable @typescript-eslint/naming-convention */
+      Enabled: enabled,
+      StartDate: enabled ? holidayModeStartDateElement.value : '',
+      EndDate: enabled ? holidayModeEndDateElement.value : '',
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1047,9 +1063,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           await getBuildingHolidayModeSettings(true)
         } catch (err: unknown) {
           refreshBuildingHolidayModeSettings({
-            HMEnabled,
-            HMStartDate,
-            HMEndDate,
+            /* eslint-disable @typescript-eslint/naming-convention */
+            HMEnabled: hmEnabled,
+            HMStartDate: hmStartDate,
+            HMEndDate: hmEndDate,
+            /* eslint-enable @typescript-eslint/naming-convention */
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
@@ -1096,39 +1114,43 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   updateFrostProtectionElement.addEventListener('click', (): void => {
     disableButtons('frost-protection')
-    const { FPEnabled, FPMinTemperature, FPMaxTemperature } =
-      buildingMapping[buildingElement.value]
-    let MinimumTemperature = 0
-    let MaximumTemperature = 0
+    const {
+      FPEnabled: fpEnabled,
+      FPMinTemperature: fpMin,
+      FPMaxTemperature: fpMax,
+    } = buildingMapping[buildingElement.value]
+    let min = 0
+    let max = 0
     try {
-      MinimumTemperature = int(frostProtectionMinimumTemperatureElement)
-      MaximumTemperature = int(frostProtectionMaximumTemperatureElement)
+      min = int(frostProtectionMinimumTemperatureElement)
+      max = int(frostProtectionMaximumTemperatureElement)
     } catch (error: unknown) {
       refreshBuildingFrostProtectionSettings({
-        FPEnabled,
-        FPMinTemperature,
-        FPMaxTemperature,
+        /* eslint-disable @typescript-eslint/naming-convention */
+        FPEnabled: fpEnabled,
+        FPMinTemperature: fpMin,
+        FPMaxTemperature: fpMax,
+        /* eslint-enable @typescript-eslint/naming-convention */
       })
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
       homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
-    if (MinimumTemperature > MaximumTemperature) {
-      ;[MinimumTemperature, MaximumTemperature] = [
-        MaximumTemperature,
-        MinimumTemperature,
-      ]
+    if (min > max) {
+      ;[min, max] = [max, min]
     }
-    if (MaximumTemperature - MinimumTemperature < 2) {
-      MaximumTemperature = MinimumTemperature + 2
+    if (max - min < GAP_2) {
+      max = min + GAP_2
     }
-    frostProtectionMinimumTemperatureElement.value = String(MinimumTemperature)
-    frostProtectionMaximumTemperatureElement.value = String(MaximumTemperature)
+    frostProtectionMinimumTemperatureElement.value = String(min)
+    frostProtectionMaximumTemperatureElement.value = String(max)
     const body: FrostProtectionSettings = {
+      /* eslint-disable @typescript-eslint/naming-convention */
       Enabled: frostProtectionEnabledElement.value === 'true',
-      MinimumTemperature,
-      MaximumTemperature,
+      MinimumTemperature: min,
+      MaximumTemperature: max,
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1141,9 +1163,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           await getBuildingFrostProtectionSettings(true)
         } catch (err: unknown) {
           refreshBuildingFrostProtectionSettings({
-            FPEnabled,
-            FPMinTemperature,
-            FPMaxTemperature,
+            /* eslint-disable @typescript-eslint/naming-convention */
+            FPEnabled: fpEnabled,
+            FPMinTemperature: fpMin,
+            FPMaxTemperature: fpMax,
+            /* eslint-enable @typescript-eslint/naming-convention */
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)

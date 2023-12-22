@@ -16,7 +16,21 @@ import {
 } from '../../types'
 
 export = class AtwDriver extends BaseMELCloudDriver {
-  public capabilitiesAtw: (
+  public readonly heatPumpType = 'Atw'
+
+  public readonly setCapabilityMapping: SetCapabilityMappingAtw =
+    setCapabilityMappingAtw
+
+  public readonly getCapabilityMapping: GetCapabilityMappingAtw =
+    getCapabilityMappingAtw
+
+  public readonly listCapabilityMapping: ListCapabilityMappingAtw =
+    listCapabilityMappingAtw
+
+  public readonly reportCapabilityMapping: ReportCapabilityMappingAtw =
+    reportCapabilityMappingAtw
+
+  public readonly capabilitiesAtw: (
     | GetCapabilityAtw
     | ListCapabilityAtw
     | SetCapabilityAtw
@@ -37,14 +51,16 @@ export = class AtwDriver extends BaseMELCloudDriver {
     'measure_power.produced',
   ]
 
-  public coolCapabilitiesAtw: SetCapabilityAtw[] = [
+  public readonly coolCapabilitiesAtw: SetCapabilityAtw[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  public notCoolCapabilitiesAtw: SetCapabilityAtw[] = ['operation_mode_zone']
+  public readonly notCoolCapabilitiesAtw: SetCapabilityAtw[] = [
+    'operation_mode_zone',
+  ]
 
-  public zone2CapabilitiesAtw: (
+  public readonly zone2CapabilitiesAtw: (
     | GetCapabilityAtw
     | ListCapabilityAtw
     | SetCapabilityAtw
@@ -56,37 +72,25 @@ export = class AtwDriver extends BaseMELCloudDriver {
     'operation_mode_state.zone2',
   ]
 
-  public coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
+  public readonly coolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  public notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
+  public readonly notCoolZone2CapabilitiesAtw: SetCapabilityAtw[] = [
     'operation_mode_zone.zone2',
   ]
 
-  public heatPumpType = 'Atw'
+  protected readonly deviceType = 1
 
-  public setCapabilityMapping: SetCapabilityMappingAtw = setCapabilityMappingAtw
-
-  public getCapabilityMapping: GetCapabilityMappingAtw = getCapabilityMappingAtw
-
-  public listCapabilityMapping: ListCapabilityMappingAtw =
-    listCapabilityMappingAtw
-
-  public reportCapabilityMapping: ReportCapabilityMappingAtw =
-    reportCapabilityMappingAtw
-
-  protected deviceType = 1
-
-  public getRequiredCapabilities({ CanCool, HasZone2 }: Store): string[] {
+  public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
     return [
       ...this.capabilitiesAtw,
-      ...(CanCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
-      ...(HasZone2
+      ...(canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
+      ...(hasZone2
         ? [
             ...this.zone2CapabilitiesAtw,
-            ...(CanCool
+            ...(canCool
               ? this.coolZone2CapabilitiesAtw
               : this.notCoolZone2CapabilitiesAtw),
           ]

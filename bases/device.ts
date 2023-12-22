@@ -1,6 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
+import { DATETIME_1970, K_MULTIPLIER } from '../constants'
 import addToLogs from '../decorators/addToLogs'
 import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
@@ -20,6 +21,7 @@ import type {
   ReportCapability,
   ReportCapabilityKeys,
   ReportData,
+  ReportPlanParameters,
   ReportPostData,
   SetCapability,
   SetCapabilityKeys,
@@ -31,8 +33,6 @@ import type {
   SyncMode,
   UpdateDeviceData,
 } from '../types'
-
-const date1970: DateTime = DateTime.local(1970)
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
@@ -52,21 +52,17 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
   protected diff!: Map<SetCapability<MELCloudDriver>, CapabilityValue>
 
-  protected reportPlanParameters: {
-    duration: object
-    interval: object
-    minus: object
-    values: object
-  } | null = null
+  protected readonly reportPlanParameters: ReportPlanParameters | null = null
 
   #syncTimeout!: NodeJS.Timeout
 
-  #reportTimeout: {
+  readonly #reportTimeout: {
     false: NodeJS.Timeout | null
     true: NodeJS.Timeout | null
   } = { true: null, false: null }
 
-  #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } = {}
+  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
+    {}
 
   public async onInit<T extends MELCloudDriver>(): Promise<void> {
     await this.setWarning(null)
@@ -292,8 +288,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   >(): Promise<GetDeviceData<T> | null> {
     try {
       const postData: PostData<T> = {
+        /* eslint-disable @typescript-eslint/naming-convention */
         DeviceID: this.id,
         HasPendingCommand: true,
+        /* eslint-enable @typescript-eslint/naming-convention */
         ...(this.buildUpdateData() as SetDeviceData<T>),
       }
       const { data } = await this.api.post<GetDeviceData<T>>(
@@ -312,10 +310,12 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): Promise<ReportData<T> | null> {
     try {
       const postData: ReportPostData = {
+        /* eslint-disable @typescript-eslint/naming-convention */
         DeviceID: this.id,
         FromDate: fromDate.toISODate() ?? '',
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
+        /* eslint-enable @typescript-eslint/naming-convention */
       }
       const { data } = await this.api.post<ReportData<T>>(
         '/EnergyCost/Report',
@@ -521,6 +521,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         }
         return acc
       },
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       { EffectiveFlags: 0 },
     ) as SetDeviceData<T>
   }
@@ -551,7 +552,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     const toDate: DateTime = DateTime.now().minus(
       this.reportPlanParameters.minus,
     )
-    const fromDate: DateTime = total ? date1970 : toDate
+    const fromDate: DateTime = total ? DATETIME_1970 : toDate
     const data: ReportData<T> | null = await this.reportEnergyCost(
       fromDate,
       toDate,
@@ -606,7 +607,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
             return (
               tags.reduce<number>(
                 (acc, tag: keyof ReportData<T>) =>
-                  acc + (data[tag] as number[])[toDate.hour] * 1000,
+                  acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
                 0,
               ) / deviceCount
             )

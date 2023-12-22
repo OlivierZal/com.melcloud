@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
+import { YEAR_1 } from './constants'
 import type {
   Building,
   DeviceSettings,
@@ -71,12 +72,14 @@ export = {
     const app: MELCloudApp = homey.app as MELCloudApp
     const buildings: Building[] = await app.getBuildings()
     return buildings
-      .filter(({ ID }) => app.getDevices({ buildingId: ID }).length)
+      .filter(({ ID: buildingId }) => app.getDevices({ buildingId }).length)
       .map(
         (building: Building): Building => ({
           ...building,
+          /* eslint-disable @typescript-eslint/naming-convention */
           HMStartDate: fromUTCtoLocal(building.HMStartDate),
           HMEndDate: fromUTCtoLocal(building.HMEndDate),
+          /* eslint-enable @typescript-eslint/naming-convention */
         }),
       )
       .sort((building1: Building, building2: Building) =>
@@ -199,8 +202,10 @@ export = {
     ).getHolidayModeSettings(Number(params.buildingId))
     return {
       ...data,
+      /* eslint-disable @typescript-eslint/naming-convention */
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
       HMEndDate: fromUTCtoLocal(data.HMEndDate),
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
   },
   getLanguage({ homey }: { homey: Homey }): string {
@@ -215,30 +220,33 @@ export = {
   }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
-    const NextToDate: DateTime = fromDate.minus({ days: 1 })
+    const nextToDate: DateTime = fromDate.minus({ days: 1 })
     const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
     return {
-      Errors: data
-        .map(({ DeviceId, ErrorMessage, StartDate }): ErrorDetails => {
-          const date: string =
-            DateTime.fromISO(StartDate).year > 1
-              ? fromUTCtoLocal(StartDate, app.getLanguage())
-              : ''
-          const error: string = ErrorMessage?.trim() ?? ''
-          return {
-            Device:
-              app.getDevice(DeviceId)?.getName() ?? app.deviceIds[DeviceId],
-            Date: date,
-            Error: error,
-          }
-        })
-        .filter((error: ErrorDetails) => error.Date && error.Error)
+      errors: data
+        .map(
+          ({
+            DeviceId: deviceId,
+            ErrorMessage: errorMessage,
+            StartDate: startDate,
+          }): ErrorDetails => {
+            const date: string =
+              DateTime.fromISO(startDate).year > YEAR_1
+                ? fromUTCtoLocal(startDate, app.getLanguage())
+                : ''
+            const device: string =
+              app.getDevice(deviceId)?.getName() ?? app.deviceIds[deviceId]
+            const error: string = errorMessage?.trim() ?? ''
+            return { date, device, error }
+          },
+        )
+        .filter((error: ErrorDetails) => error.date && error.error)
         .reverse(),
-      FromDateHuman: fromDate
+      fromDateHuman: fromDate
         .setLocale(app.getLanguage())
         .toLocaleString(DateTime.DATE_FULL),
-      NextFromDate: NextToDate.minus({ days: period }).toISODate() ?? '',
-      NextToDate: NextToDate.toISODate() ?? '',
+      nextFromDate: nextToDate.minus({ days: period }).toISODate() ?? '',
+      nextToDate: nextToDate.toISODate() ?? '',
     }
   },
   async login({

@@ -20,19 +20,21 @@ const flowCapabilities: SetCapabilityAta[] = [
 ]
 
 export = class AtaDriver extends BaseMELCloudDriver {
-  public heatPumpType = 'Ata'
+  public readonly heatPumpType = 'Ata'
 
-  public setCapabilityMapping: SetCapabilityMappingAta = setCapabilityMappingAta
+  public readonly setCapabilityMapping: SetCapabilityMappingAta =
+    setCapabilityMappingAta
 
-  public getCapabilityMapping: GetCapabilityMappingAta = getCapabilityMappingAta
+  public readonly getCapabilityMapping: GetCapabilityMappingAta =
+    getCapabilityMappingAta
 
-  public listCapabilityMapping: ListCapabilityMappingAta =
+  public readonly listCapabilityMapping: ListCapabilityMappingAta =
     listCapabilityMappingAta
 
-  public reportCapabilityMapping: ReportCapabilityMappingAta =
+  public readonly reportCapabilityMapping: ReportCapabilityMappingAta =
     reportCapabilityMappingAta
 
-  protected deviceType = 0
+  protected readonly deviceType = 0
 
   public getRequiredCapabilities(): string[] {
     return [

@@ -14,20 +14,22 @@ import {
 const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 
 export = class ErvDriver extends BaseMELCloudDriver {
-  public heatPumpType = 'Erv'
+  public readonly heatPumpType = 'Erv'
 
-  public setCapabilityMapping: SetCapabilityMappingErv = setCapabilityMappingErv
+  public readonly setCapabilityMapping: SetCapabilityMappingErv =
+    setCapabilityMappingErv
 
-  public getCapabilityMapping: GetCapabilityMappingErv = getCapabilityMappingErv
+  public readonly getCapabilityMapping: GetCapabilityMappingErv =
+    getCapabilityMappingErv
 
-  public listCapabilityMapping: ListCapabilityMappingErv =
+  public readonly listCapabilityMapping: ListCapabilityMappingErv =
     listCapabilityMappingErv
 
-  protected deviceType = 3
+  protected readonly deviceType = 3
 
   public getRequiredCapabilities({
-    HasCO2Sensor,
-    HasPM25Sensor,
+    hasCO2Sensor,
+    hasPM25Sensor,
   }: Store): string[] {
     return [
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -37,8 +39,8 @@ export = class ErvDriver extends BaseMELCloudDriver {
             capability,
           ),
       ),
-      ...(HasCO2Sensor ? ['measure_co2'] : []),
-      ...(HasPM25Sensor ? ['measure_pm25'] : []),
+      ...(hasCO2Sensor ? ['measure_co2'] : []),
+      ...(hasPM25Sensor ? ['measure_pm25'] : []),
     ]
   }
 

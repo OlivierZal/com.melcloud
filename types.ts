@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
 import type AtaDevice from './drivers/melcloud/device'
@@ -9,7 +10,7 @@ import type ErvDriver from './drivers/melcloud_erv/driver'
 
 export const loginURL = '/Login/ClientLogin'
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly homey: Homey
   readonly setWarning?: (warning: string | null) => Promise<void>
@@ -90,8 +91,8 @@ export type SettingValue = ValueOf<Settings>
 interface BaseHomeySettingValue<T> {
   readonly username: T
   readonly password: T
-  readonly ContextKey: T
-  readonly Expiry: T
+  readonly contextKey: T
+  readonly expiry: T
 }
 
 export type HomeySettings = BaseHomeySettingValue<string | null>
@@ -101,10 +102,10 @@ export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
 export type HomeySettingValue = ValueOf<HomeySettings>
 
 export interface Store {
-  readonly CanCool: boolean
-  readonly HasCO2Sensor: boolean
-  readonly HasPM25Sensor: boolean
-  readonly HasZone2: boolean
+  readonly canCool: boolean
+  readonly hasCO2Sensor: boolean
+  readonly hasPM25Sensor: boolean
+  readonly hasZone2: boolean
 }
 
 export interface ManifestDriverSettingData {
@@ -324,6 +325,13 @@ interface ReportCapabilitiesAtw {
   'meter_power.cop_daily_cooling'?: number
   'meter_power.cop_daily_heating'?: number
   'meter_power.cop_daily_hotwater'?: number
+}
+
+export interface ReportPlanParameters {
+  readonly duration: object
+  readonly interval: object
+  readonly minus: object
+  readonly values: object
 }
 
 export type SetCapabilityAta = keyof SetCapabilitiesAta
@@ -1072,21 +1080,20 @@ export interface ErrorLogPostData {
 
 export interface ErrorLogData {
   readonly DeviceId: number
-  readonly Duration: number
   readonly EndDate: string
   readonly ErrorMessage: string | null
   readonly StartDate: string
 }
 
 export interface ErrorDetails {
-  readonly Date: string
-  readonly Device: string
-  readonly Error: string
+  readonly date: string
+  readonly device: string
+  readonly error: string
 }
 
 export interface ErrorLog {
-  readonly Errors: ErrorDetails[]
-  readonly FromDateHuman: string
-  readonly NextFromDate: string
-  readonly NextToDate: string
+  readonly errors: ErrorDetails[]
+  readonly fromDateHuman: string
+  readonly nextFromDate: string
+  readonly nextToDate: string
 }

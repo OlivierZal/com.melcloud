@@ -35,8 +35,14 @@ const customRules = {
   'no-underscore-dangle': ['error', { allow: ['__'] }],
 }
 const tsCustomRules = {
-  '@typescript-eslint/naming-convention': 'off',
-  '@typescript-eslint/no-magic-numbers': 'off',
+  '@typescript-eslint/no-magic-numbers': [
+    'error',
+    {
+      ignore: [0, 1],
+      ignoreEnums: true,
+      ignoreReadonlyClassProperties: true,
+    },
+  ],
   '@typescript-eslint/no-unused-vars': [
     'error',
     { varsIgnorePattern: 'onHomeyReady' },
