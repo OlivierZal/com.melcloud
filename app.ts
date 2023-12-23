@@ -7,7 +7,6 @@ import {
   Settings as LuxonSettings,
   type DurationLike,
 } from 'luxon'
-import { MAX_INT32 } from './constants'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 import {
@@ -32,6 +31,9 @@ import {
   type SuccessData,
   type SyncFromMode,
 } from './types'
+
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+const MAX_INT32: number = 2 ** 31 - 1
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 

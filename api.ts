@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
-import { YEAR_1 } from './constants'
 import type {
   Building,
   DeviceSettings,
@@ -24,6 +23,8 @@ import type {
   Settings,
   SettingValue,
 } from './types'
+
+const YEAR_1 = 1
 
 const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {

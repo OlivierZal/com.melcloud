@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type Homey from 'homey/lib/Homey'
-import { GAP_2 } from '../constants'
 import type {
   Building,
   BuildingData,
@@ -20,6 +19,8 @@ import type {
   Settings,
   SettingValue,
 } from '../types'
+
+const FP_MIN_MAX_GAP = 2
 
 async function onHomeyReady(homey: Homey): Promise<void> {
   await homey.ready()
@@ -1140,8 +1141,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     if (min > max) {
       ;[min, max] = [max, min]
     }
-    if (max - min < GAP_2) {
-      max = min + GAP_2
+    if (max - min < FP_MIN_MAX_GAP) {
+      max = min + FP_MIN_MAX_GAP
     }
     frostProtectionMinimumTemperatureElement.value = String(min)
     frostProtectionMaximumTemperatureElement.value = String(max)

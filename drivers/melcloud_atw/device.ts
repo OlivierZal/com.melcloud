@@ -1,12 +1,6 @@
 import { DateTime } from 'luxon'
 import BaseMELCloudDevice from '../../bases/device'
-import {
-  ATW_CURVE_VALUE,
-  K_MULTIPLIER,
-  ATW_ROOM_VALUES,
-  ATW_ROOM_FLOW_GAP,
-  ATW_HEAT_COOL_GAP,
-} from '../../constants'
+import kMultiplier from '../../constants'
 import type AtwDriver from './driver'
 import {
   OperationModeAtw,
@@ -19,6 +13,13 @@ import {
   type SetDeviceValue,
   type Store,
 } from '../../types'
+
+const ROOM_VALUE: number = OperationModeZoneAtw.room
+const ROOM_COOL_VALUE: number = OperationModeZoneAtw.room_cool
+const ROOM_VALUES: number[] = [ROOM_VALUE, ROOM_COOL_VALUE]
+const CURVE_VALUE: number = OperationModeZoneAtw.curve
+const ROOM_FLOW_GAP: number = OperationModeZoneAtw.flow
+const HEAT_COOL_GAP: number = ROOM_COOL_VALUE
 
 const getOtherCapabilityZone = (capability: string): string =>
   capability.endsWith('.zone2')
@@ -62,17 +63,17 @@ export = class AtwDevice extends BaseMELCloudDevice {
         ) as keyof typeof OperationModeZoneAtw
       ]
     if (canCool) {
-      if (zoneValue > ATW_CURVE_VALUE) {
+      if (zoneValue > CURVE_VALUE) {
         otherZoneValue =
-          otherZoneValue === ATW_CURVE_VALUE
-            ? ATW_HEAT_COOL_GAP
-            : otherZoneValue + ATW_HEAT_COOL_GAP
-      } else if (otherZoneValue > ATW_CURVE_VALUE) {
-        otherZoneValue -= ATW_HEAT_COOL_GAP
+          otherZoneValue === CURVE_VALUE
+            ? HEAT_COOL_GAP
+            : otherZoneValue + HEAT_COOL_GAP
+      } else if (otherZoneValue > CURVE_VALUE) {
+        otherZoneValue -= HEAT_COOL_GAP
       }
     }
-    if (ATW_ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
-      otherZoneValue += ATW_ROOM_FLOW_GAP
+    if (ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
+      otherZoneValue += ROOM_FLOW_GAP
     }
     this.diff.set(otherZoneCapability, OperationModeZoneAtw[otherZoneValue])
     await this.setDisplayErrorWarning()
@@ -106,7 +107,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
           locale: this.app.getLanguage(),
         }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
       case ['measure_power', 'measure_power.produced'].includes(capability):
-        return (value as number) * K_MULTIPLIER
+        return (value as number) * kMultiplier
       case capability === 'operation_mode_state':
         return OperationModeAtw[value as number]
       case capability.startsWith('operation_mode_state.zone'):

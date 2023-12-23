@@ -9,10 +9,11 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type MELCloudApp from '../app'
-import { HTTP_STATUS_UNAUTHORIZED } from '../constants'
 import { loginURL, type HomeyClass, type HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => { readonly api: AxiosInstance }
+
+const HTTP_STATUS_UNAUTHORIZED = 401
 
 const getAPIErrorMessage = (error: AxiosError): string => error.message
 

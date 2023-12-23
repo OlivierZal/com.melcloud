@@ -3,7 +3,8 @@
   @typescript-eslint/no-unsafe-argument
 */
 import type { SimpleClass } from 'homey'
-import { EMPTY_FUNCTION_PARENS } from '../constants'
+
+const EMPTY_FUNCTION_PARENS = '()'
 
 const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
   ...logs: string[]

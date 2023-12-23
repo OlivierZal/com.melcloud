@@ -1,7 +1,7 @@
 import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
-import { DATETIME_1970, K_MULTIPLIER } from '../constants'
+import kMultiplier from '../constants'
 import addToLogs from '../decorators/addToLogs'
 import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
@@ -33,6 +33,9 @@ import type {
   SyncMode,
   UpdateDeviceData,
 } from '../types'
+
+const YEAR_1970 = 1970
+const DATETIME_1970: DateTime = DateTime.local(YEAR_1970)
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
@@ -607,7 +610,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
             return (
               tags.reduce<number>(
                 (acc, tag: keyof ReportData<T>) =>
-                  acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
+                  acc + (data[tag] as number[])[toDate.hour] * kMultiplier,
                 0,
               ) / deviceCount
             )
