@@ -7,6 +7,7 @@ import {
   type Capability,
   type CapabilityValue,
   type DeviceValue,
+  type ReportPlanParameters,
   type SetCapability,
   type SetDeviceValue,
 } from '../../types'
@@ -15,12 +16,7 @@ const isThermostatMode = (value: string): boolean =>
   !['dry', 'fan'].includes(value)
 
 export = class AtaDevice extends BaseMELCloudDevice {
-  protected reportPlanParameters: {
-    duration: object
-    interval: object
-    minus: object
-    values: object
-  } = {
+  protected readonly reportPlanParameters: ReportPlanParameters = {
     minus: { hours: 1 },
     interval: { hours: 1 },
     duration: { hours: 1 },

@@ -7,6 +7,7 @@ import {
   Settings as LuxonSettings,
   type DurationLike,
 } from 'luxon'
+import { MAX_INT32 } from './constants'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 import {
@@ -87,15 +88,17 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         return false
       }
       const postData: LoginPostData = {
+        /* eslint-disable @typescript-eslint/naming-convention */
         AppVersion: '1.28.1.0',
         Email: username,
         Password: password,
         Persist: true,
+        /* eslint-enable @typescript-eslint/naming-convention */
       }
       const { data } = await this.api.post<LoginData>(loginURL, postData)
       if (data.LoginData) {
-        const { ContextKey, Expiry } = data.LoginData
-        this.setSettings({ ContextKey, Expiry, username, password })
+        const { ContextKey: contextKey, Expiry: expiry } = data.LoginData
+        this.setSettings({ contextKey, expiry, username, password })
         await this.planRefreshLogin()
       }
       return !!data.LoginData
@@ -162,11 +165,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         deviceIds: Record<number, string>
         deviceList: ListDeviceAny[]
       }>(
-        (acc, { Structure: { Devices, Areas, Floors } }) => {
+        (
+          acc,
+          { Structure: { Devices: devices, Areas: areas, Floors: floors } },
+        ) => {
           const buildingDevices: ListDeviceAny[] = [
-            ...Devices,
-            ...Areas.flatMap((area): readonly ListDeviceAny[] => area.Devices),
-            ...Floors.flatMap((floor): ListDeviceAny[] => [
+            ...devices,
+            ...areas.flatMap((area): readonly ListDeviceAny[] => area.Devices),
+            ...floors.flatMap((floor): ListDeviceAny[] => [
               ...floor.Devices,
               ...floor.Areas.flatMap(
                 (area): readonly ListDeviceAny[] => area.Devices,
@@ -221,9 +227,11 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const postData: ErrorLogPostData = {
+      /* eslint-disable @typescript-eslint/naming-convention */
       DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
     const { data } = await this.api.post<ErrorLogData[] | FailureData>(
       '/Report/GetUnitErrorLog2',
@@ -251,6 +259,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   ): Promise<void> {
     const postData: FrostProtectionPostData = {
       ...settings,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       BuildingIds: [buildingId],
     }
     const { data } = await this.api.post<FailureData | SuccessData>(
@@ -274,18 +283,23 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     buildingId: number,
     settings: HolidayModeSettings,
   ): Promise<void> {
-    const { Enabled, StartDate, EndDate } = settings
-    if (Enabled && (!StartDate || !EndDate)) {
+    const {
+      Enabled: enabled,
+      StartDate: startDate,
+      EndDate: endDate,
+    } = settings
+    if (enabled && (!startDate || !endDate)) {
       throw new Error(this.homey.__('app.holiday_mode.date_missing'))
     }
-    const utcStartDate: DateTime | null = Enabled
-      ? DateTime.fromISO(StartDate).toUTC()
+    const utcStartDate: DateTime | null = enabled
+      ? DateTime.fromISO(startDate).toUTC()
       : null
-    const utcEndDate: DateTime | null = Enabled
-      ? DateTime.fromISO(EndDate).toUTC()
+    const utcEndDate: DateTime | null = enabled
+      ? DateTime.fromISO(endDate).toUTC()
       : null
     const postData: HolidayModePostData = {
-      Enabled,
+      /* eslint-disable @typescript-eslint/naming-convention */
+      Enabled: enabled,
       StartDate: utcStartDate
         ? {
             Year: utcStartDate.year,
@@ -307,6 +321,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           }
         : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
+      /* eslint-enable @typescript-eslint/naming-convention */
     }
     const { data } = await this.api.post<FailureData | SuccessData>(
       '/HolidayMode/Update',
@@ -332,19 +347,18 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   private async planRefreshLogin(): Promise<void> {
     const expiry: string =
-      (this.homey.settings.get('Expiry') as HomeySettings['Expiry']) ?? ''
+      (this.homey.settings.get('expiry') as HomeySettings['expiry']) ?? ''
     const ms: number = DateTime.fromISO(expiry)
       .minus({ days: 1 })
       .diffNow()
       .as('milliseconds')
     if (ms > 0) {
       this.applySyncFromDevices()
-      const maxTimeout: number = 2 ** 31 - 1
       this.#loginTimeout = this.setTimeout(
         async (): Promise<void> => {
           await this.login()
         },
-        Math.min(ms, maxTimeout),
+        Math.min(ms, MAX_INT32),
         { actionType: 'login refresh', units: ['days'] },
       )
       return

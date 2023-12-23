@@ -14,17 +14,17 @@ import type {
 } from '../types'
 
 export default abstract class BaseMELCloudDriver extends Driver {
-  public heatPumpType!: string
+  public readonly heatPumpType!: string
 
-  public setCapabilityMapping!: SetCapabilityMappingAny
+  public readonly setCapabilityMapping!: SetCapabilityMappingAny
 
-  public getCapabilityMapping!: GetCapabilityMappingAny
+  public readonly getCapabilityMapping!: GetCapabilityMappingAny
 
-  public listCapabilityMapping!: ListCapabilityMappingAny
+  public readonly listCapabilityMapping!: ListCapabilityMappingAny
 
-  public reportCapabilityMapping: ReportCapabilityMappingAny = null
+  public readonly reportCapabilityMapping: ReportCapabilityMappingAny = null
 
-  protected deviceType!: number
+  protected readonly deviceType!: number
 
   #app!: MELCloudApp
 
@@ -62,17 +62,22 @@ export default abstract class BaseMELCloudDriver extends Driver {
       this.deviceType,
     )) as ListDevice<T>[]
     return devices.map(
-      ({ DeviceName, DeviceID, BuildingID, Device }): DeviceDetails => {
+      ({
+        DeviceName: name,
+        DeviceID: id,
+        BuildingID: buildingid,
+        Device: device,
+      }): DeviceDetails => {
         const store: Store = {
-          CanCool: 'CanCool' in Device ? Device.CanCool : false,
-          HasCO2Sensor: 'HasCO2Sensor' in Device ? Device.HasCO2Sensor : false,
-          HasPM25Sensor:
-            'HasPM25Sensor' in Device ? Device.HasPM25Sensor : false,
-          HasZone2: 'HasZone2' in Device ? Device.HasZone2 : false,
+          canCool: 'CanCool' in device ? device.CanCool : false,
+          hasCO2Sensor: 'HasCO2Sensor' in device ? device.HasCO2Sensor : false,
+          hasPM25Sensor:
+            'HasPM25Sensor' in device ? device.HasPM25Sensor : false,
+          hasZone2: 'HasZone2' in device ? device.HasZone2 : false,
         }
         return {
-          name: DeviceName,
-          data: { id: DeviceID, buildingid: BuildingID },
+          name,
+          data: { id, buildingid },
           store,
           capabilities: this.getRequiredCapabilities(store),
         }

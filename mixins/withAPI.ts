@@ -1,5 +1,6 @@
 /* eslint-disable
-  @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  @typescript-eslint/no-explicit-any,
+  @typescript-eslint/no-unsafe-argument
 */
 import axios, {
   type AxiosError,
@@ -8,6 +9,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type MELCloudApp from '../app'
+import { HTTP_STATUS_UNAUTHORIZED } from '../constants'
 import { loginURL, type HomeyClass, type HomeySettings } from '../types'
 
 type APIClass = new (...args: any[]) => { readonly api: AxiosInstance }
@@ -54,8 +56,8 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
       updatedConfig.headers['X-MitsContextKey'] =
         (this.homey.settings.get(
-          'ContextKey',
-        ) as HomeySettings['ContextKey']) ?? ''
+          'contextKey',
+        ) as HomeySettings['contextKey']) ?? ''
       this.log(
         'Sending request:',
         updatedConfig.url,
@@ -77,7 +79,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       this.error(`Error in ${type}:`, error.config?.url, errorMessage)
       const app: MELCloudApp = this.homey.app as MELCloudApp
       if (
-        error.response?.status === 401 &&
+        error.response?.status === HTTP_STATUS_UNAUTHORIZED &&
         app.retry &&
         error.config?.url !== loginURL
       ) {
