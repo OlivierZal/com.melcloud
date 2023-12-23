@@ -89,7 +89,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       }
       const postData: LoginPostData = {
         /* eslint-disable @typescript-eslint/naming-convention */
-        AppVersion: '1.28.1.0',
+        AppVersion: '1.30.5.0',
         Email: username,
         Password: password,
         Persist: true,
