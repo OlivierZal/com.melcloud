@@ -9,27 +9,26 @@ import {
 } from 'luxon'
 import withAPI, { getErrorMessage } from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
-import {
-  loginURL,
-  type Building,
-  type ErrorLogData,
-  type ErrorLogPostData,
-  type FailureData,
-  type FrostProtectionData,
-  type FrostProtectionPostData,
-  type FrostProtectionSettings,
-  type HolidayModeData,
-  type HolidayModePostData,
-  type HolidayModeSettings,
-  type HomeySettings,
-  type HomeySettingValue,
-  type ListDeviceAny,
-  type LoginCredentials,
-  type LoginData,
-  type LoginPostData,
-  type MELCloudDevice,
-  type SuccessData,
-  type SyncFromMode,
+import type {
+  Building,
+  ErrorLogData,
+  ErrorLogPostData,
+  FailureData,
+  FrostProtectionData,
+  FrostProtectionPostData,
+  FrostProtectionSettings,
+  HolidayModeData,
+  HolidayModePostData,
+  HolidayModeSettings,
+  HomeySettings,
+  HomeySettingValue,
+  ListDeviceAny,
+  LoginCredentials,
+  LoginData,
+  LoginPostData,
+  MELCloudDevice,
+  SuccessData,
+  SyncFromMode,
 } from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -97,7 +96,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         Persist: true,
         /* eslint-enable @typescript-eslint/naming-convention */
       }
-      const { data } = await this.api.post<LoginData>(loginURL, postData)
+      const { data } = await this.api.post<LoginData>(this.loginURL, postData)
       if (data.LoginData) {
         const { ContextKey: contextKey, Expiry: expiry } = data.LoginData
         this.setSettings({ contextKey, expiry, username, password })

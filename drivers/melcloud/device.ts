@@ -1,16 +1,41 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type AtaDriver from './driver'
-import {
-  HorizontalAta,
-  OperationModeAta,
-  VerticalAta,
-  type Capability,
-  type CapabilityValue,
-  type DeviceValue,
-  type ReportPlanParameters,
-  type SetCapability,
-  type SetDeviceValue,
+import type {
+  Capability,
+  CapabilityValue,
+  DeviceValue,
+  ReportPlanParameters,
+  SetCapability,
+  SetDeviceValue,
 } from '../../types'
+
+enum OperationMode {
+  heat = 1,
+  dry = 2,
+  cool = 3,
+  fan = 7,
+  auto = 8,
+}
+
+enum Vertical {
+  auto = 0,
+  top = 1,
+  middletop = 2,
+  middle = 3,
+  middlebottom = 4,
+  bottom = 5,
+  swing = 7,
+}
+
+enum Horizontal {
+  auto = 0,
+  left = 1,
+  middleleft = 2,
+  middle = 3,
+  middleright = 4,
+  right = 5,
+  swing = 12,
+}
 
 const isThermostatMode = (value: string): boolean =>
   !['dry', 'fan'].includes(value)
@@ -55,11 +80,11 @@ export = class AtaDevice extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'operation_mode':
-        return OperationModeAta[value as keyof typeof OperationModeAta]
+        return OperationMode[value as keyof typeof OperationMode]
       case 'vertical':
-        return VerticalAta[value as keyof typeof VerticalAta]
+        return Vertical[value as keyof typeof Vertical]
       case 'horizontal':
-        return HorizontalAta[value as keyof typeof HorizontalAta]
+        return Horizontal[value as keyof typeof Horizontal]
       default:
         return value as SetDeviceValue
     }
@@ -72,11 +97,11 @@ export = class AtaDevice extends BaseMELCloudDevice {
   ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
-        return OperationModeAta[value as number]
+        return OperationMode[value as number]
       case 'vertical':
-        return VerticalAta[value as number]
+        return Vertical[value as number]
       case 'horizontal':
-        return HorizontalAta[value as number]
+        return Horizontal[value as number]
       default:
         return value
     }

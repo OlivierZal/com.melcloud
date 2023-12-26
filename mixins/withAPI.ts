@@ -9,9 +9,12 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type MELCloudApp from '../app'
-import { loginURL, type HomeyClass, type HomeySettings } from '../types'
+import type { HomeyClass, HomeySettings } from '../types'
 
-type APIClass = new (...args: any[]) => { readonly api: AxiosInstance }
+type APIClass = new (...args: any[]) => {
+  readonly api: AxiosInstance
+  readonly loginURL: string
+}
 
 const HTTP_STATUS_UNAUTHORIZED = 401
 
@@ -29,7 +32,9 @@ export const getErrorMessage = (error: unknown): string => {
 
 const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
   class extends base {
-    public api: AxiosInstance = axios.create()
+    public readonly api: AxiosInstance = axios.create()
+
+    public readonly loginURL: string = '/Login/ClientLogin'
 
     public constructor(...args: any[]) {
       super(...args)
@@ -82,7 +87,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       if (
         error.response?.status === HTTP_STATUS_UNAUTHORIZED &&
         app.retry &&
-        error.config?.url !== loginURL
+        error.config?.url !== this.loginURL
       ) {
         app.handleRetry()
         const loggedIn: boolean = await app.login()

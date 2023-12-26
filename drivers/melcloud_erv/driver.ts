@@ -1,14 +1,11 @@
 import BaseMELCloudDriver from '../../bases/driver'
-import {
-  getCapabilityMappingErv,
-  listCapabilityMappingErv,
-  setCapabilityMappingErv,
-  type FlowArgs,
-  type GetCapabilityMappingErv,
-  type ListCapabilityMappingErv,
-  type SetCapabilityErv,
-  type SetCapabilityMappingErv,
-  type Store,
+import type {
+  FlowArgs,
+  GetCapabilityMappingErv,
+  ListCapabilityMappingErv,
+  SetCapabilityErv,
+  SetCapabilityMappingErv,
+  Store,
 } from '../../types'
 
 const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
@@ -16,14 +13,24 @@ const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 export = class ErvDriver extends BaseMELCloudDriver {
   public readonly heatPumpType = 'Erv'
 
-  public readonly setCapabilityMapping: SetCapabilityMappingErv =
-    setCapabilityMappingErv
+  /* eslint-disable @typescript-eslint/naming-convention */
+  public readonly setCapabilityMapping: SetCapabilityMappingErv = {
+    onoff: { tag: 'Power', effectiveFlag: 0x1n },
+    ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
+    fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
+  } as const
 
-  public readonly getCapabilityMapping: GetCapabilityMappingErv =
-    getCapabilityMappingErv
+  public readonly getCapabilityMapping: GetCapabilityMappingErv = {
+    measure_co2: { tag: 'RoomCO2Level' },
+    measure_temperature: { tag: 'RoomTemperature' },
+    'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
+  } as const
 
-  public readonly listCapabilityMapping: ListCapabilityMappingErv =
-    listCapabilityMappingErv
+  public readonly listCapabilityMapping: ListCapabilityMappingErv = {
+    'measure_power.wifi': { tag: 'WifiSignalStrength' },
+    measure_pm25: { tag: 'PM25Level' },
+  } as const
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   protected readonly deviceType = 3
 

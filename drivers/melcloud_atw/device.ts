@@ -1,24 +1,41 @@
 import { DateTime } from 'luxon'
-import BaseMELCloudDevice from '../../bases/device'
-import kMultiplier from '../../constants'
+import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import type AtwDriver from './driver'
-import {
-  OperationModeAtw,
-  OperationModeZoneAtw,
-  type Capability,
-  type CapabilityValue,
-  type DeviceValue,
-  type ReportPlanParameters,
-  type SetCapability,
-  type SetDeviceValue,
-  type Store,
+import type {
+  Capability,
+  CapabilityValue,
+  DeviceValue,
+  ReportPlanParameters,
+  SetCapability,
+  SetDeviceValue,
+  Store,
 } from '../../types'
 
-const ROOM_VALUE: number = OperationModeZoneAtw.room
-const ROOM_COOL_VALUE: number = OperationModeZoneAtw.room_cool
+enum OperationMode {
+  idle = 0,
+  dhw = 1,
+  heating = 2,
+  cooling = 3,
+  defrost = 4,
+  standby = 5,
+  legionella = 6,
+}
+
+enum OperationModeZone {
+  room = 0,
+  flow = 1,
+  curve = 2,
+  /* eslint-disable @typescript-eslint/naming-convention */
+  room_cool = 3,
+  flow_cool = 4,
+  /* eslint-enable @typescript-eslint/naming-convention */
+}
+
+const ROOM_VALUE: number = OperationModeZone.room
+const ROOM_COOL_VALUE: number = OperationModeZone.room_cool
 const ROOM_VALUES: number[] = [ROOM_VALUE, ROOM_COOL_VALUE]
-const CURVE_VALUE: number = OperationModeZoneAtw.curve
-const ROOM_FLOW_GAP: number = OperationModeZoneAtw.flow
+const CURVE_VALUE: number = OperationModeZone.curve
+const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = ROOM_COOL_VALUE
 
 const getOtherCapabilityZone = (capability: string): string =>
@@ -53,14 +70,14 @@ export = class AtwDevice extends BaseMELCloudDevice {
       return
     }
     const zoneValue: number =
-      OperationModeZoneAtw[value as keyof typeof OperationModeZoneAtw]
+      OperationModeZone[value as keyof typeof OperationModeZone]
     const otherZoneCapability: SetCapability<AtwDriver> =
       getOtherCapabilityZone(capability) as SetCapability<AtwDriver>
     let otherZoneValue: number =
-      OperationModeZoneAtw[
+      OperationModeZone[
         this.getRequestedOrCurrentValue(
           otherZoneCapability,
-        ) as keyof typeof OperationModeZoneAtw
+        ) as keyof typeof OperationModeZone
       ]
     if (canCool) {
       if (zoneValue > CURVE_VALUE) {
@@ -75,7 +92,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
     if (ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
       otherZoneValue += ROOM_FLOW_GAP
     }
-    this.diff.set(otherZoneCapability, OperationModeZoneAtw[otherZoneValue])
+    this.diff.set(otherZoneCapability, OperationModeZone[otherZoneValue])
     await this.setDisplayErrorWarning()
   }
 
@@ -89,7 +106,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case capability.startsWith('operation_mode_zone'):
-        return OperationModeZoneAtw[value as keyof typeof OperationModeZoneAtw]
+        return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
         return value as SetDeviceValue
     }
@@ -107,15 +124,15 @@ export = class AtwDevice extends BaseMELCloudDevice {
           locale: this.app.getLanguage(),
         }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
       case ['measure_power', 'measure_power.produced'].includes(capability):
-        return (value as number) * kMultiplier
+        return (value as number) * K_MULTIPLIER
       case capability === 'operation_mode_state':
-        return OperationModeAtw[value as number]
+        return OperationMode[value as number]
       case capability.startsWith('operation_mode_state.zone'):
         return (value as boolean)
           ? 'idle'
           : (this.getCapabilityValue('operation_mode_state') as string)
       case capability.startsWith('operation_mode_zone'):
-        return OperationModeZoneAtw[value as number]
+        return OperationModeZone[value as number]
       default:
         return value
     }

@@ -1,13 +1,18 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
-import {
-  VentilationModeErv,
-  type Capability,
-  type CapabilityValue,
-  type DeviceValue,
-  type SetCapability,
-  type SetDeviceValue,
+import type {
+  Capability,
+  CapabilityValue,
+  DeviceValue,
+  SetCapability,
+  SetDeviceValue,
 } from '../../types'
+
+enum VentilationMode {
+  recovery = 0,
+  bypass = 1,
+  auto = 2,
+}
 
 export = class ErvDevice extends BaseMELCloudDevice {
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -28,7 +33,7 @@ export = class ErvDevice extends BaseMELCloudDevice {
           ? true
           : (value as boolean)
       case 'ventilation_mode':
-        return VentilationModeErv[value as keyof typeof VentilationModeErv]
+        return VentilationMode[value as keyof typeof VentilationMode]
       default:
         return value as SetDeviceValue
     }
@@ -40,7 +45,7 @@ export = class ErvDevice extends BaseMELCloudDevice {
     value: DeviceValue,
   ): CapabilityValue {
     if (capability === 'ventilation_mode') {
-      return VentilationModeErv[value as number]
+      return VentilationMode[value as number]
     }
     return value
   }
