@@ -12,7 +12,7 @@ import type {
 } from '../../types'
 
 export = class AtwDriver extends BaseMELCloudDriver {
-  public readonly heatPumpType = 'Atw'
+  public readonly heatPumpType: string = 'Atw'
 
   /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingAtw = {

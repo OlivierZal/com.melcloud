@@ -11,7 +11,7 @@ import type {
 const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 
 export = class ErvDriver extends BaseMELCloudDriver {
-  public readonly heatPumpType = 'Erv'
+  public readonly heatPumpType: string = 'Erv'
 
   /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingErv = {

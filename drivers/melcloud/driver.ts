@@ -16,7 +16,7 @@ const flowCapabilities: SetCapabilityAta[] = [
 ]
 
 export = class AtaDriver extends BaseMELCloudDriver {
-  public readonly heatPumpType = 'Ata'
+  public readonly heatPumpType: string = 'Ata'
 
   /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingAta = {
