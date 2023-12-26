@@ -38,11 +38,6 @@ const CURVE_VALUE: number = OperationModeZone.curve
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = ROOM_COOL_VALUE
 
-const getOtherCapabilityZone = (capability: string): string =>
-  capability.endsWith('.zone2')
-    ? capability.replace(/.zone2$/, '')
-    : `${capability}.zone2`
-
 export = class AtwDevice extends BaseMELCloudDevice {
   protected readonly reportPlanParameters: ReportPlanParameters = {
     minus: { days: 1 },
@@ -71,8 +66,11 @@ export = class AtwDevice extends BaseMELCloudDevice {
     }
     const zoneValue: number =
       OperationModeZone[value as keyof typeof OperationModeZone]
-    const otherZoneCapability: SetCapability<AtwDriver> =
-      getOtherCapabilityZone(capability) as SetCapability<AtwDriver>
+    const otherZoneCapability: SetCapability<AtwDriver> = (
+      capability.endsWith('.zone2')
+        ? capability.replace(/.zone2$/, '')
+        : `${capability}.zone2`
+    ) as SetCapability<AtwDriver>
     let otherZoneValue: number =
       OperationModeZone[
         this.getRequestedOrCurrentValue(

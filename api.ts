@@ -41,33 +41,6 @@ const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   return localDate ?? ''
 }
 
-const handleErrorLogQuery = (
-  query: ErrorLogQuery,
-): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const defaultLimit = 1
-  const defaultOffset = 0
-  const from: DateTime | null =
-    query.from !== undefined && query.from ? DateTime.fromISO(query.from) : null
-  const to: DateTime =
-    query.to !== undefined && query.to
-      ? DateTime.fromISO(query.to)
-      : DateTime.now()
-
-  let period: number = Number.parseInt(String(query.limit), 10)
-  period = !Number.isNaN(period) ? period : defaultLimit
-
-  let offset: number = Number.parseInt(String(query.offset), 10)
-  offset = !from && !Number.isNaN(offset) ? offset : defaultOffset
-
-  const limit: number = !from ? period : defaultLimit
-  const days: number = limit * offset + offset
-  return {
-    fromDate: from ?? to.minus({ days: days + limit }),
-    toDate: to.minus({ days }),
-    period,
-  }
-}
-
 export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
     const app: MELCloudApp = homey.app as MELCloudApp
@@ -220,7 +193,39 @@ export = {
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const { fromDate, toDate, period } = handleErrorLogQuery(query)
+
+    const handleErrorLogQuery = (): {
+      fromDate: DateTime
+      period: number
+      toDate: DateTime
+    } => {
+      const defaultLimit = 1
+      const defaultOffset = 0
+      const from: DateTime | null =
+        query.from !== undefined && query.from
+          ? DateTime.fromISO(query.from)
+          : null
+      const to: DateTime =
+        query.to !== undefined && query.to
+          ? DateTime.fromISO(query.to)
+          : DateTime.now()
+
+      let period: number = Number.parseInt(String(query.limit), 10)
+      period = !Number.isNaN(period) ? period : defaultLimit
+
+      let offset: number = Number.parseInt(String(query.offset), 10)
+      offset = !from && !Number.isNaN(offset) ? offset : defaultOffset
+
+      const limit: number = !from ? period : defaultLimit
+      const days: number = limit * offset + offset
+      return {
+        fromDate: from ?? to.minus({ days: days + limit }),
+        toDate: to.minus({ days }),
+        period,
+      }
+    }
+
+    const { fromDate, toDate, period } = handleErrorLogQuery()
     const nextToDate: DateTime = fromDate.minus({ days: 1 })
     const data: ErrorLogData[] = await app.getUnitErrorLog(fromDate, toDate)
     return {
