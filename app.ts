@@ -31,7 +31,6 @@ import type {
   SyncFromMode,
 } from './types'
 
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const MAX_INT32: number = 2 ** 31 - 1
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
@@ -89,12 +88,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         return false
       }
       const postData: LoginPostData = {
-        /* eslint-disable @typescript-eslint/naming-convention */
         AppVersion: '1.30.5.0',
         Email: username,
         Password: password,
         Persist: true,
-        /* eslint-enable @typescript-eslint/naming-convention */
       }
       const { data } = await this.api.post<LoginData>(this.loginURL, postData)
       if (data.LoginData) {
@@ -228,11 +225,9 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const postData: ErrorLogPostData = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
-      /* eslint-enable @typescript-eslint/naming-convention */
     }
     const { data } = await this.api.post<ErrorLogData[] | FailureData>(
       '/Report/GetUnitErrorLog2',
@@ -260,7 +255,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   ): Promise<void> {
     const postData: FrostProtectionPostData = {
       ...settings,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       BuildingIds: [buildingId],
     }
     const { data } = await this.api.post<FailureData | SuccessData>(
@@ -299,7 +293,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       ? DateTime.fromISO(endDate).toUTC()
       : null
     const postData: HolidayModePostData = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Enabled: enabled,
       StartDate: utcStartDate
         ? {
@@ -322,7 +315,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           }
         : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
-      /* eslint-enable @typescript-eslint/naming-convention */
     }
     const { data } = await this.api.post<FailureData | SuccessData>(
       '/HolidayMode/Update',

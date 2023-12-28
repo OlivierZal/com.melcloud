@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
 import type AtaDevice from './drivers/melcloud/device'

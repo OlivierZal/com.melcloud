@@ -18,7 +18,6 @@ const flowCapabilities: SetCapabilityAta[] = [
 export = class AtaDriver extends BaseMELCloudDriver {
   public readonly heatPumpType: string = 'Ata'
 
-  /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingAta = {
     onoff: { tag: 'Power', effectiveFlag: 0x1n },
     operation_mode: { tag: 'OperationMode', effectiveFlag: 0x2n },
@@ -77,7 +76,6 @@ export = class AtaDriver extends BaseMELCloudDriver {
     'meter_power.daily_heating': ['TotalHeatingConsumed'],
     'meter_power.daily_other': ['TotalOtherConsumed'],
   } as const
-  /* eslint-enable @typescript-eslint/naming-convention */
 
   protected readonly deviceType = 0
 

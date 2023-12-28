@@ -35,10 +35,11 @@ const customRules = {
   'no-underscore-dangle': ['error', { allow: ['__'] }],
 }
 const tsCustomRules = {
+  '@typescript-eslint/naming-convention': 'off',
   '@typescript-eslint/no-magic-numbers': [
     'error',
     {
-      ignore: [0, 1],
+      ignore: [0, 1, 2, 31, 1970],
       ignoreEnums: true,
       ignoreReadonlyClassProperties: true,
     },
