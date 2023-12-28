@@ -13,7 +13,6 @@ const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
 export = class ErvDriver extends BaseMELCloudDriver {
   public readonly heatPumpType: string = 'Erv'
 
-  /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingErv = {
     onoff: { tag: 'Power', effectiveFlag: 0x1n },
     ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
@@ -30,7 +29,6 @@ export = class ErvDriver extends BaseMELCloudDriver {
     'measure_power.wifi': { tag: 'WifiSignalStrength' },
     measure_pm25: { tag: 'PM25Level' },
   } as const
-  /* eslint-enable @typescript-eslint/naming-convention */
 
   protected readonly deviceType = 3
 

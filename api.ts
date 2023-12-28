@@ -24,8 +24,6 @@ import type {
   SettingValue,
 } from './types'
 
-const YEAR_1 = 1
-
 const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
@@ -50,10 +48,8 @@ export = {
       .map(
         (building: Building): Building => ({
           ...building,
-          /* eslint-disable @typescript-eslint/naming-convention */
           HMStartDate: fromUTCtoLocal(building.HMStartDate),
           HMEndDate: fromUTCtoLocal(building.HMEndDate),
-          /* eslint-enable @typescript-eslint/naming-convention */
         }),
       )
       .sort((building1: Building, building2: Building) =>
@@ -176,10 +172,8 @@ export = {
     ).getHolidayModeSettings(Number(params.buildingId))
     return {
       ...data,
-      /* eslint-disable @typescript-eslint/naming-convention */
       HMStartDate: fromUTCtoLocal(data.HMStartDate),
       HMEndDate: fromUTCtoLocal(data.HMEndDate),
-      /* eslint-enable @typescript-eslint/naming-convention */
     }
   },
   getLanguage({ homey }: { homey: Homey }): string {
@@ -237,7 +231,7 @@ export = {
             StartDate: startDate,
           }): ErrorDetails => {
             const date: string =
-              DateTime.fromISO(startDate).year > YEAR_1
+              DateTime.fromISO(startDate).year > 1
                 ? fromUTCtoLocal(startDate, app.getLanguage())
                 : ''
             const device: string =

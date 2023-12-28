@@ -33,9 +33,8 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
+const DATETIME_1970: DateTime = DateTime.local(1970)
 export const K_MULTIPLIER = 1000
-const YEAR_1970 = 1970
-const DATETIME_1970: DateTime = DateTime.local(YEAR_1970)
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
@@ -291,10 +290,8 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   >(): Promise<GetDeviceData<T> | null> {
     try {
       const postData: PostData<T> = {
-        /* eslint-disable @typescript-eslint/naming-convention */
         DeviceID: this.id,
         HasPendingCommand: true,
-        /* eslint-enable @typescript-eslint/naming-convention */
         ...(this.buildUpdateData() as SetDeviceData<T>),
       }
       const { data } = await this.api.post<GetDeviceData<T>>(
@@ -313,12 +310,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   ): Promise<ReportData<T> | null> {
     try {
       const postData: ReportPostData = {
-        /* eslint-disable @typescript-eslint/naming-convention */
         DeviceID: this.id,
         FromDate: fromDate.toISODate() ?? '',
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
-        /* eslint-enable @typescript-eslint/naming-convention */
       }
       const { data } = await this.api.post<ReportData<T>>(
         '/EnergyCost/Report',
@@ -524,7 +519,6 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
         }
         return acc
       },
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       { EffectiveFlags: 0 },
     ) as SetDeviceData<T>
   }

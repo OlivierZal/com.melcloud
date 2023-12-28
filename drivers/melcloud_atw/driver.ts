@@ -14,7 +14,6 @@ import type {
 export = class AtwDriver extends BaseMELCloudDriver {
   public readonly heatPumpType: string = 'Atw'
 
-  /* eslint-disable @typescript-eslint/naming-convention */
   public readonly setCapabilityMapping: SetCapabilityMappingAtw = {
     onoff: { tag: 'Power', effectiveFlag: 0x1n },
     operation_mode_zone: { tag: 'OperationModeZone1', effectiveFlag: 0x8n },
@@ -164,7 +163,6 @@ export = class AtwDriver extends BaseMELCloudDriver {
       'TotalHotWaterConsumed',
     ],
   } as const
-  /* eslint-enable @typescript-eslint/naming-convention */
 
   public readonly capabilitiesAtw: (
     | GetCapabilityAtw

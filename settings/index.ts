@@ -592,14 +592,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
               return [
                 String(ID),
                 {
-                  /* eslint-disable @typescript-eslint/naming-convention */
                   FPEnabled: fpEnabled,
                   FPMinTemperature: fpMin,
                   FPMaxTemperature: fpMax,
                   HMEnabled: hmEnabled,
                   HMStartDate: hmStartDate,
                   HMEndDate: hmEndDate,
-                  /* eslint-enable @typescript-eslint/naming-convention */
                 },
               ]
             }),
@@ -1047,11 +1045,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     } = buildingMapping[buildingElement.value]
     const enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Enabled: enabled,
       StartDate: enabled ? holidayModeStartDateElement.value : '',
       EndDate: enabled ? holidayModeEndDateElement.value : '',
-      /* eslint-enable @typescript-eslint/naming-convention */
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1064,11 +1060,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           await getBuildingHolidayModeSettings(true)
         } catch (err: unknown) {
           refreshBuildingHolidayModeSettings({
-            /* eslint-disable @typescript-eslint/naming-convention */
             HMEnabled: hmEnabled,
             HMStartDate: hmStartDate,
             HMEndDate: hmEndDate,
-            /* eslint-enable @typescript-eslint/naming-convention */
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
@@ -1127,11 +1121,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       max = int(frostProtectionMaximumTemperatureElement)
     } catch (error: unknown) {
       refreshBuildingFrostProtectionSettings({
-        /* eslint-disable @typescript-eslint/naming-convention */
         FPEnabled: fpEnabled,
         FPMinTemperature: fpMin,
         FPMaxTemperature: fpMax,
-        /* eslint-enable @typescript-eslint/naming-convention */
       })
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
@@ -1147,11 +1139,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     frostProtectionMinimumTemperatureElement.value = String(min)
     frostProtectionMaximumTemperatureElement.value = String(max)
     const body: FrostProtectionSettings = {
-      /* eslint-disable @typescript-eslint/naming-convention */
       Enabled: frostProtectionEnabledElement.value === 'true',
       MinimumTemperature: min,
       MaximumTemperature: max,
-      /* eslint-enable @typescript-eslint/naming-convention */
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1164,11 +1154,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           await getBuildingFrostProtectionSettings(true)
         } catch (err: unknown) {
           refreshBuildingFrostProtectionSettings({
-            /* eslint-disable @typescript-eslint/naming-convention */
             FPEnabled: fpEnabled,
             FPMinTemperature: fpMin,
             FPMaxTemperature: fpMax,
-            /* eslint-enable @typescript-eslint/naming-convention */
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)

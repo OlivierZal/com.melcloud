@@ -25,10 +25,8 @@ enum OperationModeZone {
   room = 0,
   flow = 1,
   curve = 2,
-  /* eslint-disable @typescript-eslint/naming-convention */
   room_cool = 3,
   flow_cool = 4,
-  /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 const ROOM_VALUE: number = OperationModeZone.room
