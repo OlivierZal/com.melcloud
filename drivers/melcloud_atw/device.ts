@@ -125,7 +125,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
         return OperationMode[value as number]
       case capability.startsWith('operation_mode_state.zone'):
         return (value as boolean)
-          ? 'idle'
+          ? OperationMode[OperationMode.idle]
           : (this.getCapabilityValue('operation_mode_state') as string)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as number]

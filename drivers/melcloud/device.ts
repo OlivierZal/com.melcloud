@@ -10,6 +10,7 @@ import type {
 } from '../../types'
 
 enum OperationMode {
+  off = 0, // does not exist in the API
   heat = 1,
   dry = 2,
   cool = 3,
@@ -37,8 +38,8 @@ enum Horizontal {
   swing = 12,
 }
 
-const isThermostatMode = (value: string): boolean =>
-  !['dry', 'fan'].includes(value)
+const isThermostatMode = (value: keyof typeof OperationMode): boolean =>
+  ![OperationMode.dry, OperationMode.fan].includes(OperationMode[value])
 
 export = class AtaDevice extends BaseMELCloudDevice {
   protected readonly reportPlanParameters: ReportPlanParameters = {
@@ -53,8 +54,10 @@ export = class AtaDevice extends BaseMELCloudDevice {
     value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
-      this.diff.set('onoff', value !== 'off')
-      if (value !== 'off') {
+      const isOn: boolean =
+        OperationMode[value as keyof typeof OperationMode] !== OperationMode.off
+      this.diff.set('onoff', isOn)
+      if (isOn) {
         this.diff.set('operation_mode', value)
       }
       await this.setAlwaysOnWarning()
@@ -62,8 +65,12 @@ export = class AtaDevice extends BaseMELCloudDevice {
       this.diff.set(capability, value)
       if (
         capability === 'operation_mode' &&
-        !isThermostatMode(value as string) &&
-        this.getCapabilityValue('thermostat_mode') !== 'off'
+        !isThermostatMode(value as keyof typeof OperationMode) &&
+        OperationMode[
+          this.getCapabilityValue(
+            'thermostat_mode',
+          ) as keyof typeof OperationMode
+        ] !== OperationMode.off
       ) {
         await this.setDisplayErrorWarning()
       }
@@ -112,12 +119,14 @@ export = class AtaDevice extends BaseMELCloudDevice {
       return
     }
     const isOn: boolean = this.getCapabilityValue('onoff') as boolean
-    const operationMode: string = this.getCapabilityValue(
+    const operationMode: keyof typeof OperationMode = this.getCapabilityValue(
       'operation_mode',
-    ) as string
+    ) as keyof typeof OperationMode
     await this.setCapabilityValue(
       'thermostat_mode',
-      isOn && isThermostatMode(operationMode) ? operationMode : 'off',
+      isOn && isThermostatMode(operationMode)
+        ? operationMode
+        : OperationMode[OperationMode.off],
     )
   }
 
