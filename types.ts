@@ -16,6 +16,59 @@ export type HomeyClass = new (...args: any[]) => SimpleClass & {
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 
+export enum OperationMode {
+  off = 0, // does not exist in the API
+  heat = 1,
+  dry = 2,
+  cool = 3,
+  fan = 7,
+  auto = 8,
+}
+
+export enum Vertical {
+  auto = 0,
+  top = 1,
+  middletop = 2,
+  middle = 3,
+  middlebottom = 4,
+  bottom = 5,
+  swing = 7,
+}
+
+export enum Horizontal {
+  auto = 0,
+  left = 1,
+  middleleft = 2,
+  middle = 3,
+  middleright = 4,
+  right = 5,
+  swing = 12,
+}
+
+export enum VentilationMode {
+  recovery = 0,
+  bypass = 1,
+  auto = 2,
+}
+
+export enum OperationModeState {
+  idle = 0,
+  dhw = 1,
+  heating = 2,
+  cooling = 3,
+  defrost = 4,
+  standby = 5,
+  legionella = 6,
+}
+
+export enum OperationModeZone {
+  room = 0,
+  flow = 1,
+  curve = 2,
+  room_cool = 3,
+  flow_cool = 4,
+}
+
 export type SyncFromMode = 'syncFrom'
 export type SyncMode = SyncFromMode | 'syncTo'
 
@@ -136,23 +189,23 @@ interface SetCapabilitiesCommon {
 
 interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
-  horizontal?: string
-  operation_mode?: string
+  horizontal?: keyof typeof Horizontal
+  operation_mode?: keyof typeof OperationMode
   target_temperature?: number
-  vertical?: string
+  vertical?: keyof typeof Vertical
 }
 
 interface SetCapabilitiesErv extends SetCapabilitiesCommon {
   fan_power?: number
-  ventilation_mode?: number
+  ventilation_mode?: keyof typeof VentilationMode
 }
 
 interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
   'onoff.forced_hot_water'?: boolean
-  operation_mode_zone?: string
-  operation_mode_zone_with_cool?: string
-  'operation_mode_zone.zone2'?: string
-  'operation_mode_zone_with_cool.zone2'?: string
+  operation_mode_zone?: keyof typeof OperationModeZone
+  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
+  'operation_mode_zone.zone2'?: keyof typeof OperationModeZone
+  'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
   target_temperature?: number
   'target_temperature.tank_water'?: number
   'target_temperature.flow_cool'?: number
@@ -179,9 +232,9 @@ interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operation_mode_state: number
-  readonly 'operation_mode_state.zone1': number
-  readonly 'operation_mode_state.zone2': number
+  readonly operation_mode_state: keyof typeof OperationModeState
+  readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
+  readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
 }
 
 interface ListCapabilitiesCommon {
@@ -340,22 +393,22 @@ interface BaseDeviceData {
 }
 
 interface UpdateDeviceDataAta extends BaseDeviceData {
-  readonly OperationMode?: number
+  readonly OperationMode?: OperationMode
   readonly SetFanSpeed?: number
   readonly SetTemperature?: number
-  readonly VaneHorizontal?: number
-  readonly VaneVertical?: number
+  readonly VaneHorizontal?: Horizontal
+  readonly VaneVertical?: Vertical
 }
 
 interface UpdateDeviceDataErv extends BaseDeviceData {
   readonly SetFanSpeed?: number
-  readonly VentilationMode?: number
+  readonly VentilationMode?: VentilationMode
 }
 
 interface UpdateDeviceDataAtw extends BaseDeviceData {
   readonly ForcedHotWaterMode?: boolean
-  readonly OperationModeZone1?: number
-  readonly OperationModeZone2?: number
+  readonly OperationModeZone1?: OperationModeZone
+  readonly OperationModeZone2?: OperationModeZone
   readonly SetCoolFlowTemperatureZone1?: number
   readonly SetCoolFlowTemperatureZone2?: number
   readonly SetHeatFlowTemperatureZone1?: number
@@ -397,7 +450,7 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly EcoHotWater: boolean
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
-  readonly OperationMode: number
+  readonly OperationMode: OperationModeState
   readonly OutdoorTemperature: number
   readonly RoomTemperatureZone1: number
   readonly RoomTemperatureZone2: number
@@ -428,8 +481,8 @@ interface ListDeviceDataAta
     ListDeviceDataCommon {
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
-  readonly VaneHorizontalDirection: number
-  readonly VaneVerticalDirection: number
+  readonly VaneHorizontalDirection: Horizontal
+  readonly VaneVerticalDirection: Vertical
 }
 
 interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {

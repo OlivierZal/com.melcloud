@@ -1,18 +1,13 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
-import type {
-  Capability,
-  CapabilityValue,
-  DeviceValue,
-  SetCapability,
-  SetDeviceValue,
+import {
+  VentilationMode,
+  type Capability,
+  type CapabilityValue,
+  type DeviceValue,
+  type SetCapability,
+  type SetDeviceValue,
 } from '../../types'
-
-enum VentilationMode {
-  recovery = 0,
-  bypass = 1,
-  auto = 2,
-}
 
 export = class ErvDevice extends BaseMELCloudDevice {
   // eslint-disable-next-line @typescript-eslint/require-await

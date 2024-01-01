@@ -1,33 +1,17 @@
 import { DateTime } from 'luxon'
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import type AtwDriver from './driver'
-import type {
-  Capability,
-  CapabilityValue,
-  DeviceValue,
-  ReportPlanParameters,
-  SetCapability,
-  SetDeviceValue,
-  Store,
+import {
+  OperationModeState,
+  OperationModeZone,
+  type Capability,
+  type CapabilityValue,
+  type DeviceValue,
+  type ReportPlanParameters,
+  type SetCapability,
+  type SetDeviceValue,
+  type Store,
 } from '../../types'
-
-enum OperationMode {
-  idle = 0,
-  dhw = 1,
-  heating = 2,
-  cooling = 3,
-  defrost = 4,
-  standby = 5,
-  legionella = 6,
-}
-
-enum OperationModeZone {
-  room = 0,
-  flow = 1,
-  curve = 2,
-  room_cool = 3,
-  flow_cool = 4,
-}
 
 const ROOM_VALUE: number = OperationModeZone.room
 const ROOM_COOL_VALUE: number = OperationModeZone.room_cool
@@ -122,10 +106,10 @@ export = class AtwDevice extends BaseMELCloudDevice {
       case ['measure_power', 'measure_power.produced'].includes(capability):
         return (value as number) * K_MULTIPLIER
       case capability === 'operation_mode_state':
-        return OperationMode[value as number]
+        return OperationModeState[value as number]
       case capability.startsWith('operation_mode_state.zone'):
         return (value as boolean)
-          ? OperationMode[OperationMode.idle]
+          ? OperationModeState[OperationModeState.idle]
           : (this.getCapabilityValue('operation_mode_state') as string)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as number]

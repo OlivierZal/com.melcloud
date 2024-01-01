@@ -1,42 +1,16 @@
 import BaseMELCloudDevice from '../../bases/device'
 import type AtaDriver from './driver'
-import type {
-  Capability,
-  CapabilityValue,
-  DeviceValue,
-  ReportPlanParameters,
-  SetCapability,
-  SetDeviceValue,
+import {
+  Horizontal,
+  OperationMode,
+  Vertical,
+  type Capability,
+  type CapabilityValue,
+  type DeviceValue,
+  type ReportPlanParameters,
+  type SetCapability,
+  type SetDeviceValue,
 } from '../../types'
-
-enum OperationMode {
-  off = 0, // does not exist in the API
-  heat = 1,
-  dry = 2,
-  cool = 3,
-  fan = 7,
-  auto = 8,
-}
-
-enum Vertical {
-  auto = 0,
-  top = 1,
-  middletop = 2,
-  middle = 3,
-  middlebottom = 4,
-  bottom = 5,
-  swing = 7,
-}
-
-enum Horizontal {
-  auto = 0,
-  left = 1,
-  middleleft = 2,
-  middle = 3,
-  middleright = 4,
-  right = 5,
-  swing = 12,
-}
 
 const isThermostatMode = (value: keyof typeof OperationMode): boolean =>
   ![OperationMode.dry, OperationMode.fan].includes(OperationMode[value])
