@@ -3,6 +3,7 @@ import type AtaDriver from './driver'
 import {
   Horizontal,
   OperationMode,
+  ThermostatMode,
   Vertical,
   type Capability,
   type CapabilityValue,
@@ -13,7 +14,7 @@ import {
 } from '../../types'
 
 const isThermostatMode = (value: keyof typeof OperationMode): boolean =>
-  ![OperationMode.dry, OperationMode.fan].includes(OperationMode[value])
+  value in ThermostatMode
 
 export = class AtaDevice extends BaseMELCloudDevice {
   protected readonly reportPlanParameters: ReportPlanParameters = {
@@ -29,7 +30,8 @@ export = class AtaDevice extends BaseMELCloudDevice {
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
       const isOn: boolean =
-        OperationMode[value as keyof typeof OperationMode] !== OperationMode.off
+        ThermostatMode[value as keyof typeof ThermostatMode] !==
+        ThermostatMode.off
       this.diff.set('onoff', isOn)
       if (isOn) {
         this.diff.set('operation_mode', value)
@@ -40,11 +42,11 @@ export = class AtaDevice extends BaseMELCloudDevice {
       if (
         capability === 'operation_mode' &&
         !isThermostatMode(value as keyof typeof OperationMode) &&
-        OperationMode[
+        ThermostatMode[
           this.getCapabilityValue(
             'thermostat_mode',
-          ) as keyof typeof OperationMode
-        ] !== OperationMode.off
+          ) as keyof typeof ThermostatMode
+        ] !== ThermostatMode.off
       ) {
         await this.setDisplayErrorWarning()
       }
@@ -100,7 +102,7 @@ export = class AtaDevice extends BaseMELCloudDevice {
       'thermostat_mode',
       isOn && isThermostatMode(operationMode)
         ? operationMode
-        : OperationMode[OperationMode.off],
+        : ThermostatMode[ThermostatMode.off],
     )
   }
 

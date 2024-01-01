@@ -16,8 +16,14 @@ export type HomeyClass = new (...args: any[]) => SimpleClass & {
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 
+export enum ThermostatMode {
+  off = 0,
+  heat = 1,
+  cool = 3,
+  auto = 8,
+}
+
 export enum OperationMode {
-  off = 0, // does not exist in the API
   heat = 1,
   dry = 2,
   cool = 3,
