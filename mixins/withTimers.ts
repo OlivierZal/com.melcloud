@@ -8,13 +8,13 @@ import {
 import type { HomeyClass } from '../types'
 
 interface BaseTimerOptions {
-  actionType: string
-  units: (keyof DurationLikeObject)[]
+  readonly actionType: string
+  readonly units: readonly (keyof DurationLikeObject)[]
 }
 
 interface TimerOptions extends BaseTimerOptions {
-  timerWords: [string, string]
-  timerType: 'setInterval' | 'setTimeout'
+  readonly timerWords: readonly [string, string]
+  readonly timerType: 'setInterval' | 'setTimeout'
 }
 
 type TimerClass = new (...args: any[]) => {
