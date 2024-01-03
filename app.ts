@@ -72,12 +72,8 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   public async login(
     loginCredentials: LoginCredentials = {
-      username:
-        (this.homey.settings.get('username') as HomeySettings['username']) ??
-        '',
-      password:
-        (this.homey.settings.get('password') as HomeySettings['password']) ??
-        '',
+      username: this.getHomeySetting('username') ?? '',
+      password: this.getHomeySetting('password') ?? '',
     },
     raise = false,
   ): Promise<boolean> {
@@ -339,8 +335,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   }
 
   private async planRefreshLogin(): Promise<void> {
-    const expiry: string =
-      (this.homey.settings.get('expiry') as HomeySettings['expiry']) ?? ''
+    const expiry: string = this.getHomeySetting('expiry') ?? ''
     const ms: number = DateTime.fromISO(expiry)
       .minus({ days: 1 })
       .diffNow()
@@ -397,7 +392,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     Object.entries(settings)
       .filter(
         ([setting, value]: [string, HomeySettingValue]) =>
-          value !== this.homey.settings.get(setting),
+          value !== this.getHomeySetting(setting as keyof HomeySettings),
       )
       .forEach(([setting, value]: [string, HomeySettingValue]): void => {
         this.homey.settings.set(setting, value)

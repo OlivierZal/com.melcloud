@@ -14,6 +14,9 @@ import type { HomeyClass, HomeySettings } from '../types'
 type APIClass = new (...args: any[]) => {
   readonly api: AxiosInstance
   readonly loginURL: string
+  readonly getHomeySetting: <K extends keyof HomeySettings>(
+    setting: K,
+  ) => HomeySettings[K]
 }
 
 const HTTP_STATUS_UNAUTHORIZED = 401
@@ -39,6 +42,12 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public constructor(...args: any[]) {
       super(...args)
       this.setupAxiosInterceptors()
+    }
+
+    public getHomeySetting<K extends keyof HomeySettings>(
+      setting: K,
+    ): HomeySettings[K] {
+      return this.homey.settings.get(setting as string) as HomeySettings[K]
     }
 
     private setupAxiosInterceptors(): void {
