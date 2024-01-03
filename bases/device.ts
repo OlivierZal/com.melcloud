@@ -113,7 +113,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
 
     if (
       changedKeys.includes('always_on') &&
-      newSettings.always_on === true &&
+      (newSettings.always_on === true) &&
       !(this.getCapabilityValue('onoff') as boolean)
     ) {
       await this.triggerCapabilityListener('onoff', true)
@@ -207,6 +207,10 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     }
   }
 
+  public getSetting<K extends keyof Settings>(setting: K): Settings[K] {
+    return super.getSetting(setting as string) as Settings[K]
+  }
+
   public async setWarning(warning: string | null): Promise<void> {
     if (warning !== null) {
       await super.setWarning(warning)
@@ -215,7 +219,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   protected async setAlwaysOnWarning(): Promise<void> {
-    if (this.getSetting('always_on') as boolean) {
+    if (this.getSetting('always_on') ?? false) {
       await this.setWarning(this.homey.__('warnings.always_on'))
     }
   }
