@@ -26,6 +26,7 @@ import type {
   SetCapabilityKeys,
   SetDeviceData,
   SetDeviceValue,
+  SettingKey,
   Settings,
   Store,
   SyncFromMode,
@@ -207,7 +208,7 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
     }
   }
 
-  public getSetting<K extends keyof Settings>(setting: K): Settings[K] {
+  public getSetting<K extends SettingKey>(setting: K): Settings[K] {
     return super.getSetting(setting as string) as Settings[K]
   }
 

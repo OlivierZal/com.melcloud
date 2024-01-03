@@ -90,6 +90,8 @@ export interface Settings
   readonly always_on?: boolean
 }
 
+export type SettingKey = keyof Settings
+
 export type SettingValue = ValueOf<Settings>
 
 interface BaseHomeySettingValue<T> {
@@ -102,6 +104,8 @@ interface BaseHomeySettingValue<T> {
 export type HomeySettings = BaseHomeySettingValue<string | null>
 
 export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
+
+export type HomeySettingKey = keyof HomeySettings
 
 export type HomeySettingValue = ValueOf<HomeySettings>
 
