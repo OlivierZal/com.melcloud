@@ -82,9 +82,7 @@ export = class AtwDevice extends BaseMELCloudDevice {
   ): SetDeviceValue {
     switch (true) {
       case capability === 'onoff':
-        return (this.getSetting('always_on') as boolean)
-          ? true
-          : (value as boolean)
+        return this.getSetting('always_on') === true || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
