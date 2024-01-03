@@ -246,8 +246,8 @@ export = class AtwDriver extends BaseMELCloudDriver {
                   args.device.getCapabilityValue(capability),
               )
             break
-          case capability.startsWith('alarm_generic') ||
-            capability.startsWith('onoff.'):
+          case capability.startsWith('alarm_generic'):
+          case capability.startsWith('onoff.'):
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
               .registerRunListener((args: FlowArgs<AtwDriver>): boolean =>

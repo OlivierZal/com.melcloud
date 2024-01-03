@@ -101,7 +101,8 @@ export = class AtwDevice extends BaseMELCloudDevice {
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
         }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
-      case ['measure_power', 'measure_power.produced'].includes(capability):
+      case capability === 'measure_power':
+      case capability === 'measure_power.produced':
         return (value as number) * K_MULTIPLIER
       case capability === 'operation_mode_state':
         return OperationModeState[value as number]
