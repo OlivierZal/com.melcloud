@@ -93,7 +93,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       const { data } = await this.api.post<LoginData>(this.loginURL, postData)
       if (data.LoginData) {
         const { ContextKey: contextKey, Expiry: expiry } = data.LoginData
-        this.setSettings({ contextKey, expiry, username, password })
+        this.setHomeySettings({ contextKey, expiry, username, password })
         await this.planRefreshLogin()
       }
       return !!data.LoginData
@@ -389,14 +389,23 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     )
   }
 
-  private setSettings(settings: Partial<HomeySettings>): void {
+  private setHomeySettings<K extends HomeySettingKey>(
+    settings: Partial<HomeySettings>,
+  ): void {
     Object.entries(settings)
       .filter(
-        ([setting, value]: [string, HomeySettingValue]) =>
-          value !== this.getHomeySetting(setting as HomeySettingKey),
+        ([setting, value]: [string, HomeySettings[K]]) =>
+          value !== this.getHomeySetting(setting as K),
       )
-      .forEach(([setting, value]: [string, HomeySettingValue]): void => {
-        this.homey.settings.set(setting, value)
+      .forEach(([setting, value]: [string, HomeySettings[K]]): void => {
+        this.setHomeySetting(setting as K, value)
       })
+  }
+
+  private setHomeySetting<K extends HomeySettingKey>(
+    setting: K,
+    value: HomeySettingValue,
+  ): void {
+    this.homey.settings.set(setting, value)
   }
 }
