@@ -107,8 +107,6 @@ export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
 
 export type HomeySettingKey = keyof HomeySettings
 
-export type HomeySettingValue = ValueOf<HomeySettings>
-
 export interface Store {
   readonly canCool: boolean
   readonly hasCO2Sensor: boolean
