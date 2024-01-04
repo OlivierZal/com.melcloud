@@ -17,10 +17,10 @@ export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 
 export enum ThermostatMode {
-  off = 0,
-  heat = 1,
-  cool = 3,
-  auto = 8,
+  auto = 'auto',
+  heat = 'heat',
+  cool = 'cool',
+  off = 'off',
 }
 
 export enum OperationMode {

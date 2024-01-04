@@ -29,9 +29,7 @@ export = class AtaDevice extends BaseMELCloudDevice {
     value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
-      const isOn: boolean =
-        ThermostatMode[value as keyof typeof ThermostatMode] !==
-        ThermostatMode.off
+      const isOn: boolean = value !== ThermostatMode.off
       this.diff.set('onoff', isOn)
       if (isOn) {
         this.diff.set('operation_mode', value)
@@ -42,11 +40,7 @@ export = class AtaDevice extends BaseMELCloudDevice {
       if (
         capability === 'operation_mode' &&
         !isThermostatMode(value as keyof typeof OperationMode) &&
-        ThermostatMode[
-          this.getCapabilityValue(
-            'thermostat_mode',
-          ) as keyof typeof ThermostatMode
-        ] !== ThermostatMode.off
+        this.getCapabilityValue('thermostat_mode') !== ThermostatMode.off
       ) {
         await this.setDisplayErrorWarning()
       }
@@ -100,7 +94,7 @@ export = class AtaDevice extends BaseMELCloudDevice {
       'thermostat_mode',
       isOn && isThermostatMode(operationMode)
         ? operationMode
-        : ThermostatMode[ThermostatMode.off],
+        : ThermostatMode.off,
     )
   }
 
