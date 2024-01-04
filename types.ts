@@ -254,8 +254,8 @@ interface ListCapabilitiesCommon {
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
   readonly fan_power: number
   readonly fan_power_state: number
-  readonly horizontal: number
-  readonly vertical: number
+  readonly horizontal: keyof typeof Horizontal
+  readonly vertical: keyof typeof Vertical
 }
 
 interface ListCapabilitiesErv extends ListCapabilitiesCommon {
