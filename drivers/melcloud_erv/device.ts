@@ -9,7 +9,7 @@ import {
   type SetDeviceValue,
 } from '../../types'
 
-export = class ErvDevice extends BaseMELCloudDevice {
+export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async specificOnCapability(
     capability: SetCapability<ErvDriver>,

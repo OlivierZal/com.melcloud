@@ -23,11 +23,12 @@ import type {
   HomeySettingKey,
   HomeySettings,
   HomeySettingValue,
-  ListDeviceAny,
+  ListDevice,
   LoginCredentials,
   LoginData,
   LoginPostData,
   MELCloudDevice,
+  MELCloudDriver,
   SuccessData,
   SyncFromMode,
 } from './types'
@@ -55,7 +56,7 @@ const handleResponse = (data: FailureData | SuccessData): void => {
 export = class MELCloudApp extends withAPI(withTimers(App)) {
   public retry = true
 
-  public deviceList: ListDeviceAny[] = []
+  public deviceList: ListDevice<MELCloudDriver>[] = []
 
   public deviceIds: Record<number, string> = {}
 
@@ -149,36 +150,44 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async listDevices(
     deviceType?: number,
     syncMode?: SyncFromMode,
-  ): Promise<ListDeviceAny[]> {
+  ): Promise<ListDevice<MELCloudDriver>[]> {
     this.clearListDevicesRefresh()
     try {
       const buildings = await this.getBuildings()
       const buildingData: {
         deviceIds: Record<number, string>
-        deviceList: ListDeviceAny[]
+        deviceList: ListDevice<MELCloudDriver>[]
       } = buildings.reduce<{
         deviceIds: Record<number, string>
-        deviceList: ListDeviceAny[]
+        deviceList: ListDevice<MELCloudDriver>[]
       }>(
         (
           acc,
           { Structure: { Devices: devices, Areas: areas, Floors: floors } },
         ) => {
-          const buildingDevices: ListDeviceAny[] = [
+          const buildingDevices: ListDevice<MELCloudDriver>[] = [
             ...devices,
-            ...areas.flatMap((area): readonly ListDeviceAny[] => area.Devices),
-            ...floors.flatMap((floor): ListDeviceAny[] => [
+            ...areas.flatMap(
+              ({
+                Devices: areaDevices,
+              }): readonly ListDevice<MELCloudDriver>[] => areaDevices,
+            ),
+            ...floors.flatMap((floor): ListDevice<MELCloudDriver>[] => [
               ...floor.Devices,
               ...floor.Areas.flatMap(
-                (area): readonly ListDeviceAny[] => area.Devices,
+                ({
+                  Devices: areaDevices,
+                }): readonly ListDevice<MELCloudDriver>[] => areaDevices,
               ),
             ]),
           ]
           const buildingDeviceIds: Record<number, string> = Object.fromEntries(
-            buildingDevices.map((device: ListDeviceAny): [number, string] => [
-              device.DeviceID,
-              device.DeviceName,
-            ]),
+            buildingDevices.map(
+              ({
+                DeviceID: deviceID,
+                DeviceName: deviceName,
+              }): [number, string] => [deviceID, deviceName],
+            ),
           )
           acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
           acc.deviceList.push(...buildingDevices)
@@ -189,7 +198,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       let { deviceList } = buildingData
       if (deviceType !== undefined) {
         deviceList = deviceList.filter(
-          (device: ListDeviceAny) => deviceType === device.Device.DeviceType,
+          ({ Device: { DeviceType: type } }) => deviceType === type,
         )
       }
       this.deviceList = deviceList
