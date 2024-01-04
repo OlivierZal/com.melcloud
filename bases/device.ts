@@ -166,26 +166,16 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
   }
 
   public async addCapability(capability: string): Promise<void> {
-    if (this.hasCapability(capability)) {
-      return
-    }
-    try {
+    if (!this.hasCapability(capability)) {
       await super.addCapability(capability)
       this.log('Adding capability', capability)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
     }
   }
 
   public async removeCapability(capability: string): Promise<void> {
-    if (!this.hasCapability(capability)) {
-      return
-    }
-    try {
+    if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
       this.log('Removing capability', capability)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
     }
   }
 
@@ -197,14 +187,9 @@ abstract class BaseMELCloudDevice extends withAPI(withTimers(Device)) {
       return
     }
     const newValue: CapabilityValue = this.convertFromDevice(capability, value)
-    if (newValue === this.getCapabilityValue(capability)) {
-      return
-    }
-    try {
+    if (newValue !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, newValue)
       this.log('Capability', capability, 'is', newValue)
-    } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
     }
   }
 
