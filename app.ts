@@ -22,6 +22,7 @@ import type {
   HolidayModeSettings,
   HomeySettingKey,
   HomeySettings,
+  HomeySettingValue,
   ListDeviceAny,
   LoginCredentials,
   LoginData,
@@ -388,23 +389,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     )
   }
 
-  private setHomeySettings<K extends HomeySettingKey>(
-    settings: Partial<HomeySettings>,
-  ): void {
+  private setHomeySettings(settings: Partial<HomeySettings>): void {
     Object.entries(settings)
       .filter(
-        ([setting, value]: [string, HomeySettings[K]]) =>
-          value !== this.getHomeySetting(setting as K),
+        ([setting, value]: [string, HomeySettingValue]) =>
+          value !== this.getHomeySetting(setting as HomeySettingKey),
       )
-      .forEach(([setting, value]: [string, HomeySettings[K]]): void => {
-        this.setHomeySetting(setting as K, value)
+      .forEach(([setting, value]: [string, HomeySettingValue]): void => {
+        this.homey.settings.set(setting, value)
       })
-  }
-
-  private setHomeySetting<K extends HomeySettingKey>(
-    setting: K,
-    value: HomeySettings[K],
-  ): void {
-    this.homey.settings.set(setting, value)
   }
 }
