@@ -463,7 +463,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       NonReportCapability<T>,
       CombinedCapabilityData<T>,
     ]): Promise<void> => {
-      if (shouldProcess(capability, effectiveFlag)) {
+      if (tag in data && shouldProcess(capability, effectiveFlag)) {
         await this.setCapabilityValue(
           capability,
           data[tag as keyof typeof data] as CapabilityValue,
