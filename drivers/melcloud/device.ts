@@ -16,7 +16,7 @@ import {
 const isThermostatMode = (value: keyof typeof OperationMode): boolean =>
   value in ThermostatMode
 
-export = class AtaDevice extends BaseMELCloudDevice {
+export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
     minus: { hours: 1 },
     interval: { hours: 1 },

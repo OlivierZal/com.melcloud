@@ -7,13 +7,12 @@ import type {
   ListCapabilityMappingAny,
   ListDevice,
   LoginCredentials,
-  MELCloudDriver,
   ReportCapabilityMappingAny,
   SetCapabilityMappingAny,
   Store,
 } from '../types'
 
-export default abstract class BaseMELCloudDriver extends Driver {
+export default abstract class BaseMELCloudDriver<T> extends Driver {
   public readonly heatPumpType!: string
 
   public readonly setCapabilityMapping!: SetCapabilityMappingAny
@@ -26,11 +25,10 @@ export default abstract class BaseMELCloudDriver extends Driver {
 
   protected readonly deviceType!: number
 
-  #app!: MELCloudApp
+  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
-    this.#app = this.homey.app as MELCloudApp
     this.registerFlowListeners()
   }
 
@@ -54,9 +52,7 @@ export default abstract class BaseMELCloudDriver extends Driver {
     )
   }
 
-  private async discoverDevices<T extends MELCloudDriver>(): Promise<
-    DeviceDetails[]
-  > {
+  private async discoverDevices(): Promise<DeviceDetails[]> {
     this.#app.clearListDevicesRefresh()
     const devices: ListDevice<T>[] = (await this.#app.listDevices(
       this.deviceType,

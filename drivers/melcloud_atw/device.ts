@@ -20,7 +20,7 @@ const CURVE_VALUE: number = OperationModeZone.curve
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = ROOM_COOL_VALUE
 
-export = class AtwDevice extends BaseMELCloudDevice {
+export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
     minus: { days: 1 },
     interval: { days: 1 },

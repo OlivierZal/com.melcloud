@@ -1,34 +1,27 @@
 import BaseMELCloudDriver from '../../bases/driver'
-import type {
-  FlowArgs,
-  GetCapabilityMappingErv,
-  ListCapabilityMappingErv,
-  SetCapabilityErv,
-  SetCapabilityMappingErv,
-  Store,
+import {
+  getCapabilityMappingErv,
+  listCapabilityMappingErv,
+  setCapabilityMappingErv,
+  type FlowArgs,
+  type GetCapabilityMappingErv,
+  type ListCapabilityMappingErv,
+  type SetCapability,
+  type SetCapabilityMappingErv,
+  type Store,
 } from '../../types'
 
-const flowCapabilities: SetCapabilityErv[] = ['ventilation_mode', 'fan_power']
-
-export = class ErvDriver extends BaseMELCloudDriver {
+export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly heatPumpType: string = 'Erv'
 
-  public readonly setCapabilityMapping: SetCapabilityMappingErv = {
-    onoff: { tag: 'Power', effectiveFlag: 0x1n },
-    ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
-    fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
-  } as const
+  public readonly setCapabilityMapping: SetCapabilityMappingErv =
+    setCapabilityMappingErv
 
-  public readonly getCapabilityMapping: GetCapabilityMappingErv = {
-    measure_co2: { tag: 'RoomCO2Level' },
-    measure_temperature: { tag: 'RoomTemperature' },
-    'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
-  } as const
+  public readonly getCapabilityMapping: GetCapabilityMappingErv =
+    getCapabilityMappingErv
 
-  public readonly listCapabilityMapping: ListCapabilityMappingErv = {
-    'measure_power.wifi': { tag: 'WifiSignalStrength' },
-    measure_pm25: { tag: 'PM25Level' },
-  } as const
+  public readonly listCapabilityMapping: ListCapabilityMappingErv =
+    listCapabilityMappingErv
 
   protected readonly deviceType = 3
 
@@ -50,9 +43,14 @@ export = class ErvDriver extends BaseMELCloudDriver {
   }
 
   protected registerFlowListeners(): void {
+    const flowCapabilities: SetCapability<ErvDriver>[] = [
+      'ventilation_mode',
+      'fan_power',
+    ]
+
     const getCapabilityArg = (
       args: FlowArgs<ErvDriver>,
-      capability: SetCapabilityErv,
+      capability: SetCapability<ErvDriver>,
     ): number | string => {
       if (capability === 'fan_power') {
         return Number(args[capability])
@@ -60,7 +58,7 @@ export = class ErvDriver extends BaseMELCloudDriver {
       return args[capability]
     }
 
-    flowCapabilities.forEach((capability: SetCapabilityErv): void => {
+    flowCapabilities.forEach((capability: SetCapability<ErvDriver>): void => {
       this.homey.flow
         .getConditionCard(`${capability}_erv_condition`)
         .registerRunListener(

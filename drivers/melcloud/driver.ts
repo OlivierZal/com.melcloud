@@ -1,81 +1,31 @@
 import BaseMELCloudDriver from '../../bases/driver'
-import type {
-  FlowArgs,
-  GetCapabilityMappingAta,
-  ListCapabilityMappingAta,
-  ReportCapabilityMappingAta,
-  SetCapabilityAta,
-  SetCapabilityMappingAta,
+import {
+  getCapabilityMappingAta,
+  listCapabilityMappingAta,
+  reportCapabilityMappingAta,
+  setCapabilityMappingAta,
+  type FlowArgs,
+  type GetCapabilityMappingAta,
+  type ListCapabilityMappingAta,
+  type ReportCapabilityMappingAta,
+  type SetCapability,
+  type SetCapabilityMappingAta,
 } from '../../types'
 
-const flowCapabilities: SetCapabilityAta[] = [
-  'operation_mode',
-  'fan_power',
-  'vertical',
-  'horizontal',
-]
-
-export = class AtaDriver extends BaseMELCloudDriver {
+export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   public readonly heatPumpType: string = 'Ata'
 
-  public readonly setCapabilityMapping: SetCapabilityMappingAta = {
-    onoff: { tag: 'Power', effectiveFlag: 0x1n },
-    operation_mode: { tag: 'OperationMode', effectiveFlag: 0x2n },
-    target_temperature: { tag: 'SetTemperature', effectiveFlag: 0x4n },
-    fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
-    vertical: { tag: 'VaneVertical', effectiveFlag: 0x10n },
-    horizontal: { tag: 'VaneHorizontal', effectiveFlag: 0x100n },
-  } as const
+  public readonly setCapabilityMapping: SetCapabilityMappingAta =
+    setCapabilityMappingAta
 
-  public readonly getCapabilityMapping: GetCapabilityMappingAta = {
-    measure_temperature: { tag: 'RoomTemperature' },
-  } as const
+  public readonly getCapabilityMapping: GetCapabilityMappingAta =
+    getCapabilityMappingAta
 
-  public readonly listCapabilityMapping: ListCapabilityMappingAta = {
-    'measure_power.wifi': { tag: 'WifiSignalStrength' },
-    fan_power: { tag: 'FanSpeed' },
-    fan_power_state: { tag: 'ActualFanSpeed' },
-    vertical: { tag: 'VaneVerticalDirection' },
-    horizontal: { tag: 'VaneHorizontalDirection' },
-  } as const
+  public readonly listCapabilityMapping: ListCapabilityMappingAta =
+    listCapabilityMappingAta
 
-  public readonly reportCapabilityMapping: ReportCapabilityMappingAta = {
-    measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
-    'measure_power.auto': ['Auto'],
-    'measure_power.cooling': ['Cooling'],
-    'measure_power.dry': ['Dry'],
-    'measure_power.fan': ['Fan'],
-    'measure_power.heating': ['Heating'],
-    'measure_power.other': ['Other'],
-    meter_power: [
-      'TotalAutoConsumed',
-      'TotalCoolingConsumed',
-      'TotalDryConsumed',
-      'TotalFanConsumed',
-      'TotalHeatingConsumed',
-      'TotalOtherConsumed',
-    ],
-    'meter_power.auto': ['TotalAutoConsumed'],
-    'meter_power.cooling': ['TotalCoolingConsumed'],
-    'meter_power.dry': ['TotalDryConsumed'],
-    'meter_power.fan': ['TotalFanConsumed'],
-    'meter_power.heating': ['TotalHeatingConsumed'],
-    'meter_power.other': ['TotalOtherConsumed'],
-    'meter_power.daily': [
-      'TotalAutoConsumed',
-      'TotalCoolingConsumed',
-      'TotalDryConsumed',
-      'TotalFanConsumed',
-      'TotalHeatingConsumed',
-      'TotalOtherConsumed',
-    ],
-    'meter_power.daily_auto': ['TotalAutoConsumed'],
-    'meter_power.daily_cooling': ['TotalCoolingConsumed'],
-    'meter_power.daily_dry': ['TotalDryConsumed'],
-    'meter_power.daily_fan': ['TotalFanConsumed'],
-    'meter_power.daily_heating': ['TotalHeatingConsumed'],
-    'meter_power.daily_other': ['TotalOtherConsumed'],
-  } as const
+  public readonly reportCapabilityMapping: ReportCapabilityMappingAta =
+    reportCapabilityMappingAta
 
   protected readonly deviceType = 0
 
@@ -91,9 +41,16 @@ export = class AtaDriver extends BaseMELCloudDriver {
   }
 
   protected registerFlowListeners(): void {
+    const flowCapabilities: SetCapability<AtaDriver>[] = [
+      'operation_mode',
+      'fan_power',
+      'vertical',
+      'horizontal',
+    ]
+
     const getCapabilityArg = (
       args: FlowArgs<AtaDriver>,
-      capability: SetCapabilityAta,
+      capability: SetCapability<AtaDriver>,
     ): number | string => {
       if (capability === 'fan_power') {
         return Number(args[capability])
@@ -101,7 +58,7 @@ export = class AtaDriver extends BaseMELCloudDriver {
       return args[capability]
     }
 
-    flowCapabilities.forEach((capability: SetCapabilityAta): void => {
+    flowCapabilities.forEach((capability: SetCapability<AtaDriver>): void => {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener(
