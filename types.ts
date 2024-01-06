@@ -585,19 +585,15 @@ export type GetCapabilityMappingAny =
   | GetCapabilityMappingErv
 
 interface ListCapabilityDataAta {
-  readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
 }
 interface ListCapabilityDataAtw {
-  readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'>
 }
 interface ListCapabilityDataErv {
-  readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'>
 }
 export interface ListCapabilityData<T> {
-  readonly effectiveFlag?: bigint
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
 export type ListCapabilityMappingAta = Record<
