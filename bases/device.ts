@@ -384,10 +384,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     }
   }
 
-  private async updateCapabilities(
-    data: GetDeviceData<T> | ListDevice<T>['Device'] | null,
-    syncMode?: SyncMode,
-  ): Promise<void> {
+  private async updateCapabilities<
+    D extends GetDeviceData<T> | ListDevice<T>['Device'],
+  >(data: D | null, syncMode?: SyncMode): Promise<void> {
     if (data?.EffectiveFlags === undefined) {
       return
     }
@@ -466,7 +465,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       if (tag in data && shouldProcess(capability, effectiveFlag)) {
         await this.setCapabilityValue(
           capability,
-          data[tag as keyof typeof data] as CapabilityValue,
+          data[tag as keyof D] as CapabilityValue,
         )
       }
     }
