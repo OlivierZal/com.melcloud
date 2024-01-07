@@ -1090,7 +1090,7 @@
                 "id": "1",
                 "title": {
                   "en": "Very slow",
-                  "fr": "Très lente",
+                  "fr": "Très lent",
                   "nl": "Zeer langzaam",
                   "sv": "Mycket långsam",
                   "no": "Veldig sakte",
@@ -1102,7 +1102,7 @@
                 "id": "2",
                 "title": {
                   "en": "Slow",
-                  "fr": "Lente",
+                  "fr": "Lent",
                   "nl": "Langzaam",
                   "sv": "Långsam",
                   "no": "Sakte",
@@ -1114,7 +1114,7 @@
                 "id": "3",
                 "title": {
                   "en": "Medium",
-                  "fr": "Moyenne",
+                  "fr": "Moyen",
                   "nl": "Medium",
                   "sv": "Medium",
                   "no": "Medium",
@@ -1277,7 +1277,7 @@
               {
                 "id": "left",
                 "title": {
-                  "en": "Leftward",
+                  "en": "Leftwards",
                   "fr": "Gauche",
                   "nl": "Links",
                   "sv": "Vänster",
@@ -2568,7 +2568,7 @@
               {
                 "id": "left",
                 "title": {
-                  "en": "Leftward",
+                  "en": "Leftwards",
                   "fr": "Gauche",
                   "nl": "Links",
                   "sv": "Vänster",
@@ -6382,7 +6382,7 @@
         {
           "id": "left",
           "title": {
-            "en": "Leftward",
+            "en": "Leftwards",
             "fr": "Gauche",
             "nl": "Links",
             "sv": "Vänster",
