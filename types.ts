@@ -78,6 +78,8 @@ type DeviceFromDriver<T> = T extends AtaDriver
       ? ErvDevice
       : MELCloudDevice
 
+export type BooleanString = 'false' | 'true'
+
 export type CapabilityValue = boolean | number | string
 export type SetDeviceValue = boolean | number
 export type DeviceValue = boolean | number | string
@@ -216,7 +218,6 @@ interface GetCapabilitiesCommon {
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
 interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
-  readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
@@ -244,6 +245,7 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
   readonly 'alarm_generic.defrost_mode': boolean
+  readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
   readonly last_legionella: string
   readonly measure_power: number
@@ -410,7 +412,6 @@ interface GetDeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
 interface GetDeviceDataAtw extends SetDeviceDataAtw {
-  readonly EcoHotWater: boolean
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
   readonly OperationMode: OperationModeState
@@ -456,6 +457,7 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly CurrentEnergyConsumed: number
   readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
+  readonly EcoHotWater: boolean
   readonly FlowTemperature: number
   readonly FlowTemperatureZone1: number
   readonly FlowTemperatureZone2: number
@@ -731,7 +733,6 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtw = {
   },
 } as const
 export const getCapabilityMappingAtw: GetCapabilityMappingAtw = {
-  'alarm_generic.eco_hot_water': { tag: 'EcoHotWater' },
   measure_temperature: { tag: 'RoomTemperatureZone1' },
   'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
   'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
@@ -747,6 +748,7 @@ export const listCapabilityMappingAtw: ListCapabilityMappingAtw = {
   'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
   'alarm_generic.booster_heater2_plus': { tag: 'BoosterHeater2PlusStatus' },
   'alarm_generic.defrost_mode': { tag: 'DefrostMode' },
+  'alarm_generic.eco_hot_water': { tag: 'EcoHotWater' },
   'alarm_generic.immersion_heater': { tag: 'ImmersionHeaterStatus' },
   last_legionella: { tag: 'LastLegionellaActivationTime' },
   measure_power: { tag: 'CurrentEnergyConsumed' },
