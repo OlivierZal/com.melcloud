@@ -30,7 +30,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
   public readonly reportCapabilityMapping: ReportCapabilityMappingAtw =
     reportCapabilityMappingAtw
 
-  public readonly capabilitiesAtw: (
+  public readonly capabilities: (
     | GetCapability<AtwDriver>
     | ListCapability<AtwDriver>
     | SetCapability<AtwDriver>
@@ -51,16 +51,16 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     'measure_power.produced',
   ]
 
-  public readonly coolCapabilitiesAtw: SetCapability<AtwDriver>[] = [
+  public readonly coolCapabilities: SetCapability<AtwDriver>[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  public readonly notCoolCapabilitiesAtw: SetCapability<AtwDriver>[] = [
+  public readonly notCoolCapabilities: SetCapability<AtwDriver>[] = [
     'operation_mode_zone',
   ]
 
-  public readonly zone2CapabilitiesAtw: (
+  public readonly zone2Capabilities: (
     | GetCapability<AtwDriver>
     | ListCapability<AtwDriver>
     | SetCapability<AtwDriver>
@@ -72,12 +72,12 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     'operation_mode_state.zone2',
   ]
 
-  public readonly coolZone2CapabilitiesAtw: SetCapability<AtwDriver>[] = [
+  public readonly coolZone2Capabilities: SetCapability<AtwDriver>[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  public readonly notCoolZone2CapabilitiesAtw: SetCapability<AtwDriver>[] = [
+  public readonly notCoolZone2Capabilities: SetCapability<AtwDriver>[] = [
     'operation_mode_zone.zone2',
   ]
 
@@ -85,14 +85,14 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
 
   public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
     return [
-      ...this.capabilitiesAtw,
-      ...(canCool ? this.coolCapabilitiesAtw : this.notCoolCapabilitiesAtw),
+      ...this.capabilities,
+      ...(canCool ? this.coolCapabilities : this.notCoolCapabilities),
       ...(hasZone2
         ? [
-            ...this.zone2CapabilitiesAtw,
+            ...this.zone2Capabilities,
             ...(canCool
-              ? this.coolZone2CapabilitiesAtw
-              : this.notCoolZone2CapabilitiesAtw),
+              ? this.coolZone2Capabilities
+              : this.notCoolZone2Capabilities),
           ]
         : []),
     ]
