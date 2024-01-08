@@ -21,7 +21,7 @@ import type {
   MELCloudDevice,
   PairSetting,
   Settings,
-  SettingValue,
+  ValueOf,
 } from './types'
 
 const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
@@ -96,7 +96,7 @@ export = {
           acc[driverId] = {}
         }
         Object.entries(device.getSettings() as Settings).forEach(
-          ([settingId, value]: [string, SettingValue]): void => {
+          ([settingId, value]: [string, ValueOf<Settings>]): void => {
             if (!(settingId in acc[driverId])) {
               acc[driverId][settingId] = []
             }
@@ -283,10 +283,9 @@ export = {
               return
             }
             const deviceSettings: Settings = Object.fromEntries(
-              deviceChangedKeys.map((key: string): [string, SettingValue] => [
-                key,
-                body[key],
-              ]),
+              deviceChangedKeys.map(
+                (key: string): [string, ValueOf<Settings>] => [key, body[key]],
+              ),
             )
             try {
               await device.setSettings(deviceSettings)

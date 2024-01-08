@@ -20,9 +20,7 @@ import type {
   HolidayModeData,
   HolidayModePostData,
   HolidayModeSettings,
-  HomeySettingKey,
   HomeySettings,
-  HomeySettingValue,
   ListDevice,
   LoginCredentials,
   LoginData,
@@ -31,6 +29,7 @@ import type {
   MELCloudDriver,
   SuccessData,
   SyncFromMode,
+  ValueOf,
 } from './types'
 
 const MAX_INT32: number = 2 ** 31 - 1
@@ -401,10 +400,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   private setHomeySettings(settings: Partial<HomeySettings>): void {
     Object.entries(settings)
       .filter(
-        ([setting, value]: [string, HomeySettingValue]) =>
-          value !== this.getHomeySetting(setting as HomeySettingKey),
+        ([setting, value]: [string, ValueOf<HomeySettings>]) =>
+          value !== this.getHomeySetting(setting as keyof HomeySettings),
       )
-      .forEach(([setting, value]: [string, HomeySettingValue]): void => {
+      .forEach(([setting, value]: [string, ValueOf<HomeySettings>]): void => {
         this.homey.settings.set(setting, value)
       })
   }

@@ -84,14 +84,12 @@ export type CapabilityValue = boolean | number | string
 export type SetDeviceValue = boolean | number
 export type DeviceValue = boolean | number | string
 
-type ValueOf<T> = T[keyof T]
+export type ValueOf<T> = T[keyof T]
 
 export interface Settings
   extends Record<string, boolean | number | string | null | undefined> {
   readonly always_on?: boolean
 }
-export type SettingKey = keyof Settings
-export type SettingValue = ValueOf<Settings>
 
 export interface Store {
   readonly canCool: boolean
@@ -108,8 +106,6 @@ interface BaseHomeySettingValue<T> {
 }
 export type HomeySettings = BaseHomeySettingValue<string | null>
 export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
-export type HomeySettingKey = keyof HomeySettings
-export type HomeySettingValue = ValueOf<HomeySettings>
 
 export interface ReportPlanParameters {
   readonly duration: object
@@ -181,7 +177,7 @@ export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
 }
 
-export type DeviceSetting = Record<string, SettingValue[]>
+export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
 interface SetCapabilitiesCommon {
