@@ -11,21 +11,21 @@ import type {
   DeviceDetails,
   DeviceValue,
   GetCapabilityData,
-  GetCapabilityMappingAny,
+  GetCapabilityMapping,
   GetDeviceData,
   ListCapabilityData,
-  ListCapabilityMappingAny,
+  ListCapabilityMapping,
   ListDevice,
   MELCloudDriver,
   NonReportCapability,
   PostData,
   ReportCapability,
-  ReportCapabilityMappingAny,
+  ReportCapabilityMapping,
   ReportData,
   ReportPlanParameters,
   ReportPostData,
   SetCapability,
-  SetCapabilityMappingAny,
+  SetCapabilityMapping,
   SetCapabilityData,
   SetDeviceData,
   SetDeviceValue,
@@ -37,17 +37,13 @@ import type {
   UpdateDeviceData,
 } from '../types'
 
-type CombinedCapabilities =
-  | Partial<NonNullable<ListCapabilityMappingAny>>
-  | (Partial<NonNullable<GetCapabilityMappingAny>> &
-      Partial<NonNullable<ListCapabilityMappingAny>> &
-      Partial<NonNullable<SetCapabilityMappingAny>>)
-  | (Partial<NonNullable<GetCapabilityMappingAny>> &
-      Partial<NonNullable<SetCapabilityMappingAny>>)
-type CombinedCapabilityData<T> =
-  | ListCapabilityData<T>
-  | (GetCapabilityData<T> & ListCapabilityData<T> & SetCapabilityData<T>)
-  | (GetCapabilityData<T> & SetCapabilityData<T>)
+type CombinedCapabilities<T> =
+  | Partial<NonNullable<GetCapabilityMapping<T>>>
+  | Partial<NonNullable<ListCapabilityMapping<T>>>
+  | Partial<NonNullable<SetCapabilityMapping<T>>>
+type CombinedCapabilityData<T> = GetCapabilityData<T> &
+  ListCapabilityData<T> &
+  SetCapabilityData<T>
 
 const DATETIME_1970: DateTime = DateTime.local(1970)
 export const K_MULTIPLIER = 1000
@@ -91,15 +87,15 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   #optionalCapabilities!: string[]
 
-  #setCapabilityMapping!: Partial<NonNullable<SetCapabilityMappingAny>>
+  #setCapabilityMapping!: Partial<NonNullable<SetCapabilityMapping<T>>>
 
-  #getCapabilityMapping!: Partial<NonNullable<GetCapabilityMappingAny>>
+  #getCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>>
 
-  #listCapabilityMapping!: Partial<NonNullable<ListCapabilityMappingAny>>
+  #listCapabilityMapping!: Partial<NonNullable<ListCapabilityMapping<T>>>
 
   #reportCapabilityMapping: {
-    false: Partial<NonNullable<ReportCapabilityMappingAny>>
-    true: Partial<NonNullable<ReportCapabilityMappingAny>>
+    false: Partial<NonNullable<ReportCapabilityMapping<T>>>
+    true: Partial<NonNullable<ReportCapabilityMapping<T>>>
   } = {
     false: {},
     true: {},
@@ -398,7 +394,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private getCapabilitiesToUpdate(
     syncMode: SyncMode | undefined,
     effectiveFlags: bigint,
-  ): CombinedCapabilities {
+  ): CombinedCapabilities<T> {
     switch (syncMode) {
       case 'syncTo':
         return {
@@ -422,13 +418,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
                 }
               ),
           ),
-        )
+        ) as Partial<NonNullable<ListCapabilityMapping<T>>>
       default:
         return {
           ...this.#setCapabilityMapping,
           ...this.#getCapabilityMapping,
           ...this.#listCapabilityMapping,
-        } as CombinedCapabilities
+        }
     }
   }
 
@@ -703,16 +699,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   private setSetAndGetCapabilityMappings(): void {
     this.#setCapabilityMapping = this.cleanMapping(
-      this.driver.setCapabilityMapping,
+      this.driver.setCapabilityMapping as SetCapabilityMapping<T>,
     )
     this.#getCapabilityMapping = this.cleanMapping(
-      this.driver.getCapabilityMapping,
+      this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
   }
 
   private setListCapabilityMapping(): void {
     this.#listCapabilityMapping = this.cleanMapping(
-      this.driver.listCapabilityMapping,
+      this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
   }
 
@@ -724,21 +720,24 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         this.#reportCapabilityMapping[String(total) as BooleanString] =
           Object.fromEntries(
             Object.entries(
-              this.cleanMapping(this.driver.reportCapabilityMapping),
+              this.cleanMapping(
+                this.driver
+                  .reportCapabilityMapping as ReportCapabilityMapping<T>,
+              ),
             ).filter(([capability]: [string, keyof ReportData<T>]) =>
               filterEnergyKeys(capability, total),
             ),
-          ) as Partial<NonNullable<ReportCapabilityMappingAny>>
+          ) as Partial<NonNullable<ReportCapabilityMapping<T>>>
       },
     )
   }
 
   private cleanMapping<
     M extends
-      | GetCapabilityMappingAny
-      | ListCapabilityMappingAny
-      | ReportCapabilityMappingAny
-      | SetCapabilityMappingAny,
+      | GetCapabilityMapping<T>
+      | ListCapabilityMapping<T>
+      | ReportCapabilityMapping<T>
+      | SetCapabilityMapping<T>,
   >(capabilityMapping: M): Partial<NonNullable<M>> {
     return Object.fromEntries(
       Object.entries(capabilityMapping ?? {}).filter(([capability]) =>

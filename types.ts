@@ -552,10 +552,16 @@ export type SetCapabilityMappingErv = Record<
   keyof SetCapabilitiesErv,
   SetCapabilityDataErv
 >
-export type SetCapabilityMappingAny =
-  | SetCapabilityMappingAta
-  | SetCapabilityMappingAtw
-  | SetCapabilityMappingErv
+export type SetCapabilityMapping<T> = T extends AtaDriver
+  ? SetCapabilityMappingAta
+  : T extends AtwDriver
+    ? SetCapabilityMappingAtw
+    : T extends ErvDriver
+      ? SetCapabilityMappingErv
+      :
+          | SetCapabilityMappingAta
+          | SetCapabilityMappingAtw
+          | SetCapabilityMappingErv
 
 interface GetCapabilityDataAta {
   readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'>
@@ -581,10 +587,16 @@ export type GetCapabilityMappingErv = Record<
   keyof GetCapabilitiesErv,
   GetCapabilityDataErv
 >
-export type GetCapabilityMappingAny =
-  | GetCapabilityMappingAta
-  | GetCapabilityMappingAtw
-  | GetCapabilityMappingErv
+export type GetCapabilityMapping<T> = T extends AtaDriver
+  ? GetCapabilityMappingAta
+  : T extends AtwDriver
+    ? GetCapabilityMappingAtw
+    : T extends ErvDriver
+      ? GetCapabilityMappingErv
+      :
+          | GetCapabilityMappingAta
+          | GetCapabilityMappingAtw
+          | GetCapabilityMappingErv
 
 interface ListCapabilityDataAta {
   readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
@@ -610,10 +622,16 @@ export type ListCapabilityMappingErv = Record<
   keyof ListCapabilitiesErv,
   ListCapabilityDataErv
 >
-export type ListCapabilityMappingAny =
-  | ListCapabilityMappingAta
-  | ListCapabilityMappingAtw
-  | ListCapabilityMappingErv
+export type ListCapabilityMapping<T> = T extends AtaDriver
+  ? ListCapabilityMappingAta
+  : T extends AtwDriver
+    ? ListCapabilityMappingAtw
+    : T extends ErvDriver
+      ? ListCapabilityMappingErv
+      :
+          | ListCapabilityMappingAta
+          | ListCapabilityMappingAtw
+          | ListCapabilityMappingErv
 
 export type ReportCapabilityMappingAta = Record<
   keyof ReportCapabilitiesAta,
@@ -623,10 +641,13 @@ export type ReportCapabilityMappingAtw = Record<
   keyof ReportCapabilitiesAtw,
   readonly (keyof ReportDataAtw)[]
 >
-export type ReportCapabilityMappingAny =
-  | ReportCapabilityMappingAta
-  | ReportCapabilityMappingAtw
-  | null
+export type ReportCapabilityMapping<T> = T extends AtaDriver
+  ? ReportCapabilityMappingAta
+  : T extends AtwDriver
+    ? ReportCapabilityMappingAtw
+    : T extends ErvDriver
+      ? null
+      : ReportCapabilityMappingAta | ReportCapabilityMappingAtw | null
 
 export const setCapabilityMappingAta: SetCapabilityMappingAta = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
