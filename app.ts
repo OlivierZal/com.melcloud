@@ -184,9 +184,9 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           const buildingDeviceIds: Record<number, string> = Object.fromEntries(
             buildingDevices.map(
               ({
-                DeviceID: deviceID,
+                DeviceID: deviceId,
                 DeviceName: deviceName,
-              }): [number, string] => [deviceID, deviceName],
+              }): [number, string] => [deviceId, deviceName],
             ),
           )
           acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }

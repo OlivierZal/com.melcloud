@@ -487,8 +487,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   private getDeviceFromList(): ListDevice<T> | undefined {
     return this.app.deviceList.find(
-      (device: ListDevice<MELCloudDriver>) => device.DeviceID === this.id,
-    ) as ListDevice<T> | undefined
+      (device: ListDevice<MELCloudDriver>): device is ListDevice<T> =>
+        device.DeviceID === this.id,
+    )
   }
 
   private async runEnergyReports(): Promise<void> {
@@ -751,12 +752,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   protected abstract specificOnCapability(
-    capability: SetCapability<MELCloudDriver> | 'thermostat_mode',
+    capability: SetCapability<T> | 'thermostat_mode',
     value: CapabilityValue,
   ): Promise<void>
 
   protected abstract convertToDevice(
-    capability: SetCapability<MELCloudDriver>,
+    capability: SetCapability<T>,
     value: CapabilityValue,
   ): SetDeviceValue
 
