@@ -399,7 +399,9 @@ export type UpdateDeviceData<T> = T & {
         EffectiveFlags: number
       } extends AtwDriver
     ? UpdateDeviceDataAtw
-    : T extends ErvDriver
+    : T & {
+          EffectiveFlags: number
+        } extends ErvDriver
       ? UpdateDeviceDataErv
       : UpdateDeviceDataAta | UpdateDeviceDataAtw | UpdateDeviceDataErv
 
