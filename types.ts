@@ -633,6 +633,10 @@ export type ListCapabilityMapping<T> = T extends AtaDriver
           | ListCapabilityMappingAtw
           | ListCapabilityMappingErv
 
+export type NonReportCapabilityData<T> =
+  | GetCapabilityData<T>
+  | ListCapabilityData<T>
+  | SetCapabilityData<T>
 export type PartialNonReportCapabilityMapping<T> =
   | Partial<NonNullable<ListCapabilityMapping<T>>>
   | (Partial<NonNullable<GetCapabilityMapping<T>>> &
@@ -640,10 +644,6 @@ export type PartialNonReportCapabilityMapping<T> =
       Partial<NonNullable<SetCapabilityMapping<T>>>)
   | (Partial<NonNullable<GetCapabilityMapping<T>>> &
       Partial<NonNullable<SetCapabilityMapping<T>>>)
-export type NonReportCapabilityData<T> =
-  | GetCapabilityData<T>
-  | ListCapabilityData<T>
-  | SetCapabilityData<T>
 
 export type ReportCapabilityMappingAta = Record<
   keyof ReportCapabilitiesAta,
