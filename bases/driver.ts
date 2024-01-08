@@ -3,26 +3,12 @@ import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
 import type {
   DeviceDetails,
-  GetCapabilityMappingAny,
-  ListCapabilityMappingAny,
   ListDevice,
   LoginCredentials,
-  ReportCapabilityMappingAny,
-  SetCapabilityMappingAny,
   Store,
 } from '../types'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
-  public readonly heatPumpType!: string
-
-  public readonly setCapabilityMapping!: SetCapabilityMappingAny
-
-  public readonly getCapabilityMapping!: GetCapabilityMappingAny
-
-  public readonly listCapabilityMapping!: ListCapabilityMappingAny
-
-  public readonly reportCapabilityMapping: ReportCapabilityMappingAny = null
-
   protected readonly deviceType!: number
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp

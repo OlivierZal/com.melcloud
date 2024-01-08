@@ -23,6 +23,8 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly listCapabilityMapping: ListCapabilityMappingErv =
     listCapabilityMappingErv
 
+  public readonly reportCapabilityMapping: null = null
+
   protected readonly deviceType = 3
 
   public getRequiredCapabilities({
