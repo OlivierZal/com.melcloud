@@ -16,8 +16,8 @@ import type {
   ListCapabilityMapping,
   ListDevice,
   MELCloudDriver,
-  NonReportCapability,
-  NonReportCapabilityData,
+  OperationalCapability,
+  OperationalCapabilityData,
   PostData,
   ReportCapability,
   ReportCapabilityMapping,
@@ -351,26 +351,26 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       return
     }
     const updateCapabilityMapping: [
-      NonReportCapability<T>,
-      NonReportCapabilityData<T>,
+      OperationalCapability<T>,
+      OperationalCapabilityData<T>,
     ][] = Object.entries(
       this.getUpdateCapabilityMapping(syncMode, BigInt(data.EffectiveFlags)),
-    ) as [NonReportCapability<T>, NonReportCapabilityData<T>][]
+    ) as [OperationalCapability<T>, OperationalCapabilityData<T>][]
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
     const [regularCapabilities, lastCapabilities]: [
-      NonReportCapability<T>,
-      NonReportCapabilityData<T>,
+      OperationalCapability<T>,
+      OperationalCapabilityData<T>,
     ][][] = updateCapabilityMapping.reduce<
-      [NonReportCapability<T>, NonReportCapabilityData<T>][][]
+      [OperationalCapability<T>, OperationalCapabilityData<T>][][]
     >(
       (
         acc,
         [capability, capabilityData]: [
-          NonReportCapability<T>,
-          NonReportCapabilityData<T>,
+          OperationalCapability<T>,
+          OperationalCapabilityData<T>,
         ],
       ) => {
         if (keysToUpdateLast.includes(capability)) {
@@ -426,14 +426,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private async setCapabilityValues<
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
   >(
-    capabilities: [NonReportCapability<T>, NonReportCapabilityData<T>][],
+    capabilities: [OperationalCapability<T>, OperationalCapabilityData<T>][],
     data: D,
   ): Promise<void> {
     await Promise.all(
       capabilities.map(
         async ([capability, { tag }]: [
-          NonReportCapability<T>,
-          NonReportCapabilityData<T>,
+          OperationalCapability<T>,
+          OperationalCapabilityData<T>,
         ]): Promise<void> => {
           if (tag in data) {
             await this.setCapabilityValue(

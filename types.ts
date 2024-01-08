@@ -346,7 +346,7 @@ export type ListCapability<T> = T extends AtaDriver
           | keyof ListCapabilitiesAta
           | keyof ListCapabilitiesAtw
           | keyof ListCapabilitiesErv
-export type NonReportCapability<T> =
+export type OperationalCapability<T> =
   | GetCapability<T>
   | ListCapability<T>
   | SetCapability<T>
@@ -357,7 +357,7 @@ export type ReportCapability<T> = T extends AtaDriver
     : T extends ErvDriver
       ? never
       : keyof ReportCapabilitiesAta | keyof ReportCapabilitiesAtw
-export type Capability<T> = NonReportCapability<T> | ReportCapability<T>
+export type Capability<T> = OperationalCapability<T> | ReportCapability<T>
 
 export type PostData<T> = SetDeviceData<T> & {
   readonly DeviceID: number
@@ -635,7 +635,7 @@ export type ListCapabilityMapping<T> = T extends AtaDriver
           | ListCapabilityMappingAtw
           | ListCapabilityMappingErv
 
-export type NonReportCapabilityData<T> =
+export type OperationalCapabilityData<T> =
   | GetCapabilityData<T>
   | ListCapabilityData<T>
   | SetCapabilityData<T>
