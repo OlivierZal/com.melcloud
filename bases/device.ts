@@ -10,7 +10,6 @@ import type {
   CapabilityValue,
   DeviceDetails,
   DeviceValue,
-  GetCapabilityData,
   GetCapabilityMapping,
   GetDeviceData,
   ListCapabilityData,
@@ -18,6 +17,8 @@ import type {
   ListDevice,
   MELCloudDriver,
   NonReportCapability,
+  NonReportCapabilityData,
+  PartialNonReportCapabilityMapping,
   PostData,
   ReportCapability,
   ReportCapabilityMapping,
@@ -36,14 +37,6 @@ import type {
   SyncMode,
   UpdateDeviceData,
 } from '../types'
-
-type CombinedCapabilities<T> =
-  | Partial<NonNullable<GetCapabilityMapping<T>>>
-  | Partial<NonNullable<ListCapabilityMapping<T>>>
-  | Partial<NonNullable<SetCapabilityMapping<T>>>
-type CombinedCapabilityData<T> = GetCapabilityData<T> &
-  ListCapabilityData<T> &
-  SetCapabilityData<T>
 
 const DATETIME_1970: DateTime = DateTime.local(1970)
 export const K_MULTIPLIER = 1000
@@ -357,25 +350,25 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (data?.EffectiveFlags === undefined) {
       return
     }
-    const capabilities: [NonReportCapability<T>, CombinedCapabilityData<T>][] =
+    const capabilities: [NonReportCapability<T>, NonReportCapabilityData<T>][] =
       Object.entries(
         this.getCapabilitiesToUpdate(syncMode, BigInt(data.EffectiveFlags)),
-      ) as [NonReportCapability<T>, CombinedCapabilityData<T>][]
+      ) as [NonReportCapability<T>, NonReportCapabilityData<T>][]
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
     const [regularCapabilities, lastCapabilities]: [
       NonReportCapability<T>,
-      CombinedCapabilityData<T>,
+      NonReportCapabilityData<T>,
     ][][] = capabilities.reduce<
-      [NonReportCapability<T>, CombinedCapabilityData<T>][][]
+      [NonReportCapability<T>, NonReportCapabilityData<T>][][]
     >(
       (
         acc,
         [capability, capabilityData]: [
           NonReportCapability<T>,
-          CombinedCapabilityData<T>,
+          NonReportCapabilityData<T>,
         ],
       ) => {
         if (keysToUpdateLast.includes(capability)) {
@@ -394,16 +387,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private getCapabilitiesToUpdate(
     syncMode: SyncMode | undefined,
     effectiveFlags: bigint,
-  ): CombinedCapabilities<T> {
+  ): PartialNonReportCapabilityMapping<T> {
     switch (syncMode) {
       case 'syncTo':
         return {
-          ...Object.fromEntries(
+          ...(Object.fromEntries(
             Object.entries(this.#setCapabilityMapping).filter(
               ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
                 !!(effectiveFlag & effectiveFlags),
             ),
-          ),
+          ) as Partial<NonNullable<SetCapabilityMapping<T>>>),
           ...this.#getCapabilityMapping,
         }
       case 'syncFrom':
@@ -431,14 +424,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private async setCapabilityValues<
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
   >(
-    capabilities: [NonReportCapability<T>, CombinedCapabilityData<T>][],
+    capabilities: [NonReportCapability<T>, NonReportCapabilityData<T>][],
     data: D,
   ): Promise<void> {
     await Promise.all(
       capabilities.map(
         async ([capability, { tag }]: [
           NonReportCapability<T>,
-          CombinedCapabilityData<T>,
+          NonReportCapabilityData<T>,
         ]): Promise<void> => {
           if (tag in data) {
             await this.setCapabilityValue(

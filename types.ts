@@ -84,7 +84,7 @@ export type CapabilityValue = boolean | number | string
 export type SetDeviceValue = boolean | number
 export type DeviceValue = boolean | number | string
 
-export type ValueOf<T> = T[keyof T]
+type ValueOf<T> = T[keyof T]
 
 export interface Settings
   extends Record<string, boolean | number | string | null | undefined> {
@@ -632,6 +632,18 @@ export type ListCapabilityMapping<T> = T extends AtaDriver
           | ListCapabilityMappingAta
           | ListCapabilityMappingAtw
           | ListCapabilityMappingErv
+
+export type PartialNonReportCapabilityMapping<T> =
+  | Partial<NonNullable<ListCapabilityMapping<T>>>
+  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
+      Partial<NonNullable<ListCapabilityMapping<T>>> &
+      Partial<NonNullable<SetCapabilityMapping<T>>>)
+  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
+      Partial<NonNullable<SetCapabilityMapping<T>>>)
+export type NonReportCapabilityData<T> =
+  | GetCapabilityData<T>
+  | ListCapabilityData<T>
+  | SetCapabilityData<T>
 
 export type ReportCapabilityMappingAta = Record<
   keyof ReportCapabilitiesAta,
