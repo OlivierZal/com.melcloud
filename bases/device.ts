@@ -18,7 +18,6 @@ import type {
   MELCloudDriver,
   NonReportCapability,
   NonReportCapabilityData,
-  PartialNonReportCapabilityMapping,
   PostData,
   ReportCapability,
   ReportCapabilityMapping,
@@ -26,8 +25,8 @@ import type {
   ReportPlanParameters,
   ReportPostData,
   SetCapability,
-  SetCapabilityMapping,
   SetCapabilityData,
+  SetCapabilityMapping,
   SetDeviceData,
   SetDeviceValue,
   SettingKey,
@@ -35,6 +34,7 @@ import type {
   Store,
   SyncFromMode,
   SyncMode,
+  UpdateCapabilityMapping,
   UpdateDeviceData,
 } from '../types'
 
@@ -350,10 +350,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (data?.EffectiveFlags === undefined) {
       return
     }
-    const capabilities: [NonReportCapability<T>, NonReportCapabilityData<T>][] =
-      Object.entries(
-        this.getCapabilitiesToUpdate(syncMode, BigInt(data.EffectiveFlags)),
-      ) as [NonReportCapability<T>, NonReportCapabilityData<T>][]
+    const updateCapabilityMapping: [
+      NonReportCapability<T>,
+      NonReportCapabilityData<T>,
+    ][] = Object.entries(
+      this.getUpdateCapabilityMapping(syncMode, BigInt(data.EffectiveFlags)),
+    ) as [NonReportCapability<T>, NonReportCapabilityData<T>][]
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
@@ -361,7 +363,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     const [regularCapabilities, lastCapabilities]: [
       NonReportCapability<T>,
       NonReportCapabilityData<T>,
-    ][][] = capabilities.reduce<
+    ][][] = updateCapabilityMapping.reduce<
       [NonReportCapability<T>, NonReportCapabilityData<T>][][]
     >(
       (
@@ -384,10 +386,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await this.setCapabilityValues(lastCapabilities, data)
   }
 
-  private getCapabilitiesToUpdate(
+  private getUpdateCapabilityMapping(
     syncMode: SyncMode | undefined,
     effectiveFlags: bigint,
-  ): PartialNonReportCapabilityMapping<T> {
+  ): UpdateCapabilityMapping<T> {
     switch (syncMode) {
       case 'syncTo':
         return {

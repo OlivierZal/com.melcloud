@@ -637,7 +637,7 @@ export type NonReportCapabilityData<T> =
   | GetCapabilityData<T>
   | ListCapabilityData<T>
   | SetCapabilityData<T>
-export type PartialNonReportCapabilityMapping<T> =
+export type UpdateCapabilityMapping<T> =
   | Partial<NonNullable<ListCapabilityMapping<T>>>
   | (Partial<NonNullable<GetCapabilityMapping<T>>> &
       Partial<NonNullable<ListCapabilityMapping<T>>> &
