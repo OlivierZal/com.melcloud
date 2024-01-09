@@ -22,20 +22,20 @@ export enum OperationMode {
 }
 export enum Vertical {
   auto = 0,
-  top = 1,
-  middletop = 2,
+  upwards = 1,
+  mid_high = 2,
   middle = 3,
-  middlebottom = 4,
-  bottom = 5,
+  mid_low = 4,
+  downwards = 5,
   swing = 7,
 }
 export enum Horizontal {
   auto = 0,
-  left = 1,
-  middleleft = 2,
-  middle = 3,
-  middleright = 4,
-  right = 5,
+  leftwards = 1,
+  center_left = 2,
+  center = 3,
+  center_right = 4,
+  rightwards = 5,
   swing = 12,
 }
 
@@ -877,7 +877,18 @@ export const listCapabilityMappingErv: ListCapabilityMappingErv = {
   measure_pm25: { tag: 'PM25Level' },
 } as const
 
-export type FlowArgs<T> = Record<Capability<T>, string> & {
+export type FlowArgs<T> = (T extends AtaDriver
+  ? SetCapabilitiesAta
+  : T extends AtwDriver
+    ? {
+        readonly onoff: boolean
+        readonly operation_mode_state: keyof typeof OperationModeState
+        readonly operation_mode_zone: keyof typeof OperationModeZone
+        readonly target_temperature: number
+      }
+    : T extends ErvDriver
+      ? SetCapabilitiesErv
+      : never) & {
   readonly device: DeviceFromDriver<T>
 }
 

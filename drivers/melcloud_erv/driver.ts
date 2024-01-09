@@ -53,12 +53,10 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
     const getCapabilityArg = (
       args: FlowArgs<ErvDriver>,
       capability: SetCapability<ErvDriver>,
-    ): number | string => {
-      if (capability === 'fan_power') {
-        return Number(args[capability])
-      }
-      return args[capability]
-    }
+    ): number | string =>
+      capability === 'fan_power'
+        ? Number(args[capability])
+        : (args[capability] as string)
 
     flowCapabilities.forEach((capability: SetCapability<ErvDriver>): void => {
       this.homey.flow
@@ -72,7 +70,7 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
         .getActionCard(`${capability}_erv_action`)
         .registerRunListener(
           async (args: FlowArgs<ErvDriver>): Promise<void> => {
-            await args.device.triggerCapabilityListener(
+            await args.device.onCapability(
               capability,
               getCapabilityArg(args, capability),
             )

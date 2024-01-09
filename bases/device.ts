@@ -217,6 +217,18 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await super.setWarning(null)
   }
 
+  public async onCapability(
+    capability: SetCapability<T> | 'thermostat_mode',
+    value: CapabilityValue,
+  ): Promise<void> {
+    this.clearSync()
+    if (capability === 'onoff') {
+      await this.setAlwaysOnWarning()
+    }
+    await this.specificOnCapability(capability, value)
+    this.applySyncToDevice()
+  }
+
   protected async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on') === true) {
       await this.setWarning(this.homey.__('warnings.always_on'))
@@ -257,18 +269,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   ): CapabilityValue {
     return (this.diff.get(capability) ??
       this.getCapabilityValue(capability)) as CapabilityValue
-  }
-
-  private async onCapability(
-    capability: SetCapability<T> | 'thermostat_mode',
-    value: CapabilityValue,
-  ): Promise<void> {
-    this.clearSync()
-    if (capability === 'onoff') {
-      await this.setAlwaysOnWarning()
-    }
-    await this.specificOnCapability(capability, value)
-    this.applySyncToDevice()
   }
 
   private async setDeviceData(): Promise<GetDeviceData<T> | null> {

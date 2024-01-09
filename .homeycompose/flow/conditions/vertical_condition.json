@@ -40,7 +40,7 @@
           }
         },
         {
-          "id": "top",
+          "id": "upwards",
           "title": {
             "en": "Upwards",
             "fr": "Haut",
@@ -52,7 +52,7 @@
           }
         },
         {
-          "id": "middletop",
+          "id": "mid_high",
           "title": {
             "en": "Mid-high",
             "fr": "Milieu haut",
@@ -76,7 +76,7 @@
           }
         },
         {
-          "id": "middlebottom",
+          "id": "mid_low",
           "title": {
             "en": "Mid-low",
             "fr": "Milieu bas",
@@ -88,7 +88,7 @@
           }
         },
         {
-          "id": "bottom",
+          "id": "downwards",
           "title": {
             "en": "Downwards",
             "fr": "Bas",

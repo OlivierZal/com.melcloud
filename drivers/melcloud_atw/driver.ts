@@ -124,10 +124,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
                 .getActionCard(`${capability}_action`)
                 .registerRunListener(
                   async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                    await args.device.triggerCapabilityListener(
-                      capability,
-                      args.onoff,
-                    )
+                    await args.device.onCapability(capability, args.onoff)
                   },
                 )
             }
@@ -144,7 +141,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
               .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                  await args.device.triggerCapabilityListener(
+                  await args.device.onCapability(
                     capability,
                     args.operation_mode_zone,
                   )
@@ -156,7 +153,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
               .getActionCard(`${capability}_action`)
               .registerRunListener(
                 async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                  await args.device.triggerCapabilityListener(
+                  await args.device.onCapability(
                     capability,
                     args.target_temperature,
                   )
