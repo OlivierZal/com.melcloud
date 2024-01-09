@@ -635,7 +635,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
-      'PUT',
+      'PATCH',
       endPoint,
       body,
       async (error: Error | null): Promise<void> => {
