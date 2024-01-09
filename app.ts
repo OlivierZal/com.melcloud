@@ -85,7 +85,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         return false
       }
       const postData: LoginPostData = {
-        AppVersion: '1.30.5.0',
+        AppVersion: '1.31.0.0',
         Email: username,
         Password: password,
         Persist: true,
