@@ -137,7 +137,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       newSettings.always_on === true &&
       !(this.getCapabilityValue('onoff') as boolean)
     ) {
-      await this.triggerCapabilityListener('onoff', true)
+      await this.onCapability('onoff' as SetCapability<T>, true)
     } else if (
       changedKeys.some(
         (setting: string) =>
