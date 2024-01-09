@@ -137,45 +137,45 @@
       "method": "GET",
       "path": "/buildings"
     },
-    "getFrostProtectionSettings": {
+    "getUnitErrorLog": {
       "method": "GET",
-      "path": "/buildings/:buildingId/settings/frost_protection"
-    },
-    "updateFrostProtectionSettings": {
-      "method": "POST",
-      "path": "/buildings/:buildingId/settings/frost_protection"
-    },
-    "getHolidayModeSettings": {
-      "method": "GET",
-      "path": "/buildings/:buildingId/settings/holiday_mode"
-    },
-    "updateHolidayModeSettings": {
-      "method": "POST",
-      "path": "/buildings/:buildingId/settings/holiday_mode"
+      "path": "/error_log"
     },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
     },
-    "getUnitErrorLog": {
-      "method": "GET",
-      "path": "/error_log"
-    },
     "login": {
       "method": "POST",
-      "path": "/login"
+      "path": "/sessions"
+    },
+    "getFrostProtectionSettings": {
+      "method": "GET",
+      "path": "/settings/buildings/:buildingId/frost_protection"
+    },
+    "updateFrostProtectionSettings": {
+      "method": "PUT",
+      "path": "/settings/buildings/:buildingId/frost_protection"
+    },
+    "getHolidayModeSettings": {
+      "method": "GET",
+      "path": "/settings/buildings/:buildingId/holiday_mode"
+    },
+    "updateHolidayModeSettings": {
+      "method": "PUT",
+      "path": "/settings/buildings/:buildingId/holiday_mode"
     },
     "getDeviceSettings": {
       "method": "GET",
-      "path": "/devices/settings"
+      "path": "/settings/devices"
     },
     "setDeviceSettings": {
-      "method": "POST",
-      "path": "/devices/settings"
+      "method": "PUT",
+      "path": "/settings/devices"
     },
     "getDriverSettings": {
       "method": "GET",
-      "path": "/drivers/settings"
+      "path": "/settings/drivers"
     }
   },
   "platforms": ["local"]

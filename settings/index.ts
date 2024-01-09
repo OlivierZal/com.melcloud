@@ -66,7 +66,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
-        '/devices/settings',
+        '/settings/devices',
         async (
           error: Error | null,
           settings: DeviceSettings,
@@ -112,7 +112,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
-        '/drivers/settings',
+        '/settings/drivers',
         async (
           error: Error | null,
           driverSettings: DriverSetting[],
@@ -490,7 +490,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
-        `/buildings/${buildingElement.value}/settings/holiday_mode`,
+        `/settings/buildings/${buildingElement.value}/holiday_mode`,
         async (error: Error | null, data: HolidayModeData): Promise<void> => {
           enableButtons('holiday-mode')
           if (error) {
@@ -530,7 +530,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       // @ts-expect-error: `homey` is partially typed
       homey.api(
         'GET',
-        `/buildings/${buildingElement.value}/settings/frost_protection`,
+        `/settings/buildings/${buildingElement.value}/frost_protection`,
         async (
           error: Error | null,
           data: FrostProtectionData,
@@ -628,14 +628,14 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   }
 
   const setDeviceSettings = (body: Settings, driverId?: string): void => {
-    let endPoint = '/devices/settings'
+    let endPoint = '/settings/devices'
     if (driverId !== undefined) {
       const queryString: string = new URLSearchParams({ driverId }).toString()
       endPoint += `?${queryString}`
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
-      'POST',
+      'PUT',
       endPoint,
       body,
       async (error: Error | null): Promise<void> => {
@@ -924,7 +924,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
-      '/login',
+      '/sessions',
       body,
       async (error: Error | null, loggedIn: boolean): Promise<void> => {
         if (error) {
@@ -1051,8 +1051,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
-      'POST',
-      `/buildings/${buildingElement.value}/settings/holiday_mode`,
+      'PUT',
+      `/settings/buildings/${buildingElement.value}/holiday_mode`,
       body,
       async (error: Error | null): Promise<void> => {
         enableButtons('holiday-mode')
@@ -1145,8 +1145,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
-      'POST',
-      `/buildings/${buildingElement.value}/settings/frost_protection`,
+      'PUT',
+      `/settings/buildings/${buildingElement.value}/frost_protection`,
       body,
       async (error: Error | null): Promise<void> => {
         enableButtons('frost-protection')
