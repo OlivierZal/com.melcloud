@@ -170,7 +170,7 @@
       "path": "/settings/devices"
     },
     "setDeviceSettings": {
-      "method": "PATCH",
+      "method": "PUT",
       "path": "/settings/devices"
     },
     "getDriverSettings": {
