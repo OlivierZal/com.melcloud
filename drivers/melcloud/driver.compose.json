@@ -76,7 +76,7 @@
       "title": {
         "en": "Power - dry",
         "fr": "Puissance - déshumidification",
-        "nl": "Vermogen - droging",
+        "nl": "Vermogen - ontvochtiging",
         "sv": "Effekt - avfuktning",
         "no": "Effekt - avfukting",
         "da": "Effekt - affugtning",
@@ -142,7 +142,7 @@
       "title": {
         "en": "Energy - dry",
         "fr": "Énergie - déshumidification",
-        "nl": "Energie - droging",
+        "nl": "Energie - ontvochtiging",
         "sv": "Energi - avfuktning",
         "no": "Energi - avfukting",
         "da": "Energi - affugtning",
@@ -219,7 +219,7 @@
       "title": {
         "en": "Daily energy - dry",
         "fr": "Énergie quotidienne - déshumidification",
-        "nl": "Dagelijkse energie - droging",
+        "nl": "Dagelijkse energie - ontvochtiging",
         "sv": "Daglig energi - avfuktning",
         "no": "Daglig energi - avfukting",
         "da": "Daglig energi - affugtning",
