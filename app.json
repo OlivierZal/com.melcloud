@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "29.0.2",
+  "version": "29.0.3",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -173,7 +173,7 @@
       "path": "/settings/devices"
     },
     "setDeviceSettings": {
-      "method": "PATCH",
+      "method": "PUT",
       "path": "/settings/devices"
     },
     "getDriverSettings": {
