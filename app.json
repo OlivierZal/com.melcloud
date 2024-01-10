@@ -24,7 +24,7 @@
   "category": [
     "climate"
   ],
-  "version": "29.0.1",
+  "version": "29.0.2",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
@@ -6380,7 +6380,7 @@
           }
         },
         {
-          "id": "left",
+          "id": "leftwards",
           "title": {
             "en": "Leftwards",
             "fr": "Gauche",
@@ -6392,7 +6392,7 @@
           }
         },
         {
-          "id": "middleleft",
+          "id": "center_left",
           "title": {
             "en": "Center-left",
             "fr": "Centre-gauche",
@@ -6404,7 +6404,7 @@
           }
         },
         {
-          "id": "middle",
+          "id": "center",
           "title": {
             "en": "Center",
             "fr": "Centre",
@@ -6416,7 +6416,7 @@
           }
         },
         {
-          "id": "middleright",
+          "id": "center_right",
           "title": {
             "en": "Center-right",
             "fr": "Centre-droite",
@@ -6428,7 +6428,7 @@
           }
         },
         {
-          "id": "right",
+          "id": "rightwards",
           "title": {
             "en": "Rightwards",
             "fr": "Droite",
@@ -6860,7 +6860,7 @@
           }
         },
         {
-          "id": "top",
+          "id": "upwards",
           "title": {
             "en": "Upwards",
             "fr": "Haut",
@@ -6872,7 +6872,7 @@
           }
         },
         {
-          "id": "middletop",
+          "id": "mid_high",
           "title": {
             "en": "Mid-high",
             "fr": "Milieu haut",
@@ -6896,7 +6896,7 @@
           }
         },
         {
-          "id": "middlebottom",
+          "id": "mid_low",
           "title": {
             "en": "Mid-low",
             "fr": "Milieu bas",
@@ -6908,7 +6908,7 @@
           }
         },
         {
-          "id": "bottom",
+          "id": "downwards",
           "title": {
             "en": "Downwards",
             "fr": "Bas",
