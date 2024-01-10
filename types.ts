@@ -7,61 +7,6 @@ import type AtwDriver from './drivers/melcloud_atw/driver'
 import type ErvDevice from './drivers/melcloud_erv/device'
 import type ErvDriver from './drivers/melcloud_erv/driver'
 
-export enum ThermostatMode {
-  auto = 'auto',
-  heat = 'heat',
-  cool = 'cool',
-  off = 'off',
-}
-export enum OperationMode {
-  heat = 1,
-  dry = 2,
-  cool = 3,
-  fan = 7,
-  auto = 8,
-}
-export enum Vertical {
-  auto = 0,
-  upwards = 1,
-  mid_high = 2,
-  middle = 3,
-  mid_low = 4,
-  downwards = 5,
-  swing = 7,
-}
-export enum Horizontal {
-  auto = 0,
-  leftwards = 1,
-  center_left = 2,
-  center = 3,
-  center_right = 4,
-  rightwards = 5,
-  swing = 12,
-}
-
-export enum OperationModeState {
-  idle = 0,
-  dhw = 1,
-  heating = 2,
-  cooling = 3,
-  defrost = 4,
-  standby = 5,
-  legionella = 6,
-}
-export enum OperationModeZone {
-  room = 0,
-  flow = 1,
-  curve = 2,
-  room_cool = 3,
-  flow_cool = 4,
-}
-
-export enum VentilationMode {
-  recovery = 0,
-  bypass = 1,
-  auto = 2,
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly homey: Homey
@@ -98,14 +43,14 @@ export interface Store {
   readonly hasZone2: boolean
 }
 
-interface BaseHomeySettingValue<T> {
+interface BaseHomeySettings<T> {
   readonly username: T
   readonly password: T
   readonly contextKey: T
   readonly expiry: T
 }
-export type HomeySettings = BaseHomeySettingValue<string | null>
-export type HomeySettingsUI = BaseHomeySettingValue<string | undefined>
+export type HomeySettings = BaseHomeySettings<string | null>
+export type HomeySettingsUI = BaseHomeySettings<string | undefined>
 
 export interface ReportPlanParameters {
   readonly duration: object
@@ -183,6 +128,44 @@ export type DeviceSettings = Record<string, DeviceSetting>
 interface SetCapabilitiesCommon {
   onoff?: boolean
 }
+interface GetCapabilitiesCommon {
+  readonly measure_temperature: number
+}
+interface ListCapabilitiesCommon {
+  readonly 'measure_power.wifi': number
+}
+
+export enum ThermostatMode {
+  auto = 'auto',
+  heat = 'heat',
+  cool = 'cool',
+  off = 'off',
+}
+export enum OperationMode {
+  heat = 1,
+  dry = 2,
+  cool = 3,
+  fan = 7,
+  auto = 8,
+}
+export enum Vertical {
+  auto = 0,
+  upwards = 1,
+  mid_high = 2,
+  middle = 3,
+  mid_low = 4,
+  downwards = 5,
+  swing = 7,
+}
+export enum Horizontal {
+  auto = 0,
+  leftwards = 1,
+  center_left = 2,
+  center = 3,
+  center_right = 4,
+  rightwards = 5,
+  swing = 12,
+}
 interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
   horizontal?: keyof typeof Horizontal
@@ -190,78 +173,13 @@ interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   target_temperature?: number
   vertical?: keyof typeof Vertical
 }
-interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
-  'onoff.forced_hot_water'?: boolean
-  operation_mode_zone?: keyof typeof OperationModeZone
-  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
-  'operation_mode_zone.zone2'?: keyof typeof OperationModeZone
-  'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
-  target_temperature?: number
-  'target_temperature.tank_water'?: number
-  'target_temperature.flow_cool'?: number
-  'target_temperature.flow_heat'?: number
-  'target_temperature.zone2'?: number
-  'target_temperature.flow_cool_zone2'?: number
-  'target_temperature.flow_heat_zone2'?: number
-}
-interface SetCapabilitiesErv extends SetCapabilitiesCommon {
-  fan_power?: number
-  ventilation_mode?: keyof typeof VentilationMode
-}
-
-interface GetCapabilitiesCommon {
-  readonly measure_temperature: number
-}
 type GetCapabilitiesAta = GetCapabilitiesCommon
-interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
-  readonly 'measure_temperature.outdoor': number
-  readonly 'measure_temperature.tank_water': number
-  readonly 'measure_temperature.zone2': number
-  readonly operation_mode_state: keyof typeof OperationModeState
-  readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
-  readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
-}
-interface GetCapabilitiesErv extends GetCapabilitiesCommon {
-  readonly measure_co2: number
-  readonly measure_temperature: number
-  readonly 'measure_temperature.outdoor': number
-}
-
-interface ListCapabilitiesCommon {
-  readonly 'measure_power.wifi': number
-}
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
   readonly fan_power: number
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
   readonly vertical: keyof typeof Vertical
 }
-interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
-  readonly 'alarm_generic.booster_heater1': boolean
-  readonly 'alarm_generic.booster_heater2': boolean
-  readonly 'alarm_generic.booster_heater2_plus': boolean
-  readonly 'alarm_generic.defrost_mode': boolean
-  readonly 'alarm_generic.eco_hot_water': boolean
-  readonly 'alarm_generic.immersion_heater': boolean
-  readonly last_legionella: string
-  readonly measure_power: number
-  readonly 'measure_power.heat_pump_frequency': number
-  readonly 'measure_power.produced': number
-  readonly 'measure_temperature.condensing': number
-  readonly 'measure_temperature.flow': number
-  readonly 'measure_temperature.flow_zone1': number
-  readonly 'measure_temperature.flow_zone2': number
-  readonly 'measure_temperature.return': number
-  readonly 'measure_temperature.return_zone1': number
-  readonly 'measure_temperature.return_zone2': number
-  readonly 'measure_temperature.tank_water_mixing': number
-  readonly 'measure_temperature.target_curve': number
-  readonly 'measure_temperature.target_curve_zone2': number
-}
-interface ListCapabilitiesErv extends ListCapabilitiesCommon {
-  readonly measure_pm25: number
-}
-
 interface ReportCapabilitiesAta {
   measure_power?: number
   'measure_power.auto'?: number
@@ -284,6 +202,66 @@ interface ReportCapabilitiesAta {
   'meter_power.daily_fan'?: number
   'meter_power.daily_heating'?: number
   'meter_power.daily_other'?: number
+}
+
+export enum OperationModeState {
+  idle = 0,
+  dhw = 1,
+  heating = 2,
+  cooling = 3,
+  standby = 5,
+  legionella = 6,
+}
+export enum OperationModeZone {
+  room = 0,
+  flow = 1,
+  curve = 2,
+  room_cool = 3,
+  flow_cool = 4,
+}
+interface SetCapabilitiesAtw extends SetCapabilitiesCommon {
+  'onoff.forced_hot_water'?: boolean
+  operation_mode_zone?: keyof typeof OperationModeZone
+  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
+  'operation_mode_zone.zone2'?: keyof typeof OperationModeZone
+  'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
+  target_temperature?: number
+  'target_temperature.tank_water'?: number
+  'target_temperature.flow_cool'?: number
+  'target_temperature.flow_heat'?: number
+  'target_temperature.zone2'?: number
+  'target_temperature.flow_cool_zone2'?: number
+  'target_temperature.flow_heat_zone2'?: number
+}
+interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
+  readonly 'measure_temperature.outdoor': number
+  readonly 'measure_temperature.tank_water': number
+  readonly 'measure_temperature.zone2': number
+  readonly operation_mode_state: keyof typeof OperationModeState
+  readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
+  readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
+}
+interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
+  readonly 'alarm_generic.booster_heater1': boolean
+  readonly 'alarm_generic.booster_heater2': boolean
+  readonly 'alarm_generic.booster_heater2_plus': boolean
+  readonly 'alarm_generic.defrost_mode': boolean
+  readonly 'alarm_generic.eco_hot_water': boolean
+  readonly 'alarm_generic.immersion_heater': boolean
+  readonly last_legionella: string
+  readonly measure_power: number
+  readonly 'measure_power.heat_pump_frequency': number
+  readonly 'measure_power.produced': number
+  readonly 'measure_temperature.condensing': number
+  readonly 'measure_temperature.flow': number
+  readonly 'measure_temperature.flow_zone1': number
+  readonly 'measure_temperature.flow_zone2': number
+  readonly 'measure_temperature.return': number
+  readonly 'measure_temperature.return_zone1': number
+  readonly 'measure_temperature.return_zone2': number
+  readonly 'measure_temperature.tank_water_mixing': number
+  readonly 'measure_temperature.target_curve': number
+  readonly 'measure_temperature.target_curve_zone2': number
 }
 interface ReportCapabilitiesAtw {
   meter_power?: number
@@ -310,6 +288,24 @@ interface ReportCapabilitiesAtw {
   'meter_power.cop_daily_cooling'?: number
   'meter_power.cop_daily_heating'?: number
   'meter_power.cop_daily_hotwater'?: number
+}
+
+export enum VentilationMode {
+  recovery = 0,
+  bypass = 1,
+  auto = 2,
+}
+interface SetCapabilitiesErv extends SetCapabilitiesCommon {
+  fan_power?: number
+  ventilation_mode?: keyof typeof VentilationMode
+}
+interface GetCapabilitiesErv extends GetCapabilitiesCommon {
+  readonly measure_co2: number
+  readonly measure_temperature: number
+  readonly 'measure_temperature.outdoor': number
+}
+interface ListCapabilitiesErv extends ListCapabilitiesCommon {
+  readonly measure_pm25: number
 }
 
 export type SetCapability<T> = T extends AtaDriver
@@ -355,15 +351,15 @@ export type ReportCapability<T> = T extends AtaDriver
       : keyof ReportCapabilitiesAta | keyof ReportCapabilitiesAtw
 export type Capability<T> = OperationalCapability<T> | ReportCapability<T>
 
-export type PostData<T> = SetDeviceData<T> & {
-  readonly DeviceID: number
-  readonly HasPendingCommand: true
-}
-
 interface BaseDeviceData {
   EffectiveFlags: number
   readonly Power?: boolean
 }
+interface ListDeviceDataCommon {
+  readonly DeviceType: number
+  readonly WifiSignalStrength: number
+}
+
 interface UpdateDeviceDataAta extends BaseDeviceData {
   readonly OperationMode?: OperationMode
   readonly SetFanSpeed?: number
@@ -371,6 +367,22 @@ interface UpdateDeviceDataAta extends BaseDeviceData {
   readonly VaneHorizontal?: Horizontal
   readonly VaneVertical?: Vertical
 }
+type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
+interface GetDeviceDataAta extends SetDeviceDataAta {
+  readonly RoomTemperature: number
+}
+interface ListDeviceDataAta
+  extends Exclude<
+      GetDeviceDataAta,
+      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
+    >,
+    ListDeviceDataCommon {
+  readonly ActualFanSpeed: number
+  readonly FanSpeed: number
+  readonly VaneHorizontalDirection: Horizontal
+  readonly VaneVerticalDirection: Vertical
+}
+
 interface UpdateDeviceDataAtw extends BaseDeviceData {
   readonly ForcedHotWaterMode?: boolean
   readonly OperationModeZone1?: OperationModeZone
@@ -383,32 +395,7 @@ interface UpdateDeviceDataAtw extends BaseDeviceData {
   readonly SetTemperatureZone1?: number
   readonly SetTemperatureZone2?: number
 }
-interface UpdateDeviceDataErv extends BaseDeviceData {
-  readonly SetFanSpeed?: number
-  readonly VentilationMode?: VentilationMode
-}
-export type UpdateDeviceData<T> = T & {
-  EffectiveFlags: number
-} extends AtaDriver
-  ? UpdateDeviceDataAta
-  : T & {
-        EffectiveFlags: number
-      } extends AtwDriver
-    ? UpdateDeviceDataAtw
-    : T & {
-          EffectiveFlags: number
-        } extends ErvDriver
-      ? UpdateDeviceDataErv
-      : UpdateDeviceDataAta | UpdateDeviceDataAtw | UpdateDeviceDataErv
-
-type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
 type SetDeviceDataAtw = Readonly<Required<UpdateDeviceDataAtw>>
-type SetDeviceDataErv = Readonly<Required<UpdateDeviceDataErv>>
-export type SetDeviceData<T> = Readonly<Required<UpdateDeviceData<T>>>
-
-interface GetDeviceDataAta extends SetDeviceDataAta {
-  readonly RoomTemperature: number
-}
 interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
@@ -417,34 +404,6 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly RoomTemperatureZone1: number
   readonly RoomTemperatureZone2: number
   readonly TankWaterTemperature: number
-}
-interface GetDeviceDataErv extends SetDeviceDataErv {
-  readonly RoomCO2Level: number
-  readonly RoomTemperature: number
-  readonly OutdoorTemperature: number
-}
-export type GetDeviceData<T> = T extends AtaDriver
-  ? GetDeviceDataAta
-  : T extends AtwDriver
-    ? GetDeviceDataAtw
-    : T extends ErvDriver
-      ? GetDeviceDataErv
-      : GetDeviceDataAta | GetDeviceDataAtw | GetDeviceDataErv
-
-interface ListDeviceDataCommon {
-  readonly DeviceType: number
-  readonly WifiSignalStrength: number
-}
-interface ListDeviceDataAta
-  extends Exclude<
-      GetDeviceDataAta,
-      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
-    >,
-    ListDeviceDataCommon {
-  readonly ActualFanSpeed: number
-  readonly FanSpeed: number
-  readonly VaneHorizontalDirection: Horizontal
-  readonly VaneVerticalDirection: Vertical
 }
 interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly BoosterHeater1Status: boolean
@@ -470,11 +429,49 @@ interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
   readonly TargetHCTemperatureZone1: number
   readonly TargetHCTemperatureZone2: number
 }
+
+interface UpdateDeviceDataErv extends BaseDeviceData {
+  readonly SetFanSpeed?: number
+  readonly VentilationMode?: VentilationMode
+}
+type SetDeviceDataErv = Readonly<Required<UpdateDeviceDataErv>>
+interface GetDeviceDataErv extends SetDeviceDataErv {
+  readonly RoomCO2Level: number
+  readonly RoomTemperature: number
+  readonly OutdoorTemperature: number
+}
 interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
   readonly PM25Level: number
 }
+
+export type UpdateDeviceData<T> = T & {
+  EffectiveFlags: number
+} extends AtaDriver
+  ? UpdateDeviceDataAta
+  : T & {
+        EffectiveFlags: number
+      } extends AtwDriver
+    ? UpdateDeviceDataAtw
+    : T & {
+          EffectiveFlags: number
+        } extends ErvDriver
+      ? UpdateDeviceDataErv
+      : UpdateDeviceDataAta | UpdateDeviceDataAtw | UpdateDeviceDataErv
+export type SetDeviceData<T> = Readonly<Required<UpdateDeviceData<T>>>
+export type PostData<T> = SetDeviceData<T> & {
+  readonly DeviceID: number
+  readonly HasPendingCommand: true
+}
+
+export type GetDeviceData<T> = T extends AtaDriver
+  ? GetDeviceDataAta
+  : T extends AtwDriver
+    ? GetDeviceDataAtw
+    : T extends ErvDriver
+      ? GetDeviceDataErv
+      : GetDeviceDataAta | GetDeviceDataAtw | GetDeviceDataErv
 export type ListDeviceData<T> = T extends AtaDriver
   ? ListDeviceDataAta
   : T extends AtwDriver
@@ -522,143 +519,13 @@ export type ReportData<T> = T extends AtaDriver
       ? never
       : ReportDataAta | ReportDataAtw
 
-interface SetCapabilityDataAta {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
-}
-interface SetCapabilityDataAtw {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
-}
-interface SetCapabilityDataErv {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
-}
-export interface SetCapabilityData<T> {
-  readonly effectiveFlag: bigint
-  readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
-}
 export type SetCapabilityMappingAta = Record<
   keyof SetCapabilitiesAta,
-  SetCapabilityDataAta
+  {
+    readonly effectiveFlag: bigint
+    readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
+  }
 >
-export type SetCapabilityMappingAtw = Record<
-  keyof SetCapabilitiesAtw,
-  SetCapabilityDataAtw
->
-export type SetCapabilityMappingErv = Record<
-  keyof SetCapabilitiesErv,
-  SetCapabilityDataErv
->
-export type SetCapabilityMapping<T> = T extends AtaDriver
-  ? SetCapabilityMappingAta
-  : T extends AtwDriver
-    ? SetCapabilityMappingAtw
-    : T extends ErvDriver
-      ? SetCapabilityMappingErv
-      :
-          | SetCapabilityMappingAta
-          | SetCapabilityMappingAtw
-          | SetCapabilityMappingErv
-
-interface GetCapabilityDataAta {
-  readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'>
-}
-interface GetCapabilityDataAtw {
-  readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'>
-}
-interface GetCapabilityDataErv {
-  readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'>
-}
-export interface GetCapabilityData<T> {
-  readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
-}
-export type GetCapabilityMappingAta = Record<
-  keyof GetCapabilitiesAta,
-  GetCapabilityDataAta
->
-export type GetCapabilityMappingAtw = Record<
-  keyof GetCapabilitiesAtw,
-  GetCapabilityDataAtw
->
-export type GetCapabilityMappingErv = Record<
-  keyof GetCapabilitiesErv,
-  GetCapabilityDataErv
->
-export type GetCapabilityMapping<T> = T extends AtaDriver
-  ? GetCapabilityMappingAta
-  : T extends AtwDriver
-    ? GetCapabilityMappingAtw
-    : T extends ErvDriver
-      ? GetCapabilityMappingErv
-      :
-          | GetCapabilityMappingAta
-          | GetCapabilityMappingAtw
-          | GetCapabilityMappingErv
-
-interface ListCapabilityDataAta {
-  readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'>
-}
-interface ListCapabilityDataAtw {
-  readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'>
-}
-interface ListCapabilityDataErv {
-  readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'>
-}
-export interface ListCapabilityData<T> {
-  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
-}
-export type ListCapabilityMappingAta = Record<
-  keyof ListCapabilitiesAta,
-  ListCapabilityDataAta
->
-export type ListCapabilityMappingAtw = Record<
-  keyof ListCapabilitiesAtw,
-  ListCapabilityDataAtw
->
-export type ListCapabilityMappingErv = Record<
-  keyof ListCapabilitiesErv,
-  ListCapabilityDataErv
->
-export type ListCapabilityMapping<T> = T extends AtaDriver
-  ? ListCapabilityMappingAta
-  : T extends AtwDriver
-    ? ListCapabilityMappingAtw
-    : T extends ErvDriver
-      ? ListCapabilityMappingErv
-      :
-          | ListCapabilityMappingAta
-          | ListCapabilityMappingAtw
-          | ListCapabilityMappingErv
-
-export type OperationalCapabilityData<T> =
-  | GetCapabilityData<T>
-  | ListCapabilityData<T>
-  | SetCapabilityData<T>
-export type UpdateCapabilityMapping<T> =
-  | Partial<NonNullable<ListCapabilityMapping<T>>>
-  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
-      Partial<NonNullable<ListCapabilityMapping<T>>> &
-      Partial<NonNullable<SetCapabilityMapping<T>>>)
-  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
-      Partial<NonNullable<SetCapabilityMapping<T>>>)
-
-export type ReportCapabilityMappingAta = Record<
-  keyof ReportCapabilitiesAta,
-  readonly (keyof ReportDataAta)[]
->
-export type ReportCapabilityMappingAtw = Record<
-  keyof ReportCapabilitiesAtw,
-  readonly (keyof ReportDataAtw)[]
->
-export type ReportCapabilityMapping<T> = T extends AtaDriver
-  ? ReportCapabilityMappingAta
-  : T extends AtwDriver
-    ? ReportCapabilityMappingAtw
-    : T extends ErvDriver
-      ? null
-      : ReportCapabilityMappingAta | ReportCapabilityMappingAtw | null
-
 export const setCapabilityMappingAta: SetCapabilityMappingAta = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   operation_mode: { tag: 'OperationMode', effectiveFlag: 0x2n },
@@ -667,9 +534,17 @@ export const setCapabilityMappingAta: SetCapabilityMappingAta = {
   vertical: { tag: 'VaneVertical', effectiveFlag: 0x10n },
   horizontal: { tag: 'VaneHorizontal', effectiveFlag: 0x100n },
 } as const
+export type GetCapabilityMappingAta = Record<
+  keyof GetCapabilitiesAta,
+  { readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'> }
+>
 export const getCapabilityMappingAta: GetCapabilityMappingAta = {
   measure_temperature: { tag: 'RoomTemperature' },
 } as const
+export type ListCapabilityMappingAta = Record<
+  keyof ListCapabilitiesAta,
+  { readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'> }
+>
 export const listCapabilityMappingAta: ListCapabilityMappingAta = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   fan_power: { tag: 'FanSpeed' },
@@ -677,6 +552,10 @@ export const listCapabilityMappingAta: ListCapabilityMappingAta = {
   vertical: { tag: 'VaneVerticalDirection' },
   horizontal: { tag: 'VaneHorizontalDirection' },
 } as const
+export type ReportCapabilityMappingAta = Record<
+  keyof ReportCapabilitiesAta,
+  readonly (keyof ReportDataAta)[]
+>
 export const reportCapabilityMappingAta: ReportCapabilityMappingAta = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -715,6 +594,13 @@ export const reportCapabilityMappingAta: ReportCapabilityMappingAta = {
   'meter_power.daily_other': ['TotalOtherConsumed'],
 } as const
 
+export type SetCapabilityMappingAtw = Record<
+  keyof SetCapabilitiesAtw,
+  {
+    readonly effectiveFlag: bigint
+    readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
+  }
+>
 export const setCapabilityMappingAtw: SetCapabilityMappingAtw = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   operation_mode_zone: { tag: 'OperationModeZone1', effectiveFlag: 0x8n },
@@ -763,6 +649,10 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtw = {
     effectiveFlag: 0x1000000000020n,
   },
 } as const
+export type GetCapabilityMappingAtw = Record<
+  keyof GetCapabilitiesAtw,
+  { readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'> }
+>
 export const getCapabilityMappingAtw: GetCapabilityMappingAtw = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
   'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
@@ -773,6 +663,10 @@ export const getCapabilityMappingAtw: GetCapabilityMappingAtw = {
   'operation_mode_state.zone1': { tag: 'IdleZone1' },
   'operation_mode_state.zone2': { tag: 'IdleZone2' },
 } as const
+export type ListCapabilityMappingAtw = Record<
+  keyof ListCapabilitiesAtw,
+  { readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'> }
+>
 export const listCapabilityMappingAtw: ListCapabilityMappingAtw = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
@@ -800,6 +694,10 @@ export const listCapabilityMappingAtw: ListCapabilityMappingAtw = {
     tag: 'TargetHCTemperatureZone2',
   },
 } as const
+export type ReportCapabilityMappingAtw = Record<
+  keyof ReportCapabilitiesAtw,
+  readonly (keyof ReportDataAtw)[]
+>
 export const reportCapabilityMappingAtw: ReportCapabilityMappingAtw = {
   meter_power: [
     'TotalCoolingConsumed',
@@ -862,20 +760,94 @@ export const reportCapabilityMappingAtw: ReportCapabilityMappingAtw = {
   ],
 } as const
 
+export type SetCapabilityMappingErv = Record<
+  keyof SetCapabilitiesErv,
+  {
+    readonly effectiveFlag: bigint
+    readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
+  }
+>
 export const setCapabilityMappingErv: SetCapabilityMappingErv = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
   fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
 } as const
+export type GetCapabilityMappingErv = Record<
+  keyof GetCapabilitiesErv,
+  { readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'> }
+>
 export const getCapabilityMappingErv: GetCapabilityMappingErv = {
   measure_co2: { tag: 'RoomCO2Level' },
   measure_temperature: { tag: 'RoomTemperature' },
   'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
 } as const
+export type ListCapabilityMappingErv = Record<
+  keyof ListCapabilitiesErv,
+  { readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'> }
+>
 export const listCapabilityMappingErv: ListCapabilityMappingErv = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   measure_pm25: { tag: 'PM25Level' },
 } as const
+
+export interface SetCapabilityData<T> {
+  readonly effectiveFlag: bigint
+  readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
+}
+export type SetCapabilityMapping<T> = T extends AtaDriver
+  ? SetCapabilityMappingAta
+  : T extends AtwDriver
+    ? SetCapabilityMappingAtw
+    : T extends ErvDriver
+      ? SetCapabilityMappingErv
+      :
+          | SetCapabilityMappingAta
+          | SetCapabilityMappingAtw
+          | SetCapabilityMappingErv
+export interface GetCapabilityData<T> {
+  readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
+}
+export type GetCapabilityMapping<T> = T extends AtaDriver
+  ? GetCapabilityMappingAta
+  : T extends AtwDriver
+    ? GetCapabilityMappingAtw
+    : T extends ErvDriver
+      ? GetCapabilityMappingErv
+      :
+          | GetCapabilityMappingAta
+          | GetCapabilityMappingAtw
+          | GetCapabilityMappingErv
+export interface ListCapabilityData<T> {
+  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+}
+export type ListCapabilityMapping<T> = T extends AtaDriver
+  ? ListCapabilityMappingAta
+  : T extends AtwDriver
+    ? ListCapabilityMappingAtw
+    : T extends ErvDriver
+      ? ListCapabilityMappingErv
+      :
+          | ListCapabilityMappingAta
+          | ListCapabilityMappingAtw
+          | ListCapabilityMappingErv
+export type OperationalCapabilityData<T> =
+  | GetCapabilityData<T>
+  | ListCapabilityData<T>
+  | SetCapabilityData<T>
+export type UpdateCapabilityMapping<T> =
+  | Partial<NonNullable<ListCapabilityMapping<T>>>
+  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
+      Partial<NonNullable<ListCapabilityMapping<T>>> &
+      Partial<NonNullable<SetCapabilityMapping<T>>>)
+  | (Partial<NonNullable<GetCapabilityMapping<T>>> &
+      Partial<NonNullable<SetCapabilityMapping<T>>>)
+export type ReportCapabilityMapping<T> = T extends AtaDriver
+  ? ReportCapabilityMappingAta
+  : T extends AtwDriver
+    ? ReportCapabilityMappingAtw
+    : T extends ErvDriver
+      ? null
+      : ReportCapabilityMappingAta | ReportCapabilityMappingAtw | null
 
 export type FlowArgs<T> = (T extends AtaDriver
   ? SetCapabilitiesAta

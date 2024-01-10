@@ -62,18 +62,6 @@
       }
     },
     {
-      "id": "defrost",
-      "title": {
-        "en": "Defrost",
-        "fr": "Dégivrage",
-        "nl": "Ontdooien",
-        "sv": "Avfrostning",
-        "no": "Avfrosting",
-        "da": "Afrimning",
-        "es": "Descongelación"
-      }
-    },
-    {
       "id": "standby",
       "title": {
         "en": "Standby",
