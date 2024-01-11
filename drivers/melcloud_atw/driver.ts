@@ -4,6 +4,7 @@ import {
   listCapabilityMappingAtw,
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
+  HeatPumpType,
   type FlowArgs,
   type GetCapability,
   type GetCapabilityMappingAtw,
@@ -16,7 +17,7 @@ import {
 } from '../../types'
 
 export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
-  public readonly heatPumpType: string = 'Atw'
+  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Atw]
 
   public readonly setCapabilityMapping: SetCapabilityMappingAtw =
     setCapabilityMappingAtw
@@ -81,7 +82,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     'operation_mode_zone.zone2',
   ]
 
-  protected readonly deviceType = 1
+  protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
 
   public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
     return [

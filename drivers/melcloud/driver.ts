@@ -4,6 +4,7 @@ import {
   listCapabilityMappingAta,
   reportCapabilityMappingAta,
   setCapabilityMappingAta,
+  HeatPumpType,
   type FlowArgs,
   type GetCapabilityMappingAta,
   type ListCapabilityMappingAta,
@@ -13,7 +14,7 @@ import {
 } from '../../types'
 
 export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
-  public readonly heatPumpType: string = 'Ata'
+  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Ata]
 
   public readonly setCapabilityMapping: SetCapabilityMappingAta =
     setCapabilityMappingAta
@@ -27,7 +28,7 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   public readonly reportCapabilityMapping: ReportCapabilityMappingAta =
     reportCapabilityMappingAta
 
-  protected readonly deviceType = 0
+  protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 
   public getRequiredCapabilities(): string[] {
     return [

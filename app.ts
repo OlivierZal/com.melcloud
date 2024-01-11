@@ -17,6 +17,7 @@ import type {
   FrostProtectionData,
   FrostProtectionPostData,
   FrostProtectionSettings,
+  HeatPumpType,
   HolidayModeData,
   HolidayModePostData,
   HolidayModeSettings,
@@ -147,7 +148,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   }
 
   public async listDevices(
-    deviceType?: number,
+    deviceType?: HeatPumpType,
     syncMode?: SyncFromMode,
   ): Promise<ListDevice<MELCloudDriver>[]> {
     this.clearListDevicesRefresh()

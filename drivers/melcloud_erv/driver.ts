@@ -3,6 +3,7 @@ import {
   getCapabilityMappingErv,
   listCapabilityMappingErv,
   setCapabilityMappingErv,
+  HeatPumpType,
   type FlowArgs,
   type GetCapabilityMappingErv,
   type ListCapabilityMappingErv,
@@ -12,7 +13,7 @@ import {
 } from '../../types'
 
 export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
-  public readonly heatPumpType: string = 'Erv'
+  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Erv]
 
   public readonly setCapabilityMapping: SetCapabilityMappingErv =
     setCapabilityMappingErv
@@ -25,7 +26,7 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
 
   public readonly reportCapabilityMapping: null = null
 
-  protected readonly deviceType = 3
+  protected readonly deviceType: HeatPumpType = HeatPumpType.Erv
 
   public getRequiredCapabilities({
     hasCO2Sensor,

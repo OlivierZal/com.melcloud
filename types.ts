@@ -13,6 +13,12 @@ export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly setWarning?: (warning: string | null) => Promise<void>
 }
 
+export enum HeatPumpType {
+  Ata = 0,
+  Atw = 1,
+  Erv = 3,
+}
+
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 type DeviceFromDriver<T> = T extends AtaDriver
@@ -356,7 +362,6 @@ interface BaseDeviceData {
   readonly Power?: boolean
 }
 interface ListDeviceDataCommon {
-  readonly DeviceType: number
   readonly WifiSignalStrength: number
 }
 
@@ -377,6 +382,7 @@ interface ListDeviceDataAta
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     >,
     ListDeviceDataCommon {
+  readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
   readonly VaneHorizontalDirection: Horizontal
@@ -406,6 +412,7 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly TankWaterTemperature: number
 }
 interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
+  readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
@@ -441,6 +448,7 @@ interface GetDeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number
 }
 interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
+  readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
   readonly PM25Level: number

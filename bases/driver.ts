@@ -3,13 +3,14 @@ import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
 import type {
   DeviceDetails,
+  HeatPumpType,
   ListDevice,
   LoginCredentials,
   Store,
 } from '../types'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
-  protected readonly deviceType!: number
+  protected readonly deviceType!: HeatPumpType
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
