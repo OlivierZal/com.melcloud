@@ -17,8 +17,6 @@ import {
 } from '../../types'
 
 export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
-  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Atw]
-
   public readonly setCapabilityMapping: SetCapabilityMappingAtw =
     setCapabilityMappingAtw
 
@@ -31,7 +29,9 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
   public readonly reportCapabilityMapping: ReportCapabilityMappingAtw =
     reportCapabilityMappingAtw
 
-  public readonly capabilities: (
+  protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
+
+  readonly #capabilities: (
     | GetCapability<AtwDriver>
     | ListCapability<AtwDriver>
     | SetCapability<AtwDriver>
@@ -52,16 +52,16 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     'measure_power.produced',
   ]
 
-  public readonly coolCapabilities: SetCapability<AtwDriver>[] = [
+  readonly #coolCapabilities: SetCapability<AtwDriver>[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  public readonly notCoolCapabilities: SetCapability<AtwDriver>[] = [
+  readonly #notCoolCapabilities: SetCapability<AtwDriver>[] = [
     'operation_mode_zone',
   ]
 
-  public readonly zone2Capabilities: (
+  readonly #zone2Capabilities: (
     | GetCapability<AtwDriver>
     | ListCapability<AtwDriver>
     | SetCapability<AtwDriver>
@@ -73,27 +73,25 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     'operation_mode_state.zone2',
   ]
 
-  public readonly coolZone2Capabilities: SetCapability<AtwDriver>[] = [
+  readonly #coolZone2Capabilities: SetCapability<AtwDriver>[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  public readonly notCoolZone2Capabilities: SetCapability<AtwDriver>[] = [
+  readonly #notCoolZone2Capabilities: SetCapability<AtwDriver>[] = [
     'operation_mode_zone.zone2',
   ]
 
-  protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
-
   public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
     return [
-      ...this.capabilities,
-      ...(canCool ? this.coolCapabilities : this.notCoolCapabilities),
+      ...this.#capabilities,
+      ...(canCool ? this.#coolCapabilities : this.#notCoolCapabilities),
       ...(hasZone2
         ? [
-            ...this.zone2Capabilities,
+            ...this.#zone2Capabilities,
             ...(canCool
-              ? this.coolZone2Capabilities
-              : this.notCoolZone2Capabilities),
+              ? this.#coolZone2Capabilities
+              : this.#notCoolZone2Capabilities),
           ]
         : []),
     ]

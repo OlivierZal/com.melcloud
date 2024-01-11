@@ -14,8 +14,6 @@ import {
 } from '../../types'
 
 export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
-  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Ata]
-
   public readonly setCapabilityMapping: SetCapabilityMappingAta =
     setCapabilityMappingAta
 

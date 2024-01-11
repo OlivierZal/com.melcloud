@@ -1,18 +1,53 @@
 import { Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
 import type PairSession from 'homey/lib/PairSession'
 import type MELCloudApp from '../app'
-import type {
-  DeviceDetails,
+import {
   HeatPumpType,
-  ListDevice,
-  LoginCredentials,
-  Store,
+  type DeviceDetails,
+  type GetCapabilityMappingAta,
+  type GetCapabilityMappingAtw,
+  type GetCapabilityMappingErv,
+  type ListCapabilityMappingAta,
+  type ListCapabilityMappingAtw,
+  type ListCapabilityMappingErv,
+  type ListDevice,
+  type LoginCredentials,
+  type ReportCapabilityMappingAta,
+  type ReportCapabilityMappingAtw,
+  type SetCapabilityMappingAta,
+  type SetCapabilityMappingAtw,
+  type SetCapabilityMappingErv,
+  type Store,
 } from '../types'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
-  protected readonly deviceType!: HeatPumpType
-
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
+
+  public abstract readonly setCapabilityMapping:
+    | SetCapabilityMappingAta
+    | SetCapabilityMappingAtw
+    | SetCapabilityMappingErv
+
+  public abstract readonly getCapabilityMapping:
+    | GetCapabilityMappingAta
+    | GetCapabilityMappingAtw
+    | GetCapabilityMappingErv
+
+  public abstract readonly listCapabilityMapping:
+    | ListCapabilityMappingAta
+    | ListCapabilityMappingAtw
+    | ListCapabilityMappingErv
+
+  public abstract readonly reportCapabilityMapping:
+    | ReportCapabilityMappingAta
+    | ReportCapabilityMappingAtw
+    | null
+
+  protected abstract readonly deviceType: HeatPumpType
+
+  public get heatPumpType(): string {
+    return HeatPumpType[this.deviceType]
+  }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {

@@ -13,8 +13,6 @@ import {
 } from '../../types'
 
 export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
-  public readonly heatPumpType: string = HeatPumpType[HeatPumpType.Erv]
-
   public readonly setCapabilityMapping: SetCapabilityMappingErv =
     setCapabilityMappingErv
 

@@ -52,12 +52,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 ) {
   public declare driver: T
 
-  public data: DeviceDetails['data'] = this.getData() as DeviceDetails['data']
-
-  public id: number = this.data.id
-
-  public buildingid: number = this.data.buildingid
-
   protected app: MELCloudApp = this.homey.app as MELCloudApp
 
   protected diff: Map<SetCapability<T>, CapabilityValue> = new Map<
@@ -91,6 +85,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   } = {
     false: {},
     true: {},
+  }
+
+  readonly #data: DeviceDetails['data'] =
+    this.getData() as DeviceDetails['data']
+
+  public get id(): number {
+    return this.#data.id
+  }
+
+  public get buildingid(): number {
+    return this.#data.buildingid
   }
 
   public async onInit(): Promise<void> {
