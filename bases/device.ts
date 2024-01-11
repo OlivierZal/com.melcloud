@@ -59,8 +59,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     CapabilityValue
   >()
 
-  protected readonly reportPlanParameters: ReportPlanParameters | null = null
-
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
     true: NodeJS.Timeout | null
@@ -89,6 +87,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   readonly #data: DeviceDetails['data'] =
     this.getData() as DeviceDetails['data']
+
+  protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
   public get id(): number {
     return this.#data.id

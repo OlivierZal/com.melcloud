@@ -10,6 +10,8 @@ import {
 } from '../../types'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
+  protected readonly reportPlanParameters: null = null
+
   // eslint-disable-next-line @typescript-eslint/require-await
   protected async specificOnCapability(
     capability: SetCapability<ErvDriver>,
