@@ -91,7 +91,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         Password: password,
         Persist: true,
       }
-      const { data } = await this.api.post<LoginData>(this.loginURL, postData)
+      const { data } = await this.api.post<LoginData>(
+        MELCloudApp.loginURL,
+        postData,
+      )
       if (data.LoginData) {
         const { ContextKey: contextKey, Expiry: expiry } = data.LoginData
         this.setHomeySettings({ contextKey, expiry, username, password })
