@@ -13,12 +13,12 @@ import {
   type Store,
 } from '../../types'
 
-const ROOM_VALUE: number = OperationModeZone.room
-const ROOM_COOL_VALUE: number = OperationModeZone.room_cool
-const ROOM_VALUES: number[] = [ROOM_VALUE, ROOM_COOL_VALUE]
-const CURVE_VALUE: number = OperationModeZone.curve
-const ROOM_FLOW_GAP: number = OperationModeZone.flow
-const HEAT_COOL_GAP: number = ROOM_COOL_VALUE
+const ROOM_VALUE: OperationModeZone = OperationModeZone.room
+const ROOM_COOL_VALUE: OperationModeZone = OperationModeZone.room_cool
+const ROOM_VALUES: OperationModeZone[] = [ROOM_VALUE, ROOM_COOL_VALUE]
+const CURVE_VALUE: OperationModeZone = OperationModeZone.curve
+const ROOM_FLOW_GAP: OperationModeZone = OperationModeZone.flow
+const HEAT_COOL_GAP: OperationModeZone = ROOM_COOL_VALUE
 
 export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
@@ -46,14 +46,14 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     if (!hasZone2) {
       return
     }
-    const zoneValue: number =
+    const zoneValue: OperationModeZone =
       OperationModeZone[value as keyof typeof OperationModeZone]
     const otherZoneCapability: SetCapability<AtwDriver> = (
       capability.endsWith('.zone2')
         ? capability.replace(/.zone2$/, '')
         : `${capability}.zone2`
     ) as SetCapability<AtwDriver>
-    let otherZoneValue: number =
+    let otherZoneValue: OperationModeZone =
       OperationModeZone[
         this.getRequestedOrCurrentValue(
           otherZoneCapability,
