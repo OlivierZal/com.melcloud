@@ -22,20 +22,26 @@ const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
       private commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
           ...logs.flatMap((log: string): [any, '-'] => {
+            if (log in this) {
+              return [this[log as keyof this], '-']
+            }
             if (log.endsWith(EMPTY_FUNCTION_PARENS)) {
               const funcName: string = log.slice(
                 0,
                 -EMPTY_FUNCTION_PARENS.length,
               )
-              const func: () => any = (this as Record<any, any>)[
-                funcName
-              ] as () => any
-              if (typeof func === 'function' && !func.length) {
+              if (
+                !(funcName in this) ||
+                typeof this[funcName as keyof this] !== 'function'
+              ) {
+                return [log, '-']
+              }
+              const func: (...funcArgs: any[]) => any = this[
+                funcName as keyof this
+              ] as (...funcArgs: any[]) => any
+              if (!func.length) {
                 return [func.call(this), '-']
               }
-            }
-            if (log in this) {
-              return [this[log as keyof LogsDecorator], '-']
             }
             return [log, '-']
           }),

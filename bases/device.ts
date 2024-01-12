@@ -8,17 +8,17 @@ import type {
   BooleanString,
   Capabilities,
   DeviceDetails,
-  DeviceValue,
   GetCapabilityMapping,
   GetDeviceData,
   ListCapabilityData,
   ListCapabilityMapping,
   ListDevice,
+  ListDeviceData,
   MELCloudDriver,
-  OperationalCapability,
-  OperationalCapabilityData,
+  OpCapabilities,
+  OpCapabilityData,
   PostData,
-  ReportCapability,
+  ReportCapabilities,
   ReportCapabilityMapping,
   ReportData,
   ReportPlanParameters,
@@ -27,13 +27,13 @@ import type {
   SetCapabilityData,
   SetCapabilityMapping,
   SetDeviceData,
-  SetDeviceValue,
   Settings,
   Store,
   SyncFromMode,
   SyncMode,
-  UpdateCapabilityMapping,
+  TypedString,
   UpdateDeviceData,
+  ValueOf,
 } from '../types'
 
 const DATETIME_1970: DateTime = DateTime.local(1970)
@@ -50,6 +50,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   withTimers(Device),
 ) {
   public declare driver: T
+
+  public readonly data: DeviceDetails['data'] =
+    this.getData() as DeviceDetails['data']
+
+  public readonly id: number = this.data.id
+
+  public readonly buildingid: number = this.data.buildingid
 
   protected app: MELCloudApp = this.homey.app as MELCloudApp
 
@@ -82,23 +89,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   #reportCapabilityMapping: {
     false: Partial<NonNullable<ReportCapabilityMapping<T>>>
     true: Partial<NonNullable<ReportCapabilityMapping<T>>>
-  } = {
-    false: {},
-    true: {},
-  }
-
-  readonly #data: DeviceDetails['data'] =
-    this.getData() as DeviceDetails['data']
+  } = { false: {}, true: {} }
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
-
-  public get id(): number {
-    return this.#data.id
-  }
-
-  public get buildingid(): number {
-    return this.#data.buildingid
-  }
 
   public async onInit(): Promise<void> {
     await this.setWarning(null)
@@ -142,7 +135,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      !(this.getCapabilityValue('onoff') as boolean)
+      !this.getCapabilityValue('onoff')
     ) {
       await this.onCapability('onoff', true)
     } else if (
@@ -203,7 +196,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public getCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: K & string,
+    capability: TypedString<K>,
   ): NonNullable<Capabilities<T>[K]> {
     return super.getCapabilityValue(capability) as NonNullable<
       Capabilities<T>[K]
@@ -211,23 +204,19 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public async setCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: K & string,
+    capability: TypedString<K>,
     value: Capabilities<T>[K],
   ): Promise<void> {
-    const newValue: Capabilities<T>[K] = this.convertFromDevice(
-      capability,
-      value as DeviceValue,
-    ) as Capabilities<T>[K]
-    if (newValue !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, newValue)
-      this.log('Capability', capability, 'is', newValue)
+    if (value !== this.getCapabilityValue(capability)) {
+      await super.setCapabilityValue(capability, value)
+      this.log('Capability', capability, 'is', value)
     }
   }
 
   public getSetting<K extends keyof Settings>(
-    setting: K,
+    setting: TypedString<K>,
   ): NonNullable<Settings[K]> {
-    return super.getSetting(setting as string) as NonNullable<Settings[K]>
+    return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
   public async setWarning(warning: string | null): Promise<void> {
@@ -286,11 +275,11 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected getRequestedOrCurrentValue<K extends keyof SetCapabilities<T>>(
     capability: K,
-  ): SetCapabilities<T>[K] {
+  ): NonNullable<SetCapabilities<T>[K]> {
     return (this.diff.get(capability as keyof SetCapabilities<T>) ??
-      this.getCapabilityValue(
-        capability as K & string,
-      )) as SetCapabilities<T>[K]
+      this.getCapabilityValue(capability as TypedString<K>)) as NonNullable<
+      SetCapabilities<T>[K]
+    >
   }
 
   private async setDeviceData(): Promise<GetDeviceData<T> | null> {
@@ -370,27 +359,25 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (data?.EffectiveFlags === undefined) {
       return
     }
-    const updateCapabilityMapping: [
-      OperationalCapability<T>,
-      OperationalCapabilityData<T>,
-    ][] = Object.entries(
-      this.getUpdateCapabilityMapping(syncMode, BigInt(data.EffectiveFlags)),
-    ) as [OperationalCapability<T>, OperationalCapabilityData<T>][]
+    const updateCapabilityEntries: [
+      TypedString<keyof OpCapabilities<T>>,
+      OpCapabilityData<T>,
+    ][] = this.getUpdateCapabilityEntries(syncMode, BigInt(data.EffectiveFlags))
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
-    const [regularCapabilities, lastCapabilities]: [
-      OperationalCapability<T>,
-      OperationalCapabilityData<T>,
-    ][][] = updateCapabilityMapping.reduce<
-      [OperationalCapability<T>, OperationalCapabilityData<T>][][]
+    const [regularCapabilityEntries, lastCapabilityEntries]: [
+      TypedString<keyof OpCapabilities<T>>,
+      OpCapabilityData<T>,
+    ][][] = updateCapabilityEntries.reduce<
+      [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][][]
     >(
       (
         acc,
         [capability, capabilityData]: [
-          OperationalCapability<T>,
-          OperationalCapabilityData<T>,
+          TypedString<keyof OpCapabilities<T>>,
+          OpCapabilityData<T>,
         ],
       ) => {
         if (keysToUpdateLast.includes(capability)) {
@@ -402,64 +389,60 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       },
       [[], []],
     )
-    await this.setCapabilityValues(regularCapabilities, data)
-    await this.setCapabilityValues(lastCapabilities, data)
+    await this.setCapabilityValues(regularCapabilityEntries, data)
+    await this.setCapabilityValues(lastCapabilityEntries, data)
   }
 
-  private getUpdateCapabilityMapping(
+  private getUpdateCapabilityEntries(
     syncMode: SyncMode | undefined,
     effectiveFlags: bigint,
-  ): UpdateCapabilityMapping<T> {
+  ): [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][] {
     switch (syncMode) {
       case 'syncTo':
-        return {
-          ...(Object.fromEntries(
-            Object.entries(this.#setCapabilityMapping).filter(
-              ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
-                !!(effectiveFlag & effectiveFlags),
-            ),
-          ) as Partial<NonNullable<SetCapabilityMapping<T>>>),
-          ...this.#getCapabilityMapping,
-        }
-      case 'syncFrom':
-        return Object.fromEntries(
-          Object.entries(this.#listCapabilityMapping).filter(
-            ([capability]: [string, ListCapabilityData<T>]) =>
-              !(
-                capability in
-                {
-                  ...this.driver.setCapabilityMapping,
-                  ...this.driver.getCapabilityMapping,
-                }
-              ),
+        return [
+          ...Object.entries(this.#setCapabilityMapping).filter(
+            ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
+              !!(effectiveFlag & effectiveFlags),
           ),
-        ) as Partial<NonNullable<ListCapabilityMapping<T>>>
+          ...Object.entries(this.#getCapabilityMapping),
+        ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
+      case 'syncFrom':
+        return Object.entries(this.#listCapabilityMapping).filter(
+          ([capability]: [string, ListCapabilityData<T>]) =>
+            !(
+              capability in
+              { ...this.#setCapabilityMapping, ...this.#getCapabilityMapping }
+            ),
+        ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
       default:
-        return {
+        return Object.entries({
           ...this.#setCapabilityMapping,
           ...this.#getCapabilityMapping,
           ...this.#listCapabilityMapping,
-        }
+        }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
     }
   }
 
   private async setCapabilityValues<
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
-    K extends keyof Capabilities<T>,
-  >(
-    capabilities: [OperationalCapability<T>, OperationalCapabilityData<T>][],
-    data: D,
-  ): Promise<void> {
+    K extends keyof OpCapabilities<T>,
+  >(capabilityEntries: [K, OpCapabilityData<T>][], data: D): Promise<void> {
     await Promise.all(
-      capabilities.map(
+      capabilityEntries.map(
         async ([capability, { tag }]: [
-          OperationalCapability<T>,
-          OperationalCapabilityData<T>,
+          K,
+          OpCapabilityData<T>,
         ]): Promise<void> => {
           if (tag in data) {
+            const value: OpCapabilities<T>[K] = this.convertFromDevice(
+              capability as TypedString<K>,
+              data[tag as keyof D] as ValueOf<
+                GetDeviceData<T> & ListDeviceData<T>
+              >,
+            )
             await this.setCapabilityValue(
-              capability as K & string,
-              data[tag as keyof D] as unknown as Capabilities<T>[K],
+              capability as TypedString<K>,
+              value as Capabilities<T>[K],
             )
           }
         },
@@ -521,14 +504,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   private async runEnergyReport(total = false): Promise<void> {
+    if (!this.reportPlanParameters) {
+      return
+    }
     const reportCapabilities: Record<
-      ReportCapability<T>,
+      keyof ReportCapabilities<T>,
       keyof ReportData<T>
     > = this.#reportCapabilityMapping[String(total) as BooleanString] as Record<
-      ReportCapability<T>,
+      keyof ReportCapabilities<T>,
       keyof ReportData<T>
     >
-    if (!this.reportPlanParameters || !Object.keys(reportCapabilities).length) {
+    if (!Object.keys(reportCapabilities).length) {
       return
     }
     const toDate: DateTime = DateTime.now().minus(
@@ -546,7 +532,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private async updateReportCapabilities(
     data: ReportData<T> | null,
     toDate: DateTime,
-    reportCapabilities: Record<ReportCapability<T>, keyof ReportData<T>>,
+    reportCapabilities: Record<
+      keyof ReportCapabilities<T>,
+      keyof ReportData<T>
+    >,
   ): Promise<void> {
     if (!data) {
       return
@@ -557,26 +546,31 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         : 1
 
     const updateReportCapability = async ([capability, tags]: [
-      ReportCapability<T>,
-      (keyof ReportData<T>)[],
+      TypedString<keyof ReportCapabilities<T>>,
+      TypedString<keyof ReportData<T>>[],
     ]): Promise<void> => {
+      const { producedTags, consumedTags } = tags.reduce<{
+        producedTags: TypedString<keyof ReportData<T>>[]
+        consumedTags: TypedString<keyof ReportData<T>>[]
+      }>(
+        (acc, tag: TypedString<keyof ReportData<T>>) => {
+          if (tag.endsWith('Consumed')) {
+            acc.consumedTags.push(tag)
+          } else {
+            acc.producedTags.push(tag)
+          }
+          return acc
+        },
+        { producedTags: [], consumedTags: [] },
+      )
       const getReportValue = (): number => {
-        const consumedTags: (keyof ReportData<T>)[] = tags.filter(
-          (tag: keyof ReportData<T>) => (tag as string).endsWith('Consumed'),
-        )
         switch (true) {
           case capability.includes('cop'):
             return (
-              tags
-                .filter(
-                  (tag: keyof ReportData<T>) =>
-                    !(tag as string).endsWith('Consumed'),
-                )
-                .reduce<number>(
-                  (acc, tag: keyof ReportData<T>) =>
-                    acc + (data[tag] as number),
-                  0,
-                ) /
+              producedTags.reduce<number>(
+                (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
+                0,
+              ) /
               (consumedTags.length
                 ? consumedTags.reduce<number>(
                     (acc, tag: keyof ReportData<T>) =>
@@ -603,16 +597,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         }
       }
       await this.setCapabilityValue(
-        capability as ReportCapability<T> & keyof Capabilities<T>,
-        getReportValue() as Capabilities<T>[keyof Capabilities<T>],
+        capability,
+        getReportValue() as Capabilities<T>[keyof ReportCapabilities<T>],
       )
     }
 
     await Promise.all(
       (
-        Object.entries(reportCapabilities) as [
-          ReportCapability<T>,
-          (keyof ReportData<T>)[],
+        Object.entries(reportCapabilities) as unknown as [
+          TypedString<keyof ReportCapabilities<T>>,
+          TypedString<keyof ReportData<T>>[],
         ][]
       ).map(updateReportCapability),
     )
@@ -781,13 +775,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(
     capability: K,
-    value: SetCapabilities<T>[K],
-  ): SetDeviceValue
+    value: NonNullable<SetCapabilities<T>[K]>,
+  ): ValueOf<SetDeviceData<T>>
 
-  protected abstract convertFromDevice<K extends keyof Capabilities<T>>(
+  protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
-    value: DeviceValue,
-  ): Capabilities<T>[K]
+    value: ValueOf<ListDeviceData<T>>,
+  ): OpCapabilities<T>[K]
 
   protected abstract updateThermostatMode(success: boolean): Promise<void>
 }

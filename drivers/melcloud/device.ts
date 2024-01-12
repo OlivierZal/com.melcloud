@@ -5,11 +5,12 @@ import {
   OperationMode,
   ThermostatMode,
   Vertical,
-  type SetCapabilities,
-  type DeviceValue,
+  type ListDeviceData,
+  type OpCapabilities,
   type ReportPlanParameters,
-  type SetDeviceValue,
-  type Capabilities,
+  type SetCapabilities,
+  type SetDeviceData,
+  type ValueOf,
 } from '../../types'
 
 const isThermostatMode = (
@@ -50,7 +51,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
     capability: K,
     value: SetCapabilities<AtaDriver>[K],
-  ): SetDeviceValue {
+  ): ValueOf<SetDeviceData<AtaDriver>> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
@@ -61,26 +62,26 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
       case 'horizontal':
         return Horizontal[value as keyof typeof Horizontal]
       default:
-        return value as SetDeviceValue
+        return value as ValueOf<SetDeviceData<AtaDriver>>
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof Capabilities<AtaDriver>>(
+  protected convertFromDevice<K extends keyof OpCapabilities<AtaDriver>>(
     capability: K,
-    value: DeviceValue,
-  ): Capabilities<AtaDriver>[K] {
+    value: ValueOf<ListDeviceData<AtaDriver>>,
+  ): OpCapabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':
         return OperationMode[
           value as OperationMode
-        ] as Capabilities<AtaDriver>[K]
+        ] as OpCapabilities<AtaDriver>[K]
       case 'vertical':
-        return Vertical[value as Vertical] as Capabilities<AtaDriver>[K]
+        return Vertical[value as Vertical] as OpCapabilities<AtaDriver>[K]
       case 'horizontal':
-        return Horizontal[value as Horizontal] as Capabilities<AtaDriver>[K]
+        return Horizontal[value as Horizontal] as OpCapabilities<AtaDriver>[K]
       default:
-        return value as Capabilities<AtaDriver>[K]
+        return value as OpCapabilities<AtaDriver>[K]
     }
   }
 

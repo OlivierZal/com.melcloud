@@ -5,12 +5,11 @@ import {
   reportCapabilityMappingAta,
   setCapabilityMappingAta,
   HeatPumpType,
-  type SetCapabilities,
-  type Capabilities,
   type FlowArgs,
   type GetCapabilityMappingAta,
   type ListCapabilityMappingAta,
   type ReportCapabilityMappingAta,
+  type SetCapabilities,
   type SetCapabilityMappingAta,
 } from '../../types'
 
@@ -29,6 +28,13 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 
+  readonly #flowCapabilities: (keyof SetCapabilities<AtaDriver>)[] = [
+    'operation_mode',
+    'fan_power',
+    'vertical',
+    'horizontal',
+  ]
+
   public getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
@@ -41,24 +47,15 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   }
 
   protected registerFlowListeners(): void {
-    const flowCapabilities: (keyof SetCapabilities<AtaDriver>)[] = [
-      'operation_mode',
-      'fan_power',
-      'vertical',
-      'horizontal',
-    ]
-
     const getCapabilityArg = <K extends keyof SetCapabilities<AtaDriver>>(
       args: FlowArgs<AtaDriver>,
       capability: K,
     ): SetCapabilities<AtaDriver>[K] =>
       (capability === 'fan_power'
-        ? Number(args[capability as keyof FlowArgs<AtaDriver>])
-        : args[
-            capability as keyof FlowArgs<AtaDriver>
-          ]) as SetCapabilities<AtaDriver>[K]
+        ? Number(args[capability])
+        : args[capability]) as SetCapabilities<AtaDriver>[K]
 
-    flowCapabilities.forEach(
+    this.#flowCapabilities.forEach(
       (capability: keyof SetCapabilities<AtaDriver>): void => {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
@@ -73,10 +70,7 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
             async (args: FlowArgs<AtaDriver>): Promise<void> => {
               await args.device.onCapability(
                 capability,
-                getCapabilityArg(
-                  args,
-                  capability,
-                ) as Capabilities<AtaDriver>[typeof capability],
+                getCapabilityArg(args, capability),
               )
             },
           )
