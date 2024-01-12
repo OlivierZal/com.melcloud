@@ -142,7 +142,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       newSettings.always_on === true &&
       !(this.getCapabilityValue('onoff') as boolean)
     ) {
-      await this.onCapability('onoff' as SetCapability<T>, true)
+      await this.onCapability('onoff', true)
     } else if (
       changedKeys.some(
         (setting: string) =>
@@ -583,10 +583,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
             )
         }
       }
-      await this.setCapabilityValue(
-        capability as Capability<T> & ReportCapability<T>,
-        getReportValue(),
-      )
+      await this.setCapabilityValue(capability, getReportValue())
     }
 
     await Promise.all(

@@ -21,9 +21,9 @@ export enum HeatPumpType {
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
-type DeviceFromDriver<T> = T extends AtaDriver
+type DeviceFromDriver<T> = MELCloudDriver & T extends AtaDriver
   ? AtaDevice
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? AtwDevice
     : T extends ErvDriver
       ? ErvDevice
@@ -314,9 +314,9 @@ interface ListCapabilitiesErv extends ListCapabilitiesCommon {
   readonly measure_pm25: number
 }
 
-export type SetCapability<T> = T extends AtaDriver
+export type SetCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof SetCapabilitiesAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? keyof SetCapabilitiesAtw
     : T extends ErvDriver
       ? keyof SetCapabilitiesErv
@@ -324,9 +324,9 @@ export type SetCapability<T> = T extends AtaDriver
           | keyof SetCapabilitiesAta
           | keyof SetCapabilitiesAtw
           | keyof SetCapabilitiesErv
-export type GetCapability<T> = T extends AtaDriver
+export type GetCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof GetCapabilitiesAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? keyof GetCapabilitiesAtw
     : T extends ErvDriver
       ? keyof GetCapabilitiesErv
@@ -334,9 +334,9 @@ export type GetCapability<T> = T extends AtaDriver
           | keyof GetCapabilitiesAta
           | keyof GetCapabilitiesAtw
           | keyof GetCapabilitiesErv
-export type ListCapability<T> = T extends AtaDriver
+export type ListCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof ListCapabilitiesAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? keyof ListCapabilitiesAtw
     : T extends ErvDriver
       ? keyof ListCapabilitiesErv
@@ -348,9 +348,9 @@ export type OperationalCapability<T> =
   | GetCapability<T>
   | ListCapability<T>
   | SetCapability<T>
-export type ReportCapability<T> = T extends AtaDriver
+export type ReportCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof ReportCapabilitiesAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? keyof ReportCapabilitiesAtw
     : T extends ErvDriver
       ? never
@@ -454,13 +454,9 @@ interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
   readonly PM25Level: number
 }
 
-export type UpdateDeviceData<T> = T & {
-  EffectiveFlags: number
-} extends AtaDriver
+export type UpdateDeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? UpdateDeviceDataAta
-  : T & {
-        EffectiveFlags: number
-      } extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? UpdateDeviceDataAtw
     : T extends ErvDriver
       ? UpdateDeviceDataErv
@@ -471,16 +467,16 @@ export type PostData<T> = SetDeviceData<T> & {
   readonly HasPendingCommand: true
 }
 
-export type GetDeviceData<T> = T extends AtaDriver
+export type GetDeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? GetDeviceDataAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? GetDeviceDataAtw
     : T extends ErvDriver
       ? GetDeviceDataErv
       : GetDeviceDataAta | GetDeviceDataAtw | GetDeviceDataErv
-export type ListDeviceData<T> = T extends AtaDriver
+export type ListDeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? ListDeviceDataAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? ListDeviceDataAtw
     : T extends ErvDriver
       ? ListDeviceDataErv
@@ -517,9 +513,9 @@ interface ReportDataAtw {
   readonly TotalHotWaterConsumed: number
   readonly TotalHotWaterProduced: number
 }
-export type ReportData<T> = T extends AtaDriver
+export type ReportData<T> = MELCloudDriver & T extends AtaDriver
   ? ReportDataAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? ReportDataAtw
     : T extends ErvDriver
       ? never
@@ -800,9 +796,9 @@ export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
 }
-export type SetCapabilityMapping<T> = T extends AtaDriver
+export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? SetCapabilityMappingAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? SetCapabilityMappingAtw
     : T extends ErvDriver
       ? SetCapabilityMappingErv
@@ -813,9 +809,9 @@ export type SetCapabilityMapping<T> = T extends AtaDriver
 export interface GetCapabilityData<T> {
   readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
 }
-export type GetCapabilityMapping<T> = T extends AtaDriver
+export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? GetCapabilityMappingAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? GetCapabilityMappingAtw
     : T extends ErvDriver
       ? GetCapabilityMappingErv
@@ -826,9 +822,9 @@ export type GetCapabilityMapping<T> = T extends AtaDriver
 export interface ListCapabilityData<T> {
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
-export type ListCapabilityMapping<T> = T extends AtaDriver
+export type ListCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? ListCapabilityMappingAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? ListCapabilityMappingAtw
     : T extends ErvDriver
       ? ListCapabilityMappingErv
@@ -847,17 +843,17 @@ export type UpdateCapabilityMapping<T> =
       Partial<NonNullable<SetCapabilityMapping<T>>>)
   | (Partial<NonNullable<GetCapabilityMapping<T>>> &
       Partial<NonNullable<SetCapabilityMapping<T>>>)
-export type ReportCapabilityMapping<T> = T extends AtaDriver
+export type ReportCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? ReportCapabilityMappingAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? ReportCapabilityMappingAtw
     : T extends ErvDriver
       ? null
       : ReportCapabilityMappingAta | ReportCapabilityMappingAtw | null
 
-export type FlowArgs<T> = (T extends AtaDriver
+export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
   ? SetCapabilitiesAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? {
         readonly onoff: boolean
         readonly operation_mode_state: keyof typeof OperationModeState
@@ -949,9 +945,9 @@ export interface ListDeviceAtw extends BaseListDevice {
 export interface ListDeviceErv extends BaseListDevice {
   readonly Device: ListDeviceDataErv
 }
-export type ListDevice<T> = T extends AtaDriver
+export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
   ? ListDeviceAta
-  : T extends AtwDriver
+  : MELCloudDriver & T extends AtwDriver
     ? ListDeviceAtw
     : T extends ErvDriver
       ? ListDeviceErv
