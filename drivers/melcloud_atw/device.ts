@@ -4,7 +4,8 @@ import type AtwDriver from './driver'
 import {
   OperationModeState,
   OperationModeZone,
-  type Capability,
+  type Capabilities,
+  type SetCapabilities,
   type CapabilityValue,
   type DeviceValue,
   type ReportPlanParameters,
@@ -77,13 +78,13 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     await this.setDisplayErrorWarning()
   }
 
-  protected convertToDevice(
-    capability: SetCapability<AtwDriver>,
-    value: CapabilityValue,
+  protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
+    capability: K,
+    value: SetCapabilities<AtwDriver>[K],
   ): SetDeviceValue {
     switch (true) {
       case capability === 'onoff':
-        return this.getSetting('always_on') === true || (value as boolean)
+        return this.getSetting('always_on') || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
@@ -91,30 +92,40 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     }
   }
 
-  protected convertFromDevice(
-    capability: Capability<AtwDriver>,
+  protected convertFromDevice<K extends keyof Capabilities<AtwDriver>>(
+    capability: K,
     value: DeviceValue,
-  ): CapabilityValue {
+  ): Capabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':
-        return !!(value as number)
+        return !!(value as number) as Capabilities<AtwDriver>[K]
       case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
-        }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
+        }).toLocaleString({
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+        }) as Capabilities<AtwDriver>[K]
       case capability === 'measure_power':
       case capability === 'measure_power.produced':
-        return (value as number) * K_MULTIPLIER
+        return ((value as number) * K_MULTIPLIER) as Capabilities<AtwDriver>[K]
       case capability === 'operation_mode_state':
-        return OperationModeState[value as OperationModeState]
+        return OperationModeState[
+          value as OperationModeState
+        ] as Capabilities<AtwDriver>[K]
       case capability.startsWith('operation_mode_state.zone'):
-        return (value as boolean)
-          ? OperationModeState[OperationModeState.idle]
-          : (this.getCapabilityValue('operation_mode_state') as string)
+        return (
+          (value as boolean)
+            ? OperationModeState[OperationModeState.idle]
+            : this.getCapabilityValue('operation_mode_state')
+        ) as Capabilities<AtwDriver>[K]
       case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[value as OperationModeZone]
+        return OperationModeZone[
+          value as OperationModeZone
+        ] as Capabilities<AtwDriver>[K]
       default:
-        return value
+        return value as Capabilities<AtwDriver>[K]
     }
   }
 

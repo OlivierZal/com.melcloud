@@ -14,6 +14,7 @@ import {
   type SetCapability,
   type SetCapabilityMappingAtw,
   type Store,
+  OperationModeState,
 } from '../../types'
 
 export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
@@ -107,7 +108,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
               .getConditionCard(`${capability}_condition`)
               .registerRunListener(
                 (args: FlowArgs<AtwDriver>): boolean =>
-                  args.operation_mode_state ===
+                  OperationModeState[args.operation_mode_state] ===
                   args.device.getCapabilityValue(capability),
               )
             break
@@ -115,8 +116,9 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
           case capability.startsWith('onoff.'):
             this.homey.flow
               .getConditionCard(`${capability}_condition`)
-              .registerRunListener((args: FlowArgs<AtwDriver>): boolean =>
-                args.device.getCapabilityValue(capability),
+              .registerRunListener(
+                (args: FlowArgs<AtwDriver>): boolean =>
+                  args.device.getCapabilityValue(capability) as boolean,
               )
             if (capability.startsWith('onoff.')) {
               this.homey.flow

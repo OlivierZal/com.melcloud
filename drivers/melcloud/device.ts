@@ -5,16 +5,18 @@ import {
   OperationMode,
   ThermostatMode,
   Vertical,
-  type Capability,
+  type SetCapabilities,
   type CapabilityValue,
   type DeviceValue,
   type ReportPlanParameters,
-  type SetCapability,
   type SetCapabilityWithThermostatMode,
   type SetDeviceValue,
+  type Capabilities,
 } from '../../types'
 
-const isThermostatMode = (value: keyof typeof OperationMode): boolean =>
+const isThermostatMode = (
+  value: keyof typeof OperationMode,
+): value is ThermostatMode & keyof typeof OperationMode =>
   value in ThermostatMode
 
 export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
@@ -48,13 +50,13 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     }
   }
 
-  protected convertToDevice(
-    capability: SetCapability<AtaDriver>,
-    value: CapabilityValue,
+  protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
+    capability: K,
+    value: SetCapabilities<AtaDriver>[K],
   ): SetDeviceValue {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true || (value as boolean)
+        return this.getSetting('always_on') || (value as boolean)
       case 'operation_mode':
         return OperationMode[value as keyof typeof OperationMode]
       case 'vertical':
@@ -67,19 +69,21 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice(
-    capability: Capability<AtaDriver>,
+  protected convertFromDevice<K extends keyof Capabilities<AtaDriver>>(
+    capability: K,
     value: DeviceValue,
-  ): CapabilityValue {
+  ): Capabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':
-        return OperationMode[value as OperationMode]
+        return OperationMode[
+          value as OperationMode
+        ] as Capabilities<AtaDriver>[K]
       case 'vertical':
-        return Vertical[value as Vertical]
+        return Vertical[value as Vertical] as Capabilities<AtaDriver>[K]
       case 'horizontal':
-        return Horizontal[value as Horizontal]
+        return Horizontal[value as Horizontal] as Capabilities<AtaDriver>[K]
       default:
-        return value
+        return value as Capabilities<AtaDriver>[K]
     }
   }
 
@@ -87,10 +91,9 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     if (!success) {
       return
     }
-    const isOn: boolean = this.getCapabilityValue('onoff') as boolean
-    const operationMode: keyof typeof OperationMode = this.getCapabilityValue(
-      'operation_mode',
-    ) as keyof typeof OperationMode
+    const isOn: boolean = this.getCapabilityValue('onoff')
+    const operationMode: keyof typeof OperationMode =
+      this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
       'thermostat_mode',
       isOn && isThermostatMode(operationMode)
