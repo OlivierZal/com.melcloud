@@ -105,13 +105,13 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
       case capability === 'measure_power.produced':
         return (value as number) * K_MULTIPLIER
       case capability === 'operation_mode_state':
-        return OperationModeState[value as number]
+        return OperationModeState[value as OperationModeState]
       case capability.startsWith('operation_mode_state.zone'):
         return (value as boolean)
           ? OperationModeState[OperationModeState.idle]
           : (this.getCapabilityValue('operation_mode_state') as string)
       case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[value as number]
+        return OperationModeZone[value as OperationModeZone]
       default:
         return value
     }

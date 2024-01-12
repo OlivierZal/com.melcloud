@@ -40,7 +40,7 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
     value: DeviceValue,
   ): CapabilityValue {
     if (capability === 'ventilation_mode') {
-      return VentilationMode[value as number]
+      return VentilationMode[value as VentilationMode]
     }
     return value
   }

@@ -72,11 +72,11 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   ): CapabilityValue {
     switch (capability) {
       case 'operation_mode':
-        return OperationMode[value as number]
+        return OperationMode[value as OperationMode]
       case 'vertical':
-        return Vertical[value as number]
+        return Vertical[value as Vertical]
       case 'horizontal':
-        return Horizontal[value as number]
+        return Horizontal[value as Horizontal]
       default:
         return value
     }
