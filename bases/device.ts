@@ -27,6 +27,7 @@ import type {
   SetCapability,
   SetCapabilityData,
   SetCapabilityMapping,
+  SetCapabilityWithThermostatMode,
   SetDeviceData,
   SetDeviceValue,
   Settings,
@@ -201,7 +202,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public async setCapabilityValue(
-    capability: Capability<T> | 'thermostat_mode',
+    capability: Capability<T>,
     value: CapabilityValue,
   ): Promise<void> {
     const newValue: CapabilityValue = this.convertFromDevice(capability, value)
@@ -223,7 +224,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public async onCapability(
-    capability: SetCapability<T> | 'thermostat_mode',
+    capability: SetCapabilityWithThermostatMode<T>,
     value: CapabilityValue,
   ): Promise<void> {
     this.clearSync()
@@ -323,7 +324,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         capability,
         async (value: CapabilityValue): Promise<void> => {
           await this.onCapability(
-            capability as SetCapability<T> | 'thermostat_mode',
+            capability as SetCapabilityWithThermostatMode<T>,
             value,
           )
         },
@@ -753,7 +754,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   protected abstract specificOnCapability(
-    capability: SetCapability<T> | 'thermostat_mode',
+    capability: SetCapabilityWithThermostatMode<T>,
     value: CapabilityValue,
   ): Promise<void>
 
@@ -763,7 +764,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   ): SetDeviceValue
 
   protected abstract convertFromDevice(
-    capability: Capability<T> | 'thermostat_mode',
+    capability: Capability<T>,
     value: DeviceValue,
   ): CapabilityValue
 

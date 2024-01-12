@@ -10,6 +10,7 @@ import {
   type DeviceValue,
   type ReportPlanParameters,
   type SetCapability,
+  type SetCapabilityWithThermostatMode,
   type SetDeviceValue,
 } from '../../types'
 
@@ -25,7 +26,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   }
 
   protected async specificOnCapability(
-    capability: SetCapability<AtaDriver> | 'thermostat_mode',
+    capability: SetCapabilityWithThermostatMode<AtaDriver>,
     value: CapabilityValue,
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
@@ -67,7 +68,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice(
-    capability: Capability<AtaDriver> | 'thermostat_mode',
+    capability: Capability<AtaDriver>,
     value: DeviceValue,
   ): CapabilityValue {
     switch (capability) {

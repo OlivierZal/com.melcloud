@@ -324,6 +324,9 @@ export type SetCapability<T> = MELCloudDriver & T extends AtaDriver
           | keyof SetCapabilitiesAta
           | keyof SetCapabilitiesAtw
           | keyof SetCapabilitiesErv
+export type SetCapabilityWithThermostatMode<T> =
+  | SetCapability<T>
+  | 'thermostat_mode'
 export type GetCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof GetCapabilitiesAta
   : MELCloudDriver & T extends AtwDriver
@@ -355,7 +358,10 @@ export type ReportCapability<T> = MELCloudDriver & T extends AtaDriver
     : T extends ErvDriver
       ? never
       : keyof ReportCapabilitiesAta | keyof ReportCapabilitiesAtw
-export type Capability<T> = OperationalCapability<T> | ReportCapability<T>
+export type Capability<T> =
+  | OperationalCapability<T>
+  | ReportCapability<T>
+  | 'thermostat_mode'
 
 interface BaseDeviceData {
   EffectiveFlags: number
