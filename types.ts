@@ -462,9 +462,7 @@ export type UpdateDeviceData<T> = T & {
         EffectiveFlags: number
       } extends AtwDriver
     ? UpdateDeviceDataAtw
-    : T & {
-          EffectiveFlags: number
-        } extends ErvDriver
+    : T extends ErvDriver
       ? UpdateDeviceDataErv
       : UpdateDeviceDataAta | UpdateDeviceDataAtw | UpdateDeviceDataErv
 export type SetDeviceData<T> = Readonly<Required<UpdateDeviceData<T>>>
