@@ -4,13 +4,15 @@ import type AtwDriver from './driver'
 import {
   OperationModeState,
   OperationModeZone,
-  type Capability,
-  type CapabilityValue,
-  type DeviceValue,
+  type ListDeviceData,
+  type OpCapabilities,
+  type OperationModeZoneCapabilities,
   type ReportPlanParameters,
-  type SetCapability,
-  type SetDeviceValue,
+  type SetCapabilities,
+  type SetDeviceData,
   type Store,
+  type TypedString,
+  type ValueOf,
 } from '../../types'
 
 const CURVE_VALUE: OperationModeZone = OperationModeZone.curve
@@ -29,37 +31,33 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
   }
 
-  protected async specificOnCapability(
-    capability: SetCapability<AtwDriver>,
-    value: CapabilityValue,
-  ): Promise<void> {
+  protected async specificOnCapability<
+    K extends keyof SetCapabilities<AtwDriver>,
+  >(capability: K, value: SetCapabilities<AtwDriver>[K]): Promise<void> {
     this.diff.set(capability, value)
     if (capability.startsWith('operation_mode_zone')) {
-      await this.handleOperationModeZones(capability, value as string)
+      await this.handleOperationModeZones(
+        capability as keyof OperationModeZoneCapabilities,
+        value as keyof typeof OperationModeZone,
+      )
     }
   }
 
-  protected async handleOperationModeZones(
-    capability: SetCapability<AtwDriver>,
-    value: string,
-  ): Promise<void> {
+  protected async handleOperationModeZones<
+    K extends keyof OperationModeZoneCapabilities,
+  >(capability: K, value: keyof typeof OperationModeZone): Promise<void> {
     const { canCool, hasZone2 } = this.getStore() as Store
     if (!hasZone2) {
       return
     }
-    const zoneValue: OperationModeZone =
-      OperationModeZone[value as keyof typeof OperationModeZone]
-    const otherZoneCapability: SetCapability<AtwDriver> = (
+    const zoneValue: OperationModeZone = OperationModeZone[value]
+    const otherZoneCapability: keyof OperationModeZoneCapabilities = (
       capability.endsWith('.zone2')
         ? capability.replace(/.zone2$/, '')
         : `${capability}.zone2`
-    ) as SetCapability<AtwDriver>
+    ) as keyof OperationModeZoneCapabilities
     let otherZoneValue: OperationModeZone =
-      OperationModeZone[
-        this.getRequestedOrCurrentValue(
-          otherZoneCapability,
-        ) as keyof typeof OperationModeZone
-      ]
+      OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
     if (canCool) {
       if (zoneValue > CURVE_VALUE) {
         otherZoneValue =
@@ -73,48 +71,62 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     if (ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
       otherZoneValue += ROOM_FLOW_GAP
     }
-    this.diff.set(otherZoneCapability, OperationModeZone[otherZoneValue])
+    this.diff.set(
+      otherZoneCapability,
+      OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
+    )
     await this.setDisplayErrorWarning()
   }
 
-  protected convertToDevice(
-    capability: SetCapability<AtwDriver>,
-    value: CapabilityValue,
-  ): SetDeviceValue {
+  protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
+    capability: K,
+    value: SetCapabilities<AtwDriver>[K],
+  ): ValueOf<SetDeviceData<AtwDriver>> {
     switch (true) {
       case capability === 'onoff':
-        return this.getSetting('always_on') === true || (value as boolean)
+        return this.getSetting('always_on') || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
-        return value as SetDeviceValue
+        return value as ValueOf<SetDeviceData<AtwDriver>>
     }
   }
 
-  protected convertFromDevice(
-    capability: Capability<AtwDriver>,
-    value: DeviceValue,
-  ): CapabilityValue {
+  protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
+    capability: TypedString<K>,
+    value: ValueOf<ListDeviceData<AtwDriver>>,
+  ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':
-        return !!(value as number)
+        return !!(value as number) as OpCapabilities<AtwDriver>[K]
       case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
-        }).toLocaleString({ weekday: 'short', day: 'numeric', month: 'short' })
+        }).toLocaleString({
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+        }) as OpCapabilities<AtwDriver>[K]
       case capability === 'measure_power':
       case capability === 'measure_power.produced':
-        return (value as number) * K_MULTIPLIER
+        return ((value as number) *
+          K_MULTIPLIER) as OpCapabilities<AtwDriver>[K]
       case capability === 'operation_mode_state':
-        return OperationModeState[value as OperationModeState]
+        return OperationModeState[
+          value as OperationModeState
+        ] as OpCapabilities<AtwDriver>[K]
       case capability.startsWith('operation_mode_state.zone'):
-        return (value as boolean)
-          ? OperationModeState[OperationModeState.idle]
-          : (this.getCapabilityValue('operation_mode_state') as string)
+        return (
+          (value as boolean)
+            ? OperationModeState[OperationModeState.idle]
+            : this.getCapabilityValue('operation_mode_state')
+        ) as OpCapabilities<AtwDriver>[K]
       case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[value as OperationModeZone]
+        return OperationModeZone[
+          value as OperationModeZone
+        ] as OpCapabilities<AtwDriver>[K]
       default:
-        return value
+        return value as OpCapabilities<AtwDriver>[K]
     }
   }
 

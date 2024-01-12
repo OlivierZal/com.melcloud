@@ -2,47 +2,47 @@ import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
 import {
   VentilationMode,
-  type Capability,
-  type CapabilityValue,
-  type DeviceValue,
-  type SetCapability,
-  type SetDeviceValue,
+  type ListDeviceData,
+  type OpCapabilities,
+  type SetCapabilities,
+  type SetDeviceData,
+  type ValueOf,
 } from '../../types'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected readonly reportPlanParameters: null = null
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  protected async specificOnCapability(
-    capability: SetCapability<ErvDriver>,
-    value: CapabilityValue,
-  ): Promise<void> {
+  protected async specificOnCapability<
+    K extends keyof SetCapabilities<ErvDriver>,
+  >(capability: K, value: SetCapabilities<ErvDriver>[K]): Promise<void> {
     this.diff.set(capability, value)
   }
 
-  protected convertToDevice(
-    capability: SetCapability<ErvDriver>,
-    value: CapabilityValue,
-  ): SetDeviceValue {
+  protected convertToDevice<K extends keyof SetCapabilities<ErvDriver>>(
+    capability: K,
+    value: SetCapabilities<ErvDriver>[K],
+  ): ValueOf<SetDeviceData<ErvDriver>> {
     switch (capability) {
       case 'onoff':
-        return this.getSetting('always_on') === true || (value as boolean)
+        return this.getSetting('always_on') || (value as boolean)
       case 'ventilation_mode':
         return VentilationMode[value as keyof typeof VentilationMode]
       default:
-        return value as SetDeviceValue
+        return value as ValueOf<SetDeviceData<ErvDriver>>
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice(
-    capability: Capability<ErvDriver>,
-    value: DeviceValue,
-  ): CapabilityValue {
-    if (capability === 'ventilation_mode') {
-      return VentilationMode[value as VentilationMode]
-    }
-    return value
+  protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
+    capability: K,
+    value: ValueOf<ListDeviceData<ErvDriver>>,
+  ): OpCapabilities<ErvDriver>[K] {
+    return capability === 'ventilation_mode'
+      ? (VentilationMode[
+          value as VentilationMode
+        ] as OpCapabilities<ErvDriver>[K])
+      : (value as OpCapabilities<ErvDriver>[K])
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

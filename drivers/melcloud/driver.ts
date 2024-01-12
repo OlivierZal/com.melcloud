@@ -9,7 +9,7 @@ import {
   type GetCapabilityMappingAta,
   type ListCapabilityMappingAta,
   type ReportCapabilityMappingAta,
-  type SetCapability,
+  type SetCapabilities,
   type SetCapabilityMappingAta,
 } from '../../types'
 
@@ -28,6 +28,13 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 
+  readonly #flowCapabilities: (keyof SetCapabilities<AtaDriver>)[] = [
+    'operation_mode',
+    'fan_power',
+    'vertical',
+    'horizontal',
+  ]
+
   public getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
@@ -40,39 +47,34 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   }
 
   protected registerFlowListeners(): void {
-    const flowCapabilities: SetCapability<AtaDriver>[] = [
-      'operation_mode',
-      'fan_power',
-      'vertical',
-      'horizontal',
-    ]
-
-    const getCapabilityArg = (
+    const getCapabilityArg = <K extends keyof SetCapabilities<AtaDriver>>(
       args: FlowArgs<AtaDriver>,
-      capability: SetCapability<AtaDriver>,
-    ): number | string =>
-      capability === 'fan_power'
+      capability: K,
+    ): SetCapabilities<AtaDriver>[K] =>
+      (capability === 'fan_power'
         ? Number(args[capability])
-        : (args[capability] as string)
+        : args[capability]) as SetCapabilities<AtaDriver>[K]
 
-    flowCapabilities.forEach((capability: SetCapability<AtaDriver>): void => {
-      this.homey.flow
-        .getConditionCard(`${capability}_condition`)
-        .registerRunListener(
-          (args: FlowArgs<AtaDriver>): boolean =>
-            getCapabilityArg(args, capability) ===
-            args.device.getCapabilityValue(capability),
-        )
-      this.homey.flow
-        .getActionCard(`${capability}_action`)
-        .registerRunListener(
-          async (args: FlowArgs<AtaDriver>): Promise<void> => {
-            await args.device.onCapability(
-              capability,
-              getCapabilityArg(args, capability),
-            )
-          },
-        )
-    })
+    this.#flowCapabilities.forEach(
+      (capability: keyof SetCapabilities<AtaDriver>): void => {
+        this.homey.flow
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener(
+            (args: FlowArgs<AtaDriver>): boolean =>
+              getCapabilityArg(args, capability) ===
+              args.device.getCapabilityValue(capability),
+          )
+        this.homey.flow
+          .getActionCard(`${capability}_action`)
+          .registerRunListener(
+            async (args: FlowArgs<AtaDriver>): Promise<void> => {
+              await args.device.onCapability(
+                capability,
+                getCapabilityArg(args, capability),
+              )
+            },
+          )
+      },
+    )
   }
 }
