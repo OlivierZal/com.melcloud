@@ -25,7 +25,6 @@ import type {
   ReportPlanParameters,
   ReportPostData,
   SetCapabilities,
-  SetCapability,
   SetCapabilityData,
   SetCapabilityMapping,
   SetCapabilityWithThermostatMode,
@@ -56,8 +55,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected app: MELCloudApp = this.homey.app as MELCloudApp
 
-  protected diff: Map<SetCapability<T>, CapabilityValue> = new Map<
-    SetCapability<T>,
+  protected diff: Map<keyof SetCapabilities<T>, CapabilityValue> = new Map<
+    keyof SetCapabilities<T>,
     CapabilityValue
   >()
 
@@ -203,23 +202,23 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public getCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: K,
+    capability: K & string,
   ): NonNullable<Capabilities<T>[K]> {
-    return super.getCapabilityValue(capability as string) as NonNullable<
+    return super.getCapabilityValue(capability) as NonNullable<
       Capabilities<T>[K]
     >
   }
 
   public async setCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: K,
+    capability: K & string,
     value: Capabilities<T>[K],
   ): Promise<void> {
     const newValue: Capabilities<T>[K] = this.convertFromDevice(
       capability,
       value as DeviceValue,
-    )
+    ) as Capabilities<T>[K]
     if (newValue !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability as string, newValue)
+      await super.setCapabilityValue(capability, newValue)
       this.log('Capability', capability, 'is', newValue)
     }
   }
@@ -287,8 +286,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   protected getRequestedOrCurrentValue<K extends keyof SetCapabilities<T>>(
     capability: K,
   ): SetCapabilities<T>[K] {
-    return (this.diff.get(capability as SetCapability<T>) ??
-      this.getCapabilityValue(capability)) as SetCapabilities<T>[K]
+    return (this.diff.get(capability as keyof SetCapabilities<T>) ??
+      this.getCapabilityValue(
+        capability as K & string,
+      )) as SetCapabilities<T>[K]
   }
 
   private async setDeviceData(): Promise<GetDeviceData<T> | null> {
@@ -444,6 +445,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   private async setCapabilityValues<
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
+    K extends keyof Capabilities<T>,
   >(
     capabilities: [OperationalCapability<T>, OperationalCapabilityData<T>][],
     data: D,
@@ -456,8 +458,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         ]): Promise<void> => {
           if (tag in data) {
             await this.setCapabilityValue(
-              capability as keyof Capabilities<T>,
-              data[tag as keyof D] as Capabilities<T>[keyof Capabilities<T>],
+              capability as K & string,
+              data[tag as keyof D] as unknown as Capabilities<T>[K],
             )
           }
         },
@@ -494,8 +496,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
             capability as keyof SetCapabilities<T>,
           ),
         ) as SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
-        if (this.diff.has(capability as SetCapability<T>)) {
-          this.diff.delete(capability as SetCapability<T>)
+        if (this.diff.has(capability as keyof SetCapabilities<T>)) {
+          this.diff.delete(capability as keyof SetCapabilities<T>)
           acc.EffectiveFlags = Number(
             BigInt(acc.EffectiveFlags) | effectiveFlag,
           )
