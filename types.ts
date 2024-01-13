@@ -31,7 +31,6 @@ type DeviceFromDriver<T> = MELCloudDriver & T extends AtaDriver
 
 export type BooleanString = 'false' | 'true'
 
-export type CapabilityValue = boolean | number | string
 export type SetDeviceValue = boolean | number
 export type DeviceValue = boolean | number | string
 
@@ -333,9 +332,6 @@ export type SetCapability<T> = MELCloudDriver & T extends AtaDriver
           | keyof SetCapabilitiesAta
           | keyof SetCapabilitiesAtw
           | keyof SetCapabilitiesErv
-export type SetCapabilityWithThermostatMode<T> =
-  | SetCapability<T>
-  | 'thermostat_mode'
 export type GetCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof GetCapabilitiesAta
   : MELCloudDriver & T extends AtwDriver
@@ -391,10 +387,6 @@ export type Capabilities<T> = (MELCloudDriver & T extends AtaDriver
           | (GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv)) & {
   thermostat_mode: ThermostatMode
 }
-export type Capability<T> =
-  | OperationalCapability<T>
-  | ReportCapability<T>
-  | 'thermostat_mode'
 
 interface BaseDeviceData {
   EffectiveFlags: number

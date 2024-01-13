@@ -6,7 +6,6 @@ import {
   OperationModeZone,
   type Capabilities,
   type SetCapabilities,
-  type CapabilityValue,
   type DeviceValue,
   type ReportPlanParameters,
   type SetCapability,
@@ -30,20 +29,27 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
   }
 
-  protected async specificOnCapability(
-    capability: SetCapability<AtwDriver>,
-    value: CapabilityValue,
-  ): Promise<void> {
+  protected async specificOnCapability<
+    K extends keyof SetCapabilities<AtwDriver>,
+  >(capability: K, value: SetCapabilities<AtwDriver>[K]): Promise<void> {
     this.diff.set(capability, value)
     if (capability.startsWith('operation_mode_zone')) {
-      await this.handleOperationModeZones(capability, value as string)
+      await this.handleOperationModeZones(
+        capability as
+          | 'operation_mode_zone_with_cool.zone2'
+          | 'operation_mode_zone.zone1'
+          | 'operation_mode_zone.zone2 | operation_mode_zone_with_cool.zone1',
+        value as keyof typeof OperationModeZone,
+      )
     }
   }
 
-  protected async handleOperationModeZones(
-    capability: SetCapability<AtwDriver>,
-    value: string,
-  ): Promise<void> {
+  protected async handleOperationModeZones<
+    K extends
+      | 'operation_mode_zone_with_cool.zone2'
+      | 'operation_mode_zone.zone1'
+      | 'operation_mode_zone.zone2 | operation_mode_zone_with_cool.zone1',
+  >(capability: K, value: keyof typeof OperationModeZone): Promise<void> {
     const { canCool, hasZone2 } = this.getStore() as Store
     if (!hasZone2) {
       return
@@ -74,7 +80,10 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     if (ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
       otherZoneValue += ROOM_FLOW_GAP
     }
-    this.diff.set(otherZoneCapability, OperationModeZone[otherZoneValue])
+    this.diff.set(
+      otherZoneCapability,
+      OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
+    )
     await this.setDisplayErrorWarning()
   }
 

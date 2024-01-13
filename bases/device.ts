@@ -7,7 +7,6 @@ import withTimers from '../mixins/withTimers'
 import type {
   BooleanString,
   Capabilities,
-  CapabilityValue,
   DeviceDetails,
   DeviceValue,
   GetCapabilityMapping,
@@ -27,7 +26,6 @@ import type {
   SetCapabilities,
   SetCapabilityData,
   SetCapabilityMapping,
-  SetCapabilityWithThermostatMode,
   SetDeviceData,
   SetDeviceValue,
   Settings,
@@ -55,9 +53,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected app: MELCloudApp = this.homey.app as MELCloudApp
 
-  protected diff: Map<keyof SetCapabilities<T>, CapabilityValue> = new Map<
+  protected diff: Map<
     keyof SetCapabilities<T>,
-    CapabilityValue
+    SetCapabilities<T>[keyof SetCapabilities<T>]
+  > = new Map<
+    keyof SetCapabilities<T>,
+    SetCapabilities<T>[keyof SetCapabilities<T>]
   >()
 
   readonly #reportTimeout: {
@@ -236,9 +237,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await super.setWarning(null)
   }
 
-  public async onCapability(
-    capability: SetCapabilityWithThermostatMode<T>,
-    value: CapabilityValue,
+  public async onCapability<K extends keyof SetCapabilities<T>>(
+    capability: K,
+    value: SetCapabilities<T>[K],
   ): Promise<void> {
     this.clearSync()
     if (capability === 'onoff') {
@@ -330,18 +331,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     }
   }
 
-  private registerCapabilityListeners(): void {
+  private registerCapabilityListeners<
+    K extends keyof SetCapabilities<T>,
+  >(): void {
     ;[
       ...Object.keys(this.driver.setCapabilityMapping),
       'thermostat_mode',
     ].forEach((capability: string): void => {
       this.registerCapabilityListener(
         capability,
-        async (value: CapabilityValue): Promise<void> => {
-          await this.onCapability(
-            capability as SetCapabilityWithThermostatMode<T>,
-            value,
-          )
+        async (value: SetCapabilities<T>[K]): Promise<void> => {
+          await this.onCapability(capability as K, value)
         },
       )
     })
@@ -774,9 +774,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     return setting in (this.driver.reportCapabilityMapping ?? {})
   }
 
-  protected abstract specificOnCapability(
-    capability: SetCapabilityWithThermostatMode<T>,
-    value: CapabilityValue,
+  protected abstract specificOnCapability<K extends keyof SetCapabilities<T>>(
+    capability: K,
+    value: SetCapabilities<T>[K],
   ): Promise<void>
 
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(

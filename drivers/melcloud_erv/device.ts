@@ -4,9 +4,7 @@ import {
   VentilationMode,
   type Capabilities,
   type SetCapabilities,
-  type CapabilityValue,
   type DeviceValue,
-  type SetCapability,
   type SetDeviceValue,
 } from '../../types'
 
@@ -14,10 +12,9 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected readonly reportPlanParameters: null = null
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  protected async specificOnCapability(
-    capability: SetCapability<ErvDriver>,
-    value: CapabilityValue,
-  ): Promise<void> {
+  protected async specificOnCapability<
+    K extends keyof SetCapabilities<ErvDriver>,
+  >(capability: K, value: SetCapabilities<ErvDriver>[K]): Promise<void> {
     this.diff.set(capability, value)
   }
 

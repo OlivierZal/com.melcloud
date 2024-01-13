@@ -6,10 +6,8 @@ import {
   ThermostatMode,
   Vertical,
   type SetCapabilities,
-  type CapabilityValue,
   type DeviceValue,
   type ReportPlanParameters,
-  type SetCapabilityWithThermostatMode,
   type SetDeviceValue,
   type Capabilities,
 } from '../../types'
@@ -27,10 +25,9 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     values: { minute: 5, second: 0, millisecond: 0 },
   }
 
-  protected async specificOnCapability(
-    capability: SetCapabilityWithThermostatMode<AtaDriver>,
-    value: CapabilityValue,
-  ): Promise<void> {
+  protected async specificOnCapability<
+    K extends keyof SetCapabilities<AtaDriver>,
+  >(capability: K, value: SetCapabilities<AtaDriver>[K]): Promise<void> {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off
       this.diff.set('onoff', isOn)

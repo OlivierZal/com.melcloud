@@ -4,10 +4,11 @@ import {
   listCapabilityMappingErv,
   setCapabilityMappingErv,
   HeatPumpType,
+  type SetCapabilities,
+  type Capabilities,
   type FlowArgs,
   type GetCapabilityMappingErv,
   type ListCapabilityMappingErv,
-  type SetCapability,
   type SetCapabilityMappingErv,
   type Store,
 } from '../../types'
@@ -44,37 +45,44 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   }
 
   protected registerFlowListeners(): void {
-    const flowCapabilities: SetCapability<ErvDriver>[] = [
+    const flowCapabilities: (keyof SetCapabilities<ErvDriver>)[] = [
       'ventilation_mode',
       'fan_power',
     ]
 
-    const getCapabilityArg = (
+    const getCapabilityArg = <K extends keyof SetCapabilities<ErvDriver>>(
       args: FlowArgs<ErvDriver>,
-      capability: SetCapability<ErvDriver>,
-    ): number | string =>
-      capability === 'fan_power'
-        ? Number(args[capability])
-        : (args[capability] as string)
+      capability: K,
+    ): SetCapabilities<ErvDriver>[K] =>
+      (capability === 'fan_power'
+        ? Number(args[capability as keyof FlowArgs<ErvDriver>])
+        : args[
+            capability as keyof FlowArgs<ErvDriver>
+          ]) as SetCapabilities<ErvDriver>[K]
 
-    flowCapabilities.forEach((capability: SetCapability<ErvDriver>): void => {
-      this.homey.flow
-        .getConditionCard(`${capability}_erv_condition`)
-        .registerRunListener(
-          (args: FlowArgs<ErvDriver>): boolean =>
-            getCapabilityArg(args, capability) ===
-            args.device.getCapabilityValue(capability),
-        )
-      this.homey.flow
-        .getActionCard(`${capability}_erv_action`)
-        .registerRunListener(
-          async (args: FlowArgs<ErvDriver>): Promise<void> => {
-            await args.device.onCapability(
-              capability,
-              getCapabilityArg(args, capability),
-            )
-          },
-        )
-    })
+    flowCapabilities.forEach(
+      (capability: keyof SetCapabilities<ErvDriver>): void => {
+        this.homey.flow
+          .getConditionCard(`${capability}_erv_condition`)
+          .registerRunListener(
+            (args: FlowArgs<ErvDriver>): boolean =>
+              getCapabilityArg(args, capability) ===
+              args.device.getCapabilityValue(capability),
+          )
+        this.homey.flow
+          .getActionCard(`${capability}_erv_action`)
+          .registerRunListener(
+            async (args: FlowArgs<ErvDriver>): Promise<void> => {
+              await args.device.onCapability(
+                capability,
+                getCapabilityArg(
+                  args,
+                  capability,
+                ) as Capabilities<ErvDriver>[typeof capability],
+              )
+            },
+          )
+      },
+    )
   }
 }
