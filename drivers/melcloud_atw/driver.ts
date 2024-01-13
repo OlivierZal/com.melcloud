@@ -6,6 +6,7 @@ import {
   setCapabilityMappingAtw,
   HeatPumpType,
   OperationModeState,
+  type SetCapabilities,
   type Capabilities,
   type FlowArgs,
   type GetCapability,
@@ -121,7 +122,10 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
                 .getActionCard(`${capability}_action`)
                 .registerRunListener(
                   async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                    await args.device.onCapability(capability, args.onoff)
+                    await args.device.onCapability(
+                      capability as keyof SetCapabilities<AtwDriver>,
+                      args.onoff,
+                    )
                   },
                 )
             }
@@ -139,7 +143,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
               .registerRunListener(
                 async (args: FlowArgs<AtwDriver>): Promise<void> => {
                   await args.device.onCapability(
-                    capability,
+                    capability as keyof SetCapabilities<AtwDriver>,
                     args.operation_mode_zone,
                   )
                 },
@@ -151,7 +155,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
               .registerRunListener(
                 async (args: FlowArgs<AtwDriver>): Promise<void> => {
                   await args.device.onCapability(
-                    capability,
+                    capability as keyof SetCapabilities<AtwDriver>,
                     args.target_temperature,
                   )
                 },
