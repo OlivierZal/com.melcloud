@@ -322,7 +322,7 @@ export type SetCapabilities<T> = (MELCloudDriver & T extends AtaDriver
       : SetCapabilitiesAta | SetCapabilitiesAtw | SetCapabilitiesErv) & {
   thermostat_mode?: ThermostatMode
 }
-export type SetCapability<T> = MELCloudDriver & T extends AtaDriver
+type SetCapability<T> = MELCloudDriver & T extends AtaDriver
   ? keyof SetCapabilitiesAta
   : MELCloudDriver & T extends AtwDriver
     ? keyof SetCapabilitiesAtw

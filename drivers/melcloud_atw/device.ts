@@ -8,7 +8,6 @@ import {
   type SetCapabilities,
   type DeviceValue,
   type ReportPlanParameters,
-  type SetCapability,
   type SetDeviceValue,
   type Store,
 } from '../../types'
@@ -56,11 +55,11 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     }
     const zoneValue: OperationModeZone =
       OperationModeZone[value as keyof typeof OperationModeZone]
-    const otherZoneCapability: SetCapability<AtwDriver> = (
+    const otherZoneCapability: keyof SetCapabilities<AtwDriver> = (
       capability.endsWith('.zone2')
         ? capability.replace(/.zone2$/, '')
         : `${capability}.zone2`
-    ) as SetCapability<AtwDriver>
+    ) as keyof SetCapabilities<AtwDriver>
     let otherZoneValue: OperationModeZone =
       OperationModeZone[
         this.getRequestedOrCurrentValue(
