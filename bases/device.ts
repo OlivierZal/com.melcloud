@@ -51,6 +51,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 ) {
   public declare driver: T
 
+  public readonly data: DeviceDetails['data'] =
+    this.getData() as DeviceDetails['data']
+
+  public readonly id: number = this.data.id
+
+  public readonly buildingid: number = this.data.buildingid
+
   protected app: MELCloudApp = this.homey.app as MELCloudApp
 
   protected diff: Map<
@@ -84,18 +91,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     true: Partial<NonNullable<ReportCapabilityMapping<T>>>
   } = { false: {}, true: {} }
 
-  readonly #data: DeviceDetails['data'] =
-    this.getData() as DeviceDetails['data']
-
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
-
-  public get id(): number {
-    return this.#data.id
-  }
-
-  public get buildingid(): number {
-    return this.#data.buildingid
-  }
 
   public async onInit(): Promise<void> {
     await this.setWarning(null)
