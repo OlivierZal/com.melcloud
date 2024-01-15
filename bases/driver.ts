@@ -23,6 +23,8 @@ import {
 export default abstract class BaseMELCloudDriver<T> extends Driver {
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
+  #heatPumpType: keyof typeof HeatPumpType | null = null
+
   public abstract readonly setCapabilityMapping:
     | SetCapabilityMappingAta
     | SetCapabilityMappingAtw
@@ -45,8 +47,13 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
 
   protected abstract readonly deviceType: HeatPumpType
 
-  public get heatPumpType(): string {
-    return HeatPumpType[this.deviceType]
+  public get heatPumpType(): keyof typeof HeatPumpType {
+    if (!this.#heatPumpType) {
+      this.#heatPumpType = HeatPumpType[
+        this.deviceType
+      ] as keyof typeof HeatPumpType
+    }
+    return this.#heatPumpType
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
