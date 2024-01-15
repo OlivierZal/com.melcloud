@@ -371,7 +371,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
-    const [regularCapabilities, lastCapabilities]: [
+    const [regularCapabilityEntries, lastCapabilityEntries]: [
       TypedString<keyof OpCapabilities<T>>,
       OpCapabilityData<T>,
     ][][] = updateCapabilityEntries.reduce<
@@ -393,8 +393,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       },
       [[], []],
     )
-    await this.setCapabilityValues(regularCapabilities, data)
-    await this.setCapabilityValues(lastCapabilities, data)
+    await this.setCapabilityValues(regularCapabilityEntries, data)
+    await this.setCapabilityValues(lastCapabilityEntries, data)
   }
 
   private getUpdateCapabilityEntries(
@@ -416,8 +416,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
             !(
               capability in
               {
-                ...this.driver.setCapabilityMapping,
-                ...this.driver.getCapabilityMapping,
+                ...this.#setCapabilityMapping,
+                ...this.#getCapabilityMapping,
               }
             ),
         ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
@@ -434,11 +434,11 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
     K extends keyof OpCapabilities<T>,
   >(
-    capabilities: [keyof OpCapabilities<T>, OpCapabilityData<T>][],
+    capabilityEntries: [keyof OpCapabilities<T>, OpCapabilityData<T>][],
     data: D,
   ): Promise<void> {
     await Promise.all(
-      capabilities.map(
+      capabilityEntries.map(
         async ([capability, { tag }]: [
           keyof OpCapabilities<T>,
           OpCapabilityData<T>,
