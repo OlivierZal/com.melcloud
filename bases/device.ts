@@ -135,7 +135,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      !(this.getCapabilityValue('onoff') as boolean)
+      !this.getCapabilityValue('onoff')
     ) {
       await this.onCapability('onoff', true)
     } else if (
@@ -510,6 +510,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   private async runEnergyReport(total = false): Promise<void> {
+    if (!this.reportPlanParameters) {
+      return
+    }
     const reportCapabilities: Record<
       keyof ReportCapabilities<T>,
       keyof ReportData<T>
@@ -517,7 +520,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       keyof ReportCapabilities<T>,
       keyof ReportData<T>
     >
-    if (!this.reportPlanParameters || !Object.keys(reportCapabilities).length) {
+    if (!Object.keys(reportCapabilities).length) {
       return
     }
     const toDate: DateTime = DateTime.now().minus(
@@ -552,23 +555,28 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       TypedString<keyof ReportCapabilities<T>>,
       TypedString<keyof ReportData<T>>[],
     ]): Promise<void> => {
+      const { producedTags, consumedTags } = tags.reduce<{
+        producedTags: TypedString<keyof ReportData<T>>[]
+        consumedTags: TypedString<keyof ReportData<T>>[]
+      }>(
+        (acc, tag: TypedString<keyof ReportData<T>>) => {
+          if (tag.endsWith('Consumed')) {
+            acc.consumedTags.push(tag)
+          } else {
+            acc.producedTags.push(tag)
+          }
+          return acc
+        },
+        { producedTags: [], consumedTags: [] },
+      )
       const getReportValue = (): number => {
-        const consumedTags: (keyof ReportData<T>)[] = tags.filter(
-          (tag: TypedString<keyof ReportData<T>>) => tag.endsWith('Consumed'),
-        )
         switch (true) {
           case capability.includes('cop'):
             return (
-              tags
-                .filter(
-                  (tag: TypedString<keyof ReportData<T>>) =>
-                    !tag.endsWith('Consumed'),
-                )
-                .reduce<number>(
-                  (acc, tag: keyof ReportData<T>) =>
-                    acc + (data[tag] as number),
-                  0,
-                ) /
+              producedTags.reduce<number>(
+                (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
+                0,
+              ) /
               (consumedTags.length
                 ? consumedTags.reduce<number>(
                     (acc, tag: keyof ReportData<T>) =>
