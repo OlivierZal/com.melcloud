@@ -176,19 +176,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     }
     await Promise.all(
       [false, true].map(async (total: boolean): Promise<void> => {
-        const changed: string[] = changedEnergyKeys.filter((setting: string) =>
-          filterEnergyKeys(setting, total),
-        )
-        if (!changed.length) {
-          return
-        }
-        this.setReportCapabilityEntries(total)
-        if (changed.some((setting: string) => newSettings[setting])) {
-          await this.runEnergyReport(total)
-        } else if (
-          this.#reportCapabilityEntries[String(total) as BooleanString].length
+        if (
+          changedEnergyKeys.some((setting: string) =>
+            filterEnergyKeys(setting, total),
+          )
         ) {
-          this.clearEnergyReportPlan(total)
+          this.setReportCapabilityEntries(total)
+          await this.runEnergyReport(total)
         }
       }),
     )
@@ -520,6 +514,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       TypedString<keyof ReportData<T>>[],
     ][] = this.#reportCapabilityEntries[String(total) as BooleanString]
     if (!reportCapabilities.length) {
+      this.clearEnergyReportPlan(total)
       return
     }
     const toDate: DateTime = DateTime.now().minus(
@@ -531,7 +526,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       toDate,
     )
     await this.updateReportCapabilities(data, toDate, reportCapabilities)
-    this.planEnergyReport(total)
+    this.planEnergyReport(this.reportPlanParameters, total)
   }
 
   private async updateReportCapabilities(
@@ -612,9 +607,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await Promise.all(reportCapabilities.map(updateReportCapability))
   }
 
-  private planEnergyReport(total = false): void {
+  private planEnergyReport(
+    reportPlanParameters: ReportPlanParameters,
+    total = false,
+  ): void {
     const totalString: BooleanString = String(total) as BooleanString
-    if (!this.reportPlanParameters || this.#reportTimeout[totalString]) {
+    if (this.#reportTimeout[totalString]) {
       return
     }
     const actionType = `${total ? 'total' : 'regular'} energy report`
@@ -624,7 +622,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           duration: { days: 1 },
           values: { hour: 1, minute: 5, second: 0, millisecond: 0 },
         }
-      : this.reportPlanParameters
+      : reportPlanParameters
     this.#reportTimeout[totalString] = this.setTimeout(
       async (): Promise<void> => {
         await this.runEnergyReport(total)
