@@ -84,12 +84,27 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   #getCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>>
 
-  #listCapabilityMapping!: Partial<NonNullable<ListCapabilityMapping<T>>>
+  #listCapabilityMapping: Partial<
+    NonNullable<ListCapabilityMapping<T>>
+  > | null = null
 
   #reportCapabilityMapping: {
     false: Partial<NonNullable<ReportCapabilityMapping<T>>>
     true: Partial<NonNullable<ReportCapabilityMapping<T>>>
   } = { false: {}, true: {} }
+
+  #setAndGetCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>> &
+    Partial<NonNullable<SetCapabilityMapping<T>>>
+
+  #syncFromCapabilityEntries!: [
+    TypedString<keyof OpCapabilities<T>>,
+    OpCapabilityData<T>,
+  ][]
+
+  #opCapabilityEntries!: [
+    TypedString<keyof OpCapabilities<T>>,
+    OpCapabilityData<T>,
+  ][]
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
@@ -97,7 +112,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await this.setWarning(null)
     this.setOptionalCapabilities()
     await this.handleCapabilities()
-    this.setListCapabilityMapping()
     this.setReportCapabilityMapping()
     this.registerCapabilityListeners()
     this.app.applySyncFromDevices()
@@ -407,19 +421,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           ...Object.entries(this.#getCapabilityMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
       case 'syncFrom':
-        return Object.entries(this.#listCapabilityMapping).filter(
-          ([capability]: [string, ListCapabilityData<T>]) =>
-            !(
-              capability in
-              { ...this.#setCapabilityMapping, ...this.#getCapabilityMapping }
-            ),
-        ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
+        return this.#syncFromCapabilityEntries
       default:
-        return Object.entries({
-          ...this.#setCapabilityMapping,
-          ...this.#getCapabilityMapping,
-          ...this.#listCapabilityMapping,
-        }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
+        return this.#opCapabilityEntries
     }
   }
 
@@ -666,7 +670,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
-    this.setOptionalCapabilities()
+    this.setOptionalCapabilities(newSettings)
     await changedCapabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
         await acc
@@ -700,8 +704,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
   }
 
-  private setOptionalCapabilities(): void {
-    const settings: Settings = this.getSettings() as Settings
+  private setOptionalCapabilities(
+    settings: Settings = this.getSettings() as Settings,
+  ): void {
     this.#optionalCapabilities = Object.keys(settings).filter(
       (setting: string) =>
         this.isCapability(setting) &&
@@ -717,12 +722,34 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     this.#getCapabilityMapping = this.cleanMapping(
       this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
+    this.#setAndGetCapabilityMapping = {
+      ...this.#setCapabilityMapping,
+      ...this.#getCapabilityMapping,
+    }
+    this.setListAndOpListCapabilityEntries()
   }
 
   private setListCapabilityMapping(): void {
     this.#listCapabilityMapping = this.cleanMapping(
       this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
+    this.setListAndOpListCapabilityEntries()
+  }
+
+  private setListAndOpListCapabilityEntries(): void {
+    if (!this.#listCapabilityMapping) {
+      this.setListCapabilityMapping()
+    }
+    this.#syncFromCapabilityEntries = Object.entries(
+      this.#listCapabilityMapping as ListCapabilityMapping<T>,
+    ).filter(
+      ([capability]: [string, ListCapabilityData<T>]) =>
+        !(capability in this.#setAndGetCapabilityMapping),
+    ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
+    this.#opCapabilityEntries = Object.entries({
+      ...this.#setAndGetCapabilityMapping,
+      ...this.#listCapabilityMapping,
+    }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
   }
 
   private setReportCapabilityMapping(

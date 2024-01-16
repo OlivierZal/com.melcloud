@@ -21,9 +21,9 @@ import {
 } from '../types'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
-  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
+  public heatPumpType!: keyof typeof HeatPumpType
 
-  #heatPumpType: keyof typeof HeatPumpType | null = null
+  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
   public abstract readonly setCapabilityMapping:
     | SetCapabilityMappingAta
@@ -47,17 +47,11 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
 
   protected abstract readonly deviceType: HeatPumpType
 
-  public get heatPumpType(): keyof typeof HeatPumpType {
-    if (!this.#heatPumpType) {
-      this.#heatPumpType = HeatPumpType[
-        this.deviceType
-      ] as keyof typeof HeatPumpType
-    }
-    return this.#heatPumpType
-  }
-
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
+    this.heatPumpType = HeatPumpType[
+      this.deviceType
+    ] as keyof typeof HeatPumpType
     this.registerFlowListeners()
   }
 
