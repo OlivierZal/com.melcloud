@@ -549,8 +549,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         ? data.UsageDisclaimerPercentages.split(',').length
         : 1
 
-    const updateReportCapability = async ([capability, tags]: [
-      TypedString<keyof ReportCapabilities<T>>,
+    const updateReportCapability = async <
+      K extends keyof ReportCapabilities<T>,
+    >([capability, tags]: [
+      TypedString<K>,
       TypedString<keyof ReportData<T>>[],
     ]): Promise<void> => {
       const { producedTags, consumedTags } = tags.reduce<{
@@ -602,7 +604,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       }
       await this.setCapabilityValue(
         capability,
-        getReportValue() as Capabilities<T>[keyof ReportCapabilities<T>],
+        getReportValue() as Capabilities<T>[K],
       )
     }
 
