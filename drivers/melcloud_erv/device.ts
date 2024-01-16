@@ -2,10 +2,11 @@ import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
 import {
   VentilationMode,
-  type Capabilities,
+  type ListDeviceData,
+  type OpCapabilities,
   type SetCapabilities,
-  type DeviceValue,
-  type SetDeviceValue,
+  type SetDeviceData,
+  type ValueOf,
 } from '../../types'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
@@ -21,28 +22,27 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<ErvDriver>>(
     capability: K,
     value: SetCapabilities<ErvDriver>[K],
-  ): SetDeviceValue {
+  ): ValueOf<SetDeviceData<ErvDriver>> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case 'ventilation_mode':
         return VentilationMode[value as keyof typeof VentilationMode]
       default:
-        return value as SetDeviceValue
+        return value as ValueOf<SetDeviceData<ErvDriver>>
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof Capabilities<ErvDriver>>(
+  protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
     capability: K,
-    value: DeviceValue,
-  ): Capabilities<ErvDriver>[K] {
-    if (capability === 'ventilation_mode') {
-      return VentilationMode[
-        value as VentilationMode
-      ] as Capabilities<ErvDriver>[K]
-    }
-    return value as Capabilities<ErvDriver>[K]
+    value: ValueOf<ListDeviceData<ErvDriver>>,
+  ): OpCapabilities<ErvDriver>[K] {
+    return capability === 'ventilation_mode'
+      ? (VentilationMode[
+          value as VentilationMode
+        ] as OpCapabilities<ErvDriver>[K])
+      : (value as OpCapabilities<ErvDriver>[K])
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

@@ -17,17 +17,15 @@ interface TimerOptions extends BaseTimerOptions {
   readonly timerType: 'setInterval' | 'setTimeout'
 }
 
+type Timer = (
+  callback: () => Promise<void>,
+  interval: DurationLike,
+  options: BaseTimerOptions,
+) => NodeJS.Timeout
+
 type TimerClass = new (...args: any[]) => {
-  setInterval: (
-    callback: () => Promise<void>,
-    interval: DurationLike,
-    options: BaseTimerOptions,
-  ) => NodeJS.Timeout
-  setTimeout: (
-    callback: () => Promise<void>,
-    interval: DurationLike,
-    options: BaseTimerOptions,
-  ) => NodeJS.Timeout
+  setInterval: Timer
+  setTimeout: Timer
 }
 
 const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>

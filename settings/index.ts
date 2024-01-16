@@ -364,9 +364,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         sinceElement.value = nextFromDate
         to = nextToDate
         errorCount += errors.length
-        errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(
-          errorCount,
-        )}`
+        errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(errorCount)}`
         generateErrorLogTableData(errors)
       },
     )

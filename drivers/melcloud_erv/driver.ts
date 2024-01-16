@@ -4,11 +4,10 @@ import {
   listCapabilityMappingErv,
   setCapabilityMappingErv,
   HeatPumpType,
-  type SetCapabilities,
-  type Capabilities,
   type FlowArgs,
   type GetCapabilityMappingErv,
   type ListCapabilityMappingErv,
+  type SetCapabilities,
   type SetCapabilityMappingErv,
   type Store,
 } from '../../types'
@@ -26,6 +25,11 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly reportCapabilityMapping: null = null
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Erv
+
+  readonly #flowCapabilities: (keyof SetCapabilities<ErvDriver>)[] = [
+    'ventilation_mode',
+    'fan_power',
+  ]
 
   public getRequiredCapabilities({
     hasCO2Sensor,
@@ -45,22 +49,15 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   }
 
   protected registerFlowListeners(): void {
-    const flowCapabilities: (keyof SetCapabilities<ErvDriver>)[] = [
-      'ventilation_mode',
-      'fan_power',
-    ]
-
     const getCapabilityArg = <K extends keyof SetCapabilities<ErvDriver>>(
       args: FlowArgs<ErvDriver>,
       capability: K,
     ): SetCapabilities<ErvDriver>[K] =>
       (capability === 'fan_power'
-        ? Number(args[capability as keyof FlowArgs<ErvDriver>])
-        : args[
-            capability as keyof FlowArgs<ErvDriver>
-          ]) as SetCapabilities<ErvDriver>[K]
+        ? Number(args[capability])
+        : args[capability]) as SetCapabilities<ErvDriver>[K]
 
-    flowCapabilities.forEach(
+    this.#flowCapabilities.forEach(
       (capability: keyof SetCapabilities<ErvDriver>): void => {
         this.homey.flow
           .getConditionCard(`${capability}_erv_condition`)
@@ -75,10 +72,7 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
             async (args: FlowArgs<ErvDriver>): Promise<void> => {
               await args.device.onCapability(
                 capability,
-                getCapabilityArg(
-                  args,
-                  capability,
-                ) as Capabilities<ErvDriver>[typeof capability],
+                getCapabilityArg(args, capability),
               )
             },
           )

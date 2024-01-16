@@ -9,7 +9,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type MELCloudApp from '../app'
-import type { HomeyClass, HomeySettings } from '../types'
+import type { HomeyClass, HomeySettings, TypedString } from '../types'
 
 type APIClass = new (...args: any[]) => {
   readonly api: AxiosInstance
@@ -46,9 +46,9 @@ const withAPI = <T extends HomeyClass>(
     }
 
     public getHomeySetting<K extends keyof HomeySettings>(
-      setting: K,
+      setting: TypedString<K>,
     ): HomeySettings[K] {
-      return this.homey.settings.get(setting as string) as HomeySettings[K]
+      return this.homey.settings.get(setting) as HomeySettings[K]
     }
 
     private setupAxiosInterceptors(): void {
