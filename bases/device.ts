@@ -509,11 +509,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (!this.reportPlanParameters) {
       return
     }
-    const reportCapabilityEntries: [
-      TypedString<keyof ReportCapabilities<T>>,
-      TypedString<keyof ReportData<T>>[],
-    ][] = this.#reportCapabilityEntries[String(total) as BooleanString]
-    if (!reportCapabilityEntries.length) {
+    if (!this.#reportCapabilityEntries[String(total) as BooleanString].length) {
       this.clearEnergyReportPlan(total)
       return
     }
