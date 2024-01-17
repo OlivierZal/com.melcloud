@@ -102,14 +102,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   ][]
 
   #reportCapabilityEntries: {
-    false: [
-      TypedString<keyof ReportCapabilities<T>>,
-      TypedString<keyof ReportData<T>>[],
-    ][]
-    true: [
-      TypedString<keyof ReportCapabilities<T>>,
-      TypedString<keyof ReportData<T>>[],
-    ][]
+    false: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
+    true: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
   } = { false: [], true: [] }
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
@@ -541,13 +535,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       this.#reportCapabilityEntries[String(total) as BooleanString].map(
         async <K extends keyof ReportCapabilities<T>>([capability, tags]: [
           TypedString<K>,
-          TypedString<keyof ReportData<T>>[],
+          (keyof ReportData<T>)[],
         ]): Promise<void> => {
-          const producedTags: TypedString<keyof ReportData<T>>[] = this.driver
+          const producedTags: (keyof ReportData<T>)[] = this.driver
             .producedTagMapping[capability] as TypedString<
             keyof ReportData<T>
           >[]
-          const consumedTags: TypedString<keyof ReportData<T>>[] = this.driver
+          const consumedTags: (keyof ReportData<T>)[] = this.driver
             .consumedTagMapping[capability] as TypedString<
             keyof ReportData<T>
           >[]
@@ -742,7 +736,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           filterEnergyKeys(capability, total),
         ) as [
           TypedString<keyof ReportCapabilities<T>>,
-          TypedString<keyof ReportData<T>>[],
+          (keyof ReportData<T>)[],
         ][]
     })
   }

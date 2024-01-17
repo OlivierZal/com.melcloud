@@ -95,19 +95,16 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   private setProducedAndConsumedTagMappings(): void {
     Object.entries(this.reportCapabilityMapping).forEach(
       ([capability, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
-        tags.forEach((tag) => {
-          const mapping: ReportCapabilityMappingAny = tag.endsWith('Consumed')
-            ? this.consumedTagMapping
-            : this.producedTagMapping
-          if (!(capability in mapping)) {
-            mapping[capability as keyof ReportCapabilityMappingAny] = []
-          }
-          ;(
-            mapping[
-              capability as keyof ReportCapabilityMappingAny
-            ] as TypedString<keyof ReportData<T>>[]
-          ).push(tag)
-        })
+        ;(this.producedTagMapping[
+          capability as keyof ReportCapabilityMappingAny
+        ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
+          (tag: TypedString<keyof ReportData<T>>) => !tag.endsWith('Consumed'),
+        )
+        ;(this.consumedTagMapping[
+          capability as keyof ReportCapabilityMappingAny
+        ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
+          (tag: TypedString<keyof ReportData<T>>) => tag.endsWith('Consumed'),
+        )
       },
     )
   }
