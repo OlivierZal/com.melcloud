@@ -4,19 +4,13 @@ import type MELCloudApp from '../app'
 import {
   HeatPumpType,
   type DeviceDetails,
-  type GetCapabilityMappingAta,
-  type GetCapabilityMappingAtw,
-  type GetCapabilityMappingErv,
-  type ListCapabilityMappingAta,
-  type ListCapabilityMappingAtw,
-  type ListCapabilityMappingErv,
+  type GetCapabilityMappingAny,
+  type ListCapabilityMappingAny,
   type ListDevice,
   type LoginCredentials,
   type ReportCapabilityMappingAny,
   type ReportData,
-  type SetCapabilityMappingAta,
-  type SetCapabilityMappingAtw,
-  type SetCapabilityMappingErv,
+  type SetCapabilityMappingAny,
   type Store,
   type TypedString,
 } from '../types'
@@ -30,20 +24,11 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
-  public abstract readonly setCapabilityMapping:
-    | SetCapabilityMappingAta
-    | SetCapabilityMappingAtw
-    | SetCapabilityMappingErv
+  public abstract readonly setCapabilityMapping: SetCapabilityMappingAny
 
-  public abstract readonly getCapabilityMapping:
-    | GetCapabilityMappingAta
-    | GetCapabilityMappingAtw
-    | GetCapabilityMappingErv
+  public abstract readonly getCapabilityMapping: GetCapabilityMappingAny
 
-  public abstract readonly listCapabilityMapping:
-    | ListCapabilityMappingAta
-    | ListCapabilityMappingAtw
-    | ListCapabilityMappingErv
+  public abstract readonly listCapabilityMapping: ListCapabilityMappingAny
 
   public abstract readonly reportCapabilityMapping: ReportCapabilityMappingAny
 

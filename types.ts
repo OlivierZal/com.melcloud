@@ -784,42 +784,45 @@ export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
 }
+export type SetCapabilityMappingAny =
+  | SetCapabilityMappingAta
+  | SetCapabilityMappingAtw
+  | SetCapabilityMappingErv
 export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? SetCapabilityMappingAta
   : MELCloudDriver & T extends AtwDriver
     ? SetCapabilityMappingAtw
     : T extends ErvDriver
       ? SetCapabilityMappingErv
-      :
-          | SetCapabilityMappingAta
-          | SetCapabilityMappingAtw
-          | SetCapabilityMappingErv
+      : SetCapabilityMappingAny
 export interface GetCapabilityData<T> {
   readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
 }
+export type GetCapabilityMappingAny =
+  | GetCapabilityMappingAta
+  | GetCapabilityMappingAtw
+  | GetCapabilityMappingErv
 export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? GetCapabilityMappingAta
   : MELCloudDriver & T extends AtwDriver
     ? GetCapabilityMappingAtw
     : T extends ErvDriver
       ? GetCapabilityMappingErv
-      :
-          | GetCapabilityMappingAta
-          | GetCapabilityMappingAtw
-          | GetCapabilityMappingErv
+      : GetCapabilityMappingAny
 export interface ListCapabilityData<T> {
   readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
 }
+export type ListCapabilityMappingAny =
+  | ListCapabilityMappingAta
+  | ListCapabilityMappingAtw
+  | ListCapabilityMappingErv
 export type ListCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? ListCapabilityMappingAta
   : MELCloudDriver & T extends AtwDriver
     ? ListCapabilityMappingAtw
     : T extends ErvDriver
       ? ListCapabilityMappingErv
-      :
-          | ListCapabilityMappingAta
-          | ListCapabilityMappingAtw
-          | ListCapabilityMappingErv
+      : ListCapabilityMappingAny
 export type OpCapabilityData<T> =
   | GetCapabilityData<T>
   | ListCapabilityData<T>
