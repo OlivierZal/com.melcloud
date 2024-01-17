@@ -4,6 +4,6 @@
     "lib": ["esnext", "dom"],
     "outDir": ".homeybuild/",
     "sourceMap": true,
-    "target": "es2022"
-  }
+    "target": "es2022",
+  },
 }
