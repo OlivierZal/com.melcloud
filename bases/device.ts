@@ -596,6 +596,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
             )
         }
       }
+
       await this.setCapabilityValue(
         capability,
         getReportValue() as Capabilities<T>[K],
