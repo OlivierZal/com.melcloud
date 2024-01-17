@@ -21,7 +21,7 @@
     "es": "Tome el control de sus bombas de calor"
   },
   "category": ["climate"],
-  "version": "30.0.1",
+  "version": "30.1.0",
   "compatibility": ">=5.0.0",
   "tags": {
     "en": [
