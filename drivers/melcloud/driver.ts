@@ -56,7 +56,7 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
         : args[capability]) as SetCapabilities<AtaDriver>[K]
 
     this.#flowCapabilities.forEach(
-      (capability: keyof SetCapabilities<AtaDriver>): void => {
+      (capability: keyof SetCapabilities<AtaDriver>) => {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
           .registerRunListener(

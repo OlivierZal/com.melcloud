@@ -12,16 +12,21 @@ import {
   type ListCapabilityMappingErv,
   type ListDevice,
   type LoginCredentials,
-  type ReportCapabilityMappingAta,
-  type ReportCapabilityMappingAtw,
+  type ReportCapabilityMappingAny,
+  type ReportData,
   type SetCapabilityMappingAta,
   type SetCapabilityMappingAtw,
   type SetCapabilityMappingErv,
   type Store,
+  type TypedString,
 } from '../types'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
   public heatPumpType!: keyof typeof HeatPumpType
+
+  public producedTagMapping: ReportCapabilityMappingAny = {}
+
+  public consumedTagMapping: ReportCapabilityMappingAny = {}
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
@@ -40,10 +45,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
     | ListCapabilityMappingAtw
     | ListCapabilityMappingErv
 
-  public abstract readonly reportCapabilityMapping:
-    | ReportCapabilityMappingAta
-    | ReportCapabilityMappingAtw
-    | null
+  public abstract readonly reportCapabilityMapping: ReportCapabilityMappingAny
 
   protected abstract readonly deviceType: HeatPumpType
 
@@ -52,6 +54,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
     this.heatPumpType = HeatPumpType[
       this.deviceType
     ] as keyof typeof HeatPumpType
+    this.setProducedAndConsumedTagMappings()
     this.registerFlowListeners()
   }
 
@@ -100,6 +103,26 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
           store,
           capabilities: this.getRequiredCapabilities(store),
         }
+      },
+    )
+  }
+
+  private setProducedAndConsumedTagMappings(): void {
+    Object.entries(this.reportCapabilityMapping).forEach(
+      ([capability, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
+        tags.forEach((tag) => {
+          const mapping: ReportCapabilityMappingAny = tag.endsWith('Consumed')
+            ? this.consumedTagMapping
+            : this.producedTagMapping
+          if (!(capability in mapping)) {
+            mapping[capability as keyof ReportCapabilityMappingAny] = []
+          }
+          ;(
+            mapping[
+              capability as keyof ReportCapabilityMappingAny
+            ] as TypedString<keyof ReportData<T>>[]
+          ).push(tag)
+        })
       },
     )
   }

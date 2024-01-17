@@ -92,7 +92,7 @@ export = {
           acc[driverId] = {}
         }
         Object.entries(device.getSettings() as Settings).forEach(
-          ([settingId, value]: [string, ValueOf<Settings>]): void => {
+          ([settingId, value]: [string, ValueOf<Settings>]) => {
             if (!(settingId in acc[driverId])) {
               acc[driverId][settingId] = []
             }

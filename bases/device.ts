@@ -162,7 +162,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       changedKeys.some(
         (setting: string) =>
           setting !== 'always_on' &&
-          !(setting in (this.driver.reportCapabilityMapping ?? {})),
+          !(setting in this.driver.reportCapabilityMapping),
       )
     ) {
       this.app.applySyncFromDevices()
@@ -338,7 +338,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ;[
       ...Object.keys(this.driver.setCapabilityMapping),
       'thermostat_mode',
-    ].forEach((capability: string): void => {
+    ].forEach((capability: string) => {
       this.registerCapabilityListener(
         capability,
         async (value: SetCapabilities<T>[K]): Promise<void> => {
@@ -543,20 +543,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           TypedString<K>,
           TypedString<keyof ReportData<T>>[],
         ]): Promise<void> => {
-          const { producedTags, consumedTags } = tags.reduce<{
-            producedTags: TypedString<keyof ReportData<T>>[]
-            consumedTags: TypedString<keyof ReportData<T>>[]
-          }>(
-            (acc, tag: TypedString<keyof ReportData<T>>) => {
-              if (tag.endsWith('Consumed')) {
-                acc.consumedTags.push(tag)
-              } else {
-                acc.producedTags.push(tag)
-              }
-              return acc
-            },
-            { producedTags: [], consumedTags: [] },
-          )
+          const producedTags: TypedString<keyof ReportData<T>>[] = this.driver
+            .producedTagMapping[capability] as TypedString<
+            keyof ReportData<T>
+          >[]
+          const consumedTags: TypedString<keyof ReportData<T>>[] = this.driver
+            .consumedTagMapping[capability] as TypedString<
+            keyof ReportData<T>
+          >[]
           let value = 0
           switch (true) {
             case capability.includes('cop'):
@@ -738,21 +732,19 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private setReportCapabilityEntries(
     totals: boolean[] | boolean = [false, true],
   ): void {
-    ;(Array.isArray(totals) ? totals : [totals]).forEach(
-      (total: boolean): void => {
-        this.#reportCapabilityEntries[String(total) as BooleanString] =
-          Object.entries(
-            this.cleanMapping(
-              this.driver.reportCapabilityMapping as ReportCapabilityMapping<T>,
-            ),
-          ).filter(([capability]: [string, keyof ReportData<T>]) =>
-            filterEnergyKeys(capability, total),
-          ) as [
-            TypedString<keyof ReportCapabilities<T>>,
-            TypedString<keyof ReportData<T>>[],
-          ][]
-      },
-    )
+    ;(Array.isArray(totals) ? totals : [totals]).forEach((total: boolean) => {
+      this.#reportCapabilityEntries[String(total) as BooleanString] =
+        Object.entries(
+          this.cleanMapping(
+            this.driver.reportCapabilityMapping as ReportCapabilityMapping<T>,
+          ),
+        ).filter(([capability]: [string, keyof ReportData<T>]) =>
+          filterEnergyKeys(capability, total),
+        ) as [
+          TypedString<keyof ReportCapabilities<T>>,
+          TypedString<keyof ReportData<T>>[],
+        ][]
+    })
   }
 
   private cleanMapping<
@@ -763,7 +755,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       | SetCapabilityMapping<T>,
   >(capabilityMapping: M): Partial<NonNullable<M>> {
     return Object.fromEntries(
-      Object.entries(capabilityMapping ?? {}).filter(([capability]) =>
+      Object.entries(capabilityMapping).filter(([capability]) =>
         this.hasCapability(capability),
       ),
     ) as Partial<NonNullable<M>>
@@ -775,7 +767,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   private isReportCapability(setting: string): boolean {
-    return setting in (this.driver.reportCapabilityMapping ?? {})
+    return setting in this.driver.reportCapabilityMapping
   }
 
   protected abstract specificOnCapability<K extends keyof SetCapabilities<T>>(

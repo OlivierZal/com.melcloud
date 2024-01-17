@@ -94,7 +94,7 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
 
   protected registerFlowListeners(): void {
     this.#flowCapabilities.forEach(
-      (capability: keyof Capabilities<AtwDriver>): void => {
+      (capability: keyof Capabilities<AtwDriver>) => {
         switch (true) {
           case capability.startsWith('operation_mode_state'):
             this.homey.flow

@@ -776,6 +776,9 @@ export const listCapabilityMappingErv: ListCapabilityMappingErv = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   measure_pm25: { tag: 'PM25Level' },
 } as const
+export type ReportCapabilityMappingErv = Record<string, never>
+export const reportCapabilityMappingErv: ReportCapabilityMappingErv =
+  {} as const
 
 export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
@@ -821,13 +824,17 @@ export type OpCapabilityData<T> =
   | GetCapabilityData<T>
   | ListCapabilityData<T>
   | SetCapabilityData<T>
+export type ReportCapabilityMappingAny =
+  | ReportCapabilityMappingAta
+  | ReportCapabilityMappingAtw
+  | ReportCapabilityMappingErv
 export type ReportCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   ? ReportCapabilityMappingAta
   : MELCloudDriver & T extends AtwDriver
     ? ReportCapabilityMappingAtw
     : T extends ErvDriver
-      ? null
-      : ReportCapabilityMappingAta | ReportCapabilityMappingAtw | null
+      ? ReportCapabilityMappingErv
+      : ReportCapabilityMappingAta | ReportCapabilityMappingAtw
 
 export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
   ? SetCapabilities<AtaDriver>

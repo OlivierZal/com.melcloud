@@ -266,10 +266,10 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const disableButtons = (setting: string, value = true): void => {
     const [baseSetting, suffix]: string[] = setting.split('-')
-    ;['apply', 'refresh'].forEach((action: string): void => {
+    ;['apply', 'refresh'].forEach((action: string) => {
       disableButton(`${action}-${setting}`, value)
       if (suffix === 'common') {
-        driverIds.forEach((driverId: string): void => {
+        driverIds.forEach((driverId: string) => {
           disableButton(`${action}-${baseSetting}-${driverId}`, value)
         })
       } else {
@@ -296,7 +296,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     tableElement.setAttribute('aria-describedby', 'Error Log')
     const theadElement: HTMLTableSectionElement = tableElement.createTHead()
     const rowElement: HTMLTableRowElement = theadElement.insertRow()
-    keys.forEach((key: string): void => {
+    keys.forEach((key: string) => {
       const thElement: HTMLTableCellElement = document.createElement('th')
       thElement.innerText = homey.__(`settings.error_log.columns.${key}`)
       rowElement.appendChild(thElement)
@@ -309,12 +309,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     if (!errors.length) {
       return
     }
-    errors.forEach((error: ErrorDetails): void => {
+    errors.forEach((error: ErrorDetails) => {
       if (!errorLogTBodyElement) {
         errorLogTBodyElement = generateErrorLogTable(Object.keys(errors[0]))
       }
       const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
-      Object.values(error).forEach((value: string): void => {
+      Object.values(error).forEach((value: string) => {
         const cellElement: HTMLTableCellElement = rowElement.insertCell()
         cellElement.innerText = value
       })
@@ -608,15 +608,15 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const updateDeviceSettings = (body: Settings, driverId?: string): void => {
     if (driverId !== undefined) {
       Object.entries(body).forEach(
-        ([settingId, settingValue]: [string, ValueOf<Settings>]): void => {
+        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
           deviceSettings[driverId][settingId] = [settingValue]
         },
       )
       flatDeviceSettings = flattenDeviceSettings()
     } else {
       Object.entries(body).forEach(
-        ([settingId, settingValue]: [string, ValueOf<Settings>]): void => {
-          Object.keys(deviceSettings).forEach((driver: string): void => {
+        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
+          Object.keys(deviceSettings).forEach((driver: string) => {
             deviceSettings[driver][settingId] = [settingValue]
           })
           flatDeviceSettings[settingId] = [settingValue]
@@ -731,7 +731,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     elements: HTMLInputElement[],
     driverId: string,
   ): void => {
-    elements.forEach((element: HTMLInputElement): void => {
+    elements.forEach((element: HTMLInputElement) => {
       updateCheckboxChildrenElement(element, driverId)
     })
   }
@@ -771,7 +771,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       .filter((setting: DriverSetting) =>
         ['checkbox', 'dropdown'].includes(setting.type),
       )
-      .forEach((setting: DriverSetting): void => {
+      .forEach((setting: DriverSetting) => {
         const divElement: HTMLDivElement = document.createElement('div')
         divElement.className = 'homey-form-group'
         const labelElement: HTMLLabelElement = document.createElement('label')
@@ -787,7 +787,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           ...(setting.type === 'checkbox'
             ? [{ id: 'false' }, { id: 'true' }]
             : setting.values ?? []),
-        ].forEach(({ id, label }: { id: string; label?: string }): void => {
+        ].forEach(({ id, label }: { id: string; label?: string }) => {
           const optionElement: HTMLOptionElement =
             document.createElement('option')
           optionElement.value = id
@@ -820,7 +820,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     let previousGroupLabel: string | undefined = ''
     driverSettings[driverId]
       .filter((setting: DriverSetting) => setting.type === 'checkbox')
-      .forEach((setting: DriverSetting): void => {
+      .forEach((setting: DriverSetting) => {
         if (setting.groupLabel !== previousGroupLabel) {
           previousGroupLabel = setting.groupLabel
           const legendElement: HTMLLegendElement =

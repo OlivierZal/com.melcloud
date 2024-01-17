@@ -2,11 +2,13 @@ import BaseMELCloudDriver from '../../bases/driver'
 import {
   getCapabilityMappingErv,
   listCapabilityMappingErv,
+  reportCapabilityMappingErv,
   setCapabilityMappingErv,
   HeatPumpType,
   type FlowArgs,
   type GetCapabilityMappingErv,
   type ListCapabilityMappingErv,
+  type ReportCapabilityMappingErv,
   type SetCapabilities,
   type SetCapabilityMappingErv,
   type Store,
@@ -22,7 +24,8 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly listCapabilityMapping: ListCapabilityMappingErv =
     listCapabilityMappingErv
 
-  public readonly reportCapabilityMapping: null = null
+  public readonly reportCapabilityMapping: ReportCapabilityMappingErv =
+    reportCapabilityMappingErv
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Erv
 
@@ -58,7 +61,7 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
         : args[capability]) as SetCapabilities<ErvDriver>[K]
 
     this.#flowCapabilities.forEach(
-      (capability: keyof SetCapabilities<ErvDriver>): void => {
+      (capability: keyof SetCapabilities<ErvDriver>) => {
         this.homey.flow
           .getConditionCard(`${capability}_erv_condition`)
           .registerRunListener(
