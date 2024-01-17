@@ -112,16 +112,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ][]
   } = { false: [], true: [] }
 
-  #producedTags: {
-    false: TypedString<keyof ReportData<T>>[]
-    true: TypedString<keyof ReportData<T>>[]
-  } = { false: [], true: [] }
-
-  #consumedTags: {
-    false: TypedString<keyof ReportData<T>>[]
-    true: TypedString<keyof ReportData<T>>[]
-  } = { false: [], true: [] }
-
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
   public async onInit(): Promise<void> {
@@ -551,16 +541,26 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       'UsageDisclaimerPercentages' in data
         ? data.UsageDisclaimerPercentages.split(',').length
         : 1
-    const producedTags: TypedString<keyof ReportData<T>>[] =
-      this.#producedTags[String(total) as BooleanString]
-    const consumedTags: TypedString<keyof ReportData<T>>[] =
-      this.#consumedTags[String(total) as BooleanString]
     await Promise.all(
       this.#reportCapabilityEntries[String(total) as BooleanString].map(
         async <K extends keyof ReportCapabilities<T>>([capability, tags]: [
           TypedString<K>,
           TypedString<keyof ReportData<T>>[],
         ]): Promise<void> => {
+          const { producedTags, consumedTags } = tags.reduce<{
+            producedTags: TypedString<keyof ReportData<T>>[]
+            consumedTags: TypedString<keyof ReportData<T>>[]
+          }>(
+            (acc, tag: TypedString<keyof ReportData<T>>) => {
+              if (tag.endsWith('Consumed')) {
+                acc.consumedTags.push(tag)
+              } else {
+                acc.producedTags.push(tag)
+              }
+              return acc
+            },
+            { producedTags: [], consumedTags: [] },
+          )
           let value = 0
           switch (true) {
             case capability.includes('cop'):
@@ -744,39 +744,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   ): void {
     ;(Array.isArray(totals) ? totals : [totals]).forEach(
       (total: boolean): void => {
-        const reportCapabilityEntries: [
-          TypedString<keyof ReportCapabilities<T>>,
-          TypedString<keyof ReportData<T>>[],
-        ][] = Object.entries(
-          this.cleanMapping(
-            this.driver.reportCapabilityMapping as ReportCapabilityMapping<T>,
-          ),
-        ).filter(([capability]: [string, keyof ReportData<T>]) =>
-          filterEnergyKeys(capability, total),
-        ) as [
-          TypedString<keyof ReportCapabilities<T>>,
-          TypedString<keyof ReportData<T>>[],
-        ][]
-        const { producedTags, consumedTags } = reportCapabilityEntries.reduce<{
-          producedTags: TypedString<keyof ReportData<T>>[]
-          consumedTags: TypedString<keyof ReportData<T>>[]
-        }>(
-          (acc, [, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
-            tags.forEach((tag: TypedString<keyof ReportData<T>>): void => {
-              if (tag.endsWith('Consumed')) {
-                acc.consumedTags.push(tag)
-              } else {
-                acc.producedTags.push(tag)
-              }
-            })
-            return acc
-          },
-          { producedTags: [], consumedTags: [] },
-        )
         this.#reportCapabilityEntries[String(total) as BooleanString] =
-          reportCapabilityEntries
-        this.#producedTags[String(total) as BooleanString] = producedTags
-        this.#consumedTags[String(total) as BooleanString] = consumedTags
+          Object.entries(
+            this.cleanMapping(
+              this.driver.reportCapabilityMapping as ReportCapabilityMapping<T>,
+            ),
+          ).filter(([capability]: [string, keyof ReportData<T>]) =>
+            filterEnergyKeys(capability, total),
+          ) as [
+            TypedString<keyof ReportCapabilities<T>>,
+            TypedString<keyof ReportData<T>>[],
+          ][]
       },
     )
   }
