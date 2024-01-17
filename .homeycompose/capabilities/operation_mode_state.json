@@ -62,15 +62,15 @@
       }
     },
     {
-      "id": "standby",
+      "id": "defrost",
       "title": {
-        "en": "Standby",
-        "fr": "En veille",
-        "nl": "Standby",
-        "sv": "Vänteläge",
-        "no": "Ventemodus",
-        "da": "Ventetilstand",
-        "es": "En espera"
+        "en": "Defrost",
+        "fr": "Dégivrage",
+        "nl": "Ontdooien",
+        "sv": "Avfrostning",
+        "no": "Avfrosting",
+        "da": "Afrimning",
+        "es": "Descongelación"
       }
     },
     {

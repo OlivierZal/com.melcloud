@@ -212,7 +212,7 @@ export enum OperationModeState {
   dhw = 1,
   heating = 2,
   cooling = 3,
-  standby = 5,
+  defrost = 5,
   legionella = 6,
 }
 export enum OperationModeZone {
