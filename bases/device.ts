@@ -551,61 +551,51 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       'UsageDisclaimerPercentages' in data
         ? data.UsageDisclaimerPercentages.split(',').length
         : 1
-
-    const updateReportCapability = async <
-      K extends keyof ReportCapabilities<T>,
-    >([capability, tags]: [
-      TypedString<K>,
-      TypedString<keyof ReportData<T>>[],
-    ]): Promise<void> => {
-      const producedTags: TypedString<keyof ReportData<T>>[] =
-        this.#producedTags[String(total) as BooleanString]
-      const consumedTags: TypedString<keyof ReportData<T>>[] =
-        this.#consumedTags[String(total) as BooleanString]
-
-      const getReportValue = (): number => {
-        switch (true) {
-          case capability.includes('cop'):
-            return (
-              producedTags.reduce<number>(
-                (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-                0,
-              ) /
-              (consumedTags.length
-                ? consumedTags.reduce<number>(
-                    (acc, tag: keyof ReportData<T>) =>
-                      acc + (data[tag] as number),
-                    0,
-                  )
-                : 1)
-            )
-          case capability.startsWith('measure_power'):
-            return (
-              tags.reduce<number>(
-                (acc, tag: keyof ReportData<T>) =>
-                  acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
-                0,
-              ) / deviceCount
-            )
-          default:
-            return (
-              tags.reduce<number>(
-                (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-                0,
-              ) / deviceCount
-            )
-        }
-      }
-
-      await this.setCapabilityValue(
-        capability,
-        getReportValue() as Capabilities<T>[K],
-      )
-    }
-
+    const producedTags: TypedString<keyof ReportData<T>>[] =
+      this.#producedTags[String(total) as BooleanString]
+    const consumedTags: TypedString<keyof ReportData<T>>[] =
+      this.#consumedTags[String(total) as BooleanString]
     await Promise.all(
       this.#reportCapabilityEntries[String(total) as BooleanString].map(
-        updateReportCapability,
+        async <K extends keyof ReportCapabilities<T>>([capability, tags]: [
+          TypedString<K>,
+          TypedString<keyof ReportData<T>>[],
+        ]): Promise<void> => {
+          let value = 0
+          switch (true) {
+            case capability.includes('cop'):
+              value =
+                producedTags.reduce<number>(
+                  (acc, tag: keyof ReportData<T>) =>
+                    acc + (data[tag] as number),
+                  0,
+                ) /
+                (consumedTags.length
+                  ? consumedTags.reduce<number>(
+                      (acc, tag: keyof ReportData<T>) =>
+                        acc + (data[tag] as number),
+                      0,
+                    )
+                  : 1)
+              break
+            case capability.startsWith('measure_power'):
+              value =
+                tags.reduce<number>(
+                  (acc, tag: keyof ReportData<T>) =>
+                    acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
+                  0,
+                ) / deviceCount
+              break
+            default:
+              value =
+                tags.reduce<number>(
+                  (acc, tag: keyof ReportData<T>) =>
+                    acc + (data[tag] as number),
+                  0,
+                ) / deviceCount
+          }
+          await this.setCapabilityValue(capability, value as Capabilities<T>[K])
+        },
       ),
     )
   }
