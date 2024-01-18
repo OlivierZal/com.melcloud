@@ -508,14 +508,14 @@ export type ReportData<T> = MELCloudDriver & T extends AtaDriver
       ? never
       : ReportDataAta | ReportDataAtw
 
-export type SetCapabilityMappingAta = Record<
+type SetCapabilityMappingAtaModel = Record<
   keyof SetCapabilitiesAta,
   {
     readonly effectiveFlag: bigint
     readonly tag: Exclude<keyof SetDeviceDataAta, 'EffectiveFlags'>
   }
 >
-export const setCapabilityMappingAta: SetCapabilityMappingAta = {
+export const setCapabilityMappingAta: SetCapabilityMappingAtaModel = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   operation_mode: { tag: 'OperationMode', effectiveFlag: 0x2n },
   target_temperature: { tag: 'SetTemperature', effectiveFlag: 0x4n },
@@ -523,29 +523,32 @@ export const setCapabilityMappingAta: SetCapabilityMappingAta = {
   vertical: { tag: 'VaneVertical', effectiveFlag: 0x10n },
   horizontal: { tag: 'VaneHorizontal', effectiveFlag: 0x100n },
 } as const
-export type GetCapabilityMappingAta = Record<
+export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
+type GetCapabilityMappingAtaModel = Record<
   keyof GetCapabilitiesAta,
   { readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'> }
 >
-export const getCapabilityMappingAta: GetCapabilityMappingAta = {
+export const getCapabilityMappingAta: GetCapabilityMappingAtaModel = {
   measure_temperature: { tag: 'RoomTemperature' },
 } as const
-export type ListCapabilityMappingAta = Record<
+export type GetCapabilityMappingAta = typeof getCapabilityMappingAta
+type ListCapabilityMappingAtaModel = Record<
   keyof ListCapabilitiesAta,
   { readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'> }
 >
-export const listCapabilityMappingAta: ListCapabilityMappingAta = {
+export const listCapabilityMappingAta: ListCapabilityMappingAtaModel = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   fan_power: { tag: 'FanSpeed' },
   fan_power_state: { tag: 'ActualFanSpeed' },
   vertical: { tag: 'VaneVerticalDirection' },
   horizontal: { tag: 'VaneHorizontalDirection' },
 } as const
-export type ReportCapabilityMappingAta = Record<
+export type ListCapabilityMappingAta = typeof listCapabilityMappingAta
+type ReportCapabilityMappingAtaModel = Record<
   keyof ReportCapabilitiesAta,
   readonly (keyof ReportDataAta)[]
 >
-export const reportCapabilityMappingAta: ReportCapabilityMappingAta = {
+export const reportCapabilityMappingAta: ReportCapabilityMappingAtaModel = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
   'measure_power.cooling': ['Cooling'],
@@ -582,15 +585,16 @@ export const reportCapabilityMappingAta: ReportCapabilityMappingAta = {
   'meter_power.daily_heating': ['TotalHeatingConsumed'],
   'meter_power.daily_other': ['TotalOtherConsumed'],
 } as const
+export type ReportCapabilityMappingAta = typeof reportCapabilityMappingAta
 
-export type SetCapabilityMappingAtw = Record<
+type SetCapabilityMappingAtwModel = Record<
   keyof SetCapabilitiesAtw,
   {
     readonly effectiveFlag: bigint
     readonly tag: Exclude<keyof SetDeviceDataAtw, 'EffectiveFlags'>
   }
 >
-export const setCapabilityMappingAtw: SetCapabilityMappingAtw = {
+export const setCapabilityMappingAtw: SetCapabilityMappingAtwModel = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   operation_mode_zone: { tag: 'OperationModeZone1', effectiveFlag: 0x8n },
   operation_mode_zone_with_cool: {
@@ -638,11 +642,12 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtw = {
     effectiveFlag: 0x1000000000020n,
   },
 } as const
-export type GetCapabilityMappingAtw = Record<
+export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
+type GetCapabilityMappingAtwModel = Record<
   keyof GetCapabilitiesAtw,
   { readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'> }
 >
-export const getCapabilityMappingAtw: GetCapabilityMappingAtw = {
+export const getCapabilityMappingAtw: GetCapabilityMappingAtwModel = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
   'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
   'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
@@ -652,11 +657,12 @@ export const getCapabilityMappingAtw: GetCapabilityMappingAtw = {
   'operation_mode_state.zone1': { tag: 'IdleZone1' },
   'operation_mode_state.zone2': { tag: 'IdleZone2' },
 } as const
-export type ListCapabilityMappingAtw = Record<
+export type GetCapabilityMappingAtw = typeof getCapabilityMappingAtw
+type ListCapabilityMappingAtwModel = Record<
   keyof ListCapabilitiesAtw,
   { readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'> }
 >
-export const listCapabilityMappingAtw: ListCapabilityMappingAtw = {
+export const listCapabilityMappingAtw: ListCapabilityMappingAtwModel = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
   'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
@@ -681,11 +687,12 @@ export const listCapabilityMappingAtw: ListCapabilityMappingAtw = {
   'measure_temperature.target_curve': { tag: 'TargetHCTemperatureZone1' },
   'measure_temperature.target_curve_zone2': { tag: 'TargetHCTemperatureZone2' },
 } as const
-export type ReportCapabilityMappingAtw = Record<
+export type ListCapabilityMappingAtw = typeof listCapabilityMappingAtw
+type ReportCapabilityMappingAtwModel = Record<
   keyof ReportCapabilitiesAtw,
   readonly (keyof ReportDataAtw)[]
 >
-export const reportCapabilityMappingAtw: ReportCapabilityMappingAtw = {
+export const reportCapabilityMappingAtw: ReportCapabilityMappingAtwModel = {
   meter_power: [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
@@ -746,39 +753,44 @@ export const reportCapabilityMappingAtw: ReportCapabilityMappingAtw = {
     'TotalHotWaterConsumed',
   ],
 } as const
+export type ReportCapabilityMappingAtw = typeof reportCapabilityMappingAtw
 
-export type SetCapabilityMappingErv = Record<
+type SetCapabilityMappingErvModel = Record<
   keyof SetCapabilitiesErv,
   {
     readonly effectiveFlag: bigint
     readonly tag: Exclude<keyof SetDeviceDataErv, 'EffectiveFlags'>
   }
 >
-export const setCapabilityMappingErv: SetCapabilityMappingErv = {
+export const setCapabilityMappingErv: SetCapabilityMappingErvModel = {
   onoff: { tag: 'Power', effectiveFlag: 0x1n },
   ventilation_mode: { tag: 'VentilationMode', effectiveFlag: 0x4n },
   fan_power: { tag: 'SetFanSpeed', effectiveFlag: 0x8n },
 } as const
-export type GetCapabilityMappingErv = Record<
+export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
+type GetCapabilityMappingErvModel = Record<
   keyof GetCapabilitiesErv,
   { readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'> }
 >
-export const getCapabilityMappingErv: GetCapabilityMappingErv = {
+export const getCapabilityMappingErv: GetCapabilityMappingErvModel = {
   measure_co2: { tag: 'RoomCO2Level' },
   measure_temperature: { tag: 'RoomTemperature' },
   'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
 } as const
-export type ListCapabilityMappingErv = Record<
+export type GetCapabilityMappingErv = typeof getCapabilityMappingErv
+type ListCapabilityMappingErvModel = Record<
   keyof ListCapabilitiesErv,
   { readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'> }
 >
-export const listCapabilityMappingErv: ListCapabilityMappingErv = {
+export const listCapabilityMappingErv: ListCapabilityMappingErvModel = {
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
   measure_pm25: { tag: 'PM25Level' },
 } as const
-export type ReportCapabilityMappingErv = Record<string, never>
-export const reportCapabilityMappingErv: ReportCapabilityMappingErv =
+export type ListCapabilityMappingErv = typeof listCapabilityMappingErv
+type ReportCapabilityMappingErvModel = Record<string, never>
+export const reportCapabilityMappingErv: ReportCapabilityMappingErvModel =
   {} as const
+export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
 
 export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
