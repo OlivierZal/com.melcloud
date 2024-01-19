@@ -15,11 +15,6 @@ import {
   type ValueOf,
 } from '../../types'
 
-const CURVE_VALUE: OperationModeZone = OperationModeZone.curve
-const ROOM_VALUES: OperationModeZone[] = [
-  OperationModeZone.room,
-  OperationModeZone.room_cool,
-]
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
 
@@ -59,16 +54,21 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     let otherZoneValue: OperationModeZone =
       OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
     if (canCool) {
-      if (zoneValue > CURVE_VALUE) {
+      if (zoneValue > OperationModeZone.curve) {
         otherZoneValue =
-          otherZoneValue === CURVE_VALUE
+          otherZoneValue === OperationModeZone.curve
             ? HEAT_COOL_GAP
             : otherZoneValue + HEAT_COOL_GAP
-      } else if (otherZoneValue > CURVE_VALUE) {
+      } else if (otherZoneValue > OperationModeZone.curve) {
         otherZoneValue -= HEAT_COOL_GAP
       }
     }
-    if (ROOM_VALUES.includes(zoneValue) && otherZoneValue === zoneValue) {
+    if (
+      [OperationModeZone.room, OperationModeZone.room_cool].includes(
+        zoneValue,
+      ) &&
+      otherZoneValue === zoneValue
+    ) {
       otherZoneValue += ROOM_FLOW_GAP
     }
     this.diff.set(
