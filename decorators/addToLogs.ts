@@ -4,8 +4,6 @@
 */
 import type { SimpleClass } from 'homey'
 
-const EMPTY_FUNCTION_PARENS = '()'
-
 const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
   ...logs: string[]
 ) =>
@@ -25,11 +23,8 @@ const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
             if (log in this) {
               return [this[log as keyof this], '-']
             }
-            if (log.endsWith(EMPTY_FUNCTION_PARENS)) {
-              const funcName: string = log.slice(
-                0,
-                -EMPTY_FUNCTION_PARENS.length,
-              )
+            if (log.endsWith('()')) {
+              const funcName: string = log.slice(0, -'()'.length)
               if (
                 !(funcName in this) ||
                 typeof this[funcName as keyof this] !== 'function'
