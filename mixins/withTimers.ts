@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   DateTime,
   Duration,
@@ -23,6 +22,7 @@ type Timer = (
   options: BaseTimerOptions,
 ) => NodeJS.Timeout
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TimerClass = new (...args: any[]) => {
   setInterval: Timer
   setTimeout: Timer
