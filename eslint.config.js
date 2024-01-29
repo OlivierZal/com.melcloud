@@ -21,20 +21,12 @@ module.exports = [
     rules: {
       ...js.configs.all.rules,
       ...importPlugin.configs.recommended.rules,
-      'camelcase': 'off',
+      camelcase: 'off',
       'max-lines': 'off',
       'no-magic-numbers': ['error', { ignore: MAGIC_NUMBERS }],
       'no-ternary': 'off',
       'no-underscore-dangle': ['error', { allow: ['__'] }],
       'one-var': 'off',
-    },
-    settings: {
-      ...importPlugin.configs.typescript.settings,
-      'import/ignore': ['node_modules'],
-      'import/resolver': {
-        ...importPlugin.configs.typescript.settings['import/resolver'],
-        typescript: { alwaysTryTypes: true },
-      },
     },
   },
   { files: ['**/*.js'], languageOptions: { globals: globals.node } },
@@ -57,6 +49,17 @@ module.exports = [
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
       'import/extensions': 'off',
       'import/no-duplicates': ['error', { 'prefer-inline': true }],
+    },
+    settings: {
+      ...importPlugin.configs.typescript.settings,
+      'import/ignore': [
+        'node_modules',
+        '\\.(coffee|scss|css|less|hbs|svg|json)$',
+      ],
+      'import/resolver': {
+        ...importPlugin.configs.typescript.settings['import/resolver'],
+        typescript: { alwaysTryTypes: true },
+      },
     },
   },
   prettier,
