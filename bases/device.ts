@@ -1,9 +1,3 @@
-import { Device } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
-import { DateTime } from 'luxon'
-import type MELCloudApp from '../app'
-import addToLogs from '../decorators/addToLogs'
-import withAPI from '../mixins/withAPI'
-import withTimers from '../mixins/withTimers'
 import type {
   BooleanString,
   Capabilities,
@@ -35,8 +29,15 @@ import type {
   UpdateDeviceData,
   ValueOf,
 } from '../types'
+import { DateTime } from 'luxon'
+import { Device } from 'homey'
+import type MELCloudApp from '../app'
+import addToLogs from '../decorators/addToLogs'
+import withAPI from '../mixins/withAPI'
+import withTimers from '../mixins/withTimers'
 
-const DATETIME_1970: DateTime = DateTime.local(1970)
+const YEAR_1970 = 1970
+const DATETIME_1970: DateTime = DateTime.local(YEAR_1970)
 export const K_MULTIPLIER = 1000
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
@@ -71,7 +72,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
     true: NodeJS.Timeout | null
-  } = { true: null, false: null }
+  } = { false: null, true: null }
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -119,7 +120,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public isDiff(): boolean {
-    return !!this.diff.size
+    return Boolean(this.diff.size)
   }
 
   public async syncDeviceFromList(syncMode?: SyncFromMode): Promise<void> {
@@ -353,7 +354,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     syncMode?: SyncMode,
   ): Promise<void> {
     await this.updateCapabilities(data, syncMode)
-    await this.updateThermostatMode(!!data)
+    await this.updateThermostatMode(Boolean(data))
     if (syncMode === 'syncTo' && !this.isDiff()) {
       this.app.applySyncFromDevices({ syncMode: 'syncFrom' })
     }
@@ -362,7 +363,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   private async updateCapabilities<
     D extends GetDeviceData<T> | ListDevice<T>['Device'],
   >(data: D | null, syncMode?: SyncMode): Promise<void> {
-    if (data?.EffectiveFlags === undefined) {
+    if (typeof data?.EffectiveFlags === 'undefined') {
       return
     }
     const updateCapabilityEntries: [
@@ -408,7 +409,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         return [
           ...Object.entries(this.#setCapabilityMapping).filter(
             ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
-              !!(effectiveFlag & effectiveFlags),
+              // eslint-disable-next-line no-bitwise
+              Boolean(effectiveFlag & effectiveFlags),
           ),
           ...Object.entries(this.#getCapabilityMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
@@ -478,6 +480,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         if (this.diff.has(capability as keyof SetCapabilities<T>)) {
           this.diff.delete(capability as keyof SetCapabilities<T>)
           acc.EffectiveFlags = Number(
+            // eslint-disable-next-line no-bitwise
             BigInt(acc.EffectiveFlags) | effectiveFlag,
           )
         }
@@ -595,9 +598,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     const actionType = `${total ? 'total' : 'regular'} energy report`
     const { interval, duration, values } = total
       ? {
-          interval: { days: 1 },
           duration: { days: 1 },
-          values: { hour: 1, minute: 5, second: 0, millisecond: 0 },
+          interval: { days: 1 },
+          values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
         }
       : reportPlanParameters
     this.#reportTimeout[totalString] = this.setTimeout(

@@ -1,10 +1,7 @@
-import { Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
-import type PairSession from 'homey/lib/PairSession'
-import type MELCloudApp from '../app'
 import {
-  HeatPumpType,
   type DeviceDetails,
   type GetCapabilityMappingAny,
+  HeatPumpType,
   type ListCapabilityMappingAny,
   type ListDevice,
   type LoginCredentials,
@@ -14,6 +11,9 @@ import {
   type Store,
   type TypedString,
 } from '../types'
+import { Driver } from 'homey'
+import type MELCloudApp from '../app'
+import type PairSession from 'homey/lib/PairSession'
 
 export default abstract class BaseMELCloudDriver<T> extends Driver {
   public heatPumpType!: keyof typeof HeatPumpType
@@ -83,10 +83,10 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
           hasZone2: 'HasZone2' in device ? device.HasZone2 : false,
         }
         return {
-          name,
-          data: { id, buildingid },
-          store,
           capabilities: this.getRequiredCapabilities(store),
+          data: { buildingid, id },
+          name,
+          store,
         }
       },
     )

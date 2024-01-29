@@ -1,17 +1,17 @@
-import BaseMELCloudDriver from '../../bases/driver'
 import {
-  getCapabilityMappingAta,
-  listCapabilityMappingAta,
-  reportCapabilityMappingAta,
-  setCapabilityMappingAta,
-  HeatPumpType,
   type FlowArgs,
   type GetCapabilityMappingAta,
+  HeatPumpType,
   type ListCapabilityMappingAta,
   type ReportCapabilityMappingAta,
   type SetCapabilities,
   type SetCapabilityMappingAta,
+  getCapabilityMappingAta,
+  listCapabilityMappingAta,
+  reportCapabilityMappingAta,
+  setCapabilityMappingAta,
 } from '../../types'
+import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   public readonly setCapabilityMapping: SetCapabilityMappingAta =

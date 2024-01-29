@@ -1,11 +1,9 @@
-import { DateTime } from 'luxon'
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
-import type AtwDriver from './driver'
 import {
-  OperationModeState,
-  OperationModeZone,
   type ListDeviceData,
   type OpCapabilities,
+  OperationModeState,
+  OperationModeZone,
   type OperationModeZoneCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
@@ -14,16 +12,18 @@ import {
   type TypedString,
   type ValueOf,
 } from '../../types'
+import type AtwDriver from './driver'
+import { DateTime } from 'luxon'
 
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
 
 export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
-    minus: { days: 1 },
-    interval: { days: 1 },
     duration: { days: 1 },
-    values: { hour: 1, minute: 10, second: 0, millisecond: 0 },
+    interval: { days: 1 },
+    minus: { days: 1 },
+    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
   protected async specificOnCapability<
@@ -42,13 +42,13 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     K extends keyof OperationModeZoneCapabilities,
   >(capability: K, value: keyof typeof OperationModeZone): Promise<void> {
     const { canCool, hasZone2 } = this.getStore() as Store
-    if (!hasZone2) {
+    if (hasZone2) {
       return
     }
     const zoneValue: OperationModeZone = OperationModeZone[value]
     const otherZoneCapability: keyof OperationModeZoneCapabilities = (
       capability.endsWith('.zone2')
-        ? capability.replace(/.zone2$/, '')
+        ? capability.replace(/.zone2$/u, '')
         : `${capability}.zone2`
     ) as keyof OperationModeZoneCapabilities
     let otherZoneValue: OperationModeZone =
@@ -98,14 +98,14 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':
-        return !!(value as number) as OpCapabilities<AtwDriver>[K]
+        return Boolean(value as number) as OpCapabilities<AtwDriver>[K]
       case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.app.getLanguage(),
         }).toLocaleString({
-          weekday: 'short',
           day: 'numeric',
           month: 'short',
+          weekday: 'short',
         }) as OpCapabilities<AtwDriver>[K]
       case capability === 'measure_power':
       case capability === 'measure_power.produced':

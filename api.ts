@@ -1,6 +1,3 @@
-import { DateTime } from 'luxon'
-import type Homey from 'homey/lib/Homey'
-import type MELCloudApp from './app'
 import type {
   Building,
   DeviceSettings,
@@ -15,54 +12,60 @@ import type {
   HolidayModeSettings,
   LoginCredentials,
   LoginSetting,
+  MELCloudDevice,
   ManifestDriver,
   ManifestDriverSetting,
   ManifestDriverSettingData,
-  MELCloudDevice,
   PairSetting,
   Settings,
   ValueOf,
 } from './types'
+import { DateTime } from 'luxon'
+import type Homey from 'homey/lib/Homey'
+import type MELCloudApp from './app'
+
+const DEFAULT_LIMIT = 1
+const DEFAULT_OFFSET = 0
 
 const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
   }
   const localDateTime: DateTime = DateTime.fromISO(utcDate, {
-    zone: 'utc',
     locale: language,
+    zone: 'utc',
   }).toLocal()
   const localDate: string | null =
-    language !== undefined
-      ? localDateTime.toLocaleString(DateTime.DATETIME_MED)
-      : localDateTime.toISO({ includeOffset: false })
+    typeof language === 'undefined'
+      ? localDateTime.toISO({ includeOffset: false })
+      : localDateTime.toLocaleString(DateTime.DATETIME_MED)
   return localDate ?? ''
 }
 
 const handleErrorLogQuery = (
   query: ErrorLogQuery,
 ): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const defaultLimit = 1
-  const defaultOffset = 0
   const from: DateTime | null =
-    query.from !== undefined && query.from ? DateTime.fromISO(query.from) : null
+    typeof query.from !== 'undefined' && query.from
+      ? DateTime.fromISO(query.from)
+      : null
   const to: DateTime =
-    query.to !== undefined && query.to
+    typeof query.to !== 'undefined' && query.to
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
   let period: number = Number.parseInt(String(query.limit), 10)
-  period = !Number.isNaN(period) ? period : defaultLimit
+  period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
   let offset: number = Number.parseInt(String(query.offset), 10)
-  offset = !from && !Number.isNaN(offset) ? offset : defaultOffset
+  offset = from !== null || Number.isNaN(offset) ? DEFAULT_OFFSET : offset
 
-  const limit: number = !from ? period : defaultLimit
+  const limit: number = from ? DEFAULT_LIMIT : period
   const days: number = limit * offset + offset
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
-    toDate: to.minus({ days }),
     period,
+    toDate: to.minus({ days }),
   }
 }
 
@@ -75,8 +78,8 @@ export = {
       .map(
         (building: Building): Building => ({
           ...building,
-          HMStartDate: fromUTCtoLocal(building.HMStartDate),
           HMEndDate: fromUTCtoLocal(building.HMEndDate),
+          HMStartDate: fromUTCtoLocal(building.HMStartDate),
         }),
       )
       .sort((building1: Building, building2: Building) =>
@@ -104,6 +107,7 @@ export = {
         return acc
       }, {})
   },
+  // eslint-disable-next-line max-lines-per-function
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
@@ -115,11 +119,14 @@ export = {
             (setting: ManifestDriverSetting): DriverSetting[] =>
               (setting.children ?? []).map(
                 (child: ManifestDriverSettingData): DriverSetting => ({
+                  driverId: driver.id,
+                  groupId: setting.id,
+                  groupLabel: setting.label[language],
                   id: child.id,
+                  max: child.max,
+                  min: child.min,
                   title: child.label[language],
                   type: child.type,
-                  min: child.min,
-                  max: child.max,
                   units: child.units,
                   values: child.values?.map(
                     (value: {
@@ -130,9 +137,6 @@ export = {
                       label: value.label[language],
                     }),
                   ),
-                  driverId: driver.id,
-                  groupId: setting.id,
-                  groupLabel: setting.label[language],
                 }),
               ),
           ),
@@ -159,11 +163,11 @@ export = {
                 : 'username'
               if (!(key in acc)) {
                 acc[key] = {
+                  driverId: driver.id,
                   groupId: 'login',
                   id: key,
                   title: '',
                   type: isPassword ? 'password' : 'text',
-                  driverId: driver.id,
                 }
               }
               acc[key][
@@ -199,8 +203,8 @@ export = {
     ).getHolidayModeSettings(Number(params.buildingId))
     return {
       ...data,
-      HMStartDate: fromUTCtoLocal(data.HMStartDate),
       HMEndDate: fromUTCtoLocal(data.HMEndDate),
+      HMStartDate: fromUTCtoLocal(data.HMStartDate),
     }
   },
   getLanguage({ homey }: { homey: Homey }): string {
@@ -253,6 +257,7 @@ export = {
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).login(body, true)
   },
+  // eslint-disable-next-line max-lines-per-function
   async setDeviceSettings({
     homey,
     body,
@@ -263,7 +268,7 @@ export = {
     query?: { driverId: string }
   }): Promise<void> {
     const changedKeys: string[] = Object.keys(body)
-    if (!changedKeys.length) {
+    if (changedKeys.length) {
       return
     }
     try {
@@ -275,26 +280,28 @@ export = {
               (changedKey: string) =>
                 body[changedKey] !== device.getSetting(changedKey),
             )
-            if (!deviceChangedKeys.length) {
-              return
-            }
-            const deviceSettings: Settings = Object.fromEntries(
-              deviceChangedKeys.map(
-                (key: string): [string, ValueOf<Settings>] => [key, body[key]],
-              ),
-            )
-            try {
-              await device.setSettings(deviceSettings)
-              device.log('Settings:', deviceSettings)
-              await device.onSettings({
-                newSettings: device.getSettings() as Settings,
-                changedKeys: deviceChangedKeys,
-              })
-            } catch (error: unknown) {
-              const errorMessage: string =
-                error instanceof Error ? error.message : String(error)
-              device.error('Settings:', errorMessage)
-              throw new Error(errorMessage)
+            if (deviceChangedKeys.length) {
+              const deviceSettings: Settings = Object.fromEntries(
+                deviceChangedKeys.map(
+                  (key: string): [string, ValueOf<Settings>] => [
+                    key,
+                    body[key],
+                  ],
+                ),
+              )
+              try {
+                await device.setSettings(deviceSettings)
+                device.log('Settings:', deviceSettings)
+                await device.onSettings({
+                  changedKeys: deviceChangedKeys,
+                  newSettings: device.getSettings() as Settings,
+                })
+              } catch (error: unknown) {
+                const errorMessage: string =
+                  error instanceof Error ? error.message : String(error)
+                device.error('Settings:', errorMessage)
+                throw new Error(errorMessage)
+              }
             }
           }),
       )

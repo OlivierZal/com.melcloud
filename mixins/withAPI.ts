@@ -1,3 +1,4 @@
+import type { HomeyClass, HomeySettings, TypedString } from '../types'
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -5,7 +6,6 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type MELCloudApp from '../app'
-import type { HomeyClass, HomeySettings, TypedString } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type APIClass = new (...args: any[]) => {
@@ -29,6 +29,7 @@ export const getErrorMessage = (error: unknown): string => {
   return errorMessage
 }
 
+// eslint-disable-next-line max-lines-per-function
 const withAPI = <T extends HomeyClass>(
   base: T,
 ): APIClass & T & { readonly loginURL: string } =>

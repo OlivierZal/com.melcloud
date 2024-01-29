@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import type Homey from 'homey/lib/Homey'
 import type {
   Building,
   BuildingData,
@@ -19,9 +18,11 @@ import type {
   Settings,
   ValueOf,
 } from '../types'
+import type Homey from 'homey/lib/Homey'
 
 const FP_MIN_MAX_GAP = 2
 
+// eslint-disable-next-line func-style, max-lines-per-function, max-statements
 async function onHomeyReady(homey: Homey): Promise<void> {
   await homey.ready()
 
@@ -154,7 +155,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }
       return acc
     },
-    { driverSettingsCommon: [], driverSettings: {} },
+    { driverSettings: {}, driverSettingsCommon: [] },
   )
 
   const intMinValueMap = new WeakMap<HTMLInputElement, number>()
@@ -338,9 +339,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const generateErrorLog = (): void => {
     const query: ErrorLogQuery = {
       from: sinceElement.value,
-      to,
       limit: '29',
       offset: '0',
+      to,
     }
     const queryString: string = new URLSearchParams(
       query as Record<string, string>,
@@ -376,23 +377,22 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   ): number => {
     let minValue: number | undefined = intMinValueMap.get(element)
     let maxValue: number | undefined = intMaxValueMap.get(element)
-    if (minValue === undefined || maxValue === undefined) {
+    if (typeof minValue === 'undefined' || typeof maxValue === 'undefined') {
       minValue = Number(element.min)
       maxValue = Number(element.max)
       intMinValueMap.set(element, minValue)
       intMaxValueMap.set(element, maxValue)
     }
     if (Number.isNaN(value) || value < minValue || value > maxValue) {
-      // eslint-disable-next-line no-param-reassign
       element.value = ''
       const labelElement: HTMLLabelElement | null = document.querySelector(
         `label[for="${element.id}"]`,
       )
       throw new Error(
         homey.__('settings.int_error', {
-          name: homey.__(labelElement?.innerText ?? ''),
-          min: minValue,
           max: maxValue,
+          min: minValue,
+          name: homey.__(labelElement?.innerText ?? ''),
         }),
       )
     }
@@ -433,11 +433,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         return false
       }
       const deviceSetting: ValueOf<Settings>[] | undefined =
-        driverId !== undefined
-          ? (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-          : flatDeviceSettings[settingId]
+        typeof driverId === 'undefined'
+          ? flatDeviceSettings[settingId]
+          : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
       return (
-        deviceSetting !== undefined &&
+        typeof deviceSetting !== 'undefined' &&
         (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
       )
     }
@@ -475,12 +475,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
     const {
       HMEnabled: enabled,
-      HMStartDate: startDate,
       HMEndDate: endDate,
+      HMStartDate: startDate,
     } = data
     holidayModeEnabledElement.value = String(enabled)
-    holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
     holidayModeEndDateElement.value = enabled ? endDate ?? '' : ''
+    holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
   }
 
   const getBuildingHolidayModeSettings = async (raise = false): Promise<void> =>
@@ -513,12 +513,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   ): void => {
     const {
       FPEnabled: enabled,
-      FPMinTemperature: min,
       FPMaxTemperature: max,
+      FPMinTemperature: min,
     } = data
     frostProtectionEnabledElement.value = String(enabled)
-    frostProtectionMinimumTemperatureElement.value = String(min)
     frostProtectionMaximumTemperatureElement.value = String(max)
+    frostProtectionMinimumTemperatureElement.value = String(min)
   }
 
   const getBuildingFrostProtectionSettings = async (
@@ -576,11 +576,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
                 ID,
                 Name: name,
                 FPEnabled: fpEnabled,
-                FPMinTemperature: fpMin,
                 FPMaxTemperature: fpMax,
+                FPMinTemperature: fpMin,
                 HMEnabled: hmEnabled,
-                HMStartDate: hmStartDate,
                 HMEndDate: hmEndDate,
+                HMStartDate: hmStartDate,
               } = building
               const optionElement: HTMLOptionElement =
                 document.createElement('option')
@@ -591,11 +591,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
                 String(ID),
                 {
                   FPEnabled: fpEnabled,
-                  FPMinTemperature: fpMin,
                   FPMaxTemperature: fpMax,
+                  FPMinTemperature: fpMin,
                   HMEnabled: hmEnabled,
-                  HMStartDate: hmStartDate,
                   HMEndDate: hmEndDate,
+                  HMStartDate: hmStartDate,
                 },
               ]
             }),
@@ -606,14 +606,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     })
 
   const updateDeviceSettings = (body: Settings, driverId?: string): void => {
-    if (driverId !== undefined) {
-      Object.entries(body).forEach(
-        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
-          deviceSettings[driverId][settingId] = [settingValue]
-        },
-      )
-      flatDeviceSettings = flattenDeviceSettings()
-    } else {
+    if (typeof driverId === 'undefined') {
       Object.entries(body).forEach(
         ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
           Object.keys(deviceSettings).forEach((driver: string) => {
@@ -622,12 +615,19 @@ async function onHomeyReady(homey: Homey): Promise<void> {
           flatDeviceSettings[settingId] = [settingValue]
         },
       )
+    } else {
+      Object.entries(body).forEach(
+        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
+          deviceSettings[driverId][settingId] = [settingValue]
+        },
+      )
+      flatDeviceSettings = flattenDeviceSettings()
     }
   }
 
   const setDeviceSettings = (body: Settings, driverId?: string): void => {
     let endPoint = '/settings/devices'
-    if (driverId !== undefined) {
+    if (typeof driverId !== 'undefined') {
       const queryString: string = new URLSearchParams({ driverId }).toString()
       endPoint += `?${queryString}`
     }
@@ -695,7 +695,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
       element.id.split('--')[0]
     ] as ValueOf<Settings>[] | undefined
-    // eslint-disable-next-line no-param-reassign
+
     element.value =
       values && new Set(values).size === 1 ? String(values[0]) : ''
   }
@@ -713,7 +713,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     const values: boolean[] = deviceSettings[driverId][
       element.id.split('--')[0]
     ] as boolean[]
-    /* eslint-disable no-param-reassign */
+
     if (new Set(values).size === 1) {
       ;[element.checked] = values
     } else {
@@ -724,7 +724,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         }
       })
     }
-    /* eslint-enable no-param-reassign */
   }
 
   const addRefreshSettingsDriverEventListener = (
@@ -746,13 +745,13 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     ) as HTMLButtonElement
     buttonElement.addEventListener('click', (): void => {
       disableButtons(settings)
-      if (driverId !== undefined) {
+      if (typeof driverId === 'undefined') {
+        addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
+      } else {
         addRefreshSettingsDriverEventListener(
           elements as HTMLInputElement[],
           driverId,
         )
-      } else {
-        addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
       }
       enableButtons(settings)
     })
@@ -918,7 +917,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       await homey.alert(homey.__('settings.authenticate.failure'))
       return
     }
-    const body: LoginCredentials = { username, password }
+    const body: LoginCredentials = { password, username }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'POST',
@@ -943,7 +942,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   const load = async (): Promise<void> => {
     generateCommonChildrenElements()
-    if (homeySettings.contextKey === undefined) {
+    if (typeof homeySettings.contextKey === 'undefined') {
       needsAuthentication()
       return
     }
@@ -1038,14 +1037,14 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     disableButtons('holiday-mode')
     const {
       HMEnabled: hmEnabled,
-      HMStartDate: hmStartDate,
       HMEndDate: hmEndDate,
+      HMStartDate: hmStartDate,
     } = buildingMapping[buildingElement.value]
     const enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
       Enabled: enabled,
-      StartDate: enabled ? holidayModeStartDateElement.value : '',
       EndDate: enabled ? holidayModeEndDateElement.value : '',
+      StartDate: enabled ? holidayModeStartDateElement.value : '',
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1059,8 +1058,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         } catch (err: unknown) {
           refreshBuildingHolidayModeSettings({
             HMEnabled: hmEnabled,
-            HMStartDate: hmStartDate,
             HMEndDate: hmEndDate,
+            HMStartDate: hmStartDate,
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
@@ -1109,19 +1108,19 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     disableButtons('frost-protection')
     const {
       FPEnabled: fpEnabled,
-      FPMinTemperature: fpMin,
       FPMaxTemperature: fpMax,
+      FPMinTemperature: fpMin,
     } = buildingMapping[buildingElement.value]
-    let min = 0
     let max = 0
+    let min = 0
     try {
-      min = int(frostProtectionMinimumTemperatureElement)
       max = int(frostProtectionMaximumTemperatureElement)
+      min = int(frostProtectionMinimumTemperatureElement)
     } catch (error: unknown) {
       refreshBuildingFrostProtectionSettings({
         FPEnabled: fpEnabled,
-        FPMinTemperature: fpMin,
         FPMaxTemperature: fpMax,
+        FPMinTemperature: fpMin,
       })
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
@@ -1134,12 +1133,12 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     if (max - min < FP_MIN_MAX_GAP) {
       max = min + FP_MIN_MAX_GAP
     }
-    frostProtectionMinimumTemperatureElement.value = String(min)
     frostProtectionMaximumTemperatureElement.value = String(max)
+    frostProtectionMinimumTemperatureElement.value = String(min)
     const body: FrostProtectionSettings = {
       Enabled: frostProtectionEnabledElement.value === 'true',
-      MinimumTemperature: min,
       MaximumTemperature: max,
+      MinimumTemperature: min,
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -1153,8 +1152,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         } catch (err: unknown) {
           refreshBuildingFrostProtectionSettings({
             FPEnabled: fpEnabled,
-            FPMinTemperature: fpMin,
             FPMaxTemperature: fpMax,
+            FPMinTemperature: fpMin,
           })
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)

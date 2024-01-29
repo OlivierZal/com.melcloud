@@ -1,17 +1,17 @@
-import BaseMELCloudDevice from '../../bases/device'
-import type AtaDriver from './driver'
 import {
   Horizontal,
-  OperationMode,
-  ThermostatMode,
-  Vertical,
   type ListDeviceData,
   type OpCapabilities,
+  OperationMode,
   type ReportPlanParameters,
   type SetCapabilities,
   type SetDeviceData,
+  ThermostatMode,
   type ValueOf,
+  Vertical,
 } from '../../types'
+import type AtaDriver from './driver'
+import BaseMELCloudDevice from '../../bases/device'
 
 const isThermostatMode = (
   value: keyof typeof OperationMode,
@@ -20,10 +20,10 @@ const isThermostatMode = (
 
 export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
-    minus: { hours: 1 },
-    interval: { hours: 1 },
     duration: { hours: 1 },
-    values: { minute: 5, second: 0, millisecond: 0 },
+    interval: { hours: 1 },
+    minus: { hours: 1 },
+    values: { millisecond: 0, minute: 5, second: 0 },
   }
 
   protected async specificOnCapability<

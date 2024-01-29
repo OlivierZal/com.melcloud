@@ -28,6 +28,7 @@ type TimerClass = new (...args: any[]) => {
   setTimeout: Timer
 }
 
+// eslint-disable-next-line max-lines-per-function
 const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
     public setInterval(
@@ -38,8 +39,8 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       const { actionType, units } = options
       return this.setTimer(callback, interval, {
         actionType,
-        timerWords: ['every', 'starting'],
         timerType: 'setInterval',
+        timerWords: ['every', 'starting'],
         units,
       })
     }
@@ -52,8 +53,8 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       const { actionType, units } = options
       return this.setTimer(callback, interval, {
         actionType,
-        timerWords: ['in', 'on'],
         timerType: 'setTimeout',
+        timerWords: ['in', 'on'],
         units,
       })
     }

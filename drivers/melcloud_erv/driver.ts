@@ -1,18 +1,18 @@
-import BaseMELCloudDriver from '../../bases/driver'
 import {
-  getCapabilityMappingErv,
-  listCapabilityMappingErv,
-  reportCapabilityMappingErv,
-  setCapabilityMappingErv,
-  HeatPumpType,
   type FlowArgs,
   type GetCapabilityMappingErv,
+  HeatPumpType,
   type ListCapabilityMappingErv,
   type ReportCapabilityMappingErv,
   type SetCapabilities,
   type SetCapabilityMappingErv,
   type Store,
+  getCapabilityMappingErv,
+  listCapabilityMappingErv,
+  reportCapabilityMappingErv,
+  setCapabilityMappingErv,
 } from '../../types'
+import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly setCapabilityMapping: SetCapabilityMappingErv =

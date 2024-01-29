@@ -1,14 +1,5 @@
 import 'source-map-support/register'
-import { App, type Driver } from 'homey' // eslint-disable-line import/no-extraneous-dependencies
-import axios from 'axios'
-import {
-  DateTime,
-  Duration,
-  Settings as LuxonSettings,
-  type DurationLike,
-} from 'luxon'
-import withAPI, { getErrorMessage } from './mixins/withAPI'
-import withTimers from './mixins/withTimers'
+import { App, type Driver } from 'homey'
 import type {
   Building,
   ErrorLogData,
@@ -25,15 +16,23 @@ import type {
   ListDevice,
   LoginCredentials,
   LoginData,
-  LoginPostData,
   MELCloudDevice,
   MELCloudDriver,
   SuccessData,
   SyncFromMode,
   ValueOf,
 } from './types'
+import {
+  DateTime,
+  Duration,
+  type DurationLike,
+  Settings as LuxonSettings,
+} from 'luxon'
+import withAPI, { getErrorMessage } from './mixins/withAPI'
+import axios from 'axios'
+import withTimers from './mixins/withTimers'
 
-const MAX_INT32: number = 2 ** 31 - 1
+const MAX_INT32 = 2147483647
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
@@ -72,41 +71,42 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     await this.planRefreshLogin()
   }
 
+  // eslint-disable-next-line max-statements
   public async login(
     loginCredentials: LoginCredentials = {
-      username: this.getHomeySetting('username') ?? '',
       password: this.getHomeySetting('password') ?? '',
+      username: this.getHomeySetting('username') ?? '',
     },
     raise = false,
   ): Promise<boolean> {
     this.clearLoginRefresh()
-    try {
-      const { username, password } = loginCredentials
-      if (!username || !password) {
-        return false
+    if (loginCredentials.username && loginCredentials.password) {
+      try {
+        const { LoginData } = (
+          await this.api.post<LoginData>(MELCloudApp.loginURL, {
+            AppVersion: '1.31.0.0',
+            Email: loginCredentials.username,
+            Password: loginCredentials.password,
+            Persist: true,
+          })
+        ).data
+        if (LoginData) {
+          this.setHomeySettings({
+            contextKey: LoginData.ContextKey,
+            expiry: LoginData.Expiry,
+            password: loginCredentials.password,
+            username: loginCredentials.username,
+          })
+          await this.planRefreshLogin()
+        }
+        return Boolean(LoginData)
+      } catch (error: unknown) {
+        if (raise) {
+          throw new Error(getErrorMessage(error))
+        }
       }
-      const postData: LoginPostData = {
-        AppVersion: '1.31.0.0',
-        Email: username,
-        Password: password,
-        Persist: true,
-      }
-      const { data } = await this.api.post<LoginData>(
-        MELCloudApp.loginURL,
-        postData,
-      )
-      if (data.LoginData) {
-        const { ContextKey: contextKey, Expiry: expiry } = data.LoginData
-        this.setHomeySettings({ contextKey, expiry, username, password })
-        await this.planRefreshLogin()
-      }
-      return !!data.LoginData
-    } catch (error: unknown) {
-      if (raise) {
-        throw new Error(getErrorMessage(error))
-      }
-      return false
     }
+    return false
   }
 
   public getDevice(
@@ -123,14 +123,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
     let devices: MELCloudDevice[] = (
-      driverId !== undefined
-        ? [this.homey.drivers.getDriver(driverId)]
-        : Object.values(this.homey.drivers.getDrivers())
+      typeof driverId === 'undefined'
+        ? Object.values(this.homey.drivers.getDrivers())
+        : [this.homey.drivers.getDriver(driverId)]
     ).flatMap(
       (driver: Driver): MELCloudDevice[] =>
         driver.getDevices() as MELCloudDevice[],
     )
-    if (buildingId !== undefined) {
+    if (typeof buildingId !== 'undefined') {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
     return devices
@@ -143,7 +143,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     this.clearListDevicesRefresh()
     this.#syncTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.listDevices(undefined, syncMode)
+        await this.listDevices(null, syncMode)
       },
       interval ?? { seconds: 1 },
       { actionType: 'sync with device', units: ['minutes', 'seconds'] },
@@ -151,16 +151,15 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   }
 
   public async listDevices(
-    deviceType?: HeatPumpType,
+    deviceType: HeatPumpType | null = null,
     syncMode?: SyncFromMode,
   ): Promise<ListDevice<MELCloudDriver>[]> {
     this.clearListDevicesRefresh()
     try {
-      const buildings = await this.getBuildings()
       const buildingData: {
         deviceIds: Record<number, string>
         deviceList: ListDevice<MELCloudDriver>[]
-      } = buildings.reduce<{
+      } = (await this.getBuildings()).reduce<{
         deviceIds: Record<number, string>
         deviceList: ListDevice<MELCloudDriver>[]
       }>(
@@ -199,7 +198,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         { deviceIds: {}, deviceList: [] },
       )
       let { deviceList } = buildingData
-      if (deviceType !== undefined) {
+      if (deviceType !== null) {
         deviceList = deviceList.filter(
           ({ Device: { DeviceType: type } }) => deviceType === type,
         )
@@ -303,27 +302,27 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       : null
     const postData: HolidayModePostData = {
       Enabled: enabled,
-      StartDate: utcStartDate
-        ? {
-            Year: utcStartDate.year,
-            Month: utcStartDate.month,
-            Day: utcStartDate.day,
-            Hour: utcStartDate.hour,
-            Minute: utcStartDate.minute,
-            Second: utcStartDate.second,
-          }
-        : null,
       EndDate: utcEndDate
         ? {
-            Year: utcEndDate.year,
-            Month: utcEndDate.month,
             Day: utcEndDate.day,
             Hour: utcEndDate.hour,
             Minute: utcEndDate.minute,
+            Month: utcEndDate.month,
             Second: utcEndDate.second,
+            Year: utcEndDate.year,
           }
         : null,
       HMTimeZones: [{ Buildings: [buildingId] }],
+      StartDate: utcStartDate
+        ? {
+            Day: utcStartDate.day,
+            Hour: utcStartDate.hour,
+            Minute: utcStartDate.minute,
+            Month: utcStartDate.month,
+            Second: utcStartDate.second,
+            Year: utcStartDate.year,
+          }
+        : null,
     }
     const { data } = await this.api.post<FailureData | SuccessData>(
       '/HolidayMode/Update',

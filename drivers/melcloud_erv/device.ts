@@ -1,13 +1,13 @@
-import BaseMELCloudDevice from '../../bases/device'
-import type ErvDriver from './driver'
 import {
-  VentilationMode,
   type ListDeviceData,
   type OpCapabilities,
   type SetCapabilities,
   type SetDeviceData,
   type ValueOf,
+  VentilationMode,
 } from '../../types'
+import BaseMELCloudDevice from '../../bases/device'
+import type ErvDriver from './driver'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected readonly reportPlanParameters: null = null
