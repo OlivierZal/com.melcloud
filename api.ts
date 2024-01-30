@@ -27,6 +27,70 @@ import type MELCloudApp from './app'
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 
+const getDriverSettings = (
+  driver: ManifestDriver,
+  language: string,
+): DriverSetting[] =>
+  (driver.settings ?? []).flatMap(
+    (setting: ManifestDriverSetting): DriverSetting[] =>
+      (setting.children ?? []).map(
+        (child: ManifestDriverSettingData): DriverSetting => ({
+          driverId: driver.id,
+          groupId: setting.id,
+          groupLabel: setting.label[language],
+          id: child.id,
+          max: child.max,
+          min: child.min,
+          title: child.label[language],
+          type: child.type,
+          units: child.units,
+          values: child.values?.map(
+            (value: {
+              id: string
+              label: Record<string, string>
+            }): { id: string; label: string } => ({
+              id: value.id,
+              label: value.label[language],
+            }),
+          ),
+        }),
+      ),
+  )
+
+const getDriverLoginSetting = (
+  driver: ManifestDriver,
+  language: string,
+): DriverSetting[] => {
+  const driverLoginSetting: LoginSetting | undefined = driver.pair?.find(
+    (pairSetting: PairSetting): pairSetting is LoginSetting =>
+      pairSetting.id === 'login',
+  )
+  return driverLoginSetting
+    ? Object.values(
+        Object.entries(driverLoginSetting.options).reduce<
+          Record<string, DriverSetting>
+        >((acc, [option, label]: [string, Record<string, string>]) => {
+          const isPassword: boolean = option.startsWith('password')
+          const key: keyof LoginCredentials = isPassword
+            ? 'password'
+            : 'username'
+          if (!(key in acc)) {
+            acc[key] = {
+              driverId: driver.id,
+              groupId: 'login',
+              id: key,
+              title: '',
+              type: isPassword ? 'password' : 'text',
+            }
+          }
+          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+            label[language]
+          return acc
+        }, {}),
+      )
+    : []
+}
+
 const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
@@ -107,78 +171,17 @@ export = {
         return acc
       }, {})
   },
-  // eslint-disable-next-line max-lines-per-function
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
     const language: string = app.getLanguage()
-    const settings: DriverSetting[] =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (app.manifest.drivers as ManifestDriver[]).flatMap(
-        (driver: ManifestDriver): DriverSetting[] =>
-          (driver.settings ?? []).flatMap(
-            (setting: ManifestDriverSetting): DriverSetting[] =>
-              (setting.children ?? []).map(
-                (child: ManifestDriverSettingData): DriverSetting => ({
-                  driverId: driver.id,
-                  groupId: setting.id,
-                  groupLabel: setting.label[language],
-                  id: child.id,
-                  max: child.max,
-                  min: child.min,
-                  title: child.label[language],
-                  type: child.type,
-                  units: child.units,
-                  values: child.values?.map(
-                    (value: {
-                      id: string
-                      label: Record<string, string>
-                    }): { id: string; label: string } => ({
-                      id: value.id,
-                      label: value.label[language],
-                    }),
-                  ),
-                }),
-              ),
-          ),
-      )
-    const settingsLogin: DriverSetting[] =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      (app.manifest.drivers as ManifestDriver[]).flatMap(
-        (driver: ManifestDriver): DriverSetting[] => {
-          const driverLoginSetting: LoginSetting | undefined =
-            driver.pair?.find(
-              (pairSetting: PairSetting): pairSetting is LoginSetting =>
-                pairSetting.id === 'login',
-            )
-          if (!driverLoginSetting) {
-            return []
-          }
-          return Object.values(
-            Object.entries(driverLoginSetting.options).reduce<
-              Record<string, DriverSetting>
-            >((acc, [option, label]: [string, Record<string, string>]) => {
-              const isPassword: boolean = option.startsWith('password')
-              const key: keyof LoginCredentials = isPassword
-                ? 'password'
-                : 'username'
-              if (!(key in acc)) {
-                acc[key] = {
-                  driverId: driver.id,
-                  groupId: 'login',
-                  id: key,
-                  title: '',
-                  type: isPassword ? 'password' : 'text',
-                }
-              }
-              acc[key][
-                option.endsWith('Placeholder') ? 'placeholder' : 'title'
-              ] = label[language]
-              return acc
-            }, {}),
-          )
-        },
-      )
-    return [...settings, ...settingsLogin]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return (app.manifest.drivers as ManifestDriver[]).flatMap(
+      (driver: ManifestDriver): DriverSetting[] => {
+        const settings = getDriverSettings(driver, language)
+        const loginSetting = getDriverLoginSetting(driver, language)
+        return [...settings, ...loginSetting]
+      },
+    )
   },
   async getFrostProtectionSettings({
     homey,
@@ -257,7 +260,6 @@ export = {
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).login(body, true)
   },
-  // eslint-disable-next-line max-lines-per-function
   async setDeviceSettings({
     homey,
     body,
@@ -267,8 +269,7 @@ export = {
     homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
-    const changedKeys: string[] = Object.keys(body)
-    if (changedKeys.length) {
+    if (Object.keys(body).length) {
       return
     }
     try {
@@ -276,7 +277,7 @@ export = {
         (homey.app as MELCloudApp)
           .getDevices({ driverId: query?.driverId })
           .map(async (device: MELCloudDevice): Promise<void> => {
-            const deviceChangedKeys: string[] = changedKeys.filter(
+            const deviceChangedKeys: string[] = Object.keys(body).filter(
               (changedKey: string) =>
                 body[changedKey] !== device.getSetting(changedKey),
             )

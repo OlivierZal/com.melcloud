@@ -32,9 +32,35 @@ import withAPI, { getErrorMessage } from './mixins/withAPI'
 import axios from 'axios'
 import withTimers from './mixins/withTimers'
 
+interface BuildingData {
+  deviceIds: Record<number, string>
+  deviceList: ListDevice<MELCloudDriver>[]
+}
+
 const MAX_INT32 = 2147483647
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
+
+const flattenDevices = (
+  acc: BuildingData,
+  devices: readonly ListDevice<MELCloudDriver>[],
+): BuildingData => {
+  const newDeviceIds = devices.reduce<Record<number, string>>(
+    (ids, device: ListDevice<MELCloudDriver>) => {
+      ids[device.DeviceID] = device.DeviceName
+      return ids
+    },
+    { ...acc.deviceIds },
+  )
+  const newDeviceList = [...acc.deviceList, ...devices]
+  return { deviceIds: newDeviceIds, deviceList: newDeviceList }
+}
+
+const throwIfRequested = (error: unknown, raise: boolean): void => {
+  if (raise) {
+    throw new Error(getErrorMessage(error))
+  }
+}
 
 const handleFailure = (data: FailureData): never => {
   const errorMessage: string = Object.entries(data.AttributeErrors)
@@ -71,22 +97,21 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     await this.planRefreshLogin()
   }
 
-  // eslint-disable-next-line max-statements
   public async login(
-    loginCredentials: LoginCredentials = {
+    { password, username }: LoginCredentials = {
       password: this.getHomeySetting('password') ?? '',
       username: this.getHomeySetting('username') ?? '',
     },
     raise = false,
   ): Promise<boolean> {
     this.clearLoginRefresh()
-    if (loginCredentials.username && loginCredentials.password) {
+    if (username && password) {
       try {
         const { LoginData } = (
           await this.api.post<LoginData>(MELCloudApp.loginURL, {
             AppVersion: '1.31.0.0',
-            Email: loginCredentials.username,
-            Password: loginCredentials.password,
+            Email: username,
+            Password: password,
             Persist: true,
           })
         ).data
@@ -94,16 +119,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           this.setHomeySettings({
             contextKey: LoginData.ContextKey,
             expiry: LoginData.Expiry,
-            password: loginCredentials.password,
-            username: loginCredentials.username,
+            password,
+            username,
           })
           await this.planRefreshLogin()
         }
         return Boolean(LoginData)
       } catch (error: unknown) {
-        if (raise) {
-          throw new Error(getErrorMessage(error))
-        }
+        throwIfRequested(error, raise)
       }
     }
     return false
@@ -156,10 +179,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   ): Promise<ListDevice<MELCloudDriver>[]> {
     this.clearListDevicesRefresh()
     try {
-      const buildingData: {
-        deviceIds: Record<number, string>
-        deviceList: ListDevice<MELCloudDriver>[]
-      } = (await this.getBuildings()).reduce<{
+      const { deviceIds, deviceList } = (await this.getBuildings()).reduce<{
         deviceIds: Record<number, string>
         deviceList: ListDevice<MELCloudDriver>[]
       }>(
@@ -167,46 +187,29 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           acc,
           { Structure: { Devices: devices, Areas: areas, Floors: floors } },
         ) => {
-          const buildingDevices: ListDevice<MELCloudDriver>[] = [
-            ...devices,
-            ...areas.flatMap(
-              ({
-                Devices: areaDevices,
-              }): readonly ListDevice<MELCloudDriver>[] => areaDevices,
-            ),
-            ...floors.flatMap((floor): ListDevice<MELCloudDriver>[] => [
-              ...floor.Devices,
-              ...floor.Areas.flatMap(
-                ({
-                  Devices: areaDevices,
-                }): readonly ListDevice<MELCloudDriver>[] => areaDevices,
-              ),
-            ]),
-          ]
-          const buildingDeviceIds: Record<number, string> = Object.fromEntries(
-            buildingDevices.map(
-              ({
-                DeviceID: deviceId,
-                DeviceName: deviceName,
-              }): [number, string] => [deviceId, deviceName],
-            ),
-          )
-          acc.deviceIds = { ...acc.deviceIds, ...buildingDeviceIds }
-          acc.deviceList.push(...buildingDevices)
+          flattenDevices(acc, devices)
+          areas.forEach(({ Devices: areaDevices }) => {
+            flattenDevices(acc, areaDevices)
+          })
+          floors.forEach((floor) => {
+            flattenDevices(acc, floor.Devices)
+            floor.Areas.forEach(({ Devices: areaDevices }) => {
+              flattenDevices(acc, areaDevices)
+            })
+          })
           return acc
         },
         { deviceIds: {}, deviceList: [] },
       )
-      let { deviceList } = buildingData
-      if (deviceType !== null) {
-        deviceList = deviceList.filter(
-          ({ Device: { DeviceType: type } }) => deviceType === type,
-        )
-      }
-      this.deviceList = deviceList
-      this.deviceIds = buildingData.deviceIds
+      this.deviceIds = deviceIds
+      this.deviceList =
+        deviceType === null
+          ? deviceList
+          : deviceList.filter(
+              ({ Device: { DeviceType: type } }) => deviceType === type,
+            )
       await this.syncDevicesFromList(syncMode)
-      return deviceList
+      return this.deviceList
     } catch (error: unknown) {
       return []
     } finally {

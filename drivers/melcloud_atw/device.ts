@@ -43,39 +43,23 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   >(capability: K, value: keyof typeof OperationModeZone): Promise<void> {
     const { canCool, hasZone2 } = this.getStore() as Store
     if (hasZone2) {
-      return
-    }
-    const zoneValue: OperationModeZone = OperationModeZone[value]
-    const otherZoneCapability: keyof OperationModeZoneCapabilities = (
-      capability.endsWith('.zone2')
-        ? capability.replace(/.zone2$/u, '')
-        : `${capability}.zone2`
-    ) as keyof OperationModeZoneCapabilities
-    let otherZoneValue: OperationModeZone =
-      OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
-    if (canCool) {
-      if (zoneValue > OperationModeZone.curve) {
-        otherZoneValue =
-          otherZoneValue === OperationModeZone.curve
-            ? HEAT_COOL_GAP
-            : otherZoneValue + HEAT_COOL_GAP
-      } else if (otherZoneValue > OperationModeZone.curve) {
-        otherZoneValue -= HEAT_COOL_GAP
-      }
-    }
-    if (
-      [OperationModeZone.room, OperationModeZone.room_cool].includes(
+      const zoneValue: OperationModeZone = OperationModeZone[value]
+      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
+        capability.endsWith('.zone2')
+          ? capability.replace(/.zone2$/u, '')
+          : `${capability}.zone2`
+      ) as keyof OperationModeZoneCapabilities
+      const otherZoneValue: OperationModeZone = this.getOtherZoneValue(
+        otherZoneCapability,
         zoneValue,
-      ) &&
-      otherZoneValue === zoneValue
-    ) {
-      otherZoneValue += ROOM_FLOW_GAP
+        canCool,
+      )
+      this.diff.set(
+        otherZoneCapability,
+        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
+      )
+      await this.setDisplayErrorWarning()
     }
-    this.diff.set(
-      otherZoneCapability,
-      OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
-    )
-    await this.setDisplayErrorWarning()
   }
 
   protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
@@ -131,7 +115,35 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected async updateThermostatMode(): Promise<void> {
+  protected updateThermostatMode = async (): Promise<void> => {
     // Not implemented.
+  }
+
+  private getOtherZoneValue(
+    otherZoneCapability: keyof OperationModeZoneCapabilities,
+    zoneValue: OperationModeZone,
+    canCool: boolean,
+  ): OperationModeZone {
+    let otherZoneValue: OperationModeZone =
+      OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
+    if (canCool) {
+      if (zoneValue > OperationModeZone.curve) {
+        otherZoneValue =
+          otherZoneValue === OperationModeZone.curve
+            ? HEAT_COOL_GAP
+            : otherZoneValue + HEAT_COOL_GAP
+      } else if (otherZoneValue > OperationModeZone.curve) {
+        otherZoneValue -= HEAT_COOL_GAP
+      }
+    }
+    if (
+      [OperationModeZone.room, OperationModeZone.room_cool].includes(
+        zoneValue,
+      ) &&
+      otherZoneValue === zoneValue
+    ) {
+      otherZoneValue += ROOM_FLOW_GAP
+    }
+    return otherZoneValue
   }
 }
