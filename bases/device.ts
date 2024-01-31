@@ -148,7 +148,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       await this.handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
-
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
@@ -164,25 +163,23 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ) {
       this.app.applySyncFromDevices()
     }
-
     const changedEnergyKeys: string[] = changedCapabilities.filter(
       (setting: string) => this.isReportCapability(setting),
     )
-    if (!changedEnergyKeys.length) {
-      return
+    if (changedEnergyKeys.length) {
+      await Promise.all(
+        [false, true].map(async (total: boolean): Promise<void> => {
+          if (
+            changedEnergyKeys.some((setting: string) =>
+              filterEnergyKeys(setting, total),
+            )
+          ) {
+            this.setReportCapabilityEntries(total)
+            await this.runEnergyReport(total)
+          }
+        }),
+      )
     }
-    await Promise.all(
-      [false, true].map(async (total: boolean): Promise<void> => {
-        if (
-          changedEnergyKeys.some((setting: string) =>
-            filterEnergyKeys(setting, total),
-          )
-        ) {
-          this.setReportCapabilityEntries(total)
-          await this.runEnergyReport(total)
-        }
-      }),
-    )
   }
 
   public onDeleted(): void {
