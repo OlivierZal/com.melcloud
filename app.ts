@@ -3,19 +3,15 @@ import { App, type Driver } from 'homey'
 import type {
   Building,
   ErrorLogData,
-  ErrorLogPostData,
   FailureData,
   FrostProtectionData,
-  FrostProtectionPostData,
   FrostProtectionSettings,
   HeatPumpType,
   HolidayModeData,
-  HolidayModePostData,
   HolidayModeSettings,
   HomeySettings,
   ListDevice,
   LoginCredentials,
-  LoginData,
   MELCloudDevice,
   MELCloudDriver,
   SuccessData,
@@ -108,7 +104,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     if (username && password) {
       try {
         const { LoginData } = (
-          await this.api.post<LoginData>(MELCloudApp.loginURL, {
+          await this.apiLogin({
             AppVersion: '1.31.0.0',
             Email: username,
             Password: password,
@@ -224,8 +220,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   public async getBuildings(): Promise<Building[]> {
     try {
-      const { data } = await this.api.get<Building[]>('/User/ListDevices')
-      return data
+      return (await this.apiList()).data
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error))
     }
@@ -235,15 +230,11 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     fromDate: DateTime,
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
-    const postData: ErrorLogPostData = {
+    const { data } = await this.apiError({
       DeviceIDs: Object.keys(this.deviceIds),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
-    }
-    const { data } = await this.api.post<ErrorLogData[] | FailureData>(
-      '/Report/GetUnitErrorLog2',
-      postData,
-    )
+    })
     if ('AttributeErrors' in data) {
       return handleFailure(data)
     }
@@ -253,36 +244,27 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public async getFrostProtectionSettings(
     buildingId: number,
   ): Promise<FrostProtectionData> {
-    const buildingDeviceId: number = this.getFirstDeviceId({ buildingId })
-    const { data } = await this.api.get<FrostProtectionData>(
-      `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
-    )
-    return data
+    return (
+      await this.apiGetFrostProtection(this.getFirstDeviceId({ buildingId }))
+    ).data
   }
 
   public async updateFrostProtectionSettings(
     buildingId: number,
     settings: FrostProtectionSettings,
   ): Promise<void> {
-    const postData: FrostProtectionPostData = {
+    const { data } = await this.apiUpdateFrostProtection({
       ...settings,
       BuildingIds: [buildingId],
-    }
-    const { data } = await this.api.post<FailureData | SuccessData>(
-      '/FrostProtection/Update',
-      postData,
-    )
+    })
     handleResponse(data)
   }
 
   public async getHolidayModeSettings(
     buildingId: number,
   ): Promise<HolidayModeData> {
-    const buildingDeviceId: number = this.getFirstDeviceId({ buildingId })
-    const { data } = await this.api.get<HolidayModeData>(
-      `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${buildingDeviceId}`,
-    )
-    return data
+    return (await this.apiGetHolidayMode(this.getFirstDeviceId({ buildingId })))
+      .data
   }
 
   public async updateHolidayModeSettings(
@@ -303,7 +285,8 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     const utcEndDate: DateTime | null = enabled
       ? DateTime.fromISO(endDate).toUTC()
       : null
-    const postData: HolidayModePostData = {
+    const { data } = await this.apiUpdateHolidayMode(
+{
       Enabled: enabled,
       EndDate: utcEndDate
         ? {
@@ -327,9 +310,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           }
         : null,
     }
-    const { data } = await this.api.post<FailureData | SuccessData>(
-      '/HolidayMode/Update',
-      postData,
     )
     handleResponse(data)
   }

@@ -1,4 +1,25 @@
-import type { HomeyClass, HomeySettings, TypedString } from '../types'
+import type {
+  Building,
+  ErrorLogData,
+  ErrorLogPostData,
+  FailureData,
+  FrostProtectionData,
+  FrostProtectionPostData,
+  GetDeviceData,
+  HeatPumpType,
+  HolidayModeData,
+  HolidayModePostData,
+  HomeyClass,
+  HomeySettings,
+  LoginData,
+  LoginPostData,
+  MELCloudDriver,
+  PostData,
+  ReportData,
+  ReportPostData,
+  SuccessData,
+  TypedString,
+} from '../types'
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -10,12 +31,35 @@ import type MELCloudApp from '../app'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type APIClass = new (...args: any[]) => {
   readonly api: AxiosInstance
+  readonly apiError: (
+    postData: ErrorLogPostData,
+  ) => Promise<{ data: ErrorLogData[] | FailureData }>
+  readonly apiGetFrostProtection: (
+    id: number,
+  ) => Promise<{ data: FrostProtectionData }>
+  readonly apiGetHolidayMode: (id: number) => Promise<{ data: HolidayModeData }>
+  readonly apiUpdateFrostProtection: (
+    postData: FrostProtectionPostData,
+  ) => Promise<{ data: FailureData | SuccessData }>
+  readonly apiUpdateHolidayMode: (
+    postData: HolidayModePostData,
+  ) => Promise<{ data: FailureData | SuccessData }>
+  readonly apiList: () => Promise<{ data: Building[] }>
+  readonly apiLogin: (postData: LoginPostData) => Promise<{ data: LoginData }>
+  readonly apiReport: <D extends MELCloudDriver>(
+    postData: ReportPostData,
+  ) => Promise<{ data: ReportData<D> }>
+  readonly apiSet: <D extends MELCloudDriver>(
+    heatPumpType: keyof typeof HeatPumpType,
+    postData: PostData<D>,
+  ) => Promise<{ data: GetDeviceData<D> }>
   readonly getHomeySetting: <K extends keyof HomeySettings>(
     setting: K,
   ) => HomeySettings[K]
 }
 
 const HTTP_STATUS_UNAUTHORIZED = 401
+const LOGIN_URL = '/Login/ClientLogin'
 
 const getAPIErrorMessage = (error: AxiosError): string => error.message
 
@@ -30,12 +74,8 @@ export const getErrorMessage = (error: unknown): string => {
 }
 
 // eslint-disable-next-line max-lines-per-function
-const withAPI = <T extends HomeyClass>(
-  base: T,
-): APIClass & T & { readonly loginURL: string } =>
+const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
   class WithAPI extends base {
-    public static readonly loginURL: string = '/Login/ClientLogin'
-
     public readonly api: AxiosInstance = axios.create()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,6 +89,75 @@ const withAPI = <T extends HomeyClass>(
       setting: TypedString<K>,
     ): HomeySettings[K] {
       return this.homey.settings.get(setting) as HomeySettings[K]
+    }
+
+    public async apiLogin(
+      postData: LoginPostData,
+    ): Promise<{ data: LoginData }> {
+      return this.api.post<LoginData>(LOGIN_URL, postData)
+    }
+
+    public async apiList(): Promise<{ data: Building[] }> {
+      return this.api.get<Building[]>('/User/ListDevices')
+    }
+
+    public async apiSet<D extends MELCloudDriver>(
+      heatPumpType: keyof typeof HeatPumpType,
+      postData: PostData<D>,
+    ): Promise<{ data: GetDeviceData<D> }> {
+      return this.api.post<GetDeviceData<D>>(
+        `/Device/Set${heatPumpType}`,
+        postData,
+      )
+    }
+
+    public async apiReport<D extends MELCloudDriver>(
+      postData: ReportPostData,
+    ): Promise<{ data: ReportData<D> }> {
+      return this.api.post<ReportData<D>>('/EnergyCost/Report', postData)
+    }
+
+    public async apiError(
+      postData: ErrorLogPostData,
+    ): Promise<{ data: ErrorLogData[] | FailureData }> {
+      return this.api.post<ErrorLogData[] | FailureData>(
+        '/Report/GetUnitErrorLog2',
+        postData,
+      )
+    }
+
+    public async apiGetFrostProtection(id: number): Promise<{
+      data: FrostProtectionData
+    }> {
+      return this.api.get<FrostProtectionData>(
+        `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${id}`,
+      )
+    }
+
+    public async apiUpdateFrostProtection(
+      postData: FrostProtectionPostData,
+    ): Promise<{ data: FailureData | SuccessData }> {
+      return this.api.post<FailureData | SuccessData>(
+        '/FrostProtection/Update',
+        postData,
+      )
+    }
+
+    public async apiGetHolidayMode(id: number): Promise<{
+      data: HolidayModeData
+    }> {
+      return this.api.get<HolidayModeData>(
+        `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${id}`,
+      )
+    }
+
+    public async apiUpdateHolidayMode(
+      postData: HolidayModePostData,
+    ): Promise<{ data: FailureData | SuccessData }> {
+      return this.api.post<FailureData | SuccessData>(
+        '/HolidayMode/Update',
+        postData,
+      )
     }
 
     private setupAxiosInterceptors(): void {
@@ -97,7 +206,7 @@ const withAPI = <T extends HomeyClass>(
       if (
         error.response?.status === HTTP_STATUS_UNAUTHORIZED &&
         app.retry &&
-        error.config?.url !== WithAPI.loginURL
+        error.config?.url !== LOGIN_URL
       ) {
         app.handleRetry()
         const loggedIn: boolean = await app.login()

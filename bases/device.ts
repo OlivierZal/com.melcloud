@@ -296,11 +296,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         HasPendingCommand: true,
         ...this.buildUpdateData(),
       }
-      const { data } = await this.api.post<GetDeviceData<T>>(
-        `/Device/Set${this.driver.heatPumpType}`,
-        postData,
-      )
-      return data
+      return (await this.apiSet(this.driver.heatPumpType, postData)).data
     } catch (error: unknown) {
       return null
     }
@@ -317,11 +313,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
       }
-      const { data } = await this.api.post<ReportData<T>>(
-        '/EnergyCost/Report',
-        postData,
-      )
-      return data
+      return (await this.apiReport(postData)).data as ReportData<T>
     } catch (error: unknown) {
       return null
     }
