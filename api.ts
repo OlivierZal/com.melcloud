@@ -269,9 +269,6 @@ export = {
     homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
-    if (!Object.keys(body).length) {
-      return
-    }
     try {
       await Promise.all(
         (homey.app as MELCloudApp)
