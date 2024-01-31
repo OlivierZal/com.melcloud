@@ -559,6 +559,54 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     )
   }
 
+  private calculateCopValue<K extends keyof ReportCapabilities<T>>(
+    data: ReportData<T>,
+    capability: TypedString<K>,
+  ): number {
+    const producedTags: (keyof ReportData<T>)[] = this.driver
+      .producedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
+    const consumedTags: (keyof ReportData<T>)[] = this.driver
+      .consumedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
+    return (
+      producedTags.reduce<number>(
+        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
+        0,
+      ) /
+      (consumedTags.length
+        ? consumedTags.reduce<number>(
+            (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
+            0,
+          )
+        : 1)
+    )
+  }
+
+  private calculatePowerValue(
+    data: ReportData<T>,
+    tags: (keyof ReportData<T>)[],
+    toDate: DateTime,
+  ): number {
+    return (
+      tags.reduce<number>(
+        (acc, tag: keyof ReportData<T>) =>
+          acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
+        0,
+      ) / this.#deviceCount
+    )
+  }
+
+  private calculateEnergyValue(
+    data: ReportData<T>,
+    tags: (keyof ReportData<T>)[],
+  ): number {
+    return (
+      tags.reduce<number>(
+        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
+        0,
+      ) / this.#deviceCount
+    )
+  }
+
   private planEnergyReport(
     reportPlanParameters: ReportPlanParameters,
     total = false,
@@ -635,54 +683,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ) {
       this.setListCapabilityMapping()
     }
-  }
-
-  private calculateCopValue<K extends keyof ReportCapabilities<T>>(
-    data: ReportData<T>,
-    capability: TypedString<K>,
-  ): number {
-    const producedTags: (keyof ReportData<T>)[] = this.driver
-      .producedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
-    const consumedTags: (keyof ReportData<T>)[] = this.driver
-      .consumedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
-    return (
-      producedTags.reduce<number>(
-        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        0,
-      ) /
-      (consumedTags.length
-        ? consumedTags.reduce<number>(
-            (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-            0,
-          )
-        : 1)
-    )
-  }
-
-  private calculatePowerValue(
-    data: ReportData<T>,
-    tags: (keyof ReportData<T>)[],
-    toDate: DateTime,
-  ): number {
-    return (
-      tags.reduce<number>(
-        (acc, tag: keyof ReportData<T>) =>
-          acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
-        0,
-      ) / this.#deviceCount
-    )
-  }
-
-  private calculateEnergyValue(
-    data: ReportData<T>,
-    tags: (keyof ReportData<T>)[],
-  ): number {
-    return (
-      tags.reduce<number>(
-        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        0,
-      ) / this.#deviceCount
-    )
   }
 
   private clearEnergyReportPlans(): void {
