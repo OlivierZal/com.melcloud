@@ -163,6 +163,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ) {
       this.app.applySyncFromDevices()
     }
+
     const changedEnergyKeys: string[] = changedCapabilities.filter(
       (setting: string) => this.isReportCapability(setting),
     )
