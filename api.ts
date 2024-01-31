@@ -289,7 +289,6 @@ export = {
               )
               try {
                 await device.setSettings(deviceSettings)
-                device.log('Settings:', deviceSettings)
                 await device.onSettings({
                   changedKeys: deviceChangedKeys,
                   newSettings: device.getSettings() as Settings,
