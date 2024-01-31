@@ -22,11 +22,148 @@ import type Homey from 'homey/lib/Homey'
 
 const FP_MIN_MAX_GAP = 2
 
-// eslint-disable-next-line func-style, max-lines-per-function, max-statements
-async function onHomeyReady(homey: Homey): Promise<void> {
-  await homey.ready()
+let homeySettings: HomeySettingsUI = {
+  contextKey: '',
+  expiry: '',
+  password: '',
+  username: '',
+}
+let deviceSettings: DeviceSettings = {}
+let flatDeviceSettings: DeviceSetting = {}
+let driverSettingsAll: DriverSetting[] = []
+let driverSettingsCommon: DriverSetting[] = []
+let driverSettingsDrivers: Record<string, DriverSetting[]> = {}
+let [usernameElement, passwordElement]: (HTMLInputElement | null)[] = [
+  null,
+  null,
+]
 
-  await new Promise<void>((resolve, reject) => {
+const minMinTemperature = 4
+const maxMinTemperature = 14
+const minMaxTemperature = 6
+const maxMaxTemperature = 16
+
+const authenticateElement: HTMLButtonElement = document.getElementById(
+  'authenticate',
+) as HTMLButtonElement
+const autoAdjustElement: HTMLButtonElement = document.getElementById(
+  'auto_adjust',
+) as HTMLButtonElement
+const refreshFrostProtectionElement: HTMLButtonElement =
+  document.getElementById('refresh-frost-protection') as HTMLButtonElement
+const refreshHolidayModeElement: HTMLButtonElement = document.getElementById(
+  'refresh-holiday-mode',
+) as HTMLButtonElement
+const seeElement: HTMLButtonElement = document.getElementById(
+  'see',
+) as HTMLButtonElement
+const updateFrostProtectionElement: HTMLButtonElement = document.getElementById(
+  'apply-frost-protection',
+) as HTMLButtonElement
+const updateHolidayModeElement: HTMLButtonElement = document.getElementById(
+  'apply-holiday-mode',
+) as HTMLButtonElement
+
+const authenticatedElement: HTMLDivElement = document.getElementById(
+  'authenticated',
+) as HTMLDivElement
+const authenticatingElement: HTMLDivElement = document.getElementById(
+  'authenticating',
+) as HTMLDivElement
+const errorLogElement: HTMLDivElement = document.getElementById(
+  'error-log',
+) as HTMLDivElement
+const loginElement: HTMLDivElement = document.getElementById(
+  'login',
+) as HTMLDivElement
+const settingsCommonElement: HTMLDivElement = document.getElementById(
+  'settings-common',
+) as HTMLDivElement
+
+const sinceElement: HTMLInputElement = document.getElementById(
+  'since',
+) as HTMLInputElement
+const frostProtectionMinimumTemperatureElement: HTMLInputElement =
+  document.getElementById('min') as HTMLInputElement
+frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
+frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
+const frostProtectionMaximumTemperatureElement: HTMLInputElement =
+  document.getElementById('max') as HTMLInputElement
+frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
+frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
+const holidayModeStartDateElement: HTMLInputElement = document.getElementById(
+  'start-date',
+) as HTMLInputElement
+const holidayModeEndDateElement: HTMLInputElement = document.getElementById(
+  'end-date',
+) as HTMLInputElement
+
+const errorCountLabelElement: HTMLLabelElement = document.getElementById(
+  'error_count',
+) as HTMLLabelElement
+const periodLabelElement: HTMLLabelElement = document.getElementById(
+  'period',
+) as HTMLLabelElement
+
+const buildingElement: HTMLSelectElement = document.getElementById(
+  'buildings',
+) as HTMLSelectElement
+const frostProtectionEnabledElement: HTMLSelectElement =
+  document.getElementById('enabled-frost-protection') as HTMLSelectElement
+const holidayModeEnabledElement: HTMLSelectElement = document.getElementById(
+  'enabled-holiday-mode',
+) as HTMLSelectElement
+
+let buildingMapping: Record<string, BuildingData> = {}
+
+let errorLogTBodyElement: HTMLTableSectionElement | null = null
+
+let errorCount = 0
+let fromDateHuman = ''
+let to = ''
+
+const disableButton = (elementId: string, value = true): void => {
+  const element: HTMLButtonElement | null = document.getElementById(
+    elementId,
+  ) as HTMLButtonElement | null
+  if (!element) {
+    return
+  }
+  if (value) {
+    element.classList.add('is-disabled')
+  } else {
+    element.classList.remove('is-disabled')
+  }
+}
+
+const disableButtons = (setting: string, value = true): void => {
+  const [baseSetting, suffix]: string[] = setting.split('-')
+  ;['apply', 'refresh'].forEach((action: string) => {
+    disableButton(`${action}-${setting}`, value)
+    if (suffix === 'common') {
+      Object.keys(deviceSettings).forEach((driverId: string) => {
+        disableButton(`${action}-${baseSetting}-${driverId}`, value)
+      })
+    } else {
+      disableButton(`${action}-${baseSetting}-common`, value)
+    }
+  })
+}
+
+const enableButtons = (setting: string, value = true): void => {
+  disableButtons(setting, !value)
+}
+
+const hide = (element: HTMLDivElement, value = true): void => {
+  element.classList.toggle('hidden', value)
+}
+
+const unhide = (element: HTMLDivElement, value = true): void => {
+  hide(element, !value)
+}
+
+const setDocumentLanguage = async (homey: Homey): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
@@ -42,97 +179,90 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
-  const homeySettings: HomeySettingsUI = await new Promise<HomeySettingsUI>(
-    (resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.get(
-        async (
-          error: Error | null,
-          settings: HomeySettingsUI,
-        ): Promise<void> => {
-          if (error) {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
-          }
-          resolve(settings)
-        },
-      )
-    },
-  )
-
-  const deviceSettings: DeviceSettings = await new Promise<DeviceSettings>(
-    (resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.api(
-        'GET',
-        '/settings/devices',
-        async (
-          error: Error | null,
-          settings: DeviceSettings,
-        ): Promise<void> => {
-          if (error) {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
-          }
-          resolve(settings)
-        },
-      )
-    },
-  )
-  const driverIds: string[] = Object.keys(deviceSettings)
-
-  const flattenDeviceSettings = (): DeviceSetting =>
-    Object.values(deviceSettings).reduce<DeviceSetting>(
-      (flattenedDeviceSettings, settings: DeviceSetting) =>
-        Object.entries(settings).reduce<DeviceSetting>(
-          (acc, [settingId, settingValues]: [string, ValueOf<Settings>[]]) => {
-            if (!(settingId in acc)) {
-              acc[settingId] = []
-            }
-            acc[settingId].push(
-              ...settingValues.filter(
-                (settingValue: ValueOf<Settings>) =>
-                  !acc[settingId].includes(settingValue),
-              ),
-            )
-            return acc
-          },
-          flattenedDeviceSettings,
-        ),
-      {},
+const getHomeySettings = async (homey: Homey): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.get(
+      async (error: Error | null, settings: HomeySettingsUI): Promise<void> => {
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        homeySettings = settings
+        resolve()
+      },
     )
+  })
 
-  let flatDeviceSettings: DeviceSetting = flattenDeviceSettings()
+const getDeviceSettings = async (homey: Homey): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.api(
+      'GET',
+      '/settings/devices',
+      async (error: Error | null, settings: DeviceSettings): Promise<void> => {
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        deviceSettings = settings
+        resolve()
+      },
+    )
+  })
 
-  const driverSettingsAll: DriverSetting[] = await new Promise<DriverSetting[]>(
-    (resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.api(
-        'GET',
-        '/settings/drivers',
-        async (
-          error: Error | null,
-          driverSettings: DriverSetting[],
-        ): Promise<void> => {
-          if (error) {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
+const getFlatDeviceSettings = (): void => {
+  flatDeviceSettings = Object.values(deviceSettings).reduce<DeviceSetting>(
+    (flattenedDeviceSettings, settings: DeviceSetting) =>
+      Object.entries(settings).reduce<DeviceSetting>(
+        (acc, [settingId, settingValues]: [string, ValueOf<Settings>[]]) => {
+          if (!(settingId in acc)) {
+            acc[settingId] = []
           }
-          resolve(driverSettings)
+          acc[settingId].push(
+            ...settingValues.filter(
+              (settingValue: ValueOf<Settings>) =>
+                !acc[settingId].includes(settingValue),
+            ),
+          )
+          return acc
         },
-      )
-    },
+        flattenedDeviceSettings,
+      ),
+    {},
   )
+}
 
-  const { driverSettingsCommon, driverSettings } = driverSettingsAll.reduce<{
-    driverSettings: Record<string, DriverSetting[]>
+const getDriverSettingsAll = async (homey: Homey): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.api(
+      'GET',
+      '/settings/drivers',
+      async (
+        error: Error | null,
+        driverSettings: DriverSetting[],
+      ): Promise<void> => {
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        driverSettingsAll = driverSettings
+        resolve()
+      },
+    )
+  })
+
+const getDriverSettings = (): void => {
+  ;({ driverSettingsCommon, driverSettingsDrivers } = driverSettingsAll.reduce<{
     driverSettingsCommon: DriverSetting[]
+    driverSettingsDrivers: Record<string, DriverSetting[]>
   }>(
     (acc, setting: DriverSetting) => {
       if (setting.groupId === 'login') {
@@ -148,268 +278,123 @@ async function onHomeyReady(homey: Homey): Promise<void> {
         }
       } else {
         const { driverId } = setting
-        if (!(driverId in acc.driverSettings)) {
-          acc.driverSettings[driverId] = []
+        if (!(driverId in acc.driverSettingsDrivers)) {
+          acc.driverSettingsDrivers[driverId] = []
         }
-        acc.driverSettings[driverId].push(setting)
+        acc.driverSettingsDrivers[driverId].push(setting)
       }
       return acc
     },
-    { driverSettings: {}, driverSettingsCommon: [] },
+    { driverSettingsCommon: [], driverSettingsDrivers: {} },
+  ))
+}
+
+const createDivElement = (): HTMLDivElement => {
+  const divElement: HTMLDivElement = document.createElement('div')
+  divElement.classList.add('homey-form-group')
+  return divElement
+}
+
+const createInputElement = ({
+  id,
+  placeholder,
+  type,
+  value,
+}: {
+  id: string
+  placeholder?: string
+  type: string
+  value?: string
+}): HTMLInputElement => {
+  const inputElement: HTMLInputElement = document.createElement('input')
+  inputElement.classList.add('homey-form-input')
+  inputElement.id = id
+  inputElement.value = value ?? ''
+  inputElement.type = type
+  inputElement.placeholder = placeholder ?? ''
+  return inputElement
+}
+
+const createLabelElement = ({
+  id,
+  text,
+}: {
+  id: string
+  text: string
+}): HTMLLabelElement => {
+  const labelElement: HTMLLabelElement = document.createElement('label')
+  labelElement.classList.add('homey-form-label')
+  labelElement.htmlFor = id
+  labelElement.innerText = text
+  return labelElement
+}
+
+const updateCredentialElement = (
+  credentialKey: keyof LoginCredentials,
+): HTMLInputElement | null => {
+  const driverSetting: LoginDriverSetting | undefined = driverSettingsAll.find(
+    (setting): setting is LoginDriverSetting => setting.id === credentialKey,
   )
-
-  const intMinValueMap = new WeakMap<HTMLInputElement, number>()
-  const intMaxValueMap = new WeakMap<HTMLInputElement, number>()
-
-  const minMinTemperature = 4
-  const maxMinTemperature = 14
-  const minMaxTemperature = 6
-  const maxMaxTemperature = 16
-
-  const authenticateElement: HTMLButtonElement = document.getElementById(
-    'authenticate',
-  ) as HTMLButtonElement
-  const autoAdjustElement: HTMLButtonElement = document.getElementById(
-    'auto_adjust',
-  ) as HTMLButtonElement
-  const refreshFrostProtectionElement: HTMLButtonElement =
-    document.getElementById('refresh-frost-protection') as HTMLButtonElement
-  const refreshHolidayModeElement: HTMLButtonElement = document.getElementById(
-    'refresh-holiday-mode',
-  ) as HTMLButtonElement
-  const seeElement: HTMLButtonElement = document.getElementById(
-    'see',
-  ) as HTMLButtonElement
-  const updateFrostProtectionElement: HTMLButtonElement =
-    document.getElementById('apply-frost-protection') as HTMLButtonElement
-  const updateHolidayModeElement: HTMLButtonElement = document.getElementById(
-    'apply-holiday-mode',
-  ) as HTMLButtonElement
-
-  const authenticatedElement: HTMLDivElement = document.getElementById(
-    'authenticated',
-  ) as HTMLDivElement
-  const authenticatingElement: HTMLDivElement = document.getElementById(
-    'authenticating',
-  ) as HTMLDivElement
-  const errorLogElement: HTMLDivElement = document.getElementById(
-    'error-log',
-  ) as HTMLDivElement
-  const loginElement: HTMLDivElement = document.getElementById(
-    'login',
-  ) as HTMLDivElement
-  const settingsCommonElement: HTMLDivElement = document.getElementById(
-    'settings-common',
-  ) as HTMLDivElement
-
-  const sinceElement: HTMLInputElement = document.getElementById(
-    'since',
-  ) as HTMLInputElement
-  const frostProtectionMinimumTemperatureElement: HTMLInputElement =
-    document.getElementById('min') as HTMLInputElement
-  frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
-  frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
-  const frostProtectionMaximumTemperatureElement: HTMLInputElement =
-    document.getElementById('max') as HTMLInputElement
-  frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
-  frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
-  const holidayModeStartDateElement: HTMLInputElement = document.getElementById(
-    'start-date',
-  ) as HTMLInputElement
-  const holidayModeEndDateElement: HTMLInputElement = document.getElementById(
-    'end-date',
-  ) as HTMLInputElement
-
-  const errorCountLabelElement: HTMLLabelElement = document.getElementById(
-    'error_count',
-  ) as HTMLLabelElement
-  const periodLabelElement: HTMLLabelElement = document.getElementById(
-    'period',
-  ) as HTMLLabelElement
-
-  const buildingElement: HTMLSelectElement = document.getElementById(
-    'buildings',
-  ) as HTMLSelectElement
-  const frostProtectionEnabledElement: HTMLSelectElement =
-    document.getElementById('enabled-frost-protection') as HTMLSelectElement
-  const holidayModeEnabledElement: HTMLSelectElement = document.getElementById(
-    'enabled-holiday-mode',
-  ) as HTMLSelectElement
-
-  let usernameElement: HTMLInputElement | null = document.getElementById(
-    'username',
-  ) as HTMLInputElement | null
-  let passwordElement: HTMLInputElement | null = document.getElementById(
-    'password',
-  ) as HTMLInputElement | null
-
-  let buildingMapping: Record<string, BuildingData> = {}
-
-  let errorLogTBodyElement: HTMLTableSectionElement | null = null
-
-  let errorCount = 0
-  let fromDateHuman = ''
-  let to = ''
-
-  const disableButton = (elementId: string, value = true): void => {
-    const element: HTMLButtonElement | null = document.getElementById(
-      elementId,
-    ) as HTMLButtonElement | null
-    if (!element) {
-      return
-    }
-    if (value) {
-      element.classList.add('is-disabled')
-    } else {
-      element.classList.remove('is-disabled')
-    }
-  }
-
-  const disableButtons = (setting: string, value = true): void => {
-    const [baseSetting, suffix]: string[] = setting.split('-')
-    ;['apply', 'refresh'].forEach((action: string) => {
-      disableButton(`${action}-${setting}`, value)
-      if (suffix === 'common') {
-        driverIds.forEach((driverId: string) => {
-          disableButton(`${action}-${baseSetting}-${driverId}`, value)
-        })
-      } else {
-        disableButton(`${action}-${baseSetting}-common`, value)
-      }
+  if (driverSetting) {
+    const divElement: HTMLDivElement = createDivElement()
+    const inputElement: HTMLInputElement = createInputElement({
+      id: driverSetting.id,
+      placeholder: driverSetting.placeholder,
+      type: driverSetting.type,
+      value: homeySettings[driverSetting.id],
     })
-  }
-
-  const enableButtons = (setting: string, value = true): void => {
-    disableButtons(setting, !value)
-  }
-
-  const hide = (element: HTMLDivElement, value = true): void => {
-    element.classList.toggle('hidden', value)
-  }
-
-  const unhide = (element: HTMLDivElement, value = true): void => {
-    hide(element, !value)
-  }
-
-  const generateErrorLogTable = (keys: string[]): HTMLTableSectionElement => {
-    const tableElement: HTMLTableElement = document.createElement('table')
-    tableElement.className = 'bordered'
-    tableElement.setAttribute('aria-describedby', 'Error Log')
-    const theadElement: HTMLTableSectionElement = tableElement.createTHead()
-    const rowElement: HTMLTableRowElement = theadElement.insertRow()
-    keys.forEach((key: string) => {
-      const thElement: HTMLTableCellElement = document.createElement('th')
-      thElement.innerText = homey.__(`settings.error_log.columns.${key}`)
-      rowElement.appendChild(thElement)
+    const labelElement: HTMLLabelElement = createLabelElement({
+      id: inputElement.id,
+      text: driverSetting.title,
     })
-    errorLogElement.appendChild(tableElement)
-    return tableElement.createTBody()
+    divElement.appendChild(labelElement)
+    divElement.appendChild(inputElement)
+    loginElement.appendChild(divElement)
+    return inputElement
   }
+  return null
+}
 
-  const generateErrorLogTableData = (errors: ErrorDetails[]): void => {
-    if (!errors.length) {
-      return
-    }
-    errors.forEach((error: ErrorDetails) => {
-      if (!errorLogTBodyElement) {
-        errorLogTBodyElement = generateErrorLogTable(Object.keys(errors[0]))
-      }
-      const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
-      Object.values(error).forEach((value: string) => {
-        const cellElement: HTMLTableCellElement = rowElement.insertCell()
-        cellElement.innerText = value
-      })
-    })
-  }
+const updateCredentialElements = (): void => {
+  ;[usernameElement, passwordElement] = (
+    ['username', 'password'] as (keyof LoginCredentials)[]
+  ).map(updateCredentialElement)
+}
 
-  const getErrorCountText = (count: number): string => {
-    if (!count) {
-      return homey.__('settings.error_log.error_count.0')
-    }
-    if (count === 1) {
-      return homey.__('settings.error_log.error_count.1')
-    }
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
-      return homey.__('settings.error_log.error_count.234')
-    }
-    return homey.__('settings.error_log.error_count.plural')
-  }
-
-  const generateErrorLog = (): void => {
-    const query: ErrorLogQuery = {
-      from: sinceElement.value,
-      limit: '29',
-      offset: '0',
-      to,
-    }
-    const queryString: string = new URLSearchParams(
-      query as Record<string, string>,
-    ).toString()
-    // @ts-expect-error: `homey` is partially typed
-    homey.api(
-      'GET',
-      `/error_log?${queryString}`,
-      async (error: Error | null, data: ErrorLog): Promise<void> => {
-        seeElement.classList.remove('is-disabled')
-        if (error) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(error.message)
-          return
-        }
-        ;({ fromDateHuman } = data)
-        const { nextFromDate, nextToDate, errors } = data
-        periodLabelElement.innerText = homey.__('settings.error_log.period', {
-          fromDateHuman,
-        })
-        sinceElement.value = nextFromDate
-        to = nextToDate
-        errorCount += errors.length
-        errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(errorCount)}`
-        generateErrorLogTableData(errors)
-      },
+const int = (
+  homey: Homey,
+  element: HTMLInputElement,
+  value: number = Number.parseInt(element.value, 10),
+): number => {
+  if (
+    Number.isNaN(value) ||
+    value < Number(element.min) ||
+    value > Number(element.max)
+  ) {
+    element.value = ''
+    const labelElement: HTMLLabelElement | null = document.querySelector(
+      `label[for="${element.id}"]`,
+    )
+    throw new Error(
+      homey.__('settings.int_error', {
+        max: element.max,
+        min: element.min,
+        name: homey.__(labelElement?.innerText ?? ''),
+      }),
     )
   }
+  return value
+}
 
-  const int = (
-    element: HTMLInputElement,
-    value: number = Number.parseInt(element.value, 10),
-  ): number => {
-    let minValue: number | undefined = intMinValueMap.get(element)
-    let maxValue: number | undefined = intMaxValueMap.get(element)
-    if (typeof minValue === 'undefined' || typeof maxValue === 'undefined') {
-      minValue = Number(element.min)
-      maxValue = Number(element.max)
-      intMinValueMap.set(element, minValue)
-      intMaxValueMap.set(element, maxValue)
-    }
-    if (Number.isNaN(value) || value < minValue || value > maxValue) {
-      element.value = ''
-      const labelElement: HTMLLabelElement | null = document.querySelector(
-        `label[for="${element.id}"]`,
-      )
-      throw new Error(
-        homey.__('settings.int_error', {
-          max: maxValue,
-          min: minValue,
-          name: homey.__(labelElement?.innerText ?? ''),
-        }),
-      )
-    }
-    return value
-  }
-
-  const processSettingValue = (
-    element: HTMLInputElement | HTMLSelectElement,
-  ): ValueOf<Settings> => {
-    const { value } = element
-    if (!value) {
-      return null
-    }
-    const intValue: number = Number.parseInt(value, 10)
+const processSettingValue = (
+  homey: Homey,
+  element: HTMLInputElement | HTMLSelectElement,
+): ValueOf<Settings> => {
+  if (element.value) {
+    const intValue: number = Number.parseInt(element.value, 10)
     if (!Number.isNaN(intValue)) {
       return element instanceof HTMLInputElement
-        ? int(element, intValue)
+        ? int(homey, element, intValue)
         : intValue
     }
     if (element instanceof HTMLInputElement && element.type === 'checkbox') {
@@ -418,545 +403,644 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       }
       return null
     }
-    return ['true', 'false'].includes(value) ? value === 'true' : value
+    return ['true', 'false'].includes(element.value)
+      ? element.value === 'true'
+      : element.value
   }
+  return null
+}
 
-  const buildSettingsBody = (
-    elements: (HTMLInputElement | HTMLSelectElement)[],
-    driverId?: string,
-  ): Settings => {
-    const shouldUpdate = (
-      settingId: string,
-      settingValue: ValueOf<Settings>,
-    ): boolean => {
-      if (settingValue === null) {
-        return false
+const shouldUpdate = (
+  settingId: string,
+  settingValue: ValueOf<Settings>,
+  driverId?: string,
+): boolean => {
+  if (settingValue === null) {
+    return false
+  }
+  const deviceSetting: ValueOf<Settings>[] | undefined =
+    typeof driverId === 'undefined'
+      ? flatDeviceSettings[settingId]
+      : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
+  return (
+    typeof deviceSetting !== 'undefined' &&
+    (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
+  )
+}
+
+const buildSettingsBody = (
+  homey: Homey,
+  elements: (HTMLInputElement | HTMLSelectElement)[],
+  driverId?: string,
+): Settings =>
+  Object.fromEntries(
+    elements
+      .map(
+        (
+          element: HTMLInputElement | HTMLSelectElement,
+        ): [null] | [string, ValueOf<Settings>] => {
+          const [settingId]: string[] = element.id.split('--')
+          const settingValue: ValueOf<Settings> = processSettingValue(
+            homey,
+            element,
+          )
+          return shouldUpdate(settingId, settingValue, driverId)
+            ? [settingId, settingValue]
+            : [null]
+        },
+      )
+      .filter(
+        (
+          entry: [null] | [string, ValueOf<Settings>],
+        ): entry is [string, ValueOf<Settings>] => entry[0] !== null,
+      ),
+  )
+
+const generateErrorLogTable = (
+  homey: Homey,
+  keys: string[],
+): HTMLTableSectionElement => {
+  const tableElement: HTMLTableElement = document.createElement('table')
+  tableElement.className = 'bordered'
+  tableElement.setAttribute('aria-describedby', 'Error Log')
+  const theadElement: HTMLTableSectionElement = tableElement.createTHead()
+  const rowElement: HTMLTableRowElement = theadElement.insertRow()
+  keys.forEach((key: string) => {
+    const thElement: HTMLTableCellElement = document.createElement('th')
+    thElement.innerText = homey.__(`settings.error_log.columns.${key}`)
+    rowElement.appendChild(thElement)
+  })
+  errorLogElement.appendChild(tableElement)
+  return tableElement.createTBody()
+}
+
+const generateErrorLogTableData = (
+  homey: Homey,
+  errors: ErrorDetails[],
+): void => {
+  if (!errors.length) {
+    return
+  }
+  errors.forEach((error: ErrorDetails) => {
+    if (!errorLogTBodyElement) {
+      errorLogTBodyElement = generateErrorLogTable(
+        homey,
+        Object.keys(errors[0]),
+      )
+    }
+    const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
+    Object.values(error).forEach((value: string) => {
+      const cellElement: HTMLTableCellElement = rowElement.insertCell()
+      cellElement.innerText = value
+    })
+  })
+}
+
+const getErrorCountText = (homey: Homey, count: number): string => {
+  switch (true) {
+    case count <= 1:
+      return homey.__(`settings.error_log.error_count.${count}`)
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    case [2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100):
+      return homey.__('settings.error_log.error_count.234')
+    default:
+      return homey.__('settings.error_log.error_count.plural')
+  }
+}
+
+const updateErrorLogElements = (homey: Homey, data: ErrorLog): void => {
+  ;({ fromDateHuman } = data)
+  periodLabelElement.innerText = homey.__('settings.error_log.period', {
+    fromDateHuman,
+  })
+  sinceElement.value = data.nextFromDate
+  to = data.nextToDate
+  errorCount += data.errors.length
+  errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(homey, errorCount)}`
+}
+
+const generateErrorLog = (homey: Homey): void => {
+  const query: ErrorLogQuery = {
+    from: sinceElement.value,
+    limit: '29',
+    offset: '0',
+    to,
+  }
+  const queryString: string = new URLSearchParams(
+    query as Record<string, string>,
+  ).toString()
+  // @ts-expect-error: `homey` is partially typed
+  homey.api(
+    'GET',
+    `/error_log?${queryString}`,
+    async (error: Error | null, data: ErrorLog): Promise<void> => {
+      seeElement.classList.remove('is-disabled')
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+        return
       }
-      const deviceSetting: ValueOf<Settings>[] | undefined =
-        typeof driverId === 'undefined'
-          ? flatDeviceSettings[settingId]
-          : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-      return (
-        typeof deviceSetting !== 'undefined' &&
-        (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
-      )
-    }
+      updateErrorLogElements(homey, data)
+      generateErrorLogTableData(homey, data.errors)
+    },
+  )
+}
 
-    return Object.fromEntries(
-      elements
-        .map(
-          (
-            element: HTMLInputElement | HTMLSelectElement,
-          ): [null] | [string, ValueOf<Settings>] => {
-            const settingId: string = element.id.split('--')[0]
-            const settingValue: ValueOf<Settings> = processSettingValue(element)
-            return shouldUpdate(settingId, settingValue)
-              ? [settingId, settingValue]
-              : [null]
-          },
-        )
-        .filter(
-          (
-            entry: [null] | [string, ValueOf<Settings>],
-          ): entry is [string, ValueOf<Settings>] => entry[0] !== null,
-        ),
+const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
+  const {
+    HMEnabled: enabled,
+    HMEndDate: endDate,
+    HMStartDate: startDate,
+  } = data
+  holidayModeEnabledElement.value = String(enabled)
+  holidayModeEndDateElement.value = enabled ? endDate ?? '' : ''
+  holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
+}
+
+const refreshBuildingFrostProtectionSettings = (
+  data: FrostProtectionData,
+): void => {
+  const {
+    FPEnabled: enabled,
+    FPMaxTemperature: max,
+    FPMinTemperature: min,
+  } = data
+  frostProtectionEnabledElement.value = String(enabled)
+  frostProtectionMaximumTemperatureElement.value = String(max)
+  frostProtectionMinimumTemperatureElement.value = String(min)
+}
+
+const refreshBuildingSettings = (): void => {
+  const settings: BuildingData = buildingMapping[buildingElement.value]
+  refreshBuildingHolidayModeSettings(settings)
+  refreshBuildingFrostProtectionSettings(settings)
+}
+
+const updateBuildingMapping = (
+  data: FrostProtectionData | HolidayModeData,
+): void => {
+  buildingMapping[buildingElement.value] = {
+    ...buildingMapping[buildingElement.value],
+    ...data,
+  }
+}
+
+const getBuildingHolidayModeSettings = async (
+  homey: Homey,
+  raise = false,
+): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.api(
+      'GET',
+      `/settings/buildings/${buildingElement.value}/holiday_mode`,
+      async (error: Error | null, data: HolidayModeData): Promise<void> => {
+        enableButtons('holiday-mode')
+        if (error) {
+          if (raise) {
+            reject(new Error(error.message))
+          } else {
+            // @ts-expect-error: `homey` is partially typed
+            await homey.alert(error.message)
+            resolve()
+          }
+          return
+        }
+        updateBuildingMapping(data)
+        refreshBuildingHolidayModeSettings(data)
+        resolve()
+      },
     )
-  }
+  })
 
-  const updateBuildingMapping = (
-    data: FrostProtectionData | HolidayModeData,
-  ): void => {
-    buildingMapping[buildingElement.value] = {
-      ...buildingMapping[buildingElement.value],
-      ...data,
-    }
-  }
-
-  const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
-    const {
-      HMEnabled: enabled,
-      HMEndDate: endDate,
-      HMStartDate: startDate,
-    } = data
-    holidayModeEnabledElement.value = String(enabled)
-    holidayModeEndDateElement.value = enabled ? endDate ?? '' : ''
-    holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
-  }
-
-  const getBuildingHolidayModeSettings = async (raise = false): Promise<void> =>
-    new Promise<void>((resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.api(
-        'GET',
-        `/settings/buildings/${buildingElement.value}/holiday_mode`,
-        async (error: Error | null, data: HolidayModeData): Promise<void> => {
-          enableButtons('holiday-mode')
-          if (error) {
-            if (raise) {
-              reject(new Error(error.message))
-              return
-            }
+const getBuildingFrostProtectionSettings = async (
+  homey: Homey,
+  raise = false,
+): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.api(
+      'GET',
+      `/settings/buildings/${buildingElement.value}/frost_protection`,
+      async (error: Error | null, data: FrostProtectionData): Promise<void> => {
+        enableButtons('frost-protection')
+        if (error) {
+          if (raise) {
+            reject(new Error(error.message))
+          } else {
             // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             resolve()
-            return
           }
-          updateBuildingMapping(data)
-          refreshBuildingHolidayModeSettings(data)
-          resolve()
-        },
-      )
-    })
+          return
+        }
+        updateBuildingMapping(data)
+        refreshBuildingFrostProtectionSettings(data)
+        resolve()
+      },
+    )
+  })
 
-  const refreshBuildingFrostProtectionSettings = (
-    data: FrostProtectionData,
-  ): void => {
-    const {
-      FPEnabled: enabled,
-      FPMaxTemperature: max,
-      FPMinTemperature: min,
-    } = data
-    frostProtectionEnabledElement.value = String(enabled)
-    frostProtectionMaximumTemperatureElement.value = String(max)
-    frostProtectionMinimumTemperatureElement.value = String(min)
-  }
-
-  const getBuildingFrostProtectionSettings = async (
-    raise = false,
-  ): Promise<void> =>
-    new Promise<void>((resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.api(
-        'GET',
-        `/settings/buildings/${buildingElement.value}/frost_protection`,
-        async (
-          error: Error | null,
-          data: FrostProtectionData,
-        ): Promise<void> => {
-          enableButtons('frost-protection')
-          if (error) {
-            if (raise) {
-              reject(new Error(error.message))
-              return
-            }
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            resolve()
-            return
-          }
-          updateBuildingMapping(data)
-          refreshBuildingFrostProtectionSettings(data)
-          resolve()
-        },
-      )
-    })
-
-  const refreshBuildingSettings = (): void => {
-    const settings: BuildingData = buildingMapping[buildingElement.value]
-    refreshBuildingHolidayModeSettings(settings)
-    refreshBuildingFrostProtectionSettings(settings)
-  }
-
-  const getBuildings = async (): Promise<Record<string, BuildingData>> =>
-    new Promise<Record<string, BuildingData>>((resolve, reject) => {
-      // @ts-expect-error: `homey` is partially typed
-      homey.api(
-        'GET',
-        '/buildings',
-        async (error: Error | null, buildings: Building[]): Promise<void> => {
-          if (error) {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            reject(error)
-            return
-          }
-          buildingMapping = Object.fromEntries(
-            buildings.map((building: Building): [string, BuildingData] => {
-              const {
-                ID,
-                Name: name,
+const getBuildings = async (
+  homey: Homey,
+): Promise<Record<string, BuildingData>> =>
+  new Promise<Record<string, BuildingData>>((resolve, reject) => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.api(
+      'GET',
+      '/buildings',
+      async (error: Error | null, buildings: Building[]): Promise<void> => {
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        buildingMapping = Object.fromEntries(
+          buildings.map((building: Building): [string, BuildingData] => {
+            const {
+              ID,
+              Name: name,
+              FPEnabled: fpEnabled,
+              FPMaxTemperature: fpMax,
+              FPMinTemperature: fpMin,
+              HMEnabled: hmEnabled,
+              HMEndDate: hmEndDate,
+              HMStartDate: hmStartDate,
+            } = building
+            const optionElement: HTMLOptionElement =
+              document.createElement('option')
+            optionElement.value = String(ID)
+            optionElement.innerText = name
+            buildingElement.appendChild(optionElement)
+            return [
+              String(ID),
+              {
                 FPEnabled: fpEnabled,
                 FPMaxTemperature: fpMax,
                 FPMinTemperature: fpMin,
                 HMEnabled: hmEnabled,
                 HMEndDate: hmEndDate,
                 HMStartDate: hmStartDate,
-              } = building
-              const optionElement: HTMLOptionElement =
-                document.createElement('option')
-              optionElement.value = String(ID)
-              optionElement.innerText = name
-              buildingElement.appendChild(optionElement)
-              return [
-                String(ID),
-                {
-                  FPEnabled: fpEnabled,
-                  FPMaxTemperature: fpMax,
-                  FPMinTemperature: fpMin,
-                  HMEnabled: hmEnabled,
-                  HMEndDate: hmEndDate,
-                  HMStartDate: hmStartDate,
-                },
-              ]
-            }),
-          )
-          resolve(buildingMapping)
-        },
-      )
-    })
-
-  const updateDeviceSettings = (body: Settings, driverId?: string): void => {
-    if (typeof driverId === 'undefined') {
-      Object.entries(body).forEach(
-        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
-          Object.keys(deviceSettings).forEach((driver: string) => {
-            deviceSettings[driver][settingId] = [settingValue]
-          })
-          flatDeviceSettings[settingId] = [settingValue]
-        },
-      )
-    } else {
-      Object.entries(body).forEach(
-        ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
-          deviceSettings[driverId][settingId] = [settingValue]
-        },
-      )
-      flatDeviceSettings = flattenDeviceSettings()
-    }
-  }
-
-  const setDeviceSettings = (body: Settings, driverId?: string): void => {
-    let endPoint = '/settings/devices'
-    if (typeof driverId !== 'undefined') {
-      const queryString: string = new URLSearchParams({ driverId }).toString()
-      endPoint += `?${queryString}`
-    }
-    // @ts-expect-error: `homey` is partially typed
-    homey.api(
-      'PUT',
-      endPoint,
-      body,
-      async (error: Error | null): Promise<void> => {
-        if (error) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(error.message)
-          return
-        }
-        updateDeviceSettings(body, driverId)
-        enableButtons(`settings-${driverId ?? 'common'}`)
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(homey.__('settings.success'))
-      },
-    )
-  }
-
-  const addApplySettingsEventListener = (
-    elements: (HTMLInputElement | HTMLSelectElement)[],
-    driverId?: string,
-  ): void => {
-    const settings = `settings-${driverId ?? 'common'}`
-    const buttonElement: HTMLButtonElement = document.getElementById(
-      `apply-${settings}`,
-    ) as HTMLButtonElement
-    buttonElement.addEventListener('click', (): void => {
-      let body: Settings = {}
-      try {
-        body = buildSettingsBody(elements, driverId)
-      } catch (error: unknown) {
-        // @ts-expect-error: `homey` is partially typed
-        homey.alert(error instanceof Error ? error.message : String(error))
-        return
-      }
-      if (!Object.keys(body).length) {
-        // @ts-expect-error: `homey` is partially typed
-        homey.alert(homey.__('settings.devices.apply.nothing'))
-        return
-      }
-      // @ts-expect-error: `homey` is partially typed
-      homey.confirm(
-        homey.__('settings.devices.apply.confirm'),
-        null,
-        async (error: Error | null, ok: boolean): Promise<void> => {
-          if (error) {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            return
-          }
-          if (ok) {
-            disableButtons(settings)
-            setDeviceSettings(body, driverId)
-          }
-        },
-      )
-    })
-  }
-
-  const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-    const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
-      element.id.split('--')[0]
-    ] as ValueOf<Settings>[] | undefined
-
-    element.value =
-      values && new Set(values).size === 1 ? String(values[0]) : ''
-  }
-
-  const addRefreshSettingsCommonEventListener = (
-    elements: HTMLSelectElement[],
-  ): void => {
-    elements.forEach(updateCommonChildrenElement)
-  }
-
-  const updateCheckboxChildrenElement = (
-    element: HTMLInputElement,
-    driverId: string,
-  ): void => {
-    const values: boolean[] = deviceSettings[driverId][
-      element.id.split('--')[0]
-    ] as boolean[]
-
-    if (new Set(values).size === 1) {
-      ;[element.checked] = values
-    } else {
-      element.indeterminate = true
-      element.addEventListener('change', (): void => {
-        if (element.indeterminate) {
-          element.indeterminate = false
-        }
-      })
-    }
-  }
-
-  const addRefreshSettingsDriverEventListener = (
-    elements: HTMLInputElement[],
-    driverId: string,
-  ): void => {
-    elements.forEach((element: HTMLInputElement) => {
-      updateCheckboxChildrenElement(element, driverId)
-    })
-  }
-
-  const addRefreshSettingsEventListener = (
-    elements: (HTMLInputElement | HTMLSelectElement)[],
-    driverId?: string,
-  ): void => {
-    const settings = `settings-${driverId ?? 'common'}`
-    const buttonElement: HTMLButtonElement = document.getElementById(
-      `refresh-${settings}`,
-    ) as HTMLButtonElement
-    buttonElement.addEventListener('click', (): void => {
-      disableButtons(settings)
-      if (typeof driverId === 'undefined') {
-        addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
-      } else {
-        addRefreshSettingsDriverEventListener(
-          elements as HTMLInputElement[],
-          driverId,
+              },
+            ]
+          }),
         )
-      }
-      enableButtons(settings)
-    })
-  }
+        resolve(buildingMapping)
+      },
+    )
+  })
 
-  const addSettingsEventListeners = (
-    elements: (HTMLInputElement | HTMLSelectElement)[],
-    driverId?: string,
-  ): void => {
-    addApplySettingsEventListener(elements, driverId)
-    addRefreshSettingsEventListener(elements, driverId)
-  }
-
-  const generateCommonChildrenElements = (): void => {
-    driverSettingsCommon
-      .filter((setting: DriverSetting) =>
-        ['checkbox', 'dropdown'].includes(setting.type),
-      )
-      .forEach((setting: DriverSetting) => {
-        const divElement: HTMLDivElement = document.createElement('div')
-        divElement.className = 'homey-form-group'
-        const labelElement: HTMLLabelElement = document.createElement('label')
-        labelElement.className = 'homey-form-label'
-        labelElement.innerText = setting.title
-        const selectElement: HTMLSelectElement =
-          document.createElement('select')
-        selectElement.className = 'homey-form-select'
-        selectElement.id = `${setting.id}--setting`
-        labelElement.htmlFor = selectElement.id
-        ;[
-          { id: '' },
-          ...(setting.type === 'checkbox'
-            ? [{ id: 'false' }, { id: 'true' }]
-            : setting.values ?? []),
-        ].forEach(({ id, label }: { id: string; label?: string }) => {
-          const optionElement: HTMLOptionElement =
-            document.createElement('option')
-          optionElement.value = id
-          if (id) {
-            optionElement.innerText =
-              label ?? homey.__(`settings.boolean.${id}`)
-          }
-          selectElement.appendChild(optionElement)
+const updateDeviceSettings = (body: Settings, driverId?: string): void => {
+  if (typeof driverId === 'undefined') {
+    Object.entries(body).forEach(
+      ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
+        Object.keys(deviceSettings).forEach((driver: string) => {
+          deviceSettings[driver][settingId] = [settingValue]
         })
-        updateCommonChildrenElement(selectElement)
-        divElement.appendChild(labelElement)
-        divElement.appendChild(selectElement)
-        settingsCommonElement.appendChild(divElement)
-      })
-    addSettingsEventListeners(
-      Array.from(settingsCommonElement.querySelectorAll('select')),
+        flatDeviceSettings[settingId] = [settingValue]
+      },
     )
-  }
-
-  const generateCheckboxChildrenElements = (driverId: string): void => {
-    const settingsElement: HTMLDivElement | null = document.getElementById(
-      `settings-${driverId}`,
-    ) as HTMLDivElement | null
-    if (!settingsElement) {
-      return
-    }
-    const fieldSetElement: HTMLFieldSetElement =
-      document.createElement('fieldset')
-    fieldSetElement.className = 'homey-form-checkbox-set'
-    let previousGroupLabel: string | undefined = ''
-    driverSettings[driverId]
-      .filter((setting: DriverSetting) => setting.type === 'checkbox')
-      .forEach((setting: DriverSetting) => {
-        if (setting.groupLabel !== previousGroupLabel) {
-          previousGroupLabel = setting.groupLabel
-          const legendElement: HTMLLegendElement =
-            document.createElement('legend')
-          legendElement.className = 'homey-form-checkbox-set-title'
-          legendElement.innerText = setting.groupLabel ?? ''
-          fieldSetElement.appendChild(legendElement)
-        }
-        const labelElement: HTMLLabelElement = document.createElement('label')
-        labelElement.className = 'homey-form-checkbox'
-        const inputElement: HTMLInputElement = document.createElement('input')
-        inputElement.className = 'homey-form-checkbox-input'
-        inputElement.id = `${setting.id}--settings-${driverId}`
-        labelElement.htmlFor = inputElement.id
-        inputElement.type = 'checkbox'
-        updateCheckboxChildrenElement(inputElement, driverId)
-        const checkmarkSpanElement: HTMLSpanElement =
-          document.createElement('span')
-        checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
-        const textSpanElement: HTMLSpanElement = document.createElement('span')
-        textSpanElement.className = 'homey-form-checkbox-text'
-        textSpanElement.innerText = setting.title
-        labelElement.appendChild(inputElement)
-        labelElement.appendChild(checkmarkSpanElement)
-        labelElement.appendChild(textSpanElement)
-        fieldSetElement.appendChild(labelElement)
-      })
-    settingsElement.appendChild(fieldSetElement)
-    addSettingsEventListeners(
-      Array.from(fieldSetElement.querySelectorAll('input')),
-      driverId,
+  } else {
+    Object.entries(body).forEach(
+      ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
+        deviceSettings[driverId][settingId] = [settingValue]
+      },
     )
-    unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
+    getFlatDeviceSettings()
   }
+}
 
-  const generate = async (): Promise<void> => {
-    buildingMapping = await getBuildings()
-    if (!Object.keys(buildingMapping).length) {
-      seeElement.classList.add('is-disabled')
-      disableButtons('frost-protection')
-      disableButtons('holiday-mode')
-      disableButtons('settings-common')
+const setDeviceSettings = (
+  homey: Homey,
+  body: Settings,
+  driverId?: string,
+): void => {
+  let endPoint = '/settings/devices'
+  if (typeof driverId !== 'undefined') {
+    const queryString: string = new URLSearchParams({ driverId }).toString()
+    endPoint += `?${queryString}`
+  }
+  // @ts-expect-error: `homey` is partially typed
+  homey.api(
+    'PUT',
+    endPoint,
+    body,
+    async (error: Error | null): Promise<void> => {
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+        return
+      }
+      updateDeviceSettings(body, driverId)
+      enableButtons(`settings-${driverId ?? 'common'}`)
       // @ts-expect-error: `homey` is partially typed
-      await homey.alert(homey.__('settings.devices.none'))
+      await homey.alert(homey.__('settings.success'))
+    },
+  )
+}
+
+const addApplySettingsEventListener = (
+  homey: Homey,
+  elements: (HTMLInputElement | HTMLSelectElement)[],
+  driverId?: string,
+): void => {
+  const settings = `settings-${driverId ?? 'common'}`
+  const buttonElement: HTMLButtonElement = document.getElementById(
+    `apply-${settings}`,
+  ) as HTMLButtonElement
+  buttonElement.addEventListener('click', (): void => {
+    let body: Settings = {}
+    try {
+      body = buildSettingsBody(homey, elements, driverId)
+    } catch (error: unknown) {
+      // @ts-expect-error: `homey` is partially typed
+      homey.alert(error instanceof Error ? error.message : String(error))
       return
     }
-    refreshBuildingSettings()
-    generateErrorLog()
-  }
-
-  const needsAuthentication = (value = true): void => {
-    if (!loginElement.childElementCount) {
-      const credentialKeys: (keyof LoginCredentials)[] = [
-        'username',
-        'password',
-      ]
-      ;[usernameElement, passwordElement] = credentialKeys.map(
-        (credentialKey: keyof LoginCredentials): HTMLInputElement | null => {
-          const driverSetting: LoginDriverSetting | undefined =
-            driverSettingsAll.find(
-              (setting): setting is LoginDriverSetting =>
-                setting.id === credentialKey,
-            )
-          if (!driverSetting) {
-            return null
-          }
-          const { id } = driverSetting
-          const divElement: HTMLDivElement = document.createElement('div')
-          divElement.classList.add('homey-form-group')
-          const labelElement: HTMLLabelElement = document.createElement('label')
-          labelElement.classList.add('homey-form-label')
-          labelElement.innerText = driverSetting.title
-          const inputElement: HTMLInputElement = document.createElement('input')
-          inputElement.classList.add('homey-form-input')
-          inputElement.type = driverSetting.type
-          inputElement.placeholder = driverSetting.placeholder ?? ''
-          inputElement.value = homeySettings[id] ?? ''
-          inputElement.id = id
-          labelElement.htmlFor = inputElement.id
-          loginElement.appendChild(labelElement)
-          loginElement.appendChild(inputElement)
-          return inputElement
-        },
-      )
-    }
-    hide(authenticatedElement, value)
-    unhide(authenticatingElement, value)
-  }
-
-  const login = async (): Promise<void> => {
-    const username: string = usernameElement?.value ?? ''
-    const password: string = passwordElement?.value ?? ''
-    if (!username || !password) {
+    if (!Object.keys(body).length) {
       // @ts-expect-error: `homey` is partially typed
-      await homey.alert(homey.__('settings.authenticate.failure'))
+      homey.alert(homey.__('settings.devices.apply.nothing'))
       return
     }
-    const body: LoginCredentials = { password, username }
     // @ts-expect-error: `homey` is partially typed
-    homey.api(
-      'POST',
-      '/sessions',
-      body,
-      async (error: Error | null, loggedIn: boolean): Promise<void> => {
+    homey.confirm(
+      homey.__('settings.devices.apply.confirm'),
+      null,
+      async (error: Error | null, ok: boolean): Promise<void> => {
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
-        if (!loggedIn) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(homey.__('settings.authenticate.failure'))
-          return
+        if (ok) {
+          disableButtons(settings)
+          setDeviceSettings(homey, body, driverId)
         }
-        await generate()
-        needsAuthentication(false)
       },
     )
-  }
+  })
+}
 
-  const load = async (): Promise<void> => {
-    generateCommonChildrenElements()
-    if (typeof homeySettings.contextKey === 'undefined') {
-      needsAuthentication()
-      return
-    }
-    Object.keys(deviceSettings).forEach(generateCheckboxChildrenElements)
-    try {
-      await generate()
-    } catch (error: unknown) {
-      needsAuthentication()
-    }
+const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
+  const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
+    element.id.split('--')[0]
+  ] as ValueOf<Settings>[] | undefined
+
+  element.value = values && new Set(values).size === 1 ? String(values[0]) : ''
+}
+
+const addRefreshSettingsCommonEventListener = (
+  elements: HTMLSelectElement[],
+): void => {
+  elements.forEach(updateCommonChildrenElement)
+}
+
+const updateCheckboxChildrenElement = (
+  element: HTMLInputElement,
+  driverId: string,
+): void => {
+  const values: boolean[] = deviceSettings[driverId][
+    element.id.split('--')[0]
+  ] as boolean[]
+
+  if (new Set(values).size === 1) {
+    ;[element.checked] = values
+  } else {
+    element.indeterminate = true
+    element.addEventListener('change', (): void => {
+      if (element.indeterminate) {
+        element.indeterminate = false
+      }
+    })
   }
+}
+
+const addRefreshSettingsDriverEventListener = (
+  elements: HTMLInputElement[],
+  driverId: string,
+): void => {
+  elements.forEach((element: HTMLInputElement) => {
+    updateCheckboxChildrenElement(element, driverId)
+  })
+}
+
+const addRefreshSettingsEventListener = (
+  elements: (HTMLInputElement | HTMLSelectElement)[],
+  driverId?: string,
+): void => {
+  const settings = `settings-${driverId ?? 'common'}`
+  const buttonElement: HTMLButtonElement = document.getElementById(
+    `refresh-${settings}`,
+  ) as HTMLButtonElement
+  buttonElement.addEventListener('click', (): void => {
+    disableButtons(settings)
+    if (typeof driverId === 'undefined') {
+      addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
+    } else {
+      addRefreshSettingsDriverEventListener(
+        elements as HTMLInputElement[],
+        driverId,
+      )
+    }
+    enableButtons(settings)
+  })
+}
+
+const addSettingsEventListeners = (
+  homey: Homey,
+  elements: (HTMLInputElement | HTMLSelectElement)[],
+  driverId?: string,
+): void => {
+  addApplySettingsEventListener(homey, elements, driverId)
+  addRefreshSettingsEventListener(elements, driverId)
+}
+
+const createSelectElement = (
+  homey: Homey,
+  setting: DriverSetting,
+): HTMLSelectElement => {
+  const selectElement: HTMLSelectElement = document.createElement('select')
+  selectElement.classList.add('homey-form-select')
+  selectElement.id = `${setting.id}--setting`
+  ;[
+    { id: '' },
+    ...(setting.type === 'checkbox'
+      ? [{ id: 'false' }, { id: 'true' }]
+      : setting.values ?? []),
+  ].forEach(({ id, label }: { id: string; label?: string }) => {
+    const optionElement: HTMLOptionElement = document.createElement('option')
+    optionElement.value = id
+    if (id) {
+      optionElement.innerText = label ?? homey.__(`settings.boolean.${id}`)
+    }
+    selectElement.appendChild(optionElement)
+  })
+  updateCommonChildrenElement(selectElement)
+  return selectElement
+}
+
+const generateCommonChildrenElements = (homey: Homey): void => {
+  driverSettingsCommon
+    .filter((setting: DriverSetting) =>
+      ['checkbox', 'dropdown'].includes(setting.type),
+    )
+    .forEach((setting: DriverSetting) => {
+      const divElement: HTMLDivElement = createDivElement()
+      const selectElement: HTMLSelectElement = createSelectElement(
+        homey,
+        setting,
+      )
+      const labelElement: HTMLLabelElement = createLabelElement({
+        id: selectElement.id,
+        text: setting.title,
+      })
+      divElement.appendChild(labelElement)
+      divElement.appendChild(selectElement)
+      settingsCommonElement.appendChild(divElement)
+    })
+  addSettingsEventListeners(
+    homey,
+    Array.from(settingsCommonElement.querySelectorAll('select')),
+  )
+}
+
+const generateCheckboxChildrenElements = (
+  homey: Homey,
+  driverId: string,
+): void => {
+  const settingsElement: HTMLDivElement | null = document.getElementById(
+    `settings-${driverId}`,
+  ) as HTMLDivElement | null
+  if (!settingsElement) {
+    return
+  }
+  const fieldSetElement: HTMLFieldSetElement =
+    document.createElement('fieldset')
+  fieldSetElement.className = 'homey-form-checkbox-set'
+  let previousGroupLabel: string | undefined = ''
+  driverSettingsDrivers[driverId]
+    .filter((setting: DriverSetting) => setting.type === 'checkbox')
+    .forEach((setting: DriverSetting) => {
+      if (setting.groupLabel !== previousGroupLabel) {
+        previousGroupLabel = setting.groupLabel
+        const legendElement: HTMLLegendElement =
+          document.createElement('legend')
+        legendElement.className = 'homey-form-checkbox-set-title'
+        legendElement.innerText = setting.groupLabel ?? ''
+        fieldSetElement.appendChild(legendElement)
+      }
+      const labelElement: HTMLLabelElement = document.createElement('label')
+      labelElement.className = 'homey-form-checkbox'
+      const inputElement: HTMLInputElement = document.createElement('input')
+      inputElement.className = 'homey-form-checkbox-input'
+      inputElement.id = `${setting.id}--settings-${driverId}`
+      labelElement.htmlFor = inputElement.id
+      inputElement.type = 'checkbox'
+      updateCheckboxChildrenElement(inputElement, driverId)
+      const checkmarkSpanElement: HTMLSpanElement =
+        document.createElement('span')
+      checkmarkSpanElement.className = 'homey-form-checkbox-checkmark'
+      const textSpanElement: HTMLSpanElement = document.createElement('span')
+      textSpanElement.className = 'homey-form-checkbox-text'
+      textSpanElement.innerText = setting.title
+      labelElement.appendChild(inputElement)
+      labelElement.appendChild(checkmarkSpanElement)
+      labelElement.appendChild(textSpanElement)
+      fieldSetElement.appendChild(labelElement)
+    })
+  settingsElement.appendChild(fieldSetElement)
+  addSettingsEventListeners(
+    homey,
+    Array.from(fieldSetElement.querySelectorAll('input')),
+    driverId,
+  )
+  unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
+}
+
+const generate = async (homey: Homey): Promise<void> => {
+  buildingMapping = await getBuildings(homey)
+  if (!Object.keys(buildingMapping).length) {
+    seeElement.classList.add('is-disabled')
+    disableButtons('frost-protection')
+    disableButtons('holiday-mode')
+    disableButtons('settings-common')
+    // @ts-expect-error: `homey` is partially typed
+    await homey.alert(homey.__('settings.devices.none'))
+    return
+  }
+  refreshBuildingSettings()
+  generateErrorLog(homey)
+}
+
+const needsAuthentication = (value = true): void => {
+  if (!loginElement.childElementCount) {
+    updateCredentialElements()
+  }
+  hide(authenticatedElement, value)
+  unhide(authenticatingElement, value)
+}
+
+const login = async (homey: Homey): Promise<void> => {
+  const username: string = usernameElement?.value ?? ''
+  const password: string = passwordElement?.value ?? ''
+  if (!username || !password) {
+    // @ts-expect-error: `homey` is partially typed
+    await homey.alert(homey.__('settings.authenticate.failure'))
+    return
+  }
+  const body: LoginCredentials = { password, username }
+  // @ts-expect-error: `homey` is partially typed
+  homey.api(
+    'POST',
+    '/sessions',
+    body,
+    async (error: Error | null, loggedIn: boolean): Promise<void> => {
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+        return
+      }
+      if (!loggedIn) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(homey.__('settings.authenticate.failure'))
+        return
+      }
+      await generate(homey)
+      needsAuthentication(false)
+    },
+  )
+}
+
+const load = async (homey: Homey): Promise<void> => {
+  generateCommonChildrenElements(homey)
+  if (typeof homeySettings.contextKey === 'undefined') {
+    needsAuthentication()
+    return
+  }
+  Object.keys(deviceSettings).forEach((driverId: string) => {
+    generateCheckboxChildrenElements(homey, driverId)
+  })
+  try {
+    await generate(homey)
+  } catch (error: unknown) {
+    needsAuthentication()
+  }
+}
+
+// eslint-disable-next-line func-style
+async function onHomeyReady(homey: Homey): Promise<void> {
+  await homey.ready()
+  await setDocumentLanguage(homey)
+  await getHomeySettings(homey)
+  await getDeviceSettings(homey)
+  getFlatDeviceSettings()
+  await getDriverSettingsAll(homey)
+  getDriverSettings()
 
   authenticateElement.addEventListener('click', (): void => {
     authenticateElement.classList.add('is-disabled')
-    login()
+    login(homey)
       .catch(async (error: Error): Promise<void> => {
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
@@ -980,7 +1064,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   seeElement.addEventListener('click', (): void => {
     seeElement.classList.add('is-disabled')
-    generateErrorLog()
+    generateErrorLog(homey)
   })
 
   autoAdjustElement.addEventListener('click', (): void => {
@@ -1025,7 +1109,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   refreshHolidayModeElement.addEventListener('click', (): void => {
     disableButtons('holiday-mode')
-    getBuildingHolidayModeSettings().catch(
+    getBuildingHolidayModeSettings(homey).catch(
       async (error: Error): Promise<void> => {
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
@@ -1054,7 +1138,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       async (error: Error | null): Promise<void> => {
         enableButtons('holiday-mode')
         try {
-          await getBuildingHolidayModeSettings(true)
+          await getBuildingHolidayModeSettings(homey, true)
         } catch (err: unknown) {
           refreshBuildingHolidayModeSettings({
             HMEnabled: hmEnabled,
@@ -1096,7 +1180,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
 
   refreshFrostProtectionElement.addEventListener('click', (): void => {
     disableButtons('frost-protection')
-    getBuildingFrostProtectionSettings().catch(
+    getBuildingFrostProtectionSettings(homey).catch(
       async (error: Error): Promise<void> => {
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
@@ -1114,8 +1198,8 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     let max = 0
     let min = 0
     try {
-      max = int(frostProtectionMaximumTemperatureElement)
-      min = int(frostProtectionMinimumTemperatureElement)
+      max = int(homey, frostProtectionMaximumTemperatureElement)
+      min = int(homey, frostProtectionMinimumTemperatureElement)
     } catch (error: unknown) {
       refreshBuildingFrostProtectionSettings({
         FPEnabled: fpEnabled,
@@ -1148,7 +1232,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       async (error: Error | null): Promise<void> => {
         enableButtons('frost-protection')
         try {
-          await getBuildingFrostProtectionSettings(true)
+          await getBuildingFrostProtectionSettings(homey, true)
         } catch (err: unknown) {
           refreshBuildingFrostProtectionSettings({
             FPEnabled: fpEnabled,
@@ -1170,5 +1254,5 @@ async function onHomeyReady(homey: Homey): Promise<void> {
     )
   })
 
-  await load()
+  await load(homey)
 }

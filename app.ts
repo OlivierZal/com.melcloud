@@ -2,6 +2,7 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey'
 import type {
   Building,
+  BuildingDevices,
   ErrorLogData,
   FailureData,
   FrostProtectionData,
@@ -28,19 +29,14 @@ import withAPI, { getErrorMessage } from './mixins/withAPI'
 import axios from 'axios'
 import withTimers from './mixins/withTimers'
 
-interface BuildingData {
-  deviceIds: Record<number, string>
-  deviceList: ListDevice<MELCloudDriver>[]
-}
-
 const MAX_INT32 = 2147483647
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
 const flattenDevices = (
-  acc: BuildingData,
+  acc: BuildingDevices,
   devices: readonly ListDevice<MELCloudDriver>[],
-): BuildingData => {
+): BuildingDevices => {
   const newDeviceIds = devices.reduce<Record<number, string>>(
     (ids, device: ListDevice<MELCloudDriver>) => {
       ids[device.DeviceID] = device.DeviceName
@@ -183,17 +179,18 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           acc,
           { Structure: { Devices: devices, Areas: areas, Floors: floors } },
         ) => {
-          flattenDevices(acc, devices)
+          let newAcc = { ...acc }
+          newAcc = flattenDevices(newAcc, devices)
           areas.forEach(({ Devices: areaDevices }) => {
-            flattenDevices(acc, areaDevices)
+            newAcc = flattenDevices(newAcc, areaDevices)
           })
           floors.forEach((floor) => {
-            flattenDevices(acc, floor.Devices)
+            newAcc = flattenDevices(newAcc, floor.Devices)
             floor.Areas.forEach(({ Devices: areaDevices }) => {
-              flattenDevices(acc, areaDevices)
+              newAcc = flattenDevices(newAcc, areaDevices)
             })
           })
-          return acc
+          return newAcc
         },
         { deviceIds: {}, deviceList: [] },
       )
@@ -285,8 +282,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     const utcEndDate: DateTime | null = enabled
       ? DateTime.fromISO(endDate).toUTC()
       : null
-    const { data } = await this.apiUpdateHolidayMode(
-{
+    const { data } = await this.apiUpdateHolidayMode({
       Enabled: enabled,
       EndDate: utcEndDate
         ? {
@@ -309,8 +305,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
             Year: utcStartDate.year,
           }
         : null,
-    }
-    )
+    })
     handleResponse(data)
   }
 
