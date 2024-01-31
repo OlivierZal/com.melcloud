@@ -269,7 +269,7 @@ export = {
     homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
-    if (Object.keys(body).length) {
+    if (!Object.keys(body).length) {
       return
     }
     try {
