@@ -40,7 +40,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
       this.deviceType
     ] as keyof typeof HeatPumpType
     this.setProducedAndConsumedTagMappings()
-    this.registerFlowListeners()
+    this.registerRunListeners()
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -111,5 +111,5 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
 
   public abstract getRequiredCapabilities(store: Store): string[]
 
-  protected abstract registerFlowListeners(): void
+  protected abstract registerRunListeners(): void
 }

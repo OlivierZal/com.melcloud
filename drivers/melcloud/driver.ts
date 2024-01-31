@@ -46,7 +46,7 @@ export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
     ]
   }
 
-  protected registerFlowListeners(): void {
+  protected registerRunListeners(): void {
     const getCapabilityArg = <K extends keyof SetCapabilities<AtaDriver>>(
       args: FlowArgs<AtaDriver>,
       capability: K,

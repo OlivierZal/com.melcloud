@@ -92,74 +92,83 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
     ]
   }
 
-  protected registerFlowListeners(): void {
+  protected registerRunListeners(): void {
     this.#flowCapabilities.forEach(
       (capability: keyof Capabilities<AtwDriver>) => {
         switch (true) {
-          case capability.startsWith('operation_mode_state'):
-            this.homey.flow
-              .getConditionCard(`${capability}_condition`)
-              .registerRunListener(
-                (args: FlowArgs<AtwDriver>): boolean =>
-                  args.operation_mode_state ===
-                  args.device.getCapabilityValue(capability),
-              )
-            break
           case capability.startsWith('alarm_generic'):
           case capability.startsWith('onoff.'):
-            this.homey.flow
-              .getConditionCard(`${capability}_condition`)
-              .registerRunListener(
-                (args: FlowArgs<AtwDriver>): boolean =>
-                  args.device.getCapabilityValue(capability) as boolean,
-              )
-            if (capability.startsWith('onoff.')) {
-              this.homey.flow
-                .getActionCard(`${capability}_action`)
-                .registerRunListener(
-                  async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                    await args.device.onCapability(
-                      capability as keyof SetCapabilities<AtwDriver>,
-                      args.onoff,
-                    )
-                  },
-                )
-            }
+            this.registerBooleanRunListener(capability)
             break
-          case capability.startsWith('operation_mode_zone'):
-            this.homey.flow
-              .getConditionCard(`${capability}_condition`)
-              .registerRunListener(
-                (args: FlowArgs<AtwDriver>): boolean =>
-                  args.operation_mode_zone ===
-                  args.device.getCapabilityValue(capability),
-              )
-            this.homey.flow
-              .getActionCard(`${capability}_action`)
-              .registerRunListener(
-                async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                  await args.device.onCapability(
-                    capability as keyof SetCapabilities<AtwDriver>,
-                    args.operation_mode_zone,
-                  )
-                },
-              )
+          case capability.startsWith('operation_mode'):
+            this.registerOperationModeRunListener(capability)
             break
           case capability.startsWith('target_temperature.'):
-            this.homey.flow
-              .getActionCard(`${capability}_action`)
-              .registerRunListener(
-                async (args: FlowArgs<AtwDriver>): Promise<void> => {
-                  await args.device.onCapability(
-                    capability as keyof SetCapabilities<AtwDriver>,
-                    args.target_temperature,
-                  )
-                },
-              )
+            this.registerTargetTemperatureRunListener(capability)
             break
           default:
         }
       },
     )
+  }
+
+  private registerBooleanRunListener(
+    capability: keyof Capabilities<AtwDriver>,
+  ): void {
+    this.homey.flow
+      .getConditionCard(`${capability}_condition`)
+      .registerRunListener(
+        (args: FlowArgs<AtwDriver>): boolean =>
+          args.device.getCapabilityValue(capability) as boolean,
+      )
+    if (capability.startsWith('onoff.')) {
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(
+          async (args: FlowArgs<AtwDriver>): Promise<void> => {
+            await args.device.onCapability(
+              capability as keyof SetCapabilities<AtwDriver>,
+              args.onoff,
+            )
+          },
+        )
+    }
+  }
+
+  private registerOperationModeRunListener(
+    capability: keyof Capabilities<AtwDriver>,
+  ): void {
+    this.homey.flow
+      .getConditionCard(`${capability}_condition`)
+      .registerRunListener(
+        (args: FlowArgs<AtwDriver>): boolean =>
+          args[capability as 'operation_mode_state' | 'operation_mode_zone'] ===
+          args.device.getCapabilityValue(capability),
+      )
+    if (capability.startsWith('operation_mode_zone')) {
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(
+          async (args: FlowArgs<AtwDriver>): Promise<void> => {
+            await args.device.onCapability(
+              capability as keyof SetCapabilities<AtwDriver>,
+              args.operation_mode_zone,
+            )
+          },
+        )
+    }
+  }
+
+  private registerTargetTemperatureRunListener(
+    capability: keyof Capabilities<AtwDriver>,
+  ): void {
+    this.homey.flow
+      .getActionCard(`${capability}_action`)
+      .registerRunListener(async (args: FlowArgs<AtwDriver>): Promise<void> => {
+        await args.device.onCapability(
+          capability as keyof SetCapabilities<AtwDriver>,
+          args.target_temperature,
+        )
+      })
   }
 }

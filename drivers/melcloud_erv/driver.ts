@@ -51,7 +51,7 @@ export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
     ]
   }
 
-  protected registerFlowListeners(): void {
+  protected registerRunListeners(): void {
     const getCapabilityArg = <K extends keyof SetCapabilities<ErvDriver>>(
       args: FlowArgs<ErvDriver>,
       capability: K,
