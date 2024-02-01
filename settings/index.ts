@@ -83,14 +83,14 @@ const settingsCommonElement: HTMLDivElement = document.getElementById(
 const sinceElement: HTMLInputElement = document.getElementById(
   'since',
 ) as HTMLInputElement
-const frostProtectionMinimumTemperatureElement: HTMLInputElement =
+const frostProtectionMinTemperatureElement: HTMLInputElement =
   document.getElementById('min') as HTMLInputElement
-frostProtectionMinimumTemperatureElement.min = String(minMinTemperature)
-frostProtectionMinimumTemperatureElement.max = String(maxMinTemperature)
-const frostProtectionMaximumTemperatureElement: HTMLInputElement =
+frostProtectionMinTemperatureElement.min = String(minMinTemperature)
+frostProtectionMinTemperatureElement.max = String(maxMinTemperature)
+const frostProtectionMaxTemperatureElement: HTMLInputElement =
   document.getElementById('max') as HTMLInputElement
-frostProtectionMaximumTemperatureElement.min = String(minMaxTemperature)
-frostProtectionMaximumTemperatureElement.max = String(maxMaxTemperature)
+frostProtectionMaxTemperatureElement.min = String(minMaxTemperature)
+frostProtectionMaxTemperatureElement.max = String(maxMaxTemperature)
 const holidayModeStartDateElement: HTMLInputElement = document.getElementById(
   'start-date',
 ) as HTMLInputElement
@@ -586,8 +586,8 @@ const refreshBuildingFrostProtectionSettings = (
     FPMinTemperature: min,
   } = data
   frostProtectionEnabledElement.value = String(enabled)
-  frostProtectionMaximumTemperatureElement.value = String(max)
-  frostProtectionMinimumTemperatureElement.value = String(min)
+  frostProtectionMaxTemperatureElement.value = String(max)
+  frostProtectionMinTemperatureElement.value = String(min)
 }
 
 const refreshBuildingSettings = (): void => {
@@ -1045,68 +1045,7 @@ const login = async (homey: Homey): Promise<void> => {
   )
 }
 
-const load = async (homey: Homey): Promise<void> => {
-  generateCommonChildrenElements(homey)
-  if (typeof homeySettings.contextKey === 'undefined') {
-    needsAuthentication()
-    return
-  }
-  Object.keys(deviceSettings).forEach((driverId: string) => {
-    generateCheckboxChildrenElements(homey, driverId)
-  })
-  try {
-    await generate(homey)
-  } catch (error: unknown) {
-    needsAuthentication()
-  }
-}
-
-// eslint-disable-next-line func-style
-async function onHomeyReady(homey: Homey): Promise<void> {
-  await homey.ready()
-  await setDocumentLanguage(homey)
-  await getHomeySettings(homey)
-  await getDeviceSettings(homey)
-  getFlatDeviceSettings()
-  await getDriverSettingsAll(homey)
-  getDriverSettings()
-
-  authenticateElement.addEventListener('click', (): void => {
-    authenticateElement.classList.add('is-disabled')
-    login(homey)
-      .catch(async (error: Error): Promise<void> => {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(error.message)
-      })
-      .finally((): void => {
-        authenticateElement.classList.remove('is-disabled')
-      })
-  })
-
-  sinceElement.addEventListener('change', (): void => {
-    if (
-      to &&
-      sinceElement.value &&
-      Date.parse(sinceElement.value) > Date.parse(to)
-    ) {
-      sinceElement.value = to
-      // @ts-expect-error: `homey` is partially typed
-      homey.alert(homey.__('settings.error_log.error', { fromDateHuman }))
-    }
-  })
-
-  seeElement.addEventListener('click', (): void => {
-    seeElement.classList.add('is-disabled')
-    generateErrorLog(homey)
-  })
-
-  autoAdjustElement.addEventListener('click', (): void => {
-    // @ts-expect-error: `homey` is partially typed
-    homey.openURL('https://homey.app/a/com.mecloud.extension')
-  })
-
-  buildingElement.addEventListener('change', refreshBuildingSettings)
-
+const addHolidayModeEventListeners = (homey: Homey): void => {
   holidayModeEnabledElement.addEventListener('change', (): void => {
     if (holidayModeEnabledElement.value === 'false') {
       holidayModeStartDateElement.value = ''
@@ -1149,7 +1088,9 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       },
     )
   })
+}
 
+const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', (): void => {
     disableButtons('holiday-mode')
     const {
@@ -1192,24 +1133,20 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       },
     )
   })
+}
 
-  frostProtectionMinimumTemperatureElement.addEventListener(
-    'change',
-    (): void => {
-      if (frostProtectionEnabledElement.value === 'false') {
-        frostProtectionEnabledElement.value = 'true'
-      }
-    },
-  )
+const addFrostProtectionEventListeners = (homey: Homey): void => {
+  frostProtectionMinTemperatureElement.addEventListener('change', (): void => {
+    if (frostProtectionEnabledElement.value === 'false') {
+      frostProtectionEnabledElement.value = 'true'
+    }
+  })
 
-  frostProtectionMaximumTemperatureElement.addEventListener(
-    'change',
-    (): void => {
-      if (frostProtectionEnabledElement.value === 'false') {
-        frostProtectionEnabledElement.value = 'true'
-      }
-    },
-  )
+  frostProtectionMaxTemperatureElement.addEventListener('change', (): void => {
+    if (frostProtectionEnabledElement.value === 'false') {
+      frostProtectionEnabledElement.value = 'true'
+    }
+  })
 
   refreshFrostProtectionElement.addEventListener('click', (): void => {
     disableButtons('frost-protection')
@@ -1220,72 +1157,148 @@ async function onHomeyReady(homey: Homey): Promise<void> {
       },
     )
   })
+}
 
+const updateFrostProtectionData = (
+  homey: Homey,
+  body: FrostProtectionSettings,
+  data: FrostProtectionData,
+): void => {
+  // @ts-expect-error: `homey` is partially typed
+  homey.api(
+    'PUT',
+    `/settings/buildings/${buildingElement.value}/frost_protection`,
+    body,
+    async (error: Error | null): Promise<void> => {
+      enableButtons('frost-protection')
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+        return
+      }
+      try {
+        await getBuildingFrostProtectionSettings(homey, true)
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(homey.__('settings.success'))
+      } catch (err: unknown) {
+        refreshBuildingFrostProtectionSettings(data)
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(err.message)
+      }
+    },
+  )
+}
+
+const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
+  let [min, max]: [number, number] = [
+    int(homey, frostProtectionMinTemperatureElement),
+    int(homey, frostProtectionMaxTemperatureElement),
+  ]
+  if (min > max) {
+    ;[min, max] = [max, min]
+  }
+  if (max - min < FP_MIN_MAX_GAP) {
+    max = min + FP_MIN_MAX_GAP
+  }
+  if (frostProtectionMinTemperatureElement.value !== String(min)) {
+    frostProtectionMinTemperatureElement.value = String(min)
+    frostProtectionMaxTemperatureElement.value = String(max)
+  }
+  return [min, max]
+}
+
+const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', (): void => {
     disableButtons('frost-protection')
-    const {
-      FPEnabled: fpEnabled,
-      FPMaxTemperature: fpMax,
-      FPMinTemperature: fpMin,
-    } = buildingMapping[buildingElement.value]
-    let max = 0
-    let min = 0
+    const fpData: FrostProtectionData = buildingMapping[buildingElement.value]
     try {
-      max = int(homey, frostProtectionMaximumTemperatureElement)
-      min = int(homey, frostProtectionMinimumTemperatureElement)
+      const [min, max]: [number, number] = fixAndGetFpMinMax(homey)
+      updateFrostProtectionData(
+        homey,
+        {
+          Enabled: frostProtectionEnabledElement.value === 'true',
+          MaximumTemperature: max,
+          MinimumTemperature: min,
+        },
+        fpData,
+      )
     } catch (error: unknown) {
-      refreshBuildingFrostProtectionSettings({
-        FPEnabled: fpEnabled,
-        FPMaxTemperature: fpMax,
-        FPMinTemperature: fpMin,
-      })
+      refreshBuildingFrostProtectionSettings(fpData)
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
       homey.alert(error instanceof Error ? error.message : String(error))
-      return
     }
-    if (min > max) {
-      ;[min, max] = [max, min]
-    }
-    if (max - min < FP_MIN_MAX_GAP) {
-      max = min + FP_MIN_MAX_GAP
-    }
-    frostProtectionMaximumTemperatureElement.value = String(max)
-    frostProtectionMinimumTemperatureElement.value = String(min)
-    const body: FrostProtectionSettings = {
-      Enabled: frostProtectionEnabledElement.value === 'true',
-      MaximumTemperature: max,
-      MinimumTemperature: min,
-    }
-    // @ts-expect-error: `homey` is partially typed
-    homey.api(
-      'PUT',
-      `/settings/buildings/${buildingElement.value}/frost_protection`,
-      body,
-      async (error: Error | null): Promise<void> => {
-        enableButtons('frost-protection')
-        try {
-          await getBuildingFrostProtectionSettings(homey, true)
-        } catch (err: unknown) {
-          refreshBuildingFrostProtectionSettings({
-            FPEnabled: fpEnabled,
-            FPMaxTemperature: fpMax,
-            FPMinTemperature: fpMin,
-          })
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(err.message)
-          return
-        }
-        if (error) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(error.message)
-        } else {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(homey.__('settings.success'))
-        }
-      },
-    )
+  })
+}
+
+const addEventListeners = (homey: Homey): void => {
+  authenticateElement.addEventListener('click', (): void => {
+    authenticateElement.classList.add('is-disabled')
+    login(homey)
+      .catch(async (error: Error): Promise<void> => {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+      })
+      .finally((): void => {
+        authenticateElement.classList.remove('is-disabled')
+      })
   })
 
+  sinceElement.addEventListener('change', (): void => {
+    if (
+      to &&
+      sinceElement.value &&
+      Date.parse(sinceElement.value) > Date.parse(to)
+    ) {
+      sinceElement.value = to
+      // @ts-expect-error: `homey` is partially typed
+      homey.alert(homey.__('settings.error_log.error', { fromDateHuman }))
+    }
+  })
+
+  seeElement.addEventListener('click', (): void => {
+    seeElement.classList.add('is-disabled')
+    generateErrorLog(homey)
+  })
+
+  autoAdjustElement.addEventListener('click', (): void => {
+    // @ts-expect-error: `homey` is partially typed
+    homey.openURL('https://homey.app/a/com.mecloud.extension')
+  })
+
+  buildingElement.addEventListener('change', refreshBuildingSettings)
+
+  addHolidayModeEventListeners(homey)
+  addUpdateHolidayModeEventListener(homey)
+  addFrostProtectionEventListeners(homey)
+  addUpdateFrostProtectionEventListener(homey)
+}
+
+const load = async (homey: Homey): Promise<void> => {
+  addEventListeners(homey)
+  generateCommonChildrenElements(homey)
+  if (typeof homeySettings.contextKey !== 'undefined') {
+    Object.keys(deviceSettings).forEach((driverId: string) => {
+      generateCheckboxChildrenElements(homey, driverId)
+    })
+    try {
+      await generate(homey)
+      return
+    } catch (error: unknown) {
+      // Pass
+    }
+  }
+  needsAuthentication()
+}
+
+// eslint-disable-next-line func-style
+async function onHomeyReady(homey: Homey): Promise<void> {
+  await homey.ready()
+  await setDocumentLanguage(homey)
+  await getHomeySettings(homey)
+  await getDeviceSettings(homey)
+  getFlatDeviceSettings()
+  await getDriverSettingsAll(homey)
+  getDriverSettings()
   await load(homey)
 }
