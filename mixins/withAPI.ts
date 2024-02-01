@@ -126,9 +126,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       )
     }
 
-    public async apiGetFrostProtection(id: number): Promise<{
-      data: FrostProtectionData
-    }> {
+    public async apiGetFrostProtection(
+      id: number,
+    ): Promise<{ data: FrostProtectionData }> {
       return this.api.get<FrostProtectionData>(
         `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${id}`,
       )
@@ -143,9 +143,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       )
     }
 
-    public async apiGetHolidayMode(id: number): Promise<{
-      data: HolidayModeData
-    }> {
+    public async apiGetHolidayMode(
+      id: number,
+    ): Promise<{ data: HolidayModeData }> {
       return this.api.get<HolidayModeData>(
         `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${id}`,
       )
