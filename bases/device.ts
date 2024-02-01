@@ -107,7 +107,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     true: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
   } = { false: [], true: [] }
 
-  #deviceCount = 1
+  #linkedDeviceCount = 1
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
@@ -522,10 +522,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     if (!data) {
       return
     }
-    this.#deviceCount =
-      'UsageDisclaimerPercentages' in data
-        ? data.UsageDisclaimerPercentages.split(',').length
-        : 1
+    if ('UsageDisclaimerPercentages' in data) {
+      this.#linkedDeviceCount =
+        data.UsageDisclaimerPercentages.split(',').length
+    }
     await Promise.all(
       this.#reportCapabilityEntries[String(total) as BooleanString].map(
         async <K extends keyof ReportCapabilities<T>>([capability, tags]: [
@@ -581,7 +581,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         (acc, tag: keyof ReportData<T>) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
         0,
-      ) / this.#deviceCount
+      ) / this.#linkedDeviceCount
     )
   }
 
@@ -593,7 +593,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
         0,
-      ) / this.#deviceCount
+      ) / this.#linkedDeviceCount
     )
   }
 
