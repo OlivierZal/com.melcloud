@@ -369,6 +369,7 @@ interface ListDeviceDataAta
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     >,
     ListDeviceDataCommon {
+  readonly EffectiveFlags: 0
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
@@ -399,6 +400,7 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly TankWaterTemperature: number
 }
 interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
+  readonly EffectiveFlags: 0
   readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -435,6 +437,7 @@ interface GetDeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number
 }
 interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
+  readonly EffectiveFlags: 0
   readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean

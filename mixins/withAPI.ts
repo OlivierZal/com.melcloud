@@ -34,6 +34,10 @@ type APIClass = new (...args: any[]) => {
   readonly apiError: (
     postData: ErrorLogPostData,
   ) => Promise<{ data: ErrorLogData[] | FailureData }>
+  readonly apiGet: <D extends MELCloudDriver>(
+    id: string,
+    buildingId: string,
+  ) => Promise<{ data: GetDeviceData<D> & { readonly EffectiveFlags: 0 } }>
   readonly apiGetFrostProtection: (
     id: number,
   ) => Promise<{ data: FrostProtectionData }>
@@ -111,6 +115,16 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       )
     }
 
+    public async apiGet<D extends MELCloudDriver>(
+      id: string,
+      buildingId: string,
+    ): Promise<{ data: GetDeviceData<D> & { readonly EffectiveFlags: 0 } }> {
+      return this.api.get<GetDeviceData<D> & { readonly EffectiveFlags: 0 }>(
+        '/Device/Get',
+        { params: { buildingId, id } },
+      )
+    }
+
     public async apiReport<D extends MELCloudDriver>(
       postData: ReportPostData,
     ): Promise<{ data: ReportData<D> }> {
@@ -129,9 +143,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public async apiGetFrostProtection(
       id: number,
     ): Promise<{ data: FrostProtectionData }> {
-      return this.api.get<FrostProtectionData>(
-        `/FrostProtection/GetSettings?tableName=DeviceLocation&id=${id}`,
-      )
+      return this.api.get<FrostProtectionData>('/FrostProtection/GetSettings', {
+        params: { id, tableName: 'DeviceLocation' },
+      })
     }
 
     public async apiUpdateFrostProtection(
@@ -146,9 +160,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public async apiGetHolidayMode(
       id: number,
     ): Promise<{ data: HolidayModeData }> {
-      return this.api.get<HolidayModeData>(
-        `/HolidayMode/GetSettings?tableName=DeviceLocation&id=${id}`,
-      )
+      return this.api.get<HolidayModeData>('/HolidayMode/GetSettings', {
+        params: { id, tableName: 'DeviceLocation' },
+      })
     }
 
     public async apiUpdateHolidayMode(
