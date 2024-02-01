@@ -336,15 +336,14 @@ const createLabelElement = (
   element: HTMLInputElement | HTMLSelectElement,
   { text }: { text: string },
 ): HTMLLabelElement => {
-  const className: string =
-    element.type === 'checkbox' ? 'homey-form-checkbox' : 'homey-form-label'
+  const isCheckbox: boolean = element.type === 'checkbox'
   const labelElement: HTMLLabelElement = document.createElement('label')
-  labelElement.classList.add(className)
+  labelElement.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
   labelElement.htmlFor = element.id
-  if (className === 'homey-form-label') {
-    labelElement.innerText = text
-  } else {
+  if (isCheckbox) {
     addTextToCheckbox(labelElement, element as HTMLInputElement, text)
+  } else {
+    labelElement.innerText = text
   }
   return labelElement
 }
