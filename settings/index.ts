@@ -338,7 +338,9 @@ const createLabelElement = (
 ): HTMLLabelElement => {
   const isCheckbox: boolean = element.type === 'checkbox'
   const labelElement: HTMLLabelElement = document.createElement('label')
-  labelElement.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
+  labelElement.classList.add(
+    isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
+  )
   labelElement.htmlFor = element.id
   if (isCheckbox) {
     addTextToCheckbox(labelElement, element as HTMLInputElement, text)
