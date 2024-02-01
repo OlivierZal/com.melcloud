@@ -33,10 +33,8 @@ let flatDeviceSettings: DeviceSetting = {}
 let driverSettingsAll: DriverSetting[] = []
 let driverSettingsCommon: DriverSetting[] = []
 let driverSettingsDrivers: Record<string, DriverSetting[]> = {}
-let [usernameElement, passwordElement]: (HTMLInputElement | null)[] = [
-  null,
-  null,
-]
+let usernameElement: HTMLInputElement | null = null
+let passwordElement: HTMLInputElement | null = null
 
 const minMinTemperature = 4
 const maxMinTemperature = 14
@@ -375,10 +373,12 @@ const updateCredentialElement = (
   return null
 }
 
+const credentialKeys: (keyof LoginCredentials)[] = ['username', 'password']
+
 const updateCredentialElements = (): void => {
-  ;[usernameElement, passwordElement] = (
-    ['username', 'password'] as (keyof LoginCredentials)[]
-  ).map(updateCredentialElement)
+  ;[usernameElement, passwordElement] = credentialKeys.map(
+    updateCredentialElement,
+  )
 }
 
 const int = (
