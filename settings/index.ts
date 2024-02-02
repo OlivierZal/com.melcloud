@@ -1093,11 +1093,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', (): void => {
     disableButtons('holiday-mode')
-    const {
-      HMEnabled: hmEnabled,
-      HMEndDate: hmEndDate,
-      HMStartDate: hmStartDate,
-    } = buildingMapping[buildingElement.value]
+    const data: HolidayModeData = buildingMapping[buildingElement.value]
     const enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
       Enabled: enabled,
@@ -1111,25 +1107,20 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       body,
       async (error: Error | null): Promise<void> => {
         enableButtons('holiday-mode')
-        try {
-          await getBuildingHolidayModeSettings(homey, true)
-        } catch (err: unknown) {
-          refreshBuildingHolidayModeSettings({
-            HMEnabled: hmEnabled,
-            HMEndDate: hmEndDate,
-            HMStartDate: hmStartDate,
-          })
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(err.message)
-          return
-        }
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(homey.__('settings.success'))
+        try {
+          await getBuildingHolidayModeSettings(homey, true)
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(homey.__('settings.success'))
+        } catch (err: unknown) {
+          refreshBuildingHolidayModeSettings(data)
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(err.message)
+        }
       },
     )
   })
@@ -1210,7 +1201,7 @@ const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', (): void => {
     disableButtons('frost-protection')
-    const fpData: FrostProtectionData = buildingMapping[buildingElement.value]
+    const data: FrostProtectionData = buildingMapping[buildingElement.value]
     try {
       const [min, max]: [number, number] = fixAndGetFpMinMax(homey)
       updateFrostProtectionData(
@@ -1220,10 +1211,10 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
           MaximumTemperature: max,
           MinimumTemperature: min,
         },
-        fpData,
+        data,
       )
     } catch (error: unknown) {
-      refreshBuildingFrostProtectionSettings(fpData)
+      refreshBuildingFrostProtectionSettings(data)
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
       homey.alert(error instanceof Error ? error.message : String(error))
