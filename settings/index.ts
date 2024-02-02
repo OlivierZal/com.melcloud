@@ -1107,19 +1107,20 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       body,
       async (error: Error | null): Promise<void> => {
         enableButtons('holiday-mode')
-        if (error) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(error.message)
-          return
-        }
         try {
           await getBuildingHolidayModeSettings(homey, true)
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(homey.__('settings.success'))
         } catch (err: unknown) {
           refreshBuildingHolidayModeSettings(data)
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
+          return
+        }
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+        } else {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(homey.__('settings.success'))
         }
       },
     )
@@ -1162,19 +1163,20 @@ const updateFrostProtectionData = (
     body,
     async (error: Error | null): Promise<void> => {
       enableButtons('frost-protection')
-      if (error) {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(error.message)
-        return
-      }
       try {
         await getBuildingFrostProtectionSettings(homey, true)
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(homey.__('settings.success'))
       } catch (err: unknown) {
         refreshBuildingFrostProtectionSettings(data)
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(err.message)
+        return
+      }
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+      } else {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(homey.__('settings.success'))
       }
     },
   )
