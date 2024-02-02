@@ -18,6 +18,7 @@ import type {
   ManifestDriverSettingData,
   PairSetting,
   Settings,
+  TypedString,
   ValueOf,
 } from './types'
 import { DateTime } from 'luxon'
@@ -260,7 +261,7 @@ export = {
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).login(body, true)
   },
-  async setDeviceSettings({
+  async setDeviceSettings<K extends keyof Settings>({
     homey,
     body,
     query,
@@ -274,18 +275,19 @@ export = {
         (homey.app as MELCloudApp)
           .getDevices({ driverId: query?.driverId })
           .map(async (device: MELCloudDevice): Promise<void> => {
-            const deviceChangedKeys: string[] = Object.keys(body).filter(
-              (changedKey: string) =>
-                body[changedKey] !== device.getSetting(changedKey),
+            const deviceChangedKeys: TypedString<K>[] = (
+              Object.keys(body) as K[]
+            ).filter(
+              (changedKey: K): changedKey is TypedString<K> =>
+                body[changedKey] !==
+                device.getSetting(changedKey as TypedString<K>),
             )
             if (deviceChangedKeys.length) {
               const deviceSettings: Settings = Object.fromEntries(
-                deviceChangedKeys.map(
-                  (key: string): [string, ValueOf<Settings>] => [
-                    key,
-                    body[key],
-                  ],
-                ),
+                deviceChangedKeys.map((key: K): [K, Settings[K]] => [
+                  key,
+                  body[key],
+                ]),
               )
               try {
                 await device.setSettings(deviceSettings)
