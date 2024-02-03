@@ -250,11 +250,10 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     buildingId: number,
     settings: FrostProtectionSettings,
   ): Promise<void> {
-    const { data } = await this.apiUpdateFrostProtection({
+    handleResponse((await this.apiUpdateFrostProtection({
       ...settings,
       BuildingIds: [buildingId],
-    })
-    handleResponse(data)
+    })).data)
   }
 
   public async getHolidayModeSettings(
@@ -266,13 +265,12 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   public async updateHolidayModeSettings(
     buildingId: number,
-    settings: HolidayModeSettings,
-  ): Promise<void> {
-    const {
+    {
       Enabled: enabled,
       StartDate: startDate,
       EndDate: endDate,
-    } = settings
+    }: HolidayModeSettings,
+  ): Promise<void> {
     if (enabled && (!startDate || !endDate)) {
       throw new Error(this.homey.__('app.holiday_mode.date_missing'))
     }
@@ -282,31 +280,34 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     const utcEndDate: DateTime | null = enabled
       ? DateTime.fromISO(endDate).toUTC()
       : null
-    const { data } = await this.apiUpdateHolidayMode({
-      Enabled: enabled,
-      EndDate: utcEndDate
-        ? {
-            Day: utcEndDate.day,
-            Hour: utcEndDate.hour,
-            Minute: utcEndDate.minute,
-            Month: utcEndDate.month,
-            Second: utcEndDate.second,
-            Year: utcEndDate.year,
-          }
-        : null,
-      HMTimeZones: [{ Buildings: [buildingId] }],
-      StartDate: utcStartDate
-        ? {
-            Day: utcStartDate.day,
-            Hour: utcStartDate.hour,
-            Minute: utcStartDate.minute,
-            Month: utcStartDate.month,
-            Second: utcStartDate.second,
-            Year: utcStartDate.year,
-          }
-        : null,
-    })
-    handleResponse(data)
+    handleResponse(
+      (
+        await this.apiUpdateHolidayMode({
+          Enabled: enabled,
+          EndDate: utcEndDate
+            ? {
+                Day: utcEndDate.day,
+                Hour: utcEndDate.hour,
+                Minute: utcEndDate.minute,
+                Month: utcEndDate.month,
+                Second: utcEndDate.second,
+                Year: utcEndDate.year,
+              }
+            : null,
+          HMTimeZones: [{ Buildings: [buildingId] }],
+          StartDate: utcStartDate
+            ? {
+                Day: utcStartDate.day,
+                Hour: utcStartDate.hour,
+                Minute: utcStartDate.minute,
+                Month: utcStartDate.month,
+                Second: utcStartDate.second,
+                Year: utcStartDate.year,
+              }
+            : null,
+        })
+      ).data,
+    )
   }
 
   public getLanguage(): string {
