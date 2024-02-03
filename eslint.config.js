@@ -5,7 +5,7 @@ const prettier = require('eslint-config-prettier')
 const tsParser = require('@typescript-eslint/parser')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 
-const MAGIC_NUMBERS = [0, 1]
+const MAGIC_NUMBERS = [0, 1, 2]
 
 module.exports = [
   { ignores: ['.homeybuild/'] },
