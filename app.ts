@@ -250,10 +250,14 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     buildingId: number,
     settings: FrostProtectionSettings,
   ): Promise<void> {
-    handleResponse((await this.apiUpdateFrostProtection({
-      ...settings,
-      BuildingIds: [buildingId],
-    })).data)
+    handleResponse(
+      (
+        await this.apiUpdateFrostProtection({
+          ...settings,
+          BuildingIds: [buildingId],
+        })
+      ).data,
+    )
   }
 
   public async getHolidayModeSettings(
