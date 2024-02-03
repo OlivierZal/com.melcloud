@@ -85,23 +85,22 @@ const getAPILogs = (
   const isResponse = Boolean(
     (!isError && 'status' in object) || (isError && 'response' in object),
   )
-  const config: InternalAxiosRequestConfig = (
+  const config: InternalAxiosRequestConfig | undefined =
     isResponse || isError
       ? (object as AxiosError | AxiosResponse).config
-      : object
-  ) as InternalAxiosRequestConfig
+      : (object as InternalAxiosRequestConfig)
   let response: AxiosResponse | null = null
   if (isResponse) {
     response = isError ? object.response ?? null : (object as AxiosResponse)
   }
   return [
     `API ${isResponse ? 'response' : 'request'}:`,
-    config.method?.toUpperCase(),
-    config.url,
-    config.params,
-    isResponse ? response?.headers : config.headers,
+    config?.method?.toUpperCase(),
+    config?.url,
+    config?.params,
+    isResponse ? response?.headers : config?.headers,
     response?.status,
-    (isResponse ? (object as AxiosResponse) : config).data,
+    isResponse ? (object as AxiosResponse).data : config?.data,
     message,
   ]
     .filter(
