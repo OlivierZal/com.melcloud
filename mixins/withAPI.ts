@@ -25,6 +25,7 @@ import axios, {
   type AxiosInstance,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
+  isAxiosError,
 } from 'axios'
 import type MELCloudApp from '../app'
 
@@ -69,12 +70,49 @@ const getAPIErrorMessage = (error: AxiosError): string => error.message
 
 export const getErrorMessage = (error: unknown): string => {
   let errorMessage = String(error)
-  if (axios.isAxiosError(error)) {
+  if (isAxiosError(error)) {
     errorMessage = getAPIErrorMessage(error)
   } else if (error instanceof Error) {
     errorMessage = error.message
   }
   return errorMessage
+}
+
+const getAPILogs = (
+  object: AxiosError | AxiosResponse | InternalAxiosRequestConfig,
+  message?: string,
+): string => {
+  const isError = isAxiosError(object)
+  const isResponse = Boolean(
+    (!isError && 'status' in object) || (isError && 'response' in object),
+  )
+  const config: InternalAxiosRequestConfig = (
+    isResponse || isError
+      ? (object as AxiosError | AxiosResponse).config
+      : object
+  ) as InternalAxiosRequestConfig
+  let response: AxiosResponse | null = null
+  if (isResponse) {
+    response = isError ? object.response ?? null : (object as AxiosResponse)
+  }
+  return [
+    `API ${isResponse ? 'response' : 'request'}:`,
+    config.method?.toUpperCase(),
+    config.url,
+    config.params,
+    isResponse ? response?.headers : config.headers,
+    response?.status,
+    (isResponse ? (object as AxiosResponse) : config).data,
+    message,
+  ]
+    .filter(
+      (log: number | object | string | undefined) => typeof log !== 'undefined',
+    )
+    .map((log: number | object | string): number | string =>
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      typeof log === 'object' ? JSON.stringify(log, null, 2) : log,
+    )
+    .join('\n')
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -197,16 +235,12 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
         (this.homey.settings.get(
           'contextKey',
         ) as HomeySettings['contextKey']) ?? ''
-      this.log(
-        'Sending request:',
-        updatedConfig.url,
-        updatedConfig.method === 'post' ? updatedConfig.data : '',
-      )
+      this.log(getAPILogs(config))
       return updatedConfig
     }
 
     private handleResponse(response: AxiosResponse): AxiosResponse {
-      this.log('Received response:', response.config.url, response.data)
+      this.log(getAPILogs(response))
       return response
     }
 
@@ -214,9 +248,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       type: 'request' | 'response',
       error: AxiosError,
     ): Promise<AxiosError> {
-      const errorMessage: string = getAPIErrorMessage(error)
-      this.error(`Error in ${type}:`, error.config?.url, errorMessage)
       const app: MELCloudApp = this.homey.app as MELCloudApp
+      const errorMessage: string = getAPIErrorMessage(error)
+      this.error(getAPILogs(error), errorMessage)
       if (
         error.response?.status === HTTP_STATUS_UNAUTHORIZED &&
         app.retry &&

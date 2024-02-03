@@ -101,7 +101,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       try {
         const { LoginData } = (
           await this.apiLogin({
-            AppVersion: '1.31.0.0',
+            AppVersion: '1.32.1.0',
             Email: username,
             Password: password,
             Persist: true,
