@@ -235,7 +235,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
         (this.homey.settings.get(
           'contextKey',
         ) as HomeySettings['contextKey']) ?? ''
-      this.log(getAPILogs(config))
+      this.log(getAPILogs(updatedConfig))
       return updatedConfig
     }
 
