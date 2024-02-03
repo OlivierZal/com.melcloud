@@ -74,7 +74,9 @@ const getAPICallData = (
   object: AxiosError | AxiosResponse | InternalAxiosRequestConfig,
 ): string[] => {
   const isError = axios.isAxiosError(object)
-  const isResponse = Boolean('status' in object || 'response' in object)
+  const isResponse = Boolean(
+    'status' in object || (isError && typeof object.response === 'undefined'),
+  )
   const config: InternalAxiosRequestConfig | undefined =
     isResponse || isError
       ? (object as AxiosError | AxiosResponse).config
