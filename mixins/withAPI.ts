@@ -205,13 +205,13 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig =>
           this.handleRequest(config),
         async (error: AxiosError): Promise<AxiosError> =>
-          this.handleError('request', error),
+          this.handleError(error),
       )
       this.api.interceptors.response.use(
         (response: AxiosResponse): AxiosResponse =>
           this.handleResponse(response),
         async (error: AxiosError): Promise<AxiosError> =>
-          this.handleError('response', error),
+          this.handleError(error),
       )
     }
 
@@ -232,10 +232,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       return response
     }
 
-    private async handleError(
-      type: 'request' | 'response',
-      error: AxiosError,
-    ): Promise<AxiosError> {
+    private async handleError(error: AxiosError): Promise<AxiosError> {
       const app: MELCloudApp = this.homey.app as MELCloudApp
       const apiCallData: string[] = getAPICallData(error)
       this.error(apiCallData.join('\n'))
