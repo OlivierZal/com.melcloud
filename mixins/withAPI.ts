@@ -244,8 +244,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
         error.config?.url !== LOGIN_URL
       ) {
         this.app.handleRetry()
-        const loggedIn: boolean = await this.app.login()
-        if (loggedIn && error.config) {
+        if ((await this.app.login()) && error.config) {
           return this.api.request(error.config)
         }
       }
