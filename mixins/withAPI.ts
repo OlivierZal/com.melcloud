@@ -220,10 +220,10 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       config: InternalAxiosRequestConfig,
     ): InternalAxiosRequestConfig {
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
-      updatedConfig.headers['X-MitsContextKey'] =
-        (this.homey.settings.get(
-          'contextKey',
-        ) as HomeySettings['contextKey']) ?? ''
+      updatedConfig.headers.set(
+        'X-MitsContextKey',
+        this.getHomeySetting('contextKey'),
+      )
       this.log(getAPICallData(updatedConfig).join('\n'))
       return updatedConfig
     }
