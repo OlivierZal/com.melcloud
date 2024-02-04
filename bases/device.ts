@@ -50,7 +50,7 @@ const filterEnergyKeys = (key: string, total: boolean): boolean => {
 abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   withTimers(Device),
 ) {
-  public declare driver: T
+  public declare readonly driver: T
 
   public readonly data: DeviceDetails['data'] =
     this.getData() as DeviceDetails['data']
@@ -59,7 +59,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   public readonly buildingid: number = this.data.buildingid
 
-  protected app: MELCloudApp = this.homey.app as MELCloudApp
+  protected readonly app: MELCloudApp = this.homey.app as MELCloudApp
 
   protected diff: Map<
     keyof SetCapabilities<T>,
