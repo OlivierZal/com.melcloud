@@ -62,7 +62,6 @@ type APIClass = new (...args: any[]) => {
   ) => HomeySettings[K]
 }
 
-const HTTP_STATUS_UNAUTHORIZED = 401
 const LOGIN_URL = '/Login/ClientLogin'
 
 export const getErrorMessage = (error: unknown): string =>
@@ -239,7 +238,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       const apiCallData: string[] = getAPICallData(error)
       this.error(apiCallData.join('\n'))
       if (
-        error.response?.status === HTTP_STATUS_UNAUTHORIZED &&
+        error.response?.status === axios.HttpStatusCode.Unauthorized &&
         app.retry &&
         error.config?.url !== LOGIN_URL
       ) {
