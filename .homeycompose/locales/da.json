@@ -50,9 +50,9 @@
     },
     "error_log": {
       "columns": {
-        "Date": "Dato",
-        "Device": "Enhed",
-        "Error": "Fejl"
+        "date": "Dato",
+        "device": "Enhed",
+        "error": "Fejl"
       },
       "error": "Vælg en dato før\n__fromDateHuman__.",
       "error_count": {

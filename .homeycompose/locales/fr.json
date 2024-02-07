@@ -50,9 +50,9 @@
     },
     "error_log": {
       "columns": {
-        "Date": "Date",
-        "Device": "Appareil",
-        "Error": "Erreur"
+        "date": "Date",
+        "device": "Appareil",
+        "error": "Erreur"
       },
       "error": "Choisissez une date antérieure au\n__fromDateHuman__.",
       "error_count": {
