@@ -26,6 +26,7 @@ import type MELCloudApp from './app'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
+const YEAR_1 = 1
 
 const getDriverSettings = (
   driver: ManifestDriver,
@@ -233,7 +234,7 @@ export = {
             StartDate: startDate,
           }): ErrorDetails => {
             const date: string =
-              DateTime.fromISO(startDate).year > 1
+              DateTime.fromISO(startDate).year > YEAR_1
                 ? fromUTCtoLocal(startDate, app.getLanguage())
                 : ''
             const device: string =

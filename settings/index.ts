@@ -21,6 +21,7 @@ import type {
 import type Homey from 'homey/lib/Homey'
 
 const FP_MIN_MAX_GAP = 2
+const SIZE_ONE = 1
 
 let homeySettings: HomeySettingsUI = {
   contextKey: '',
@@ -442,10 +443,14 @@ const shouldUpdate = (
     typeof driverId === 'undefined'
       ? flatDeviceSettings[settingId]
       : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-  return (
-    typeof deviceSetting !== 'undefined' &&
-    (new Set(deviceSetting).size !== 1 || settingValue !== deviceSetting[0])
-  )
+  if (typeof deviceSetting === 'undefined') {
+    return false
+  }
+  if (new Set(deviceSetting).size !== SIZE_ONE) {
+    return true
+  }
+  const [deviceSettingValue]: ValueOf<Settings>[] = deviceSetting
+  return settingValue !== deviceSettingValue
 }
 
 const buildSettingsBody = (
@@ -472,7 +477,10 @@ const buildSettingsBody = (
       .filter(
         (
           entry: [null] | [string, ValueOf<Settings>],
-        ): entry is [string, ValueOf<Settings>] => entry[0] !== null,
+        ): entry is [string, ValueOf<Settings>] => {
+          const [key]: [null] | [string, ValueOf<Settings>] = entry
+          return key !== null
+        },
       ),
   )
 
@@ -503,10 +511,7 @@ const generateErrorLogTableData = (
   }
   errors.forEach((error: ErrorDetails) => {
     if (!errorLogTBodyElement) {
-      errorLogTBodyElement = generateErrorLogTable(
-        homey,
-        Object.keys(errors[0]),
-      )
+      errorLogTBodyElement = generateErrorLogTable(homey, Object.keys(error))
     }
     const rowElement: HTMLTableRowElement = errorLogTBodyElement.insertRow()
     Object.values(error).forEach((value: string) => {
@@ -518,6 +523,7 @@ const generateErrorLogTableData = (
 
 const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     case count <= 1:
       return homey.__(`settings.error_log.error_count.${count}`)
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -803,10 +809,16 @@ const addApplySettingsEventListener = (
 }
 
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
+  const [settingId]: string[] = element.id.split('--')
   const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
-    element.id.split('--')[0]
+    settingId
   ] as ValueOf<Settings>[] | undefined
-  element.value = values && new Set(values).size === 1 ? String(values[0]) : ''
+  if (values && new Set(values).size === SIZE_ONE) {
+    const [value]: ValueOf<Settings>[] = values
+    element.value = String(value)
+  } else {
+    element.value = ''
+  }
 }
 
 const addRefreshSettingsCommonEventListener = (
@@ -819,11 +831,9 @@ const updateCheckboxChildrenElement = (
   element: HTMLInputElement,
   driverId: string,
 ): void => {
-  const values: boolean[] = deviceSettings[driverId][
-    element.id.split('--')[0]
-  ] as boolean[]
-
-  if (new Set(values).size === 1) {
+  const [settingId]: string[] = element.id.split('--')
+  const values: boolean[] = deviceSettings[driverId][settingId] as boolean[]
+  if (new Set(values).size === SIZE_ONE) {
     ;[element.checked] = values
   } else {
     element.indeterminate = true

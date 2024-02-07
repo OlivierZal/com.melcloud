@@ -1,33 +1,34 @@
-import type {
-  BooleanString,
-  Capabilities,
-  DeviceDetails,
-  GetCapabilityMapping,
-  GetDeviceData,
-  ListCapabilityData,
-  ListCapabilityMapping,
-  ListDevice,
-  ListDeviceData,
-  MELCloudDriver,
-  OpCapabilities,
-  OpCapabilityData,
-  PostData,
-  ReportCapabilities,
-  ReportCapabilityMapping,
-  ReportData,
-  ReportPlanParameters,
-  ReportPostData,
-  SetCapabilities,
-  SetCapabilityData,
-  SetCapabilityMapping,
-  SetDeviceData,
-  Settings,
-  Store,
-  SyncFromMode,
-  SyncMode,
-  TypedString,
-  UpdateDeviceData,
-  ValueOf,
+import {
+  type BooleanString,
+  type Capabilities,
+  type DeviceDetails,
+  FLAG_UNCHANGED,
+  type GetCapabilityMapping,
+  type GetDeviceData,
+  type ListCapabilityData,
+  type ListCapabilityMapping,
+  type ListDevice,
+  type ListDeviceData,
+  type MELCloudDriver,
+  type OpCapabilities,
+  type OpCapabilityData,
+  type PostData,
+  type ReportCapabilities,
+  type ReportCapabilityMapping,
+  type ReportData,
+  type ReportPlanParameters,
+  type ReportPostData,
+  type SetCapabilities,
+  type SetCapabilityData,
+  type SetCapabilityMapping,
+  type SetDeviceData,
+  type Settings,
+  type Store,
+  type SyncFromMode,
+  type SyncMode,
+  type TypedString,
+  type UpdateDeviceData,
+  type ValueOf,
 } from '../types'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
@@ -36,9 +37,10 @@ import addToLogs from '../decorators/addToLogs'
 import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
 
-const YEAR_1970 = 1970
-const DATETIME_1970: DateTime = DateTime.local(YEAR_1970)
+const DEFAULT_ONE = 1
+const DEFAULT_ZERO = 0
 export const K_MULTIPLIER = 1000
+const YEAR_1970 = 1970
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
   const condition: boolean =
@@ -107,7 +109,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     true: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
   } = { false: [], true: [] }
 
-  #linkedDeviceCount = 1
+  #linkedDeviceCount = DEFAULT_ONE
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
@@ -122,7 +124,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public isDiff(): boolean {
-    return this.diff.size > 0
+    return Boolean(this.diff.size)
   }
 
   public async syncDeviceFromList(syncMode?: SyncFromMode): Promise<void> {
@@ -379,10 +381,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           OpCapabilityData<T>,
         ],
       ) => {
+        const [regular, last]: [
+          TypedString<keyof OpCapabilities<T>>,
+          OpCapabilityData<T>,
+        ][][] = acc
         if (keysToUpdateLast.includes(capability)) {
-          acc[1].push([capability, capabilityData])
+          last.push([capability, capabilityData])
         } else {
-          acc[0].push([capability, capabilityData])
+          regular.push([capability, capabilityData])
         }
         return acc
       },
@@ -478,7 +484,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         }
         return acc
       },
-      { EffectiveFlags: 0 },
+      { EffectiveFlags: FLAG_UNCHANGED },
     ) as SetDeviceData<T>
   }
 
@@ -505,7 +511,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     const toDate: DateTime = DateTime.now().minus(
       this.reportPlanParameters.minus,
     )
-    const fromDate: DateTime = total ? DATETIME_1970 : toDate
+    const fromDate: DateTime = total ? DateTime.local(YEAR_1970) : toDate
     const data: ReportData<T> | null = await this.reportEnergyCost(
       fromDate,
       toDate,
@@ -532,18 +538,29 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           TypedString<K>,
           (keyof ReportData<T>)[],
         ]): Promise<void> => {
-          let value = 0
           switch (true) {
             case capability.includes('cop'):
-              value = this.calculateCopValue(data, capability)
+              await this.setCapabilityValue(
+                capability,
+                this.calculateCopValue(data, capability) as Capabilities<T>[K],
+              )
               break
             case capability.startsWith('measure_power'):
-              value = this.calculatePowerValue(data, tags, toDate)
+              await this.setCapabilityValue(
+                capability,
+                this.calculatePowerValue(
+                  data,
+                  tags,
+                  toDate,
+                ) as Capabilities<T>[K],
+              )
               break
             default:
-              value = this.calculateEnergyValue(data, tags)
+              await this.setCapabilityValue(
+                capability,
+                this.calculateEnergyValue(data, tags) as Capabilities<T>[K],
+              )
           }
-          await this.setCapabilityValue(capability, value as Capabilities<T>[K])
         },
       ),
     )
@@ -560,14 +577,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     return (
       producedTags.reduce<number>(
         (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        0,
+        DEFAULT_ZERO,
       ) /
       (consumedTags.length
         ? consumedTags.reduce<number>(
             (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-            0,
+            DEFAULT_ZERO,
           )
-        : 1)
+        : DEFAULT_ONE)
     )
   }
 
@@ -580,7 +597,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T>) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
-        0,
+        DEFAULT_ZERO,
       ) / this.#linkedDeviceCount
     )
   }
@@ -592,7 +609,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     return (
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        0,
+        DEFAULT_ZERO,
       ) / this.#linkedDeviceCount
     )
   }

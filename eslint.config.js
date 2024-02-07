@@ -6,7 +6,7 @@ const parser = require('@typescript-eslint/parser')
 const prettier = require('eslint-config-prettier')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 
-const MAGIC_NUMBERS = [0, 1, 2]
+const [eslintOverrides] = tsPlugin.configs['eslint-recommended'].overrides
 
 module.exports = [
   { ignores: ['.homeybuild/'] },
@@ -24,7 +24,6 @@ module.exports = [
       ...importPlugin.configs.recommended.rules,
       camelcase: 'off',
       'max-lines': 'off',
-      'no-magic-numbers': ['error', { ignore: MAGIC_NUMBERS }],
       'no-ternary': 'off',
       'no-underscore-dangle': ['error', { allow: ['__'] }],
       'one-var': 'off',
@@ -35,14 +34,11 @@ module.exports = [
     files: ['**/*.ts'],
     plugins: { '@typescript-eslint': tsPlugin },
     rules: {
-      ...tsPlugin.configs['eslint-recommended'].overrides[0].rules,
+      ...eslintOverrides.rules,
       ...tsPlugin.configs.all.rules,
       ...importPlugin.configs.typescript.rules,
       '@typescript-eslint/naming-convention': 'off',
-      '@typescript-eslint/no-magic-numbers': [
-        'error',
-        { ignore: MAGIC_NUMBERS, ignoreEnums: true },
-      ],
+      '@typescript-eslint/no-magic-numbers': ['error', { ignoreEnums: true }],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { varsIgnorePattern: 'onHomeyReady' },

@@ -7,6 +7,8 @@ import type ErvDriver from './drivers/melcloud_erv/driver'
 import type Homey from 'homey/lib/Homey'
 import type { SimpleClass } from 'homey'
 
+export const FLAG_UNCHANGED = 0
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly homey: Homey
@@ -369,7 +371,7 @@ interface ListDeviceDataAta
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     >,
     ListDeviceDataCommon {
-  readonly EffectiveFlags: 0
+  readonly EffectiveFlags: typeof FLAG_UNCHANGED
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
@@ -400,7 +402,7 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly TankWaterTemperature: number
 }
 interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
-  readonly EffectiveFlags: 0
+  readonly EffectiveFlags: typeof FLAG_UNCHANGED
   readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -437,7 +439,7 @@ interface GetDeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number
 }
 interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
-  readonly EffectiveFlags: 0
+  readonly EffectiveFlags: typeof FLAG_UNCHANGED
   readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean

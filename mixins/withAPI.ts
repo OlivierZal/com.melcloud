@@ -2,6 +2,7 @@ import type {
   Building,
   ErrorLogData,
   ErrorLogPostData,
+  FLAG_UNCHANGED,
   FailureData,
   FrostProtectionData,
   FrostProtectionPostData,
@@ -40,7 +41,9 @@ type APIClass = new (...args: any[]) => {
   readonly apiGet: <D extends MELCloudDriver>(
     id: string,
     buildingId: string,
-  ) => Promise<{ data: GetDeviceData<D> & { readonly EffectiveFlags: 0 } }>
+  ) => Promise<{
+    data: GetDeviceData<D> & { readonly EffectiveFlags: typeof FLAG_UNCHANGED }
+  }>
   readonly apiGetFrostProtection: (
     id: number,
   ) => Promise<{ data: FrostProtectionData }>
@@ -110,11 +113,14 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public async apiGet<D extends MELCloudDriver>(
       id: string,
       buildingId: string,
-    ): Promise<{ data: GetDeviceData<D> & { readonly EffectiveFlags: 0 } }> {
-      return this.api.get<GetDeviceData<D> & { readonly EffectiveFlags: 0 }>(
-        '/Device/Get',
-        { params: { buildingId, id } },
-      )
+    ): Promise<{
+      data: GetDeviceData<D> & {
+        readonly EffectiveFlags: typeof FLAG_UNCHANGED
+      }
+    }> {
+      return this.api.get<
+        GetDeviceData<D> & { readonly EffectiveFlags: typeof FLAG_UNCHANGED }
+      >('/Device/Get', { params: { buildingId, id } })
     }
 
     public async apiReport<D extends MELCloudDriver>(

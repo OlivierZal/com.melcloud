@@ -12,7 +12,7 @@ interface BaseTimerOptions {
 }
 
 interface TimerOptions extends BaseTimerOptions {
-  readonly timerWords: readonly [string, string]
+  readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
   readonly timerType: 'setInterval' | 'setTimeout'
 }
 
@@ -28,6 +28,9 @@ type TimerClass = new (...args: any[]) => {
   setTimeout: Timer
 }
 
+const FIRST_CHAR = 0
+const SECOND_CHAR = 1
+
 // eslint-disable-next-line max-lines-per-function
 const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
@@ -40,7 +43,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       return this.setTimer(callback, interval, {
         actionType,
         timerType: 'setInterval',
-        timerWords: ['every', 'starting'],
+        timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
         units,
       })
     }
@@ -54,7 +57,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       return this.setTimer(callback, interval, {
         actionType,
         timerType: 'setTimeout',
-        timerWords: ['in', 'on'],
+        timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
         units,
       })
     }
@@ -67,13 +70,13 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       const { actionType, timerWords, timerType, units } = options
       const duration: Duration = Duration.fromDurationLike(interval)
       this.log(
-        `${actionType.charAt(0).toUpperCase()}${actionType
-          .slice(1)
+        `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType
+          .slice(SECOND_CHAR)
           .toLowerCase()}`,
         'will run',
-        timerWords[0],
+        timerWords.timeSpecifier,
         duration.shiftTo(...units).toHuman(),
-        timerWords[1],
+        timerWords.dateSpecifier,
         DateTime.now()
           .plus(duration)
           .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),

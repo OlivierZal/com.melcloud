@@ -3,6 +3,8 @@
 */
 import type { SimpleClass } from 'homey'
 
+const FIRST_CHAR = 0
+
 const addToLogs =
   <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, context: ClassDecoratorContext<T>): T => {
@@ -22,7 +24,7 @@ const addToLogs =
               return [this[log as keyof this], '-']
             }
             if (log.endsWith('()')) {
-              const funcName: string = log.slice(0, -'()'.length)
+              const funcName: string = log.slice(FIRST_CHAR, -'()'.length)
               if (
                 !(funcName in this) ||
                 typeof this[funcName as keyof this] !== 'function'
