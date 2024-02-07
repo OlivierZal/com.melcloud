@@ -66,11 +66,6 @@ type APIClass = new (...args: any[]) => {
 
 const LOGIN_URL = '/Login/ClientLogin'
 
-export const getErrorMessage = (error: unknown): string =>
-  axios.isAxiosError(error) || error instanceof Error
-    ? error.message
-    : String(error)
-
 // eslint-disable-next-line max-lines-per-function
 const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
   class WithAPI extends base {
