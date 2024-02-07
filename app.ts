@@ -206,7 +206,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     } catch (error: unknown) {
       return []
     } finally {
-      this.applySyncFromDevices({ interval: { minutes: 3 } })
+      this.applySyncFromDevices({ interval: { minutes: 5 } })
     }
   }
 
