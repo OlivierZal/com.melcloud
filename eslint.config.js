@@ -59,5 +59,11 @@ module.exports = [
       },
     },
   },
+  {
+    files: ['tests/**'],
+    languageOptions: { globals: globals.jest },
+    plugins: { jest: jestPlugin },
+    rules: jestPlugin.configs.all.rules,
+  },
   prettier,
 ]

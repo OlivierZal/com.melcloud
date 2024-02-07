@@ -1,4 +1,6 @@
+coverage/*
 eslint.config.js
+jest.config.ts
 LICENSE
 README.md
 sonar-project.properties
