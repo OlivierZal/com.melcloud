@@ -25,13 +25,18 @@ import {
   type DurationLike,
   Settings as LuxonSettings,
 } from 'luxon'
-import withAPI, { getErrorMessage } from './mixins/withAPI'
 import axios from 'axios'
+import withAPI from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 
 const MAX_INT32 = 2147483647
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
+
+const getErrorMessage = (error: unknown): string =>
+  axios.isAxiosError(error) || error instanceof Error
+    ? error.message
+    : String(error)
 
 const flattenDevices = (
   acc: BuildingDevices,
