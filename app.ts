@@ -30,7 +30,6 @@ import withAPI from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 
 const MAX_INT32 = 2147483647
-const NOW_MS = 0
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
@@ -341,7 +340,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       .minus({ days: 1 })
       .diffNow()
       .as('milliseconds')
-    if (ms > NOW_MS) {
+    if (ms > DateTime.now().diffNow().as('milliseconds')) {
       this.applySyncFromDevices()
       this.#loginTimeout = this.setTimeout(
         async (): Promise<void> => {
