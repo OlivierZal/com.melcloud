@@ -4,10 +4,10 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
-  modulePathIgnorePatterns: ['<rootDir>/build/'],
+  modulePathIgnorePatterns: ['<rootDir>/.homeybuild/'],
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: ['<rootDir>/.homeybuild/', '<rootDir>/node_modules/'],
 }
 
 export default config
