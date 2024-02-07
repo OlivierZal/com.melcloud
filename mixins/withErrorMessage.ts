@@ -1,17 +1,16 @@
 import type APICallContextData from '../lib/APICallContextData'
 import type { AxiosError } from 'axios'
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type APICallContextClass = new (...args: any[]) => APICallContextData
-type APICallContextWithErrorMessageClass = new (
-  ...args: any[]
-) => APICallContextData & { errorMessage: string }
-/* eslint-enable @typescript-eslint/no-explicit-any */
+export interface APICallContextDataWithErrorMessage extends APICallContextData {
+  readonly errorMessage: string
+}
 
-const withErrorMessage = <T extends APICallContextClass>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const withErrorMessage = <T extends new (...args: any[]) => APICallContextData>(
   base: T,
   error: AxiosError,
-): APICallContextWithErrorMessageClass =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): new (...args: any[]) => APICallContextDataWithErrorMessage =>
   class extends base {
     public readonly errorMessage: string = error.message
   }
