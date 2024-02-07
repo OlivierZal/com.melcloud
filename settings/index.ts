@@ -20,8 +20,18 @@ import type {
 } from '../types'
 import type Homey from 'homey/lib/Homey'
 
+const C_DIVISOR = 100
+const D_DIVISOR = 10
 const FP_MIN_MAX_GAP = 2
-const SIZE_ONE = 1
+const SIZE_1 = 1
+
+const NUMBER_1 = 1
+const NUMBER_2 = 2
+const NUMBER_3 = 3
+const NUMBER_4 = 4
+const NUMBER_12 = 12
+const NUMBER_13 = 13
+const NUMBER_14 = 14
 
 let homeySettings: HomeySettingsUI = {
   contextKey: '',
@@ -446,7 +456,7 @@ const shouldUpdate = (
   if (typeof deviceSetting === 'undefined') {
     return false
   }
-  if (new Set(deviceSetting).size !== SIZE_ONE) {
+  if (new Set(deviceSetting).size !== SIZE_1) {
     return true
   }
   const [deviceSettingValue]: ValueOf<Settings>[] = deviceSetting
@@ -523,11 +533,10 @@ const generateErrorLogTableData = (
 
 const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    case count <= 1:
+    case count <= NUMBER_1:
       return homey.__(`settings.error_log.error_count.${count}`)
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    case [2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100):
+    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % D_DIVISOR) &&
+      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % C_DIVISOR):
       return homey.__('settings.error_log.error_count.234')
     default:
       return homey.__('settings.error_log.error_count.plural')
@@ -813,7 +822,7 @@ const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
     settingId
   ] as ValueOf<Settings>[] | undefined
-  if (values && new Set(values).size === SIZE_ONE) {
+  if (values && new Set(values).size === SIZE_1) {
     const [value]: ValueOf<Settings>[] = values
     element.value = String(value)
   } else {
@@ -833,7 +842,7 @@ const updateCheckboxChildrenElement = (
 ): void => {
   const [settingId]: string[] = element.id.split('--')
   const values: boolean[] = deviceSettings[driverId][settingId] as boolean[]
-  if (new Set(values).size === SIZE_ONE) {
+  if (new Set(values).size === SIZE_1) {
     ;[element.checked] = values
   } else {
     element.indeterminate = true

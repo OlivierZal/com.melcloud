@@ -37,8 +37,8 @@ import addToLogs from '../decorators/addToLogs'
 import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
 
-const DEFAULT_ONE = 1
-const DEFAULT_ZERO = 0
+const DEFAULT_0 = 0
+const DEFAULT_1 = 1
 export const K_MULTIPLIER = 1000
 const YEAR_1970 = 1970
 
@@ -109,7 +109,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     true: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
   } = { false: [], true: [] }
 
-  #linkedDeviceCount = DEFAULT_ONE
+  #linkedDeviceCount = DEFAULT_1
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
@@ -577,14 +577,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     return (
       producedTags.reduce<number>(
         (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        DEFAULT_ZERO,
+        DEFAULT_0,
       ) /
       (consumedTags.length
         ? consumedTags.reduce<number>(
             (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-            DEFAULT_ZERO,
+            DEFAULT_0,
           )
-        : DEFAULT_ONE)
+        : DEFAULT_1)
     )
   }
 
@@ -597,7 +597,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T>) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
-        DEFAULT_ZERO,
+        DEFAULT_0,
       ) / this.#linkedDeviceCount
     )
   }
@@ -609,7 +609,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     return (
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
-        DEFAULT_ZERO,
+        DEFAULT_0,
       ) / this.#linkedDeviceCount
     )
   }

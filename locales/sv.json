@@ -1,0 +1,79 @@
+{
+  "app": {
+    "building": {
+      "no_device": "Byggnaden __buildingId__ har ingen enhet."
+    },
+    "holiday_mode": {
+      "date_missing": "Startdatum och/eller slutdatum saknas."
+    }
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Logga in",
+      "failure": "Autentisering misslyckades.",
+      "legend": "Inloggningsuppgifter"
+    },
+    "boolean": {
+      "false": "Nej",
+      "true": "Ja"
+    },
+    "buildings": {
+      "frost_protection": {
+        "enabled": "Aktivera <strong>frostskydd</strong>",
+        "max": "Maximal temperatur",
+        "min": "Minimal temperatur"
+      },
+      "holiday_mode": {
+        "enabled": "Aktivera <strong>semesterläge</strong>",
+        "end_date": "Slutdatum",
+        "start_date": "Startdatum"
+      },
+      "legend": "Byggnadsinställningar",
+      "update": "Uppdatera"
+    },
+    "devices": {
+      "apply": {
+        "button": "Tillämpa på alla enheter",
+        "confirm": "Är du säker på att du vill tillämpa dessa inställningar på alla enheter?",
+        "nothing": "Ingen ändring att tillämpa."
+      },
+      "legend": "Enhetsinställningar",
+      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
+    },
+    "devices_ata": {
+      "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
+      "configure": "Konfigurera",
+      "legend": "Luft-luft enhetsinställningar"
+    },
+    "devices_atw": {
+      "legend": "Luft-vatten enhetsinställningar"
+    },
+    "error_log": {
+      "columns": {
+        "date": "Datum",
+        "device": "Enhet",
+        "error": "Fel"
+      },
+      "error": "Välj ett datum före\n__fromDateHuman__.",
+      "error_count": {
+        "0": "fel",
+        "1": "fel",
+        "234": "fel",
+        "plural": "fel"
+      },
+      "legend": "Fellogg",
+      "period": "Sedan __fromDateHuman__:",
+      "see": "Se alla fel",
+      "since": "sedan"
+    },
+    "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "refresh": "Ladda om",
+    "success": "Uppdatering lyckades.",
+    "title": "MELCloud-inställningar"
+  },
+  "warnings": {
+    "always_on": "Avstängning från Homey har inaktiverats.",
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
+    "display_error": "Uppdatering lyckades (även om ett annat värde visas)."
+  }
+}
