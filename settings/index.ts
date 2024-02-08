@@ -20,8 +20,8 @@ import type {
 } from '../types'
 import type Homey from 'homey/lib/Homey'
 
-const C_DIVISOR = 100
-const D_DIVISOR = 10
+const DIVISOR_10 = 10
+const DIVISOR_100 = 100
 const FP_MIN_MAX_GAP = 2
 const SIZE_1 = 1
 
@@ -535,8 +535,8 @@ const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
     case count <= NUMBER_1:
       return homey.__(`settings.error_log.error_count.${count}`)
-    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % D_DIVISOR) &&
-      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % C_DIVISOR):
+    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % DIVISOR_10) &&
+      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % DIVISOR_100):
       return homey.__('settings.error_log.error_count.234')
     default:
       return homey.__('settings.error_log.error_count.plural')
