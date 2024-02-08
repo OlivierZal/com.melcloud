@@ -196,6 +196,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       config: InternalAxiosRequestConfig,
     ): Promise<InternalAxiosRequestConfig> {
       if (config.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
+        this.rescheduleAPIList()
         return Promise.reject(
           new Error(
             `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
@@ -234,6 +235,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
           break
         case axios.HttpStatusCode.TooManyRequests:
           this.#holdAPIListUntil = DateTime.now().plus({ minutes: 30 })
+          this.rescheduleAPIList()
           break
         default:
       }
@@ -245,6 +247,12 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       if (this.setWarning) {
         await this.setWarning(warning)
       }
+    }
+
+    private rescheduleAPIList(): void {
+      this.app.applySyncFromDevices({
+        interval: this.#holdAPIListUntil.diffNow(),
+      })
     }
   }
 
