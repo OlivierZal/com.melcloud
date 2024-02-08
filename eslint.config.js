@@ -4,6 +4,7 @@ const jest = require('eslint-plugin-jest')
 const js = require('@eslint/js')
 const parser = require('@typescript-eslint/parser')
 const prettier = require('eslint-config-prettier')
+const stylistic = require('@stylistic/eslint-plugin')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 
 const [eslintOverrides] = tsPlugin.configs['eslint-recommended'].overrides
@@ -18,7 +19,11 @@ module.exports = [
       sourceType: 'module',
     },
     linterOptions: { reportUnusedDisableDirectives: true },
-    plugins: { import: importPlugin },
+    plugins: {
+      '@stylistic': stylistic,
+      '@typescript-eslint': tsPlugin,
+      import: importPlugin,
+    },
     rules: {
       ...js.configs.all.rules,
       ...importPlugin.configs.recommended.rules,
@@ -32,11 +37,11 @@ module.exports = [
   { files: ['**/*.js'], languageOptions: { globals: globals.node } },
   {
     files: ['**/*.ts'],
-    plugins: { '@typescript-eslint': tsPlugin },
     rules: {
       ...eslintOverrides.rules,
       ...tsPlugin.configs.all.rules,
       ...importPlugin.configs.typescript.rules,
+      '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/no-magic-numbers': ['error', { ignoreEnums: true }],
       '@typescript-eslint/no-unused-vars': [
@@ -62,5 +67,6 @@ module.exports = [
     plugins: { jest },
     rules: jest.configs.all.rules,
   },
+  { rules: { '@stylistic/lines-between-class-members': ['error', 'always'] } },
   prettier,
 ]

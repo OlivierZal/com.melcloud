@@ -63,7 +63,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected readonly app: MELCloudApp = this.homey.app as MELCloudApp
 
-  protected diff: Map<
+  protected readonly diff: Map<
     keyof SetCapabilities<T>,
     SetCapabilities<T>[keyof SetCapabilities<T>]
   > = new Map<

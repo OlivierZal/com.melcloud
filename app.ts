@@ -19,18 +19,14 @@ import type {
   SyncFromMode,
   ValueOf,
 } from './types'
-import {
-  DateTime,
-  Duration,
-  type DurationLike,
-  Settings as LuxonSettings,
-} from 'luxon'
+import { DateTime, type DurationLike, Settings as LuxonSettings } from 'luxon'
 import axios from 'axios'
 import withAPI from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 
 const MAX_INT32 = 2147483647
 const NO_TIME_DIFF = 0
+const SYNC_INTERVAL = 5
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
@@ -77,17 +73,51 @@ const handleResponse = (data: FailureData | SuccessData): void => {
 }
 
 export = class MELCloudApp extends withAPI(withTimers(App)) {
-  public retry = true
+  #deviceList: ListDevice<MELCloudDriver>[] = []
 
-  public deviceList: ListDevice<MELCloudDriver>[] = []
+  #deviceIds: Record<number, string> = {}
 
-  public deviceIds: Record<number, string> = {}
+  #holdAPIListUntil: DateTime = DateTime.now()
+
+  #retry = true
+
+  #retryTimeout!: NodeJS.Timeout
 
   #loginTimeout!: NodeJS.Timeout
 
   #syncTimeout!: NodeJS.Timeout
 
-  #retryTimeout!: NodeJS.Timeout
+  public get deviceList(): ListDevice<MELCloudDriver>[] {
+    return this.#deviceList
+  }
+
+  public get deviceIds(): Record<number, string> {
+    return this.#deviceIds
+  }
+
+  public get holdAPIListUntil(): DateTime {
+    return this.#holdAPIListUntil
+  }
+
+  public set holdAPIListUntil(value: DateTime) {
+    this.#holdAPIListUntil = value
+  }
+
+  public get retry(): boolean {
+    return this.#retry
+  }
+
+  public set retry(value: boolean) {
+    this.#retry = value
+  }
+
+  public get retryTimeout(): NodeJS.Timeout {
+    return this.#retryTimeout
+  }
+
+  public set retryTimeout(value: NodeJS.Timeout) {
+    this.#retryTimeout = value
+  }
 
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
@@ -200,19 +230,24 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
         },
         { deviceIds: {}, deviceList: [] },
       )
-      this.deviceIds = deviceIds
-      this.deviceList =
+      this.#deviceIds = deviceIds
+      this.#deviceList =
         deviceType === null
           ? deviceList
           : deviceList.filter(
               ({ Device: { DeviceType: type } }) => deviceType === type,
             )
       await this.syncDevicesFromList(syncMode)
-      return this.deviceList
+      return this.#deviceList
     } catch (error: unknown) {
       return []
     } finally {
-      this.applySyncFromDevices({ interval: { minutes: 5 } })
+      const HOLD_INTERVAL: number = this.#holdAPIListUntil
+        .diffNow()
+        .as('minutes')
+      this.applySyncFromDevices({
+        interval: { minutes: Math.max(SYNC_INTERVAL, HOLD_INTERVAL) },
+      })
     }
   }
 
@@ -234,7 +269,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const { data } = await this.apiError({
-      DeviceIDs: Object.keys(this.deviceIds),
+      DeviceIDs: Object.keys(this.#deviceIds),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
     })
@@ -322,17 +357,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   public getLanguage(): string {
     return this.homey.i18n.getLanguage()
-  }
-
-  public handleRetry(): void {
-    this.retry = false
-    this.homey.clearTimeout(this.#retryTimeout)
-    this.#retryTimeout = this.homey.setTimeout(
-      () => {
-        this.retry = true
-      },
-      Duration.fromObject({ minutes: 1 }).as('milliseconds'),
-    )
   }
 
   private async planRefreshLogin(): Promise<void> {

@@ -20,6 +20,7 @@ import type {
   ReportPostData,
   SuccessData,
 } from '../types'
+import { DateTime, Duration } from 'luxon'
 import axios, {
   type AxiosError,
   type AxiosInstance,
@@ -29,7 +30,6 @@ import axios, {
 import type { APICallContextDataWithErrorMessage } from './withErrorMessage'
 import APICallRequestData from '../lib/APICallRequestData'
 import APICallResponseData from '../lib/APICallResponseData'
-import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
 import createAPICallErrorData from '../lib/APICallErrorData'
 
@@ -78,8 +78,6 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public readonly api: AxiosInstance = axios.create()
 
     public readonly app: MELCloudApp = this.homey.app as MELCloudApp
-
-    #holdAPIListUntil: DateTime = DateTime.now()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public constructor(...args: any[]) {
@@ -195,11 +193,13 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     private async handleRequest(
       config: InternalAxiosRequestConfig,
     ): Promise<InternalAxiosRequestConfig> {
-      if (config.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
-        this.rescheduleAPIList()
+      if (
+        config.url === LIST_URL &&
+        this.app.holdAPIListUntil > DateTime.now()
+      ) {
         return Promise.reject(
           new Error(
-            `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
+            `API requests to ${LIST_URL} are on hold for ${this.app.holdAPIListUntil
               .diffNow()
               .shiftTo('minutes', 'seconds')
               .toHuman()}`,
@@ -227,15 +227,14 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       switch (error.response?.status) {
         case axios.HttpStatusCode.Unauthorized:
           if (this.app.retry && error.config?.url !== LOGIN_URL) {
-            this.app.handleRetry()
+            this.handleRetry()
             if ((await this.app.login()) && error.config) {
               return this.api.request(error.config)
             }
           }
           break
         case axios.HttpStatusCode.TooManyRequests:
-          this.#holdAPIListUntil = DateTime.now().plus({ minutes: 30 })
-          this.rescheduleAPIList()
+          this.app.holdAPIListUntil = DateTime.now().plus({ minutes: 30 })
           break
         default:
       }
@@ -249,10 +248,15 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       }
     }
 
-    private rescheduleAPIList(): void {
-      this.app.applySyncFromDevices({
-        interval: this.#holdAPIListUntil.diffNow(),
-      })
+    private handleRetry(): void {
+      this.app.retry = false
+      this.homey.clearTimeout(this.app.retryTimeout)
+      this.app.retryTimeout = this.homey.setTimeout(
+        () => {
+          this.app.retry = true
+        },
+        Duration.fromObject({ minutes: 1 }).as('milliseconds'),
+      )
     }
   }
 
