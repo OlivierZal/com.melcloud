@@ -87,7 +87,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   #syncTimeout!: NodeJS.Timeout
 
-  readonly #retryTimeout!: NodeJS.Timeout
+  #retryTimeout!: NodeJS.Timeout
 
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
@@ -327,7 +327,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
   public handleRetry(): void {
     this.retry = false
     this.homey.clearTimeout(this.#retryTimeout)
-    this.homey.setTimeout(
+    this.#retryTimeout = this.homey.setTimeout(
       () => {
         this.retry = true
       },

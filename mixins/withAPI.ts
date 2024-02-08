@@ -29,6 +29,7 @@ import axios, {
 import type { APICallContextDataWithErrorMessage } from './withErrorMessage'
 import APICallRequestData from '../lib/APICallRequestData'
 import APICallResponseData from '../lib/APICallResponseData'
+import { DateTime } from 'luxon'
 import type MELCloudApp from '../app'
 import createAPICallErrorData from '../lib/APICallErrorData'
 
@@ -68,6 +69,7 @@ type APIClass = new (...args: any[]) => {
   ) => HomeySettings[K]
 }
 
+const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
 
 // eslint-disable-next-line max-lines-per-function
@@ -76,6 +78,8 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public readonly api: AxiosInstance = axios.create()
 
     public readonly app: MELCloudApp = this.homey.app as MELCloudApp
+
+    #holdAPIListUntil: DateTime = DateTime.now()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public constructor(...args: any[]) {
@@ -97,7 +101,7 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     }
 
     public async apiList(): Promise<{ data: Building[] }> {
-      return this.api.get<Building[]>('/User/ListDevices')
+      return this.api.get<Building[]>(LIST_URL)
     }
 
     public async apiSet<D extends MELCloudDriver>(
@@ -174,8 +178,9 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
 
     private setupAxiosInterceptors(): void {
       this.api.interceptors.request.use(
-        (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig =>
-          this.handleRequest(config),
+        async (
+          config: InternalAxiosRequestConfig,
+        ): Promise<InternalAxiosRequestConfig> => this.handleRequest(config),
         async (error: AxiosError): Promise<AxiosError> =>
           this.handleError(error),
       )
@@ -187,9 +192,19 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       )
     }
 
-    private handleRequest(
+    private async handleRequest(
       config: InternalAxiosRequestConfig,
-    ): InternalAxiosRequestConfig {
+    ): Promise<InternalAxiosRequestConfig> {
+      if (config.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
+        return Promise.reject(
+          new Error(
+            `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
+              .diffNow()
+              .shiftTo('minutes', 'seconds')
+              .toHuman()}`,
+          ),
+        )
+      }
       const updatedConfig: InternalAxiosRequestConfig = { ...config }
       updatedConfig.headers.set(
         'X-MitsContextKey',
@@ -208,15 +223,19 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
       const apiCallData: APICallContextDataWithErrorMessage =
         createAPICallErrorData(error)
       this.error(String(apiCallData))
-      if (
-        error.response?.status === axios.HttpStatusCode.Unauthorized &&
-        this.app.retry &&
-        error.config?.url !== LOGIN_URL
-      ) {
-        this.app.handleRetry()
-        if ((await this.app.login()) && error.config) {
-          return this.api.request(error.config)
-        }
+      switch (error.response?.status) {
+        case axios.HttpStatusCode.Unauthorized:
+          if (this.app.retry && error.config?.url !== LOGIN_URL) {
+            this.app.handleRetry()
+            if ((await this.app.login()) && error.config) {
+              return this.api.request(error.config)
+            }
+          }
+          break
+        case axios.HttpStatusCode.TooManyRequests:
+          this.#holdAPIListUntil = DateTime.now().plus({ minutes: 30 })
+          break
+        default:
       }
       await this.setErrorWarning(apiCallData.errorMessage)
       return Promise.reject(error)
