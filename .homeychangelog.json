@@ -154,5 +154,8 @@
   },
   "30.0.0": {
     "en": "Enhanced performances."
+  },
+  "31.0.0": {
+    "en": "Improved error handling, try to handle the new MELCloud request limitation."
   }
 }
