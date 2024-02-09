@@ -1,3 +1,4 @@
+import type { DateObjectUnits, DurationLike } from 'luxon'
 import type AtaDevice from './drivers/melcloud/device'
 import type AtaDriver from './drivers/melcloud/driver'
 import type AtwDevice from './drivers/melcloud_atw/device'
@@ -58,10 +59,10 @@ export type HomeySettings = BaseHomeySettings<string | null>
 export type HomeySettingsUI = BaseHomeySettings<string | undefined>
 
 export interface ReportPlanParameters {
-  readonly duration: object
-  readonly interval: object
-  readonly minus: object
-  readonly values: object
+  readonly duration: DurationLike
+  readonly interval: DurationLike
+  readonly minus: DurationLike
+  readonly values: DateObjectUnits
 }
 
 export type SyncFromMode = 'syncFrom'
