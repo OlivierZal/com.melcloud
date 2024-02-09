@@ -1,6 +1,6 @@
 import {
+  type DeviceDataFromList,
   Horizontal,
-  type ListDeviceData,
   type OpCapabilities,
   OperationMode,
   type ReportPlanParameters,
@@ -69,7 +69,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<AtaDriver>>(
     capability: K,
-    value: ValueOf<ListDeviceData<AtaDriver>>,
+    value: ValueOf<DeviceDataFromList<AtaDriver>>,
   ): OpCapabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':
@@ -85,10 +85,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     }
   }
 
-  protected async updateThermostatMode(success: boolean): Promise<void> {
-    if (!success) {
-      return
-    }
+  protected async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     const operationMode: keyof typeof OperationMode =
       this.getCapabilityValue('operation_mode')

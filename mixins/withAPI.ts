@@ -1,12 +1,12 @@
 import type {
   Building,
+  DeviceData,
+  DeviceDataFromGet,
   ErrorLogData,
   ErrorLogPostData,
-  FLAG_UNCHANGED,
   FailureData,
   FrostProtectionData,
   FrostProtectionPostData,
-  GetDeviceData,
   HeatPumpType,
   HolidayModeData,
   HolidayModePostData,
@@ -40,11 +40,9 @@ type APIClass = new (...args: any[]) => {
     postData: ErrorLogPostData,
   ) => Promise<{ data: ErrorLogData[] | FailureData }>
   readonly apiGet: <D extends MELCloudDriver>(
-    id: string,
-    buildingId: string,
-  ) => Promise<{
-    data: GetDeviceData<D> & { readonly EffectiveFlags: typeof FLAG_UNCHANGED }
-  }>
+    id: number,
+    buildingId: number,
+  ) => Promise<{ data: DeviceDataFromGet<D> }>
   readonly apiGetFrostProtection: (
     id: number,
   ) => Promise<{ data: FrostProtectionData }>
@@ -63,7 +61,7 @@ type APIClass = new (...args: any[]) => {
   readonly apiSet: <D extends MELCloudDriver>(
     heatPumpType: keyof typeof HeatPumpType,
     postData: PostData<D>,
-  ) => Promise<{ data: GetDeviceData<D> }>
+  ) => Promise<{ data: DeviceData<D> }>
   readonly getHomeySetting: <K extends keyof HomeySettings>(
     setting: K,
   ) => HomeySettings[K]
@@ -105,24 +103,20 @@ const withAPI = <T extends HomeyClass>(base: T): APIClass & T =>
     public async apiSet<D extends MELCloudDriver>(
       heatPumpType: keyof typeof HeatPumpType,
       postData: PostData<D>,
-    ): Promise<{ data: GetDeviceData<D> }> {
-      return this.api.post<GetDeviceData<D>>(
+    ): Promise<{ data: DeviceData<D> }> {
+      return this.api.post<DeviceData<D>>(
         `/Device/Set${heatPumpType}`,
         postData,
       )
     }
 
     public async apiGet<D extends MELCloudDriver>(
-      id: string,
-      buildingId: string,
-    ): Promise<{
-      data: GetDeviceData<D> & {
-        readonly EffectiveFlags: typeof FLAG_UNCHANGED
-      }
-    }> {
-      return this.api.get<
-        GetDeviceData<D> & { readonly EffectiveFlags: typeof FLAG_UNCHANGED }
-      >('/Device/Get', { params: { buildingId, id } })
+      id: number,
+      buildingId: number,
+    ): Promise<{ data: DeviceDataFromGet<D> }> {
+      return this.api.get<DeviceDataFromGet<D>>('/Device/Get', {
+        params: { buildingId, id },
+      })
     }
 
     public async apiReport<D extends MELCloudDriver>(

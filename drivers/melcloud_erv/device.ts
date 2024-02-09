@@ -1,5 +1,5 @@
 import {
-  type ListDeviceData,
+  type DeviceDataFromList,
   type OpCapabilities,
   type SetCapabilities,
   type SetDeviceData,
@@ -36,7 +36,7 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
     capability: K,
-    value: ValueOf<ListDeviceData<ErvDriver>>,
+    value: ValueOf<DeviceDataFromList<ErvDriver>>,
   ): OpCapabilities<ErvDriver>[K] {
     return capability === 'ventilation_mode'
       ? (VentilationMode[
