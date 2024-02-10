@@ -130,7 +130,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     const dataFromGet: DeviceDataFromGet<T> | null = await this.getDeviceData()
     if (dataFromGet) {
       const data: ListDevice<T>['Device'] = {
-        ...this.app.devices[this.id].Device,
+        ...this.app.devicesPerId[this.id].Device,
         ...dataFromGet,
       }
       this.log('Syncing from device list:', data)

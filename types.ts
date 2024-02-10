@@ -972,9 +972,8 @@ export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
       : ListDeviceAta | ListDeviceAtw | ListDeviceErv
 
 export interface DeviceLookup {
-  devices: Record<number, ListDevice<MELCloudDriver>>
-  deviceList: ListDevice<MELCloudDriver>[]
-  deviceListPerType: Record<string, ListDevice<MELCloudDriver>[]>
+  devicesPerId: Record<number, ListDevice<MELCloudDriver>>
+  devicesPerType: Record<string, ListDevice<MELCloudDriver>[]>
 }
 export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 export interface Building extends Readonly<BuildingData> {

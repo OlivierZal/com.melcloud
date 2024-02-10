@@ -39,21 +39,19 @@ const flattenDevices = (
 ): DeviceLookup => {
   const flatDevices = devices.reduce<DeviceLookup>(
     (flattenedDevices, device) => {
-      flattenedDevices.devices[device.DeviceID] = device
+      flattenedDevices.devicesPerId[device.DeviceID] = device
       const type: HeatPumpType = device.Device.DeviceType
-      if (!(type in flattenedDevices.deviceListPerType)) {
-        flattenedDevices.deviceListPerType[type] = []
+      if (!(type in flattenedDevices.devicesPerType)) {
+        flattenedDevices.devicesPerType[type] = []
       }
-      flattenedDevices.deviceListPerType[type].push(device)
+      flattenedDevices.devicesPerType[type].push(device)
       return flattenedDevices
     },
     {
-      deviceList: [...acc.deviceList],
-      deviceListPerType: { ...acc.deviceListPerType },
-      devices: { ...acc.devices },
+      devicesPerId: { ...acc.devicesPerId },
+      devicesPerType: { ...acc.devicesPerType },
     },
   )
-  flatDevices.deviceList.push(...devices)
   return flatDevices
 }
 
@@ -80,11 +78,9 @@ const handleResponse = (data: FailureData | SuccessData): void => {
 }
 
 export = class MELCloudApp extends withAPI(withTimers(App)) {
-  #devices: Record<number, ListDevice<MELCloudDriver>> = {}
+  #devicesPerId: Record<number, ListDevice<MELCloudDriver>> = {}
 
-  #deviceList: readonly ListDevice<MELCloudDriver>[] = []
-
-  #deviceListPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
+  #devicesPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
 
   #holdAPIListUntil: DateTime = DateTime.now()
 
@@ -96,19 +92,15 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   #syncInterval: NodeJS.Timeout | null = null
 
-  public get devices(): Record<number, ListDevice<MELCloudDriver>> {
-    return this.#devices
+  public get devicesPerId(): Record<number, ListDevice<MELCloudDriver>> {
+    return this.#devicesPerId
   }
 
-  public get deviceList(): readonly ListDevice<MELCloudDriver>[] | null {
-    return this.#deviceList
-  }
-
-  public get deviceListPerType(): Record<
+  public get devicesPerType(): Record<
     string,
     readonly ListDevice<MELCloudDriver>[]
   > {
-    return this.#deviceListPerType
+    return this.#devicesPerType
   }
 
   public get holdAPIListUntil(): DateTime {
@@ -233,7 +225,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const { data } = await this.apiError({
-      DeviceIDs: Object.keys(this.#devices),
+      DeviceIDs: Object.keys(this.#devicesPerId),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
     })
@@ -325,7 +317,9 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   private async syncDevicesFromList(): Promise<void> {
     try {
-      const buildingDevices = (await this.getBuildings()).reduce<DeviceLookup>(
+      const { devicesPerId, devicesPerType } = (
+        await this.getBuildings()
+      ).reduce<DeviceLookup>(
         (
           acc,
           { Structure: { Devices: devices, Areas: areas, Floors: floors } },
@@ -343,14 +337,12 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           })
           return newAcc
         },
-        { deviceList: [], deviceListPerType: {}, devices: {} },
+        { devicesPerId: {}, devicesPerType: {} },
       )
-      this.#deviceList = buildingDevices.deviceList
-      this.#deviceListPerType = buildingDevices.deviceListPerType
-      this.#devices = buildingDevices.devices
+      this.#devicesPerId = devicesPerId
+      this.#devicesPerType = devicesPerType
     } catch (error: unknown) {
-      this.#deviceList = []
-      this.#deviceListPerType = {}
+      this.#devicesPerType = {}
     } finally {
       await this.syncDevices()
     }

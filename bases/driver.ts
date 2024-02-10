@@ -73,7 +73,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   }
 
   private discoverDevices(): DeviceDetails[] {
-    return this.#app.deviceListPerType[this.deviceType].map(
+    return this.#app.devicesPerType[this.deviceType].map(
       ({
         DeviceName: name,
         DeviceID: id,

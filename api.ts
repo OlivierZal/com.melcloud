@@ -239,7 +239,7 @@ export = {
                 : ''
             const device: string =
               app.getDevice(deviceId)?.getName() ??
-              app.devices[deviceId].DeviceName
+              app.devicesPerId[deviceId].DeviceName
             const error: string = errorMessage?.trim() ?? ''
             return { date, device, error }
           },
