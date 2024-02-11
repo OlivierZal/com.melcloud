@@ -178,10 +178,7 @@ interface SetCapabilitiesAta extends SetCapabilitiesCommon {
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
-  readonly fan_power: number
   readonly fan_power_state: number
-  readonly horizontal: keyof typeof Horizontal
-  readonly vertical: keyof typeof Vertical
 }
 interface ReportCapabilitiesAta {
   measure_power?: number
@@ -367,16 +364,10 @@ type DeviceDataFromGetAta = DeviceDataAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 interface DeviceDataFromListAta
-  extends Exclude<
-      DeviceDataFromGetAta,
-      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
-    >,
+  extends DeviceDataFromGetAta,
     DeviceDataFromListCommon {
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
-  readonly FanSpeed: number
-  readonly VaneHorizontalDirection: Horizontal
-  readonly VaneVerticalDirection: Vertical
 }
 
 interface UpdateDeviceDataAtw extends BaseDeviceData {
@@ -557,11 +548,8 @@ type ListCapabilityMappingAtaType = Record<
   { readonly tag: Exclude<keyof DeviceDataFromListAta, 'EffectiveFlags'> }
 >
 export const listCapabilityMappingAta: ListCapabilityMappingAtaType = {
-  fan_power: { tag: 'FanSpeed' },
   fan_power_state: { tag: 'ActualFanSpeed' },
-  horizontal: { tag: 'VaneHorizontalDirection' },
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  vertical: { tag: 'VaneVerticalDirection' },
 } as const
 export type ListCapabilityMappingAta = typeof listCapabilityMappingAta
 type ReportCapabilityMappingAtaType = Record<
@@ -841,7 +829,7 @@ export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
     : T extends ErvDriver
       ? GetCapabilityMappingErv
       : GetCapabilityMappingAny
-export interface ListCapabilityData<T> {
+interface ListCapabilityData<T> {
   readonly tag: Exclude<keyof DeviceDataFromList<T>, 'EffectiveFlags'>
 }
 export type ListCapabilityMappingAny =
@@ -973,7 +961,7 @@ export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
 
 export interface DeviceLookup {
   devicesPerId: Record<number, ListDevice<MELCloudDriver>>
-  devicesPerType: Record<string, ListDevice<MELCloudDriver>[]>
+  devicesPerType: Record<HeatPumpType, ListDevice<MELCloudDriver>[]>
 }
 export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 export interface Building extends Readonly<BuildingData> {

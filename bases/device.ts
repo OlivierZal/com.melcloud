@@ -7,7 +7,6 @@ import {
   type DeviceDetails,
   FLAG_UNCHANGED,
   type GetCapabilityMapping,
-  type ListCapabilityData,
   type ListCapabilityMapping,
   type ListDevice,
   type MELCloudDriver,
@@ -82,26 +81,11 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   #optionalCapabilities!: string[]
 
-  #setCapabilityMapping!: Partial<NonNullable<SetCapabilityMapping<T>>>
+  #setCapabilityMapping: Partial<NonNullable<SetCapabilityMapping<T>>> = {}
 
-  #getCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>>
+  #getCapabilityMapping: Partial<NonNullable<GetCapabilityMapping<T>>> = {}
 
-  #listCapabilityMapping: Partial<
-    NonNullable<ListCapabilityMapping<T>>
-  > | null = null
-
-  #setAndGetCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>> &
-    Partial<NonNullable<SetCapabilityMapping<T>>>
-
-  #notSetOrGetCapabilityEntries!: [
-    TypedString<keyof OpCapabilities<T>>,
-    OpCapabilityData<T>,
-  ][]
-
-  #opCapabilityEntries!: [
-    TypedString<keyof OpCapabilities<T>>,
-    OpCapabilityData<T>,
-  ][]
+  #listCapabilityMapping: Partial<NonNullable<ListCapabilityMapping<T>>> = {}
 
   #reportCapabilityEntries: {
     false: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
@@ -387,9 +371,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         ...Object.entries(this.#getCapabilityMapping),
       ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
     } else if (this.#syncToDeviceTimeout) {
-      return this.#notSetOrGetCapabilityEntries
+      return Object.entries(this.#listCapabilityMapping) as [
+        TypedString<keyof OpCapabilities<T>>,
+        OpCapabilityData<T>,
+      ][]
     }
-    return this.#opCapabilityEntries
+    return Object.entries({
+      ...this.#setCapabilityMapping,
+      ...this.#getCapabilityMapping,
+      ...this.#listCapabilityMapping,
+    }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
   }
 
   private async setCapabilityValues<
@@ -713,34 +704,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     this.#getCapabilityMapping = this.cleanMapping(
       this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
-    this.#setAndGetCapabilityMapping = {
-      ...this.#setCapabilityMapping,
-      ...this.#getCapabilityMapping,
-    }
-    this.setListAndOpCapabilityEntries()
   }
 
   private setListCapabilityMapping(): void {
     this.#listCapabilityMapping = this.cleanMapping(
       this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
-    this.setListAndOpCapabilityEntries()
-  }
-
-  private setListAndOpCapabilityEntries(): void {
-    if (!this.#listCapabilityMapping) {
-      this.setListCapabilityMapping()
-    }
-    this.#notSetOrGetCapabilityEntries = Object.entries(
-      this.#listCapabilityMapping as ListCapabilityMapping<T>,
-    ).filter(
-      ([capability]: [string, ListCapabilityData<T>]) =>
-        !(capability in this.#setAndGetCapabilityMapping),
-    ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
-    this.#opCapabilityEntries = Object.entries({
-      ...this.#setAndGetCapabilityMapping,
-      ...this.#listCapabilityMapping,
-    }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
   }
 
   private setReportCapabilityEntries(

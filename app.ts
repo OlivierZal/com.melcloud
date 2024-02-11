@@ -23,6 +23,11 @@ import axios from 'axios'
 import withAPI from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 
+const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
+  0: [],
+  1: [],
+  3: [],
+}
 const MAX_INT32 = 2147483647
 const NO_TIME_DIFF = 0
 
@@ -34,26 +39,24 @@ const getErrorMessage = (error: unknown): string =>
     : String(error)
 
 const flattenDevices = (
-  acc: DeviceLookup,
+  flattenedDevices: DeviceLookup,
   devices: readonly ListDevice<MELCloudDriver>[],
-): DeviceLookup => {
-  const flatDevices = devices.reduce<DeviceLookup>(
-    (flattenedDevices, device) => {
-      flattenedDevices.devicesPerId[device.DeviceID] = device
+): DeviceLookup =>
+  devices.reduce<DeviceLookup>(
+    (acc, device) => {
+      acc.devicesPerId[device.DeviceID] = device
       const type: HeatPumpType = device.Device.DeviceType
-      if (!(type in flattenedDevices.devicesPerType)) {
-        flattenedDevices.devicesPerType[type] = []
+      if (!(type in acc.devicesPerType)) {
+        acc.devicesPerType[type] = []
       }
-      flattenedDevices.devicesPerType[type].push(device)
-      return flattenedDevices
+      acc.devicesPerType[type].push(device)
+      return acc
     },
     {
-      devicesPerId: { ...acc.devicesPerId },
-      devicesPerType: { ...acc.devicesPerType },
+      devicesPerId: { ...flattenedDevices.devicesPerId },
+      devicesPerType: { ...flattenedDevices.devicesPerType },
     },
   )
-  return flatDevices
-}
 
 const throwIfRequested = (error: unknown, raise: boolean): void => {
   if (raise) {
@@ -337,12 +340,12 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
           })
           return newAcc
         },
-        { devicesPerId: {}, devicesPerType: {} },
+        { devicesPerId: {}, devicesPerType: DEFAULT_DEVICES_PER_TYPE },
       )
       this.#devicesPerId = devicesPerId
       this.#devicesPerType = devicesPerType
     } catch (error: unknown) {
-      this.#devicesPerType = {}
+      this.#devicesPerType = DEFAULT_DEVICES_PER_TYPE
     } finally {
       await this.syncDevices()
     }
