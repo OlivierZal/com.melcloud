@@ -346,8 +346,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       this.#devicesPerType = devicesPerType
     } catch (error: unknown) {
       this.#devicesPerType = DEFAULT_DEVICES_PER_TYPE
-    } finally {
-      await this.syncDevices()
     }
   }
 
@@ -395,14 +393,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): number[] {
     return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
-  }
-
-  private async syncDevices(): Promise<void> {
-    await Promise.all(
-      this.getDevices().map(async (device: MELCloudDevice): Promise<void> => {
-        await device.syncFromDevice()
-      }),
-    )
   }
 
   private setHomeySettings(settings: Partial<HomeySettings>): void {
