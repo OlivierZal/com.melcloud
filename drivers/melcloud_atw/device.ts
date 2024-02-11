@@ -1,6 +1,6 @@
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import {
-  type ListDeviceData,
+  type DeviceDataFromList,
   type OpCapabilities,
   OperationModeState,
   OperationModeZone,
@@ -78,7 +78,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
 
   protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
     capability: TypedString<K>,
-    value: ValueOf<ListDeviceData<AtwDriver>>,
+    value: ValueOf<DeviceDataFromList<AtwDriver>>,
   ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

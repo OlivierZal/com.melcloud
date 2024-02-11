@@ -1,14 +1,14 @@
 import {
   type BooleanString,
   type Capabilities,
+  type DeviceData,
+  type DeviceDataFromGet,
+  type DeviceDataFromList,
   type DeviceDetails,
   FLAG_UNCHANGED,
   type GetCapabilityMapping,
-  type GetDeviceData,
-  type ListCapabilityData,
   type ListCapabilityMapping,
   type ListDevice,
-  type ListDeviceData,
   type MELCloudDriver,
   type OpCapabilities,
   type OpCapabilityData,
@@ -24,8 +24,6 @@ import {
   type SetDeviceData,
   type Settings,
   type Store,
-  type SyncFromMode,
-  type SyncMode,
   type TypedString,
   type UpdateDeviceData,
   type ValueOf,
@@ -71,6 +69,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     SetCapabilities<T>[keyof SetCapabilities<T>]
   >()
 
+  #firstRun = true
+
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
     true: NodeJS.Timeout | null
@@ -79,30 +79,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
 
-  #syncTimeout!: NodeJS.Timeout
+  #syncFromDeviceTimeout: NodeJS.Timeout | null = null
+
+  #syncToDeviceTimeout!: NodeJS.Timeout
 
   #optionalCapabilities!: string[]
 
-  #setCapabilityMapping!: Partial<NonNullable<SetCapabilityMapping<T>>>
+  #setCapabilityMapping: Partial<NonNullable<SetCapabilityMapping<T>>> = {}
 
-  #getCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>>
+  #getCapabilityMapping: Partial<NonNullable<GetCapabilityMapping<T>>> = {}
 
-  #listCapabilityMapping: Partial<
-    NonNullable<ListCapabilityMapping<T>>
-  > | null = null
-
-  #setAndGetCapabilityMapping!: Partial<NonNullable<GetCapabilityMapping<T>>> &
-    Partial<NonNullable<SetCapabilityMapping<T>>>
-
-  #syncFromCapabilityEntries!: [
-    TypedString<keyof OpCapabilities<T>>,
-    OpCapabilityData<T>,
-  ][]
-
-  #opCapabilityEntries!: [
-    TypedString<keyof OpCapabilities<T>>,
-    OpCapabilityData<T>,
-  ][]
+  #listCapabilityMapping: Partial<NonNullable<ListCapabilityMapping<T>>> = {}
 
   #reportCapabilityEntries: {
     false: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
@@ -119,20 +106,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await this.handleCapabilities()
     this.setReportCapabilityEntries()
     this.registerCapabilityListeners()
-    this.app.applySyncFromDevices()
+    await this.syncFromDevice()
+    this.#firstRun = false
     await this.runEnergyReports()
-  }
-
-  public isDiff(): boolean {
-    return Boolean(this.diff.size)
-  }
-
-  public async syncDeviceFromList(syncMode?: SyncFromMode): Promise<void> {
-    const deviceFromList: ListDevice<T> | undefined = this.getDeviceFromList()
-    const data: ListDevice<T>['Device'] | null = deviceFromList?.Device ?? null
-    this.log('Syncing from device list:', data)
-    await this.updateStore(data)
-    await this.endSync(data, syncMode)
   }
 
   public async onSettings({
@@ -163,7 +139,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           !(setting in this.driver.reportCapabilityMapping),
       )
     ) {
-      this.app.applySyncFromDevices()
+      await this.syncFromDevice()
     }
 
     const changedEnergyKeys: string[] = changedCapabilities.filter(
@@ -186,7 +162,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
   }
 
   public onDeleted(): void {
-    this.clearSync()
+    this.clearSyncWithDevice()
     this.clearEnergyReportPlans()
   }
 
@@ -239,7 +215,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     capability: K,
     value: SetCapabilities<T>[K],
   ): Promise<void> {
-    this.clearSync()
+    this.clearSyncWithDevice()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
     }
@@ -257,12 +233,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     await this.setWarning(this.homey.__('warnings.display_error'))
   }
 
-  protected async updateStore(
-    data: ListDevice<T>['Device'] | null,
-  ): Promise<void> {
-    if (!data) {
-      return
-    }
+  protected async updateStore(data: ListDevice<T>['Device']): Promise<void> {
     const updates = await Promise.all(
       Object.entries(this.getStore() as Store)
         .filter(
@@ -289,19 +260,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
       this.getCapabilityValue(capability as TypedString<K>)) as NonNullable<
       SetCapabilities<T>[K]
     >
-  }
-
-  private async setDeviceData(): Promise<GetDeviceData<T> | null> {
-    try {
-      const postData: PostData<T> = {
-        DeviceID: this.id,
-        HasPendingCommand: true,
-        ...this.buildUpdateData(),
-      }
-      return (await this.apiSet(this.driver.heatPumpType, postData)).data
-    } catch (error: unknown) {
-      return null
-    }
   }
 
   private async reportEnergyCost(
@@ -337,33 +295,23 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     })
   }
 
-  private clearSync(): void {
-    this.app.clearListDevicesRefresh()
-    this.homey.clearTimeout(this.#syncTimeout)
+  private clearSyncWithDevice(): void {
+    this.homey.clearTimeout(this.#syncToDeviceTimeout)
+    this.homey.clearTimeout(this.#syncFromDeviceTimeout)
+    this.#syncFromDeviceTimeout = null
     this.log('Sync with device has been paused')
   }
 
-  private async endSync(
-    data: GetDeviceData<T> | ListDevice<T>['Device'] | null,
-    syncMode?: SyncMode,
+  private async updateCapabilities(
+    data: DeviceData<T> | ListDevice<T>['Device'] | null,
   ): Promise<void> {
-    await this.updateCapabilities(data, syncMode)
-    await this.updateThermostatMode(Boolean(data))
-    if (syncMode === 'syncTo' && !this.isDiff()) {
-      this.app.applySyncFromDevices({ syncMode: 'syncFrom' })
-    }
-  }
-
-  private async updateCapabilities<
-    D extends GetDeviceData<T> | ListDevice<T>['Device'],
-  >(data: D | null, syncMode?: SyncMode): Promise<void> {
-    if (typeof data?.EffectiveFlags === 'undefined') {
+    if (!data) {
       return
     }
     const updateCapabilityEntries: [
       TypedString<keyof OpCapabilities<T>>,
       OpCapabilityData<T>,
-    ][] = this.getUpdateCapabilityEntries(syncMode, BigInt(data.EffectiveFlags))
+    ][] = this.getUpdateCapabilityEntries(BigInt(data.EffectiveFlags))
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
@@ -396,14 +344,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     )
     await this.setCapabilityValues(regularCapabilityEntries, data)
     await this.setCapabilityValues(lastCapabilityEntries, data)
+    await this.updateThermostatMode()
   }
 
   private getUpdateCapabilityEntries(
-    syncMode: SyncMode | undefined,
     effectiveFlags: bigint,
   ): [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][] {
-    switch (syncMode) {
-      case 'syncTo':
+    switch (true) {
+      case Boolean(effectiveFlags):
         return [
           ...Object.entries(this.#setCapabilityMapping).filter(
             ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
@@ -412,15 +360,23 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
           ),
           ...Object.entries(this.#getCapabilityMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
-      case 'syncFrom':
-        return this.#syncFromCapabilityEntries
+      case this.#firstRun:
+      case Boolean(this.#syncFromDeviceTimeout):
+        return Object.entries({
+          ...this.#setCapabilityMapping,
+          ...this.#getCapabilityMapping,
+          ...this.#listCapabilityMapping,
+        }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
       default:
-        return this.#opCapabilityEntries
+        return Object.entries(this.#listCapabilityMapping) as [
+          TypedString<keyof OpCapabilities<T>>,
+          OpCapabilityData<T>,
+        ][]
     }
   }
 
   private async setCapabilityValues<
-    D extends GetDeviceData<T> | ListDevice<T>['Device'],
+    D extends DeviceData<T> | ListDevice<T>['Device'],
     K extends keyof OpCapabilities<T>,
   >(capabilityEntries: [K, OpCapabilityData<T>][], data: D): Promise<void> {
     await Promise.all(
@@ -433,7 +389,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
               data[tag as keyof D] as ValueOf<
-                GetDeviceData<T> & ListDeviceData<T>
+                DeviceData<T> & DeviceDataFromList<T>
               >,
             )
             await this.setCapabilityValue(
@@ -446,19 +402,44 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     )
   }
 
+  private planSyncFromDevice(): void {
+    this.#syncFromDeviceTimeout = this.setTimeout(
+      async (): Promise<void> => {
+        await this.syncFromDevice()
+        this.#syncFromDeviceTimeout = null
+      },
+      { minutes: 1 },
+      { actionType: 'sync from device', units: ['minutes'] },
+    )
+  }
+
+  private async syncFromDevice(): Promise<void> {
+    const dataFromGet: DeviceDataFromGet<T> | null = await this.getDeviceData()
+    if (dataFromGet) {
+      const data: ListDevice<T>['Device'] = {
+        ...this.app.devicesPerId[this.id].Device,
+        ...dataFromGet,
+      }
+      this.log('Syncing from device list:', data)
+      await this.updateStore(data)
+      await this.updateCapabilities(data)
+    }
+    this.planSyncFromDevice()
+  }
+
   private applySyncToDevice(): void {
-    this.#syncTimeout = this.setTimeout(
+    this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
         await this.syncToDevice()
       },
       { seconds: 1 },
-      { actionType: 'sync with device', units: ['seconds'] },
+      { actionType: 'sync to device', units: ['seconds'] },
     )
   }
 
   private async syncToDevice(): Promise<void> {
-    const data: GetDeviceData<T> | null = await this.setDeviceData()
-    await this.endSync(data, 'syncTo')
+    await this.updateCapabilities(await this.setDeviceData())
+    this.planSyncFromDevice()
   }
 
   private buildUpdateData(): SetDeviceData<T> {
@@ -488,11 +469,26 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     ) as SetDeviceData<T>
   }
 
-  private getDeviceFromList(): ListDevice<T> | undefined {
-    return this.app.deviceList.find(
-      (device: ListDevice<MELCloudDriver>): device is ListDevice<T> =>
-        device.DeviceID === this.id,
-    )
+  private async setDeviceData(): Promise<DeviceData<T> | null> {
+    try {
+      const postData: PostData<T> = {
+        DeviceID: this.id,
+        HasPendingCommand: true,
+        ...this.buildUpdateData(),
+      }
+      return (await this.apiSet(this.driver.heatPumpType, postData)).data
+    } catch (error: unknown) {
+      return null
+    }
+  }
+
+  private async getDeviceData(): Promise<DeviceDataFromGet<T> | null> {
+    try {
+      return (await this.apiGet(this.id, this.buildingid))
+        .data as DeviceDataFromGet<T>
+    } catch (error: unknown) {
+      return null
+    }
   }
 
   private async runEnergyReports(): Promise<void> {
@@ -723,34 +719,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     this.#getCapabilityMapping = this.cleanMapping(
       this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
-    this.#setAndGetCapabilityMapping = {
-      ...this.#setCapabilityMapping,
-      ...this.#getCapabilityMapping,
-    }
-    this.setListAndOpCapabilityEntries()
   }
 
   private setListCapabilityMapping(): void {
     this.#listCapabilityMapping = this.cleanMapping(
       this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
-    this.setListAndOpCapabilityEntries()
-  }
-
-  private setListAndOpCapabilityEntries(): void {
-    if (!this.#listCapabilityMapping) {
-      this.setListCapabilityMapping()
-    }
-    this.#syncFromCapabilityEntries = Object.entries(
-      this.#listCapabilityMapping as ListCapabilityMapping<T>,
-    ).filter(
-      ([capability]: [string, ListCapabilityData<T>]) =>
-        !(capability in this.#setAndGetCapabilityMapping),
-    ) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
-    this.#opCapabilityEntries = Object.entries({
-      ...this.#setAndGetCapabilityMapping,
-      ...this.#listCapabilityMapping,
-    }) as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
   }
 
   private setReportCapabilityEntries(
@@ -806,10 +780,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
-    value: ValueOf<ListDeviceData<T>>,
+    value: ValueOf<DeviceDataFromList<T>>,
   ): OpCapabilities<T>[K]
 
-  protected abstract updateThermostatMode(success: boolean): Promise<void>
+  protected abstract updateThermostatMode(): Promise<void>
 }
 
 export default BaseMELCloudDevice

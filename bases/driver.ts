@@ -3,7 +3,6 @@ import {
   type GetCapabilityMappingAny,
   HeatPumpType,
   type ListCapabilityMappingAny,
-  type ListDevice,
   type LoginCredentials,
   type ReportCapabilityMappingAny,
   type ReportData,
@@ -51,10 +50,11 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   public async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
+      async (data: LoginCredentials): Promise<boolean> => this.login(data),
     )
     session.setHandler(
       'list_devices',
+      // eslint-disable-next-line @typescript-eslint/require-await
       async (): Promise<DeviceDetails[]> => this.discoverDevices(),
     )
   }
@@ -63,16 +63,17 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   public async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.#app.login(data),
+      async (data: LoginCredentials): Promise<boolean> => this.login(data),
     )
   }
 
-  private async discoverDevices(): Promise<DeviceDetails[]> {
-    this.#app.clearListDevicesRefresh()
-    const devices: ListDevice<T>[] = (await this.#app.listDevices(
-      this.deviceType,
-    )) as ListDevice<T>[]
-    return devices.map(
+  private async login(data: LoginCredentials): Promise<boolean> {
+    this.#app.clearSyncFromDevices()
+    return this.#app.login(data)
+  }
+
+  private discoverDevices(): DeviceDetails[] {
+    return this.#app.devicesPerType[this.deviceType].map(
       ({
         DeviceName: name,
         DeviceID: id,

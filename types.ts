@@ -65,9 +65,6 @@ export interface ReportPlanParameters {
   readonly values: DateObjectUnits
 }
 
-export type SyncFromMode = 'syncFrom'
-export type SyncMode = SyncFromMode | 'syncTo'
-
 export interface ManifestDriverSettingData {
   readonly id: string
   readonly label: Record<string, string>
@@ -181,10 +178,7 @@ interface SetCapabilitiesAta extends SetCapabilitiesCommon {
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
-  readonly fan_power: number
   readonly fan_power_state: number
-  readonly horizontal: keyof typeof Horizontal
-  readonly vertical: keyof typeof Vertical
 }
 interface ReportCapabilitiesAta {
   measure_power?: number
@@ -351,7 +345,7 @@ interface BaseDeviceData {
   EffectiveFlags: number
   readonly Power?: boolean
 }
-interface ListDeviceDataCommon {
+interface DeviceDataFromListCommon {
   readonly WifiSignalStrength: number
 }
 
@@ -363,21 +357,17 @@ interface UpdateDeviceDataAta extends BaseDeviceData {
   readonly VaneVertical?: Vertical
 }
 type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
-interface GetDeviceDataAta extends SetDeviceDataAta {
+interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
-interface ListDeviceDataAta
-  extends Exclude<
-      GetDeviceDataAta,
-      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
-    >,
-    ListDeviceDataCommon {
+type DeviceDataFromGetAta = DeviceDataAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
+}
+interface DeviceDataFromListAta
+  extends DeviceDataFromGetAta,
+    DeviceDataFromListCommon {
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
-  readonly FanSpeed: number
-  readonly VaneHorizontalDirection: Horizontal
-  readonly VaneVerticalDirection: Vertical
 }
 
 interface UpdateDeviceDataAtw extends BaseDeviceData {
@@ -393,7 +383,7 @@ interface UpdateDeviceDataAtw extends BaseDeviceData {
   readonly SetTemperatureZone2?: number
 }
 type SetDeviceDataAtw = Readonly<Required<UpdateDeviceDataAtw>>
-interface GetDeviceDataAtw extends SetDeviceDataAtw {
+interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
   readonly OperationMode: OperationModeState
@@ -402,8 +392,12 @@ interface GetDeviceDataAtw extends SetDeviceDataAtw {
   readonly RoomTemperatureZone2: number
   readonly TankWaterTemperature: number
 }
-interface ListDeviceDataAtw extends GetDeviceDataAtw, ListDeviceDataCommon {
+type DeviceDataFromGetAtw = DeviceDataAtw & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
+}
+interface DeviceDataFromListAtw
+  extends DeviceDataFromGetAtw,
+    DeviceDataFromListCommon {
   readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -434,13 +428,17 @@ interface UpdateDeviceDataErv extends BaseDeviceData {
   readonly VentilationMode?: VentilationMode
 }
 type SetDeviceDataErv = Readonly<Required<UpdateDeviceDataErv>>
-interface GetDeviceDataErv extends SetDeviceDataErv {
+interface DeviceDataErv extends SetDeviceDataErv {
   readonly RoomCO2Level: number
   readonly RoomTemperature: number
   readonly OutdoorTemperature: number
 }
-interface ListDeviceDataErv extends GetDeviceDataErv, ListDeviceDataCommon {
+type DeviceDataFromGetErv = DeviceDataErv & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
+}
+interface DeviceDataFromListErv
+  extends DeviceDataFromGetErv,
+    DeviceDataFromListCommon {
   readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
@@ -460,20 +458,27 @@ export type PostData<T> = SetDeviceData<T> & {
   readonly HasPendingCommand: true
 }
 
-export type GetDeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? GetDeviceDataAta
+export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataAta
   : MELCloudDriver & T extends AtwDriver
-    ? GetDeviceDataAtw
+    ? DeviceDataAtw
     : T extends ErvDriver
-      ? GetDeviceDataErv
-      : GetDeviceDataAta | GetDeviceDataAtw | GetDeviceDataErv
-export type ListDeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? ListDeviceDataAta
+      ? DeviceDataErv
+      : DeviceDataAta | DeviceDataAtw | DeviceDataErv
+export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromGetAta
   : MELCloudDriver & T extends AtwDriver
-    ? ListDeviceDataAtw
+    ? DeviceDataFromGetAtw
     : T extends ErvDriver
-      ? ListDeviceDataErv
-      : ListDeviceDataAta | ListDeviceDataAtw | ListDeviceDataErv
+      ? DeviceDataFromGetErv
+      : DeviceDataFromGetAta | DeviceDataFromGetAtw | DeviceDataFromGetErv
+export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromListAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataFromListAtw
+    : T extends ErvDriver
+      ? DeviceDataFromListErv
+      : DeviceDataFromListAta | DeviceDataFromListAtw | DeviceDataFromListErv
 
 export interface ReportPostData {
   readonly DeviceID: number
@@ -532,7 +537,7 @@ export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
 export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
 type GetCapabilityMappingAtaType = Record<
   keyof GetCapabilitiesAta,
-  { readonly tag: Exclude<keyof GetDeviceDataAta, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataAta, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
   measure_temperature: { tag: 'RoomTemperature' },
@@ -540,14 +545,11 @@ export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
 export type GetCapabilityMappingAta = typeof getCapabilityMappingAta
 type ListCapabilityMappingAtaType = Record<
   keyof ListCapabilitiesAta,
-  { readonly tag: Exclude<keyof ListDeviceDataAta, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromListAta, 'EffectiveFlags'> }
 >
 export const listCapabilityMappingAta: ListCapabilityMappingAtaType = {
-  fan_power: { tag: 'FanSpeed' },
   fan_power_state: { tag: 'ActualFanSpeed' },
-  horizontal: { tag: 'VaneHorizontalDirection' },
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  vertical: { tag: 'VaneVerticalDirection' },
 } as const
 export type ListCapabilityMappingAta = typeof listCapabilityMappingAta
 type ReportCapabilityMappingAtaType = Record<
@@ -651,7 +653,7 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
 export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
 type GetCapabilityMappingAtwType = Record<
   keyof GetCapabilitiesAtw,
-  { readonly tag: Exclude<keyof GetDeviceDataAtw, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataAtw, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
@@ -666,7 +668,7 @@ export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
 export type GetCapabilityMappingAtw = typeof getCapabilityMappingAtw
 type ListCapabilityMappingAtwType = Record<
   keyof ListCapabilitiesAtw,
-  { readonly tag: Exclude<keyof ListDeviceDataAtw, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromListAtw, 'EffectiveFlags'> }
 >
 export const listCapabilityMappingAtw: ListCapabilityMappingAtwType = {
   'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
@@ -776,7 +778,7 @@ export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
 export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
 type GetCapabilityMappingErvType = Record<
   keyof GetCapabilitiesErv,
-  { readonly tag: Exclude<keyof GetDeviceDataErv, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataErv, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
   measure_co2: { tag: 'RoomCO2Level' },
@@ -786,7 +788,7 @@ export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
 export type GetCapabilityMappingErv = typeof getCapabilityMappingErv
 type ListCapabilityMappingErvType = Record<
   keyof ListCapabilitiesErv,
-  { readonly tag: Exclude<keyof ListDeviceDataErv, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromListErv, 'EffectiveFlags'> }
 >
 export const listCapabilityMappingErv: ListCapabilityMappingErvType = {
   measure_pm25: { tag: 'PM25Level' },
@@ -814,7 +816,7 @@ export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
       ? SetCapabilityMappingErv
       : SetCapabilityMappingAny
 export interface GetCapabilityData<T> {
-  readonly tag: Exclude<keyof GetDeviceData<T>, 'EffectiveFlags'>
+  readonly tag: Exclude<keyof DeviceData<T>, 'EffectiveFlags'>
 }
 export type GetCapabilityMappingAny =
   | GetCapabilityMappingAta
@@ -827,8 +829,8 @@ export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
     : T extends ErvDriver
       ? GetCapabilityMappingErv
       : GetCapabilityMappingAny
-export interface ListCapabilityData<T> {
-  readonly tag: Exclude<keyof ListDeviceData<T>, 'EffectiveFlags'>
+interface ListCapabilityData<T> {
+  readonly tag: Exclude<keyof DeviceDataFromList<T>, 'EffectiveFlags'>
 }
 export type ListCapabilityMappingAny =
   | ListCapabilityMappingAta
@@ -941,13 +943,13 @@ interface BaseListDevice {
   readonly DeviceName: string
 }
 interface ListDeviceAta extends BaseListDevice {
-  readonly Device: ListDeviceDataAta
+  readonly Device: DeviceDataFromListAta
 }
 interface ListDeviceAtw extends BaseListDevice {
-  readonly Device: ListDeviceDataAtw
+  readonly Device: DeviceDataFromListAtw
 }
 interface ListDeviceErv extends BaseListDevice {
-  readonly Device: ListDeviceDataErv
+  readonly Device: DeviceDataFromListErv
 }
 export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
   ? ListDeviceAta
@@ -957,9 +959,9 @@ export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
       ? ListDeviceErv
       : ListDeviceAta | ListDeviceAtw | ListDeviceErv
 
-export interface BuildingDevices {
-  deviceIds: Record<number, string>
-  deviceList: ListDevice<MELCloudDriver>[]
+export interface DeviceLookup {
+  devicesPerId: Record<number, ListDevice<MELCloudDriver>>
+  devicesPerType: Record<HeatPumpType, ListDevice<MELCloudDriver>[]>
 }
 export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 export interface Building extends Readonly<BuildingData> {

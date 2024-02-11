@@ -238,7 +238,8 @@ export = {
                 ? fromUTCtoLocal(startDate, app.getLanguage())
                 : ''
             const device: string =
-              app.getDevice(deviceId)?.getName() ?? app.deviceIds[deviceId]
+              app.getDevice(deviceId)?.getName() ??
+              app.devicesPerId[deviceId].DeviceName
             const error: string = errorMessage?.trim() ?? ''
             return { date, device, error }
           },

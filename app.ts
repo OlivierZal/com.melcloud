@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey'
 import type {
   Building,
-  BuildingDevices,
+  DeviceLookup,
   ErrorLogData,
   FailureData,
   FrostProtectionData,
@@ -16,17 +16,20 @@ import type {
   MELCloudDevice,
   MELCloudDriver,
   SuccessData,
-  SyncFromMode,
   ValueOf,
 } from './types'
-import { DateTime, type DurationLike, Settings as LuxonSettings } from 'luxon'
+import { DateTime, Settings as LuxonSettings } from 'luxon'
 import axios from 'axios'
 import withAPI from './mixins/withAPI'
 import withTimers from './mixins/withTimers'
 
+const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
+  0: [],
+  1: [],
+  3: [],
+}
 const MAX_INT32 = 2147483647
 const NO_TIME_DIFF = 0
-const SYNC_INTERVAL = 5
 
 axios.defaults.baseURL = 'https://app.melcloud.com/Mitsubishi.Wifi.Client'
 
@@ -36,19 +39,24 @@ const getErrorMessage = (error: unknown): string =>
     : String(error)
 
 const flattenDevices = (
-  acc: BuildingDevices,
+  flattenedDevices: DeviceLookup,
   devices: readonly ListDevice<MELCloudDriver>[],
-): BuildingDevices => {
-  const newDeviceIds = devices.reduce<Record<number, string>>(
-    (ids, device: ListDevice<MELCloudDriver>) => {
-      ids[device.DeviceID] = device.DeviceName
-      return ids
+): DeviceLookup =>
+  devices.reduce<DeviceLookup>(
+    (acc, device) => {
+      acc.devicesPerId[device.DeviceID] = device
+      const type: HeatPumpType = device.Device.DeviceType
+      if (!(type in acc.devicesPerType)) {
+        acc.devicesPerType[type] = []
+      }
+      acc.devicesPerType[type].push(device)
+      return acc
     },
-    { ...acc.deviceIds },
+    {
+      devicesPerId: { ...flattenedDevices.devicesPerId },
+      devicesPerType: { ...flattenedDevices.devicesPerType },
+    },
   )
-  const newDeviceList = [...acc.deviceList, ...devices]
-  return { deviceIds: newDeviceIds, deviceList: newDeviceList }
-}
 
 const throwIfRequested = (error: unknown, raise: boolean): void => {
   if (raise) {
@@ -73,9 +81,9 @@ const handleResponse = (data: FailureData | SuccessData): void => {
 }
 
 export = class MELCloudApp extends withAPI(withTimers(App)) {
-  #deviceList: ListDevice<MELCloudDriver>[] = []
+  #devicesPerId: Record<number, ListDevice<MELCloudDriver>> = {}
 
-  #deviceIds: Record<number, string> = {}
+  #devicesPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
 
   #holdAPIListUntil: DateTime = DateTime.now()
 
@@ -85,14 +93,17 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
 
   #loginTimeout!: NodeJS.Timeout
 
-  #syncTimeout!: NodeJS.Timeout
+  #syncInterval: NodeJS.Timeout | null = null
 
-  public get deviceList(): ListDevice<MELCloudDriver>[] {
-    return this.#deviceList
+  public get devicesPerId(): Record<number, ListDevice<MELCloudDriver>> {
+    return this.#devicesPerId
   }
 
-  public get deviceIds(): Record<number, string> {
-    return this.#deviceIds
+  public get devicesPerType(): Record<
+    string,
+    readonly ListDevice<MELCloudDriver>[]
+  > {
+    return this.#devicesPerType
   }
 
   public get holdAPIListUntil(): DateTime {
@@ -187,72 +198,20 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     return devices
   }
 
-  public applySyncFromDevices({
-    syncMode,
-    interval,
-  }: { syncMode?: SyncFromMode; interval?: DurationLike } = {}): void {
-    this.clearListDevicesRefresh()
-    this.#syncTimeout = this.setTimeout(
+  public async runSyncFromDevices(): Promise<void> {
+    this.clearSyncFromDevices()
+    await this.syncDevicesFromList()
+    this.#syncInterval = this.setInterval(
       async (): Promise<void> => {
-        await this.listDevices(null, syncMode)
+        await this.syncDevicesFromList()
       },
-      interval ?? { seconds: 1 },
-      { actionType: 'sync with device', units: ['minutes', 'seconds'] },
+      { minutes: 5 },
+      { actionType: 'sync with device', units: ['minutes'] },
     )
   }
 
-  public async listDevices(
-    deviceType: HeatPumpType | null = null,
-    syncMode?: SyncFromMode,
-  ): Promise<ListDevice<MELCloudDriver>[]> {
-    this.clearListDevicesRefresh()
-    try {
-      const { deviceIds, deviceList } = (await this.getBuildings()).reduce<{
-        deviceIds: Record<number, string>
-        deviceList: ListDevice<MELCloudDriver>[]
-      }>(
-        (
-          acc,
-          { Structure: { Devices: devices, Areas: areas, Floors: floors } },
-        ) => {
-          let newAcc = { ...acc }
-          newAcc = flattenDevices(newAcc, devices)
-          areas.forEach(({ Devices: areaDevices }) => {
-            newAcc = flattenDevices(newAcc, areaDevices)
-          })
-          floors.forEach((floor) => {
-            newAcc = flattenDevices(newAcc, floor.Devices)
-            floor.Areas.forEach(({ Devices: areaDevices }) => {
-              newAcc = flattenDevices(newAcc, areaDevices)
-            })
-          })
-          return newAcc
-        },
-        { deviceIds: {}, deviceList: [] },
-      )
-      this.#deviceIds = deviceIds
-      this.#deviceList =
-        deviceType === null
-          ? deviceList
-          : deviceList.filter(
-              ({ Device: { DeviceType: type } }) => deviceType === type,
-            )
-      await this.syncDevicesFromList(syncMode)
-      return this.#deviceList
-    } catch (error: unknown) {
-      return []
-    } finally {
-      const HOLD_INTERVAL: number = this.#holdAPIListUntil
-        .diffNow()
-        .as('minutes')
-      this.applySyncFromDevices({
-        interval: { minutes: Math.max(SYNC_INTERVAL, HOLD_INTERVAL) },
-      })
-    }
-  }
-
-  public clearListDevicesRefresh(): void {
-    this.homey.clearTimeout(this.#syncTimeout)
+  public clearSyncFromDevices(): void {
+    this.homey.clearInterval(this.#syncInterval)
     this.log('Device list refresh has been paused')
   }
 
@@ -269,7 +228,7 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     toDate: DateTime,
   ): Promise<ErrorLogData[]> {
     const { data } = await this.apiError({
-      DeviceIDs: Object.keys(this.#deviceIds),
+      DeviceIDs: Object.keys(this.#devicesPerId),
       FromDate: fromDate.toISODate() ?? '',
       ToDate: toDate.toISODate() ?? '',
     })
@@ -359,6 +318,37 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     return this.homey.i18n.getLanguage()
   }
 
+  private async syncDevicesFromList(): Promise<void> {
+    try {
+      const { devicesPerId, devicesPerType } = (
+        await this.getBuildings()
+      ).reduce<DeviceLookup>(
+        (
+          acc,
+          { Structure: { Devices: devices, Areas: areas, Floors: floors } },
+        ) => {
+          let newAcc = { ...acc }
+          newAcc = flattenDevices(newAcc, devices)
+          areas.forEach(({ Devices: areaDevices }) => {
+            newAcc = flattenDevices(newAcc, areaDevices)
+          })
+          floors.forEach((floor) => {
+            newAcc = flattenDevices(newAcc, floor.Devices)
+            floor.Areas.forEach(({ Devices: areaDevices }) => {
+              newAcc = flattenDevices(newAcc, areaDevices)
+            })
+          })
+          return newAcc
+        },
+        { devicesPerId: {}, devicesPerType: DEFAULT_DEVICES_PER_TYPE },
+      )
+      this.#devicesPerId = devicesPerId
+      this.#devicesPerType = devicesPerType
+    } catch (error: unknown) {
+      this.#devicesPerType = DEFAULT_DEVICES_PER_TYPE
+    }
+  }
+
   private async planRefreshLogin(): Promise<void> {
     const expiry: string = this.getHomeySetting('expiry') ?? ''
     const ms: number = DateTime.fromISO(expiry)
@@ -366,7 +356,9 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
       .diffNow()
       .as('milliseconds')
     if (ms > NO_TIME_DIFF) {
-      this.applySyncFromDevices()
+      if (!this.#syncInterval) {
+        await this.runSyncFromDevices()
+      }
       this.#loginTimeout = this.setTimeout(
         async (): Promise<void> => {
           await this.login()
@@ -401,17 +393,6 @@ export = class MELCloudApp extends withAPI(withTimers(App)) {
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): number[] {
     return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
-  }
-
-  private async syncDevicesFromList(syncMode?: SyncFromMode): Promise<void> {
-    await Promise.all(
-      this.getDevices()
-        .filter((device: MELCloudDevice) => !device.isDiff())
-        .map(
-          async (device: MELCloudDevice): Promise<void> =>
-            device.syncDeviceFromList(syncMode),
-        ),
-    )
   }
 
   private setHomeySettings(settings: Partial<HomeySettings>): void {
