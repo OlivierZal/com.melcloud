@@ -30,9 +30,9 @@ import {
 } from '../types'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
+import MELCloudAPI from '../lib/MELCloudAPI'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
-import withAPI from '../mixins/withAPI'
 import withTimers from '../mixins/withTimers'
 
 const DEFAULT_0 = 0
@@ -47,8 +47,8 @@ const filterEnergyKeys = (key: string, total: boolean): boolean => {
 }
 
 @addToLogs('getName()')
-abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
-  withTimers(Device),
+abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
+  Device,
 ) {
   public declare readonly driver: T
 
@@ -68,6 +68,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
     keyof SetCapabilities<T>,
     SetCapabilities<T>[keyof SetCapabilities<T>]
   >()
+
+  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(this.homey)
 
   #firstRun = true
 
@@ -273,7 +275,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         ToDate: toDate.toISODate() ?? '',
         UseCurrency: false,
       }
-      return (await this.apiReport(postData)).data as ReportData<T>
+      return (await this.#melcloudAPI.report(postData)).data as ReportData<T>
     } catch (error: unknown) {
       return null
     }
@@ -476,7 +478,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
         HasPendingCommand: true,
         ...this.buildUpdateData(),
       }
-      return (await this.apiSet(this.driver.heatPumpType, postData)).data
+      return (await this.#melcloudAPI.set(this.driver.heatPumpType, postData))
+        .data
     } catch (error: unknown) {
       return null
     }
@@ -484,7 +487,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withAPI(
 
   private async getDeviceData(): Promise<DeviceDataFromGet<T> | null> {
     try {
-      return (await this.apiGet(this.id, this.buildingid))
+      return (await this.#melcloudAPI.get(this.id, this.buildingid))
         .data as DeviceDataFromGet<T>
     } catch (error: unknown) {
       return null
