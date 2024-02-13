@@ -174,7 +174,7 @@ export = {
   },
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const app: MELCloudApp = homey.app as MELCloudApp
-    const language: string = app.getLanguage()
+    const language: string = homey.i18n.getLanguage()
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (app.manifest.drivers as ManifestDriver[]).flatMap(
       (driver: ManifestDriver): DriverSetting[] => {
@@ -212,7 +212,7 @@ export = {
     }
   },
   getLanguage({ homey }: { homey: Homey }): string {
-    return (homey.app as MELCloudApp).getLanguage()
+    return homey.i18n.getLanguage()
   },
   async getUnitErrorLog({
     homey,
@@ -235,7 +235,7 @@ export = {
           }): ErrorDetails => {
             const date: string =
               DateTime.fromISO(startDate).year > YEAR_1
-                ? fromUTCtoLocal(startDate, app.getLanguage())
+                ? fromUTCtoLocal(startDate, homey.i18n.getLanguage())
                 : ''
             const device: string =
               app.getDevice(deviceId)?.getName() ??
@@ -247,7 +247,7 @@ export = {
         .filter((error: ErrorDetails) => error.date && error.error)
         .reverse(),
       fromDateHuman: fromDate
-        .setLocale(app.getLanguage())
+        .setLocale(homey.i18n.getLanguage())
         .toLocaleString(DateTime.DATE_FULL),
       nextFromDate: nextToDate.minus({ days: period }).toISODate() ?? '',
       nextToDate: nextToDate.toISODate() ?? '',

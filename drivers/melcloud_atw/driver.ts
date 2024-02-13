@@ -138,12 +138,15 @@ export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
   private registerOperationModeRunListener(
     capability: keyof Capabilities<AtwDriver>,
   ): void {
+    const capabilityArg: 'operation_mode_state' | 'operation_mode_zone' =
+      capability.startsWith('operation_mode_state')
+        ? 'operation_mode_state'
+        : 'operation_mode_zone'
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
         (args: FlowArgs<AtwDriver>): boolean =>
-          args[capability as 'operation_mode_state' | 'operation_mode_zone'] ===
-          args.device.getCapabilityValue(capability),
+          args[capabilityArg] === args.device.getCapabilityValue(capability),
       )
     if (capability.startsWith('operation_mode_zone')) {
       this.homey.flow

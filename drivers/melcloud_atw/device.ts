@@ -85,7 +85,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
         return Boolean(value as number) as OpCapabilities<AtwDriver>[K]
       case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
-          locale: this.app.getLanguage(),
+          locale: this.homey.i18n.getLanguage(),
         }).toLocaleString({
           day: 'numeric',
           month: 'short',
