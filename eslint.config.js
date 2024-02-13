@@ -40,7 +40,6 @@ module.exports = [
       ...jsOverrides.rules,
       ...tsPlugin.configs.all.rules,
       ...importPlugin.configs.typescript.rules,
-      '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/no-magic-numbers': ['error', { ignoreEnums: true }],
       '@typescript-eslint/no-unused-vars': [

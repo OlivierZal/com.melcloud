@@ -48,10 +48,6 @@ export default class MELCloudAPI {
 
   #retryTimeout!: NodeJS.Timeout
 
-  public get api(): AxiosInstance {
-    return this.#api
-  }
-
   public constructor(homey: Homey) {
     this.#app = homey.app as MELCloudApp
     this.#api = axios.create({
