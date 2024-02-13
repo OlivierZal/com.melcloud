@@ -11,8 +11,7 @@
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "jest"
+    "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.6.1",
