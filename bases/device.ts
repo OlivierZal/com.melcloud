@@ -69,17 +69,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     SetCapabilities<T>[keyof SetCapabilities<T>]
   >()
 
-  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(this.homey)
-
   #firstRun = true
-
-  readonly #reportTimeout: {
-    false: NodeJS.Timeout | null
-    true: NodeJS.Timeout | null
-  } = { false: null, true: null }
-
-  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
-    {}
 
   #syncFromDeviceTimeout: NodeJS.Timeout | null = null
 
@@ -99,6 +89,18 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   } = { false: [], true: [] }
 
   #linkedDeviceCount = DEFAULT_1
+
+  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
+    this.homey.settings,
+  )
+
+  readonly #reportTimeout: {
+    false: NodeJS.Timeout | null
+    true: NodeJS.Timeout | null
+  } = { false: null, true: null }
+
+  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
+    {}
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 

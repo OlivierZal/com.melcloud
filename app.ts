@@ -1,23 +1,24 @@
 import 'source-map-support/register'
-import { App, type Driver } from 'homey'
-import type {
-  Building,
-  DeviceLookup,
-  ErrorLogData,
-  FailureData,
-  FrostProtectionData,
-  FrostProtectionSettings,
-  HeatPumpType,
-  HolidayModeData,
-  HolidayModeSettings,
-  HomeySettings,
-  ListDevice,
-  LoginCredentials,
-  MELCloudDevice,
-  MELCloudDriver,
-  SuccessData,
-  ValueOf,
+import {
+  APP_VERSION,
+  type Building,
+  type DeviceLookup,
+  type ErrorLogData,
+  type FailureData,
+  type FrostProtectionData,
+  type FrostProtectionSettings,
+  type HeatPumpType,
+  type HolidayModeData,
+  type HolidayModeSettings,
+  type HomeySettings,
+  type ListDevice,
+  type LoginCredentials,
+  type MELCloudDevice,
+  type MELCloudDriver,
+  type SuccessData,
+  type ValueOf,
 } from './types'
+import { App, type Driver } from 'homey'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
@@ -76,8 +77,6 @@ const handleResponse = (data: FailureData | SuccessData): void => {
 }
 
 export = class MELCloudApp extends withTimers(App) {
-  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(this.homey)
-
   #devicesPerId: Record<number, ListDevice<MELCloudDriver>> = {}
 
   #devicesPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
@@ -85,6 +84,12 @@ export = class MELCloudApp extends withTimers(App) {
   #loginTimeout!: NodeJS.Timeout
 
   #syncInterval: NodeJS.Timeout | null = null
+
+  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
+    this.homey.settings,
+    this.log.bind(this),
+    this.error.bind(this),
+  )
 
   public get devicesPerId(): Record<number, ListDevice<MELCloudDriver>> {
     return this.#devicesPerId
@@ -114,15 +119,14 @@ export = class MELCloudApp extends withTimers(App) {
       try {
         const { LoginData } = (
           await this.#melcloudAPI.login({
-            AppVersion: '1.32.1.0',
+            AppVersion: APP_VERSION,
             Email: username,
             Password: password,
             Persist: true,
           })
         ).data
-        if (LoginData) {
-          this.setHomeySettings({ password, username })
-          await this.planRefreshLogin()
+        if (LoginData && !this.#syncInterval) {
+          await this.runSyncFromDevices()
         }
         return Boolean(LoginData)
       } catch (error: unknown) {
@@ -336,9 +340,6 @@ export = class MELCloudApp extends withTimers(App) {
       .diffNow()
       .as('milliseconds')
     if (ms > NO_TIME_DIFF) {
-      if (!this.#syncInterval) {
-        await this.runSyncFromDevices()
-      }
       this.#loginTimeout = this.setTimeout(
         async (): Promise<void> => {
           await this.login()

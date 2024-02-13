@@ -1,22 +1,24 @@
-import type {
-  Building,
-  DeviceData,
-  DeviceDataFromGet,
-  ErrorLogData,
-  ErrorLogPostData,
-  FailureData,
-  FrostProtectionData,
-  FrostProtectionPostData,
-  HeatPumpType,
-  HolidayModeData,
-  HolidayModePostData,
-  LoginData,
-  LoginPostData,
-  MELCloudDriver,
-  PostData,
-  ReportData,
-  ReportPostData,
-  SuccessData,
+/* eslint-disable no-console */
+import {
+  APP_VERSION,
+  type Building,
+  type DeviceData,
+  type DeviceDataFromGet,
+  type ErrorLogData,
+  type ErrorLogPostData,
+  type FailureData,
+  type FrostProtectionData,
+  type FrostProtectionPostData,
+  type HeatPumpType,
+  type HolidayModeData,
+  type HolidayModePostData,
+  type LoginData,
+  type LoginPostData,
+  type MELCloudDriver,
+  type PostData,
+  type ReportData,
+  type ReportPostData,
+  type SuccessData,
 } from '../types'
 import { DateTime, Duration } from 'luxon'
 import axios, {
@@ -28,9 +30,14 @@ import axios, {
 import type { APICallContextDataWithErrorMessage } from '../mixins/withErrorMessage'
 import APICallRequestData from './APICallRequestData'
 import APICallResponseData from './APICallResponseData'
-import type Homey from 'homey/lib/Homey'
-import type MELCloudApp from '../app'
 import createAPICallErrorData from './APICallErrorData'
+
+interface SettingManager {
+  get: (key: string) => string
+  set: (key: string, value: string) => void
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Logger = (...args: any[]) => void
 
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
@@ -38,36 +45,65 @@ const LOGIN_URL = '/Login/ClientLogin'
 export default class MELCloudAPI {
   public static readonly instance: MELCloudAPI
 
-  readonly #api: AxiosInstance
-
-  readonly #app: MELCloudApp
-
   #holdAPIListUntil: DateTime = DateTime.now()
 
   #retry = true
 
   #retryTimeout!: NodeJS.Timeout
 
-  public constructor(homey: Homey) {
-    this.#app = homey.app as MELCloudApp
+  readonly #settingManager: SettingManager
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly #logger: (...args: any[]) => void
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly #errorLogger: (...args: any[]) => void
+
+  readonly #api: AxiosInstance
+
+  public constructor(
+    settingManager: SettingManager,
+    logger: Logger = console.log,
+    errorLogger: Logger = console.error,
+  ) {
+    this.#settingManager = settingManager
+    this.#logger = logger
+    this.#errorLogger = errorLogger
     this.#api = axios.create({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
-      headers: { 'X-MitsContextKey': this.#app.getHomeySetting('contextKey') },
+      headers: {
+        'X-MitsContextKey': this.#settingManager.get('contextKey') as
+          | string
+          | null
+          | undefined,
+      },
     })
     this.setupAxiosInterceptors()
   }
 
-  public static getInstance(homey: Homey): MELCloudAPI {
-    return typeof MELCloudAPI.instance === 'undefined'
-      ? new MELCloudAPI(homey)
-      : MELCloudAPI.instance
+  public static getInstance(
+    settingManager?: SettingManager,
+    logger: Logger = console.log,
+    errorLogger: Logger = console.error,
+  ): MELCloudAPI {
+    if (typeof MELCloudAPI.instance === 'undefined') {
+      if (!settingManager) {
+        throw new Error('SettingManager is required')
+      }
+      return new MELCloudAPI(settingManager, logger, errorLogger)
+    }
+    return MELCloudAPI.instance
   }
 
   public async login(postData: LoginPostData): Promise<{ data: LoginData }> {
     const response = await this.#api.post<LoginData>(LOGIN_URL, postData)
     if (response.data.LoginData) {
+      const { Email: username, Password: password } = postData
+      this.#settingManager.set('username', username)
+      this.#settingManager.set('password', password)
       const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
-      this.#app.setHomeySettings({ contextKey, expiry })
+      this.#settingManager.set('contextKey', contextKey)
+      this.#settingManager.set('expiry', expiry)
       this.#api.defaults.headers.common['X-MitsContextKey'] = contextKey
     }
     return response
@@ -166,24 +202,24 @@ export default class MELCloudAPI {
         ),
       )
     }
-    this.#app.log(String(new APICallRequestData(config)))
+    this.#logger(String(new APICallRequestData(config)))
     return config
   }
 
   private handleResponse(response: AxiosResponse): AxiosResponse {
-    this.#app.log(String(new APICallResponseData(response)))
+    this.#logger(String(new APICallResponseData(response)))
     return response
   }
 
   private async handleError(error: AxiosError): Promise<AxiosError> {
     const apiCallData: APICallContextDataWithErrorMessage =
       createAPICallErrorData(error)
-    this.#app.error(String(apiCallData))
+    this.#errorLogger(String(apiCallData))
     switch (error.response?.status) {
       case axios.HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
           this.handleRetry()
-          if ((await this.#app.login()) && error.config) {
+          if ((await this.loginWithStoredCredentials()) && error.config) {
             return this.#api.request(error.config)
           }
         }
@@ -205,5 +241,23 @@ export default class MELCloudAPI {
       },
       Duration.fromObject({ minutes: 1 }).as('milliseconds'),
     )
+  }
+
+  private async loginWithStoredCredentials(): Promise<boolean> {
+    const username = this.#settingManager.get('username')
+    const password = this.#settingManager.get('password')
+    if (username && password) {
+      return (
+        (
+          await this.login({
+            AppVersion: APP_VERSION,
+            Email: username,
+            Password: password,
+            Persist: true,
+          })
+        ).data.LoginData !== null
+      )
+    }
+    return false
   }
 }

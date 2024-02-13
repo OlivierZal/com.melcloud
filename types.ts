@@ -8,6 +8,7 @@ import type ErvDriver from './drivers/melcloud_erv/driver'
 import type Homey from 'homey/lib/Homey'
 import type { SimpleClass } from 'homey'
 
+export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,14 +106,14 @@ export interface ManifestDriver {
 }
 
 export interface DriverSetting {
+  placeholder?: string
+  title: string
   readonly driverId: string
   readonly groupId?: string
   readonly groupLabel?: string
   readonly id: string
   readonly max?: number
   readonly min?: number
-  placeholder?: string
-  title: string
   readonly type: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
@@ -873,7 +874,7 @@ export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
       : never) & { readonly device: DeviceFromDriver<T> }
 
 export interface LoginPostData {
-  readonly AppVersion: string
+  readonly AppVersion: typeof APP_VERSION
   readonly Email: string
   readonly Password: string
   readonly Persist: true
