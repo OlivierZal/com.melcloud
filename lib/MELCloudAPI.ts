@@ -78,7 +78,7 @@ export default class MELCloudAPI {
           | undefined,
       },
     })
-    this.setupAxiosInterceptors()
+    this.#setupAxiosInterceptors()
   }
 
   public static getInstance(
@@ -176,20 +176,22 @@ export default class MELCloudAPI {
     )
   }
 
-  private setupAxiosInterceptors(): void {
+  #setupAxiosInterceptors(): void {
     this.#api.interceptors.request.use(
       async (
         config: InternalAxiosRequestConfig,
-      ): Promise<InternalAxiosRequestConfig> => this.handleRequest(config),
-      async (error: AxiosError): Promise<AxiosError> => this.handleError(error),
+      ): Promise<InternalAxiosRequestConfig> => this.#handleRequest(config),
+      async (error: AxiosError): Promise<AxiosError> =>
+        this.#handleError(error),
     )
     this.#api.interceptors.response.use(
-      (response: AxiosResponse): AxiosResponse => this.handleResponse(response),
-      async (error: AxiosError): Promise<AxiosError> => this.handleError(error),
+      (response: AxiosResponse): AxiosResponse => this.#handleResponse(response),
+      async (error: AxiosError): Promise<AxiosError> =>
+        this.#handleError(error),
     )
   }
 
-  private async handleRequest(
+  async #handleRequest(
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
     if (config.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
@@ -206,20 +208,20 @@ export default class MELCloudAPI {
     return config
   }
 
-  private handleResponse(response: AxiosResponse): AxiosResponse {
+  #handleResponse(response: AxiosResponse): AxiosResponse {
     this.#logger(String(new APICallResponseData(response)))
     return response
   }
 
-  private async handleError(error: AxiosError): Promise<AxiosError> {
+  async #handleError(error: AxiosError): Promise<AxiosError> {
     const apiCallData: APICallContextDataWithErrorMessage =
       createAPICallErrorData(error)
     this.#errorLogger(String(apiCallData))
     switch (error.response?.status) {
       case axios.HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
-          this.handleRetry()
-          if ((await this.loginWithStoredCredentials()) && error.config) {
+          this.#handleRetry()
+          if ((await this.#loginWithStoredCredentials()) && error.config) {
             return this.#api.request(error.config)
           }
         }
@@ -232,7 +234,7 @@ export default class MELCloudAPI {
     return Promise.reject(error)
   }
 
-  private handleRetry(): void {
+  #handleRetry(): void {
     this.#retry = false
     clearTimeout(this.#retryTimeout)
     this.#retryTimeout = setTimeout(
@@ -243,7 +245,7 @@ export default class MELCloudAPI {
     )
   }
 
-  private async loginWithStoredCredentials(): Promise<boolean> {
+  async #loginWithStoredCredentials(): Promise<boolean> {
     const username = this.#settingManager.get('username')
     const password = this.#settingManager.get('password')
     if (username && password) {

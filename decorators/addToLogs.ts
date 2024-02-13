@@ -11,14 +11,14 @@ const addToLogs =
   (target: T, context: ClassDecoratorContext<T>): T => {
     abstract class LogsDecorator extends target {
       public error(...args: any[]): void {
-        this.commonLog('error', ...args)
+        this.#commonLog('error', ...args)
       }
 
       public log(...args: any[]): void {
-        this.commonLog('log', ...args)
+        this.#commonLog('log', ...args)
       }
 
-      private commonLog(logType: 'error' | 'log', ...args: any[]): void {
+      #commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
           ...logs.flatMap((log: string): [any, '-'] => {
             if (log in this) {

@@ -105,7 +105,7 @@ export = class MELCloudApp extends withTimers(App) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.planRefreshLogin()
+    await this.#planRefreshLogin()
   }
 
   public async login(
@@ -165,10 +165,10 @@ export = class MELCloudApp extends withTimers(App) {
 
   public async runSyncFromDevices(): Promise<void> {
     this.clearSyncFromDevices()
-    await this.syncDevicesFromList()
+    await this.#syncDevicesFromList()
     this.#syncInterval = this.setInterval(
       async (): Promise<void> => {
-        await this.syncDevicesFromList()
+        await this.#syncDevicesFromList()
       },
       { minutes: 5 },
       { actionType: 'sync with device', units: ['minutes'] },
@@ -208,7 +208,7 @@ export = class MELCloudApp extends withTimers(App) {
   ): Promise<FrostProtectionData> {
     return (
       await this.#melcloudAPI.getFrostProtection(
-        this.getFirstDeviceId({ buildingId }),
+        this.#getFirstDeviceId({ buildingId }),
       )
     ).data
   }
@@ -232,7 +232,7 @@ export = class MELCloudApp extends withTimers(App) {
   ): Promise<HolidayModeData> {
     return (
       await this.#melcloudAPI.getHolidayMode(
-        this.getFirstDeviceId({ buildingId }),
+        this.#getFirstDeviceId({ buildingId }),
       )
     ).data
   }
@@ -301,7 +301,7 @@ export = class MELCloudApp extends withTimers(App) {
       })
   }
 
-  private async syncDevicesFromList(): Promise<void> {
+  async #syncDevicesFromList(): Promise<void> {
     try {
       const { devicesPerId, devicesPerType } = (
         await this.getBuildings()
@@ -332,8 +332,8 @@ export = class MELCloudApp extends withTimers(App) {
     }
   }
 
-  private async planRefreshLogin(): Promise<void> {
-    this.clearLoginRefresh()
+  async #planRefreshLogin(): Promise<void> {
+    this.#clearLoginRefresh()
     const expiry: string = this.getHomeySetting('expiry') ?? ''
     const ms: number = DateTime.fromISO(expiry)
       .minus({ days: 1 })
@@ -352,16 +352,16 @@ export = class MELCloudApp extends withTimers(App) {
     await this.login()
   }
 
-  private clearLoginRefresh(): void {
+  #clearLoginRefresh(): void {
     this.homey.clearTimeout(this.#loginTimeout)
     this.log('Login refresh has been paused')
   }
 
-  private getFirstDeviceId({
+  #getFirstDeviceId({
     buildingId,
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): number {
-    const deviceIds = this.getDeviceIds({ buildingId, driverId })
+    const deviceIds = this.#getDeviceIds({ buildingId, driverId })
     if (!deviceIds.length) {
       throw new Error(this.homey.__('app.building.no_device', { buildingId }))
     }
@@ -369,7 +369,7 @@ export = class MELCloudApp extends withTimers(App) {
     return firstDeviceId
   }
 
-  private getDeviceIds({
+  #getDeviceIds({
     buildingId,
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): number[] {

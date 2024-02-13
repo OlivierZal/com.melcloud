@@ -42,7 +42,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
     this.#heatPumpType = HeatPumpType[
       this.deviceType
     ] as keyof typeof HeatPumpType
-    this.setProducedAndConsumedTagMappings()
+    this.#setProducedAndConsumedTagMappings()
     this.registerRunListeners()
   }
 
@@ -50,12 +50,12 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   public async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.login(data),
+      async (data: LoginCredentials): Promise<boolean> => this.#login(data),
     )
     session.setHandler(
       'list_devices',
       // eslint-disable-next-line @typescript-eslint/require-await
-      async (): Promise<DeviceDetails[]> => this.discoverDevices(),
+      async (): Promise<DeviceDetails[]> => this.#discoverDevices(),
     )
   }
 
@@ -63,16 +63,16 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   public async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
-      async (data: LoginCredentials): Promise<boolean> => this.login(data),
+      async (data: LoginCredentials): Promise<boolean> => this.#login(data),
     )
   }
 
-  private async login(data: LoginCredentials): Promise<boolean> {
+  async #login(data: LoginCredentials): Promise<boolean> {
     this.#app.clearSyncFromDevices()
     return this.#app.login(data)
   }
 
-  private discoverDevices(): DeviceDetails[] {
+  #discoverDevices(): DeviceDetails[] {
     return this.#app.devicesPerType[this.deviceType].map(
       ({
         DeviceName: name,
@@ -97,7 +97,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
     )
   }
 
-  private setProducedAndConsumedTagMappings(): void {
+  #setProducedAndConsumedTagMappings(): void {
     Object.entries(this.reportCapabilityMapping).forEach(
       ([capability, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
         ;(this.producedTagMapping[

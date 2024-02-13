@@ -49,7 +49,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
           ? capability.replace(/.zone2$/u, '')
           : `${capability}.zone2`
       ) as keyof OperationModeZoneCapabilities
-      const otherZoneValue: OperationModeZone = this.getOtherZoneValue(
+      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
         otherZoneCapability,
         zoneValue,
         canCool,
@@ -119,7 +119,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     // Not implemented.
   }
 
-  private getOtherZoneValue(
+  #getOtherZoneValue(
     otherZoneCapability: keyof OperationModeZoneCapabilities,
     zoneValue: OperationModeZone,
     canCool: boolean,

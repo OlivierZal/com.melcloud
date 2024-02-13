@@ -40,7 +40,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
       const { actionType, units } = options
-      return this.setTimer(callback, interval, {
+      return this.#setTimer(callback, interval, {
         actionType,
         timerType: 'setInterval',
         timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
@@ -54,7 +54,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
       const { actionType, units } = options
-      return this.setTimer(callback, interval, {
+      return this.#setTimer(callback, interval, {
         actionType,
         timerType: 'setTimeout',
         timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
@@ -62,7 +62,7 @@ const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
       })
     }
 
-    private setTimer(
+    #setTimer(
       callback: () => Promise<void>,
       interval: DurationLike,
       options: TimerOptions,
