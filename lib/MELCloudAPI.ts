@@ -185,7 +185,8 @@ export default class MELCloudAPI {
         this.#handleError(error),
     )
     this.#api.interceptors.response.use(
-      (response: AxiosResponse): AxiosResponse => this.#handleResponse(response),
+      (response: AxiosResponse): AxiosResponse =>
+        this.#handleResponse(response),
       async (error: AxiosError): Promise<AxiosError> =>
         this.#handleError(error),
     )
