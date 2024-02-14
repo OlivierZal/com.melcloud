@@ -186,14 +186,11 @@ export default class MELCloudAPI {
       .as('milliseconds')
     if (ms > NO_TIME_DIFF) {
       const interval: number = Math.min(ms, MAX_INT32)
-      this.#loginTimeout = setTimeout(
-        (): void => {
-          this.#loginWithStoredCredentials().catch((error: Error) => {
-            this.#errorLogger(error.message)
-          })
-        },
-        interval,
-      )
+      this.#loginTimeout = setTimeout((): void => {
+        this.#loginWithStoredCredentials().catch((error: Error) => {
+          this.#errorLogger(error.message)
+        })
+      }, interval)
       this.#logger(interval)
       return true
     }
