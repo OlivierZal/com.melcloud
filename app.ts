@@ -28,8 +28,6 @@ const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
   1: [],
   3: [],
 }
-const MAX_INT32 = 2147483647
-const NO_TIME_DIFF = 0
 
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
@@ -81,8 +79,6 @@ export = class MELCloudApp extends withTimers(App) {
 
   #devicesPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
 
-  #loginTimeout!: NodeJS.Timeout
-
   #syncInterval: NodeJS.Timeout | null = null
 
   readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
@@ -105,7 +101,9 @@ export = class MELCloudApp extends withTimers(App) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.#planRefreshLogin()
+    if (await this.#melcloudAPI.planRefreshLogin()) {
+      await this.#syncDevicesFromList()
+    }
   }
 
   public async login(
@@ -126,6 +124,7 @@ export = class MELCloudApp extends withTimers(App) {
           })
         ).data
         if (LoginData && !this.#syncInterval) {
+          await this.#melcloudAPI.planRefreshLogin()
           await this.runSyncFromDevices()
         }
         return Boolean(LoginData)
@@ -164,7 +163,7 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public async runSyncFromDevices(): Promise<void> {
-    this.clearSyncFromDevices()
+    this.clearSyncDevicesFromList()
     await this.#syncDevicesFromList()
     this.#syncInterval = this.setInterval(
       async (): Promise<void> => {
@@ -175,7 +174,7 @@ export = class MELCloudApp extends withTimers(App) {
     )
   }
 
-  public clearSyncFromDevices(): void {
+  public clearSyncDevicesFromList(): void {
     this.homey.clearInterval(this.#syncInterval)
     this.log('Device list refresh has been paused')
   }
@@ -330,31 +329,6 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       // Pass
     }
-  }
-
-  async #planRefreshLogin(): Promise<void> {
-    this.#clearLoginRefresh()
-    const expiry: string = this.getHomeySetting('expiry') ?? ''
-    const ms: number = DateTime.fromISO(expiry)
-      .minus({ days: 1 })
-      .diffNow()
-      .as('milliseconds')
-    if (ms > NO_TIME_DIFF) {
-      this.#loginTimeout = this.setTimeout(
-        async (): Promise<void> => {
-          await this.login()
-        },
-        Math.min(ms, MAX_INT32),
-        { actionType: 'login refresh', units: ['days'] },
-      )
-      return
-    }
-    await this.login()
-  }
-
-  #clearLoginRefresh(): void {
-    this.homey.clearTimeout(this.#loginTimeout)
-    this.log('Login refresh has been paused')
   }
 
   #getFirstDeviceId({

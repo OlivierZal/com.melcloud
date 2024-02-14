@@ -68,7 +68,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
   }
 
   async #login(data: LoginCredentials): Promise<boolean> {
-    this.#app.clearSyncFromDevices()
+    this.#app.clearSyncDevicesFromList()
     return this.#app.login(data)
   }
 

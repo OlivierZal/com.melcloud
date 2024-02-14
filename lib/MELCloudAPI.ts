@@ -33,7 +33,7 @@ import APICallResponseData from './APICallResponseData'
 import createAPICallErrorData from './APICallErrorData'
 
 interface SettingManager {
-  get: (key: string) => string
+  get: (key: string) => string | null | undefined
   set: (key: string, value: string) => void
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,11 +41,15 @@ type Logger = (...args: any[]) => void
 
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
+const MAX_INT32 = 2147483647
+const NO_TIME_DIFF = 0
 
 export default class MELCloudAPI {
   public static readonly instance: MELCloudAPI
 
   #holdAPIListUntil: DateTime = DateTime.now()
+
+  #loginTimeout!: NodeJS.Timeout
 
   #retry = true
 
@@ -72,10 +76,7 @@ export default class MELCloudAPI {
     this.#api = axios.create({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
       headers: {
-        'X-MitsContextKey': this.#settingManager.get('contextKey') as
-          | string
-          | null
-          | undefined,
+        'X-MitsContextKey': this.#settingManager.get('contextKey'),
       },
     })
     this.#setupAxiosInterceptors()
@@ -176,6 +177,27 @@ export default class MELCloudAPI {
     )
   }
 
+  public async planRefreshLogin(): Promise<boolean> {
+    this.#clearLoginRefresh()
+    const expiry: string = this.#settingManager.get('expiry') ?? ''
+    const ms: number = DateTime.fromISO(expiry)
+      .minus({ days: 1 })
+      .diffNow()
+      .as('milliseconds')
+    if (ms > NO_TIME_DIFF) {
+      this.#loginTimeout = setTimeout(
+        (): void => {
+          this.#loginWithStoredCredentials().catch((error: Error) => {
+            this.#errorLogger(error.message)
+          })
+        },
+        Math.min(ms, MAX_INT32),
+      )
+      return true
+    }
+    return this.#loginWithStoredCredentials()
+  }
+
   #setupAxiosInterceptors(): void {
     this.#api.interceptors.request.use(
       async (
@@ -247,8 +269,8 @@ export default class MELCloudAPI {
   }
 
   async #loginWithStoredCredentials(): Promise<boolean> {
-    const username = this.#settingManager.get('username')
-    const password = this.#settingManager.get('password')
+    const username = this.#settingManager.get('username') ?? ''
+    const password = this.#settingManager.get('password') ?? ''
     if (username && password) {
       return (
         (
@@ -262,5 +284,10 @@ export default class MELCloudAPI {
       )
     }
     return false
+  }
+
+  #clearLoginRefresh(): void {
+    clearTimeout(this.#loginTimeout)
+    this.#logger('Login refresh has been paused')
   }
 }
