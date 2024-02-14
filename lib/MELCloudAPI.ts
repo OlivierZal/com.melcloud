@@ -103,9 +103,9 @@ export default class MELCloudAPI {
       this.#settingManager.set('username', username)
       this.#settingManager.set('password', password)
       const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
+      this.#api.defaults.headers.common['X-MitsContextKey'] = contextKey
       this.#settingManager.set('contextKey', contextKey)
       this.#settingManager.set('expiry', expiry)
-      this.#api.defaults.headers.common['X-MitsContextKey'] = contextKey
     }
     return response
   }
@@ -114,26 +114,26 @@ export default class MELCloudAPI {
     return this.#api.get<Building[]>(LIST_URL)
   }
 
-  public async set<D extends MELCloudDriver>(
+  public async set<T extends MELCloudDriver>(
     heatPumpType: keyof typeof HeatPumpType,
-    postData: PostData<D>,
-  ): Promise<{ data: DeviceData<D> }> {
-    return this.#api.post<DeviceData<D>>(`/Device/Set${heatPumpType}`, postData)
+    postData: PostData<T>,
+  ): Promise<{ data: DeviceData<T> }> {
+    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
   }
 
-  public async get<D extends MELCloudDriver>(
+  public async get<T extends MELCloudDriver>(
     id: number,
     buildingId: number,
-  ): Promise<{ data: DeviceDataFromGet<D> }> {
-    return this.#api.get<DeviceDataFromGet<D>>('/Device/Get', {
+  ): Promise<{ data: DeviceDataFromGet<T> }> {
+    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
       params: { buildingId, id },
     })
   }
 
-  public async report<D extends MELCloudDriver>(
+  public async report<T extends MELCloudDriver>(
     postData: ReportPostData,
-  ): Promise<{ data: ReportData<D> }> {
-    return this.#api.post<ReportData<D>>('/EnergyCost/Report', postData)
+  ): Promise<{ data: ReportData<T> }> {
+    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
   }
 
   public async error(
@@ -185,14 +185,16 @@ export default class MELCloudAPI {
       .diffNow()
       .as('milliseconds')
     if (ms > NO_TIME_DIFF) {
+      const interval: number = Math.min(ms, MAX_INT32)
       this.#loginTimeout = setTimeout(
         (): void => {
           this.#loginWithStoredCredentials().catch((error: Error) => {
             this.#errorLogger(error.message)
           })
         },
-        Math.min(ms, MAX_INT32),
+        interval,
       )
+      this.#logger(interval)
       return true
     }
     return this.#loginWithStoredCredentials()
