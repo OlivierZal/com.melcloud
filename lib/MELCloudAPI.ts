@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   APP_VERSION,
   type Building,
@@ -42,6 +41,7 @@ type Logger = (...args: any[]) => void
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
 const MAX_INT32 = 2147483647
+const MS_PER_DAY = 86400000
 const NO_TIME_DIFF = 0
 
 export default class MELCloudAPI {
@@ -67,8 +67,9 @@ export default class MELCloudAPI {
 
   public constructor(
     settingManager: SettingManager,
+    // eslint-disable-next-line no-console
     logger: Logger = console.log,
-    errorLogger: Logger = console.error,
+    errorLogger: Logger = logger,
   ) {
     this.#settingManager = settingManager
     this.#logger = logger
@@ -82,8 +83,9 @@ export default class MELCloudAPI {
 
   public static getInstance(
     settingManager?: SettingManager,
+    // eslint-disable-next-line no-console
     logger: Logger = console.log,
-    errorLogger: Logger = console.error,
+    errorLogger: Logger = logger,
   ): MELCloudAPI {
     if (typeof MELCloudAPI.instance === 'undefined') {
       if (!settingManager) {
@@ -189,7 +191,10 @@ export default class MELCloudAPI {
           this.#errorLogger(error.message)
         })
       }, interval)
-      this.#logger(interval)
+    this.#logger(
+      'Login refresh will run in',
+      Math.floor(interval / MS_PER_DAY),
+    )
       return true
     }
     return this.#loginWithStoredCredentials()
