@@ -152,6 +152,32 @@ export interface LoginDriverSetting extends DriverSetting {
 export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
+export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
+  ? SetDeviceDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? SetDeviceDataAtw
+    : SetDeviceDataErv
+export type PostData<T> = MELCloudDriver & T extends AtaDriver
+  ? PostDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? PostDataAtw
+    : PostDataErv
+export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataAtw
+    : DeviceDataErv
+export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromGetAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataFromGetAtw
+    : DeviceDataFromGetErv
+export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromListAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataFromListAtw
+    : DeviceDataFromListErv
+
 interface SetCapabilitiesCommon {
   onoff?: boolean
 }
@@ -596,16 +622,6 @@ export const reportCapabilityMappingErv: ReportCapabilityMappingErvType =
   {} as const
 export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
 
-export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? SetDeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? SetDeviceDataAtw
-    : SetDeviceDataErv
-export type PostData<T> = MELCloudDriver & T extends AtaDriver
-  ? PostDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? PostDataAtw
-    : PostDataErv
 export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
@@ -619,16 +635,6 @@ export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? SetCapabilityMappingAtw
     : SetCapabilityMappingErv
-export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataAtw
-    : DeviceDataErv
-export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataFromGetAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataFromGetAtw
-    : DeviceDataFromGetErv
 export interface GetCapabilityData<T> {
   readonly tag: Exclude<keyof DeviceData<T>, 'EffectiveFlags'>
 }
@@ -641,12 +647,6 @@ export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? GetCapabilityMappingAtw
     : GetCapabilityMappingErv
-
-export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataFromListAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataFromListAtw
-    : DeviceDataFromListErv
 interface ListCapabilityData<T> {
   readonly tag: Exclude<keyof DeviceDataFromList<T>, 'EffectiveFlags'>
 }
@@ -689,6 +689,7 @@ export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? ListDeviceAtw
     : ListDeviceErv
+
 export interface DeviceLookup {
   devicesPerId: Record<number, ListDeviceAny>
   devicesPerType: Record<HeatPumpType, ListDeviceAny[]>
