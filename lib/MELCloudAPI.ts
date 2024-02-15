@@ -1,8 +1,8 @@
 import {
   APP_VERSION,
   type Building,
-  type DeviceData,
-  type DeviceDataFromGet,
+  type DeviceDataAny,
+  type DeviceDataFromGetAny,
   type ErrorLogData,
   type ErrorLogPostData,
   type FailureData,
@@ -13,12 +13,11 @@ import {
   type HolidayModePostData,
   type LoginData,
   type LoginPostData,
-  type MELCloudDriver,
-  type PostData,
-  type ReportData,
+  type PostDataAny,
+  type ReportDataAny,
   type ReportPostData,
   type SuccessData,
-} from '../types'
+} from '../types/MELCloudAPITypes'
 import { DateTime, Duration } from 'luxon'
 import axios, {
   type AxiosError,
@@ -114,26 +113,26 @@ export default class MELCloudAPI {
     return this.#api.get<Building[]>(LIST_URL)
   }
 
-  public async set<T extends MELCloudDriver>(
+  public async set(
     heatPumpType: keyof typeof HeatPumpType,
-    postData: PostData<T>,
-  ): Promise<{ data: DeviceData<T> }> {
-    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
+    postData: PostDataAny,
+  ): Promise<{ data: DeviceDataAny }> {
+    return this.#api.post<DeviceDataAny>(`/Device/Set${heatPumpType}`, postData)
   }
 
-  public async get<T extends MELCloudDriver>(
+  public async get(
     id: number,
     buildingId: number,
-  ): Promise<{ data: DeviceDataFromGet<T> }> {
-    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
+  ): Promise<{ data: DeviceDataFromGetAny }> {
+    return this.#api.get<DeviceDataFromGetAny>('/Device/Get', {
       params: { buildingId, id },
     })
   }
 
-  public async report<T extends MELCloudDriver>(
+  public async report(
     postData: ReportPostData,
-  ): Promise<{ data: ReportData<T> }> {
-    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
+  ): Promise<{ data: ReportDataAny }> {
+    return this.#api.post<ReportDataAny>('/EnergyCost/Report', postData)
   }
 
   public async error(

@@ -2,12 +2,13 @@ import 'source-map-support/register'
 import {
   APP_VERSION,
   type Building,
-  type DeviceLookup,
   type HeatPumpType,
-  type ListDevice,
-  type LoginCredentials,
-  type MELCloudDriver,
-} from './types'
+  type ListDeviceAny,
+} from './types/MELCloudAPITypes'
+import type {
+  DeviceLookup,
+  LoginCredentials,
+} from './types/types'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
@@ -24,7 +25,7 @@ const getErrorMessage = (error: unknown): string =>
 
 const flattenDevices = (
   flattenedDevices: DeviceLookup,
-  devices: readonly ListDevice<MELCloudDriver>[],
+  devices: readonly ListDeviceAny[],
 ): DeviceLookup =>
   devices.reduce<DeviceLookup>(
     (acc, device) => {
@@ -49,9 +50,9 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
 }
 
 export = class MELCloudApp extends withTimers(App) {
-  #devicesPerId: Record<number, ListDevice<MELCloudDriver>> = {}
+  #devicesPerId: Record<number, ListDeviceAny> = {}
 
-  #devicesPerType: Record<string, readonly ListDevice<MELCloudDriver>[]> = {}
+  #devicesPerType: Record<string, readonly ListDeviceAny[]> = {}
 
   #syncInterval: NodeJS.Timeout | null = null
 
@@ -61,13 +62,13 @@ export = class MELCloudApp extends withTimers(App) {
     this.error.bind(this),
   )
 
-  public get devicesPerId(): Record<number, ListDevice<MELCloudDriver>> {
+  public get devicesPerId(): Record<number, ListDeviceAny> {
     return this.#devicesPerId
   }
 
   public get devicesPerType(): Record<
     string,
-    readonly ListDevice<MELCloudDriver>[]
+    readonly ListDeviceAny[]
   > {
     return this.#devicesPerType
   }

@@ -1,16 +1,16 @@
-import {
-  type DeviceDetails,
-  type GetCapabilityMappingAny,
-  HeatPumpType,
-  type ListCapabilityMappingAny,
-  type LoginCredentials,
-  type ReportCapabilityMappingAny,
-  type ReportData,
-  type SetCapabilityMappingAny,
-  type Store,
-  type TypedString,
-} from '../types'
+import type {
+  DeviceDetails,
+  GetCapabilityMappingAny,
+  ListCapabilityMappingAny,
+  LoginCredentials,
+  ReportCapabilityMappingAny,
+  ReportData,
+  SetCapabilityMappingAny,
+  Store,
+  TypedString,
+} from '../types/types'
 import { Driver } from 'homey'
+import { HeatPumpType } from '../types/MELCloudAPITypes'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
 

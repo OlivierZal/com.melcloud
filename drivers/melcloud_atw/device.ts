@@ -1,17 +1,19 @@
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
+import type {
+  DeviceDataFromList,
+  OpCapabilities,
+  OperationModeZoneCapabilities,
+  ReportPlanParameters,
+  SetCapabilities,
+  SetDeviceData,
+  Store,
+  TypedString,
+  ValueOf,
+} from '../../types/types'
 import {
-  type DeviceDataFromList,
-  type OpCapabilities,
   OperationModeState,
   OperationModeZone,
-  type OperationModeZoneCapabilities,
-  type ReportPlanParameters,
-  type SetCapabilities,
-  type SetDeviceData,
-  type Store,
-  type TypedString,
-  type ValueOf,
-} from '../../types'
+} from '../../types/MELCloudAPITypes'
 import type AtwDriver from './driver'
 import { DateTime } from 'luxon'
 

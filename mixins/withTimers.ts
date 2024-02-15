@@ -4,7 +4,7 @@ import {
   type DurationLike,
   type DurationLikeObject,
 } from 'luxon'
-import type { HomeyClass } from '../types'
+import type { HomeyClass } from '../types/types'
 
 interface BaseTimerOptions {
   readonly actionType: string

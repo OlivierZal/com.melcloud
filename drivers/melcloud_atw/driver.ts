@@ -2,7 +2,6 @@ import {
   type Capabilities,
   type FlowArgs,
   type GetCapabilityMappingAtw,
-  HeatPumpType,
   type ListCapabilityMappingAtw,
   type ReportCapabilityMappingAtw,
   type SetCapabilities,
@@ -12,8 +11,9 @@ import {
   listCapabilityMappingAtw,
   reportCapabilityMappingAtw,
   setCapabilityMappingAtw,
-} from '../../types'
+} from '../../types/types'
 import BaseMELCloudDriver from '../../bases/driver'
+import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtwDriver extends BaseMELCloudDriver<AtwDriver> {
   public readonly setCapabilityMapping: SetCapabilityMappingAtw =

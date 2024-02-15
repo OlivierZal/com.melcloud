@@ -1,7 +1,5 @@
 import type {
   Building,
-  DeviceSettings,
-  DriverSetting,
   ErrorDetails,
   ErrorLog,
   ErrorLogData,
@@ -11,6 +9,11 @@ import type {
   FrostProtectionSettings,
   HolidayModeData,
   HolidayModeSettings,
+  SuccessData,
+} from './types/MELCloudAPITypes'
+import type {
+  DeviceSettings,
+  DriverSetting,
   LoginCredentials,
   LoginSetting,
   MELCloudDevice,
@@ -19,9 +22,8 @@ import type {
   ManifestDriverSettingData,
   PairSetting,
   Settings,
-  SuccessData,
   ValueOf,
-} from './types'
+} from './types/types'
 import { DateTime } from 'luxon'
 import type { Driver } from 'homey'
 import type Homey from 'homey/lib/Homey'

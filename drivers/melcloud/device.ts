@@ -1,15 +1,17 @@
 import {
   type DeviceDataFromList,
-  Horizontal,
   type OpCapabilities,
-  OperationMode,
   type ReportPlanParameters,
   type SetCapabilities,
   type SetDeviceData,
   ThermostatMode,
   type ValueOf,
+} from '../../types/types'
+import {
+  Horizontal,
+  OperationMode,
   Vertical,
-} from '../../types'
+} from '../../types/MELCloudAPITypes'
 import type AtaDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 

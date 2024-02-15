@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   Building,
   BuildingData,
-  DeviceSetting,
-  DeviceSettings,
-  DriverSetting,
   ErrorDetails,
   ErrorLog,
   ErrorLogQuery,
@@ -12,12 +8,18 @@ import type {
   FrostProtectionSettings,
   HolidayModeData,
   HolidayModeSettings,
+} from '../types/MELCloudAPITypes'
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import type {
+  DeviceSetting,
+  DeviceSettings,
+  DriverSetting,
   HomeySettingsUI,
   LoginCredentials,
   LoginDriverSetting,
   Settings,
   ValueOf,
-} from '../types'
+} from '../types/types'
 import type Homey from 'homey/lib/Homey'
 
 const DIVISOR_10 = 10

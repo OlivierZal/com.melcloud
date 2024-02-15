@@ -1,7 +1,6 @@
 import {
   type FlowArgs,
   type GetCapabilityMappingAta,
-  HeatPumpType,
   type ListCapabilityMappingAta,
   type ReportCapabilityMappingAta,
   type SetCapabilities,
@@ -10,8 +9,9 @@ import {
   listCapabilityMappingAta,
   reportCapabilityMappingAta,
   setCapabilityMappingAta,
-} from '../../types'
+} from '../../types/types'
 import BaseMELCloudDriver from '../../bases/driver'
+import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
   public readonly setCapabilityMapping: SetCapabilityMappingAta =

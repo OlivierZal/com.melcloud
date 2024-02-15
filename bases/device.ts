@@ -1,33 +1,31 @@
-import {
-  type BooleanString,
-  type Capabilities,
-  type DeviceData,
-  type DeviceDataFromGet,
-  type DeviceDataFromList,
-  type DeviceDetails,
-  FLAG_UNCHANGED,
-  type GetCapabilityMapping,
-  type ListCapabilityMapping,
-  type ListDevice,
-  type MELCloudDriver,
-  type OpCapabilities,
-  type OpCapabilityData,
-  type PostData,
-  type ReportCapabilities,
-  type ReportCapabilityMapping,
-  type ReportData,
-  type ReportPlanParameters,
-  type ReportPostData,
-  type SetCapabilities,
-  type SetCapabilityData,
-  type SetCapabilityMapping,
-  type SetDeviceData,
-  type Settings,
-  type Store,
-  type TypedString,
-  type UpdateDeviceData,
-  type ValueOf,
-} from '../types'
+import type {
+  BooleanString,
+  Capabilities,
+  DeviceData,
+  DeviceDataFromGet,
+  DeviceDataFromList,
+  DeviceDetails,
+  GetCapabilityMapping,
+  ListCapabilityMapping,
+  ListDevice,
+  MELCloudDriver,
+  OpCapabilities,
+  OpCapabilityData,
+  PostData,
+  ReportCapabilities,
+  ReportCapabilityMapping,
+  ReportData,
+  ReportPlanParameters,
+  SetCapabilities,
+  SetCapabilityData,
+  SetCapabilityMapping,
+  SetDeviceData,
+  Settings,
+  Store,
+  TypedString,
+  ValueOf,
+} from '../types/types'
+import { FLAG_UNCHANGED, type ReportPostData } from '../types/MELCloudAPITypes'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
 import MELCloudAPI from '../lib/MELCloudAPI'
@@ -446,9 +444,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   #buildUpdateData(): SetDeviceData<T> {
-    return Object.entries(this.#setCapabilityMapping).reduce<
-      UpdateDeviceData<T>
-    >(
+    return Object.entries(this.#setCapabilityMapping).reduce<SetDeviceData<T>>(
       (
         acc,
         [capability, { tag, effectiveFlag }]: [string, SetCapabilityData<T>],
@@ -469,7 +465,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         return acc
       },
       { EffectiveFlags: FLAG_UNCHANGED },
-    ) as SetDeviceData<T>
+    )
   }
 
   async #setDeviceData(): Promise<DeviceData<T> | null> {
@@ -480,7 +476,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         ...this.#buildUpdateData(),
       }
       return (await this.#melcloudAPI.set(this.driver.heatPumpType, postData))
-        .data
+        .data as DeviceData<T>
     } catch (error: unknown) {
       return null
     }

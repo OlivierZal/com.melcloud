@@ -1,26 +1,59 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
-import type AtaDevice from './drivers/melcloud/device'
-import type AtaDriver from './drivers/melcloud/driver'
-import type AtwDevice from './drivers/melcloud_atw/device'
-import type AtwDriver from './drivers/melcloud_atw/driver'
-import type ErvDevice from './drivers/melcloud_erv/device'
-import type ErvDriver from './drivers/melcloud_erv/driver'
+import type {
+  DeviceDataAny,
+  DeviceDataAta,
+  DeviceDataAtw,
+  DeviceDataErv,
+  DeviceDataFromGetAny,
+  DeviceDataFromGetAta,
+  DeviceDataFromGetAtw,
+  DeviceDataFromGetErv,
+  DeviceDataFromListAny,
+  DeviceDataFromListAta,
+  DeviceDataFromListAtw,
+  DeviceDataFromListErv,
+  HeatPumpType,
+  Horizontal,
+  ListDeviceAny,
+  ListDeviceAta,
+  ListDeviceAtw,
+  ListDeviceErv,
+  OperationMode,
+  OperationModeState,
+  OperationModeZone,
+  PostDataAny,
+  PostDataAta,
+  PostDataAtw,
+  PostDataErv,
+  ReportDataAny,
+  ReportDataAta,
+  ReportDataAtw,
+  SetDeviceDataAny,
+  SetDeviceDataAta,
+  SetDeviceDataAtw,
+  SetDeviceDataErv,
+  Vertical,
+} from './MELCloudAPITypes'
+import type AtaDevice from '../drivers/melcloud/device'
+import type AtaDriver from '../drivers/melcloud/driver'
+import type AtwDevice from '../drivers/melcloud_atw/device'
+import type AtwDriver from '../drivers/melcloud_atw/driver'
+import type ErvDevice from '../drivers/melcloud_erv/device'
+import type ErvDriver from '../drivers/melcloud_erv/driver'
 import type Homey from 'homey/lib/Homey'
 import type { SimpleClass } from 'homey'
 
-export const APP_VERSION = '1.32.1.0'
-export const FLAG_UNCHANGED = 0
+export enum ThermostatMode {
+  auto = 'auto',
+  heat = 'heat',
+  cool = 'cool',
+  off = 'off',
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type HomeyClass = new (...args: any[]) => SimpleClass & {
   readonly homey: Homey
   readonly setWarning?: (warning: string | null) => Promise<void>
-}
-
-export enum HeatPumpType {
-  Ata = 0,
-  Atw = 1,
-  Erv = 3,
 }
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
@@ -137,37 +170,6 @@ interface ListCapabilitiesCommon {
   readonly 'measure_power.wifi': number
 }
 
-export enum ThermostatMode {
-  auto = 'auto',
-  heat = 'heat',
-  cool = 'cool',
-  off = 'off',
-}
-export enum OperationMode {
-  heat = 1,
-  dry = 2,
-  cool = 3,
-  fan = 7,
-  auto = 8,
-}
-export enum Vertical {
-  auto = 0,
-  upwards = 1,
-  mid_high = 2,
-  middle = 3,
-  mid_low = 4,
-  downwards = 5,
-  swing = 7,
-}
-export enum Horizontal {
-  auto = 0,
-  leftwards = 1,
-  center_left = 2,
-  center = 3,
-  center_right = 4,
-  rightwards = 5,
-  swing = 12,
-}
 interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
   horizontal?: keyof typeof Horizontal
@@ -203,21 +205,6 @@ interface ReportCapabilitiesAta {
   'meter_power.daily_other'?: number
 }
 
-export enum OperationModeState {
-  idle = 0,
-  dhw = 1,
-  heating = 2,
-  cooling = 3,
-  defrost = 5,
-  legionella = 6,
-}
-export enum OperationModeZone {
-  room = 0,
-  flow = 1,
-  curve = 2,
-  room_cool = 3,
-  flow_cool = 4,
-}
 export interface OperationModeZoneCapabilities {
   operation_mode_zone?: keyof typeof OperationModeZone
   operation_mode_zone_with_cool?: keyof typeof OperationModeZone
@@ -330,6 +317,13 @@ export type OpCapabilities<T> = MELCloudDriver & T extends AtaDriver
           | (GetCapabilitiesAta & ListCapabilitiesAta & SetCapabilitiesAta)
           | (GetCapabilitiesAtw & ListCapabilitiesAtw & SetCapabilitiesAtw)
           | (GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv)
+export type ReportData<T> = MELCloudDriver & T extends AtaDriver
+  ? ReportDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? ReportDataAtw
+    : T extends ErvDriver
+      ? never
+      : ReportDataAny
 export type ReportCapabilities<T> = MELCloudDriver & T extends AtaDriver
   ? ReportCapabilitiesAta
   : MELCloudDriver & T extends AtwDriver
@@ -339,184 +333,6 @@ export type ReportCapabilities<T> = MELCloudDriver & T extends AtaDriver
       : ReportCapabilitiesAta | ReportCapabilitiesAtw
 export type Capabilities<T> = OpCapabilities<T> &
   ReportCapabilities<T> & { thermostat_mode: ThermostatMode }
-
-interface BaseDeviceData {
-  EffectiveFlags: number
-  readonly Power?: boolean
-}
-interface DeviceDataFromListCommon {
-  readonly WifiSignalStrength: number
-}
-
-interface UpdateDeviceDataAta extends BaseDeviceData {
-  readonly OperationMode?: OperationMode
-  readonly SetFanSpeed?: number
-  readonly SetTemperature?: number
-  readonly VaneHorizontal?: Horizontal
-  readonly VaneVertical?: Vertical
-}
-type SetDeviceDataAta = Readonly<Required<UpdateDeviceDataAta>>
-interface DeviceDataAta extends SetDeviceDataAta {
-  readonly RoomTemperature: number
-}
-type DeviceDataFromGetAta = DeviceDataAta & {
-  readonly EffectiveFlags: typeof FLAG_UNCHANGED
-}
-interface DeviceDataFromListAta
-  extends DeviceDataFromGetAta,
-    DeviceDataFromListCommon {
-  readonly DeviceType: HeatPumpType.Ata
-  readonly ActualFanSpeed: number
-}
-
-interface UpdateDeviceDataAtw extends BaseDeviceData {
-  readonly ForcedHotWaterMode?: boolean
-  readonly OperationModeZone1?: OperationModeZone
-  readonly OperationModeZone2?: OperationModeZone
-  readonly SetCoolFlowTemperatureZone1?: number
-  readonly SetCoolFlowTemperatureZone2?: number
-  readonly SetHeatFlowTemperatureZone1?: number
-  readonly SetHeatFlowTemperatureZone2?: number
-  readonly SetTankWaterTemperature?: number
-  readonly SetTemperatureZone1?: number
-  readonly SetTemperatureZone2?: number
-}
-type SetDeviceDataAtw = Readonly<Required<UpdateDeviceDataAtw>>
-interface DeviceDataAtw extends SetDeviceDataAtw {
-  readonly IdleZone1: boolean
-  readonly IdleZone2: boolean
-  readonly OperationMode: OperationModeState
-  readonly OutdoorTemperature: number
-  readonly RoomTemperatureZone1: number
-  readonly RoomTemperatureZone2: number
-  readonly TankWaterTemperature: number
-}
-type DeviceDataFromGetAtw = DeviceDataAtw & {
-  readonly EffectiveFlags: typeof FLAG_UNCHANGED
-}
-interface DeviceDataFromListAtw
-  extends DeviceDataFromGetAtw,
-    DeviceDataFromListCommon {
-  readonly DeviceType: HeatPumpType.Atw
-  readonly BoosterHeater1Status: boolean
-  readonly BoosterHeater2PlusStatus: boolean
-  readonly BoosterHeater2Status: boolean
-  readonly CanCool: boolean
-  readonly CondensingTemperature: number
-  readonly CurrentEnergyConsumed: number
-  readonly CurrentEnergyProduced: number
-  readonly DefrostMode: number
-  readonly EcoHotWater: boolean
-  readonly FlowTemperature: number
-  readonly FlowTemperatureZone1: number
-  readonly FlowTemperatureZone2: number
-  readonly HasZone2: boolean
-  readonly HeatPumpFrequency: number
-  readonly ImmersionHeaterStatus: boolean
-  readonly LastLegionellaActivationTime: string
-  readonly MixingTankWaterTemperature: number
-  readonly ReturnTemperature: number
-  readonly ReturnTemperatureZone1: number
-  readonly ReturnTemperatureZone2: number
-  readonly TargetHCTemperatureZone1: number
-  readonly TargetHCTemperatureZone2: number
-}
-
-interface UpdateDeviceDataErv extends BaseDeviceData {
-  readonly SetFanSpeed?: number
-  readonly VentilationMode?: VentilationMode
-}
-type SetDeviceDataErv = Readonly<Required<UpdateDeviceDataErv>>
-interface DeviceDataErv extends SetDeviceDataErv {
-  readonly RoomCO2Level: number
-  readonly RoomTemperature: number
-  readonly OutdoorTemperature: number
-}
-type DeviceDataFromGetErv = DeviceDataErv & {
-  readonly EffectiveFlags: typeof FLAG_UNCHANGED
-}
-interface DeviceDataFromListErv
-  extends DeviceDataFromGetErv,
-    DeviceDataFromListCommon {
-  readonly DeviceType: HeatPumpType.Erv
-  readonly HasCO2Sensor: boolean
-  readonly HasPM25Sensor: boolean
-  readonly PM25Level: number
-}
-
-export type UpdateDeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? UpdateDeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? UpdateDeviceDataAtw
-    : T extends ErvDriver
-      ? UpdateDeviceDataErv
-      : UpdateDeviceDataAta | UpdateDeviceDataAtw | UpdateDeviceDataErv
-export type SetDeviceData<T> = Readonly<Required<UpdateDeviceData<T>>>
-export type PostData<T> = SetDeviceData<T> & {
-  readonly DeviceID: number
-  readonly HasPendingCommand: true
-}
-
-export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataAtw
-    : T extends ErvDriver
-      ? DeviceDataErv
-      : DeviceDataAta | DeviceDataAtw | DeviceDataErv
-export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataFromGetAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataFromGetAtw
-    : T extends ErvDriver
-      ? DeviceDataFromGetErv
-      : DeviceDataFromGetAta | DeviceDataFromGetAtw | DeviceDataFromGetErv
-export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataFromListAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataFromListAtw
-    : T extends ErvDriver
-      ? DeviceDataFromListErv
-      : DeviceDataFromListAta | DeviceDataFromListAtw | DeviceDataFromListErv
-
-export interface ReportPostData {
-  readonly DeviceID: number
-  readonly FromDate: string
-  readonly ToDate: string
-  readonly UseCurrency: false
-}
-
-interface ReportDataAta {
-  readonly Auto: readonly number[]
-  readonly Cooling: readonly number[]
-  readonly Dry: readonly number[]
-  readonly Fan: readonly number[]
-  readonly Heating: readonly number[]
-  readonly Other: readonly number[]
-  readonly TotalAutoConsumed: number
-  readonly TotalCoolingConsumed: number
-  readonly TotalDryConsumed: number
-  readonly TotalFanConsumed: number
-  readonly TotalHeatingConsumed: number
-  readonly TotalOtherConsumed: number
-  readonly UsageDisclaimerPercentages: string
-}
-interface ReportDataAtw {
-  readonly CoP: readonly number[]
-  readonly TotalCoolingConsumed: number
-  readonly TotalCoolingProduced: number
-  readonly TotalHeatingConsumed: number
-  readonly TotalHeatingProduced: number
-  readonly TotalHotWaterConsumed: number
-  readonly TotalHotWaterProduced: number
-}
-export type ReportData<T> = MELCloudDriver & T extends AtaDriver
-  ? ReportDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? ReportDataAtw
-    : T extends ErvDriver
-      ? never
-      : ReportDataAta | ReportDataAtw
 
 type SetCapabilityMappingAtaType = Record<
   keyof SetCapabilitiesAta,
@@ -799,6 +615,20 @@ export const reportCapabilityMappingErv: ReportCapabilityMappingErvType =
   {} as const
 export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
 
+export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
+  ? SetDeviceDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? SetDeviceDataAtw
+    : T extends ErvDriver
+      ? SetDeviceDataErv
+      : SetDeviceDataAny
+export type PostData<T> = MELCloudDriver & T extends AtaDriver
+  ? PostDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? PostDataAtw
+    : T extends ErvDriver
+      ? PostDataErv
+      : PostDataAny
 export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
   readonly tag: Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>
@@ -814,6 +644,20 @@ export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
     : T extends ErvDriver
       ? SetCapabilityMappingErv
       : SetCapabilityMappingAny
+export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataAtw
+    : T extends ErvDriver
+      ? DeviceDataErv
+      : DeviceDataAny
+export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromGetAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataFromGetAtw
+    : T extends ErvDriver
+      ? DeviceDataFromGetErv
+      : DeviceDataFromGetAny
 export interface GetCapabilityData<T> {
   readonly tag: Exclude<keyof DeviceData<T>, 'EffectiveFlags'>
 }
@@ -828,6 +672,14 @@ export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
     : T extends ErvDriver
       ? GetCapabilityMappingErv
       : GetCapabilityMappingAny
+
+export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
+  ? DeviceDataFromListAta
+  : MELCloudDriver & T extends AtwDriver
+    ? DeviceDataFromListAtw
+    : T extends ErvDriver
+      ? DeviceDataFromListErv
+      : DeviceDataFromListAny
 interface ListCapabilityData<T> {
   readonly tag: Exclude<keyof DeviceDataFromList<T>, 'EffectiveFlags'>
 }
@@ -871,113 +723,16 @@ export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
       ? SetCapabilities<ErvDriver>
       : never) & { readonly device: DeviceFromDriver<T> }
 
-export interface LoginPostData {
-  readonly AppVersion: typeof APP_VERSION
-  readonly Email: string
-  readonly Password: string
-  readonly Persist: true
-}
-export interface LoginData {
-  readonly LoginData: {
-    readonly ContextKey: string
-    readonly Expiry: string
-  } | null
-}
-
-export interface FrostProtectionSettings {
-  readonly Enabled: boolean
-  readonly MaximumTemperature: number
-  readonly MinimumTemperature: number
-}
-export interface FrostProtectionPostData extends FrostProtectionSettings {
-  readonly BuildingIds: [number]
-}
-export interface FrostProtectionData {
-  FPEnabled: boolean
-  FPMaxTemperature: number
-  FPMinTemperature: number
-}
-
-export interface HolidayModeSettings {
-  readonly Enabled: boolean
-  readonly EndDate: string
-  readonly StartDate: string
-}
-export interface HolidayModePostData {
-  readonly Enabled: boolean
-  readonly EndDate: {
-    readonly Day: number
-    readonly Hour: number
-    readonly Minute: number
-    readonly Month: number
-    readonly Second: number
-    readonly Year: number
-  } | null
-  readonly HMTimeZones: [{ readonly Buildings: [number] }]
-  readonly StartDate: {
-    readonly Day: number
-    readonly Hour: number
-    readonly Minute: number
-    readonly Month: number
-    readonly Second: number
-    readonly Year: number
-  } | null
-}
-export interface HolidayModeData {
-  HMEnabled: boolean
-  HMEndDate: string | null
-  HMStartDate: string | null
-}
-
-export interface SuccessData {
-  readonly AttributeErrors: null
-}
-export interface FailureData {
-  readonly AttributeErrors: Record<string, readonly string[]>
-}
-
-interface BaseListDevice {
-  readonly BuildingID: number
-  readonly DeviceID: number
-  readonly DeviceName: string
-}
-interface ListDeviceAta extends BaseListDevice {
-  readonly Device: DeviceDataFromListAta
-}
-interface ListDeviceAtw extends BaseListDevice {
-  readonly Device: DeviceDataFromListAtw
-}
-interface ListDeviceErv extends BaseListDevice {
-  readonly Device: DeviceDataFromListErv
-}
 export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
   ? ListDeviceAta
   : MELCloudDriver & T extends AtwDriver
     ? ListDeviceAtw
-    : T extends ErvDriver
+    : MELCloudDriver & T extends ErvDriver
       ? ListDeviceErv
-      : ListDeviceAta | ListDeviceAtw | ListDeviceErv
-
+      : ListDeviceAny
 export interface DeviceLookup {
-  devicesPerId: Record<number, ListDevice<MELCloudDriver>>
-  devicesPerType: Record<HeatPumpType, ListDevice<MELCloudDriver>[]>
-}
-export interface BuildingData extends FrostProtectionData, HolidayModeData {}
-export interface Building extends Readonly<BuildingData> {
-  readonly ID: number
-  readonly Name: string
-  readonly Structure: {
-    readonly Areas: readonly {
-      readonly Devices: readonly ListDevice<MELCloudDriver>[]
-    }[]
-    readonly Devices: readonly ListDevice<MELCloudDriver>[]
-    readonly Floors: readonly {
-      readonly Areas: readonly {
-        readonly Devices: readonly ListDevice<MELCloudDriver>[]
-      }[]
-      readonly Devices: readonly ListDevice<MELCloudDriver>[]
-    }[]
-  }
+  devicesPerId: Record<number, ListDeviceAny>
+  devicesPerType: Record<HeatPumpType, ListDeviceAny[]>
 }
 
 export interface DeviceDetails {
@@ -985,33 +740,4 @@ export interface DeviceDetails {
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store
-}
-
-export interface ErrorLogQuery {
-  readonly from?: string
-  readonly limit?: string
-  readonly offset?: string
-  readonly to?: string
-}
-export interface ErrorLogPostData {
-  readonly DeviceIDs: readonly string[]
-  readonly FromDate: string
-  readonly ToDate: string
-}
-export interface ErrorLogData {
-  readonly DeviceId: number
-  readonly EndDate: string
-  readonly ErrorMessage: string | null
-  readonly StartDate: string
-}
-export interface ErrorDetails {
-  readonly date: string
-  readonly device: string
-  readonly error: string
-}
-export interface ErrorLog {
-  readonly errors: ErrorDetails[]
-  readonly fromDateHuman: string
-  readonly nextFromDate: string
-  readonly nextToDate: string
 }

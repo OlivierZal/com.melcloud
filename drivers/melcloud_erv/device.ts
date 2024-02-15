@@ -5,7 +5,7 @@ import {
   type SetDeviceData,
   type ValueOf,
   VentilationMode,
-} from '../../types'
+} from '../../types/types'
 import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
 

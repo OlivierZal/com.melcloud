@@ -1,7 +1,6 @@
 import {
   type FlowArgs,
   type GetCapabilityMappingErv,
-  HeatPumpType,
   type ListCapabilityMappingErv,
   type ReportCapabilityMappingErv,
   type SetCapabilities,
@@ -11,8 +10,9 @@ import {
   listCapabilityMappingErv,
   reportCapabilityMappingErv,
   setCapabilityMappingErv,
-} from '../../types'
+} from '../../types/types'
 import BaseMELCloudDriver from '../../bases/driver'
+import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
   public readonly setCapabilityMapping: SetCapabilityMappingErv =
