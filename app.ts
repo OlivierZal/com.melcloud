@@ -5,10 +5,7 @@ import {
   type HeatPumpType,
   type ListDeviceAny,
 } from './types/MELCloudAPITypes'
-import type {
-  DeviceLookup,
-  LoginCredentials,
-} from './types/types'
+import type { DeviceLookup, LoginCredentials } from './types/types'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
@@ -66,10 +63,7 @@ export = class MELCloudApp extends withTimers(App) {
     return this.#devicesPerId
   }
 
-  public get devicesPerType(): Record<
-    string,
-    readonly ListDeviceAny[]
-  > {
+  public get devicesPerType(): Record<string, readonly ListDeviceAny[]> {
     return this.#devicesPerType
   }
 
