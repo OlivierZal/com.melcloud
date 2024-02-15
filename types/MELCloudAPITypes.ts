@@ -6,6 +6,7 @@ export enum HeatPumpType {
   Atw = 1,
   Erv = 3,
 }
+
 export enum OperationMode {
   heat = 1,
   dry = 2,
@@ -73,10 +74,10 @@ export interface SetDeviceDataAta extends BaseDeviceData {
   readonly VaneHorizontal?: Horizontal
   readonly VaneVertical?: Vertical
 }
+export type PostDataAta = BasePostData & SetDeviceDataAta
 export interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
-export type PostDataAta = BasePostData & SetDeviceDataAta
 export type DeviceDataFromGetAta = DeviceDataAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
@@ -162,12 +163,7 @@ export interface DeviceDataFromListErv
   readonly PM25Level: number
 }
 
-export type SetDeviceDataAny =
-  | SetDeviceDataAta
-  | SetDeviceDataAtw
-  | SetDeviceDataErv
 export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
-
 export type DeviceData<T extends PostDataAny> = T extends PostDataAta
   ? DeviceDataAta
   : T extends PostDataAtw
@@ -183,10 +179,6 @@ export type DeviceDataFromGet<T extends DeviceDataFromGetAny> =
     : T extends DeviceDataFromGetAtw
       ? DeviceDataFromGetAtw
       : DeviceDataFromGetErv
-export type DeviceDataFromListAny =
-  | DeviceDataFromListAta
-  | DeviceDataFromListAtw
-  | DeviceDataFromListErv
 
 export interface ReportPostData {
   readonly DeviceID: number
@@ -194,7 +186,6 @@ export interface ReportPostData {
   readonly ToDate: string
   readonly UseCurrency: false
 }
-
 export interface ReportDataAta {
   readonly Auto: readonly number[]
   readonly Cooling: readonly number[]
@@ -286,6 +277,7 @@ export interface FailureData {
   readonly AttributeErrors: Record<string, readonly string[]>
 }
 
+export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 interface BaseListDevice {
   readonly BuildingID: number
   readonly DeviceID: number
@@ -301,7 +293,6 @@ export interface ListDeviceErv extends BaseListDevice {
   readonly Device: DeviceDataFromListErv
 }
 export type ListDeviceAny = ListDeviceAta | ListDeviceAtw | ListDeviceErv
-export interface BuildingData extends FrostProtectionData, HolidayModeData {}
 export interface Building extends Readonly<BuildingData> {
   readonly ID: number
   readonly Name: string
@@ -335,15 +326,4 @@ export interface ErrorLogData {
   readonly EndDate: string
   readonly ErrorMessage: string | null
   readonly StartDate: string
-}
-export interface ErrorDetails {
-  readonly date: string
-  readonly device: string
-  readonly error: string
-}
-export interface ErrorLog {
-  readonly errors: ErrorDetails[]
-  readonly fromDateHuman: string
-  readonly nextFromDate: string
-  readonly nextToDate: string
 }

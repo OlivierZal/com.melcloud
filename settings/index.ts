@@ -1,8 +1,6 @@
 import type {
   Building,
   BuildingData,
-  ErrorDetails,
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionSettings,
@@ -14,6 +12,8 @@ import type {
   DeviceSetting,
   DeviceSettings,
   DriverSetting,
+  ErrorDetails,
+  ErrorLog,
   HomeySettingsUI,
   LoginCredentials,
   LoginDriverSetting,

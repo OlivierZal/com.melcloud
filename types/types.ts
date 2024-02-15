@@ -700,3 +700,15 @@ export interface DeviceDetails {
   readonly name: string
   readonly store: Store
 }
+
+export interface ErrorDetails {
+  readonly date: string
+  readonly device: string
+  readonly error: string
+}
+export interface ErrorLog {
+  readonly errors: ErrorDetails[]
+  readonly fromDateHuman: string
+  readonly nextFromDate: string
+  readonly nextToDate: string
+}
