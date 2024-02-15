@@ -191,10 +191,10 @@ export default class MELCloudAPI {
           this.#errorLogger(error.message)
         })
       }, interval)
-    this.#logger(
-      'Login refresh will run in',
-      Math.floor(interval / MS_PER_DAY),
-    )
+      this.#logger(
+        'Login refresh will run in',
+        Math.floor(interval / MS_PER_DAY),
+      )
       return true
     }
     return this.#loginWithStoredCredentials()
