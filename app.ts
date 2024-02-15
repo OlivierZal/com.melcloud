@@ -3,23 +3,13 @@ import {
   APP_VERSION,
   type Building,
   type DeviceLookup,
-  type ErrorLogData,
-  type FailureData,
-  type FrostProtectionData,
-  type FrostProtectionSettings,
   type HeatPumpType,
-  type HolidayModeData,
-  type HolidayModeSettings,
-  type HomeySettings,
   type ListDevice,
   type LoginCredentials,
-  type MELCloudDevice,
   type MELCloudDriver,
-  type SuccessData,
-  type ValueOf,
 } from './types'
-import { App, type Driver } from 'homey'
-import { DateTime, Settings as LuxonSettings } from 'luxon'
+import { App } from 'homey'
+import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
 
@@ -58,22 +48,6 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
   }
 }
 
-const handleFailure = (data: FailureData): never => {
-  const errorMessage: string = Object.entries(data.AttributeErrors)
-    .map(
-      ([error, messages]: [string, readonly string[]]): string =>
-        `${error}: ${messages.join(', ')}`,
-    )
-    .join('\n')
-  throw new Error(errorMessage)
-}
-
-const handleResponse = (data: FailureData | SuccessData): void => {
-  if (data.AttributeErrors) {
-    handleFailure(data)
-  }
-}
-
 export = class MELCloudApp extends withTimers(App) {
   #devicesPerId: Record<number, ListDevice<MELCloudDriver>> = {}
 
@@ -107,10 +81,7 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public async login(
-    { password, username }: LoginCredentials = {
-      password: this.getHomeySetting('password') ?? '',
-      username: this.getHomeySetting('username') ?? '',
-    },
+    { password, username }: LoginCredentials,
     raise = false,
   ): Promise<boolean> {
     if (username && password) {
@@ -133,33 +104,6 @@ export = class MELCloudApp extends withTimers(App) {
       }
     }
     return false
-  }
-
-  public getDevice(
-    deviceId: number,
-    { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
-  ): MELCloudDevice | undefined {
-    return this.getDevices({ buildingId, driverId }).find(
-      ({ id }) => id === deviceId,
-    )
-  }
-
-  public getDevices({
-    buildingId,
-    driverId,
-  }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
-    let devices: MELCloudDevice[] = (
-      typeof driverId === 'undefined'
-        ? Object.values(this.homey.drivers.getDrivers())
-        : [this.homey.drivers.getDriver(driverId)]
-    ).flatMap(
-      (driver: Driver): MELCloudDevice[] =>
-        driver.getDevices() as MELCloudDevice[],
-    )
-    if (typeof buildingId !== 'undefined') {
-      devices = devices.filter(({ buildingid }) => buildingid === buildingId)
-    }
-    return devices
   }
 
   public async runSyncFromDevices(): Promise<void> {
@@ -185,119 +129,6 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error))
     }
-  }
-
-  public async getUnitErrorLog(
-    fromDate: DateTime,
-    toDate: DateTime,
-  ): Promise<ErrorLogData[]> {
-    const { data } = await this.#melcloudAPI.error({
-      DeviceIDs: Object.keys(this.#devicesPerId),
-      FromDate: fromDate.toISODate() ?? '',
-      ToDate: toDate.toISODate() ?? '',
-    })
-    if ('AttributeErrors' in data) {
-      return handleFailure(data)
-    }
-    return data
-  }
-
-  public async getFrostProtectionSettings(
-    buildingId: number,
-  ): Promise<FrostProtectionData> {
-    return (
-      await this.#melcloudAPI.getFrostProtection(
-        this.#getFirstDeviceId({ buildingId }),
-      )
-    ).data
-  }
-
-  public async updateFrostProtectionSettings(
-    buildingId: number,
-    settings: FrostProtectionSettings,
-  ): Promise<void> {
-    handleResponse(
-      (
-        await this.#melcloudAPI.updateFrostProtection({
-          ...settings,
-          BuildingIds: [buildingId],
-        })
-      ).data,
-    )
-  }
-
-  public async getHolidayModeSettings(
-    buildingId: number,
-  ): Promise<HolidayModeData> {
-    return (
-      await this.#melcloudAPI.getHolidayMode(
-        this.#getFirstDeviceId({ buildingId }),
-      )
-    ).data
-  }
-
-  public async updateHolidayModeSettings(
-    buildingId: number,
-    {
-      Enabled: enabled,
-      StartDate: startDate,
-      EndDate: endDate,
-    }: HolidayModeSettings,
-  ): Promise<void> {
-    if (enabled && (!startDate || !endDate)) {
-      throw new Error(this.homey.__('app.holiday_mode.date_missing'))
-    }
-    const utcStartDate: DateTime | null = enabled
-      ? DateTime.fromISO(startDate).toUTC()
-      : null
-    const utcEndDate: DateTime | null = enabled
-      ? DateTime.fromISO(endDate).toUTC()
-      : null
-    handleResponse(
-      (
-        await this.#melcloudAPI.updateHolidayMode({
-          Enabled: enabled,
-          EndDate: utcEndDate
-            ? {
-                Day: utcEndDate.day,
-                Hour: utcEndDate.hour,
-                Minute: utcEndDate.minute,
-                Month: utcEndDate.month,
-                Second: utcEndDate.second,
-                Year: utcEndDate.year,
-              }
-            : null,
-          HMTimeZones: [{ Buildings: [buildingId] }],
-          StartDate: utcStartDate
-            ? {
-                Day: utcStartDate.day,
-                Hour: utcStartDate.hour,
-                Minute: utcStartDate.minute,
-                Month: utcStartDate.month,
-                Second: utcStartDate.second,
-                Year: utcStartDate.year,
-              }
-            : null,
-        })
-      ).data,
-    )
-  }
-
-  public getHomeySetting<K extends keyof HomeySettings>(
-    setting: K,
-  ): HomeySettings[K] {
-    return this.homey.settings.get(setting) as HomeySettings[K]
-  }
-
-  public setHomeySettings(settings: Partial<HomeySettings>): void {
-    Object.entries(settings)
-      .filter(
-        ([setting, value]: [string, ValueOf<HomeySettings>]) =>
-          value !== this.getHomeySetting(setting as keyof HomeySettings),
-      )
-      .forEach(([setting, value]: [string, ValueOf<HomeySettings>]) => {
-        this.homey.settings.set(setting, value)
-      })
   }
 
   async #syncDevicesFromList(): Promise<void> {
@@ -329,24 +160,5 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       // Pass
     }
-  }
-
-  #getFirstDeviceId({
-    buildingId,
-    driverId,
-  }: { buildingId?: number; driverId?: string } = {}): number {
-    const deviceIds = this.#getDeviceIds({ buildingId, driverId })
-    if (!deviceIds.length) {
-      throw new Error(this.homey.__('app.building.no_device', { buildingId }))
-    }
-    const [firstDeviceId]: number[] = deviceIds
-    return firstDeviceId
-  }
-
-  #getDeviceIds({
-    buildingId,
-    driverId,
-  }: { buildingId?: number; driverId?: string } = {}): number[] {
-    return this.getDevices({ buildingId, driverId }).map(({ id }): number => id)
   }
 }
