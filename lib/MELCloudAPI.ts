@@ -117,9 +117,7 @@ export default class MELCloudAPI {
   public async set<T extends PostDataAny>(
     heatPumpType: keyof typeof HeatPumpType,
     postData: T,
-  ): Promise<{
-    data: DeviceData<T>
-  }> {
+  ): Promise<{ data: DeviceData<T> }> {
     return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
   }
 
