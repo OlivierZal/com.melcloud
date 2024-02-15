@@ -34,6 +34,9 @@ const YEAR_1 = 1
 
 const melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance()
 
+const toUTC = (date: string, enabled: boolean): DateTime | null =>
+  enabled ? DateTime.fromISO(date).toUTC() : null
+
 const getDevices = (
   homey: Homey,
   { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
@@ -107,54 +110,6 @@ const getUnitErrorLog = async (
     return handleFailure(data)
   }
   return data
-}
-
-const updateHolidayModeSettings = async (
-  homey: Homey,
-  buildingId: number,
-  {
-    Enabled: enabled,
-    StartDate: startDate,
-    EndDate: endDate,
-  }: HolidayModeSettings,
-): Promise<void> => {
-  if (enabled && (!startDate || !endDate)) {
-    throw new Error(homey.__('app.holiday_mode.date_missing'))
-  }
-  const utcStartDate: DateTime | null = enabled
-    ? DateTime.fromISO(startDate).toUTC()
-    : null
-  const utcEndDate: DateTime | null = enabled
-    ? DateTime.fromISO(endDate).toUTC()
-    : null
-  handleResponse(
-    (
-      await melcloudAPI.updateHolidayMode({
-        Enabled: enabled,
-        EndDate: utcEndDate
-          ? {
-              Day: utcEndDate.day,
-              Hour: utcEndDate.hour,
-              Minute: utcEndDate.minute,
-              Month: utcEndDate.month,
-              Second: utcEndDate.second,
-              Year: utcEndDate.year,
-            }
-          : null,
-        HMTimeZones: [{ Buildings: [buildingId] }],
-        StartDate: utcStartDate
-          ? {
-              Day: utcStartDate.day,
-              Hour: utcStartDate.hour,
-              Minute: utcStartDate.minute,
-              Month: utcStartDate.month,
-              Second: utcStartDate.second,
-              Year: utcStartDate.year,
-            }
-          : null,
-      })
-    ).data,
-  )
 }
 
 const getDriverSettings = (
@@ -458,6 +413,39 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    await updateHolidayModeSettings(homey, Number(params.buildingId), body)
+    const { Enabled: enabled, StartDate: start, EndDate: end } = body
+    if (enabled && (!start || !end)) {
+      throw new Error(homey.__('app.holiday_mode.date_missing'))
+    }
+    const utcStart: DateTime | null = toUTC(start, enabled)
+    const utcEnd: DateTime | null = toUTC(end, enabled)
+    handleResponse(
+      (
+        await melcloudAPI.updateHolidayMode({
+          Enabled: enabled,
+          EndDate: utcEnd
+            ? {
+                Day: utcEnd.day,
+                Hour: utcEnd.hour,
+                Minute: utcEnd.minute,
+                Month: utcEnd.month,
+                Second: utcEnd.second,
+                Year: utcEnd.year,
+              }
+            : null,
+          HMTimeZones: [{ Buildings: [Number(params.buildingId)] }],
+          StartDate: utcStart
+            ? {
+                Day: utcStart.day,
+                Hour: utcStart.hour,
+                Minute: utcStart.minute,
+                Month: utcStart.month,
+                Second: utcStart.second,
+                Year: utcStart.year,
+              }
+            : null,
+        })
+      ).data,
+    )
   },
 }
