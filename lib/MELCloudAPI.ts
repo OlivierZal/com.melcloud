@@ -187,7 +187,7 @@ export default class MELCloudAPI {
     if (ms > NO_TIME_DIFF) {
       const interval: number = Math.min(ms, MAX_INT32)
       this.#loginTimeout = setTimeout((): void => {
-        this.#loginWithStoredCredentials().catch((error: Error) => {
+        this.#attemptAutoLogin().catch((error: Error) => {
           this.#errorLogger(error.message)
         })
       }, interval)
@@ -197,7 +197,7 @@ export default class MELCloudAPI {
       )
       return true
     }
-    return this.#loginWithStoredCredentials()
+    return this.#attemptAutoLogin()
   }
 
   #setupAxiosInterceptors(): void {
@@ -246,7 +246,7 @@ export default class MELCloudAPI {
       case axios.HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
           this.#handleRetry()
-          if ((await this.#loginWithStoredCredentials()) && error.config) {
+          if ((await this.#attemptAutoLogin()) && error.config) {
             return this.#api.request(error.config)
           }
         }
@@ -270,11 +270,11 @@ export default class MELCloudAPI {
     )
   }
 
-  async #loginWithStoredCredentials(): Promise<boolean> {
+  async #attemptAutoLogin(): Promise<boolean> {
     const username = this.#settingManager.get('username') ?? ''
     const password = this.#settingManager.get('password') ?? ''
     if (username && password) {
-      return (
+      return Boolean(
         (
           await this.login({
             AppVersion: APP_VERSION,
@@ -282,7 +282,7 @@ export default class MELCloudAPI {
             Password: password,
             Persist: true,
           })
-        ).data.LoginData !== null
+        ).data.LoginData,
       )
     }
     return false
