@@ -75,9 +75,7 @@ export default class MELCloudAPI {
     this.#errorLogger = errorLogger
     this.#api = axios.create({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
-      headers: {
-        'X-MitsContextKey': this.#settingManager.get('contextKey'),
-      },
+      headers: { 'X-MitsContextKey': this.#settingManager.get('contextKey') },
     })
     this.#setupAxiosInterceptors()
   }
