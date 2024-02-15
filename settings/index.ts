@@ -904,13 +904,16 @@ const createSelectElement = (
   ;[
     { id: '' },
     ...(setting.type === 'checkbox'
-      ? [{ id: 'false' }, { id: 'true' }]
+      ? ['false', 'true'].map((id: string): { id: string; label: string } => ({
+          id,
+          label: homey.__(`settings.boolean.${id}`),
+        }))
       : setting.values ?? []),
   ].forEach(({ id, label }: { id: string; label?: string }) => {
     const optionElement: HTMLOptionElement = document.createElement('option')
     optionElement.value = id
-    if (id) {
-      optionElement.innerText = label ?? homey.__(`settings.boolean.${id}`)
+    if (typeof label !== 'undefined') {
+      optionElement.innerText = label
     }
     selectElement.appendChild(optionElement)
   })
