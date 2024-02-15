@@ -168,11 +168,21 @@ export type SetDeviceDataAny =
   | SetDeviceDataErv
 export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
 
-export type DeviceDataAny = DeviceDataAta | DeviceDataAtw | DeviceDataErv
+export type DeviceData<T extends PostDataAny> = T extends PostDataAta
+  ? DeviceDataAta
+  : T extends PostDataAtw
+    ? DeviceDataAtw
+    : DeviceDataErv
 export type DeviceDataFromGetAny =
   | DeviceDataFromGetAta
   | DeviceDataFromGetAtw
   | DeviceDataFromGetErv
+export type DeviceDataFromGet<T extends DeviceDataFromGetAny> =
+  T extends DeviceDataFromGetAta
+    ? DeviceDataFromGetAta
+    : T extends DeviceDataFromGetAtw
+      ? DeviceDataFromGetAtw
+      : DeviceDataFromGetErv
 export type DeviceDataFromListAny =
   | DeviceDataFromListAta
   | DeviceDataFromListAtw

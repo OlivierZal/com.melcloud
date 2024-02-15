@@ -1,7 +1,8 @@
 import {
   APP_VERSION,
   type Building,
-  type DeviceDataAny,
+  type DeviceData,
+  type DeviceDataFromGet,
   type DeviceDataFromGetAny,
   type ErrorLogData,
   type ErrorLogPostData,
@@ -113,18 +114,20 @@ export default class MELCloudAPI {
     return this.#api.get<Building[]>(LIST_URL)
   }
 
-  public async set(
+  public async set<T extends PostDataAny>(
     heatPumpType: keyof typeof HeatPumpType,
-    postData: PostDataAny,
-  ): Promise<{ data: DeviceDataAny }> {
-    return this.#api.post<DeviceDataAny>(`/Device/Set${heatPumpType}`, postData)
+    postData: T,
+  ): Promise<{
+    data: DeviceData<T>
+  }> {
+    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
   }
 
-  public async get(
+  public async get<T extends DeviceDataFromGetAny>(
     id: number,
     buildingId: number,
-  ): Promise<{ data: DeviceDataFromGetAny }> {
-    return this.#api.get<DeviceDataFromGetAny>('/Device/Get', {
+  ): Promise<{ data: DeviceDataFromGet<T> }> {
+    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
       params: { buildingId, id },
     })
   }
