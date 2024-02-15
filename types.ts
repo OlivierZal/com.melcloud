@@ -50,14 +50,12 @@ export interface Store {
   readonly hasZone2: boolean
 }
 
-interface BaseHomeySettings<T> {
-  readonly username: T
-  readonly password: T
-  readonly contextKey: T
-  readonly expiry: T
+export interface HomeySettingsUI {
+  readonly username: string | undefined
+  readonly password: string | undefined
+  readonly contextKey: string | undefined
+  readonly expiry: string | undefined
 }
-export type HomeySettings = BaseHomeySettings<string | null>
-export type HomeySettingsUI = BaseHomeySettings<string | undefined>
 
 export interface ReportPlanParameters {
   readonly duration: DurationLike
