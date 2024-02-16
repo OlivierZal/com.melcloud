@@ -11,7 +11,6 @@ import type {
   MELCloudDriver,
   OpCapabilities,
   OpCapabilityData,
-  PostData,
   ReportCapabilities,
   ReportCapabilityMapping,
   ReportData,
@@ -25,9 +24,9 @@ import type {
   TypedString,
   ValueOf,
 } from '../types/types'
-import { FLAG_UNCHANGED, type ReportPostData } from '../types/MELCloudAPITypes'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
+import { FLAG_UNCHANGED } from '../types/MELCloudAPITypes'
 import MELCloudAPI from '../lib/MELCloudAPI'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
@@ -270,13 +269,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     toDate: DateTime,
   ): Promise<ReportData<T> | null> {
     try {
-      const postData: ReportPostData = {
-        DeviceID: this.id,
-        FromDate: fromDate.toISODate() ?? '',
-        ToDate: toDate.toISODate() ?? '',
-        UseCurrency: false,
-      }
-      return (await this.#melcloudAPI.report(postData)).data as ReportData<T>
+      return (
+        await this.#melcloudAPI.report({
+          DeviceID: this.id,
+          FromDate: fromDate.toISODate() ?? '',
+          ToDate: toDate.toISODate() ?? '',
+          UseCurrency: false,
+        })
+      ).data as ReportData<T>
     } catch (error: unknown) {
       return null
     }
@@ -470,13 +470,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   async #setDeviceData(): Promise<DeviceData<T> | null> {
     try {
-      const postData: PostData<T> = {
-        DeviceID: this.id,
-        HasPendingCommand: true,
-        ...this.#buildUpdateData(),
-      }
-      return (await this.#melcloudAPI.set(this.driver.heatPumpType, postData))
-        .data as DeviceData<T>
+      return (
+        await this.#melcloudAPI.set(this.driver.heatPumpType, {
+          DeviceID: this.id,
+          HasPendingCommand: true,
+          ...this.#buildUpdateData(),
+        })
+      ).data as DeviceData<T>
     } catch (error: unknown) {
       return null
     }

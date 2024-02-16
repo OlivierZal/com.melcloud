@@ -19,9 +19,6 @@ import type {
   OperationMode,
   OperationModeState,
   OperationModeZone,
-  PostDataAta,
-  PostDataAtw,
-  PostDataErv,
   ReportDataAta,
   ReportDataAtw,
   SetDeviceDataAta,
@@ -158,11 +155,6 @@ export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
-export type PostData<T> = MELCloudDriver & T extends AtaDriver
-  ? PostDataAta
-  : MELCloudDriver & T extends AtwDriver
-    ? PostDataAtw
-    : PostDataErv
 export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? DeviceDataAta
   : MELCloudDriver & T extends AtwDriver
