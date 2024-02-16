@@ -36,9 +36,6 @@ const YEAR_1 = 1
 
 const melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance()
 
-const toUTC = (date: string, enabled: boolean): DateTime | null =>
-  enabled ? DateTime.fromISO(date).toUTC() : null
-
 const getDevices = (
   homey: Homey,
   { buildingId, driverId }: { buildingId?: number; driverId?: string } = {},
@@ -173,7 +170,7 @@ const getDriverLoginSetting = (
     : []
 }
 
-const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
+const fromUTC = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
   }
@@ -187,6 +184,9 @@ const fromUTCtoLocal = (utcDate: string | null, language?: string): string => {
       : localDateTime.toLocaleString(DateTime.DATETIME_MED)
   return localDate ?? ''
 }
+
+const toUTC = (date: string, enabled: boolean): DateTime | null =>
+  enabled ? DateTime.fromISO(date).toUTC() : null
 
 const handleErrorLogQuery = (
   query: ErrorLogQuery,
@@ -222,8 +222,8 @@ export = {
       .map(
         (building: Building): Building => ({
           ...building,
-          HMEndDate: fromUTCtoLocal(building.HMEndDate),
-          HMStartDate: fromUTCtoLocal(building.HMStartDate),
+          HMEndDate: fromUTC(building.HMEndDate),
+          HMStartDate: fromUTC(building.HMStartDate),
         }),
       )
       .sort((building1: Building, building2: Building) =>
@@ -286,8 +286,8 @@ export = {
     )
     return {
       ...data,
-      HMEndDate: fromUTCtoLocal(data.HMEndDate),
-      HMStartDate: fromUTCtoLocal(data.HMStartDate),
+      HMEndDate: fromUTC(data.HMEndDate),
+      HMStartDate: fromUTC(data.HMStartDate),
     }
   },
   getLanguage({ homey }: { homey: Homey }): string {
@@ -312,7 +312,7 @@ export = {
           }): ErrorDetails => {
             const date: string =
               DateTime.fromISO(startDate).year > YEAR_1
-                ? fromUTCtoLocal(startDate, homey.i18n.getLanguage())
+                ? fromUTC(startDate, homey.i18n.getLanguage())
                 : ''
             const device: string =
               getDevice(homey, deviceId)?.getName() ??
