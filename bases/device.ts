@@ -454,7 +454,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           this.getRequestedOrCurrentValue(
             capability as keyof SetCapabilities<T>,
           ),
-        ) as SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
+        )
         if (this.diff.has(capability as keyof SetCapabilities<T>)) {
           this.diff.delete(capability as keyof SetCapabilities<T>)
           acc.EffectiveFlags = Number(
@@ -776,7 +776,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(
     capability: K,
     value: NonNullable<SetCapabilities<T>[K]>,
-  ): ValueOf<SetDeviceData<T>>
+  ): SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
 
   protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,

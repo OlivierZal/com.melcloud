@@ -67,14 +67,20 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
     capability: K,
     value: SetCapabilities<AtwDriver>[K],
-  ): ValueOf<SetDeviceData<AtwDriver>> {
+  ): SetDeviceData<AtwDriver>[Exclude<
+    keyof SetDeviceData<AtwDriver>,
+    'EffectiveFlags'
+  >] {
     switch (true) {
       case capability === 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
-        return value as ValueOf<SetDeviceData<AtwDriver>>
+        return value as SetDeviceData<AtwDriver>[Exclude<
+          keyof SetDeviceData<AtwDriver>,
+          'EffectiveFlags'
+        >]
     }
   }
 

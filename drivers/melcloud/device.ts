@@ -53,7 +53,10 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
     capability: K,
     value: SetCapabilities<AtaDriver>[K],
-  ): ValueOf<SetDeviceData<AtaDriver>> {
+  ): SetDeviceData<AtaDriver>[Exclude<
+    keyof SetDeviceData<AtaDriver>,
+    'EffectiveFlags'
+  >] {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
@@ -64,7 +67,10 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
       case 'horizontal':
         return Horizontal[value as keyof typeof Horizontal]
       default:
-        return value as ValueOf<SetDeviceData<AtaDriver>>
+        return value as SetDeviceData<AtaDriver>[Exclude<
+          keyof SetDeviceData<AtaDriver>,
+          'EffectiveFlags'
+        >]
     }
   }
 

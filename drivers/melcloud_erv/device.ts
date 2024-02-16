@@ -22,14 +22,20 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<ErvDriver>>(
     capability: K,
     value: SetCapabilities<ErvDriver>[K],
-  ): ValueOf<SetDeviceData<ErvDriver>> {
+  ): SetDeviceData<ErvDevice>[Exclude<
+    keyof SetDeviceData<ErvDevice>,
+    'EffectiveFlags'
+  >] {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case 'ventilation_mode':
         return VentilationMode[value as keyof typeof VentilationMode]
       default:
-        return value as ValueOf<SetDeviceData<ErvDriver>>
+        return value as SetDeviceData<ErvDevice>[Exclude<
+          keyof SetDeviceData<ErvDevice>,
+          'EffectiveFlags'
+        >]
     }
   }
 
