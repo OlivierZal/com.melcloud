@@ -2,9 +2,7 @@ import type {
   Building,
   BuildingData,
   FrostProtectionData,
-  FrostProtectionSettings,
   HolidayModeData,
-  HolidayModeSettings,
 } from '../types/MELCloudAPITypes'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
@@ -14,6 +12,8 @@ import type {
   ErrorDetails,
   ErrorLog,
   ErrorLogQuery,
+  FrostProtectionSettings,
+  HolidayModeSettings,
   HomeySettingsUI,
   LoginCredentials,
   LoginDriverSetting,
@@ -1120,9 +1120,9 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
     const data: HolidayModeData = buildingMapping[buildingElement.value]
     const enabled: boolean = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
-      Enabled: enabled,
-      EndDate: enabled ? holidayModeEndDateElement.value : '',
-      StartDate: enabled ? holidayModeStartDateElement.value : '',
+      enabled,
+      endDate: enabled ? holidayModeEndDateElement.value : '',
+      startDate: enabled ? holidayModeStartDateElement.value : '',
     }
     // @ts-expect-error: `homey` is partially typed
     homey.api(

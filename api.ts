@@ -3,9 +3,7 @@ import type {
   ErrorLogData,
   FailureData,
   FrostProtectionData,
-  FrostProtectionSettings,
   HolidayModeData,
-  HolidayModeSettings,
   SuccessData,
 } from './types/MELCloudAPITypes'
 import type {
@@ -14,6 +12,8 @@ import type {
   ErrorDetails,
   ErrorLog,
   ErrorLogQuery,
+  FrostProtectionSettings,
+  HolidayModeSettings,
   LoginCredentials,
   LoginSetting,
   MELCloudDevice,
@@ -410,35 +410,35 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    const { Enabled: enabled, StartDate: start, EndDate: end } = body
-    if (enabled && (!start || !end)) {
+    const { enabled, startDate, endDate } = body
+    if (enabled && (!startDate || !endDate)) {
       throw new Error(homey.__('app.holiday_mode.date_missing'))
     }
-    const utcStart: DateTime | null = toUTC(start, enabled)
-    const utcEnd: DateTime | null = toUTC(end, enabled)
+    const utcStartDate: DateTime | null = toUTC(startDate, enabled)
+    const utcEndDate: DateTime | null = toUTC(endDate, enabled)
     handleResponse(
       (
         await melcloudAPI.updateHolidayMode({
           Enabled: enabled,
-          EndDate: utcEnd
+          EndDate: utcEndDate
             ? {
-                Day: utcEnd.day,
-                Hour: utcEnd.hour,
-                Minute: utcEnd.minute,
-                Month: utcEnd.month,
-                Second: utcEnd.second,
-                Year: utcEnd.year,
+                Day: utcEndDate.day,
+                Hour: utcEndDate.hour,
+                Minute: utcEndDate.minute,
+                Month: utcEndDate.month,
+                Second: utcEndDate.second,
+                Year: utcEndDate.year,
               }
             : null,
           HMTimeZones: [{ Buildings: [Number(params.buildingId)] }],
-          StartDate: utcStart
+          StartDate: utcStartDate
             ? {
-                Day: utcStart.day,
-                Hour: utcStart.hour,
-                Minute: utcStart.minute,
-                Month: utcStart.month,
-                Second: utcStart.second,
-                Year: utcStart.year,
+                Day: utcStartDate.day,
+                Hour: utcStartDate.hour,
+                Minute: utcStartDate.minute,
+                Month: utcStartDate.month,
+                Second: utcStartDate.second,
+                Year: utcStartDate.year,
               }
             : null,
         })

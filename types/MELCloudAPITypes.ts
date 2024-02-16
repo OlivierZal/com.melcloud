@@ -225,12 +225,10 @@ export interface LoginData {
   } | null
 }
 
-export interface FrostProtectionSettings {
+export interface FrostProtectionPostData {
   readonly Enabled: boolean
   readonly MaximumTemperature: number
   readonly MinimumTemperature: number
-}
-export interface FrostProtectionPostData extends FrostProtectionSettings {
   readonly BuildingIds: [number]
 }
 export interface FrostProtectionData {
@@ -239,11 +237,6 @@ export interface FrostProtectionData {
   FPMinTemperature: number
 }
 
-export interface HolidayModeSettings {
-  readonly Enabled: boolean
-  readonly EndDate: string
-  readonly StartDate: string
-}
 export interface HolidayModePostData {
   readonly Enabled: boolean
   readonly EndDate: {

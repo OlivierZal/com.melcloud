@@ -719,3 +719,15 @@ export interface ErrorLog {
   readonly nextFromDate: string
   readonly nextToDate: string
 }
+
+export interface FrostProtectionSettings {
+  readonly Enabled: boolean
+  readonly MaximumTemperature: number
+  readonly MinimumTemperature: number
+}
+
+export interface HolidayModeSettings {
+  readonly enabled: boolean
+  readonly endDate: string
+  readonly startDate: string
+}
