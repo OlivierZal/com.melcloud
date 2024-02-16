@@ -484,8 +484,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   async #getDeviceData(): Promise<DeviceDataFromGet<T> | null> {
     try {
-      return (await this.#melcloudAPI.get(this.id, this.buildingid))
-        .data as DeviceDataFromGet<T>
+      return (await this.#melcloudAPI.get(this.id, this.buildingid)).data
     } catch (error: unknown) {
       return null
     }
