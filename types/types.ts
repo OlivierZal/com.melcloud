@@ -702,6 +702,12 @@ export interface DeviceDetails {
   readonly store: Store
 }
 
+export interface ErrorLogQuery {
+  readonly from?: string
+  readonly limit?: string
+  readonly offset?: string
+  readonly to?: string
+}
 export interface ErrorDetails {
   readonly date: string
   readonly device: string

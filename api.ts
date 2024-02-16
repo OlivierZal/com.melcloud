@@ -1,7 +1,6 @@
 import type {
   Building,
   ErrorLogData,
-  ErrorLogQuery,
   FailureData,
   FrostProtectionData,
   FrostProtectionSettings,
@@ -14,6 +13,7 @@ import type {
   DriverSetting,
   ErrorDetails,
   ErrorLog,
+  ErrorLogQuery,
   LoginCredentials,
   LoginSetting,
   MELCloudDevice,

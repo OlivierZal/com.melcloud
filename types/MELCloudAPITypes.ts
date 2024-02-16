@@ -310,12 +310,6 @@ export interface Building extends Readonly<BuildingData> {
   }
 }
 
-export interface ErrorLogQuery {
-  readonly from?: string
-  readonly limit?: string
-  readonly offset?: string
-  readonly to?: string
-}
 export interface ErrorLogPostData {
   readonly DeviceIDs: readonly string[]
   readonly FromDate: string
