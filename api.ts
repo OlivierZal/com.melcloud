@@ -60,18 +60,14 @@ const getDevice = (
 ): MELCloudDevice | undefined =>
   getDevices(homey).find(({ id }) => id === deviceId)
 
-const getBuildingDeviceId = (
-  homey: Homey,
-  { buildingId }: { buildingId?: number } = {},
-): number => {
-  const deviceIds = getDevices(homey, { buildingId }).map(
-    ({ id }): number => id,
-  )
-  if (!deviceIds.length) {
+const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
+  const device: MELCloudDevice | undefined = getDevices(homey, {
+    buildingId,
+  }).find(({ id }) => typeof id !== 'undefined')
+  if (!device) {
     throw new Error(homey.__('app.building.no_device', { buildingId }))
   }
-  const [firstDeviceId]: number[] = deviceIds
-  return firstDeviceId
+  return device.id
 }
 
 const handleFailure = (data: FailureData): never => {
@@ -270,7 +266,7 @@ export = {
   }): Promise<FrostProtectionData> {
     return (
       await melcloudAPI.getFrostProtection(
-        getBuildingDeviceId(homey, { buildingId: Number(params.buildingId) }),
+        getBuildingDeviceId(homey, Number(params.buildingId)),
       )
     ).data
   },
@@ -282,7 +278,7 @@ export = {
     params: { buildingId: number }
   }): Promise<HolidayModeData> {
     const { data } = await melcloudAPI.getHolidayMode(
-      getBuildingDeviceId(homey, { buildingId: Number(params.buildingId) }),
+      getBuildingDeviceId(homey, Number(params.buildingId)),
     )
     return {
       ...data,

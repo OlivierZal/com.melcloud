@@ -9,6 +9,7 @@ import type {
   DeviceDataFromListAta,
   DeviceDataFromListAtw,
   DeviceDataFromListErv,
+  FrostProtectionPostData,
   HeatPumpType,
   Horizontal,
   ListDeviceAny,
@@ -720,11 +721,10 @@ export interface ErrorLog {
   readonly nextToDate: string
 }
 
-export interface FrostProtectionSettings {
-  readonly Enabled: boolean
-  readonly MaximumTemperature: number
-  readonly MinimumTemperature: number
-}
+export type FrostProtectionSettings = Omit<
+  FrostProtectionPostData,
+  'BuildingIds'
+>
 
 export interface HolidayModeSettings {
   readonly enabled: boolean
