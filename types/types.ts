@@ -47,9 +47,9 @@ export type HomeyClass = new (...args: any[]) => SimpleClass & {
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
-type DeviceFromDriver<T> = MELCloudDriver & T extends AtaDriver
+type DeviceFromDriver<T> = T extends AtaDriver
   ? AtaDevice
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? AtwDevice
     : ErvDevice
 
@@ -157,9 +157,9 @@ export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? DeviceDataAtw
     : DeviceDataErv
-export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
+export type DeviceDataFromList<T> = T extends AtaDriver
   ? DeviceDataFromListAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? DeviceDataFromListAtw
     : DeviceDataFromListErv
 
@@ -301,26 +301,26 @@ interface ListCapabilitiesErv extends ListCapabilitiesCommon {
   readonly measure_pm25: number
 }
 
-export type SetCapabilities<T> = (MELCloudDriver & T extends AtaDriver
+export type SetCapabilities<T> = (T extends AtaDriver
   ? SetCapabilitiesAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? SetCapabilitiesAtw
     : SetCapabilitiesErv) & {
   thermostat_mode?: ThermostatMode
 }
-export type OpCapabilities<T> = MELCloudDriver & T extends AtaDriver
+export type OpCapabilities<T> = T extends AtaDriver
   ? GetCapabilitiesAta & ListCapabilitiesAta & SetCapabilitiesAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? GetCapabilitiesAtw & ListCapabilitiesAtw & SetCapabilitiesAtw
     : GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv
-export type ReportData<T> = MELCloudDriver & T extends AtaDriver
+export type ReportData<T> = T extends AtaDriver
   ? ReportDataAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? ReportDataAtw
     : never
-export type ReportCapabilities<T> = MELCloudDriver & T extends AtaDriver
+export type ReportCapabilities<T> = T extends AtaDriver
   ? ReportCapabilitiesAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? ReportCapabilitiesAtw
     : never
 export type Capabilities<T> = OpCapabilities<T> &
@@ -615,9 +615,9 @@ export type SetCapabilityMappingAny =
   | SetCapabilityMappingAta
   | SetCapabilityMappingAtw
   | SetCapabilityMappingErv
-export type SetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
+export type SetCapabilityMapping<T> = T extends AtaDriver
   ? SetCapabilityMappingAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? SetCapabilityMappingAtw
     : SetCapabilityMappingErv
 export interface GetCapabilityData<T> {
@@ -627,9 +627,9 @@ export type GetCapabilityMappingAny =
   | GetCapabilityMappingAta
   | GetCapabilityMappingAtw
   | GetCapabilityMappingErv
-export type GetCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
+export type GetCapabilityMapping<T> = T extends AtaDriver
   ? GetCapabilityMappingAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? GetCapabilityMappingAtw
     : GetCapabilityMappingErv
 interface ListCapabilityData<T> {
@@ -639,9 +639,9 @@ export type ListCapabilityMappingAny =
   | ListCapabilityMappingAta
   | ListCapabilityMappingAtw
   | ListCapabilityMappingErv
-export type ListCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
+export type ListCapabilityMapping<T> = T extends AtaDriver
   ? ListCapabilityMappingAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? ListCapabilityMappingAtw
     : ListCapabilityMappingErv
 export type OpCapabilityData<T> =
@@ -652,15 +652,15 @@ export type ReportCapabilityMappingAny =
   | ReportCapabilityMappingAta
   | ReportCapabilityMappingAtw
   | ReportCapabilityMappingErv
-export type ReportCapabilityMapping<T> = MELCloudDriver & T extends AtaDriver
+export type ReportCapabilityMapping<T> = T extends AtaDriver
   ? ReportCapabilityMappingAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? ReportCapabilityMappingAtw
     : ReportCapabilityMappingErv
 
-export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
+export type FlowArgs<T> = (T extends AtaDriver
   ? SetCapabilities<AtaDriver>
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? {
         readonly onoff: boolean
         readonly operation_mode_state: keyof typeof OperationModeState
@@ -669,9 +669,9 @@ export type FlowArgs<T> = (MELCloudDriver & T extends AtaDriver
       }
     : SetCapabilities<ErvDriver>) & { readonly device: DeviceFromDriver<T> }
 
-export type ListDevice<T> = MELCloudDriver & T extends AtaDriver
+export type ListDevice<T> = T extends AtaDriver
   ? ListDeviceAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? ListDeviceAtw
     : ListDeviceErv
 

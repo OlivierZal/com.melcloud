@@ -164,24 +164,23 @@ export interface DeviceDataFromListErv
 }
 
 export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
-export type DeviceData<T extends PostDataAny> = PostDataAny &
-  T extends PostDataAta
+export type DeviceData<D extends PostDataAny> = D extends PostDataAta
   ? DeviceDataAta
-  : PostDataAny & T extends PostDataAtw
+  : D extends PostDataAtw
     ? DeviceDataAtw
-    : PostDataAny & T extends PostDataErv
+    : D extends PostDataErv
       ? DeviceDataErv
       : never
 export type DeviceDataFromGetAny =
   | DeviceDataFromGetAta
   | DeviceDataFromGetAtw
   | DeviceDataFromGetErv
-export type DeviceDataFromGet<T extends DeviceDataFromGetAny> =
-  DeviceDataFromGetAny & T extends DeviceDataFromGetAta
+export type DeviceDataFromGet<D extends DeviceDataFromGetAny> =
+  D extends DeviceDataFromGetAta
     ? DeviceDataFromGetAta
-    : DeviceDataFromGetAny & T extends DeviceDataFromGetAtw
+    : D extends DeviceDataFromGetAtw
       ? DeviceDataFromGetAtw
-      : DeviceDataFromGetAny & T extends DeviceDataFromGetErv
+      : D extends DeviceDataFromGetErv
         ? DeviceDataFromGetErv
         : never
 
