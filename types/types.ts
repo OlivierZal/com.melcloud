@@ -1,11 +1,11 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
-  DeviceDataAta,
-  DeviceDataAtw,
-  DeviceDataErv,
   DeviceDataFromListAta,
   DeviceDataFromListAtw,
   DeviceDataFromListErv,
+  DeviceDataFromSetAta,
+  DeviceDataFromSetAtw,
+  DeviceDataFromSetErv,
   FrostProtectionPostData,
   HeatPumpType,
   Horizontal,
@@ -152,10 +152,10 @@ export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
 export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataAta
+  ? DeviceDataFromSetAta
   : T extends AtwDriver
-    ? DeviceDataAtw
-    : DeviceDataErv
+    ? DeviceDataFromSetAtw
+    : DeviceDataFromSetErv
 export type DeviceDataFromList<T> = T extends AtaDriver
   ? DeviceDataFromListAta
   : T extends AtwDriver
@@ -181,7 +181,10 @@ interface SetCapabilitiesAta extends SetCapabilitiesCommon {
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
+  readonly fan_power: number
   readonly fan_power_state: number
+  readonly horizontal: keyof typeof Horizontal
+  readonly vertical: keyof typeof Vertical
 }
 interface ReportCapabilitiesAta {
   measure_power?: number
@@ -341,7 +344,7 @@ export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
 export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
 type GetCapabilityMappingAtaType = Record<
   keyof GetCapabilitiesAta,
-  { readonly tag: Exclude<keyof DeviceDataAta, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromSetAta, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
   measure_temperature: { tag: 'RoomTemperature' },
@@ -352,8 +355,11 @@ type ListCapabilityMappingAtaType = Record<
   { readonly tag: Exclude<keyof DeviceDataFromListAta, 'EffectiveFlags'> }
 >
 export const listCapabilityMappingAta: ListCapabilityMappingAtaType = {
+  fan_power: { tag: 'FanSpeed' },
   fan_power_state: { tag: 'ActualFanSpeed' },
+  horizontal: { tag: 'VaneHorizontalDirection' },
   'measure_power.wifi': { tag: 'WifiSignalStrength' },
+  vertical: { tag: 'VaneVerticalDirection' },
 } as const
 export type ListCapabilityMappingAta = typeof listCapabilityMappingAta
 type ReportCapabilityMappingAtaType = Record<
@@ -457,7 +463,7 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
 export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
 type GetCapabilityMappingAtwType = Record<
   keyof GetCapabilitiesAtw,
-  { readonly tag: Exclude<keyof DeviceDataAtw, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromSetAtw, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
@@ -582,7 +588,7 @@ export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
 export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
 type GetCapabilityMappingErvType = Record<
   keyof GetCapabilitiesErv,
-  { readonly tag: Exclude<keyof DeviceDataErv, 'EffectiveFlags'> }
+  { readonly tag: Exclude<keyof DeviceDataFromSetErv, 'EffectiveFlags'> }
 >
 export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
   measure_co2: { tag: 'RoomCO2Level' },

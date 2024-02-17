@@ -1,9 +1,9 @@
 import {
   APP_VERSION,
   type Building,
-  type DeviceData,
   type DeviceDataFromGet,
   type DeviceDataFromGetAny,
+  type DeviceDataFromSet,
   type ErrorLogData,
   type ErrorLogPostData,
   type FailureData,
@@ -117,8 +117,11 @@ export default class MELCloudAPI {
   public async set<D extends PostDataAny>(
     heatPumpType: keyof typeof HeatPumpType,
     postData: D,
-  ): Promise<{ data: DeviceData<D> }> {
-    return this.#api.post<DeviceData<D>>(`/Device/Set${heatPumpType}`, postData)
+  ): Promise<{ data: DeviceDataFromSet<D> }> {
+    return this.#api.post<DeviceDataFromSet<D>>(
+      `/Device/Set${heatPumpType}`,
+      postData,
+    )
   }
 
   public async get<D extends DeviceDataFromGetAny>(

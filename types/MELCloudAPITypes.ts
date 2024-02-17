@@ -75,17 +75,23 @@ export interface SetDeviceDataAta extends BaseDeviceData {
   readonly VaneVertical?: Vertical
 }
 export type PostDataAta = BasePostData & SetDeviceDataAta
-export interface DeviceDataAta extends SetDeviceDataAta {
+export interface DeviceDataFromSetAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
-export type DeviceDataFromGetAta = DeviceDataAta & {
+export type DeviceDataFromGetAta = DeviceDataFromSetAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAta
-  extends DeviceDataFromGetAta,
+  extends Omit<
+      DeviceDataFromGetAta,
+      'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
+    >,
     BaseDeviceDataFromList {
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
+  readonly FanSpeed: number
+  readonly VaneHorizontalDirection: Horizontal
+  readonly VaneVerticalDirection: Vertical
 }
 
 export interface SetDeviceDataAtw extends BaseDeviceData {
@@ -101,7 +107,7 @@ export interface SetDeviceDataAtw extends BaseDeviceData {
   readonly SetTemperatureZone2?: number
 }
 export type PostDataAtw = BasePostData & SetDeviceDataAtw
-export interface DeviceDataAtw extends SetDeviceDataAtw {
+export interface DeviceDataFromSetAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
   readonly OperationMode: OperationModeState
@@ -110,7 +116,7 @@ export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly RoomTemperatureZone2: number
   readonly TankWaterTemperature: number
 }
-export type DeviceDataFromGetAtw = DeviceDataAtw & {
+export type DeviceDataFromGetAtw = DeviceDataFromSetAtw & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAtw
@@ -146,12 +152,12 @@ export interface SetDeviceDataErv extends BaseDeviceData {
   readonly VentilationMode?: VentilationMode
 }
 export type PostDataErv = BasePostData & SetDeviceDataErv
-export interface DeviceDataErv extends SetDeviceDataErv {
+export interface DeviceDataFromSetErv extends SetDeviceDataErv {
   readonly RoomCO2Level: number
   readonly RoomTemperature: number
   readonly OutdoorTemperature: number
 }
-export type DeviceDataFromGetErv = DeviceDataErv & {
+export type DeviceDataFromGetErv = DeviceDataFromSetErv & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListErv
@@ -164,12 +170,12 @@ export interface DeviceDataFromListErv
 }
 
 export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
-export type DeviceData<D extends PostDataAny> = D extends PostDataAta
-  ? DeviceDataAta
+export type DeviceDataFromSet<D extends PostDataAny> = D extends PostDataAta
+  ? DeviceDataFromSetAta
   : D extends PostDataAtw
-    ? DeviceDataAtw
+    ? DeviceDataFromSetAtw
     : D extends PostDataErv
-      ? DeviceDataErv
+      ? DeviceDataFromSetErv
       : never
 export type DeviceDataFromGetAny =
   | DeviceDataFromGetAta
