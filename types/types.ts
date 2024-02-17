@@ -39,11 +39,10 @@ export enum ThermostatMode {
   off = 'off',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type HomeyClass = new (...args: any[]) => SimpleClass & {
-  readonly homey: Homey
-  readonly setWarning?: (warning: string | null) => Promise<void>
-}
+export type HomeyClass = new (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+) => SimpleClass & { readonly homey: Homey }
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
