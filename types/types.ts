@@ -3,9 +3,6 @@ import type {
   DeviceDataAta,
   DeviceDataAtw,
   DeviceDataErv,
-  DeviceDataFromGetAta,
-  DeviceDataFromGetAtw,
-  DeviceDataFromGetErv,
   DeviceDataFromListAta,
   DeviceDataFromListAtw,
   DeviceDataFromListErv,
@@ -160,11 +157,6 @@ export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
   : MELCloudDriver & T extends AtwDriver
     ? DeviceDataAtw
     : DeviceDataErv
-export type DeviceDataFromGet<T> = MELCloudDriver & T extends AtaDriver
-  ? DeviceDataFromGetAta
-  : MELCloudDriver & T extends AtwDriver
-    ? DeviceDataFromGetAtw
-    : DeviceDataFromGetErv
 export type DeviceDataFromList<T> = MELCloudDriver & T extends AtaDriver
   ? DeviceDataFromListAta
   : MELCloudDriver & T extends AtwDriver

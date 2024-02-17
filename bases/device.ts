@@ -2,7 +2,6 @@ import type {
   BooleanString,
   Capabilities,
   DeviceData,
-  DeviceDataFromGet,
   DeviceDataFromList,
   DeviceDetails,
   GetCapabilityMapping,
@@ -415,16 +414,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   async #syncFromDevice(): Promise<void> {
-    const dataFromGet: DeviceDataFromGet<T> | null = await this.#getDeviceData()
-    if (dataFromGet) {
-      const data: ListDevice<T>['Device'] = {
-        ...this.app.devicesPerId[this.id].Device,
-        ...dataFromGet,
-      }
-      this.log('Syncing from device list:', data)
-      await this.updateStore(data)
-      await this.#updateCapabilities(data)
-    }
+    const data: ListDevice<T>['Device'] = this.app.devicesPerId[this.id].Device
+    this.log('Syncing from device list:', data)
+    await this.updateStore(data)
+    await this.#updateCapabilities(data)
     this.#planSyncFromDevice()
   }
 
@@ -477,14 +470,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           ...this.#buildUpdateData(),
         })
       ).data as DeviceData<T>
-    } catch (error: unknown) {
-      return null
-    }
-  }
-
-  async #getDeviceData(): Promise<DeviceDataFromGet<T> | null> {
-    try {
-      return (await this.#melcloudAPI.get(this.id, this.buildingid)).data
     } catch (error: unknown) {
       return null
     }
