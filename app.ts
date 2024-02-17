@@ -71,7 +71,7 @@ export = class MELCloudApp extends withTimers(App) {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     if (await this.melcloudAPI.planRefreshLogin()) {
-      await this.#syncDevicesFromList()
+      await this.#runSyncFromDevices()
     }
   }
 
@@ -91,7 +91,7 @@ export = class MELCloudApp extends withTimers(App) {
         ).data
         if (LoginData && !this.#syncInterval) {
           await this.melcloudAPI.planRefreshLogin()
-          await this.runSyncFromDevices()
+          await this.#runSyncFromDevices()
         }
         return Boolean(LoginData)
       } catch (error: unknown) {
@@ -99,18 +99,6 @@ export = class MELCloudApp extends withTimers(App) {
       }
     }
     return false
-  }
-
-  public async runSyncFromDevices(): Promise<void> {
-    this.clearSyncDevicesFromList()
-    await this.#syncDevicesFromList()
-    this.#syncInterval = this.setInterval(
-      async (): Promise<void> => {
-        await this.#syncDevicesFromList()
-      },
-      { minutes: 5 },
-      { actionType: 'device list refresh', units: ['minutes'] },
-    )
   }
 
   public clearSyncDevicesFromList(): void {
@@ -124,6 +112,18 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error))
     }
+  }
+
+  async #runSyncFromDevices(): Promise<void> {
+    this.clearSyncDevicesFromList()
+    await this.#syncDevicesFromList()
+    this.#syncInterval = this.setInterval(
+      async (): Promise<void> => {
+        await this.#syncDevicesFromList()
+      },
+      { minutes: 5 },
+      { actionType: 'device list refresh', units: ['minutes'] },
+    )
   }
 
   async #syncDevicesFromList(): Promise<void> {
