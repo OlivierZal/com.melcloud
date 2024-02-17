@@ -5,8 +5,12 @@ import {
   type HeatPumpType,
   type ListDeviceAny,
 } from './types/MELCloudAPITypes'
-import type { DeviceLookup, LoginCredentials } from './types/types'
-import { App } from 'homey'
+import { App, type Driver } from 'homey'
+import type {
+  DeviceLookup,
+  LoginCredentials,
+  MELCloudDevice,
+} from './types/types'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
@@ -114,6 +118,24 @@ export = class MELCloudApp extends withTimers(App) {
     }
   }
 
+  public getDevices({
+    buildingId,
+    driverId,
+  }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
+    let devices: MELCloudDevice[] = (
+      typeof driverId === 'undefined'
+        ? Object.values(this.homey.drivers.getDrivers())
+        : [this.homey.drivers.getDriver(driverId)]
+    ).flatMap(
+      (driver: Driver): MELCloudDevice[] =>
+        driver.getDevices() as MELCloudDevice[],
+    )
+    if (typeof buildingId !== 'undefined') {
+      devices = devices.filter(({ buildingid }) => buildingid === buildingId)
+    }
+    return devices
+  }
+
   async #runSyncFromDevices(): Promise<void> {
     this.clearSyncDevicesFromList()
     await this.#syncDevicesFromList()
@@ -152,8 +174,17 @@ export = class MELCloudApp extends withTimers(App) {
       )
       this.#devicesPerId = devicesPerId
       this.#devicesPerType = devicesPerType
+      await this.#syncDevices()
     } catch (error: unknown) {
       // Pass
     }
+  }
+
+  async #syncDevices(): Promise<void> {
+    await Promise.all(
+      this.getDevices().map(async (device: MELCloudDevice) =>
+        device.syncFromDevice(),
+      ),
+    )
   }
 }
