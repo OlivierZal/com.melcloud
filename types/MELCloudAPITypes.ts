@@ -82,11 +82,11 @@ export type DeviceDataFromGetAta = DeviceDataFromSetAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAta
-  extends Omit<
+  extends BaseDeviceDataFromList,
+    Omit<
       DeviceDataFromGetAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
-    >,
-    BaseDeviceDataFromList {
+    > {
   readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
   readonly FanSpeed: number
@@ -120,8 +120,8 @@ export type DeviceDataFromGetAtw = DeviceDataFromSetAtw & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAtw
-  extends DeviceDataFromGetAtw,
-    BaseDeviceDataFromList {
+  extends BaseDeviceDataFromList,
+    DeviceDataFromGetAtw {
   readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
@@ -161,8 +161,8 @@ export type DeviceDataFromGetErv = DeviceDataFromSetErv & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListErv
-  extends DeviceDataFromGetErv,
-    BaseDeviceDataFromList {
+  extends BaseDeviceDataFromList,
+    DeviceDataFromGetErv {
   readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean

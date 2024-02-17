@@ -8,7 +8,7 @@ import type {
   SetDeviceData,
   Store,
   TypedString,
-  ValueOf,
+  WithoutEffectiveFlags,
 } from '../../types/types'
 import {
   OperationModeState,
@@ -67,26 +67,20 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
     capability: K,
     value: SetCapabilities<AtwDriver>[K],
-  ): SetDeviceData<AtwDriver>[Exclude<
-    keyof SetDeviceData<AtwDriver>,
-    'EffectiveFlags'
-  >] {
+  ): WithoutEffectiveFlags<SetDeviceData<AtwDriver>> {
     switch (true) {
       case capability === 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
-        return value as SetDeviceData<AtwDriver>[Exclude<
-          keyof SetDeviceData<AtwDriver>,
-          'EffectiveFlags'
-        >]
+        return value as WithoutEffectiveFlags<SetDeviceData<AtwDriver>>
     }
   }
 
   protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
     capability: TypedString<K>,
-    value: ValueOf<DeviceDataFromList<AtwDriver>>,
+    value: WithoutEffectiveFlags<DeviceDataFromList<AtwDriver>>,
   ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

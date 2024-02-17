@@ -5,7 +5,7 @@ import {
   type SetCapabilities,
   type SetDeviceData,
   ThermostatMode,
-  type ValueOf,
+  type WithoutEffectiveFlags,
 } from '../../types/types'
 import {
   Horizontal,
@@ -53,10 +53,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
     capability: K,
     value: SetCapabilities<AtaDriver>[K],
-  ): SetDeviceData<AtaDriver>[Exclude<
-    keyof SetDeviceData<AtaDriver>,
-    'EffectiveFlags'
-  >] {
+  ): WithoutEffectiveFlags<SetDeviceData<AtaDriver>> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
@@ -67,17 +64,14 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
       case 'horizontal':
         return Horizontal[value as keyof typeof Horizontal]
       default:
-        return value as SetDeviceData<AtaDriver>[Exclude<
-          keyof SetDeviceData<AtaDriver>,
-          'EffectiveFlags'
-        >]
+        return value as WithoutEffectiveFlags<SetDeviceData<AtaDriver>>
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<AtaDriver>>(
     capability: K,
-    value: ValueOf<DeviceDataFromList<AtaDriver>>,
+    value: WithoutEffectiveFlags<DeviceDataFromList<AtaDriver>>,
   ): OpCapabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':

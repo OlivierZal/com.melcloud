@@ -21,7 +21,7 @@ import type {
   Settings,
   Store,
   TypedString,
-  ValueOf,
+  WithoutEffectiveFlags,
 } from '../types/types'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
@@ -379,8 +379,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   async #setCapabilityValues<
-    D extends DeviceData<T> | ListDevice<T>['Device'],
     K extends keyof OpCapabilities<T>,
+    D extends DeviceData<T> | ListDevice<T>['Device'],
   >(capabilityEntries: [K, OpCapabilityData<T>][], data: D): Promise<void> {
     await Promise.all(
       capabilityEntries.map(
@@ -391,9 +391,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           if (tag in data) {
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
-              data[tag as keyof D] as ValueOf<
-                DeviceData<T> & DeviceDataFromList<T>
-              >,
+              data[tag as keyof D] as
+                | WithoutEffectiveFlags<DeviceData<T>>
+                | WithoutEffectiveFlags<DeviceDataFromList<T>>,
             )
             await this.setCapabilityValue(
               capability as TypedString<K>,
@@ -449,7 +449,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           HasPendingCommand: true,
           ...this.#buildUpdateData(),
         })
-      ).data as DeviceData<T>
+      ).data
     } catch (error: unknown) {
       return null
     }
@@ -758,11 +758,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(
     capability: K,
     value: NonNullable<SetCapabilities<T>[K]>,
-  ): SetDeviceData<T>[Exclude<keyof SetDeviceData<T>, 'EffectiveFlags'>]
+  ): WithoutEffectiveFlags<SetDeviceData<T>>
 
   protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
-    value: ValueOf<DeviceDataFromList<T>>,
+    value:
+      | WithoutEffectiveFlags<DeviceData<T>>
+      | WithoutEffectiveFlags<DeviceDataFromList<T>>,
   ): OpCapabilities<T>[K]
 
   protected abstract updateThermostatMode(): Promise<void>
