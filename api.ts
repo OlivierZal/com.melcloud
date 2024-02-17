@@ -40,9 +40,7 @@ const getDevice = (
 
 const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
   const device: MELCloudDevice | undefined = (homey.app as MELCloudApp)
-    .getDevices({
-      buildingId,
-    })
+    .getDevices({ buildingId })
     .find(({ id }) => typeof id !== 'undefined')
   if (!device) {
     throw new Error(homey.__('app.building.no_device', { buildingId }))
