@@ -47,17 +47,17 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
 }
 
 export = class MELCloudApp extends withTimers(App) {
+  public readonly melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
+    this.homey.settings,
+    this.log.bind(this),
+    this.error.bind(this),
+  )
+
   #devicesPerId: Record<number, ListDeviceAny> = {}
 
   #devicesPerType: Record<string, readonly ListDeviceAny[]> = {}
 
   #syncInterval: NodeJS.Timeout | null = null
-
-  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
-    this.homey.settings,
-    this.log.bind(this),
-    this.error.bind(this),
-  )
 
   public get devicesPerId(): Record<number, ListDeviceAny> {
     return this.#devicesPerId
@@ -70,7 +70,7 @@ export = class MELCloudApp extends withTimers(App) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    if (await this.#melcloudAPI.planRefreshLogin()) {
+    if (await this.melcloudAPI.planRefreshLogin()) {
       await this.#syncDevicesFromList()
     }
   }
@@ -82,7 +82,7 @@ export = class MELCloudApp extends withTimers(App) {
     if (username && password) {
       try {
         const { LoginData } = (
-          await this.#melcloudAPI.login({
+          await this.melcloudAPI.login({
             AppVersion: APP_VERSION,
             Email: username,
             Password: password,
@@ -90,7 +90,7 @@ export = class MELCloudApp extends withTimers(App) {
           })
         ).data
         if (LoginData && !this.#syncInterval) {
-          await this.#melcloudAPI.planRefreshLogin()
+          await this.melcloudAPI.planRefreshLogin()
           await this.runSyncFromDevices()
         }
         return Boolean(LoginData)
@@ -120,7 +120,7 @@ export = class MELCloudApp extends withTimers(App) {
 
   public async getBuildings(): Promise<Building[]> {
     try {
-      return (await this.#melcloudAPI.list()).data
+      return (await this.melcloudAPI.list()).data
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error))
     }

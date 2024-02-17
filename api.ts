@@ -27,14 +27,11 @@ import type {
 import { DateTime } from 'luxon'
 import type { Driver } from 'homey'
 import type Homey from 'homey/lib/Homey'
-import MELCloudAPI from './lib/MELCloudAPI'
 import type MELCloudApp from './app'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
-
-const melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance()
 
 const getDevices = (
   homey: Homey,
@@ -91,8 +88,9 @@ const getUnitErrorLog = async (
   fromDate: DateTime,
   toDate: DateTime,
 ): Promise<ErrorLogData[]> => {
-  const { data } = await melcloudAPI.error({
-    DeviceIDs: Object.keys((homey.app as MELCloudApp).devicesPerId),
+  const app: MELCloudApp = homey.app as MELCloudApp
+  const { data } = await app.melcloudAPI.error({
+    DeviceIDs: Object.keys(app.devicesPerId),
     FromDate: fromDate.toISODate() ?? '',
     ToDate: toDate.toISODate() ?? '',
   })
@@ -265,7 +263,7 @@ export = {
     params: { buildingId: number }
   }): Promise<FrostProtectionData> {
     return (
-      await melcloudAPI.getFrostProtection(
+      await (homey.app as MELCloudApp).melcloudAPI.getFrostProtection(
         getBuildingDeviceId(homey, Number(params.buildingId)),
       )
     ).data
@@ -277,7 +275,9 @@ export = {
     homey: Homey
     params: { buildingId: number }
   }): Promise<HolidayModeData> {
-    const { data } = await melcloudAPI.getHolidayMode(
+    const { data } = await (
+      homey.app as MELCloudApp
+    ).melcloudAPI.getHolidayMode(
       getBuildingDeviceId(homey, Number(params.buildingId)),
     )
     return {
@@ -382,15 +382,17 @@ export = {
     }
   },
   async updateFrostProtectionSettings({
+    homey,
     params,
     body,
   }: {
     body: FrostProtectionSettings
+    homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
     handleResponse(
       (
-        await melcloudAPI.updateFrostProtection({
+        await (homey.app as MELCloudApp).melcloudAPI.updateFrostProtection({
           ...body,
           BuildingIds: [Number(params.buildingId)],
         })
@@ -414,7 +416,7 @@ export = {
     const utcEndDate: DateTime | null = toUTC(endDate, enabled)
     handleResponse(
       (
-        await melcloudAPI.updateHolidayMode({
+        await (homey.app as MELCloudApp).melcloudAPI.updateHolidayMode({
           Enabled: enabled,
           EndDate: utcEndDate
             ? {
