@@ -149,12 +149,12 @@ export type DeviceSettings = Record<string, DeviceSetting>
 
 export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? SetDeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
 export type DeviceData<T> = MELCloudDriver & T extends AtaDriver
   ? DeviceDataAta
-  : MELCloudDriver & T extends AtwDriver
+  : T extends AtwDriver
     ? DeviceDataAtw
     : DeviceDataErv
 export type DeviceDataFromList<T> = T extends AtaDriver
