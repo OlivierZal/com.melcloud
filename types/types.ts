@@ -305,9 +305,7 @@ export type SetCapabilities<T> = (T extends AtaDriver
   ? SetCapabilitiesAta
   : T extends AtwDriver
     ? SetCapabilitiesAtw
-    : SetCapabilitiesErv) & {
-  thermostat_mode?: ThermostatMode
-}
+    : SetCapabilitiesErv) & { thermostat_mode?: ThermostatMode }
 export type OpCapabilities<T> = T extends AtaDriver
   ? GetCapabilitiesAta & ListCapabilitiesAta & SetCapabilitiesAta
   : T extends AtwDriver

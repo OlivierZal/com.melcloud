@@ -294,14 +294,10 @@ export interface Building extends Readonly<BuildingData> {
   readonly ID: number
   readonly Name: string
   readonly Structure: {
-    readonly Areas: readonly {
-      readonly Devices: readonly ListDeviceAny[]
-    }[]
+    readonly Areas: readonly { readonly Devices: readonly ListDeviceAny[] }[]
     readonly Devices: readonly ListDeviceAny[]
     readonly Floors: readonly {
-      readonly Areas: readonly {
-        readonly Devices: readonly ListDeviceAny[]
-      }[]
+      readonly Areas: readonly { readonly Devices: readonly ListDeviceAny[] }[]
       readonly Devices: readonly ListDeviceAny[]
     }[]
   }
