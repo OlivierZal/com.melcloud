@@ -8,6 +8,7 @@ import type {
   ListCapabilityMapping,
   ListDevice,
   MELCloudDriver,
+  NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpCapabilityData,
   ReportCapabilities,
@@ -21,7 +22,6 @@ import type {
   Settings,
   Store,
   TypedString,
-  WithoutEffectiveFlags,
 } from '../types/types'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
@@ -392,8 +392,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
               data[tag as keyof D] as
-                | WithoutEffectiveFlags<DeviceData<T>>
-                | WithoutEffectiveFlags<DeviceDataFromList<T>>,
+                | NonEffectiveFlagsValueOf<DeviceData<T>>
+                | NonEffectiveFlagsValueOf<DeviceDataFromList<T>>,
             )
             await this.setCapabilityValue(
               capability as TypedString<K>,
@@ -758,13 +758,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(
     capability: K,
     value: NonNullable<SetCapabilities<T>[K]>,
-  ): WithoutEffectiveFlags<SetDeviceData<T>>
+  ): NonEffectiveFlagsValueOf<SetDeviceData<T>>
 
   protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
     value:
-      | WithoutEffectiveFlags<DeviceData<T>>
-      | WithoutEffectiveFlags<DeviceDataFromList<T>>,
+      | NonEffectiveFlagsValueOf<DeviceData<T>>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<T>>,
   ): OpCapabilities<T>[K]
 
   protected abstract updateThermostatMode(): Promise<void>

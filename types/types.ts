@@ -58,8 +58,8 @@ type DeviceFromDriver<T> = T extends AtaDriver
 
 export type BooleanString = 'false' | 'true'
 
-export type KeysWithoutEffectiveFlags<T> = Exclude<keyof T, 'EffectiveFlags'>
-export type WithoutEffectiveFlags<T> = T[KeysWithoutEffectiveFlags<T>]
+export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
+export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
 
 export type TypedString<T> = T & string
 export type ValueOf<T> = T[keyof T]
@@ -338,7 +338,7 @@ type SetCapabilityMappingAtaType = Record<
   keyof SetCapabilitiesAta,
   {
     readonly effectiveFlag: bigint
-    readonly tag: KeysWithoutEffectiveFlags<SetDeviceDataAta>
+    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAta>
   }
 >
 export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
@@ -352,7 +352,7 @@ export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
 export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
 type GetCapabilityMappingAtaType = Record<
   keyof GetCapabilitiesAta,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromSetAta> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetAta> }
 >
 export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
   measure_temperature: { tag: 'RoomTemperature' },
@@ -360,7 +360,7 @@ export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
 export type GetCapabilityMappingAta = typeof getCapabilityMappingAta
 type ListCapabilityMappingAtaType = Record<
   keyof ListCapabilitiesAta,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromListAta> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListAta> }
 >
 export const listCapabilityMappingAta: ListCapabilityMappingAtaType = {
   fan_power: { tag: 'FanSpeed' },
@@ -417,7 +417,7 @@ type SetCapabilityMappingAtwType = Record<
   keyof SetCapabilitiesAtw,
   {
     readonly effectiveFlag: bigint
-    readonly tag: KeysWithoutEffectiveFlags<SetDeviceDataAtw>
+    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
   }
 >
 export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
@@ -471,7 +471,7 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
 export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
 type GetCapabilityMappingAtwType = Record<
   keyof GetCapabilitiesAtw,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromSetAtw> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetAtw> }
 >
 export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
@@ -486,7 +486,7 @@ export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
 export type GetCapabilityMappingAtw = typeof getCapabilityMappingAtw
 type ListCapabilityMappingAtwType = Record<
   keyof ListCapabilitiesAtw,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromListAtw> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListAtw> }
 >
 export const listCapabilityMappingAtw: ListCapabilityMappingAtwType = {
   'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
@@ -585,7 +585,7 @@ type SetCapabilityMappingErvType = Record<
   keyof SetCapabilitiesErv,
   {
     readonly effectiveFlag: bigint
-    readonly tag: KeysWithoutEffectiveFlags<SetDeviceDataErv>
+    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataErv>
   }
 >
 export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
@@ -596,7 +596,7 @@ export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
 export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
 type GetCapabilityMappingErvType = Record<
   keyof GetCapabilitiesErv,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromSetErv> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetErv> }
 >
 export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
   measure_co2: { tag: 'RoomCO2Level' },
@@ -606,7 +606,7 @@ export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
 export type GetCapabilityMappingErv = typeof getCapabilityMappingErv
 type ListCapabilityMappingErvType = Record<
   keyof ListCapabilitiesErv,
-  { readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromListErv> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListErv> }
 >
 export const listCapabilityMappingErv: ListCapabilityMappingErvType = {
   measure_pm25: { tag: 'PM25Level' },
@@ -620,7 +620,7 @@ export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
 
 export interface SetCapabilityData<T> {
   readonly effectiveFlag: bigint
-  readonly tag: KeysWithoutEffectiveFlags<SetDeviceData<T>>
+  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceData<T>>
 }
 export type SetCapabilityMappingAny =
   | SetCapabilityMappingAta
@@ -632,7 +632,7 @@ export type SetCapabilityMapping<T> = T extends AtaDriver
     ? SetCapabilityMappingAtw
     : SetCapabilityMappingErv
 export interface GetCapabilityData<T> {
-  readonly tag: KeysWithoutEffectiveFlags<DeviceData<T>>
+  readonly tag: NonEffectiveFlagsKeyOf<DeviceData<T>>
 }
 export type GetCapabilityMappingAny =
   | GetCapabilityMappingAta
@@ -644,7 +644,7 @@ export type GetCapabilityMapping<T> = T extends AtaDriver
     ? GetCapabilityMappingAtw
     : GetCapabilityMappingErv
 interface ListCapabilityData<T> {
-  readonly tag: KeysWithoutEffectiveFlags<DeviceDataFromList<T>>
+  readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromList<T>>
 }
 export type ListCapabilityMappingAny =
   | ListCapabilityMappingAta
