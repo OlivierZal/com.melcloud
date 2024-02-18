@@ -174,7 +174,7 @@ export type DeviceDataFromSet<T extends PostDataAny> = T extends PostDataAta
   ? DeviceDataFromSetAta
   : T extends PostDataAtw
     ? DeviceDataFromSetAtw
-      : DeviceDataFromSetErv
+    : DeviceDataFromSetErv
 export type DeviceDataFromGetAny =
   | DeviceDataFromGetAta
   | DeviceDataFromGetAtw
