@@ -20,8 +20,6 @@ export default abstract class BaseMELCloudDriver<
 
   public readonly consumedTagMapping: ReportCapabilityMappingAny = {}
 
-  #heatPumpType!: T
-
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
   public abstract readonly setCapabilityMapping: SetCapabilityMappingAny
@@ -35,12 +33,11 @@ export default abstract class BaseMELCloudDriver<
   protected abstract readonly deviceType: HeatPumpType
 
   public get heatPumpType(): T {
-    return this.#heatPumpType
+    return HeatPumpType[this.deviceType] as T
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
-    this.#heatPumpType = HeatPumpType[this.deviceType] as T
     this.#setProducedAndConsumedTagMappings()
     this.registerRunListeners()
   }
