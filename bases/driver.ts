@@ -34,7 +34,7 @@ export default abstract class BaseMELCloudDriver<
 
   protected abstract readonly deviceType: HeatPumpType
 
-  public get heatPumpType(): keyof typeof HeatPumpType {
+  public get heatPumpType(): T {
     return this.#heatPumpType
   }
 
