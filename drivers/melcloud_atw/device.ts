@@ -1,6 +1,7 @@
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import type {
   DeviceDataFromList,
+  NonEffectiveFlagsValueOf,
   OpCapabilities,
   OperationModeZoneCapabilities,
   ReportPlanParameters,
@@ -8,7 +9,6 @@ import type {
   SetDeviceData,
   Store,
   TypedString,
-  NonEffectiveFlagsValueOf,
 } from '../../types/types'
 import {
   OperationModeState,
