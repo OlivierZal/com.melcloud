@@ -4,22 +4,23 @@ import type {
   ListCapabilityMappingAny,
   LoginCredentials,
   ReportCapabilityMappingAny,
-  ReportData,
   SetCapabilityMappingAny,
   Store,
   TypedString,
 } from '../types/types'
+import { HeatPumpType, type ReportData } from '../types/MELCloudAPITypes'
 import { Driver } from 'homey'
-import { HeatPumpType } from '../types/MELCloudAPITypes'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
 
-export default abstract class BaseMELCloudDriver<T> extends Driver {
+export default abstract class BaseMELCloudDriver<
+  T extends keyof typeof HeatPumpType,
+> extends Driver {
   public readonly producedTagMapping: ReportCapabilityMappingAny = {}
 
   public readonly consumedTagMapping: ReportCapabilityMappingAny = {}
 
-  #heatPumpType!: keyof typeof HeatPumpType
+  #heatPumpType!: T
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
@@ -39,9 +40,7 @@ export default abstract class BaseMELCloudDriver<T> extends Driver {
 
   // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
-    this.#heatPumpType = HeatPumpType[
-      this.deviceType
-    ] as keyof typeof HeatPumpType
+    this.#heatPumpType = HeatPumpType[this.deviceType] as T
     this.#setProducedAndConsumedTagMappings()
     this.registerRunListeners()
   }

@@ -13,7 +13,7 @@ import {
 import BaseMELCloudDriver from '../../bases/driver'
 import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
-export = class AtaDriver extends BaseMELCloudDriver<AtaDriver> {
+export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   public readonly setCapabilityMapping: SetCapabilityMappingAta =
     setCapabilityMappingAta
 

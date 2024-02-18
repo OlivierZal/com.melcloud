@@ -1,9 +1,8 @@
 import {
   APP_VERSION,
   type Building,
+  type DeviceData,
   type DeviceDataFromGet,
-  type DeviceDataFromGetAny,
-  type DeviceDataFromSet,
   type ErrorLogData,
   type ErrorLogPostData,
   type FailureData,
@@ -14,8 +13,8 @@ import {
   type HolidayModePostData,
   type LoginData,
   type LoginPostData,
-  type PostDataAny,
-  type ReportDataAny,
+  type PostData,
+  type ReportData,
   type ReportPostData,
   type SuccessData,
 } from '../types/MELCloudAPITypes'
@@ -114,17 +113,14 @@ export default class MELCloudAPI {
     return this.#api.get<Building[]>(LIST_URL)
   }
 
-  public async set<T extends PostDataAny>(
-    heatPumpType: keyof typeof HeatPumpType,
-    postData: T,
-  ): Promise<{ data: DeviceDataFromSet<T> }> {
-    return this.#api.post<DeviceDataFromSet<T>>(
-      `/Device/Set${heatPumpType}`,
-      postData,
-    )
+  public async set<T extends keyof typeof HeatPumpType>(
+    heatPumpType: T,
+    postData: PostData<T>,
+  ): Promise<{ data: DeviceData<T> }> {
+    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
   }
 
-  public async get<T extends DeviceDataFromGetAny>(
+  public async get<T extends keyof typeof HeatPumpType>(
     id: number,
     buildingId: number,
   ): Promise<{ data: DeviceDataFromGet<T> }> {
@@ -133,10 +129,10 @@ export default class MELCloudAPI {
     })
   }
 
-  public async report(
+  public async report<T extends keyof typeof HeatPumpType>(
     postData: ReportPostData,
-  ): Promise<{ data: ReportDataAny }> {
-    return this.#api.post<ReportDataAny>('/EnergyCost/Report', postData)
+  ): Promise<{ data: ReportData<T> }> {
+    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
   }
 
   public async error(

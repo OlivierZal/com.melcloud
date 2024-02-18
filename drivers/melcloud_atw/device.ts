@@ -1,4 +1,9 @@
 import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
+import {
+  type DeviceData,
+  OperationModeState,
+  OperationModeZone,
+} from '../../types/MELCloudAPITypes'
 import type {
   DeviceDataFromList,
   NonEffectiveFlagsValueOf,
@@ -10,10 +15,6 @@ import type {
   Store,
   TypedString,
 } from '../../types/types'
-import {
-  OperationModeState,
-  OperationModeZone,
-} from '../../types/MELCloudAPITypes'
 import type AtwDriver from './driver'
 import { DateTime } from 'luxon'
 
@@ -80,7 +81,9 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
 
   protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
     capability: TypedString<K>,
-    value: NonEffectiveFlagsValueOf<DeviceDataFromList<AtwDriver>>,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceData<AtwDriver['heatPumpType']>>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<AtwDriver>>,
   ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

@@ -7,6 +7,7 @@ import {
   VentilationMode,
 } from '../../types/types'
 import BaseMELCloudDevice from '../../bases/device'
+import type { DeviceData } from '../../types/MELCloudAPITypes'
 import type ErvDriver from './driver'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
@@ -36,7 +37,9 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
     capability: K,
-    value: NonEffectiveFlagsValueOf<DeviceDataFromList<ErvDriver>>,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceData<ErvDriver['heatPumpType']>>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<ErvDriver>>,
   ): OpCapabilities<ErvDriver>[K] {
     return capability === 'ventilation_mode'
       ? (VentilationMode[

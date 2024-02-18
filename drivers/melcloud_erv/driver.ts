@@ -14,7 +14,7 @@ import {
 import BaseMELCloudDriver from '../../bases/driver'
 import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
-export = class ErvDriver extends BaseMELCloudDriver<ErvDriver> {
+export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   public readonly setCapabilityMapping: SetCapabilityMappingErv =
     setCapabilityMappingErv
 

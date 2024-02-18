@@ -75,10 +75,10 @@ export interface SetDeviceDataAta extends BaseDeviceData {
   readonly VaneVertical?: Vertical
 }
 export type PostDataAta = BasePostData & SetDeviceDataAta
-export interface DeviceDataFromSetAta extends SetDeviceDataAta {
+export interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
-export type DeviceDataFromGetAta = DeviceDataFromSetAta & {
+export type DeviceDataFromGetAta = DeviceDataAta & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAta
@@ -107,7 +107,7 @@ export interface SetDeviceDataAtw extends BaseDeviceData {
   readonly SetTemperatureZone2?: number
 }
 export type PostDataAtw = BasePostData & SetDeviceDataAtw
-export interface DeviceDataFromSetAtw extends SetDeviceDataAtw {
+export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
   readonly OperationMode: OperationModeState
@@ -116,7 +116,7 @@ export interface DeviceDataFromSetAtw extends SetDeviceDataAtw {
   readonly RoomTemperatureZone2: number
   readonly TankWaterTemperature: number
 }
-export type DeviceDataFromGetAtw = DeviceDataFromSetAtw & {
+export type DeviceDataFromGetAtw = DeviceDataAtw & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListAtw
@@ -152,12 +152,12 @@ export interface SetDeviceDataErv extends BaseDeviceData {
   readonly VentilationMode?: VentilationMode
 }
 export type PostDataErv = BasePostData & SetDeviceDataErv
-export interface DeviceDataFromSetErv extends SetDeviceDataErv {
+export interface DeviceDataErv extends SetDeviceDataErv {
   readonly RoomCO2Level: number
   readonly RoomTemperature: number
   readonly OutdoorTemperature: number
 }
-export type DeviceDataFromGetErv = DeviceDataFromSetErv & {
+export type DeviceDataFromGetErv = DeviceDataErv & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
 }
 export interface DeviceDataFromListErv
@@ -169,20 +169,22 @@ export interface DeviceDataFromListErv
   readonly PM25Level: number
 }
 
-export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
-export type DeviceDataFromSet<T extends PostDataAny> = T extends PostDataAta
-  ? DeviceDataFromSetAta
-  : T extends PostDataAtw
-    ? DeviceDataFromSetAtw
-    : DeviceDataFromSetErv
-export type DeviceDataFromGetAny =
-  | DeviceDataFromGetAta
-  | DeviceDataFromGetAtw
-  | DeviceDataFromGetErv
-export type DeviceDataFromGet<T extends DeviceDataFromGetAny> =
-  T extends DeviceDataFromGetAta
+export type PostData<T extends keyof typeof HeatPumpType> =
+  T extends HeatPumpType.Ata
+    ? PostDataAta
+    : T extends HeatPumpType.Atw
+      ? PostDataAtw
+      : PostDataErv
+export type DeviceData<T extends keyof typeof HeatPumpType> =
+  T extends HeatPumpType.Ata
+    ? DeviceDataAta
+    : T extends HeatPumpType.Atw
+      ? DeviceDataAtw
+      : DeviceDataErv
+export type DeviceDataFromGet<T extends keyof typeof HeatPumpType> =
+  T extends HeatPumpType.Ata
     ? DeviceDataFromGetAta
-    : T extends DeviceDataFromGetAtw
+    : T extends HeatPumpType.Atw
       ? DeviceDataFromGetAtw
       : DeviceDataFromGetErv
 
@@ -216,7 +218,12 @@ export interface ReportDataAtw {
   readonly TotalHotWaterConsumed: number
   readonly TotalHotWaterProduced: number
 }
-export type ReportDataAny = ReportDataAta | ReportDataAtw
+export type ReportData<T extends keyof typeof HeatPumpType> =
+  T extends HeatPumpType.Ata
+    ? ReportDataAta
+    : T extends HeatPumpType.Atw
+      ? ReportDataAtw
+      : never
 
 export interface LoginPostData {
   readonly AppVersion: typeof APP_VERSION

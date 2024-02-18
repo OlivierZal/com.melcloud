@@ -1,4 +1,10 @@
 import {
+  type DeviceData,
+  Horizontal,
+  OperationMode,
+  Vertical,
+} from '../../types/MELCloudAPITypes'
+import {
   type DeviceDataFromList,
   type NonEffectiveFlagsValueOf,
   type OpCapabilities,
@@ -7,11 +13,6 @@ import {
   type SetDeviceData,
   ThermostatMode,
 } from '../../types/types'
-import {
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '../../types/MELCloudAPITypes'
 import type AtaDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 
@@ -71,7 +72,9 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<AtaDriver>>(
     capability: K,
-    value: NonEffectiveFlagsValueOf<DeviceDataFromList<AtaDriver>>,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceData<AtaDriver['heatPumpType']>>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<AtaDriver>>,
   ): OpCapabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':

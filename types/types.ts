@@ -1,12 +1,12 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
+  DeviceData,
+  DeviceDataAta,
+  DeviceDataAtw,
+  DeviceDataErv,
   DeviceDataFromListAta,
   DeviceDataFromListAtw,
   DeviceDataFromListErv,
-  DeviceDataFromSet,
-  DeviceDataFromSetAta,
-  DeviceDataFromSetAtw,
-  DeviceDataFromSetErv,
   FrostProtectionPostData,
   HeatPumpType,
   Horizontal,
@@ -17,9 +17,6 @@ import type {
   OperationMode,
   OperationModeState,
   OperationModeZone,
-  PostDataAta,
-  PostDataAtw,
-  PostDataErv,
   ReportDataAta,
   ReportDataAtw,
   SetDeviceDataAta,
@@ -158,12 +155,6 @@ export type SetDeviceData<T> = MELCloudDriver & T extends AtaDriver
   : T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
-type PostData<T> = T extends AtaDriver
-  ? PostDataAta
-  : T extends AtwDriver
-    ? PostDataAtw
-    : PostDataErv
-export type DeviceData<T> = DeviceDataFromSet<PostData<T>>
 export type DeviceDataFromList<T> = T extends AtaDriver
   ? DeviceDataFromListAta
   : T extends AtwDriver
@@ -321,11 +312,7 @@ export type OpCapabilities<T> = T extends AtaDriver
   : T extends AtwDriver
     ? GetCapabilitiesAtw & ListCapabilitiesAtw & SetCapabilitiesAtw
     : GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv
-export type ReportData<T> = T extends AtaDriver
-  ? ReportDataAta
-  : T extends AtwDriver
-    ? ReportDataAtw
-    : never
+
 export type ReportCapabilities<T> = T extends AtaDriver
   ? ReportCapabilitiesAta
   : T extends AtwDriver
@@ -352,7 +339,7 @@ export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
 export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
 type GetCapabilityMappingAtaType = Record<
   keyof GetCapabilitiesAta,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetAta> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataAta> }
 >
 export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
   measure_temperature: { tag: 'RoomTemperature' },
@@ -471,7 +458,7 @@ export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
 export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
 type GetCapabilityMappingAtwType = Record<
   keyof GetCapabilitiesAtw,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetAtw> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataAtw> }
 >
 export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
   measure_temperature: { tag: 'RoomTemperatureZone1' },
@@ -596,7 +583,7 @@ export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
 export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
 type GetCapabilityMappingErvType = Record<
   keyof GetCapabilitiesErv,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromSetErv> }
+  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataErv> }
 >
 export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
   measure_co2: { tag: 'RoomCO2Level' },
@@ -631,8 +618,8 @@ export type SetCapabilityMapping<T> = T extends AtaDriver
   : T extends AtwDriver
     ? SetCapabilityMappingAtw
     : SetCapabilityMappingErv
-export interface GetCapabilityData<T> {
-  readonly tag: NonEffectiveFlagsKeyOf<DeviceData<T>>
+export interface GetCapabilityData<T extends MELCloudDriver> {
+  readonly tag: NonEffectiveFlagsKeyOf<DeviceData<T['heatPumpType']>>
 }
 export type GetCapabilityMappingAny =
   | GetCapabilityMappingAta
@@ -655,7 +642,7 @@ export type ListCapabilityMapping<T> = T extends AtaDriver
   : T extends AtwDriver
     ? ListCapabilityMappingAtw
     : ListCapabilityMappingErv
-export type OpCapabilityData<T> =
+export type OpCapabilityData<T extends MELCloudDriver> =
   | GetCapabilityData<T>
   | ListCapabilityData<T>
   | SetCapabilityData<T>
