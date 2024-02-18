@@ -170,25 +170,21 @@ export interface DeviceDataFromListErv
 }
 
 export type PostDataAny = PostDataAta | PostDataAtw | PostDataErv
-export type DeviceDataFromSet<D extends PostDataAny> = D extends PostDataAta
+export type DeviceDataFromSet<T extends PostDataAny> = T extends PostDataAta
   ? DeviceDataFromSetAta
-  : D extends PostDataAtw
+  : T extends PostDataAtw
     ? DeviceDataFromSetAtw
-    : D extends PostDataErv
-      ? DeviceDataFromSetErv
-      : never
+      : DeviceDataFromSetErv
 export type DeviceDataFromGetAny =
   | DeviceDataFromGetAta
   | DeviceDataFromGetAtw
   | DeviceDataFromGetErv
-export type DeviceDataFromGet<D extends DeviceDataFromGetAny> =
-  D extends DeviceDataFromGetAta
+export type DeviceDataFromGet<T extends DeviceDataFromGetAny> =
+  T extends DeviceDataFromGetAta
     ? DeviceDataFromGetAta
-    : D extends DeviceDataFromGetAtw
+    : T extends DeviceDataFromGetAtw
       ? DeviceDataFromGetAtw
-      : D extends DeviceDataFromGetErv
-        ? DeviceDataFromGetErv
-        : never
+      : DeviceDataFromGetErv
 
 export interface ReportPostData {
   readonly DeviceID: number
