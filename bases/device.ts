@@ -663,7 +663,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         (capability: string) => !this.#isReportCapability(capability),
       )
     ) {
-      this.#setListCapabilityMapping()
+      this.#setListCapabilityMappings()
     }
   }
 
@@ -698,10 +698,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     this.#getCapabilityMapping = this.#cleanMapping(
       this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
-    this.#setListCapabilityMapping()
+    this.#setListCapabilityMappings()
   }
 
-  #setListCapabilityMapping(): void {
+  #setListCapabilityMappings(): void {
     this.#listCapabilityMapping = this.#cleanMapping(
       this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
@@ -716,8 +716,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         OpCapabilityData<T>,
       ]) =>
         !Object.keys({
-          ...this.driver.setCapabilityMapping,
-          ...this.driver.getCapabilityMapping,
+          ...this.#setCapabilityMapping,
+          ...this.#getCapabilityMapping,
         }).includes(capability),
     )
   }
