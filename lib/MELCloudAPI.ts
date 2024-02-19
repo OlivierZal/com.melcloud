@@ -75,7 +75,6 @@ export default class MELCloudAPI {
     this.#errorLogger = errorLogger
     this.#api = axios.create({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
-      headers: { 'X-MitsContextKey': this.#settingManager.get('contextKey') },
     })
     this.#setupAxiosInterceptors()
   }
@@ -102,7 +101,6 @@ export default class MELCloudAPI {
       this.#settingManager.set('username', username)
       this.#settingManager.set('password', password)
       const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
-      this.#api.defaults.headers.common['X-MitsContextKey'] = contextKey
       this.#settingManager.set('contextKey', contextKey)
       this.#settingManager.set('expiry', expiry)
     }
@@ -218,7 +216,8 @@ export default class MELCloudAPI {
   async #handleRequest(
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
-    if (config.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
+    const newConfig: InternalAxiosRequestConfig = { ...config }
+    if (newConfig.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
       return Promise.reject(
         new Error(
           `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
@@ -228,8 +227,14 @@ export default class MELCloudAPI {
         ),
       )
     }
-    this.#logger(String(new APICallRequestData(config)))
-    return config
+    if (newConfig.url !== LOGIN_URL) {
+      newConfig.headers.set(
+        'X-MitsContextKey',
+        this.#settingManager.get('contextKey'),
+      )
+    }
+    this.#logger(String(new APICallRequestData(newConfig)))
+    return newConfig
   }
 
   #handleResponse(response: AxiosResponse): AxiosResponse {

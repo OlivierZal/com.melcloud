@@ -639,7 +639,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         await acc
         await this.removeCapability(capability)
       }, Promise.resolve())
-    this.#setSetAndGetCapabilityMappings()
+    this.#setCapabilityMappings()
   }
 
   async #handleOptionalCapabilities(
@@ -663,7 +663,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         (capability: string) => !this.#isReportCapability(capability),
       )
     ) {
-      this.#setListCapabilityMappings()
+      this.#setListCapabilityMapping()
     }
   }
 
@@ -691,16 +691,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     )
   }
 
-  #setSetAndGetCapabilityMappings(): void {
+  #setCapabilityMappings(): void {
     this.#setCapabilityMapping = this.#cleanMapping(
       this.driver.setCapabilityMapping as SetCapabilityMapping<T>,
     )
     this.#getCapabilityMapping = this.#cleanMapping(
       this.driver.getCapabilityMapping as GetCapabilityMapping<T>,
     )
+    this.#setListCapabilityMapping()
   }
 
-  #setListCapabilityMappings(): void {
+  #setListCapabilityMapping(): void {
     this.#listCapabilityMapping = this.#cleanMapping(
       this.driver.listCapabilityMapping as ListCapabilityMapping<T>,
     )
@@ -714,13 +715,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         TypedString<keyof OpCapabilities<T>>,
         OpCapabilityData<T>,
       ]) =>
-        !(
-          capability in
-          {
-            ...this.driver.setCapabilityMapping,
-            ...this.driver.getCapabilityMapping,
-          }
-        ),
+        !Object.keys({
+          ...this.driver.setCapabilityMapping,
+          ...this.driver.getCapabilityMapping,
+        }).includes(capability),
     )
   }
 
