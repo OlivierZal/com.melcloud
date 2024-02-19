@@ -3,6 +3,7 @@ import {
   type FlowArgs,
   type GetCapabilityMappingAtw,
   type ListCapabilityMappingAtw,
+  type OpCapabilities,
   type ReportCapabilityMappingAtw,
   type SetCapabilities,
   type SetCapabilityMappingAtw,
@@ -30,7 +31,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
 
-  readonly #capabilities: (keyof Capabilities<AtwDriver>)[] = [
+  readonly #capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'onoff',
     'onoff.forced_hot_water',
     'measure_temperature',
@@ -47,16 +48,16 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.produced',
   ]
 
-  readonly #coolCapabilities: (keyof SetCapabilities<AtwDriver>)[] = [
+  readonly #coolCapabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  readonly #notCoolCapabilities: (keyof SetCapabilities<AtwDriver>)[] = [
+  readonly #notCoolCapabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'operation_mode_zone',
   ]
 
-  readonly #zone2Capabilities: (keyof Capabilities<AtwDriver>)[] = [
+  readonly #zone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -64,12 +65,12 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_state.zone2',
   ]
 
-  readonly #coolZone2Capabilities: (keyof SetCapabilities<AtwDriver>)[] = [
+  readonly #coolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  readonly #notCoolZone2Capabilities: (keyof SetCapabilities<AtwDriver>)[] = [
+  readonly #notCoolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'operation_mode_zone.zone2',
   ]
 

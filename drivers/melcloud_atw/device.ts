@@ -11,6 +11,7 @@ import type {
   OperationModeZoneCapabilities,
   ReportPlanParameters,
   SetCapabilities,
+  SetCapabilitiesWithThermostatMode,
   SetDeviceData,
   Store,
   TypedString,
@@ -29,21 +30,23 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
-  protected async specificOnCapability<
-    K extends keyof SetCapabilities<AtwDriver>,
-  >(capability: K, value: SetCapabilities<AtwDriver>[K]): Promise<void> {
-    this.diff.set(capability, value)
+  protected specificOnCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode<AtwDriver>,
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode<AtwDriver>[K],
+  ): void {
     if (capability.startsWith('operation_mode_zone')) {
-      await this.handleOperationModeZones(
+      this.handleOperationModeZones(
         capability as keyof OperationModeZoneCapabilities,
         value as keyof typeof OperationModeZone,
       )
     }
   }
 
-  protected async handleOperationModeZones<
+  protected handleOperationModeZones<
     K extends keyof OperationModeZoneCapabilities,
-  >(capability: K, value: keyof typeof OperationModeZone): Promise<void> {
+  >(capability: K, value: keyof typeof OperationModeZone): void {
     const { canCool, hasZone2 } = this.getStore() as Store
     if (hasZone2) {
       const zoneValue: OperationModeZone = OperationModeZone[value]
@@ -61,7 +64,6 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
         otherZoneCapability,
         OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
       )
-      await this.setDisplayErrorWarning()
     }
   }
 
@@ -120,8 +122,8 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected updateThermostatMode = async (): Promise<void> => {
-    // Not implemented.
+  protected async updateThermostatMode(): Promise<void> {
+    // Not implemented
   }
 
   #getOtherZoneValue(

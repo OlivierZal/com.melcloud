@@ -73,7 +73,6 @@
   },
   "warnings": {
     "always_on": "Avstenging fra Homey er deaktivert.",
-    "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
-    "display_error": "Oppdatering vellykket (selv om en annen verdi vises)."
+    "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt."
   }
 }

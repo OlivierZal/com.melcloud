@@ -303,17 +303,22 @@ interface ListCapabilitiesErv extends ListCapabilitiesCommon {
   readonly measure_pm25: number
 }
 
-export type SetCapabilities<T extends MELCloudDriver> = (T extends AtaDriver
+export type SetCapabilities<T extends MELCloudDriver> = T extends AtaDriver
   ? SetCapabilitiesAta
   : T extends AtwDriver
     ? SetCapabilitiesAtw
-    : SetCapabilitiesErv) & { thermostat_mode?: ThermostatMode }
+    : SetCapabilitiesErv
+export type SetCapabilitiesWithThermostatMode<T extends MELCloudDriver> =
+  T extends AtaDriver
+    ? SetCapabilitiesAta & { thermostat_mode?: ThermostatMode }
+    : T extends AtwDriver
+      ? SetCapabilitiesAtw & { thermostat_mode?: ThermostatMode }
+      : SetCapabilitiesErv & { thermostat_mode?: ThermostatMode }
 export type OpCapabilities<T extends MELCloudDriver> = T extends AtaDriver
   ? GetCapabilitiesAta & ListCapabilitiesAta & SetCapabilitiesAta
   : T extends AtwDriver
     ? GetCapabilitiesAtw & ListCapabilitiesAtw & SetCapabilitiesAtw
     : GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv
-
 export type ReportCapabilities<T extends MELCloudDriver> = T extends AtaDriver
   ? ReportCapabilitiesAta
   : T extends AtwDriver

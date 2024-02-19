@@ -73,7 +73,6 @@
   },
   "warnings": {
     "always_on": "L'extinction depuis Homey a été désactivée.",
-    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord.",
-    "display_error": "Mise à jour réussie (même si une autre valeur est affichée)."
+    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
   }
 }

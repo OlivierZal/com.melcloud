@@ -50,7 +50,6 @@ export default abstract class BaseMELCloudDriver<
     )
     session.setHandler(
       'list_devices',
-      // eslint-disable-next-line @typescript-eslint/require-await
       async (): Promise<DeviceDetails[]> => this.#discoverDevices(),
     )
   }
@@ -68,7 +67,8 @@ export default abstract class BaseMELCloudDriver<
     return this.#app.login(data)
   }
 
-  #discoverDevices(): DeviceDetails[] {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async #discoverDevices(): Promise<DeviceDetails[]> {
     return this.#app.devicesPerType[this.deviceType].map(
       ({
         DeviceName: name,

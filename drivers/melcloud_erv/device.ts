@@ -13,13 +13,6 @@ import type ErvDriver from './driver'
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   protected readonly reportPlanParameters: null = null
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  protected async specificOnCapability<
-    K extends keyof SetCapabilities<ErvDriver>,
-  >(capability: K, value: SetCapabilities<ErvDriver>[K]): Promise<void> {
-    this.diff.set(capability, value)
-  }
-
   protected convertToDevice<K extends keyof SetCapabilities<ErvDriver>>(
     capability: K,
     value: SetCapabilities<ErvDriver>[K],
@@ -49,7 +42,12 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected async specificOnCapability(): Promise<void> {
+    // Not implemented
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected async updateThermostatMode(): Promise<void> {
-    // Not implemented.
+    // Not implemented
   }
 }

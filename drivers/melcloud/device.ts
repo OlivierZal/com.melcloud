@@ -10,6 +10,7 @@ import {
   type OpCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
+  type SetCapabilitiesWithThermostatMode,
   type SetDeviceData,
   ThermostatMode,
 } from '../../types/types'
@@ -30,24 +31,21 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   }
 
   protected async specificOnCapability<
-    K extends keyof SetCapabilities<AtaDriver>,
-  >(capability: K, value: SetCapabilities<AtaDriver>[K]): Promise<void> {
+    K extends keyof SetCapabilitiesWithThermostatMode<AtaDriver>,
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode<AtaDriver>[K],
+  ): Promise<void> {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off
       this.diff.set('onoff', isOn)
       if (isOn) {
-        this.diff.set('operation_mode', value)
+        this.diff.set(
+          'operation_mode',
+          value as Exclude<ThermostatMode, ThermostatMode.off>,
+        )
       }
       await this.setAlwaysOnWarning()
-    } else {
-      this.diff.set(capability, value)
-      if (
-        capability === 'operation_mode' &&
-        !isThermostatMode(value as keyof typeof OperationMode) &&
-        this.getCapabilityValue('thermostat_mode') !== ThermostatMode.off
-      ) {
-        await this.setDisplayErrorWarning()
-      }
     }
   }
 
@@ -104,6 +102,6 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected async updateStore(): Promise<void> {
-    // Not implemented.
+    // Not implemented
   }
 }

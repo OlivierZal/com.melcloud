@@ -73,7 +73,6 @@
   },
   "warnings": {
     "always_on": "Se ha desactivado el apagado desde Homey.",
-    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
-    "display_error": "Actualización exitosa (aunque se muestre otro valor)."
+    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."
   }
 }

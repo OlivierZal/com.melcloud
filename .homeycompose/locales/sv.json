@@ -73,7 +73,6 @@
   },
   "warnings": {
     "always_on": "Avstängning från Homey har inaktiverats.",
-    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
-    "display_error": "Uppdatering lyckades (även om ett annat värde visas)."
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel."
   }
 }

@@ -73,7 +73,6 @@
   },
   "warnings": {
     "always_on": "Shutdown from Homey has been disabled.",
-    "dashboard": "Exit the device and return to update your dashboard.",
-    "display_error": "Update successful (even if another value is displayed)."
+    "dashboard": "Exit the device and return to update your dashboard."
   }
 }

@@ -2,7 +2,7 @@ import 'source-map-support/register'
 import {
   APP_VERSION,
   type Building,
-  type HeatPumpType,
+  HeatPumpType,
   type ListDeviceAny,
 } from './types/MELCloudAPITypes'
 import { App, type Driver } from 'homey'
@@ -16,9 +16,9 @@ import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
 
 const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
-  0: [],
-  1: [],
-  3: [],
+  [HeatPumpType.Ata]: [],
+  [HeatPumpType.Atw]: [],
+  [HeatPumpType.Erv]: [],
 }
 
 const getErrorMessage = (error: unknown): string =>
@@ -59,7 +59,8 @@ export = class MELCloudApp extends withTimers(App) {
 
   #devicesPerId: Record<number, ListDeviceAny> = {}
 
-  #devicesPerType: Record<string, readonly ListDeviceAny[]> = {}
+  #devicesPerType: Record<string, readonly ListDeviceAny[]> =
+    DEFAULT_DEVICES_PER_TYPE
 
   #syncInterval: NodeJS.Timeout | null = null
 

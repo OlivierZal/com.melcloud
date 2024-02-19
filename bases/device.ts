@@ -14,6 +14,7 @@ import type {
   ReportCapabilityMapping,
   ReportPlanParameters,
   SetCapabilities,
+  SetCapabilitiesWithThermostatMode,
   SetCapabilityData,
   SetCapabilityMapping,
   SetDeviceData,
@@ -220,15 +221,20 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     await super.setWarning(null)
   }
 
-  public async onCapability<K extends keyof SetCapabilities<T>>(
+  public async onCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode<T>,
+  >(
     capability: K,
-    value: SetCapabilities<T>[K],
+    value: SetCapabilitiesWithThermostatMode<T>[K],
   ): Promise<void> {
     this.#clearSyncToDevice()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
     }
-    await this.specificOnCapability(capability, value)
+    if (capability !== 'thermostat_mode') {
+      this.diff.set(capability, value)
+    }
+    this.specificOnCapability(capability, value)
     this.#syncToDevice()
   }
 
@@ -243,10 +249,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
     }
-  }
-
-  protected async setDisplayErrorWarning(): Promise<void> {
-    await this.setWarning(this.homey.__('warnings.display_error'))
   }
 
   protected async updateStore(data: ListDevice<T>['Device']): Promise<void> {
@@ -272,7 +274,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected getRequestedOrCurrentValue<K extends keyof SetCapabilities<T>>(
     capability: K,
   ): NonNullable<SetCapabilities<T>[K]> {
-    return (this.diff.get(capability as keyof SetCapabilities<T>) ??
+    return (this.diff.get(capability) ??
       this.getCapabilityValue(capability as TypedString<K>)) as NonNullable<
       SetCapabilities<T>[K]
     >
@@ -764,10 +766,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     return setting in this.driver.reportCapabilityMapping
   }
 
-  protected abstract specificOnCapability<K extends keyof SetCapabilities<T>>(
-    capability: K,
-    value: SetCapabilities<T>[K],
-  ): Promise<void>
+  protected abstract specificOnCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode<T>,
+  >(capability: K, value: SetCapabilitiesWithThermostatMode<T>[K]): void
 
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(
     capability: K,
