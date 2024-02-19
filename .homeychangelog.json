@@ -157,5 +157,8 @@
   },
   "31.0.0": {
     "en": "Improved error handling."
+  },
+  "32.0.0": {
+    "en": "Handle API with a singleton."
   }
 }
