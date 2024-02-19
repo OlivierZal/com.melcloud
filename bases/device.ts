@@ -239,7 +239,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   public async syncFromDevice(): Promise<void> {
-    const data: ListDevice<T>['Device'] = this.app.devicesPerId[this.id].Device
+    const data: ListDevice<T>['Device'] | null =
+      (this.app.devicesPerId[this.id] as ListDevice<T> | undefined)?.Device ??
+      null
     this.log('Syncing from device list:', data)
     await this.updateStore(data)
     await this.#updateCapabilities(data)
@@ -251,7 +253,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     }
   }
 
-  protected async updateStore(data: ListDevice<T>['Device']): Promise<void> {
+  protected async updateStore(
+    data: ListDevice<T>['Device'] | null,
+  ): Promise<void> {
+    if (!data) {
+      return
+    }
     const updates = await Promise.all(
       Object.entries(this.getStore() as Store)
         .filter(
@@ -372,7 +379,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           ...Object.entries(this.#setCapabilityMapping).filter(
             ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
               // eslint-disable-next-line no-bitwise
-              Boolean(effectiveFlag & effectiveFlags),
+              effectiveFlag & effectiveFlags,
           ),
           ...Object.entries(this.#getCapabilityMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]

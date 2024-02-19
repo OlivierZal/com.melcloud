@@ -98,7 +98,7 @@ export = class MELCloudApp extends withTimers(App) {
           await this.melcloudAPI.planRefreshLogin()
           await this.#runSyncFromDevices()
         }
-        return Boolean(LoginData)
+        return LoginData !== null
       } catch (error: unknown) {
         throwIfRequested(error, raise)
       }

@@ -222,7 +222,7 @@ export default class MELCloudAPI {
         new Error(
           `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
             .diffNow()
-            .shiftTo('minutes', 'seconds')
+            .shiftTo('minutes')
             .toHuman()}`,
         ),
       )
@@ -256,7 +256,7 @@ export default class MELCloudAPI {
         }
         break
       case axios.HttpStatusCode.TooManyRequests:
-        this.#holdAPIListUntil = DateTime.now().plus({ minutes: 30 })
+        this.#holdAPIListUntil = DateTime.now().plus({ hours: 2 })
         break
       default:
     }
@@ -278,16 +278,20 @@ export default class MELCloudAPI {
     const username = this.#settingManager.get('username') ?? ''
     const password = this.#settingManager.get('password') ?? ''
     if (username && password) {
-      return Boolean(
-        (
-          await this.login({
-            AppVersion: APP_VERSION,
-            Email: username,
-            Password: password,
-            Persist: true,
-          })
-        ).data.LoginData,
-      )
+      try {
+        return (
+          (
+            await this.login({
+              AppVersion: APP_VERSION,
+              Email: username,
+              Password: password,
+              Persist: true,
+            })
+          ).data.LoginData !== null
+        )
+      } catch (error: unknown) {
+        // Pass
+      }
     }
     return false
   }
