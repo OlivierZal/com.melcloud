@@ -278,8 +278,8 @@ export default class MELCloudAPI {
   }
 
   async #attemptAutoLogin(): Promise<boolean> {
-    const username = this.#settingManager.get('username') ?? ''
-    const password = this.#settingManager.get('password') ?? ''
+    const username: string = this.#settingManager.get('username') ?? ''
+    const password: string = this.#settingManager.get('password') ?? ''
     if (username && password) {
       try {
         return (
