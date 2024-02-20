@@ -62,7 +62,7 @@ export = class MELCloudApp extends withTimers(App) {
   #devicesPerType: Record<string, readonly ListDeviceAny[]> =
     DEFAULT_DEVICES_PER_TYPE
 
-  #syncInterval: NodeJS.Timeout | null = null
+  #syncFromDevicesInterval: NodeJS.Timeout | null = null
 
   public get devicesPerId(): Record<number, ListDeviceAny> {
     return this.#devicesPerId
@@ -94,7 +94,7 @@ export = class MELCloudApp extends withTimers(App) {
             Persist: true,
           })
         ).data
-        if (LoginData && !this.#syncInterval) {
+        if (LoginData && !this.#syncFromDevicesInterval) {
           await this.#runSyncFromDevices()
         }
         return LoginData !== null
@@ -105,8 +105,8 @@ export = class MELCloudApp extends withTimers(App) {
     return false
   }
 
-  public clearSyncDevicesFromList(): void {
-    this.homey.clearInterval(this.#syncInterval)
+  public clearSyncFromDevices(): void {
+    this.homey.clearInterval(this.#syncFromDevicesInterval)
     this.log('Device list refresh has been paused')
   }
 
@@ -142,18 +142,18 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   async #runSyncFromDevices(): Promise<void> {
-    this.clearSyncDevicesFromList()
-    await this.#syncDevicesFromList()
-    this.#syncInterval = this.setInterval(
+    this.clearSyncFromDevices()
+    await this.#syncFromDeviceList()
+    this.#syncFromDevicesInterval = this.setInterval(
       async (): Promise<void> => {
-        await this.#syncDevicesFromList()
+        await this.#syncFromDeviceList()
       },
       { minutes: 5 },
       { actionType: 'device list refresh', units: ['minutes'] },
     )
   }
 
-  async #syncDevicesFromList(): Promise<void> {
+  async #syncFromDeviceList(): Promise<void> {
     try {
       const { devicesPerId, devicesPerType } = (
         await this.getBuildings()
@@ -179,13 +179,13 @@ export = class MELCloudApp extends withTimers(App) {
       )
       this.#devicesPerId = devicesPerId
       this.#devicesPerType = devicesPerType
-      await this.#syncDevices()
+      await this.#syncFromDevices()
     } catch (error: unknown) {
       // Pass
     }
   }
 
-  async #syncDevices(): Promise<void> {
+  async #syncFromDevices(): Promise<void> {
     await Promise.all(
       this.getDevices().map(async (device: MELCloudDevice) =>
         device.syncFromDevice(),
