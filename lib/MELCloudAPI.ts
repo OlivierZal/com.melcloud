@@ -180,6 +180,7 @@ export default class MELCloudAPI {
       this.#logger(
         'Login refresh will run in',
         Math.floor(interval / MS_PER_DAY),
+        'days',
       )
       return true
     }
