@@ -665,15 +665,15 @@ export type ReportCapabilityMapping<T extends MELCloudDriver> =
       : ReportCapabilityMappingErv
 
 export type FlowArgs<T extends MELCloudDriver> = (T extends AtaDriver
-  ? SetCapabilities<AtaDriver>
+  ? Omit<SetCapabilitiesAta, 'fan_power'> & { readonly fan_power?: string }
   : T extends AtwDriver
     ? {
-        readonly onoff: boolean
-        readonly operation_mode_state: keyof typeof OperationModeState
-        readonly operation_mode_zone: keyof typeof OperationModeZone
-        readonly target_temperature: number
+        readonly onoff?: boolean
+        readonly operation_mode_state?: keyof typeof OperationModeState
+        readonly operation_mode_zone?: keyof typeof OperationModeZone
+        readonly target_temperature?: number
       }
-    : SetCapabilities<ErvDriver>) & { readonly device: DeviceFromDriver<T> }
+    : SetCapabilitiesErv) & { readonly device: DeviceFromDriver<T> }
 
 export type ListDevice<T extends MELCloudDriver> = T extends AtaDriver
   ? ListDeviceAta

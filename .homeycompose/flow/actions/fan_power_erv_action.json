@@ -25,57 +25,10 @@
     },
     {
       "name": "fan_power",
-      "type": "dropdown",
-      "values": [
-        {
-          "id": "1",
-          "title": {
-            "en": "Very slow",
-            "fr": "Très lent",
-            "nl": "Zeer langzaam",
-            "sv": "Mycket långsam",
-            "no": "Veldig sakte",
-            "da": "Meget langsom",
-            "es": "Muy lento"
-          }
-        },
-        {
-          "id": "2",
-          "title": {
-            "en": "Slow",
-            "fr": "Lent",
-            "nl": "Langzaam",
-            "sv": "Långsam",
-            "no": "Sakte",
-            "da": "Langsom",
-            "es": "Lento"
-          }
-        },
-        {
-          "id": "3",
-          "title": {
-            "en": "Fast",
-            "fr": "Rapide",
-            "nl": "Snel",
-            "sv": "Snabb",
-            "no": "Rask",
-            "da": "Hurtig",
-            "es": "Rápido"
-          }
-        },
-        {
-          "id": "4",
-          "title": {
-            "en": "Very fast",
-            "fr": "Très rapide",
-            "nl": "Zeer snel",
-            "sv": "Mycket snabb",
-            "no": "Veldig rask",
-            "da": "Meget hurtig",
-            "es": "Muy rápido"
-          }
-        }
-      ]
+      "type": "range",
+      "min": 1,
+      "max": 4,
+      "step": 1
     }
   ]
 }

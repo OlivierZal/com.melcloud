@@ -52,31 +52,21 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   }
 
   protected registerRunListeners(): void {
-    const getCapabilityArg = <K extends keyof SetCapabilities<ErvDriver>>(
-      args: FlowArgs<ErvDriver>,
-      capability: K,
-    ): SetCapabilities<ErvDriver>[K] =>
-      (capability === 'fan_power'
-        ? Number(args[capability])
-        : args[capability]) as SetCapabilities<ErvDriver>[K]
-
     this.#flowCapabilities.forEach(
       (capability: keyof SetCapabilities<ErvDriver>) => {
-        this.homey.flow
-          .getConditionCard(`${capability}_erv_condition`)
-          .registerRunListener(
-            (args: FlowArgs<ErvDriver>): boolean =>
-              getCapabilityArg(args, capability) ===
-              args.device.getCapabilityValue(capability),
-          )
+        if (capability !== 'fan_power') {
+          this.homey.flow
+            .getConditionCard(`${capability}_erv_condition`)
+            .registerRunListener(
+              (args: FlowArgs<ErvDriver>): boolean =>
+                args[capability] === args.device.getCapabilityValue(capability),
+            )
+        }
         this.homey.flow
           .getActionCard(`${capability}_erv_action`)
           .registerRunListener(
             async (args: FlowArgs<ErvDriver>): Promise<void> => {
-              await args.device.onCapability(
-                capability,
-                getCapabilityArg(args, capability),
-              )
+              await args.device.onCapability(capability, args[capability])
             },
           )
       },

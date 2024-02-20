@@ -1153,88 +1153,6 @@
       },
       {
         "title": {
-          "en": "The fan speed !{{is|is not}}",
-          "fr": "La vitesse du ventilateur !{{est|n'est pas}}",
-          "nl": "De ventilatiesnelheid !{{is|is niet}}",
-          "sv": "Fläkthastigheten !{{är|är inte}}",
-          "no": "Viftehastigheten !{{er|er ikke}}",
-          "da": "Blæserhastigheden !{{er|er ikke}}",
-          "es": "La velocidad del ventilador !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The fan speed !{{is|is not}} [[fan_power]]",
-          "fr": "La vitesse du ventilateur !{{est|n'est pas}} [[fan_power]]",
-          "nl": "De ventilatiesnelheid !{{is|is niet}} [[fan_power]]",
-          "sv": "Fläkthastigheten !{{är|är inte}} [[fan_power]]",
-          "no": "Viftehastigheten !{{er|er ikke}} [[fan_power]]",
-          "da": "Blæserhastigheden !{{er|er ikke}} [[fan_power]]",
-          "es": "La velocidad del ventilador !{{está|no está}} [[fan_power]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_erv"
-          },
-          {
-            "name": "fan_power",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "1",
-                "title": {
-                  "en": "Very slow",
-                  "fr": "Très lent",
-                  "nl": "Zeer langzaam",
-                  "sv": "Mycket långsam",
-                  "no": "Veldig sakte",
-                  "da": "Meget langsom",
-                  "es": "Muy lento"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Slow",
-                  "fr": "Lent",
-                  "nl": "Langzaam",
-                  "sv": "Långsam",
-                  "no": "Sakte",
-                  "da": "Langsom",
-                  "es": "Lento"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Fast",
-                  "fr": "Rapide",
-                  "nl": "Snel",
-                  "sv": "Snabb",
-                  "no": "Rask",
-                  "da": "Hurtig",
-                  "es": "Rápido"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Very fast",
-                  "fr": "Très rapide",
-                  "nl": "Zeer snel",
-                  "sv": "Mycket snabb",
-                  "no": "Veldig rask",
-                  "da": "Meget hurtig",
-                  "es": "Muy rápido"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "fan_power_erv_condition"
-      },
-      {
-        "title": {
           "en": "The horizontal vane !{{is|is not}}",
           "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
@@ -1332,6 +1250,18 @@
                   "no": "Høyre",
                   "da": "Højre",
                   "es": "Derecha"
+                }
+              },
+              {
+                "id": "wide",
+                "title": {
+                  "en": "Wide",
+                  "fr": "Large",
+                  "nl": "Breed",
+                  "sv": "Bred",
+                  "no": "Bred",
+                  "da": "Bred",
+                  "es": "Ancho"
                 }
               },
               {
@@ -2433,57 +2363,10 @@
           },
           {
             "name": "fan_power",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "1",
-                "title": {
-                  "en": "Very slow",
-                  "fr": "Très lent",
-                  "nl": "Zeer langzaam",
-                  "sv": "Mycket långsam",
-                  "no": "Veldig sakte",
-                  "da": "Meget langsom",
-                  "es": "Muy lento"
-                }
-              },
-              {
-                "id": "2",
-                "title": {
-                  "en": "Slow",
-                  "fr": "Lent",
-                  "nl": "Langzaam",
-                  "sv": "Långsam",
-                  "no": "Sakte",
-                  "da": "Langsom",
-                  "es": "Lento"
-                }
-              },
-              {
-                "id": "3",
-                "title": {
-                  "en": "Fast",
-                  "fr": "Rapide",
-                  "nl": "Snel",
-                  "sv": "Snabb",
-                  "no": "Rask",
-                  "da": "Hurtig",
-                  "es": "Rápido"
-                }
-              },
-              {
-                "id": "4",
-                "title": {
-                  "en": "Very fast",
-                  "fr": "Très rapide",
-                  "nl": "Zeer snel",
-                  "sv": "Mycket snabb",
-                  "no": "Veldig rask",
-                  "da": "Meget hurtig",
-                  "es": "Muy rápido"
-                }
-              }
-            ]
+            "type": "range",
+            "min": 1,
+            "max": 4,
+            "step": 1
           }
         ],
         "id": "fan_power_erv_action"
@@ -2587,6 +2470,18 @@
                   "no": "Høyre",
                   "da": "Højre",
                   "es": "Derecha"
+                }
+              },
+              {
+                "id": "wide",
+                "title": {
+                  "en": "Wide",
+                  "fr": "Large",
+                  "nl": "Breed",
+                  "sv": "Bred",
+                  "no": "Bred",
+                  "da": "Bred",
+                  "es": "Ancho"
                 }
               },
               {
@@ -6401,6 +6296,18 @@
             "no": "Høyre",
             "da": "Højre",
             "es": "Derecha"
+          }
+        },
+        {
+          "id": "wide",
+          "title": {
+            "en": "Wide",
+            "fr": "Large",
+            "nl": "Breed",
+            "sv": "Bred",
+            "no": "Bred",
+            "da": "Bred",
+            "es": "Ancho"
           }
         },
         {
