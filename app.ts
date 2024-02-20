@@ -136,6 +136,11 @@ export = class MELCloudApp extends withTimers(App) {
     return devices
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public async onUninit(): Promise<void> {
+    this.melcloudAPI.clearLoginRefresh()
+  }
+
   async #runSyncFromDevices(): Promise<void> {
     this.clearSyncDevicesFromList()
     await this.#syncDevicesFromList()

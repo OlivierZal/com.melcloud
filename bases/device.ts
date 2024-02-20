@@ -167,8 +167,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   public onDeleted(): void {
-    this.#clearSyncToDevice()
-    this.#clearEnergyReportPlans()
+    this.homey.clearTimeout(this.#syncToDeviceTimeout)
+    this.homey.clearTimeout(this.#reportTimeout.false)
+    this.homey.clearTimeout(this.#reportTimeout.true)
+    this.homey.clearInterval(this.#reportInterval.false)
+    this.homey.clearInterval(this.#reportInterval.true)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public async onUninit(): Promise<void> {
+    this.onDeleted()
   }
 
   public async addCapability(capability: string): Promise<void> {
@@ -667,11 +675,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     ) {
       this.#setListCapabilityMappings()
     }
-  }
-
-  #clearEnergyReportPlans(): void {
-    this.#clearEnergyReportPlan()
-    this.#clearEnergyReportPlan(true)
   }
 
   #clearEnergyReportPlan(total = false): void {

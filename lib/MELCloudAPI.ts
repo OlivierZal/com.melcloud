@@ -164,7 +164,7 @@ export default class MELCloudAPI {
   }
 
   public async planRefreshLogin(): Promise<boolean> {
-    this.#clearLoginRefresh()
+    this.clearLoginRefresh()
     const expiry: string = this.#settingManager.get('expiry') ?? ''
     const ms: number = DateTime.fromISO(expiry)
       .minus({ days: 1 })
@@ -184,6 +184,11 @@ export default class MELCloudAPI {
       return true
     }
     return this.#attemptLogin()
+  }
+
+  public clearLoginRefresh(): void {
+    clearTimeout(this.#loginTimeout)
+    this.#logger('Login refresh has been paused')
   }
 
   #setupAxiosInterceptors(): void {
@@ -283,10 +288,5 @@ export default class MELCloudAPI {
       }
     }
     return false
-  }
-
-  #clearLoginRefresh(): void {
-    clearTimeout(this.#loginTimeout)
-    this.#logger('Login refresh has been paused')
   }
 }
