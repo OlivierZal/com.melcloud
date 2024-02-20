@@ -57,8 +57,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   public readonly buildingid: number = this.data.buildingid
 
-  protected readonly app: MELCloudApp = this.homey.app as MELCloudApp
-
   protected readonly diff: Map<
     keyof SetCapabilities<T>,
     SetCapabilities<T>[keyof SetCapabilities<T>]
@@ -94,6 +92,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   } = { false: [], true: [] }
 
   #linkedDeviceCount = DEFAULT_1
+
+  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
@@ -243,7 +243,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   public async syncFromDevice(): Promise<void> {
     const data: ListDevice<T>['Device'] | null =
-      (this.app.devicesPerId[this.id] as ListDevice<T> | undefined)?.Device ??
+      (this.#app.devicesPerId[this.id] as ListDevice<T> | undefined)?.Device ??
       null
     this.log('Syncing from device list:', data)
     await this.updateStore(data)
@@ -296,7 +296,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   ): Promise<ReportData<T['heatPumpType']> | null> {
     try {
       return (
-        await this.app.melcloudAPI.report({
+        await this.#app.melcloudAPI.report({
           DeviceID: this.id,
           FromDate: fromDate.toISODate() ?? '',
           ToDate: toDate.toISODate() ?? '',
@@ -464,7 +464,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   async #setDeviceData(): Promise<DeviceData<T['heatPumpType']> | null> {
     try {
       return (
-        await this.app.melcloudAPI.set(this.driver.heatPumpType, {
+        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
           DeviceID: this.id,
           HasPendingCommand: true,
           ...this.#buildUpdateData(),
