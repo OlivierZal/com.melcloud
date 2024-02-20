@@ -1,6 +1,13 @@
 export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0
 
+export interface APISettings {
+  readonly username?: string | null
+  readonly password?: string | null
+  readonly contextKey?: string | null
+  readonly expiry?: string | null
+}
+
 export enum HeatPumpType {
   Ata = 0,
   Atw = 1,

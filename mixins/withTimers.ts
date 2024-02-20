@@ -4,7 +4,8 @@ import {
   type DurationLike,
   type DurationLikeObject,
 } from 'luxon'
-import type { HomeyClass } from '../types/types'
+import type Homey from 'homey/lib/Homey'
+import type { SimpleClass } from 'homey'
 
 interface BaseTimerOptions {
   readonly actionType: string
@@ -32,7 +33,14 @@ const FIRST_CHAR = 0
 const SECOND_CHAR = 1
 
 // eslint-disable-next-line max-lines-per-function
-const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
+const withTimers = <
+  T extends new (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...args: any[]
+  ) => SimpleClass & { readonly homey: Homey },
+>(
+  base: T,
+): T & TimerClass =>
   class extends base {
     public setInterval(
       callback: () => Promise<void>,

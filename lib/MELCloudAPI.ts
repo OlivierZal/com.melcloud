@@ -1,4 +1,5 @@
 import {
+  type APISettings,
   APP_VERSION,
   type Building,
   type DeviceData,
@@ -31,8 +32,10 @@ import APICallResponseData from './APICallResponseData'
 import createAPICallErrorData from './APICallErrorData'
 
 interface SettingManager {
-  get: (key: string) => string | null | undefined
-  set: (key: string, value: string) => void
+  get: <K extends keyof APISettings>(
+    key: K,
+  ) => APISettings[K] | null | undefined
+  set: <K extends keyof APISettings>(key: K, value: APISettings[K]) => void
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Logger = (...args: any[]) => void

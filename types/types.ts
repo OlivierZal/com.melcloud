@@ -30,8 +30,6 @@ import type AtwDevice from '../drivers/melcloud_atw/device'
 import type AtwDriver from '../drivers/melcloud_atw/driver'
 import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
-import type Homey from 'homey/lib/Homey'
-import type { SimpleClass } from 'homey'
 
 export enum ThermostatMode {
   auto = 'auto',
@@ -39,11 +37,6 @@ export enum ThermostatMode {
   cool = 'cool',
   off = 'off',
 }
-
-export type HomeyClass = new (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ...args: any[]
-) => SimpleClass & { readonly homey: Homey }
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
@@ -74,10 +67,10 @@ export interface Store {
 }
 
 export interface HomeySettingsUI {
-  readonly username: string | undefined
-  readonly password: string | undefined
-  readonly contextKey: string | undefined
-  readonly expiry: string | undefined
+  readonly username?: string
+  readonly password?: string
+  readonly contextKey?: string
+  readonly expiry?: string
 }
 
 export interface ReportPlanParameters {
