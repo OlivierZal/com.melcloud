@@ -30,6 +30,7 @@ export enum Horizontal {
   center = 3,
   center_right = 4,
   rightwards = 5,
+  wide = 8,
   swing = 12,
 }
 
