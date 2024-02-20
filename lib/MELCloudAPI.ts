@@ -47,8 +47,6 @@ const MS_PER_DAY = 86400000
 const NO_TIME_DIFF = 0
 
 export default class MELCloudAPI {
-  public static readonly instance: MELCloudAPI
-
   #holdAPIListUntil: DateTime = DateTime.now()
 
   #loginTimeout!: NodeJS.Timeout
@@ -82,33 +80,18 @@ export default class MELCloudAPI {
     this.#setupAxiosInterceptors()
   }
 
-  public static getInstance(
-    settingManager?: SettingManager,
-    // eslint-disable-next-line no-console
-    logger: Logger = console.log,
-    errorLogger: Logger = logger,
-  ): MELCloudAPI {
-    if (typeof MELCloudAPI.instance === 'undefined') {
-      if (!settingManager) {
-        throw new Error('SettingManager is required')
-      }
-      return new MELCloudAPI(settingManager, logger, errorLogger)
-    }
-    return MELCloudAPI.instance
-  }
-
   public async login(postData: LoginPostData): Promise<{ data: LoginData }> {
     const response: AxiosResponse<LoginData> = await this.#api.post<LoginData>(
       LOGIN_URL,
       postData,
     )
     if (response.data.LoginData) {
-      const { Email: username, Password: password } = postData
-      this.#settingManager.set('username', username)
-      this.#settingManager.set('password', password)
+      this.#settingManager.set('username', postData.Email)
+      this.#settingManager.set('password', postData.Password)
       const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
       this.#settingManager.set('contextKey', contextKey)
       this.#settingManager.set('expiry', expiry)
+      await this.planRefreshLogin()
     }
     return response
   }
@@ -190,7 +173,7 @@ export default class MELCloudAPI {
     if (ms > NO_TIME_DIFF) {
       const interval: number = Math.min(ms, MAX_INT32)
       this.#loginTimeout = setTimeout((): void => {
-        this.#attemptAutoLogin().catch((error: Error) => {
+        this.#attemptLogin().catch((error: Error) => {
           this.#errorLogger(error.message)
         })
       }, interval)
@@ -200,7 +183,7 @@ export default class MELCloudAPI {
       )
       return true
     }
-    return this.#attemptAutoLogin()
+    return this.#attemptLogin()
   }
 
   #setupAxiosInterceptors(): void {
@@ -256,7 +239,7 @@ export default class MELCloudAPI {
       case axios.HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
           this.#handleRetry()
-          if ((await this.#attemptAutoLogin()) && error.config) {
+          if ((await this.#attemptLogin()) && error.config) {
             return this.#api.request(error.config)
           }
         }
@@ -280,7 +263,7 @@ export default class MELCloudAPI {
     )
   }
 
-  async #attemptAutoLogin(): Promise<boolean> {
+  async #attemptLogin(): Promise<boolean> {
     const username: string = this.#settingManager.get('username') ?? ''
     const password: string = this.#settingManager.get('password') ?? ''
     if (username && password) {

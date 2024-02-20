@@ -51,7 +51,7 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
 }
 
 export = class MELCloudApp extends withTimers(App) {
-  public readonly melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
+  public readonly melcloudAPI: MELCloudAPI = new MELCloudAPI(
     this.homey.settings,
     this.log.bind(this),
     this.error.bind(this),
@@ -95,7 +95,6 @@ export = class MELCloudApp extends withTimers(App) {
           })
         ).data
         if (LoginData && !this.#syncInterval) {
-          await this.melcloudAPI.planRefreshLogin()
           await this.#runSyncFromDevices()
         }
         return LoginData !== null

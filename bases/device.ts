@@ -29,7 +29,6 @@ import {
 } from '../types/MELCloudAPITypes'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
-import MELCloudAPI from '../lib/MELCloudAPI'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
@@ -95,10 +94,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   } = { false: [], true: [] }
 
   #linkedDeviceCount = DEFAULT_1
-
-  readonly #melcloudAPI: MELCloudAPI = MELCloudAPI.getInstance(
-    this.homey.settings,
-  )
 
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
@@ -293,7 +288,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   ): Promise<ReportData<T['heatPumpType']> | null> {
     try {
       return (
-        await this.#melcloudAPI.report({
+        await this.app.melcloudAPI.report({
           DeviceID: this.id,
           FromDate: fromDate.toISODate() ?? '',
           ToDate: toDate.toISODate() ?? '',
@@ -461,7 +456,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   async #setDeviceData(): Promise<DeviceData<T['heatPumpType']> | null> {
     try {
       return (
-        await this.#melcloudAPI.set(this.driver.heatPumpType, {
+        await this.app.melcloudAPI.set(this.driver.heatPumpType, {
           DeviceID: this.id,
           HasPendingCommand: true,
           ...this.#buildUpdateData(),
