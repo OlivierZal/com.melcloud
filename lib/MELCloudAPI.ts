@@ -98,7 +98,10 @@ export default class MELCloudAPI {
   }
 
   public async login(postData: LoginPostData): Promise<{ data: LoginData }> {
-    const response = await this.#api.post<LoginData>(LOGIN_URL, postData)
+    const response: AxiosResponse<LoginData> = await this.#api.post<LoginData>(
+      LOGIN_URL,
+      postData,
+    )
     if (response.data.LoginData) {
       const { Email: username, Password: password } = postData
       this.#settingManager.set('username', username)
