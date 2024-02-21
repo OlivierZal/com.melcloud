@@ -158,9 +158,6 @@
   "31.0.0": {
     "en": "Improved error handling."
   },
-  "32.0.0": {
-    "en": "Handle API with a singleton."
-  },
   "32.1.0": {
     "en": "Added wide horizontal mode (for air-to-air devices)."
   }
