@@ -14,9 +14,6 @@ import BaseMELCloudDriver from '../../bases/driver'
 import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
-  public readonly setCapabilityMapping: SetCapabilityMappingAta =
-    setCapabilityMappingAta
-
   public readonly getCapabilityMapping: GetCapabilityMappingAta =
     getCapabilityMappingAta
 
@@ -25,6 +22,9 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
 
   public readonly reportCapabilityMapping: ReportCapabilityMappingAta =
     reportCapabilityMappingAta
+
+  public readonly setCapabilityMapping: SetCapabilityMappingAta =
+    setCapabilityMappingAta
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 

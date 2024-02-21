@@ -30,57 +30,6 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
-  protected specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode<AtwDriver>,
-  >(
-    capability: K,
-    value: SetCapabilitiesWithThermostatMode<AtwDriver>[K],
-  ): void {
-    if (capability.startsWith('operation_mode_zone')) {
-      this.handleOperationModeZones(
-        capability as keyof OperationModeZoneCapabilities,
-        value as keyof typeof OperationModeZone,
-      )
-    }
-  }
-
-  protected handleOperationModeZones<
-    K extends keyof OperationModeZoneCapabilities,
-  >(capability: K, value: keyof typeof OperationModeZone): void {
-    const { canCool, hasZone2 } = this.getStore() as Store
-    if (hasZone2) {
-      const zoneValue: OperationModeZone = OperationModeZone[value]
-      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
-        capability.endsWith('.zone2')
-          ? capability.replace(/.zone2$/u, '')
-          : `${capability}.zone2`
-      ) as keyof OperationModeZoneCapabilities
-      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
-        otherZoneCapability,
-        zoneValue,
-        canCool,
-      )
-      this.diff.set(
-        otherZoneCapability,
-        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
-      )
-    }
-  }
-
-  protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
-    capability: K,
-    value: SetCapabilities<AtwDriver>[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>> {
-    switch (true) {
-      case capability === 'onoff':
-        return this.getSetting('always_on') || (value as boolean)
-      case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[value as keyof typeof OperationModeZone]
-      default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>>
-    }
-  }
-
   protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
     capability: TypedString<K>,
     value:
@@ -118,6 +67,57 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
         ] as OpCapabilities<AtwDriver>[K]
       default:
         return value as OpCapabilities<AtwDriver>[K]
+    }
+  }
+
+  protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
+    capability: K,
+    value: SetCapabilities<AtwDriver>[K],
+  ): NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>> {
+    switch (true) {
+      case capability === 'onoff':
+        return this.getSetting('always_on') || (value as boolean)
+      case capability.startsWith('operation_mode_zone'):
+        return OperationModeZone[value as keyof typeof OperationModeZone]
+      default:
+        return value as NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>>
+    }
+  }
+
+  protected handleOperationModeZones<
+    K extends keyof OperationModeZoneCapabilities,
+  >(capability: K, value: keyof typeof OperationModeZone): void {
+    const { canCool, hasZone2 } = this.getStore() as Store
+    if (hasZone2) {
+      const zoneValue: OperationModeZone = OperationModeZone[value]
+      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
+        capability.endsWith('.zone2')
+          ? capability.replace(/.zone2$/u, '')
+          : `${capability}.zone2`
+      ) as keyof OperationModeZoneCapabilities
+      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
+        otherZoneCapability,
+        zoneValue,
+        canCool,
+      )
+      this.diff.set(
+        otherZoneCapability,
+        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
+      )
+    }
+  }
+
+  protected specificOnCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode<AtwDriver>,
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode<AtwDriver>[K],
+  ): void {
+    if (capability.startsWith('operation_mode_zone')) {
+      this.handleOperationModeZones(
+        capability as keyof OperationModeZoneCapabilities,
+        value as keyof typeof OperationModeZone,
+      )
     }
   }
 

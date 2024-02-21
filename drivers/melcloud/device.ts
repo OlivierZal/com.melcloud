@@ -30,43 +30,6 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     values: { millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected async specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode<AtaDriver>,
-  >(
-    capability: K,
-    value: SetCapabilitiesWithThermostatMode<AtaDriver>[K],
-  ): Promise<void> {
-    if (capability === 'thermostat_mode') {
-      const isOn: boolean = value !== ThermostatMode.off
-      this.diff.set('onoff', isOn)
-      if (isOn) {
-        this.diff.set(
-          'operation_mode',
-          value as Exclude<ThermostatMode, ThermostatMode.off>,
-        )
-      }
-      await this.setAlwaysOnWarning()
-    }
-  }
-
-  protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
-    capability: K,
-    value: SetCapabilities<AtaDriver>[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData<AtaDriver>> {
-    switch (capability) {
-      case 'onoff':
-        return this.getSetting('always_on') || (value as boolean)
-      case 'operation_mode':
-        return OperationMode[value as keyof typeof OperationMode]
-      case 'vertical':
-        return Vertical[value as keyof typeof Vertical]
-      case 'horizontal':
-        return Horizontal[value as keyof typeof Horizontal]
-      default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData<AtaDriver>>
-    }
-  }
-
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<AtaDriver>>(
     capability: K,
@@ -88,6 +51,48 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     }
   }
 
+  protected convertToDevice<K extends keyof SetCapabilities<AtaDriver>>(
+    capability: K,
+    value: SetCapabilities<AtaDriver>[K],
+  ): NonEffectiveFlagsValueOf<SetDeviceData<AtaDriver>> {
+    switch (capability) {
+      case 'onoff':
+        return this.getSetting('always_on') || (value as boolean)
+      case 'operation_mode':
+        return OperationMode[value as keyof typeof OperationMode]
+      case 'vertical':
+        return Vertical[value as keyof typeof Vertical]
+      case 'horizontal':
+        return Horizontal[value as keyof typeof Horizontal]
+      default:
+        return value as NonEffectiveFlagsValueOf<SetDeviceData<AtaDriver>>
+    }
+  }
+
+  protected async specificOnCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode<AtaDriver>,
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode<AtaDriver>[K],
+  ): Promise<void> {
+    if (capability === 'thermostat_mode') {
+      const isOn: boolean = value !== ThermostatMode.off
+      this.diff.set('onoff', isOn)
+      if (isOn) {
+        this.diff.set(
+          'operation_mode',
+          value as Exclude<ThermostatMode, ThermostatMode.off>,
+        )
+      }
+      await this.setAlwaysOnWarning()
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected async updateStore(): Promise<void> {
+    // Not implemented
+  }
+
   protected async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     const operationMode: keyof typeof OperationMode =
@@ -98,10 +103,5 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
         ? operationMode
         : ThermostatMode.off,
     )
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected async updateStore(): Promise<void> {
-    // Not implemented
   }
 }

@@ -48,6 +48,12 @@ const MAX_INT32 = 2147483647
 const MS_PER_DAY = 86400000
 const NO_TIME_DIFF = 0
 
+const throwIfRequested = (error: unknown, raise: boolean): void => {
+  if (raise) {
+    throw new Error(error instanceof Error ? error.message : String(error))
+  }
+}
+
 export default class MELCloudAPI {
   #holdAPIListUntil: DateTime = DateTime.now()
 
@@ -57,15 +63,15 @@ export default class MELCloudAPI {
 
   #retryTimeout!: NodeJS.Timeout
 
-  readonly #settingManager: SettingManager
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly #logger: (...args: any[]) => void
+  readonly #api: AxiosInstance
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly #errorLogger: (...args: any[]) => void
 
-  readonly #api: AxiosInstance
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly #logger: (...args: any[]) => void
+
+  readonly #settingManager: SettingManager
 
   public constructor(
     settingManager: SettingManager,
@@ -82,6 +88,76 @@ export default class MELCloudAPI {
     this.#setupAxiosInterceptors()
   }
 
+  public async applyLogin(
+    { password, username }: LoginCredentials = {
+      password: this.#settingManager.get('password') ?? '',
+      username: this.#settingManager.get('username') ?? '',
+    },
+    onSuccess?: () => Promise<void>,
+    raise = false,
+  ): Promise<boolean> {
+    if (username && password) {
+      try {
+        const { LoginData } = (
+          await this.login({
+            AppVersion: APP_VERSION,
+            Email: username,
+            Password: password,
+            Persist: true,
+          })
+        ).data
+        if (LoginData !== null && onSuccess) {
+          await onSuccess()
+        }
+        return LoginData !== null
+      } catch (error: unknown) {
+        throwIfRequested(error, raise)
+      }
+    }
+    return false
+  }
+
+  public clearLoginRefresh(): void {
+    clearTimeout(this.#loginTimeout)
+    this.#logger('Login refresh has been paused')
+  }
+
+  public async error(
+    postData: ErrorLogPostData,
+  ): Promise<{ data: ErrorLogData[] | FailureData }> {
+    return this.#api.post<ErrorLogData[] | FailureData>(
+      '/Report/GetUnitErrorLog2',
+      postData,
+    )
+  }
+
+  public async get<T extends keyof typeof HeatPumpType>(
+    id: number,
+    buildingId: number,
+  ): Promise<{ data: DeviceDataFromGet<T> }> {
+    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
+      params: { buildingId, id },
+    })
+  }
+
+  public async getFrostProtection(
+    id: number,
+  ): Promise<{ data: FrostProtectionData }> {
+    return this.#api.get<FrostProtectionData>('/FrostProtection/GetSettings', {
+      params: { id, tableName: 'DeviceLocation' },
+    })
+  }
+
+  public async getHolidayMode(id: number): Promise<{ data: HolidayModeData }> {
+    return this.#api.get<HolidayModeData>('/HolidayMode/GetSettings', {
+      params: { id, tableName: 'DeviceLocation' },
+    })
+  }
+
+  public async list(): Promise<{ data: Building[] }> {
+    return this.#api.get<Building[]>(LIST_URL)
+  }
+
   public async login(postData: LoginPostData): Promise<{ data: LoginData }> {
     const response: AxiosResponse<LoginData> = await this.#api.post<LoginData>(
       LOGIN_URL,
@@ -96,73 +172,6 @@ export default class MELCloudAPI {
       await this.planRefreshLogin()
     }
     return response
-  }
-
-  public async list(): Promise<{ data: Building[] }> {
-    return this.#api.get<Building[]>(LIST_URL)
-  }
-
-  public async set<T extends keyof typeof HeatPumpType>(
-    heatPumpType: T,
-    postData: PostData<T>,
-  ): Promise<{ data: DeviceData<T> }> {
-    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
-  }
-
-  public async get<T extends keyof typeof HeatPumpType>(
-    id: number,
-    buildingId: number,
-  ): Promise<{ data: DeviceDataFromGet<T> }> {
-    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
-      params: { buildingId, id },
-    })
-  }
-
-  public async report<T extends keyof typeof HeatPumpType>(
-    postData: ReportPostData,
-  ): Promise<{ data: ReportData<T> }> {
-    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
-  }
-
-  public async error(
-    postData: ErrorLogPostData,
-  ): Promise<{ data: ErrorLogData[] | FailureData }> {
-    return this.#api.post<ErrorLogData[] | FailureData>(
-      '/Report/GetUnitErrorLog2',
-      postData,
-    )
-  }
-
-  public async getFrostProtection(
-    id: number,
-  ): Promise<{ data: FrostProtectionData }> {
-    return this.#api.get<FrostProtectionData>('/FrostProtection/GetSettings', {
-      params: { id, tableName: 'DeviceLocation' },
-    })
-  }
-
-  public async updateFrostProtection(
-    postData: FrostProtectionPostData,
-  ): Promise<{ data: FailureData | SuccessData }> {
-    return this.#api.post<FailureData | SuccessData>(
-      '/FrostProtection/Update',
-      postData,
-    )
-  }
-
-  public async getHolidayMode(id: number): Promise<{ data: HolidayModeData }> {
-    return this.#api.get<HolidayModeData>('/HolidayMode/GetSettings', {
-      params: { id, tableName: 'DeviceLocation' },
-    })
-  }
-
-  public async updateHolidayMode(
-    postData: HolidayModePostData,
-  ): Promise<{ data: FailureData | SuccessData }> {
-    return this.#api.post<FailureData | SuccessData>(
-      '/HolidayMode/Update',
-      postData,
-    )
   }
 
   public async planRefreshLogin(): Promise<boolean> {
@@ -189,58 +198,56 @@ export default class MELCloudAPI {
     return this.applyLogin()
   }
 
-  public async applyLogin(
-    { password, username }: LoginCredentials = {
-      password: this.#settingManager.get('password') ?? '',
-      username: this.#settingManager.get('username') ?? '',
-    },
-    onSuccess?: () => Promise<void>,
-    raise = false,
-  ): Promise<boolean> {
-    if (username && password) {
-      try {
-        const { LoginData } = (
-          await this.login({
-            AppVersion: APP_VERSION,
-            Email: username,
-            Password: password,
-            Persist: true,
-          })
-        ).data
-        if (LoginData !== null && onSuccess) {
-          await onSuccess()
+  public async report<T extends keyof typeof HeatPumpType>(
+    postData: ReportPostData,
+  ): Promise<{ data: ReportData<T> }> {
+    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
+  }
+
+  public async set<T extends keyof typeof HeatPumpType>(
+    heatPumpType: T,
+    postData: PostData<T>,
+  ): Promise<{ data: DeviceData<T> }> {
+    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
+  }
+
+  public async updateFrostProtection(
+    postData: FrostProtectionPostData,
+  ): Promise<{ data: FailureData | SuccessData }> {
+    return this.#api.post<FailureData | SuccessData>(
+      '/FrostProtection/Update',
+      postData,
+    )
+  }
+
+  public async updateHolidayMode(
+    postData: HolidayModePostData,
+  ): Promise<{ data: FailureData | SuccessData }> {
+    return this.#api.post<FailureData | SuccessData>(
+      '/HolidayMode/Update',
+      postData,
+    )
+  }
+
+  async #handleError(error: AxiosError): Promise<AxiosError> {
+    const apiCallData: APICallContextDataWithErrorMessage =
+      createAPICallErrorData(error)
+    this.#errorLogger(String(apiCallData))
+    switch (error.response?.status) {
+      case axios.HttpStatusCode.Unauthorized:
+        if (this.#retry && error.config?.url !== LOGIN_URL) {
+          this.#handleRetry()
+          if ((await this.applyLogin()) && error.config) {
+            return this.#api.request(error.config)
+          }
         }
-        return LoginData !== null
-      } catch (error: unknown) {
-        if (raise) {
-          throw new Error(
-            error instanceof Error ? error.message : String(error),
-          )
-        }
-      }
+        break
+      case axios.HttpStatusCode.TooManyRequests:
+        this.#holdAPIListUntil = DateTime.now().plus({ hours: 2 })
+        break
+      default:
     }
-    return false
-  }
-
-  public clearLoginRefresh(): void {
-    clearTimeout(this.#loginTimeout)
-    this.#logger('Login refresh has been paused')
-  }
-
-  #setupAxiosInterceptors(): void {
-    this.#api.interceptors.request.use(
-      async (
-        config: InternalAxiosRequestConfig,
-      ): Promise<InternalAxiosRequestConfig> => this.#handleRequest(config),
-      async (error: AxiosError): Promise<AxiosError> =>
-        this.#handleError(error),
-    )
-    this.#api.interceptors.response.use(
-      (response: AxiosResponse): AxiosResponse =>
-        this.#handleResponse(response),
-      async (error: AxiosError): Promise<AxiosError> =>
-        this.#handleError(error),
-    )
+    return Promise.reject(error)
   }
 
   async #handleRequest(
@@ -272,27 +279,6 @@ export default class MELCloudAPI {
     return response
   }
 
-  async #handleError(error: AxiosError): Promise<AxiosError> {
-    const apiCallData: APICallContextDataWithErrorMessage =
-      createAPICallErrorData(error)
-    this.#errorLogger(String(apiCallData))
-    switch (error.response?.status) {
-      case axios.HttpStatusCode.Unauthorized:
-        if (this.#retry && error.config?.url !== LOGIN_URL) {
-          this.#handleRetry()
-          if ((await this.applyLogin()) && error.config) {
-            return this.#api.request(error.config)
-          }
-        }
-        break
-      case axios.HttpStatusCode.TooManyRequests:
-        this.#holdAPIListUntil = DateTime.now().plus({ hours: 2 })
-        break
-      default:
-    }
-    return Promise.reject(error)
-  }
-
   #handleRetry(): void {
     this.#retry = false
     clearTimeout(this.#retryTimeout)
@@ -301,6 +287,22 @@ export default class MELCloudAPI {
         this.#retry = true
       },
       Duration.fromObject({ minutes: 1 }).as('milliseconds'),
+    )
+  }
+
+  #setupAxiosInterceptors(): void {
+    this.#api.interceptors.request.use(
+      async (
+        config: InternalAxiosRequestConfig,
+      ): Promise<InternalAxiosRequestConfig> => this.#handleRequest(config),
+      async (error: AxiosError): Promise<AxiosError> =>
+        this.#handleError(error),
+    )
+    this.#api.interceptors.response.use(
+      (response: AxiosResponse): AxiosResponse =>
+        this.#handleResponse(response),
+      async (error: AxiosError): Promise<AxiosError> =>
+        this.#handleError(error),
     )
   }
 }

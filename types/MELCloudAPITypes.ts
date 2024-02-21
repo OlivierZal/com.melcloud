@@ -2,10 +2,10 @@ export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0
 
 export interface APISettings {
-  readonly username?: string | null
-  readonly password?: string | null
   readonly contextKey?: string | null
   readonly expiry?: string | null
+  readonly password?: string | null
+  readonly username?: string | null
 }
 
 export enum HeatPumpType {
@@ -64,8 +64,8 @@ export enum VentilationMode {
 }
 
 interface BaseDeviceData {
-  EffectiveFlags: number
   readonly Power?: boolean
+  EffectiveFlags: number
 }
 interface BasePostData {
   readonly DeviceID: number
@@ -95,8 +95,8 @@ export interface DeviceDataFromListAta
       DeviceDataFromGetAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     > {
-  readonly DeviceType: HeatPumpType.Ata
   readonly ActualFanSpeed: number
+  readonly DeviceType: HeatPumpType.Ata
   readonly FanSpeed: number
   readonly VaneHorizontalDirection: Horizontal
   readonly VaneVerticalDirection: Vertical
@@ -130,7 +130,6 @@ export type DeviceDataFromGetAtw = DeviceDataAtw & {
 export interface DeviceDataFromListAtw
   extends BaseDeviceDataFromList,
     DeviceDataFromGetAtw {
-  readonly DeviceType: HeatPumpType.Atw
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
@@ -139,6 +138,7 @@ export interface DeviceDataFromListAtw
   readonly CurrentEnergyConsumed: number
   readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
+  readonly DeviceType: HeatPumpType.Atw
   readonly EcoHotWater: boolean
   readonly FlowTemperature: number
   readonly FlowTemperatureZone1: number
@@ -161,9 +161,9 @@ export interface SetDeviceDataErv extends BaseDeviceData {
 }
 export type PostDataErv = BasePostData & SetDeviceDataErv
 export interface DeviceDataErv extends SetDeviceDataErv {
+  readonly OutdoorTemperature: number
   readonly RoomCO2Level: number
   readonly RoomTemperature: number
-  readonly OutdoorTemperature: number
 }
 export type DeviceDataFromGetErv = DeviceDataErv & {
   readonly EffectiveFlags: typeof FLAG_UNCHANGED
@@ -251,10 +251,10 @@ export interface LoginData {
 }
 
 export interface FrostProtectionPostData {
+  readonly BuildingIds: [number]
   readonly Enabled: boolean
   readonly MaximumTemperature: number
   readonly MinimumTemperature: number
-  readonly BuildingIds: [number]
 }
 export interface FrostProtectionData {
   FPEnabled: boolean

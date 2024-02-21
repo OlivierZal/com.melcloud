@@ -13,8 +13,8 @@ interface BaseTimerOptions {
 }
 
 interface TimerOptions extends BaseTimerOptions {
-  readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
   readonly timerType: 'setInterval' | 'setTimeout'
+  readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
 }
 
 type Timer = (

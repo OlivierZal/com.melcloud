@@ -68,10 +68,10 @@ export interface Store {
 }
 
 export interface HomeySettingsUI {
-  readonly username?: string
-  readonly password?: string
   readonly contextKey?: string
   readonly expiry?: string
+  readonly password?: string
+  readonly username?: string
 }
 
 export interface ReportPlanParameters {
@@ -82,16 +82,16 @@ export interface ReportPlanParameters {
 }
 
 export interface ManifestDriverSettingData {
-  readonly id: string
-  readonly label: Record<string, string>
   readonly max?: number
   readonly min?: number
-  readonly type: string
   readonly units?: string
   readonly values?: readonly {
     readonly id: string
     readonly label: Record<string, string>
   }[]
+  readonly id: string
+  readonly label: Record<string, string>
+  readonly type: string
 }
 export interface ManifestDriverSetting {
   readonly children?: readonly ManifestDriverSettingData[]
@@ -115,23 +115,23 @@ export interface ManifestDriver {
     string,
     { readonly title?: Record<string, string> }
   >
-  readonly id: string
   readonly pair?: LoginSetting & readonly PairSetting[]
   readonly settings?: readonly ManifestDriverSetting[]
+  readonly id: string
 }
 
 export interface DriverSetting {
   placeholder?: string
-  title: string
-  readonly driverId: string
   readonly groupId?: string
   readonly groupLabel?: string
-  readonly id: string
   readonly max?: number
   readonly min?: number
-  readonly type: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
+  title: string
+  readonly driverId: string
+  readonly id: string
+  readonly type: string
 }
 export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
@@ -187,10 +187,6 @@ interface ReportCapabilitiesAta {
   meter_power?: number
   'meter_power.auto'?: number
   'meter_power.cooling'?: number
-  'meter_power.dry'?: number
-  'meter_power.fan'?: number
-  'meter_power.heating'?: number
-  'meter_power.other'?: number
   'meter_power.daily'?: number
   'meter_power.daily_auto'?: number
   'meter_power.daily_cooling'?: number
@@ -198,12 +194,16 @@ interface ReportCapabilitiesAta {
   'meter_power.daily_fan'?: number
   'meter_power.daily_heating'?: number
   'meter_power.daily_other'?: number
+  'meter_power.dry'?: number
+  'meter_power.fan'?: number
+  'meter_power.heating'?: number
+  'meter_power.other'?: number
 }
 
 export interface OperationModeZoneCapabilities {
   operation_mode_zone?: keyof typeof OperationModeZone
-  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
   'operation_mode_zone.zone2'?: keyof typeof OperationModeZone
+  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
   'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
 }
 interface SetCapabilitiesAtw
@@ -211,12 +211,12 @@ interface SetCapabilitiesAtw
     OperationModeZoneCapabilities {
   'onoff.forced_hot_water'?: boolean
   target_temperature?: number
-  'target_temperature.tank_water'?: number
   'target_temperature.flow_cool'?: number
-  'target_temperature.flow_heat'?: number
-  'target_temperature.zone2'?: number
   'target_temperature.flow_cool_zone2'?: number
+  'target_temperature.flow_heat'?: number
   'target_temperature.flow_heat_zone2'?: number
+  'target_temperature.tank_water'?: number
+  'target_temperature.zone2'?: number
 }
 interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'measure_temperature.outdoor': number
@@ -251,28 +251,28 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
 interface ReportCapabilitiesAtw {
   meter_power?: number
   'meter_power.cooling'?: number
-  'meter_power.heating'?: number
-  'meter_power.hotwater'?: number
-  'meter_power.produced'?: number
-  'meter_power.produced_cooling'?: number
-  'meter_power.produced_heating'?: number
-  'meter_power.produced_hotwater'?: number
   'meter_power.cop'?: number
   'meter_power.cop_cooling'?: number
+  'meter_power.cop_daily'?: number
+  'meter_power.cop_daily_cooling'?: number
+  'meter_power.cop_daily_heating'?: number
+  'meter_power.cop_daily_hotwater'?: number
   'meter_power.cop_heating'?: number
   'meter_power.cop_hotwater'?: number
   'meter_power.daily'?: number
   'meter_power.daily_cooling'?: number
   'meter_power.daily_heating'?: number
   'meter_power.daily_hotwater'?: number
+  'meter_power.heating'?: number
+  'meter_power.hotwater'?: number
+  'meter_power.produced'?: number
+  'meter_power.produced_cooling'?: number
   'meter_power.produced_daily'?: number
   'meter_power.produced_daily_cooling'?: number
   'meter_power.produced_daily_heating'?: number
   'meter_power.produced_daily_hotwater'?: number
-  'meter_power.cop_daily'?: number
-  'meter_power.cop_daily_cooling'?: number
-  'meter_power.cop_daily_heating'?: number
-  'meter_power.cop_daily_hotwater'?: number
+  'meter_power.produced_heating'?: number
+  'meter_power.produced_hotwater'?: number
 }
 
 export enum VentilationMode {

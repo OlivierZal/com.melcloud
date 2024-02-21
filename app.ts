@@ -59,25 +59,6 @@ export = class MELCloudApp extends withTimers(App) {
     return this.#devicesPerType
   }
 
-  public async onInit(): Promise<void> {
-    LuxonSettings.defaultLocale = 'en-us'
-    LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    if (await this.melcloudAPI.planRefreshLogin()) {
-      await this.#runSyncFromDevices()
-    }
-  }
-
-  public async login(
-    { password, username }: LoginCredentials,
-    raise = false,
-  ): Promise<boolean> {
-    return this.melcloudAPI.applyLogin(
-      { password, username },
-      async (): Promise<void> => this.#syncFromDeviceList(),
-      raise,
-    )
-  }
-
   public clearSyncFromDevices(): void {
     this.homey.clearInterval(this.#syncFromDevicesInterval)
     this.log('Device list refresh has been paused')
@@ -107,6 +88,25 @@ export = class MELCloudApp extends withTimers(App) {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
     return devices
+  }
+
+  public async login(
+    { password, username }: LoginCredentials,
+    raise = false,
+  ): Promise<boolean> {
+    return this.melcloudAPI.applyLogin(
+      { password, username },
+      async (): Promise<void> => this.#syncFromDeviceList(),
+      raise,
+    )
+  }
+
+  public async onInit(): Promise<void> {
+    LuxonSettings.defaultLocale = 'en-us'
+    LuxonSettings.defaultZone = this.homey.clock.getTimezone()
+    if (await this.melcloudAPI.planRefreshLogin()) {
+      await this.#runSyncFromDevices()
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

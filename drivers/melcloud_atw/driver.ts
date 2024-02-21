@@ -17,9 +17,6 @@ import BaseMELCloudDriver from '../../bases/driver'
 import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
-  public readonly setCapabilityMapping: SetCapabilityMappingAtw =
-    setCapabilityMappingAtw
-
   public readonly getCapabilityMapping: GetCapabilityMappingAtw =
     getCapabilityMappingAtw
 
@@ -28,6 +25,9 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   public readonly reportCapabilityMapping: ReportCapabilityMappingAtw =
     reportCapabilityMappingAtw
+
+  public readonly setCapabilityMapping: SetCapabilityMappingAtw =
+    setCapabilityMappingAtw
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
 
@@ -53,8 +53,21 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_zone_with_cool',
   ]
 
+  readonly #coolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+    'target_temperature.flow_cool_zone2',
+    'operation_mode_zone_with_cool.zone2',
+  ]
+
+  readonly #flowCapabilities: (keyof Capabilities<AtwDriver>)[] =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    this.manifest.capabilities as (keyof Capabilities<AtwDriver>)[]
+
   readonly #notCoolCapabilities: (keyof OpCapabilities<AtwDriver>)[] = [
     'operation_mode_zone',
+  ]
+
+  readonly #notCoolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+    'operation_mode_zone.zone2',
   ]
 
   readonly #zone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
@@ -64,19 +77,6 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_state.zone1',
     'operation_mode_state.zone2',
   ]
-
-  readonly #coolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
-    'target_temperature.flow_cool_zone2',
-    'operation_mode_zone_with_cool.zone2',
-  ]
-
-  readonly #notCoolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
-    'operation_mode_zone.zone2',
-  ]
-
-  readonly #flowCapabilities: (keyof Capabilities<AtwDriver>)[] =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as (keyof Capabilities<AtwDriver>)[]
 
   public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
     return [

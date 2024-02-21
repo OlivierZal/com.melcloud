@@ -16,9 +16,9 @@ const SPACE = 2
 export default abstract class APICallContextData {
   public readonly method: InternalAxiosRequestConfig['method']
 
-  public readonly url: InternalAxiosRequestConfig['url']
-
   public readonly params: InternalAxiosRequestConfig['params']
+
+  public readonly url: InternalAxiosRequestConfig['url']
 
   public constructor(config?: InternalAxiosRequestConfig) {
     this.method = config?.method?.toUpperCase()

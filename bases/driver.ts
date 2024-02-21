@@ -19,19 +19,19 @@ import type PairSession from 'homey/lib/PairSession'
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof HeatPumpType,
 > extends Driver {
-  public readonly producedTagMapping: ReportCapabilityMappingAny = {}
-
   public readonly consumedTagMapping: ReportCapabilityMappingAny = {}
 
-  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
+  public readonly producedTagMapping: ReportCapabilityMappingAny = {}
 
-  public abstract readonly setCapabilityMapping: SetCapabilityMappingAny
+  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
   public abstract readonly getCapabilityMapping: GetCapabilityMappingAny
 
   public abstract readonly listCapabilityMapping: ListCapabilityMappingAny
 
   public abstract readonly reportCapabilityMapping: ReportCapabilityMappingAny
+
+  public abstract readonly setCapabilityMapping: SetCapabilityMappingAny
 
   protected abstract readonly deviceType: HeatPumpType
 
@@ -65,11 +65,6 @@ export default abstract class BaseMELCloudDriver<
     )
   }
 
-  async #login(data: LoginCredentials): Promise<boolean> {
-    this.#app.clearSyncFromDevices()
-    return this.#app.login(data)
-  }
-
   // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails[]> {
     return this.#app.devicesPerType[this.deviceType].map(
@@ -94,6 +89,11 @@ export default abstract class BaseMELCloudDriver<
         }
       },
     )
+  }
+
+  async #login(data: LoginCredentials): Promise<boolean> {
+    this.#app.clearSyncFromDevices()
+    return this.#app.login(data)
   }
 
   #setProducedAndConsumedTagMappings(): void {

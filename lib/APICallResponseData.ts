@@ -2,13 +2,13 @@ import APICallContextData from './APICallContextData'
 import type { AxiosResponse } from 'axios'
 
 export default class APICallResponseData extends APICallContextData {
-  public readonly dataType: string = 'API response'
-
   public readonly headers?: AxiosResponse['headers']
 
   public readonly status?: AxiosResponse['status']
 
   public readonly data: AxiosResponse['data']
+
+  public readonly dataType: string = 'API response'
 
   public constructor(response?: AxiosResponse) {
     super(response?.config)

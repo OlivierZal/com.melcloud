@@ -325,9 +325,9 @@ export = {
     body,
     query,
   }: {
+    query?: { driverId: string }
     body: Settings
     homey: Homey
-    query?: { driverId: string }
   }): Promise<void> {
     try {
       await Promise.all(
