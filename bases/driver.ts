@@ -7,7 +7,11 @@ import type {
   Store,
   TypedString,
 } from '../types/types'
-import { HeatPumpType, type LoginCredentials, type ReportData } from '../types/MELCloudAPITypes'
+import {
+  HeatPumpType,
+  type LoginCredentials,
+  type ReportData,
+} from '../types/MELCloudAPITypes'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
