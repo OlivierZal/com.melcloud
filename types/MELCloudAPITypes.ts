@@ -233,6 +233,10 @@ export type ReportData<T extends keyof typeof HeatPumpType> =
       ? ReportDataAtw
       : never
 
+export interface LoginCredentials {
+  readonly password: string
+  readonly username: string
+}
 export interface LoginPostData {
   readonly AppVersion: typeof APP_VERSION
   readonly Email: string

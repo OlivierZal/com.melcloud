@@ -1,16 +1,12 @@
 import 'source-map-support/register'
+import { App, type Driver } from 'homey'
 import {
-  APP_VERSION,
   type Building,
   HeatPumpType,
   type ListDeviceAny,
+  type LoginCredentials,
 } from './types/MELCloudAPITypes'
-import { App, type Driver } from 'homey'
-import type {
-  DeviceLookup,
-  LoginCredentials,
-  MELCloudDevice,
-} from './types/types'
+import type { DeviceLookup, MELCloudDevice } from './types/types'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
@@ -20,9 +16,6 @@ const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
   [HeatPumpType.Atw]: [],
   [HeatPumpType.Erv]: [],
 }
-
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
 
 const flattenDevices = (
   flattenedDevices: DeviceLookup,
@@ -43,12 +36,6 @@ const flattenDevices = (
       devicesPerType: { ...flattenedDevices.devicesPerType },
     },
   )
-
-const throwIfRequested = (error: unknown, raise: boolean): void => {
-  if (raise) {
-    throw new Error(getErrorMessage(error))
-  }
-}
 
 export = class MELCloudApp extends withTimers(App) {
   public readonly melcloudAPI: MELCloudAPI = new MELCloudAPI(
@@ -84,25 +71,11 @@ export = class MELCloudApp extends withTimers(App) {
     { password, username }: LoginCredentials,
     raise = false,
   ): Promise<boolean> {
-    if (username && password) {
-      try {
-        const { LoginData } = (
-          await this.melcloudAPI.login({
-            AppVersion: APP_VERSION,
-            Email: username,
-            Password: password,
-            Persist: true,
-          })
-        ).data
-        if (LoginData && !this.#syncFromDevicesInterval) {
-          await this.#runSyncFromDevices()
-        }
-        return LoginData !== null
-      } catch (error: unknown) {
-        throwIfRequested(error, raise)
-      }
-    }
-    return false
+    return this.melcloudAPI.applyLogin(
+      { password, username },
+      async (): Promise<void> => this.#syncFromDeviceList(),
+      raise,
+    )
   }
 
   public clearSyncFromDevices(): void {
@@ -114,7 +87,7 @@ export = class MELCloudApp extends withTimers(App) {
     try {
       return (await this.melcloudAPI.list()).data
     } catch (error: unknown) {
-      throw new Error(getErrorMessage(error))
+      throw new Error(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -142,6 +115,9 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   async #runSyncFromDevices(): Promise<void> {
+    if (this.#syncFromDevicesInterval) {
+      return
+    }
     this.clearSyncFromDevices()
     await this.#syncFromDeviceList()
     this.#syncFromDevicesInterval = this.setInterval(

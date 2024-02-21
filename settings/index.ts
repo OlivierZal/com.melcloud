@@ -3,6 +3,7 @@ import type {
   BuildingData,
   FrostProtectionData,
   HolidayModeData,
+  LoginCredentials,
 } from '../types/MELCloudAPITypes'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
@@ -15,7 +16,6 @@ import type {
   FrostProtectionSettings,
   HolidayModeSettings,
   HomeySettingsUI,
-  LoginCredentials,
   LoginDriverSetting,
   Settings,
   ValueOf,

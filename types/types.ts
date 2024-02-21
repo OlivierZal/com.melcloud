@@ -14,6 +14,7 @@ import type {
   ListDeviceAta,
   ListDeviceAtw,
   ListDeviceErv,
+  LoginCredentials,
   OperationMode,
   OperationModeState,
   OperationModeZone,
@@ -131,10 +132,6 @@ export interface DriverSetting {
   readonly type: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
-}
-export interface LoginCredentials {
-  readonly password: string
-  readonly username: string
 }
 export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials

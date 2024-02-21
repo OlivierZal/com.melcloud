@@ -12,6 +12,7 @@ import {
   type HeatPumpType,
   type HolidayModeData,
   type HolidayModePostData,
+  type LoginCredentials,
   type LoginData,
   type LoginPostData,
   type PostData,
@@ -174,7 +175,7 @@ export default class MELCloudAPI {
     if (ms > NO_TIME_DIFF) {
       const interval: number = Math.min(ms, MAX_INT32)
       this.#loginTimeout = setTimeout((): void => {
-        this.#attemptLogin().catch((error: Error) => {
+        this.applyLogin().catch((error: Error) => {
           this.#errorLogger(error.message)
         })
       }, interval)
@@ -185,7 +186,40 @@ export default class MELCloudAPI {
       )
       return true
     }
-    return this.#attemptLogin()
+    return this.applyLogin()
+  }
+
+  public async applyLogin(
+    { password, username }: LoginCredentials = {
+      password: this.#settingManager.get('password') ?? '',
+      username: this.#settingManager.get('username') ?? '',
+    },
+    onSuccess?: () => Promise<void>,
+    raise = false,
+  ): Promise<boolean> {
+    if (username && password) {
+      try {
+        const { LoginData } = (
+          await this.login({
+            AppVersion: APP_VERSION,
+            Email: username,
+            Password: password,
+            Persist: true,
+          })
+        ).data
+        if (LoginData !== null && onSuccess) {
+          await onSuccess()
+        }
+        return LoginData !== null
+      } catch (error: unknown) {
+        if (raise) {
+          throw new Error(
+            error instanceof Error ? error.message : String(error),
+          )
+        }
+      }
+    }
+    return false
   }
 
   public clearLoginRefresh(): void {
@@ -246,7 +280,7 @@ export default class MELCloudAPI {
       case axios.HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
           this.#handleRetry()
-          if ((await this.#attemptLogin()) && error.config) {
+          if ((await this.applyLogin()) && error.config) {
             return this.#api.request(error.config)
           }
         }
@@ -268,27 +302,5 @@ export default class MELCloudAPI {
       },
       Duration.fromObject({ minutes: 1 }).as('milliseconds'),
     )
-  }
-
-  async #attemptLogin(): Promise<boolean> {
-    const username: string = this.#settingManager.get('username') ?? ''
-    const password: string = this.#settingManager.get('password') ?? ''
-    if (username && password) {
-      try {
-        return (
-          (
-            await this.login({
-              AppVersion: APP_VERSION,
-              Email: username,
-              Password: password,
-              Persist: true,
-            })
-          ).data.LoginData !== null
-        )
-      } catch (error: unknown) {
-        // Pass
-      }
-    }
-    return false
   }
 }

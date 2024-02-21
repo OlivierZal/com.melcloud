@@ -4,6 +4,7 @@ import type {
   FailureData,
   FrostProtectionData,
   HolidayModeData,
+  LoginCredentials,
   SuccessData,
 } from './types/MELCloudAPITypes'
 import type {
@@ -14,7 +15,6 @@ import type {
   ErrorLogQuery,
   FrostProtectionSettings,
   HolidayModeSettings,
-  LoginCredentials,
   LoginSetting,
   MELCloudDevice,
   ManifestDriver,
