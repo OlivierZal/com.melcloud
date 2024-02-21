@@ -48,14 +48,7 @@ const filterEnergyKeys = (key: string, total: boolean): boolean => {
 abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   Device,
 ) {
-  public buildingid!: number
-
-  public readonly data: DeviceDetails['data'] =
-    this.getData() as DeviceDetails['data']
-
   public declare readonly driver: T
-
-  public readonly id: number = this.data.id
 
   protected readonly diff: Map<
     keyof SetCapabilities<T>,
@@ -95,6 +88,11 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
+  readonly #data: DeviceDetails['data'] =
+    this.getData() as DeviceDetails['data']
+
+  readonly #id: number = this.#data.id
+
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
 
@@ -104,6 +102,14 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   } = { false: null, true: null }
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
+
+  public get buildingid(): number {
+    return this.#data.buildingid
+  }
+
+  public get id(): number {
+    return this.#id
+  }
 
   public async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
@@ -152,7 +158,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   public async onInit(): Promise<void> {
-    this.buildingid = this.data.buildingid
     await this.setWarning(null)
     this.#setOptionalCapabilities()
     await this.#handleCapabilities()
@@ -244,7 +249,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   public async syncFromDevice(): Promise<void> {
     const data: ListDevice<T>['Device'] | null =
-      (this.#app.devicesPerId[this.id] as ListDevice<T> | undefined)?.Device ??
+      (this.#app.devicesPerId[this.#id] as ListDevice<T> | undefined)?.Device ??
       null
     this.log('Syncing from device list:', data)
     await this.updateStore(data)
@@ -543,7 +548,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     try {
       return (
         await this.#app.melcloudAPI.report({
-          DeviceID: this.id,
+          DeviceID: this.#id,
           FromDate: fromDate.toISODate() ?? '',
           ToDate: toDate.toISODate() ?? '',
           UseCurrency: false,
