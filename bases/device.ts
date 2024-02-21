@@ -238,7 +238,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       this.diff.set(capability, value)
     }
     this.specificOnCapability(capability, value)
-    this.#syncToDevice()
+    this.#applySyncToDevice()
   }
 
   public async syncFromDevice(): Promise<void> {
@@ -425,7 +425,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     )
   }
 
-  #syncToDevice(): void {
+  #applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
         await this.#updateCapabilities(await this.#setDeviceData())
