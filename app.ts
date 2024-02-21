@@ -11,7 +11,7 @@ import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
 
-const DEFAULT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
+const INIT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
   [HeatPumpType.Ata]: [],
   [HeatPumpType.Atw]: [],
   [HeatPumpType.Erv]: [],
@@ -46,8 +46,9 @@ export = class MELCloudApp extends withTimers(App) {
 
   #devicesPerId: Record<number, ListDeviceAny> = {}
 
-  #devicesPerType: Record<string, readonly ListDeviceAny[]> =
-    DEFAULT_DEVICES_PER_TYPE
+  #devicesPerType: Record<string, readonly ListDeviceAny[]> = {
+    ...INIT_DEVICES_PER_TYPE,
+  }
 
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
 
@@ -151,7 +152,7 @@ export = class MELCloudApp extends withTimers(App) {
           })
           return newAcc
         },
-        { devicesPerId: {}, devicesPerType: DEFAULT_DEVICES_PER_TYPE },
+        { devicesPerId: {}, devicesPerType: { ...INIT_DEVICES_PER_TYPE } },
       )
       this.#devicesPerId = devicesPerId
       this.#devicesPerType = devicesPerType
