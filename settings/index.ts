@@ -307,10 +307,10 @@ const createDivElement = (): HTMLDivElement => {
 }
 
 const createInputElement = ({
-  id,
   placeholder,
-  type,
   value,
+  id,
+  type,
 }: {
   placeholder?: string
   value?: string
