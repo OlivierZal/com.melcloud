@@ -33,7 +33,7 @@ import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
-const DEFAULT_0 = 0
+export const DEFAULT_0 = 0
 const DEFAULT_1 = 1
 export const K_MULTIPLIER = 1000
 const YEAR_1970 = 1970

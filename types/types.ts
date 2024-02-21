@@ -140,6 +140,11 @@ export interface LoginDriverSetting extends DriverSetting {
 export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
+export type TargetTemperatureOptions = object & {
+  readonly max: number
+  readonly min: number
+}
+
 export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
   T extends AtaDriver
   ? SetDeviceDataAta
