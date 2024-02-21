@@ -37,6 +37,7 @@ interface SettingManager {
   ) => APISettings[K] | null | undefined
   set: <K extends keyof APISettings>(key: K, value: APISettings[K]) => void
 }
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Logger = (...args: any[]) => void
 
