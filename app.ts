@@ -97,14 +97,10 @@ export = class MELCloudApp extends withTimers(App) {
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    if (await this.melcloudAPI.planRefreshLogin()) {
-      await this.#runSyncFromDevices()
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public async onUninit(): Promise<void> {
-    this.melcloudAPI.clearLoginRefresh()
+    await this.melcloudAPI.applyLogin(
+      null,
+      async (): Promise<void> => this.#runSyncFromDevices(),
+    )
   }
 
   async #runSyncFromDevices(): Promise<void> {

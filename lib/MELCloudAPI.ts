@@ -44,9 +44,6 @@ type Logger = (...args: any[]) => void
 
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
-const MAX_INT32 = 2147483647
-const MS_PER_DAY = 86400000
-const NO_TIME_DIFF = 0
 
 const throwIfRequested = (error: unknown, raise: boolean): void => {
   if (raise) {
@@ -56,8 +53,6 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
 
 export default class MELCloudAPI {
   #holdAPIListUntil: DateTime = DateTime.now()
-
-  #loginTimeout!: NodeJS.Timeout
 
   #retry = true
 
@@ -89,13 +84,16 @@ export default class MELCloudAPI {
   }
 
   public async applyLogin(
-    { password, username }: LoginCredentials = {
-      password: this.#settingManager.get('password') ?? '',
-      username: this.#settingManager.get('username') ?? '',
-    },
+    data: LoginCredentials | null = null,
     onSuccess?: () => Promise<void>,
     raise = false,
   ): Promise<boolean> {
+    const username: string = data
+      ? data.username
+      : this.#settingManager.get('username') ?? ''
+    const password: string = data
+      ? data.password
+      : this.#settingManager.get('password') ?? ''
     if (username && password) {
       try {
         const { LoginData } = (
@@ -115,11 +113,6 @@ export default class MELCloudAPI {
       }
     }
     return false
-  }
-
-  public clearLoginRefresh(): void {
-    clearTimeout(this.#loginTimeout)
-    this.#logger('Login refresh has been paused')
   }
 
   public async error(
@@ -169,33 +162,8 @@ export default class MELCloudAPI {
       const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
       this.#settingManager.set('contextKey', contextKey)
       this.#settingManager.set('expiry', expiry)
-      await this.planRefreshLogin()
     }
     return response
-  }
-
-  public async planRefreshLogin(): Promise<boolean> {
-    this.clearLoginRefresh()
-    const expiry: string = this.#settingManager.get('expiry') ?? ''
-    const ms: number = DateTime.fromISO(expiry)
-      .minus({ days: 1 })
-      .diffNow()
-      .as('milliseconds')
-    if (ms > NO_TIME_DIFF) {
-      const interval: number = Math.min(ms, MAX_INT32)
-      this.#loginTimeout = setTimeout((): void => {
-        this.applyLogin().catch((error: Error) => {
-          this.#errorLogger(error.message)
-        })
-      }, interval)
-      this.#logger(
-        'Login refresh will run in',
-        Math.floor(interval / MS_PER_DAY),
-        'days',
-      )
-      return true
-    }
-    return this.applyLogin()
   }
 
   public async report<T extends keyof typeof HeatPumpType>(
@@ -254,6 +222,16 @@ export default class MELCloudAPI {
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
     const newConfig: InternalAxiosRequestConfig = { ...config }
+    if (newConfig.url !== LOGIN_URL) {
+      const expiry: string = this.#settingManager.get('expiry') ?? ''
+      if (expiry && DateTime.fromISO(expiry) < DateTime.now()) {
+        await this.applyLogin()
+      }
+      newConfig.headers.set(
+        'X-MitsContextKey',
+        this.#settingManager.get('contextKey'),
+      )
+    }
     if (newConfig.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
       return Promise.reject(
         new Error(
@@ -262,12 +240,6 @@ export default class MELCloudAPI {
             .shiftTo('minutes')
             .toHuman()}`,
         ),
-      )
-    }
-    if (newConfig.url !== LOGIN_URL) {
-      newConfig.headers.set(
-        'X-MitsContextKey',
-        this.#settingManager.get('contextKey'),
       )
     }
     this.#logger(String(new APICallRequestData(newConfig)))
