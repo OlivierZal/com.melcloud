@@ -11,12 +11,6 @@ import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './lib/MELCloudAPI'
 import withTimers from './mixins/withTimers'
 
-const INIT_DEVICES_PER_TYPE: DeviceLookup['devicesPerType'] = {
-  [HeatPumpType.Ata]: [],
-  [HeatPumpType.Atw]: [],
-  [HeatPumpType.Erv]: [],
-}
-
 const flattenDevices = (
   flattenedDevices: DeviceLookup,
   devices: readonly ListDeviceAny[],
@@ -24,11 +18,7 @@ const flattenDevices = (
   devices.reduce<DeviceLookup>(
     (acc, device) => {
       acc.devicesPerId[device.DeviceID] = device
-      const type: HeatPumpType = device.Device.DeviceType
-      if (!(type in acc.devicesPerType)) {
-        acc.devicesPerType[type] = []
-      }
-      acc.devicesPerType[type].push(device)
+      acc.devicesPerType[device.Device.DeviceType].push(device)
       return acc
     },
     {
@@ -47,7 +37,9 @@ export = class MELCloudApp extends withTimers(App) {
   #devicesPerId: Record<number, ListDeviceAny> = {}
 
   #devicesPerType: Record<string, readonly ListDeviceAny[]> = {
-    ...INIT_DEVICES_PER_TYPE,
+    [HeatPumpType.Ata]: [],
+    [HeatPumpType.Atw]: [],
+    [HeatPumpType.Erv]: [],
   }
 
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
@@ -146,13 +138,20 @@ export = class MELCloudApp extends withTimers(App) {
           })
           floors.forEach((floor) => {
             newAcc = flattenDevices(newAcc, floor.Devices)
-            floor.Areas.forEach(({ Devices: areaDevices }) => {
-              newAcc = flattenDevices(newAcc, areaDevices)
+            floor.Areas.forEach(({ Devices: floorAreaDevices }) => {
+              newAcc = flattenDevices(newAcc, floorAreaDevices)
             })
           })
           return newAcc
         },
-        { devicesPerId: {}, devicesPerType: { ...INIT_DEVICES_PER_TYPE } },
+        {
+          devicesPerId: {},
+          devicesPerType: {
+            [HeatPumpType.Ata]: [],
+            [HeatPumpType.Atw]: [],
+            [HeatPumpType.Erv]: [],
+          },
+        },
       )
       this.#devicesPerId = devicesPerId
       this.#devicesPerType = devicesPerType
