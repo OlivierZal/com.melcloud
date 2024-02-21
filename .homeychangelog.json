@@ -158,10 +158,10 @@
   "31.0.0": {
     "en": "Improved error handling."
   },
+  "32.0.0": {
+    "en": "Improved API management."
+  },
   "32.1.0": {
     "en": "Added wide horizontal mode (for air-to-air devices)."
-  },
-  "32.2.0": {
-    "en": "Improved API management and fixed air-to-water device crash on Homey 2016-2019."
   }
 }
