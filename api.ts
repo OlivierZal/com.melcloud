@@ -318,7 +318,7 @@ export = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return (homey.app as MELCloudApp).login(body, true)
+    return (homey.app as MELCloudApp).applyLogin(body, true)
   },
   async setDeviceSettings({
     homey,

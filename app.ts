@@ -52,6 +52,17 @@ export = class MELCloudApp extends withTimers(App) {
     return this.#devicesPerType
   }
 
+  public async applyLogin(
+    data?: LoginCredentials,
+    raise = false,
+  ): Promise<boolean> {
+    return this.melcloudAPI.applyLogin(
+      data,
+      async (): Promise<void> => this.#runSyncFromDevices(),
+      raise,
+    )
+  }
+
   public clearSyncFromDevices(): void {
     this.homey.clearInterval(this.#syncFromDevicesInterval)
     this.log('Device list refresh has been paused')
@@ -83,24 +94,10 @@ export = class MELCloudApp extends withTimers(App) {
     return devices
   }
 
-  public async login(
-    { password, username }: LoginCredentials,
-    raise = false,
-  ): Promise<boolean> {
-    return this.melcloudAPI.applyLogin(
-      { password, username },
-      async (): Promise<void> => this.#syncFromDeviceList(),
-      raise,
-    )
-  }
-
   public async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.melcloudAPI.applyLogin(
-      null,
-      async (): Promise<void> => this.#runSyncFromDevices(),
-    )
+    await this.applyLogin()
   }
 
   async #runSyncFromDevices(): Promise<void> {

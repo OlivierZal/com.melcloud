@@ -84,16 +84,13 @@ export default class MELCloudAPI {
   }
 
   public async applyLogin(
-    data: LoginCredentials | null = null,
+    { password, username }: LoginCredentials = {
+      password: this.#settingManager.get('password') ?? '',
+      username: this.#settingManager.get('username') ?? '',
+    },
     onSuccess?: () => Promise<void>,
     raise = false,
   ): Promise<boolean> {
-    const username: string = data
-      ? data.username
-      : this.#settingManager.get('username') ?? ''
-    const password: string = data
-      ? data.password
-      : this.#settingManager.get('password') ?? ''
     if (username && password) {
       try {
         const { LoginData } = (

@@ -93,7 +93,7 @@ export default abstract class BaseMELCloudDriver<
 
   async #login(data: LoginCredentials): Promise<boolean> {
     this.#app.clearSyncFromDevices()
-    return this.#app.login(data)
+    return this.#app.applyLogin(data)
   }
 
   #setProducedAndConsumedTagMappings(): void {
