@@ -1,18 +1,18 @@
 import BaseMELCloudDevice, { K_MULTIPLIER, NUMBER_0 } from '../../bases/device'
 import {
-  type DeviceData,
+  type DeviceDataAtw,
+  type DeviceDataFromListAtw,
   OperationModeState,
   OperationModeZone,
+  type SetDeviceDataAtw,
 } from '../../types/MELCloudAPITypes'
 import type {
-  ListDevice,
   NonEffectiveFlagsValueOf,
-  OpCapabilities,
+  OpCapabilitiesAtw,
   OperationModeZoneCapabilities,
   ReportPlanParameters,
-  SetCapabilities,
-  SetCapabilitiesWithThermostatMode,
-  SetDeviceData,
+  SetCapabilitiesAtw,
+  SetCapabilitiesWithThermostatModeAtw,
   Store,
   TargetTemperatureOptions,
   TypedString,
@@ -31,15 +31,13 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
-  protected convertFromDevice<K extends keyof OpCapabilities<AtwDriver>>(
+  protected convertFromDevice<K extends keyof OpCapabilitiesAtw>(
     capability: TypedString<K>,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData<AtwDriver['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<ListDevice<AtwDriver>['Device']>,
-  ): OpCapabilities<AtwDriver>[K] {
+    value: NonEffectiveFlagsValueOf<DeviceDataAtw & DeviceDataFromListAtw>,
+  ): OpCapabilitiesAtw[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':
-        return Boolean(value as number) as OpCapabilities<AtwDriver>[K]
+        return Boolean(value as number) as OpCapabilitiesAtw[K]
       case capability === 'last_legionella':
         return DateTime.fromISO(value as string, {
           locale: this.homey.i18n.getLanguage(),
@@ -47,45 +45,44 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
           day: 'numeric',
           month: 'short',
           weekday: 'short',
-        }) as OpCapabilities<AtwDriver>[K]
+        }) as OpCapabilitiesAtw[K]
       case capability === 'measure_power':
       case capability === 'measure_power.produced':
-        return ((value as number) *
-          K_MULTIPLIER) as OpCapabilities<AtwDriver>[K]
+        return ((value as number) * K_MULTIPLIER) as OpCapabilitiesAtw[K]
       case capability === 'operation_mode_state':
         return OperationModeState[
           value as OperationModeState
-        ] as OpCapabilities<AtwDriver>[K]
+        ] as OpCapabilitiesAtw[K]
       case capability.startsWith('operation_mode_state.zone'):
         return (
           (value as boolean)
             ? OperationModeState[OperationModeState.idle]
             : this.getCapabilityValue('operation_mode_state')
-        ) as OpCapabilities<AtwDriver>[K]
+        ) as OpCapabilitiesAtw[K]
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[
           value as OperationModeZone
-        ] as OpCapabilities<AtwDriver>[K]
+        ] as OpCapabilitiesAtw[K]
       case capability.startsWith('target_temperature') && value === NUMBER_0:
         return (
           this.getCapabilityOptions(capability) as TargetTemperatureOptions
-        ).min as OpCapabilities<AtwDriver>[K]
+        ).min as OpCapabilitiesAtw[K]
       default:
-        return value as OpCapabilities<AtwDriver>[K]
+        return value as OpCapabilitiesAtw[K]
     }
   }
 
-  protected convertToDevice<K extends keyof SetCapabilities<AtwDriver>>(
+  protected convertToDevice<K extends keyof SetCapabilitiesAtw>(
     capability: K,
-    value: SetCapabilities<AtwDriver>[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>> {
+    value: SetCapabilitiesAtw[K],
+  ): NonEffectiveFlagsValueOf<SetDeviceDataAtw> {
     switch (true) {
       case capability === 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case capability.startsWith('operation_mode_zone'):
         return OperationModeZone[value as keyof typeof OperationModeZone]
       default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData<AtwDriver>>
+        return value as NonEffectiveFlagsValueOf<SetDeviceDataAtw>
     }
   }
 
@@ -113,11 +110,8 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   }
 
   protected specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode<AtwDriver>,
-  >(
-    capability: K,
-    value: SetCapabilitiesWithThermostatMode<AtwDriver>[K],
-  ): void {
+    K extends keyof SetCapabilitiesWithThermostatModeAtw,
+  >(capability: K, value: SetCapabilitiesWithThermostatModeAtw[K]): void {
     if (capability.startsWith('operation_mode_zone')) {
       this.handleOperationModeZones(
         capability as keyof OperationModeZoneCapabilities,

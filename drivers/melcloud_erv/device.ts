@@ -1,13 +1,15 @@
+import type {
+  DeviceDataErv,
+  DeviceDataFromListErv,
+  SetDeviceDataErv,
+} from '../../types/MELCloudAPITypes'
 import {
-  type ListDevice,
   type NonEffectiveFlagsValueOf,
   type OpCapabilities,
-  type SetCapabilities,
-  type SetDeviceData,
+  type SetCapabilitiesErv,
   VentilationMode,
 } from '../../types/types'
 import BaseMELCloudDevice from '../../bases/device'
-import type { DeviceData } from '../../types/MELCloudAPITypes'
 import type ErvDriver from './driver'
 
 export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
@@ -16,9 +18,7 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
     capability: K,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData<ErvDriver['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<ListDevice<ErvDriver>['Device']>,
+    value: NonEffectiveFlagsValueOf<DeviceDataErv & DeviceDataFromListErv>,
   ): OpCapabilities<ErvDriver>[K] {
     return capability === 'ventilation_mode'
       ? (VentilationMode[
@@ -27,17 +27,17 @@ export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
       : (value as OpCapabilities<ErvDriver>[K])
   }
 
-  protected convertToDevice<K extends keyof SetCapabilities<ErvDriver>>(
+  protected convertToDevice<K extends keyof SetCapabilitiesErv>(
     capability: K,
-    value: SetCapabilities<ErvDriver>[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData<ErvDriver>> {
+    value: SetCapabilitiesErv[K],
+  ): NonEffectiveFlagsValueOf<SetDeviceDataErv> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case 'ventilation_mode':
         return VentilationMode[value as keyof typeof VentilationMode]
       default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData<ErvDriver>>
+        return value as NonEffectiveFlagsValueOf<SetDeviceDataErv>
     }
   }
 

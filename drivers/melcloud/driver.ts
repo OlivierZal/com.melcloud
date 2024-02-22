@@ -1,9 +1,9 @@
 import {
-  type FlowArgs,
+  type FlowArgsAta,
   type GetCapabilityTagMappingAta,
   type ListCapabilityTagMappingAta,
   type ReportCapabilityTagMappingAta,
-  type SetCapabilities,
+  type SetCapabilitiesAta,
   type SetCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
@@ -30,7 +30,7 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 
-  readonly #flowCapabilities: (keyof SetCapabilities<AtaDriver>)[] = [
+  readonly #flowCapabilities: (keyof SetCapabilitiesAta)[] = [
     'operation_mode',
     'fan_power',
     'vertical',
@@ -49,24 +49,20 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   }
 
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach(
-      (capability: keyof SetCapabilities<AtaDriver>) => {
-        if (capability !== 'fan_power') {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: FlowArgs<AtaDriver>): boolean =>
-                args[capability] === args.device.getCapabilityValue(capability),
-            )
-        }
+    this.#flowCapabilities.forEach((capability: keyof SetCapabilitiesAta) => {
+      if (capability !== 'fan_power') {
         this.homey.flow
-          .getActionCard(`${capability}_action`)
+          .getConditionCard(`${capability}_condition`)
           .registerRunListener(
-            async (args: FlowArgs<AtaDriver>): Promise<void> => {
-              await args.device.onCapability(capability, args[capability])
-            },
+            (args: FlowArgsAta): boolean =>
+              args[capability] === args.device.getCapabilityValue(capability),
           )
-      },
-    )
+      }
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+          await args.device.onCapability(capability, args[capability])
+        })
+    })
   }
 }

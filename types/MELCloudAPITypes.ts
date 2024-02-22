@@ -233,6 +233,12 @@ export type DeviceDataFromGet<T extends keyof typeof HeatPumpType> =
     : T extends HeatPumpType.Atw
       ? DeviceDataFromGetAtw
       : DeviceDataFromGetErv
+export type DeviceDataFromList<T extends keyof typeof HeatPumpType> =
+  T extends HeatPumpType.Ata
+    ? DeviceDataFromListAta
+    : T extends HeatPumpType.Atw
+      ? DeviceDataFromListAtw
+      : DeviceDataFromListErv
 
 export interface ReportPostData {
   readonly DeviceID: number

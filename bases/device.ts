@@ -9,8 +9,8 @@ import type {
   NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpDeviceData,
-  ReportCapabilitTagyMapping,
   ReportCapabilities,
+  ReportCapabilityTagMapping,
   ReportPlanParameters,
   SetCapabilities,
   SetCapabilitiesWithThermostatMode,
@@ -22,6 +22,7 @@ import type {
 } from '../types/types'
 import {
   type DeviceData,
+  type DeviceDataFromList,
   FLAG_UNCHANGED,
   type NonEffectiveFlagsKeyOf,
   type ReportData,
@@ -401,7 +402,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     M extends
       | GetCapabilityTagMapping<T>
       | ListCapabilityTagMapping<T>
-      | ReportCapabilitTagyMapping<T>
+      | ReportCapabilityTagMapping<T>
       | SetCapabilityTagMapping<T>,
   >(capabilityTagMapping: M): Partial<NonNullable<M>> {
     return Object.fromEntries(
@@ -614,9 +615,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           if (tag in data) {
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
-              data[tag as keyof D] as
-                | NonEffectiveFlagsValueOf<DeviceData<T['heatPumpType']>>
-                | NonEffectiveFlagsValueOf<ListDevice<T>['Device']>,
+              data[tag as keyof D] as NonEffectiveFlagsValueOf<
+                DeviceData<T['heatPumpType']> &
+                  DeviceDataFromList<T['heatPumpType']>
+              >,
             )
             await this.setCapabilityValue(
               capability as TypedString<K>,
@@ -679,7 +681,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
         Object.entries(
           this.#cleanMapping(
             this.driver
-              .reportCapabilityTagMapping as ReportCapabilitTagyMapping<T>,
+              .reportCapabilityTagMapping as ReportCapabilityTagMapping<T>,
           ),
         ).filter(
           ([capability]: [string, keyof ReportData<T['heatPumpType']>]) =>
@@ -786,7 +788,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData<T['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<ListDevice<T>['Device']>,
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<T['heatPumpType']>>,
   ): OpCapabilities<T>[K]
 
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(

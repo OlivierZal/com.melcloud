@@ -1,11 +1,11 @@
 import {
-  type Capabilities,
-  type FlowArgs,
+  type CapabilitiesAtw,
+  type FlowArgsAtw,
   type GetCapabilityTagMappingAtw,
   type ListCapabilityTagMappingAtw,
-  type OpCapabilities,
+  type OpCapabilitiesAtw,
   type ReportCapabilityTagMappingAtw,
-  type SetCapabilities,
+  type SetCapabilitiesAtw,
   type SetCapabilityTagMappingAtw,
   type Store,
   getCapabilityTagMappingAtw,
@@ -33,7 +33,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
 
-  readonly #capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #capabilities: (keyof OpCapabilitiesAtw)[] = [
     'onoff',
     'onoff.forced_hot_water',
     'measure_temperature',
@@ -50,29 +50,29 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.produced',
   ]
 
-  readonly #coolCapabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #coolCapabilities: (keyof OpCapabilitiesAtw)[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  readonly #coolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #coolZone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  readonly #flowCapabilities: (keyof Capabilities<AtwDriver>)[] =
+  readonly #flowCapabilities: (keyof CapabilitiesAtw)[] =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as (keyof Capabilities<AtwDriver>)[]
+    this.manifest.capabilities as (keyof CapabilitiesAtw)[]
 
-  readonly #notCoolCapabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #notCoolCapabilities: (keyof OpCapabilitiesAtw)[] = [
     'operation_mode_zone',
   ]
 
-  readonly #notCoolZone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #notCoolZone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
     'operation_mode_zone.zone2',
   ]
 
-  readonly #zone2Capabilities: (keyof OpCapabilities<AtwDriver>)[] = [
+  readonly #zone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -96,49 +96,43 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   }
 
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach(
-      (capability: keyof Capabilities<AtwDriver>) => {
-        switch (true) {
-          case capability.startsWith('alarm_generic'):
-          case capability.startsWith('onoff.'):
-            this.#registerBooleanRunListener(capability)
-            break
-          case capability.startsWith('operation_mode'):
-            this.#registerOperationModeRunListener(capability)
-            break
-          case capability.startsWith('target_temperature.'):
-            this.#registerTargetTemperatureRunListener(capability)
-            break
-          default:
-        }
-      },
-    )
+    this.#flowCapabilities.forEach((capability: keyof CapabilitiesAtw) => {
+      switch (true) {
+        case capability.startsWith('alarm_generic'):
+        case capability.startsWith('onoff.'):
+          this.#registerBooleanRunListener(capability)
+          break
+        case capability.startsWith('operation_mode'):
+          this.#registerOperationModeRunListener(capability)
+          break
+        case capability.startsWith('target_temperature.'):
+          this.#registerTargetTemperatureRunListener(capability)
+          break
+        default:
+      }
+    })
   }
 
-  #registerBooleanRunListener(capability: keyof Capabilities<AtwDriver>): void {
+  #registerBooleanRunListener(capability: keyof CapabilitiesAtw): void {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
-        (args: FlowArgs<AtwDriver>): boolean =>
+        (args: FlowArgsAtw): boolean =>
           args.device.getCapabilityValue(capability) as boolean,
       )
     if (capability.startsWith('onoff.')) {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(
-          async (args: FlowArgs<AtwDriver>): Promise<void> => {
-            await args.device.onCapability(
-              capability as keyof SetCapabilities<AtwDriver>,
-              args.onoff,
-            )
-          },
-        )
+        .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
+          await args.device.onCapability(
+            capability as keyof SetCapabilitiesAtw,
+            args.onoff,
+          )
+        })
     }
   }
 
-  #registerOperationModeRunListener(
-    capability: keyof Capabilities<AtwDriver>,
-  ): void {
+  #registerOperationModeRunListener(capability: keyof CapabilitiesAtw): void {
     const capabilityArg: 'operation_mode_state' | 'operation_mode_zone' =
       capability.startsWith('operation_mode_state')
         ? 'operation_mode_state'
@@ -146,31 +140,29 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
-        (args: FlowArgs<AtwDriver>): boolean =>
+        (args: FlowArgsAtw): boolean =>
           args[capabilityArg] === args.device.getCapabilityValue(capability),
       )
     if (capability.startsWith('operation_mode_zone')) {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(
-          async (args: FlowArgs<AtwDriver>): Promise<void> => {
-            await args.device.onCapability(
-              capability as keyof SetCapabilities<AtwDriver>,
-              args.operation_mode_zone,
-            )
-          },
-        )
+        .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
+          await args.device.onCapability(
+            capability as keyof SetCapabilitiesAtw,
+            args.operation_mode_zone,
+          )
+        })
     }
   }
 
   #registerTargetTemperatureRunListener(
-    capability: keyof Capabilities<AtwDriver>,
+    capability: keyof CapabilitiesAtw,
   ): void {
     this.homey.flow
       .getActionCard(`${capability}_action`)
-      .registerRunListener(async (args: FlowArgs<AtwDriver>): Promise<void> => {
+      .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
         await args.device.onCapability(
-          capability as keyof SetCapabilities<AtwDriver>,
+          capability as keyof SetCapabilitiesAtw,
           args.target_temperature,
         )
       })

@@ -4,6 +4,7 @@ import type {
   DeviceDataAta,
   DeviceDataAtw,
   DeviceDataErv,
+  DeviceDataFromList,
   FrostProtectionPostData,
   HeatPumpType,
   Horizontal,
@@ -39,11 +40,6 @@ export enum ThermostatMode {
 
 export type MELCloudDriver = AtaDriver | AtwDriver | ErvDriver
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
-type DeviceFromDriver<T extends MELCloudDriver> = T extends AtaDriver
-  ? AtaDevice
-  : T extends AtwDriver
-    ? AtwDevice
-    : ErvDevice
 
 export type BooleanString = 'false' | 'true'
 
@@ -149,7 +145,7 @@ export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
     ? SetDeviceDataAtw
     : SetDeviceDataErv
 export type OpDeviceData<T extends MELCloudDriver> = NonEffectiveFlagsKeyOf<
-  DeviceData<T['heatPumpType']> | ListDevice<T>['Device']
+  DeviceData<T['heatPumpType']> & DeviceDataFromList<T['heatPumpType']>
 >
 
 interface SetCapabilitiesCommon {
@@ -162,12 +158,15 @@ interface ListCapabilitiesCommon {
   readonly 'measure_power.wifi': number
 }
 
-interface SetCapabilitiesAta extends SetCapabilitiesCommon {
+export interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
   horizontal?: keyof typeof Horizontal
   operation_mode?: keyof typeof OperationMode
   target_temperature?: number
   vertical?: keyof typeof Vertical
+}
+export type SetCapabilitiesWithThermostatModeAta = SetCapabilitiesAta & {
+  thermostat_mode?: ThermostatMode
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
 interface ListCapabilitiesAta extends ListCapabilitiesCommon {
@@ -176,6 +175,9 @@ interface ListCapabilitiesAta extends ListCapabilitiesCommon {
   readonly horizontal: keyof typeof Horizontal
   readonly vertical: keyof typeof Vertical
 }
+export type OpCapabilitiesAta = GetCapabilitiesAta &
+  ListCapabilitiesAta &
+  SetCapabilitiesAta
 interface ReportCapabilitiesAta {
   measure_power?: number
   'measure_power.auto'?: number
@@ -206,7 +208,7 @@ export interface OperationModeZoneCapabilities {
   operation_mode_zone_with_cool?: keyof typeof OperationModeZone
   'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
 }
-interface SetCapabilitiesAtw
+export interface SetCapabilitiesAtw
   extends SetCapabilitiesCommon,
     OperationModeZoneCapabilities {
   'onoff.forced_hot_water'?: boolean
@@ -217,6 +219,9 @@ interface SetCapabilitiesAtw
   'target_temperature.flow_heat_zone2'?: number
   'target_temperature.tank_water'?: number
   'target_temperature.zone2'?: number
+}
+export type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw & {
+  thermostat_mode?: ThermostatMode
 }
 interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'measure_temperature.outdoor': number
@@ -248,6 +253,9 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'measure_temperature.target_curve': number
   readonly 'measure_temperature.target_curve_zone2': number
 }
+export type OpCapabilitiesAtw = GetCapabilitiesAtw &
+  ListCapabilitiesAtw &
+  SetCapabilitiesAtw
 interface ReportCapabilitiesAtw {
   meter_power?: number
   'meter_power.cooling'?: number
@@ -274,15 +282,22 @@ interface ReportCapabilitiesAtw {
   'meter_power.produced_heating'?: number
   'meter_power.produced_hotwater'?: number
 }
+export type CapabilitiesAtw = OpCapabilitiesAtw &
+  ReportCapabilitiesAtw & {
+    thermostat_mode: ThermostatMode
+  }
 
 export enum VentilationMode {
   recovery = 0,
   bypass = 1,
   auto = 2,
 }
-interface SetCapabilitiesErv extends SetCapabilitiesCommon {
+export interface SetCapabilitiesErv extends SetCapabilitiesCommon {
   fan_power?: number
   ventilation_mode?: keyof typeof VentilationMode
+}
+type SetCapabilitiesWithThermostatModeErv = SetCapabilitiesErv & {
+  thermostat_mode?: ThermostatMode
 }
 interface GetCapabilitiesErv extends GetCapabilitiesCommon {
   readonly measure_co2: number
@@ -292,6 +307,9 @@ interface GetCapabilitiesErv extends GetCapabilitiesCommon {
 interface ListCapabilitiesErv extends ListCapabilitiesCommon {
   readonly measure_pm25: number
 }
+type OpCapabilitiesErv = GetCapabilitiesErv &
+  ListCapabilitiesErv &
+  SetCapabilitiesErv
 
 export type SetCapabilities<T extends MELCloudDriver> = T extends AtaDriver
   ? SetCapabilitiesAta
@@ -300,15 +318,15 @@ export type SetCapabilities<T extends MELCloudDriver> = T extends AtaDriver
     : SetCapabilitiesErv
 export type SetCapabilitiesWithThermostatMode<T extends MELCloudDriver> =
   T extends AtaDriver
-    ? SetCapabilitiesAta & { thermostat_mode?: ThermostatMode }
+    ? SetCapabilitiesWithThermostatModeAta
     : T extends AtwDriver
-      ? SetCapabilitiesAtw & { thermostat_mode?: ThermostatMode }
-      : SetCapabilitiesErv & { thermostat_mode?: ThermostatMode }
+      ? SetCapabilitiesWithThermostatModeAtw
+      : SetCapabilitiesWithThermostatModeErv
 export type OpCapabilities<T extends MELCloudDriver> = T extends AtaDriver
-  ? GetCapabilitiesAta & ListCapabilitiesAta & SetCapabilitiesAta
+  ? OpCapabilitiesAta
   : T extends AtwDriver
-    ? GetCapabilitiesAtw & ListCapabilitiesAtw & SetCapabilitiesAtw
-    : GetCapabilitiesErv & ListCapabilitiesErv & SetCapabilitiesErv
+    ? OpCapabilitiesAtw
+    : OpCapabilitiesErv
 export type ReportCapabilities<T extends MELCloudDriver> = T extends AtaDriver
   ? ReportCapabilitiesAta
   : T extends AtwDriver
@@ -578,23 +596,21 @@ export type ReportCapabilityTagMappingAny =
   | ReportCapabilityTagMappingAta
   | ReportCapabilityTagMappingAtw
   | ReportCapabilityTagMappingErv
-export type ReportCapabilitTagyMapping<T extends MELCloudDriver> =
+export type ReportCapabilityTagMapping<T extends MELCloudDriver> =
   T extends AtaDriver
     ? ReportCapabilityTagMappingAta
     : T extends AtwDriver
       ? ReportCapabilityTagMappingAtw
       : ReportCapabilityTagMappingErv
 
-export type FlowArgs<T extends MELCloudDriver> = (T extends AtaDriver
-  ? SetCapabilitiesAta
-  : T extends AtwDriver
-    ? {
-        readonly onoff?: boolean
-        readonly operation_mode_state?: keyof typeof OperationModeState
-        readonly operation_mode_zone?: keyof typeof OperationModeZone
-        readonly target_temperature?: number
-      }
-    : SetCapabilitiesErv) & { readonly device: DeviceFromDriver<T> }
+export type FlowArgsAta = SetCapabilitiesAta & { readonly device: AtaDevice }
+export type FlowArgsAtw = {
+  readonly onoff?: boolean
+  readonly operation_mode_state?: keyof typeof OperationModeState
+  readonly operation_mode_zone?: keyof typeof OperationModeZone
+  readonly target_temperature?: number
+} & { readonly device: AtwDevice }
+export type FlowArgsErv = SetCapabilitiesErv & { readonly device: ErvDevice }
 
 export type ListDevice<T extends MELCloudDriver> = T extends AtaDriver
   ? ListDeviceAta
