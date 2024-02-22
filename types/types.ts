@@ -1,29 +1,32 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
-import type {
-  DeviceData,
-  DeviceDataAta,
-  DeviceDataAtw,
-  DeviceDataErv,
-  DeviceDataFromListAta,
-  DeviceDataFromListAtw,
-  DeviceDataFromListErv,
-  FrostProtectionPostData,
-  HeatPumpType,
-  Horizontal,
-  ListDeviceAny,
-  ListDeviceAta,
-  ListDeviceAtw,
-  ListDeviceErv,
-  LoginCredentials,
-  OperationMode,
-  OperationModeState,
-  OperationModeZone,
-  ReportDataAta,
-  ReportDataAtw,
-  SetDeviceDataAta,
-  SetDeviceDataAtw,
-  SetDeviceDataErv,
-  Vertical,
+import {
+  type DeviceData,
+  type DeviceDataAta,
+  type DeviceDataAtw,
+  type DeviceDataErv,
+  type DeviceDataFromListAta,
+  type DeviceDataFromListAtw,
+  type DeviceDataFromListErv,
+  EffectiveFlagsAta,
+  EffectiveFlagsAtw,
+  EffectiveFlagsErv,
+  type FrostProtectionPostData,
+  type HeatPumpType,
+  type Horizontal,
+  type ListDeviceAny,
+  type ListDeviceAta,
+  type ListDeviceAtw,
+  type ListDeviceErv,
+  type LoginCredentials,
+  type OperationMode,
+  type OperationModeState,
+  type OperationModeZone,
+  type ReportDataAta,
+  type ReportDataAtw,
+  type SetDeviceDataAta,
+  type SetDeviceDataAtw,
+  type SetDeviceDataErv,
+  type Vertical,
 } from './MELCloudAPITypes'
 import type AtaDevice from '../drivers/melcloud/device'
 import type AtaDriver from '../drivers/melcloud/driver'
@@ -322,20 +325,36 @@ export type ReportCapabilities<T extends MELCloudDriver> = T extends AtaDriver
 export type Capabilities<T extends MELCloudDriver> = OpCapabilities<T> &
   ReportCapabilities<T> & { thermostat_mode: ThermostatMode }
 
+interface SetCapabilityDataAta {
+  readonly effectiveFlag: EffectiveFlagsAta
+  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAta>
+}
 type SetCapabilityMappingAtaType = Record<
   keyof SetCapabilitiesAta,
-  {
-    readonly effectiveFlag: bigint
-    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAta>
-  }
+  SetCapabilityDataAta
 >
 export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
-  fan_power: { effectiveFlag: 0x8n, tag: 'SetFanSpeed' },
-  horizontal: { effectiveFlag: 0x100n, tag: 'VaneHorizontal' },
-  onoff: { effectiveFlag: 0x1n, tag: 'Power' },
-  operation_mode: { effectiveFlag: 0x2n, tag: 'OperationMode' },
-  target_temperature: { effectiveFlag: 0x4n, tag: 'SetTemperature' },
-  vertical: { effectiveFlag: 0x10n, tag: 'VaneVertical' },
+  fan_power: {
+    effectiveFlag: EffectiveFlagsAta.SetFanSpeed,
+    tag: 'SetFanSpeed',
+  },
+  horizontal: {
+    effectiveFlag: EffectiveFlagsAta.VaneHorizontal,
+    tag: 'VaneHorizontal',
+  },
+  onoff: { effectiveFlag: EffectiveFlagsAta.Power, tag: 'Power' },
+  operation_mode: {
+    effectiveFlag: EffectiveFlagsAta.OperationMode,
+    tag: 'OperationMode',
+  },
+  target_temperature: {
+    effectiveFlag: EffectiveFlagsAta.SetTemperature,
+    tag: 'SetTemperature',
+  },
+  vertical: {
+    effectiveFlag: EffectiveFlagsAta.VaneVertical,
+    tag: 'VaneVertical',
+  },
 } as const
 export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
 type GetCapabilityMappingAtaType = Record<
@@ -401,58 +420,62 @@ export const reportCapabilityMappingAta: ReportCapabilityMappingAtaType = {
 } as const
 export type ReportCapabilityMappingAta = typeof reportCapabilityMappingAta
 
+interface SetCapabilityDataAtw {
+  readonly effectiveFlag: EffectiveFlagsAtw
+  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
+}
 type SetCapabilityMappingAtwType = Record<
   keyof SetCapabilitiesAtw,
-  {
-    readonly effectiveFlag: bigint
-    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
-  }
+  SetCapabilityDataAtw
 >
 export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
-  onoff: { effectiveFlag: 0x1n, tag: 'Power' },
+  onoff: { effectiveFlag: EffectiveFlagsAtw.Power, tag: 'Power' },
   'onoff.forced_hot_water': {
-    effectiveFlag: 0x10000n,
+    effectiveFlag: EffectiveFlagsAtw.ForcedHotWaterMode,
     tag: 'ForcedHotWaterMode',
   },
-  operation_mode_zone: { effectiveFlag: 0x8n, tag: 'OperationModeZone1' },
+  operation_mode_zone: {
+    effectiveFlag: EffectiveFlagsAtw.OperationModeZone1,
+    tag: 'OperationModeZone1',
+  },
   'operation_mode_zone.zone2': {
-    effectiveFlag: 0x10n,
+    effectiveFlag: EffectiveFlagsAtw.OperationModeZone2,
     tag: 'OperationModeZone2',
   },
   operation_mode_zone_with_cool: {
-    effectiveFlag: 0x8n,
+    effectiveFlag: EffectiveFlagsAtw.OperationModeZone1,
     tag: 'OperationModeZone1',
   },
   'operation_mode_zone_with_cool.zone2': {
-    effectiveFlag: 0x10n,
+    effectiveFlag: EffectiveFlagsAtw.OperationModeZone2,
     tag: 'OperationModeZone2',
   },
   target_temperature: {
-    effectiveFlag: 0x200000080n,
+    effectiveFlag: EffectiveFlagsAtw.SetTemperatureZone1,
     tag: 'SetTemperatureZone1',
   },
   'target_temperature.flow_cool': {
-    effectiveFlag: 0x1000000000000n,
+    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
     tag: 'SetCoolFlowTemperatureZone1',
   },
   'target_temperature.flow_cool_zone2': {
-    effectiveFlag: 0x1000000000000n,
+    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
     tag: 'SetCoolFlowTemperatureZone2',
   },
   'target_temperature.flow_heat': {
-    effectiveFlag: 0x1000000000000n,
+    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
     tag: 'SetHeatFlowTemperatureZone1',
   },
   'target_temperature.flow_heat_zone2': {
-    effectiveFlag: 0x1000000000000n,
+    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
     tag: 'SetHeatFlowTemperatureZone2',
   },
   'target_temperature.tank_water': {
-    effectiveFlag: 0x1000000000020n,
+    effectiveFlag: EffectiveFlagsAtw.SetTankWaterTemperature,
     tag: 'SetTankWaterTemperature',
   },
   'target_temperature.zone2': {
-    effectiveFlag: 0x800000200n,
+    effectiveFlag: EffectiveFlagsAtw.SetTemperatureZone2,
     tag: 'SetTemperatureZone2',
   },
 } as const
@@ -569,17 +592,24 @@ export const reportCapabilityMappingAtw: ReportCapabilityMappingAtwType = {
 } as const
 export type ReportCapabilityMappingAtw = typeof reportCapabilityMappingAtw
 
+interface SetCapabilityDataErv {
+  readonly effectiveFlag: EffectiveFlagsErv
+  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataErv>
+}
 type SetCapabilityMappingErvType = Record<
   keyof SetCapabilitiesErv,
-  {
-    readonly effectiveFlag: bigint
-    readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataErv>
-  }
+  SetCapabilityDataErv
 >
 export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
-  fan_power: { effectiveFlag: 0x8n, tag: 'SetFanSpeed' },
-  onoff: { effectiveFlag: 0x1n, tag: 'Power' },
-  ventilation_mode: { effectiveFlag: 0x4n, tag: 'VentilationMode' },
+  fan_power: {
+    effectiveFlag: EffectiveFlagsErv.SetFanSpeed,
+    tag: 'SetFanSpeed',
+  },
+  onoff: { effectiveFlag: EffectiveFlagsErv.Power, tag: 'Power' },
+  ventilation_mode: {
+    effectiveFlag: EffectiveFlagsErv.VentilationMode,
+    tag: 'VentilationMode',
+  },
 } as const
 export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
 type GetCapabilityMappingErvType = Record<
@@ -606,10 +636,11 @@ export const reportCapabilityMappingErv: ReportCapabilityMappingErvType =
   {} as const
 export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
 
-export interface SetCapabilityData<T extends MELCloudDriver> {
-  readonly effectiveFlag: bigint
-  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceData<T>>
-}
+export type SetCapabilityData<T extends MELCloudDriver> = T extends AtaDriver
+  ? SetCapabilityDataAta
+  : T extends AtwDriver
+    ? SetCapabilityDataAtw
+    : SetCapabilityDataErv
 export type SetCapabilityMappingAny =
   | SetCapabilityMappingAta
   | SetCapabilityMappingAtw

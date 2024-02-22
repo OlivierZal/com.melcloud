@@ -1,5 +1,5 @@
 export const APP_VERSION = '1.32.1.0'
-export const FLAG_UNCHANGED = 0
+export const FLAG_UNCHANGED = 0x0
 
 export interface APISettings {
   readonly contextKey?: string | null
@@ -12,6 +12,30 @@ export enum HeatPumpType {
   Ata = 0,
   Atw = 1,
   Erv = 3,
+}
+
+export enum EffectiveFlagsAta {
+  Power = 0x1,
+  OperationMode = 0x2,
+  SetTemperature = 0x4,
+  SetFanSpeed = 0x8,
+  VaneVertical = 0x10,
+  VaneHorizontal = 0x100,
+}
+export enum EffectiveFlagsAtw {
+  Power = 0x1,
+  OperationModeZone1 = 0x8,
+  OperationModeZone2 = 0x10,
+  ForcedHotWaterMode = 0x10000,
+  SetTemperatureZone1 = 0x200000080,
+  SetTemperatureZone2 = 0x800000200,
+  SetFlowTemperatureZone = 0x1000000000000,
+  SetTankWaterTemperature = 0x1000000000020,
+}
+export enum EffectiveFlagsErv {
+  Power = 0x1,
+  VentilationMode = 0x4,
+  SetFanSpeed = 0x8,
 }
 
 export enum OperationMode {

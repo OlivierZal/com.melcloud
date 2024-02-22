@@ -311,9 +311,9 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     return Object.entries(this.#setCapabilityMapping).reduce<SetDeviceData<T>>(
       (
         acc,
-        [capability, { tag, effectiveFlag }]: [string, SetCapabilityData<T>],
+        [capability, { effectiveFlag, tag }]: [string, SetCapabilityData<T>],
       ) => {
-        acc[tag] = this.convertToDevice(
+        acc[tag as keyof SetDeviceData<T>] = this.convertToDevice(
           capability as keyof SetCapabilities<T>,
           this.getRequestedOrCurrentValue(
             capability as keyof SetCapabilities<T>,
@@ -323,7 +323,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           this.diff.delete(capability as keyof SetCapabilities<T>)
           acc.EffectiveFlags = Number(
             // eslint-disable-next-line no-bitwise
-            BigInt(acc.EffectiveFlags) | effectiveFlag,
+            BigInt(acc.EffectiveFlags) | BigInt(effectiveFlag),
           )
         }
         return acc
@@ -416,15 +416,15 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   #getUpdateCapabilityEntries(
-    effectiveFlags: bigint,
+    effectiveFlags: number,
   ): [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][] {
     switch (true) {
-      case effectiveFlags !== BigInt(FLAG_UNCHANGED):
+      case effectiveFlags !== FLAG_UNCHANGED:
         return [
           ...Object.entries(this.#setCapabilityMapping).filter(
             ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
               // eslint-disable-next-line no-bitwise
-              effectiveFlag & effectiveFlags,
+              BigInt(effectiveFlag) & BigInt(effectiveFlags),
           ),
           ...Object.entries(this.#getCapabilityMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][]
@@ -693,7 +693,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     const updateCapabilityEntries: [
       TypedString<keyof OpCapabilities<T>>,
       OpCapabilityData<T>,
-    ][] = this.#getUpdateCapabilityEntries(BigInt(data.EffectiveFlags))
+    ][] = this.#getUpdateCapabilityEntries(data.EffectiveFlags)
     const keysToUpdateLast: string[] = [
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
