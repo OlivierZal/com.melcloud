@@ -51,12 +51,14 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   protected registerRunListeners(): void {
     this.#flowCapabilities.forEach(
       (capability: keyof SetCapabilities<AtaDriver>) => {
-        this.homey.flow
-          .getConditionCard(`${capability}_condition`)
-          .registerRunListener(
-            (args: FlowArgs<AtaDriver>): boolean =>
-              args[capability] === args.device.getCapabilityValue(capability),
-          )
+        if (capability !== 'fan_power') {
+          this.homey.flow
+            .getConditionCard(`${capability}_condition`)
+            .registerRunListener(
+              (args: FlowArgs<AtaDriver>): boolean =>
+                args[capability] === args.device.getCapabilityValue(capability),
+            )
+        }
         this.homey.flow
           .getActionCard(`${capability}_action`)
           .registerRunListener(
