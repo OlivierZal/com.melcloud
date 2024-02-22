@@ -2147,7 +2147,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud"
+            "filter": "driver_id=melcloud|melcloud_erv"
           },
           {
             "name": "fan_power",
@@ -2157,42 +2157,16 @@
             "step": 1
           }
         ],
+        "hint": {
+          "en": "Set the fan speed to 0 for automatic mode (air-to-air heat pump)",
+          "fr": "Définir la vitesse du ventilateur sur 0 pour le mode automatique (pompe à chaleur air-air)",
+          "nl": "Stel de ventilatiesnelheid in op 0 voor de automatische modus (lucht-lucht warmtepomp)",
+          "sv": "Ställ in fläkthastigheten till 0 för automatiskt läge (luft-luft värmepump)",
+          "no": "Innstill viftehastigheten til 0 for automatisk modus (luft-luft varmepumpe)",
+          "da": "Indstil blæserhastigheden til 0 for automatisk tilstand (luft-luft varmepumpe",
+          "es": "Configurar la velocidad del ventilador a 0 para el modo automático (bombas de calor aire-aire)"
+        },
         "id": "fan_power_action"
-      },
-      {
-        "title": {
-          "en": "Set the fan speed",
-          "fr": "Définir la vitesse du ventilateur",
-          "nl": "Stel de ventilatiesnelheid in",
-          "sv": "Ställ in fläkthastigheten",
-          "no": "Innstill viftehastigheten",
-          "da": "Indstil blæserhastigheden",
-          "es": "Configurar la velocidad del ventilador"
-        },
-        "titleFormatted": {
-          "en": "Set the fan speed to [[fan_power]]",
-          "fr": "Définir la vitesse du ventilateur à [[fan_power]]",
-          "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
-          "sv": "Ställ in fläkthastigheten till [[fan_power]]",
-          "no": "Innstill viftehastigheten til [[fan_power]]",
-          "da": "Indstil blæserhastigheden til [[fan_power]]",
-          "es": "Configurar la velocidad del ventilador a [[fan_power]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_erv"
-          },
-          {
-            "name": "fan_power",
-            "type": "range",
-            "min": 1,
-            "max": 4,
-            "step": 1
-          }
-        ],
-        "id": "fan_power_erv_action"
       },
       {
         "title": {
@@ -3064,7 +3038,7 @@
             ]
           }
         ],
-        "id": "ventilation_mode_erv_action"
+        "id": "ventilation_mode_action"
       },
       {
         "title": {
