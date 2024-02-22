@@ -1,32 +1,27 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
-import {
-  type DeviceData,
-  type DeviceDataAta,
-  type DeviceDataAtw,
-  type DeviceDataErv,
-  type DeviceDataFromListAta,
-  type DeviceDataFromListAtw,
-  type DeviceDataFromListErv,
-  EffectiveFlagsAta,
-  EffectiveFlagsAtw,
-  EffectiveFlagsErv,
-  type FrostProtectionPostData,
-  type HeatPumpType,
-  type Horizontal,
-  type ListDeviceAny,
-  type ListDeviceAta,
-  type ListDeviceAtw,
-  type ListDeviceErv,
-  type LoginCredentials,
-  type OperationMode,
-  type OperationModeState,
-  type OperationModeZone,
-  type ReportDataAta,
-  type ReportDataAtw,
-  type SetDeviceDataAta,
-  type SetDeviceDataAtw,
-  type SetDeviceDataErv,
-  type Vertical,
+import type {
+  DeviceData,
+  DeviceDataAta,
+  DeviceDataAtw,
+  DeviceDataErv,
+  FrostProtectionPostData,
+  HeatPumpType,
+  Horizontal,
+  ListDeviceAny,
+  ListDeviceAta,
+  ListDeviceAtw,
+  ListDeviceErv,
+  LoginCredentials,
+  NonEffectiveFlagsKeyOf,
+  OperationMode,
+  OperationModeState,
+  OperationModeZone,
+  ReportDataAta,
+  ReportDataAtw,
+  SetDeviceDataAta,
+  SetDeviceDataAtw,
+  SetDeviceDataErv,
+  Vertical,
 } from './MELCloudAPITypes'
 import type AtaDevice from '../drivers/melcloud/device'
 import type AtaDriver from '../drivers/melcloud/driver'
@@ -52,7 +47,6 @@ type DeviceFromDriver<T extends MELCloudDriver> = T extends AtaDriver
 
 export type BooleanString = 'false' | 'true'
 
-export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
 export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
 
 export type TypedString<T> = T & string
@@ -154,11 +148,9 @@ export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
   : T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
-export type DeviceDataFromList<T extends MELCloudDriver> = T extends AtaDriver
-  ? DeviceDataFromListAta
-  : T extends AtwDriver
-    ? DeviceDataFromListAtw
-    : DeviceDataFromListErv
+export type OpDeviceData<T extends MELCloudDriver> = NonEffectiveFlagsKeyOf<
+  DeviceData<T['heatPumpType']> | ListDevice<T>['Device']
+>
 
 interface SetCapabilitiesCommon {
   onoff?: boolean
@@ -325,63 +317,40 @@ export type ReportCapabilities<T extends MELCloudDriver> = T extends AtaDriver
 export type Capabilities<T extends MELCloudDriver> = OpCapabilities<T> &
   ReportCapabilities<T> & { thermostat_mode: ThermostatMode }
 
-interface SetCapabilityDataAta {
-  readonly effectiveFlag: EffectiveFlagsAta
-  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAta>
-}
-type SetCapabilityMappingAtaType = Record<
+export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
-  SetCapabilityDataAta
->
-export const setCapabilityMappingAta: SetCapabilityMappingAtaType = {
-  fan_power: {
-    effectiveFlag: EffectiveFlagsAta.SetFanSpeed,
-    tag: 'SetFanSpeed',
-  },
-  horizontal: {
-    effectiveFlag: EffectiveFlagsAta.VaneHorizontal,
-    tag: 'VaneHorizontal',
-  },
-  onoff: { effectiveFlag: EffectiveFlagsAta.Power, tag: 'Power' },
-  operation_mode: {
-    effectiveFlag: EffectiveFlagsAta.OperationMode,
-    tag: 'OperationMode',
-  },
-  target_temperature: {
-    effectiveFlag: EffectiveFlagsAta.SetTemperature,
-    tag: 'SetTemperature',
-  },
-  vertical: {
-    effectiveFlag: EffectiveFlagsAta.VaneVertical,
-    tag: 'VaneVertical',
-  },
+  NonEffectiveFlagsKeyOf<SetDeviceDataAta>
+> = {
+  fan_power: 'SetFanSpeed',
+  horizontal: 'VaneHorizontal',
+  onoff: 'Power',
+  operation_mode: 'OperationMode',
+  target_temperature: 'SetTemperature',
+  vertical: 'VaneVertical',
 } as const
-export type SetCapabilityMappingAta = typeof setCapabilityMappingAta
-type GetCapabilityMappingAtaType = Record<
+export type SetCapabilityTagMappingAta = typeof setCapabilityTagMappingAta
+export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataAta> }
->
-export const getCapabilityMappingAta: GetCapabilityMappingAtaType = {
-  measure_temperature: { tag: 'RoomTemperature' },
+  NonEffectiveFlagsKeyOf<DeviceDataAta>
+> = {
+  measure_temperature: 'RoomTemperature',
 } as const
-export type GetCapabilityMappingAta = typeof getCapabilityMappingAta
-type ListCapabilityMappingAtaType = Record<
+export type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
+export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListAta> }
->
-export const listCapabilityMappingAta: ListCapabilityMappingAtaType = {
-  fan_power: { tag: 'FanSpeed' },
-  fan_power_state: { tag: 'ActualFanSpeed' },
-  horizontal: { tag: 'VaneHorizontalDirection' },
-  'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  vertical: { tag: 'VaneVerticalDirection' },
+  NonEffectiveFlagsKeyOf<ListDeviceAta['Device']>
+> = {
+  fan_power: 'FanSpeed',
+  fan_power_state: 'ActualFanSpeed',
+  horizontal: 'VaneHorizontalDirection',
+  'measure_power.wifi': 'WifiSignalStrength',
+  vertical: 'VaneVerticalDirection',
 } as const
-export type ListCapabilityMappingAta = typeof listCapabilityMappingAta
-type ReportCapabilityMappingAtaType = Record<
+export type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
+export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
   readonly (keyof ReportDataAta)[]
->
-export const reportCapabilityMappingAta: ReportCapabilityMappingAtaType = {
+> = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
   'measure_power.cooling': ['Cooling'],
@@ -418,118 +387,72 @@ export const reportCapabilityMappingAta: ReportCapabilityMappingAtaType = {
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
 } as const
-export type ReportCapabilityMappingAta = typeof reportCapabilityMappingAta
+export type ReportCapabilityTagMappingAta = typeof reportCapabilityTagMappingAta
 
-interface SetCapabilityDataAtw {
-  readonly effectiveFlag: EffectiveFlagsAtw
-  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
-}
-type SetCapabilityMappingAtwType = Record<
+export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
-  SetCapabilityDataAtw
->
-export const setCapabilityMappingAtw: SetCapabilityMappingAtwType = {
-  onoff: { effectiveFlag: EffectiveFlagsAtw.Power, tag: 'Power' },
-  'onoff.forced_hot_water': {
-    effectiveFlag: EffectiveFlagsAtw.ForcedHotWaterMode,
-    tag: 'ForcedHotWaterMode',
-  },
-  operation_mode_zone: {
-    effectiveFlag: EffectiveFlagsAtw.OperationModeZone1,
-    tag: 'OperationModeZone1',
-  },
-  'operation_mode_zone.zone2': {
-    effectiveFlag: EffectiveFlagsAtw.OperationModeZone2,
-    tag: 'OperationModeZone2',
-  },
-  operation_mode_zone_with_cool: {
-    effectiveFlag: EffectiveFlagsAtw.OperationModeZone1,
-    tag: 'OperationModeZone1',
-  },
-  'operation_mode_zone_with_cool.zone2': {
-    effectiveFlag: EffectiveFlagsAtw.OperationModeZone2,
-    tag: 'OperationModeZone2',
-  },
-  target_temperature: {
-    effectiveFlag: EffectiveFlagsAtw.SetTemperatureZone1,
-    tag: 'SetTemperatureZone1',
-  },
-  'target_temperature.flow_cool': {
-    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
-    tag: 'SetCoolFlowTemperatureZone1',
-  },
-  'target_temperature.flow_cool_zone2': {
-    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
-    tag: 'SetCoolFlowTemperatureZone2',
-  },
-  'target_temperature.flow_heat': {
-    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
-    tag: 'SetHeatFlowTemperatureZone1',
-  },
-  'target_temperature.flow_heat_zone2': {
-    effectiveFlag: EffectiveFlagsAtw.SetFlowTemperatureZone,
-    tag: 'SetHeatFlowTemperatureZone2',
-  },
-  'target_temperature.tank_water': {
-    effectiveFlag: EffectiveFlagsAtw.SetTankWaterTemperature,
-    tag: 'SetTankWaterTemperature',
-  },
-  'target_temperature.zone2': {
-    effectiveFlag: EffectiveFlagsAtw.SetTemperatureZone2,
-    tag: 'SetTemperatureZone2',
-  },
+  NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
+> = {
+  onoff: 'Power',
+  'onoff.forced_hot_water': 'ForcedHotWaterMode',
+  operation_mode_zone: 'OperationModeZone1',
+  'operation_mode_zone.zone2': 'OperationModeZone2',
+  operation_mode_zone_with_cool: 'OperationModeZone1',
+  'operation_mode_zone_with_cool.zone2': 'OperationModeZone2',
+  target_temperature: 'SetTemperatureZone1',
+  'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
+  'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
+  'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
+  'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
+  'target_temperature.tank_water': 'SetTankWaterTemperature',
+  'target_temperature.zone2': 'SetTemperatureZone2',
 } as const
-export type SetCapabilityMappingAtw = typeof setCapabilityMappingAtw
-type GetCapabilityMappingAtwType = Record<
+export type SetCapabilityTagMappingAtw = typeof setCapabilityTagMappingAtw
+export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataAtw> }
->
-export const getCapabilityMappingAtw: GetCapabilityMappingAtwType = {
-  measure_temperature: { tag: 'RoomTemperatureZone1' },
-  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
-  'measure_temperature.tank_water': { tag: 'TankWaterTemperature' },
-  'measure_temperature.zone2': { tag: 'RoomTemperatureZone2' },
-  operation_mode_state: { tag: 'OperationMode' },
+  NonEffectiveFlagsKeyOf<DeviceDataAtw>
+> = {
+  measure_temperature: 'RoomTemperatureZone1',
+  'measure_temperature.outdoor': 'OutdoorTemperature',
+  'measure_temperature.tank_water': 'TankWaterTemperature',
+  'measure_temperature.zone2': 'RoomTemperatureZone2',
+  operation_mode_state: 'OperationMode',
   // Must follow `operation_mode_state`
-  'operation_mode_state.zone1': { tag: 'IdleZone1' },
-  'operation_mode_state.zone2': { tag: 'IdleZone2' },
+  'operation_mode_state.zone1': 'IdleZone1',
+  'operation_mode_state.zone2': 'IdleZone2',
 } as const
-export type GetCapabilityMappingAtw = typeof getCapabilityMappingAtw
-type ListCapabilityMappingAtwType = Record<
+export type GetCapabilityTagMappingAtw = typeof getCapabilityTagMappingAtw
+export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListAtw> }
->
-export const listCapabilityMappingAtw: ListCapabilityMappingAtwType = {
-  'alarm_generic.booster_heater1': { tag: 'BoosterHeater1Status' },
-  'alarm_generic.booster_heater2': { tag: 'BoosterHeater2Status' },
-  'alarm_generic.booster_heater2_plus': { tag: 'BoosterHeater2PlusStatus' },
-  'alarm_generic.defrost_mode': { tag: 'DefrostMode' },
-  'alarm_generic.eco_hot_water': { tag: 'EcoHotWater' },
-  'alarm_generic.immersion_heater': { tag: 'ImmersionHeaterStatus' },
-  last_legionella: { tag: 'LastLegionellaActivationTime' },
-  measure_power: { tag: 'CurrentEnergyConsumed' },
-  'measure_power.heat_pump_frequency': { tag: 'HeatPumpFrequency' },
-  'measure_power.produced': { tag: 'CurrentEnergyProduced' },
-  'measure_power.wifi': { tag: 'WifiSignalStrength' },
-  'measure_temperature.condensing': { tag: 'CondensingTemperature' },
-  'measure_temperature.flow': { tag: 'FlowTemperature' },
-  'measure_temperature.flow_zone1': { tag: 'FlowTemperatureZone1' },
-  'measure_temperature.flow_zone2': { tag: 'FlowTemperatureZone2' },
-  'measure_temperature.return': { tag: 'ReturnTemperature' },
-  'measure_temperature.return_zone1': { tag: 'ReturnTemperatureZone1' },
-  'measure_temperature.return_zone2': { tag: 'ReturnTemperatureZone2' },
-  'measure_temperature.tank_water_mixing': {
-    tag: 'MixingTankWaterTemperature',
-  },
-  'measure_temperature.target_curve': { tag: 'TargetHCTemperatureZone1' },
-  'measure_temperature.target_curve_zone2': { tag: 'TargetHCTemperatureZone2' },
+  NonEffectiveFlagsKeyOf<ListDeviceAtw['Device']>
+> = {
+  'alarm_generic.booster_heater1': 'BoosterHeater1Status',
+  'alarm_generic.booster_heater2': 'BoosterHeater2Status',
+  'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
+  'alarm_generic.defrost_mode': 'DefrostMode',
+  'alarm_generic.eco_hot_water': 'EcoHotWater',
+  'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
+  last_legionella: 'LastLegionellaActivationTime',
+  measure_power: 'CurrentEnergyConsumed',
+  'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
+  'measure_power.produced': 'CurrentEnergyProduced',
+  'measure_power.wifi': 'WifiSignalStrength',
+  'measure_temperature.condensing': 'CondensingTemperature',
+  'measure_temperature.flow': 'FlowTemperature',
+  'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
+  'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
+  'measure_temperature.return': 'ReturnTemperature',
+  'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
+  'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
+  'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
+  'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
+  'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
 } as const
-export type ListCapabilityMappingAtw = typeof listCapabilityMappingAtw
-type ReportCapabilityMappingAtwType = Record<
+export type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
+export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
   readonly (keyof ReportDataAtw)[]
->
-export const reportCapabilityMappingAtw: ReportCapabilityMappingAtwType = {
+> = {
   meter_power: [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
@@ -590,108 +513,80 @@ export const reportCapabilityMappingAtw: ReportCapabilityMappingAtwType = {
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
 } as const
-export type ReportCapabilityMappingAtw = typeof reportCapabilityMappingAtw
+export type ReportCapabilityTagMappingAtw = typeof reportCapabilityTagMappingAtw
 
-interface SetCapabilityDataErv {
-  readonly effectiveFlag: EffectiveFlagsErv
-  readonly tag: NonEffectiveFlagsKeyOf<SetDeviceDataErv>
-}
-type SetCapabilityMappingErvType = Record<
+export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
-  SetCapabilityDataErv
->
-export const setCapabilityMappingErv: SetCapabilityMappingErvType = {
-  fan_power: {
-    effectiveFlag: EffectiveFlagsErv.SetFanSpeed,
-    tag: 'SetFanSpeed',
-  },
-  onoff: { effectiveFlag: EffectiveFlagsErv.Power, tag: 'Power' },
-  ventilation_mode: {
-    effectiveFlag: EffectiveFlagsErv.VentilationMode,
-    tag: 'VentilationMode',
-  },
+  NonEffectiveFlagsKeyOf<SetDeviceDataErv>
+> = {
+  fan_power: 'SetFanSpeed',
+  onoff: 'Power',
+  ventilation_mode: 'VentilationMode',
 } as const
-export type SetCapabilityMappingErv = typeof setCapabilityMappingErv
-type GetCapabilityMappingErvType = Record<
+export type SetCapabilityTagMappingErv = typeof setCapabilityTagMappingErv
+export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataErv> }
->
-export const getCapabilityMappingErv: GetCapabilityMappingErvType = {
-  measure_co2: { tag: 'RoomCO2Level' },
-  measure_temperature: { tag: 'RoomTemperature' },
-  'measure_temperature.outdoor': { tag: 'OutdoorTemperature' },
+  NonEffectiveFlagsKeyOf<DeviceDataErv>
+> = {
+  measure_co2: 'RoomCO2Level',
+  measure_temperature: 'RoomTemperature',
+  'measure_temperature.outdoor': 'OutdoorTemperature',
 } as const
-export type GetCapabilityMappingErv = typeof getCapabilityMappingErv
-type ListCapabilityMappingErvType = Record<
+export type GetCapabilityTagMappingErv = typeof getCapabilityTagMappingErv
+export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
-  { readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromListErv> }
->
-export const listCapabilityMappingErv: ListCapabilityMappingErvType = {
-  measure_pm25: { tag: 'PM25Level' },
-  'measure_power.wifi': { tag: 'WifiSignalStrength' },
+  NonEffectiveFlagsKeyOf<ListDeviceErv['Device']>
+> = {
+  measure_pm25: 'PM25Level',
+  'measure_power.wifi': 'WifiSignalStrength',
 } as const
-export type ListCapabilityMappingErv = typeof listCapabilityMappingErv
-type ReportCapabilityMappingErvType = Record<string, never>
-export const reportCapabilityMappingErv: ReportCapabilityMappingErvType =
-  {} as const
-export type ReportCapabilityMappingErv = typeof reportCapabilityMappingErv
+export type ListCapabilityTagMappingErv = typeof listCapabilityTagMappingErv
+export const reportCapabilityTagMappingErv: Record<string, never> = {} as const
+export type ReportCapabilityTagMappingErv = typeof reportCapabilityTagMappingErv
 
-export type SetCapabilityData<T extends MELCloudDriver> = T extends AtaDriver
-  ? SetCapabilityDataAta
-  : T extends AtwDriver
-    ? SetCapabilityDataAtw
-    : SetCapabilityDataErv
-export type SetCapabilityMappingAny =
-  | SetCapabilityMappingAta
-  | SetCapabilityMappingAtw
-  | SetCapabilityMappingErv
-export type SetCapabilityMapping<T extends MELCloudDriver> = T extends AtaDriver
-  ? SetCapabilityMappingAta
-  : T extends AtwDriver
-    ? SetCapabilityMappingAtw
-    : SetCapabilityMappingErv
-export interface GetCapabilityData<T extends MELCloudDriver> {
-  readonly tag: NonEffectiveFlagsKeyOf<DeviceData<T['heatPumpType']>>
-}
-export type GetCapabilityMappingAny =
-  | GetCapabilityMappingAta
-  | GetCapabilityMappingAtw
-  | GetCapabilityMappingErv
-export type GetCapabilityMapping<T extends MELCloudDriver> = T extends AtaDriver
-  ? GetCapabilityMappingAta
-  : T extends AtwDriver
-    ? GetCapabilityMappingAtw
-    : GetCapabilityMappingErv
-interface ListCapabilityData<T extends MELCloudDriver> {
-  readonly tag: NonEffectiveFlagsKeyOf<DeviceDataFromList<T>>
-}
-export type ListCapabilityMappingAny =
-  | ListCapabilityMappingAta
-  | ListCapabilityMappingAtw
-  | ListCapabilityMappingErv
-export type ListCapabilityMapping<T extends MELCloudDriver> =
+export type SetCapabilityTagMappingAny =
+  | SetCapabilityTagMappingAta
+  | SetCapabilityTagMappingAtw
+  | SetCapabilityTagMappingErv
+export type SetCapabilityTagMapping<T extends MELCloudDriver> =
   T extends AtaDriver
-    ? ListCapabilityMappingAta
+    ? SetCapabilityTagMappingAta
     : T extends AtwDriver
-      ? ListCapabilityMappingAtw
-      : ListCapabilityMappingErv
-export type OpCapabilityData<T extends MELCloudDriver> =
-  | GetCapabilityData<T>
-  | ListCapabilityData<T>
-  | SetCapabilityData<T>
-export type ReportCapabilityMappingAny =
-  | ReportCapabilityMappingAta
-  | ReportCapabilityMappingAtw
-  | ReportCapabilityMappingErv
-export type ReportCapabilityMapping<T extends MELCloudDriver> =
+      ? SetCapabilityTagMappingAtw
+      : SetCapabilityTagMappingErv
+export type GetCapabilityTagMappingAny =
+  | GetCapabilityTagMappingAta
+  | GetCapabilityTagMappingAtw
+  | GetCapabilityTagMappingErv
+export type GetCapabilityTagMapping<T extends MELCloudDriver> =
   T extends AtaDriver
-    ? ReportCapabilityMappingAta
+    ? GetCapabilityTagMappingAta
     : T extends AtwDriver
-      ? ReportCapabilityMappingAtw
-      : ReportCapabilityMappingErv
+      ? GetCapabilityTagMappingAtw
+      : GetCapabilityTagMappingErv
+export type ListCapabilityTagMappingAny =
+  | ListCapabilityTagMappingAta
+  | ListCapabilityTagMappingAtw
+  | ListCapabilityTagMappingErv
+export type ListCapabilityTagMapping<T extends MELCloudDriver> =
+  T extends AtaDriver
+    ? ListCapabilityTagMappingAta
+    : T extends AtwDriver
+      ? ListCapabilityTagMappingAtw
+      : ListCapabilityTagMappingErv
+export type ReportCapabilityTagMappingAny =
+  | ReportCapabilityTagMappingAta
+  | ReportCapabilityTagMappingAtw
+  | ReportCapabilityTagMappingErv
+export type ReportCapabilitTagyMapping<T extends MELCloudDriver> =
+  T extends AtaDriver
+    ? ReportCapabilityTagMappingAta
+    : T extends AtwDriver
+      ? ReportCapabilityTagMappingAtw
+      : ReportCapabilityTagMappingErv
 
 export type FlowArgs<T extends MELCloudDriver> = (T extends AtaDriver
-  ? Omit<SetCapabilitiesAta, 'fan_power'> & { readonly fan_power?: string }
+  ? SetCapabilitiesAta
   : T extends AtwDriver
     ? {
         readonly onoff?: boolean

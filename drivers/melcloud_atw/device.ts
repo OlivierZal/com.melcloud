@@ -5,7 +5,7 @@ import {
   OperationModeZone,
 } from '../../types/MELCloudAPITypes'
 import type {
-  DeviceDataFromList,
+  ListDevice,
   NonEffectiveFlagsValueOf,
   OpCapabilities,
   OperationModeZoneCapabilities,
@@ -35,7 +35,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
     capability: TypedString<K>,
     value:
       | NonEffectiveFlagsValueOf<DeviceData<AtwDriver['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList<AtwDriver>>,
+      | NonEffectiveFlagsValueOf<ListDevice<AtwDriver>['Device']>,
   ): OpCapabilities<AtwDriver>[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

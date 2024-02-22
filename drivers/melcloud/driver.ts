@@ -1,30 +1,32 @@
 import {
   type FlowArgs,
-  type GetCapabilityMappingAta,
-  type ListCapabilityMappingAta,
-  type ReportCapabilityMappingAta,
+  type GetCapabilityTagMappingAta,
+  type ListCapabilityTagMappingAta,
+  type ReportCapabilityTagMappingAta,
   type SetCapabilities,
-  type SetCapabilityMappingAta,
-  getCapabilityMappingAta,
-  listCapabilityMappingAta,
-  reportCapabilityMappingAta,
-  setCapabilityMappingAta,
+  type SetCapabilityTagMappingAta,
+  getCapabilityTagMappingAta,
+  listCapabilityTagMappingAta,
+  reportCapabilityTagMappingAta,
+  setCapabilityTagMappingAta,
 } from '../../types/types'
+import { HeatPumpType, effectiveFlagsAta } from '../../types/MELCloudAPITypes'
 import BaseMELCloudDriver from '../../bases/driver'
-import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
-  public readonly getCapabilityMapping: GetCapabilityMappingAta =
-    getCapabilityMappingAta
+  public readonly effectiveFlags: typeof effectiveFlagsAta = effectiveFlagsAta
 
-  public readonly listCapabilityMapping: ListCapabilityMappingAta =
-    listCapabilityMappingAta
+  public readonly getCapabilityTagMapping: GetCapabilityTagMappingAta =
+    getCapabilityTagMappingAta
 
-  public readonly reportCapabilityMapping: ReportCapabilityMappingAta =
-    reportCapabilityMappingAta
+  public readonly listCapabilityTagMapping: ListCapabilityTagMappingAta =
+    listCapabilityTagMappingAta
 
-  public readonly setCapabilityMapping: SetCapabilityMappingAta =
-    setCapabilityMappingAta
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAta =
+    reportCapabilityTagMappingAta
+
+  public readonly setCapabilityTagMapping: SetCapabilityTagMappingAta =
+    setCapabilityTagMappingAta
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
 
@@ -38,40 +40,28 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   public getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
-        ...this.setCapabilityMapping,
-        ...this.getCapabilityMapping,
-        ...this.listCapabilityMapping,
+        ...this.setCapabilityTagMapping,
+        ...this.getCapabilityTagMapping,
+        ...this.listCapabilityTagMapping,
       }).filter((capability: string) => capability !== 'measure_power.wifi'),
       'thermostat_mode',
     ]
   }
 
   protected registerRunListeners(): void {
-    const getCapabilityArg = <K extends keyof SetCapabilities<AtaDriver>>(
-      args: FlowArgs<AtaDriver>,
-      capability: K,
-    ): SetCapabilities<AtaDriver>[K] =>
-      (capability === 'fan_power'
-        ? Number(args[capability])
-        : args[capability]) as SetCapabilities<AtaDriver>[K]
-
     this.#flowCapabilities.forEach(
       (capability: keyof SetCapabilities<AtaDriver>) => {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
           .registerRunListener(
             (args: FlowArgs<AtaDriver>): boolean =>
-              getCapabilityArg(args, capability) ===
-              args.device.getCapabilityValue(capability),
+              args[capability] === args.device.getCapabilityValue(capability),
           )
         this.homey.flow
           .getActionCard(`${capability}_action`)
           .registerRunListener(
             async (args: FlowArgs<AtaDriver>): Promise<void> => {
-              await args.device.onCapability(
-                capability,
-                getCapabilityArg(args, capability),
-              )
+              await args.device.onCapability(capability, args[capability])
             },
           )
       },

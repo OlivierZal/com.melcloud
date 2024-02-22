@@ -1,9 +1,9 @@
 import type {
   DeviceDetails,
-  GetCapabilityMappingAny,
-  ListCapabilityMappingAny,
-  ReportCapabilityMappingAny,
-  SetCapabilityMappingAny,
+  GetCapabilityTagMappingAny,
+  ListCapabilityTagMappingAny,
+  ReportCapabilityTagMappingAny,
+  SetCapabilityTagMappingAny,
   Store,
   TypedString,
 } from '../types/types'
@@ -11,6 +11,9 @@ import {
   HeatPumpType,
   type LoginCredentials,
   type ReportData,
+  type effectiveFlagsAta,
+  type effectiveFlagsAtw,
+  type effectiveFlagsErv,
 } from '../types/MELCloudAPITypes'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
@@ -19,19 +22,24 @@ import type PairSession from 'homey/lib/PairSession'
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof HeatPumpType,
 > extends Driver {
-  public readonly consumedTagMapping: ReportCapabilityMappingAny = {}
+  public readonly consumedTagMapping: ReportCapabilityTagMappingAny = {}
 
-  public readonly producedTagMapping: ReportCapabilityMappingAny = {}
+  public readonly producedTagMapping: ReportCapabilityTagMappingAny = {}
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
-  public abstract readonly getCapabilityMapping: GetCapabilityMappingAny
+  public abstract readonly effectiveFlags:
+    | typeof effectiveFlagsAta
+    | typeof effectiveFlagsAtw
+    | typeof effectiveFlagsErv
 
-  public abstract readonly listCapabilityMapping: ListCapabilityMappingAny
+  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMappingAny
 
-  public abstract readonly reportCapabilityMapping: ReportCapabilityMappingAny
+  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMappingAny
 
-  public abstract readonly setCapabilityMapping: SetCapabilityMappingAny
+  public abstract readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAny
+
+  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMappingAny
 
   protected abstract readonly deviceType: HeatPumpType
 
@@ -97,15 +105,15 @@ export default abstract class BaseMELCloudDriver<
   }
 
   #setProducedAndConsumedTagMappings(): void {
-    Object.entries(this.reportCapabilityMapping).forEach(
+    Object.entries(this.reportCapabilityTagMapping).forEach(
       ([capability, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
         ;(this.producedTagMapping[
-          capability as keyof ReportCapabilityMappingAny
+          capability as keyof ReportCapabilityTagMappingAny
         ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
           (tag: TypedString<keyof ReportData<T>>) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
-          capability as keyof ReportCapabilityMappingAny
+          capability as keyof ReportCapabilityTagMappingAny
         ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
           (tag: TypedString<keyof ReportData<T>>) => tag.endsWith('Consumed'),
         )

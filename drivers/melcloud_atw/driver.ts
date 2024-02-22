@@ -1,33 +1,35 @@
 import {
   type Capabilities,
   type FlowArgs,
-  type GetCapabilityMappingAtw,
-  type ListCapabilityMappingAtw,
+  type GetCapabilityTagMappingAtw,
+  type ListCapabilityTagMappingAtw,
   type OpCapabilities,
-  type ReportCapabilityMappingAtw,
+  type ReportCapabilityTagMappingAtw,
   type SetCapabilities,
-  type SetCapabilityMappingAtw,
+  type SetCapabilityTagMappingAtw,
   type Store,
-  getCapabilityMappingAtw,
-  listCapabilityMappingAtw,
-  reportCapabilityMappingAtw,
-  setCapabilityMappingAtw,
+  getCapabilityTagMappingAtw,
+  listCapabilityTagMappingAtw,
+  reportCapabilityTagMappingAtw,
+  setCapabilityTagMappingAtw,
 } from '../../types/types'
+import { HeatPumpType, effectiveFlagsAtw } from '../../types/MELCloudAPITypes'
 import BaseMELCloudDriver from '../../bases/driver'
-import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
-  public readonly getCapabilityMapping: GetCapabilityMappingAtw =
-    getCapabilityMappingAtw
+  public readonly effectiveFlags: typeof effectiveFlagsAtw = effectiveFlagsAtw
 
-  public readonly listCapabilityMapping: ListCapabilityMappingAtw =
-    listCapabilityMappingAtw
+  public readonly getCapabilityTagMapping: GetCapabilityTagMappingAtw =
+    getCapabilityTagMappingAtw
 
-  public readonly reportCapabilityMapping: ReportCapabilityMappingAtw =
-    reportCapabilityMappingAtw
+  public readonly listCapabilityTagMapping: ListCapabilityTagMappingAtw =
+    listCapabilityTagMappingAtw
 
-  public readonly setCapabilityMapping: SetCapabilityMappingAtw =
-    setCapabilityMappingAtw
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAtw =
+    reportCapabilityTagMappingAtw
+
+  public readonly setCapabilityTagMapping: SetCapabilityTagMappingAtw =
+    setCapabilityTagMappingAtw
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
 

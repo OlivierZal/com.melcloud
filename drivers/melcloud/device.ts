@@ -5,7 +5,7 @@ import {
   Vertical,
 } from '../../types/MELCloudAPITypes'
 import {
-  type DeviceDataFromList,
+  type ListDevice,
   type NonEffectiveFlagsValueOf,
   type OpCapabilities,
   type ReportPlanParameters,
@@ -38,7 +38,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData<AtaDriver['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList<AtaDriver>>,
+      | NonEffectiveFlagsValueOf<ListDevice<AtaDriver>['Device']>,
   ): OpCapabilities<AtaDriver>[K] {
     switch (capability) {
       case 'operation_mode':

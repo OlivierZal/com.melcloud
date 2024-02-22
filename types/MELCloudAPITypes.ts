@@ -1,6 +1,8 @@
 export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0x0
 
+export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
+
 export interface APISettings {
   readonly contextKey?: string | null
   readonly expiry?: string | null
@@ -12,30 +14,6 @@ export enum HeatPumpType {
   Ata = 0,
   Atw = 1,
   Erv = 3,
-}
-
-export enum EffectiveFlagsAta {
-  Power = 0x1,
-  OperationMode = 0x2,
-  SetTemperature = 0x4,
-  SetFanSpeed = 0x8,
-  VaneVertical = 0x10,
-  VaneHorizontal = 0x100,
-}
-export enum EffectiveFlagsAtw {
-  Power = 0x1,
-  OperationModeZone1 = 0x8,
-  OperationModeZone2 = 0x10,
-  ForcedHotWaterMode = 0x10000,
-  SetTemperatureZone1 = 0x200000080,
-  SetTemperatureZone2 = 0x800000200,
-  SetFlowTemperatureZone = 0x1000000000000,
-  SetTankWaterTemperature = 0x1000000000020,
-}
-export enum EffectiveFlagsErv {
-  Power = 0x1,
-  VentilationMode = 0x4,
-  SetFanSpeed = 0x8,
 }
 
 export enum OperationMode {
@@ -106,6 +84,17 @@ export interface SetDeviceDataAta extends BaseDeviceData {
   readonly VaneHorizontal?: Horizontal
   readonly VaneVertical?: Vertical
 }
+export const effectiveFlagsAta: Record<
+  NonEffectiveFlagsKeyOf<SetDeviceDataAta>,
+  number
+> = {
+  OperationMode: 0x2,
+  Power: 0x1,
+  SetFanSpeed: 0x8,
+  SetTemperature: 0x4,
+  VaneHorizontal: 0x100,
+  VaneVertical: 0x10,
+} as const
 export type PostDataAta = BasePostData & SetDeviceDataAta
 export interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
@@ -139,6 +128,22 @@ export interface SetDeviceDataAtw extends BaseDeviceData {
   readonly SetTemperatureZone1?: number
   readonly SetTemperatureZone2?: number
 }
+export const effectiveFlagsAtw: Record<
+  NonEffectiveFlagsKeyOf<SetDeviceDataAtw>,
+  number
+> = {
+  ForcedHotWaterMode: 0x10000,
+  OperationModeZone1: 0x8,
+  OperationModeZone2: 0x10,
+  Power: 0x1,
+  SetCoolFlowTemperatureZone1: 0x1000000000000,
+  SetCoolFlowTemperatureZone2: 0x1000000000000,
+  SetHeatFlowTemperatureZone1: 0x1000000000000,
+  SetHeatFlowTemperatureZone2: 0x1000000000000,
+  SetTankWaterTemperature: 0x1000000000020,
+  SetTemperatureZone1: 0x200000080,
+  SetTemperatureZone2: 0x800000200,
+} as const
 export type PostDataAtw = BasePostData & SetDeviceDataAtw
 export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
@@ -184,6 +189,14 @@ export interface SetDeviceDataErv extends BaseDeviceData {
   readonly SetFanSpeed?: number
   readonly VentilationMode?: VentilationMode
 }
+export const effectiveFlagsErv: Record<
+  NonEffectiveFlagsKeyOf<SetDeviceDataErv>,
+  number
+> = {
+  Power: 0x1,
+  SetFanSpeed: 0x8,
+  VentilationMode: 0x4,
+} as const
 export type PostDataErv = BasePostData & SetDeviceDataErv
 export interface DeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number

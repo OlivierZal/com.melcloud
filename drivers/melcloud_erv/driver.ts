@@ -1,31 +1,33 @@
 import {
   type FlowArgs,
-  type GetCapabilityMappingErv,
-  type ListCapabilityMappingErv,
-  type ReportCapabilityMappingErv,
+  type GetCapabilityTagMappingErv,
+  type ListCapabilityTagMappingErv,
+  type ReportCapabilityTagMappingErv,
   type SetCapabilities,
-  type SetCapabilityMappingErv,
+  type SetCapabilityTagMappingErv,
   type Store,
-  getCapabilityMappingErv,
-  listCapabilityMappingErv,
-  reportCapabilityMappingErv,
-  setCapabilityMappingErv,
+  getCapabilityTagMappingErv,
+  listCapabilityTagMappingErv,
+  reportCapabilityTagMappingErv,
+  setCapabilityTagMappingErv,
 } from '../../types/types'
+import { HeatPumpType, effectiveFlagsErv } from '../../types/MELCloudAPITypes'
 import BaseMELCloudDriver from '../../bases/driver'
-import { HeatPumpType } from '../../types/MELCloudAPITypes'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
-  public readonly getCapabilityMapping: GetCapabilityMappingErv =
-    getCapabilityMappingErv
+  public readonly effectiveFlags: typeof effectiveFlagsErv = effectiveFlagsErv
 
-  public readonly listCapabilityMapping: ListCapabilityMappingErv =
-    listCapabilityMappingErv
+  public readonly getCapabilityTagMapping: GetCapabilityTagMappingErv =
+    getCapabilityTagMappingErv
 
-  public readonly reportCapabilityMapping: ReportCapabilityMappingErv =
-    reportCapabilityMappingErv
+  public readonly listCapabilityTagMapping: ListCapabilityTagMappingErv =
+    listCapabilityTagMappingErv
 
-  public readonly setCapabilityMapping: SetCapabilityMappingErv =
-    setCapabilityMappingErv
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingErv =
+    reportCapabilityTagMappingErv
+
+  public readonly setCapabilityTagMapping: SetCapabilityTagMappingErv =
+    setCapabilityTagMappingErv
 
   protected readonly deviceType: HeatPumpType = HeatPumpType.Erv
 
