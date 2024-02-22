@@ -98,6 +98,7 @@ export interface DeviceDataFromListAta
   readonly ActualFanSpeed: number
   readonly DeviceType: HeatPumpType.Ata
   readonly FanSpeed: number
+  readonly NumberOfFanSpeeds: number
   readonly VaneHorizontalDirection: Horizontal
   readonly VaneVerticalDirection: Vertical
 }

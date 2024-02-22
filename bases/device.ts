@@ -33,8 +33,8 @@ import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
-export const DEFAULT_0 = 0
-const DEFAULT_1 = 1
+export const NUMBER_0 = 0
+const NUMBER_1 = 1
 export const K_MULTIPLIER = 1000
 const YEAR_1970 = 1970
 
@@ -60,7 +60,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   #getCapabilityMapping: Partial<NonNullable<GetCapabilityMapping<T>>> = {}
 
-  #linkedDeviceCount = DEFAULT_1
+  #linkedDeviceCount = NUMBER_1
 
   #listCapabilityMapping: Partial<NonNullable<ListCapabilityMapping<T>>> = {}
 
@@ -348,15 +348,15 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       producedTags.reduce<number>(
         (acc, tag: keyof ReportData<T['heatPumpType']>) =>
           acc + (data[tag] as number),
-        DEFAULT_0,
+        NUMBER_0,
       ) /
       (consumedTags.length
         ? consumedTags.reduce<number>(
             (acc, tag: keyof ReportData<T['heatPumpType']>) =>
               acc + (data[tag] as number),
-            DEFAULT_0,
+            NUMBER_0,
           )
-        : DEFAULT_1)
+        : NUMBER_1)
     )
   }
 
@@ -368,7 +368,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T['heatPumpType']>) =>
           acc + (data[tag] as number),
-        DEFAULT_0,
+        NUMBER_0,
       ) / this.#linkedDeviceCount
     )
   }
@@ -382,7 +382,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       tags.reduce<number>(
         (acc, tag: keyof ReportData<T['heatPumpType']>) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
-        DEFAULT_0,
+        NUMBER_0,
       ) / this.#linkedDeviceCount
     )
   }

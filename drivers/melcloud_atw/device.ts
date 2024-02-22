@@ -1,4 +1,4 @@
-import BaseMELCloudDevice, { DEFAULT_0, K_MULTIPLIER } from '../../bases/device'
+import BaseMELCloudDevice, { K_MULTIPLIER, NUMBER_0 } from '../../bases/device'
 import {
   type DeviceData,
   OperationModeState,
@@ -66,7 +66,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
         return OperationModeZone[
           value as OperationModeZone
         ] as OpCapabilities<AtwDriver>[K]
-      case capability.startsWith('target_temperature') && value === DEFAULT_0:
+      case capability.startsWith('target_temperature') && value === NUMBER_0:
         return (
           this.getCapabilityOptions(capability) as TargetTemperatureOptions
         ).min as OpCapabilities<AtwDriver>[K]
