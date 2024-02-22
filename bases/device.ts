@@ -33,9 +33,9 @@ import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
+export const K_MULTIPLIER = 1000
 export const NUMBER_0 = 0
 const NUMBER_1 = 1
-export const K_MULTIPLIER = 1000
 const YEAR_1970 = 1970
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
