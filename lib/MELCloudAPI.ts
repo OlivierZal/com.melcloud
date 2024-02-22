@@ -222,16 +222,6 @@ export default class MELCloudAPI {
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
     const newConfig: InternalAxiosRequestConfig = { ...config }
-    if (newConfig.url !== LOGIN_URL) {
-      const expiry: string = this.#settingManager.get('expiry') ?? ''
-      if (expiry && DateTime.fromISO(expiry) < DateTime.now()) {
-        await this.applyLogin()
-      }
-      newConfig.headers.set(
-        'X-MitsContextKey',
-        this.#settingManager.get('contextKey'),
-      )
-    }
     if (newConfig.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
       return Promise.reject(
         new Error(
@@ -240,6 +230,16 @@ export default class MELCloudAPI {
             .shiftTo('minutes')
             .toHuman()}`,
         ),
+      )
+    }
+    if (newConfig.url !== LOGIN_URL) {
+      const expiry: string = this.#settingManager.get('expiry') ?? ''
+      if (expiry && DateTime.fromISO(expiry) < DateTime.now()) {
+        await this.applyLogin()
+      }
+      newConfig.headers.set(
+        'X-MitsContextKey',
+        this.#settingManager.get('contextKey'),
       )
     }
     this.#logger(String(new APICallRequestData(newConfig)))
