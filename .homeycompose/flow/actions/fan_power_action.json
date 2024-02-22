@@ -32,12 +32,12 @@
     }
   ],
   "hint": {
-    "en": "Set the fan speed to 0 for automatic mode",
-    "fr": "Définir la vitesse du ventilateur sur 0 pour le mode automatique",
-    "nl": "Stel de ventilatiesnelheid in op 0 voor de automatische modus",
-    "sv": "Ställ in fläkthastigheten till 0 för automatiskt läge",
-    "no": "Innstill viftehastigheten til 0 for automatisk modus",
-    "da": "Indstil blæserhastigheden til 0 for automatisk tilstand",
-    "es": "Configurar la velocidad del ventilador a 0 para el modo automático"
+    "en": "Set the fan speed to 0 for automatic mode (air-to-air heat pump)",
+    "fr": "Définir la vitesse du ventilateur sur 0 pour le mode automatique (pompe à chaleur air-air)",
+    "nl": "Stel de ventilatiesnelheid in op 0 voor de automatische modus (lucht-lucht warmtepomp)",
+    "sv": "Ställ in fläkthastigheten till 0 för automatiskt läge (luft-luft värmepump)",
+    "no": "Innstill viftehastigheten til 0 for automatisk modus (luft-luft varmepumpe)",
+    "da": "Indstil blæserhastigheden til 0 for automatisk tilstand (luft-luft varmepumpe",
+    "es": "Configurar la velocidad del ventilador a 0 para el modo automático (bombas de calor aire-aire)"
   }
 }
