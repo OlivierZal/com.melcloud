@@ -419,7 +419,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     effectiveFlags: bigint,
   ): [TypedString<keyof OpCapabilities<T>>, OpCapabilityData<T>][] {
     switch (true) {
-      case Boolean(effectiveFlags):
+      case effectiveFlags !== BigInt(FLAG_UNCHANGED):
         return [
           ...Object.entries(this.#setCapabilityMapping).filter(
             ([, { effectiveFlag }]: [string, SetCapabilityData<T>]) =>
