@@ -111,6 +111,7 @@ export interface DeviceDataFromListAta
   readonly ActualFanSpeed: number
   readonly DeviceType: HeatPumpType.Ata
   readonly FanSpeed: number
+  readonly HasAutomaticFanSpeed: boolean
   readonly NumberOfFanSpeeds: number
   readonly VaneHorizontalDirection: Horizontal
   readonly VaneVerticalDirection: Vertical
@@ -210,6 +211,7 @@ export interface DeviceDataFromListErv
   extends BaseDeviceDataFromList,
     DeviceDataFromGetErv {
   readonly DeviceType: HeatPumpType.Erv
+  readonly HasAutomaticFanSpeed: boolean
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
   readonly NumberOfFanSpeeds: number

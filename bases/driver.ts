@@ -21,6 +21,22 @@ import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
 
+const getCapabilityOptions = (
+  capabilities: string[],
+  device: ListDeviceAny['Device'],
+): DeviceDetails['capabilitiesOptions'] =>
+  capabilities.includes('fan_power') &&
+  'NumberOfFanSpeeds' in device &&
+  'HasAutomaticFanSpeed' in device
+    ? {
+        fan_power: {
+          max: device.NumberOfFanSpeeds,
+          min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
+          step: NUMBER_1,
+        },
+      }
+    : {}
+
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof HeatPumpType,
 > extends Driver {
@@ -94,28 +110,13 @@ export default abstract class BaseMELCloudDriver<
         const capabilities: string[] = this.getRequiredCapabilities(store)
         return {
           capabilities,
-          capabilitiesOptions: this.#getCapabilityOptions(capabilities, device),
+          capabilitiesOptions: getCapabilityOptions(capabilities, device),
           data: { buildingid, id },
           name,
           store,
         }
       },
     )
-  }
-
-  #getCapabilityOptions(
-    capabilities: string[],
-    device: ListDeviceAny['Device'],
-  ): DeviceDetails['capabilitiesOptions'] {
-    return capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
-      ? {
-          fan_power: {
-            max: device.NumberOfFanSpeeds,
-            min: this.deviceType === HeatPumpType.Erv ? NUMBER_1 : NUMBER_0,
-            step: NUMBER_1,
-          },
-        }
-      : {}
   }
 
   async #login(data: LoginCredentials): Promise<boolean> {
