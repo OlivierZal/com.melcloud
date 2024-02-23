@@ -36,7 +36,9 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertFromDevice<K extends keyof OpCapabilitiesAta>(
     capability: K,
-    value: NonEffectiveFlagsValueOf<DeviceDataAta & DeviceDataFromListAta>,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceDataAta>
+      | NonEffectiveFlagsValueOf<DeviceDataFromListAta>,
   ): OpCapabilitiesAta[K] {
     switch (capability) {
       case 'operation_mode':

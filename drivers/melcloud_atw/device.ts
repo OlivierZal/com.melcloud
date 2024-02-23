@@ -33,7 +33,9 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
 
   protected convertFromDevice<K extends keyof OpCapabilitiesAtw>(
     capability: TypedString<K>,
-    value: NonEffectiveFlagsValueOf<DeviceDataAtw & DeviceDataFromListAtw>,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceDataAtw>
+      | NonEffectiveFlagsValueOf<DeviceDataFromListAtw>,
   ): OpCapabilitiesAtw[K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

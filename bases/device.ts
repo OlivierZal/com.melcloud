@@ -615,10 +615,11 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           if (tag in data) {
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
-              data[tag as keyof D] as NonEffectiveFlagsValueOf<
-                DeviceData<T['heatPumpType']> &
-                  DeviceDataFromList<T['heatPumpType']>
-              >,
+              data[tag as keyof D] as
+                | NonEffectiveFlagsValueOf<
+                    DeviceDataFromList<T['heatPumpType']>
+                  >
+                | NonEffectiveFlagsValueOf<DeviceData<T['heatPumpType']>>,
             )
             await this.setCapabilityValue(
               capability as TypedString<K>,
