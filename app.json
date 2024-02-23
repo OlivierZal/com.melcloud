@@ -2158,13 +2158,13 @@
           }
         ],
         "hint": {
-          "en": "Automatic mode for air-to-air heat pumps: set to 0",
-          "fr": "Mode automatique pour les pompes à chaleur air-air : définir à 0",
-          "nl": "Automatische modus voor de lucht-lucht warmtepompen: stel in op 0",
-          "sv": "Automatiskt läge för luft-luft värmepumpar: ställ till 0",
-          "no": "Automatisk modus for luft-luft varmepumper: innstill til 0",
-          "da": "Automatisk tilstand for luft-luft varmepumper: indstil til 0",
-          "es": "Modo automático para las bombas de calor aire-aire: configurar a 0"
+          "en": "Some values may not be available on your device.\n\nValue 0 is the automatic mode for air-to-air heat pumps.",
+          "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.\n\nLa valeur 0 correspond au mode automatique pour les pompes à chaleur air-air.",
+          "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.\n\nWaarde 0 is de automatische modus voor lucht-lucht warmtepompen.",
+          "sv": "Vissa värden kanske inte är tillgängliga på din enhet.\n\nVärde 0 är det automatiska läget för luft-luft värmepumpar.",
+          "no": "Noen verdier kan ikke være tilgjengelige på enheten din.\n\nVerdi 0 er den automatiske modusen for luft-luft varmepumper.",
+          "da": "Nogle værdier er måske ikke tilgængelige på din enhed.\n\nVærdi 0 er den automatiske tilstand for luft-luft varmepumper.",
+          "es": "Algunos valores pueden no estar disponibles en su dispositivo.\n\nEl valor 0 es el modo automático para las bombas de calor aire-aire."
         },
         "id": "fan_power_action"
       },
@@ -3580,13 +3580,13 @@
               },
               "value": false,
               "hint": {
-                "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
-                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
-                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
-                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
-                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey, den kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
-                "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
-                "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
+                "en": "This setting prevents the device from being switched off from Homey.\n\nIt can still be switched off manually (from a remote control or from the physical device).",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey.\n\nIl peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique).",
+                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld.\n\nHet kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat).",
+                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey.\n\nDen kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten).",
+                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey.\n\nDen kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten).",
+                "da": "Denne indstilling forhindrer at enheden slukkes fra Homey.\n\nDen kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed).",
+                "es": "Esta configuración evita que el dispositivo se apague desde Homey.\n\nTodavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)."
               }
             },
             {
@@ -5016,13 +5016,13 @@
               },
               "value": false,
               "hint": {
-                "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
-                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
-                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
-                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
-                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey, den kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
-                "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
-                "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
+                "en": "This setting prevents the device from being switched off from Homey.\n\nIt can still be switched off manually (from a remote control or from the physical device).",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey.\n\nIl peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique).",
+                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld.\n\nHet kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat).",
+                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey.\n\nDen kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten).",
+                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey.\n\nDen kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten).",
+                "da": "Denne indstilling forhindrer at enheden slukkes fra Homey.\n\nDen kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed).",
+                "es": "Esta configuración evita que el dispositivo se apague desde Homey.\n\nTodavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)."
               }
             },
             {
@@ -5943,13 +5943,13 @@
               },
               "value": false,
               "hint": {
-                "en": "This setting prevents the device from being switched off from Homey, it can still be switched off manually (from a remote control or from the physical device)",
-                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey, il peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique)",
-                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld, het kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat)",
-                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey, den kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)",
-                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey, den kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten)",
-                "da": "Denne indstilling forhindrer, at enheden slukkes fra Homey, den kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed)",
-                "es": "Esta configuración evita que el dispositivo se apague desde Homey, todavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)"
+                "en": "This setting prevents the device from being switched off from Homey.\n\nIt can still be switched off manually (from a remote control or from the physical device).",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey.\n\nIl peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique).",
+                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld.\n\nHet kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat).",
+                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey.\n\nDen kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten).",
+                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey.\n\nDen kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten).",
+                "da": "Denne indstilling forhindrer at enheden slukkes fra Homey.\n\nDen kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed).",
+                "es": "Esta configuración evita que el dispositivo se apague desde Homey.\n\nTodavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico)."
               }
             },
             {
