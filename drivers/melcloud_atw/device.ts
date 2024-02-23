@@ -1,4 +1,3 @@
-import BaseMELCloudDevice, { K_MULTIPLIER, NUMBER_0 } from '../../bases/device'
 import {
   type DeviceDataAtw,
   type DeviceDataFromListAtw,
@@ -14,11 +13,12 @@ import type {
   SetCapabilitiesAtw,
   SetCapabilitiesWithThermostatModeAtw,
   Store,
-  TargetTemperatureOptions,
   TypedString,
 } from '../../types/types'
 import type AtwDriver from './driver'
+import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
+import { K_MULTIPLIER } from '../../constants'
 
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
@@ -65,10 +65,12 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
         return OperationModeZone[
           value as OperationModeZone
         ] as OpCapabilitiesAtw[K]
-      case capability.startsWith('target_temperature') && value === NUMBER_0:
-        return (
-          this.getCapabilityOptions(capability) as TargetTemperatureOptions
-        ).min as OpCapabilitiesAtw[K]
+      case capability === 'target_temperature.flow_cool':
+      case capability === 'target_temperature.flow_cool_zone2':
+      case capability === 'target_temperature.flow_heat':
+      case capability === 'target_temperature.flow_heat_zone2':
+        return ((value as number) ||
+          this.getCapabilityOptions(capability).min) as OpCapabilitiesAtw[K]
       default:
         return value as OpCapabilitiesAtw[K]
     }

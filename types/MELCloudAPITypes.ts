@@ -212,6 +212,7 @@ export interface DeviceDataFromListErv
   readonly DeviceType: HeatPumpType.Erv
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
+  readonly NumberOfFanSpeeds: number
   readonly PM25Level: number
 }
 

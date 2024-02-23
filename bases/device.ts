@@ -1,6 +1,7 @@
 import type {
   BooleanString,
   Capabilities,
+  CapabilityOptionsEntries,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -27,15 +28,13 @@ import {
   type NonEffectiveFlagsKeyOf,
   type ReportData,
 } from '../types/MELCloudAPITypes'
+import { K_MULTIPLIER, NUMBER_0, NUMBER_1 } from '../constants'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
-export const K_MULTIPLIER = 1000
-export const NUMBER_0 = 0
-const NUMBER_1 = 1
 const YEAR_1970 = 1970
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
@@ -121,6 +120,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       await super.addCapability(capability)
       this.log('Adding capability', capability)
     }
+  }
+
+  public getCapabilityOptions<K extends keyof CapabilityOptionsEntries>(
+    capability: K,
+  ): CapabilityOptionsEntries[K] {
+    return super.getCapabilityOptions(capability) as CapabilityOptionsEntries[K]
   }
 
   public getCapabilityValue<K extends keyof Capabilities<T>>(
@@ -237,6 +242,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       await super.removeCapability(capability)
       this.log('Removing capability', capability)
     }
+  }
+
+  public async setCapabilityOptions<K extends keyof CapabilityOptionsEntries>(
+    capability: K,
+    options: CapabilityOptionsEntries[K],
+  ): Promise<void> {
+    await super.setCapabilityOptions(capability, options)
   }
 
   public async setCapabilityValue<K extends keyof Capabilities<T>>(
@@ -439,7 +451,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
         ] as [TypedString<keyof OpCapabilities<T>>, OpDeviceData<T>][]
-      case Boolean(this.diff.size):
+      case this.diff.size > NUMBER_0:
       case this.#syncToDeviceTimeout !== null:
         return this.#listOnlyCapabilityTagEntries
       default:

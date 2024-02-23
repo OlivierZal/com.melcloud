@@ -21,13 +21,12 @@ import type {
   ValueOf,
 } from '../types/types'
 import type Homey from 'homey/lib/Homey'
+import { NUMBER_1 } from '../constants'
 
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 const FP_MIN_MAX_GAP = 2
-const SIZE_1 = 1
 
-const NUMBER_1 = 1
 const NUMBER_2 = 2
 const NUMBER_3 = 3
 const NUMBER_4 = 4
@@ -458,7 +457,7 @@ const shouldUpdate = (
   if (typeof deviceSetting === 'undefined') {
     return false
   }
-  if (new Set(deviceSetting).size !== SIZE_1) {
+  if (new Set(deviceSetting).size !== NUMBER_1) {
     return true
   }
   const [deviceSettingValue]: ValueOf<Settings>[] = deviceSetting
@@ -824,7 +823,7 @@ const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const values: ValueOf<Settings>[] | undefined = flatDeviceSettings[
     settingId
   ] as ValueOf<Settings>[] | undefined
-  if (values && new Set(values).size === SIZE_1) {
+  if (values && new Set(values).size === NUMBER_1) {
     const [value]: ValueOf<Settings>[] = values
     element.value = String(value)
   } else {
@@ -844,7 +843,7 @@ const updateCheckboxChildrenElement = (
 ): void => {
   const [settingId]: string[] = element.id.split('--')
   const values: boolean[] = deviceSettings[driverId][settingId] as boolean[]
-  if (new Set(values).size === SIZE_1) {
+  if (new Set(values).size === NUMBER_1) {
     ;[element.checked] = values
   } else {
     element.indeterminate = true

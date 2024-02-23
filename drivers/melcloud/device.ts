@@ -16,8 +16,8 @@ import {
 } from '../../types/types'
 import type AtaDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
+import { NUMBER_0 } from '../../constants'
 
-const NUMBER_5 = 5
 const NUMBER_255 = 255
 
 const isThermostatMode = (
@@ -48,7 +48,7 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
       case 'horizontal':
         return Horizontal[value as Horizontal] as OpCapabilitiesAta[K]
       case 'fan_power':
-        return (value === NUMBER_255 ? NUMBER_5 : value) as OpCapabilitiesAta[K]
+        return (value === NUMBER_255 ? NUMBER_0 : value) as OpCapabilitiesAta[K]
       default:
         return value as OpCapabilitiesAta[K]
     }

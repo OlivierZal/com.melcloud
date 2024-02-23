@@ -133,9 +133,17 @@ export interface LoginDriverSetting extends DriverSetting {
 export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
-export type TargetTemperatureOptions = object & {
+export type RangeOptions = object & {
   readonly max: number
   readonly min: number
+  readonly step: number
+}
+
+export interface CapabilityOptionsEntries {
+  readonly 'target_temperature.flow_cool': RangeOptions
+  readonly 'target_temperature.flow_cool_zone2': RangeOptions
+  readonly 'target_temperature.flow_heat': RangeOptions
+  readonly 'target_temperature.flow_heat_zone2': RangeOptions
 }
 
 export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
@@ -625,6 +633,11 @@ export interface DeviceLookup {
 
 export interface DeviceDetails {
   readonly capabilities: readonly string[]
+  readonly capabilitiesOptions:
+    | Record<string, never>
+    | {
+        readonly fan_power: RangeOptions
+      }
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store

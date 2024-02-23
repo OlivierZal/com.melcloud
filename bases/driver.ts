@@ -9,12 +9,14 @@ import type {
 } from '../types/types'
 import {
   HeatPumpType,
+  type ListDeviceAny,
   type LoginCredentials,
   type ReportData,
   type effectiveFlagsAta,
   type effectiveFlagsAtw,
   type effectiveFlagsErv,
 } from '../types/MELCloudAPITypes'
+import { NUMBER_0, NUMBER_1 } from '../constants'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
@@ -89,14 +91,31 @@ export default abstract class BaseMELCloudDriver<
             'HasPM25Sensor' in device ? device.HasPM25Sensor : false,
           hasZone2: 'HasZone2' in device ? device.HasZone2 : false,
         }
+        const capabilities: string[] = this.getRequiredCapabilities(store)
         return {
-          capabilities: this.getRequiredCapabilities(store),
+          capabilities,
+          capabilitiesOptions: this.#getCapabilityOptions(capabilities, device),
           data: { buildingid, id },
           name,
           store,
         }
       },
     )
+  }
+
+  #getCapabilityOptions(
+    capabilities: string[],
+    device: ListDeviceAny['Device'],
+  ): DeviceDetails['capabilitiesOptions'] {
+    return capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
+      ? {
+          fan_power: {
+            max: device.NumberOfFanSpeeds,
+            min: this.deviceType === HeatPumpType.Erv ? NUMBER_1 : NUMBER_0,
+            step: NUMBER_1,
+          },
+        }
+      : {}
   }
 
   async #login(data: LoginCredentials): Promise<boolean> {
