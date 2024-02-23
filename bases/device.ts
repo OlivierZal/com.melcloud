@@ -72,8 +72,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     OpDeviceData<T>,
   ][] = []
 
-  #optionalCapabilities!: string[]
-
   #reportCapabilityTagEntries: {
     false: [
       TypedString<keyof ReportCapabilities<T>>,
@@ -173,7 +171,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       number
     >
     await this.setWarning(null)
-    this.#setOptionalCapabilities()
     await this.#handleCapabilities()
     this.#setReportCapabilityTagEntries()
     this.#registerCapabilityListeners()
@@ -273,7 +270,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       (this.#app.devicesPerId[this.#id] as ListDevice<T> | undefined)?.Device ??
       null
     this.log('Syncing from device list:', data)
-    await this.updateStore(data)
     await this.#updateCapabilities(data)
   }
 
@@ -289,31 +285,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected async setAlwaysOnWarning(): Promise<void> {
     if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
-    }
-  }
-
-  protected async updateStore(
-    data: ListDevice<T>['Device'] | null,
-  ): Promise<void> {
-    if (!data) {
-      return
-    }
-    const updates = await Promise.all(
-      Object.entries(this.getStore() as Store)
-        .filter(
-          ([key, value]: [string, boolean]) =>
-            key in data && value !== data[key as keyof ListDevice<T>['Device']],
-        )
-        .map(async ([key]: [string, boolean]): Promise<boolean> => {
-          await this.setStoreValue(
-            key,
-            data[key as keyof ListDevice<T>['Device']],
-          )
-          return true
-        }),
-    )
-    if (updates.some(Boolean)) {
-      await this.#handleCapabilities()
     }
   }
 
@@ -464,9 +435,15 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   async #handleCapabilities(): Promise<void> {
+    const settings: Settings = this.getSettings() as Settings
     const capabilities: string[] = [
       ...this.driver.getRequiredCapabilities(this.getStore() as Store),
-      ...this.#optionalCapabilities,
+      ...Object.keys(settings).filter(
+        (setting: string) =>
+          this.#isCapability(setting) &&
+          typeof settings[setting] === 'boolean' &&
+          settings[setting],
+      ),
     ]
     await capabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
@@ -488,7 +465,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
-    this.#setOptionalCapabilities(newSettings)
     await changedCapabilities.reduce<Promise<void>>(
       async (acc, capability: string) => {
         await acc
@@ -672,17 +648,6 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           ...this.#setCapabilityTagMapping,
           ...this.#getCapabilityTagMapping,
         }).includes(capability),
-    )
-  }
-
-  #setOptionalCapabilities(
-    settings: Settings = this.getSettings() as Settings,
-  ): void {
-    this.#optionalCapabilities = Object.keys(settings).filter(
-      (setting: string) =>
-        this.#isCapability(setting) &&
-        typeof settings[setting] === 'boolean' &&
-        settings[setting],
     )
   }
 

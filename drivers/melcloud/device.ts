@@ -91,11 +91,6 @@ export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected async updateStore(): Promise<void> {
-    // Not implemented
-  }
-
   protected async updateThermostatMode(): Promise<void> {
     const isOn: boolean = this.getCapabilityValue('onoff')
     const operationMode: keyof typeof OperationMode =
