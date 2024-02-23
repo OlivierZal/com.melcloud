@@ -25,8 +25,7 @@ const getCapabilityOptions = (
   capabilities: string[],
   device: ListDeviceAny['Device'],
 ): DeviceDetails['capabilitiesOptions'] =>
-  capabilities.includes('fan_power') &&
-  'NumberOfFanSpeeds' in device
+  capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
     ? {
         fan_power: {
           max: device.NumberOfFanSpeeds,
