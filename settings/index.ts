@@ -21,12 +21,12 @@ import type {
   ValueOf,
 } from '../types/types'
 import type Homey from 'homey/lib/Homey'
-import { NUMBER_1 } from '../constants'
 
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 const FP_MIN_MAX_GAP = 2
 
+const NUMBER_1 = 1
 const NUMBER_2 = 2
 const NUMBER_3 = 3
 const NUMBER_4 = 4
