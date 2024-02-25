@@ -65,6 +65,7 @@ export = class MELCloudApp extends withTimers(App) {
 
   public clearSyncFromDevices(): void {
     this.homey.clearInterval(this.#syncFromDevicesInterval)
+    this.#syncFromDevicesInterval = null
     this.log('Device list refresh has been paused')
   }
 
