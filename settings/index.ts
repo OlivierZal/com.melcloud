@@ -568,7 +568,7 @@ const generateErrorLog = (homey: Homey): void => {
   // @ts-expect-error: `homey` is partially typed
   homey.api(
     'GET',
-    `/error_log?${queryString}`,
+    `/error?${queryString}`,
     async (error: Error | null, data: ErrorLog): Promise<void> => {
       seeElement.classList.remove('is-disabled')
       if (error) {
