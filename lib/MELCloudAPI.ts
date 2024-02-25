@@ -25,6 +25,7 @@ import axios, {
   type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
+  HttpStatusCode,
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type { APICallContextDataWithErrorMessage } from '../mixins/withErrorMessage'
@@ -199,7 +200,7 @@ export default class MELCloudAPI {
       createAPICallErrorData(error)
     this.#errorLogger(String(apiCallData))
     switch (error.response?.status) {
-      case axios.HttpStatusCode.Unauthorized:
+      case HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
           this.#handleRetry()
           if ((await this.applyLogin()) && error.config) {
@@ -207,7 +208,7 @@ export default class MELCloudAPI {
           }
         }
         break
-      case axios.HttpStatusCode.TooManyRequests:
+      case HttpStatusCode.TooManyRequests:
         this.#holdAPIListUntil = DateTime.now().plus({ hours: 2 })
         break
       default:
