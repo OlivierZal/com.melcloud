@@ -163,5 +163,8 @@
   },
   "32.1.0": {
     "en": "Added wide horizontal mode (for air-to-air devices)."
+  },
+  "32.3.0": {
+    "en": "Improve fan_power handling (air-to-air and erv devices."
   }
 }
