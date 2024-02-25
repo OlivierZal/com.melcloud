@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   Building,
   BuildingData,
@@ -5,7 +6,6 @@ import type {
   HolidayModeData,
   LoginCredentials,
 } from '../melcloud/types'
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   DeviceSetting,
   DeviceSettings,
