@@ -23,13 +23,13 @@ import type {
   SetDeviceDataAtw,
   SetDeviceDataErv,
   Vertical,
-} from './MELCloudAPITypes'
-import type AtaDevice from '../drivers/melcloud/device'
-import type AtaDriver from '../drivers/melcloud/driver'
-import type AtwDevice from '../drivers/melcloud_atw/device'
-import type AtwDriver from '../drivers/melcloud_atw/driver'
-import type ErvDevice from '../drivers/melcloud_erv/device'
-import type ErvDriver from '../drivers/melcloud_erv/driver'
+} from './melcloud/types'
+import type AtaDevice from './drivers/melcloud/device'
+import type AtaDriver from './drivers/melcloud/driver'
+import type AtwDevice from './drivers/melcloud_atw/device'
+import type AtwDriver from './drivers/melcloud_atw/driver'
+import type ErvDevice from './drivers/melcloud_erv/device'
+import type ErvDriver from './drivers/melcloud_erv/driver'
 
 export enum ThermostatMode {
   auto = 'auto',

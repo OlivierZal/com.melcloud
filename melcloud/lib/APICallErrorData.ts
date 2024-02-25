@@ -1,6 +1,6 @@
 import withErrorMessage, {
   type APICallContextDataWithErrorMessage,
-} from '../mixins/withErrorMessage'
+} from './withErrorMessage'
 import APICallRequestData from './APICallRequestData'
 import APICallResponseData from './APICallResponseData'
 import type { AxiosError } from 'axios'

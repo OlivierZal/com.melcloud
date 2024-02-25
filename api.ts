@@ -6,7 +6,7 @@ import type {
   HolidayModeData,
   LoginCredentials,
   SuccessData,
-} from './types/MELCloudAPITypes'
+} from './melcloud/types'
 import type {
   DeviceSettings,
   DriverSetting,
@@ -23,7 +23,7 @@ import type {
   PairSetting,
   Settings,
   ValueOf,
-} from './types/types'
+} from './types'
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
 import type MELCloudApp from './app'
@@ -70,7 +70,7 @@ const getUnitErrorLog = async (
   toDate: DateTime,
 ): Promise<ErrorLogData[]> => {
   const app: MELCloudApp = homey.app as MELCloudApp
-  const { data } = await app.melcloudAPI.error({
+  const { data } = await app.melcloudAPI.errors({
     DeviceIDs: Object.keys(app.devicesPerId),
     FromDate: fromDate.toISODate() ?? '',
     ToDate: toDate.toISODate() ?? '',

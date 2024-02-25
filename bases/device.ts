@@ -20,14 +20,14 @@ import type {
   Settings,
   Store,
   TypedString,
-} from '../types/types'
+} from '../types'
 import {
   type DeviceData,
   type DeviceDataFromList,
   FLAG_UNCHANGED,
   type NonEffectiveFlagsKeyOf,
   type ReportData,
-} from '../types/MELCloudAPITypes'
+} from '../melcloud/types'
 import { K_MULTIPLIER, NUMBER_0, NUMBER_1 } from '../constants'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'

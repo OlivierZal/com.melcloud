@@ -4,7 +4,7 @@ import {
   OperationModeState,
   OperationModeZone,
   type SetDeviceDataAtw,
-} from '../../types/MELCloudAPITypes'
+} from '../../melcloud/types'
 import type {
   NonEffectiveFlagsValueOf,
   OpCapabilitiesAtw,
@@ -14,7 +14,7 @@ import type {
   SetCapabilitiesWithThermostatModeAtw,
   Store,
   TypedString,
-} from '../../types/types'
+} from '../../types'
 import type AtwDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'

@@ -12,8 +12,8 @@ import {
   listCapabilityTagMappingAtw,
   reportCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
-} from '../../types/types'
-import { HeatPumpType, effectiveFlagsAtw } from '../../types/MELCloudAPITypes'
+} from '../../types'
+import { HeatPumpType, effectiveFlagsAtw } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {

@@ -5,7 +5,7 @@ import {
   OperationMode,
   type SetDeviceDataAta,
   Vertical,
-} from '../../types/MELCloudAPITypes'
+} from '../../melcloud/types'
 import {
   type NonEffectiveFlagsValueOf,
   type OpCapabilitiesAta,
@@ -13,7 +13,7 @@ import {
   type SetCapabilitiesAta,
   type SetCapabilitiesWithThermostatModeAta,
   ThermostatMode,
-} from '../../types/types'
+} from '../../types'
 import type AtaDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 import { NUMBER_0 } from '../../constants'

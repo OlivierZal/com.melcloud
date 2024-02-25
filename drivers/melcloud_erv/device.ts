@@ -2,13 +2,13 @@ import type {
   DeviceDataErv,
   DeviceDataFromListErv,
   SetDeviceDataErv,
-} from '../../types/MELCloudAPITypes'
+} from '../../melcloud/types'
 import {
   type NonEffectiveFlagsValueOf,
   type OpCapabilities,
   type SetCapabilitiesErv,
   VentilationMode,
-} from '../../types/types'
+} from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
 import type ErvDriver from './driver'
 

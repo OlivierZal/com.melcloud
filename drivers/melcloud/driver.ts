@@ -9,8 +9,8 @@ import {
   listCapabilityTagMappingAta,
   reportCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
-} from '../../types/types'
-import { HeatPumpType, effectiveFlagsAta } from '../../types/MELCloudAPITypes'
+} from '../../types'
+import { HeatPumpType, effectiveFlagsAta } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {

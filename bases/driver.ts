@@ -6,7 +6,7 @@ import type {
   SetCapabilityTagMappingAny,
   Store,
   TypedString,
-} from '../types/types'
+} from '../types'
 import {
   HeatPumpType,
   type ListDeviceAny,
@@ -15,7 +15,7 @@ import {
   type effectiveFlagsAta,
   type effectiveFlagsAtw,
   type effectiveFlagsErv,
-} from '../types/MELCloudAPITypes'
+} from '../melcloud/types'
 import { NUMBER_0, NUMBER_1 } from '../constants'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'

@@ -141,7 +141,7 @@
     },
     "getUnitErrorLog": {
       "method": "GET",
-      "path": "/error"
+      "path": "/errors"
     },
     "getLanguage": {
       "method": "GET",

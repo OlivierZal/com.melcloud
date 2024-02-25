@@ -5,10 +5,10 @@ import {
   HeatPumpType,
   type ListDeviceAny,
   type LoginCredentials,
-} from './types/MELCloudAPITypes'
-import type { DeviceLookup, MELCloudDevice } from './types/types'
+} from './melcloud/types'
+import type { DeviceLookup, MELCloudDevice } from './types'
 import { Settings as LuxonSettings } from 'luxon'
-import MELCloudAPI from './lib/MELCloudAPI'
+import MELCloudAPI from './melcloud/api'
 import withTimers from './mixins/withTimers'
 
 const flattenDevices = (

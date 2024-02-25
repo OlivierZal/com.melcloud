@@ -19,7 +19,7 @@ import {
   type ReportData,
   type ReportPostData,
   type SuccessData,
-} from '../types/MELCloudAPITypes'
+} from './types'
 import { DateTime, Duration } from 'luxon'
 import axios, {
   type AxiosError,
@@ -28,10 +28,10 @@ import axios, {
   HttpStatusCode,
   type InternalAxiosRequestConfig,
 } from 'axios'
-import type { APICallContextDataWithErrorMessage } from '../mixins/withErrorMessage'
-import APICallRequestData from './APICallRequestData'
-import APICallResponseData from './APICallResponseData'
-import createAPICallErrorData from './APICallErrorData'
+import type { APICallContextDataWithErrorMessage } from './lib/withErrorMessage'
+import APICallRequestData from './lib/APICallRequestData'
+import APICallResponseData from './lib/APICallResponseData'
+import createAPICallErrorData from './lib/APICallErrorData'
 
 interface SettingManager {
   get: <K extends keyof APISettings>(
@@ -113,7 +113,7 @@ export default class MELCloudAPI {
     return false
   }
 
-  public async error(
+  public async errors(
     postData: ErrorLogPostData,
   ): Promise<{ data: ErrorLogData[] | FailureData }> {
     return this.#api.post<ErrorLogData[] | FailureData>(

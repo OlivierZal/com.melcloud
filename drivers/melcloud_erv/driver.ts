@@ -10,8 +10,8 @@ import {
   listCapabilityTagMappingErv,
   reportCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
-} from '../../types/types'
-import { HeatPumpType, effectiveFlagsErv } from '../../types/MELCloudAPITypes'
+} from '../../types'
+import { HeatPumpType, effectiveFlagsErv } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {

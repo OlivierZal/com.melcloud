@@ -4,7 +4,7 @@ import type {
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
-} from '../types/MELCloudAPITypes'
+} from '../melcloud/types'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   DeviceSetting,
@@ -19,7 +19,7 @@ import type {
   LoginDriverSetting,
   Settings,
   ValueOf,
-} from '../types/types'
+} from '../types'
 import type Homey from 'homey/lib/Homey'
 
 const DIVISOR_10 = 10
@@ -568,7 +568,7 @@ const generateErrorLog = (homey: Homey): void => {
   // @ts-expect-error: `homey` is partially typed
   homey.api(
     'GET',
-    `/error?${queryString}`,
+    `/errors?${queryString}`,
     async (error: Error | null, data: ErrorLog): Promise<void> => {
       seeElement.classList.remove('is-disabled')
       if (error) {
