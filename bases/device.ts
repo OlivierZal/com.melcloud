@@ -2,6 +2,8 @@ import type {
   BooleanString,
   Capabilities,
   CapabilityOptionsEntries,
+  DeviceData,
+  DeviceDataFromList,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -10,8 +12,10 @@ import type {
   NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpDeviceData,
+  PostData,
   ReportCapabilities,
   ReportCapabilityTagMapping,
+  ReportData,
   ReportPlanParameters,
   SetCapabilities,
   SetCapabilitiesWithThermostatMode,
@@ -21,13 +25,7 @@ import type {
   Store,
   TypedString,
 } from '../types'
-import {
-  type DeviceData,
-  type DeviceDataFromList,
-  FLAG_UNCHANGED,
-  type NonEffectiveFlagsKeyOf,
-  type ReportData,
-} from '../melcloud/types'
+import { FLAG_UNCHANGED, type NonEffectiveFlagsKeyOf } from '../melcloud/types'
 import { K_MULTIPLIER, NUMBER_0, NUMBER_1 } from '../constants'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
@@ -73,14 +71,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   ][] = []
 
   #reportCapabilityTagEntries: {
-    false: [
-      TypedString<keyof ReportCapabilities<T>>,
-      (keyof ReportData<T['heatPumpType']>)[],
-    ][]
-    true: [
-      TypedString<keyof ReportCapabilities<T>>,
-      (keyof ReportData<T['heatPumpType']>)[],
-    ][]
+    false: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
+    true: [TypedString<keyof ReportCapabilities<T>>, (keyof ReportData<T>)[]][]
   } = { false: [], true: [] }
 
   #setCapabilityTagMapping: Partial<NonNullable<SetCapabilityTagMapping<T>>> =
@@ -326,27 +318,21 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   #calculateCopValue<K extends keyof ReportCapabilities<T>>(
-    data: ReportData<T['heatPumpType']>,
+    data: ReportData<T>,
     capability: TypedString<K>,
   ): number {
-    const producedTags: (keyof ReportData<T['heatPumpType']>)[] = this.driver
-      .producedTagMapping[capability] as TypedString<
-      keyof ReportData<T['heatPumpType']>
-    >[]
-    const consumedTags: (keyof ReportData<T['heatPumpType']>)[] = this.driver
-      .consumedTagMapping[capability] as TypedString<
-      keyof ReportData<T['heatPumpType']>
-    >[]
+    const producedTags: (keyof ReportData<T>)[] = this.driver
+      .producedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
+    const consumedTags: (keyof ReportData<T>)[] = this.driver
+      .consumedTagMapping[capability] as TypedString<keyof ReportData<T>>[]
     return (
       producedTags.reduce<number>(
-        (acc, tag: keyof ReportData<T['heatPumpType']>) =>
-          acc + (data[tag] as number),
+        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
         NUMBER_0,
       ) /
       (consumedTags.length
         ? consumedTags.reduce<number>(
-            (acc, tag: keyof ReportData<T['heatPumpType']>) =>
-              acc + (data[tag] as number),
+            (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
             NUMBER_0,
           )
         : NUMBER_1)
@@ -354,26 +340,25 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   #calculateEnergyValue(
-    data: ReportData<T['heatPumpType']>,
-    tags: (keyof ReportData<T['heatPumpType']>)[],
+    data: ReportData<T>,
+    tags: (keyof ReportData<T>)[],
   ): number {
     return (
       tags.reduce<number>(
-        (acc, tag: keyof ReportData<T['heatPumpType']>) =>
-          acc + (data[tag] as number),
+        (acc, tag: keyof ReportData<T>) => acc + (data[tag] as number),
         NUMBER_0,
       ) / this.#linkedDeviceCount
     )
   }
 
   #calculatePowerValue(
-    data: ReportData<T['heatPumpType']>,
-    tags: (keyof ReportData<T['heatPumpType']>)[],
+    data: ReportData<T>,
+    tags: (keyof ReportData<T>)[],
     toDate: DateTime,
   ): number {
     return (
       tags.reduce<number>(
-        (acc, tag: keyof ReportData<T['heatPumpType']>) =>
+        (acc, tag: keyof ReportData<T>) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
         NUMBER_0,
       ) / this.#linkedDeviceCount
@@ -542,7 +527,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   async #reportEnergyCost(
     fromDate: DateTime,
     toDate: DateTime,
-  ): Promise<ReportData<T['heatPumpType']> | null> {
+  ): Promise<ReportData<T> | null> {
     try {
       return (
         await this.#app.melcloudAPI.report({
@@ -571,8 +556,10 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       this.reportPlanParameters.minus,
     )
     const fromDate: DateTime = total ? DateTime.local(YEAR_1970) : toDate
-    const data: ReportData<T['heatPumpType']> | null =
-      await this.#reportEnergyCost(fromDate, toDate)
+    const data: ReportData<T> | null = await this.#reportEnergyCost(
+      fromDate,
+      toDate,
+    )
     await this.#updateReportCapabilities(data, toDate, total)
     this.#planEnergyReport(this.reportPlanParameters, total)
   }
@@ -594,7 +581,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   async #setCapabilityValues<
     K extends keyof OpCapabilities<T>,
-    D extends DeviceData<T['heatPumpType']> | ListDevice<T>['Device'],
+    D extends DeviceData<T> | ListDevice<T>['Device'],
   >(capabilityTagEntries: [K, OpDeviceData<T>][], data: D): Promise<void> {
     await Promise.all(
       capabilityTagEntries.map(
@@ -603,10 +590,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
             const value: OpCapabilities<T>[K] = this.convertFromDevice(
               capability as TypedString<K>,
               data[tag as keyof D] as
-                | NonEffectiveFlagsValueOf<
-                    DeviceDataFromList<T['heatPumpType']>
-                  >
-                | NonEffectiveFlagsValueOf<DeviceData<T['heatPumpType']>>,
+                | NonEffectiveFlagsValueOf<DeviceData<T>>
+                | NonEffectiveFlagsValueOf<DeviceDataFromList<T>>,
             )
             await this.setCapabilityValue(
               capability as TypedString<K>,
@@ -618,15 +603,16 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
     )
   }
 
-  async #setDeviceData(): Promise<DeviceData<T['heatPumpType']> | null> {
+  async #setDeviceData(): Promise<DeviceData<T> | null> {
     try {
+      const postData: PostData<T> = {
+        DeviceID: this.id,
+        HasPendingCommand: true,
+        ...this.#buildUpdateData(),
+      }
       return (
-        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
-          DeviceID: this.id,
-          HasPendingCommand: true,
-          ...this.#buildUpdateData(),
-        })
-      ).data as DeviceData<T['heatPumpType']>
+        await this.#app.melcloudAPI.set(this.driver.heatPumpType, postData)
+      ).data as DeviceData<T>
     } catch (error: unknown) {
       return null
     }
@@ -660,18 +646,17 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
             this.driver
               .reportCapabilityTagMapping as ReportCapabilityTagMapping<T>,
           ),
-        ).filter(
-          ([capability]: [string, keyof ReportData<T['heatPumpType']>]) =>
-            filterEnergyKeys(capability, total),
+        ).filter(([capability]: [string, keyof ReportData<T>]) =>
+          filterEnergyKeys(capability, total),
         ) as [
           TypedString<keyof ReportCapabilities<T>>,
-          (keyof ReportData<T['heatPumpType']>)[],
+          (keyof ReportData<T>)[],
         ][]
     })
   }
 
   async #updateCapabilities(
-    data: DeviceData<T['heatPumpType']> | ListDevice<T>['Device'] | null,
+    data: DeviceData<T> | ListDevice<T>['Device'] | null,
   ): Promise<void> {
     if (!data) {
       return
@@ -716,7 +701,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   }
 
   async #updateReportCapabilities(
-    data: ReportData<T['heatPumpType']> | null,
+    data: ReportData<T> | null,
     toDate: DateTime,
     total = false,
   ): Promise<void> {
@@ -731,7 +716,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       this.#reportCapabilityTagEntries[String(total) as BooleanString].map(
         async <K extends keyof ReportCapabilities<T>>([capability, tags]: [
           TypedString<K>,
-          (keyof ReportData<T['heatPumpType']>)[],
+          (keyof ReportData<T>)[],
         ]): Promise<void> => {
           switch (true) {
             case capability.includes('cop'):
@@ -764,8 +749,8 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   protected abstract convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
     value:
-      | NonEffectiveFlagsValueOf<DeviceData<T['heatPumpType']>>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList<T['heatPumpType']>>,
+      | NonEffectiveFlagsValueOf<DeviceData<T>>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList<T>>,
   ): OpCapabilities<T>[K]
 
   protected abstract convertToDevice<K extends keyof SetCapabilities<T>>(

@@ -1,10 +1,11 @@
-import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
-  DeviceData,
+  BasePostData,
   DeviceDataAta,
   DeviceDataAtw,
   DeviceDataErv,
-  DeviceDataFromList,
+  DeviceDataFromListAta,
+  DeviceDataFromListAtw,
+  DeviceDataFromListErv,
   FrostProtectionPostData,
   Horizontal,
   ListDeviceAta,
@@ -22,6 +23,7 @@ import type {
   SetDeviceDataErv,
   Vertical,
 } from './melcloud/types'
+import type { DateObjectUnits, DurationLike } from 'luxon'
 import type AtaDevice from './drivers/melcloud/device'
 import type AtaDriver from './drivers/melcloud/driver'
 import type AtwDevice from './drivers/melcloud_atw/device'
@@ -150,9 +152,25 @@ export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
   : T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
-export type OpDeviceData<T extends MELCloudDriver> = NonEffectiveFlagsKeyOf<
-  DeviceData<T['heatPumpType']> & DeviceDataFromList<T['heatPumpType']>
->
+export type PostData<T extends MELCloudDriver> = BasePostData & SetDeviceData<T>
+export type DeviceData<T extends MELCloudDriver> = T extends AtaDriver
+  ? DeviceDataAta
+  : T extends AtwDriver
+    ? DeviceDataAtw
+    : DeviceDataErv
+export type DeviceDataFromList<T extends MELCloudDriver> = T extends AtaDriver
+  ? DeviceDataFromListAta
+  : T extends AtwDriver
+    ? DeviceDataFromListAtw
+    : DeviceDataFromListErv
+export type OpDeviceData<T extends MELCloudDriver> =
+  | NonEffectiveFlagsKeyOf<DeviceData<T>>
+  | NonEffectiveFlagsKeyOf<DeviceDataFromList<T>>
+export type ReportData<T extends MELCloudDriver> = T extends AtaDriver
+  ? ReportDataAta
+  : T extends AtwDriver
+    ? ReportDataAtw
+    : never
 
 interface SetCapabilitiesCommon {
   onoff?: boolean

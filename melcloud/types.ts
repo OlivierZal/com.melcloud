@@ -69,7 +69,7 @@ interface BaseDeviceData {
   readonly Power?: boolean
   EffectiveFlags: number
 }
-interface BasePostData {
+export interface BasePostData {
   readonly DeviceID: number
   readonly HasPendingCommand: true
 }
@@ -95,7 +95,7 @@ export const effectiveFlagsAta: Record<
   VaneHorizontal: 0x100,
   VaneVertical: 0x10,
 } as const
-export type PostDataAta = Readonly<BasePostData> & SetDeviceDataAta
+export type PostDataAta = BasePostData & Required<Readonly<SetDeviceDataAta>>
 export interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
@@ -145,7 +145,7 @@ export const effectiveFlagsAtw: Record<
   SetTemperatureZone1: 0x200000080,
   SetTemperatureZone2: 0x800000200,
 } as const
-export type PostDataAtw = Readonly<BasePostData> & SetDeviceDataAtw
+export type PostDataAtw = BasePostData & Required<Readonly<SetDeviceDataAtw>>
 export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
@@ -198,7 +198,7 @@ export const effectiveFlagsErv: Record<
   SetFanSpeed: 0x8,
   VentilationMode: 0x4,
 } as const
-export type PostDataErv = Readonly<BasePostData> & SetDeviceDataErv
+export type PostDataErv = BasePostData & Required<Readonly<SetDeviceDataErv>>
 export interface DeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number
   readonly RoomCO2Level: number
@@ -218,12 +218,14 @@ export interface DeviceDataFromListErv
   readonly PM25Level: number
 }
 
-export type PostData<T extends keyof typeof HeatPumpType> =
+export type SetDeviceData<T extends keyof typeof HeatPumpType> =
   T extends HeatPumpType.Ata
-    ? PostDataAta
+    ? SetDeviceDataAta
     : T extends HeatPumpType.Atw
-      ? PostDataAtw
-      : PostDataErv
+      ? SetDeviceDataAtw
+      : SetDeviceDataErv
+export type PostData<T extends keyof typeof HeatPumpType> = BasePostData &
+  SetDeviceData<T>
 export type DeviceData<T extends keyof typeof HeatPumpType> =
   T extends HeatPumpType.Ata
     ? DeviceDataAta
