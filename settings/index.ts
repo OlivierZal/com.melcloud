@@ -233,12 +233,11 @@ const getFlatDeviceSettings = (): void => {
           if (!(settingId in acc)) {
             acc[settingId] = []
           }
-          acc[settingId].push(
-            ...settingValues.filter(
-              (settingValue: ValueOf<Settings>) =>
-                !acc[settingId].includes(settingValue),
-            ),
-          )
+          const values = new Set<ValueOf<Settings>>([
+            ...acc[settingId],
+            ...settingValues,
+          ])
+          acc[settingId] = Array.from(values)
           return acc
         },
         flattenedDeviceSettings,
