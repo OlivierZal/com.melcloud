@@ -121,15 +121,15 @@ export = class MELCloudApp extends withTimers(App) {
         ],
       )
       /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
+      this.#devicesPerType = Object.groupBy<HeatPumpType, ListDeviceAny>(
+        buildingDevices,
+        ({ Device }) => Device.DeviceType,
+      )
       const devicesPerId: Partial<Record<number, readonly ListDeviceAny[]>> =
         Object.groupBy<number, ListDeviceAny>(
           buildingDevices,
           ({ DeviceID }) => DeviceID,
         )
-      this.#devicesPerType = Object.groupBy<HeatPumpType, ListDeviceAny>(
-        buildingDevices,
-        ({ Device }) => Device.DeviceType,
-      )
       /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
       this.#devices = Object.fromEntries(
         Object.entries(devicesPerId).map(
