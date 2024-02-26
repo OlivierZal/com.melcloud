@@ -21,6 +21,7 @@ import type {
   SetDeviceDataAta,
   SetDeviceDataAtw,
   SetDeviceDataErv,
+  VentilationMode,
   Vertical,
 } from './melcloud/types'
 import type AtaDevice from './drivers/melcloud/device'
@@ -306,11 +307,6 @@ interface ReportCapabilitiesAtw {
 export type CapabilitiesAtw = OpCapabilitiesAtw &
   ReportCapabilitiesAtw & { thermostat_mode: ThermostatMode }
 
-export enum VentilationMode {
-  recovery = 0,
-  bypass = 1,
-  auto = 2,
-}
 export interface SetCapabilitiesErv extends SetCapabilitiesCommon {
   fan_power?: number
   ventilation_mode?: keyof typeof VentilationMode
