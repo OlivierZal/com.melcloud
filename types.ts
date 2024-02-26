@@ -304,9 +304,7 @@ interface ReportCapabilitiesAtw {
   'meter_power.produced_hotwater'?: number
 }
 export type CapabilitiesAtw = OpCapabilitiesAtw &
-  ReportCapabilitiesAtw & {
-    thermostat_mode: ThermostatMode
-  }
+  ReportCapabilitiesAtw & { thermostat_mode: ThermostatMode }
 
 export enum VentilationMode {
   recovery = 0,
@@ -371,9 +369,7 @@ export type SetCapabilityTagMappingAta = typeof setCapabilityTagMappingAta
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
   NonEffectiveFlagsKeyOf<DeviceDataAta>
-> = {
-  measure_temperature: 'RoomTemperature',
-} as const
+> = { measure_temperature: 'RoomTemperature' } as const
 export type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
@@ -643,9 +639,7 @@ export interface DeviceDetails {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions:
     | Record<string, never>
-    | {
-        readonly fan_power: RangeOptions
-      }
+    | { readonly fan_power: RangeOptions }
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store
