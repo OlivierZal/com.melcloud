@@ -61,11 +61,9 @@ export default class MELCloudAPI {
 
   readonly #api: AxiosInstance
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly #errorLogger: (...args: any[]) => void
+  readonly #errorLogger: Logger
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly #logger: (...args: any[]) => void
+  readonly #logger: Logger
 
   readonly #settingManager: SettingManager
 
@@ -221,13 +219,11 @@ export default class MELCloudAPI {
   ): Promise<InternalAxiosRequestConfig> {
     const newConfig: InternalAxiosRequestConfig = { ...config }
     if (newConfig.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
-      return Promise.reject(
-        new Error(
-          `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
-            .diffNow()
-            .shiftTo('minutes')
-            .toHuman()}`,
-        ),
+      throw new Error(
+        `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
+          .diffNow()
+          .shiftTo('minutes')
+          .toHuman()}`,
       )
     }
     if (newConfig.url !== LOGIN_URL) {
