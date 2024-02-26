@@ -88,17 +88,25 @@ const getDriverSettings = (
   (driver.settings ?? []).flatMap(
     (setting: ManifestDriverSetting): DriverSetting[] =>
       (setting.children ?? []).map(
-        (child: ManifestDriverSettingData): DriverSetting => ({
+        ({
+          id,
+          max,
+          min,
+          label,
+          type,
+          units,
+          values,
+        }: ManifestDriverSettingData): DriverSetting => ({
           driverId: driver.id,
           groupId: setting.id,
           groupLabel: setting.label[language],
-          id: child.id,
-          max: child.max,
-          min: child.min,
-          title: child.label[language],
-          type: child.type,
-          units: child.units,
-          values: child.values?.map(
+          id,
+          max,
+          min,
+          title: label[language],
+          type,
+          units,
+          values: values?.map(
             (value: {
               id: string
               label: Record<string, string>
