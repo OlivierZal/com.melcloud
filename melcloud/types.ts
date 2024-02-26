@@ -95,7 +95,7 @@ export const effectiveFlagsAta: Record<
   VaneHorizontal: 0x100,
   VaneVertical: 0x10,
 } as const
-export type PostDataAta = BasePostData & SetDeviceDataAta
+export type PostDataAta = Readonly<BasePostData> & SetDeviceDataAta
 export interface DeviceDataAta extends SetDeviceDataAta {
   readonly RoomTemperature: number
 }
@@ -145,7 +145,7 @@ export const effectiveFlagsAtw: Record<
   SetTemperatureZone1: 0x200000080,
   SetTemperatureZone2: 0x800000200,
 } as const
-export type PostDataAtw = BasePostData & SetDeviceDataAtw
+export type PostDataAtw = Readonly<BasePostData> & SetDeviceDataAtw
 export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone1: boolean
   readonly IdleZone2: boolean
@@ -198,7 +198,7 @@ export const effectiveFlagsErv: Record<
   SetFanSpeed: 0x8,
   VentilationMode: 0x4,
 } as const
-export type PostDataErv = BasePostData & SetDeviceDataErv
+export type PostDataErv = Readonly<BasePostData> & SetDeviceDataErv
 export interface DeviceDataErv extends SetDeviceDataErv {
   readonly OutdoorTemperature: number
   readonly RoomCO2Level: number
