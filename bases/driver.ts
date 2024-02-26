@@ -91,7 +91,7 @@ export default abstract class BaseMELCloudDriver<
 
   // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails[]> {
-    return this.#app.devicesPerType[this.deviceType].map(
+    return (this.#app.devicesPerType[this.deviceType] ?? []).map(
       ({
         DeviceName: name,
         DeviceID: id,

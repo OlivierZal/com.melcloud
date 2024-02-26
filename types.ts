@@ -6,9 +6,7 @@ import type {
   DeviceDataErv,
   DeviceDataFromList,
   FrostProtectionPostData,
-  HeatPumpType,
   Horizontal,
-  ListDeviceAny,
   ListDeviceAta,
   ListDeviceAtw,
   ListDeviceErv,
@@ -625,11 +623,6 @@ export type ListDevice<T extends MELCloudDriver> = T extends AtaDriver
   : T extends AtwDriver
     ? ListDeviceAtw
     : ListDeviceErv
-
-export interface DeviceLookup {
-  devicesPerId: Record<number, ListDeviceAny>
-  devicesPerType: Record<HeatPumpType, ListDeviceAny[]>
-}
 
 export interface DeviceDetails {
   readonly capabilities: readonly string[]

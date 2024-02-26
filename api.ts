@@ -71,7 +71,7 @@ const getUnitErrorLog = async (
 ): Promise<ErrorLogData[]> => {
   const app: MELCloudApp = homey.app as MELCloudApp
   const { data } = await app.melcloudAPI.errors({
-    DeviceIDs: Object.keys(app.devicesPerId),
+    DeviceIDs: app.getDeviceIds(),
     FromDate: fromDate.toISODate() ?? '',
     ToDate: toDate.toISODate() ?? '',
   })
@@ -297,7 +297,8 @@ export = {
                 : ''
             const device: string =
               getDevice(app, deviceId)?.getName() ??
-              app.devicesPerId[deviceId].DeviceName
+              app.getDeviceFromList(deviceId)?.DeviceName ??
+              ''
             const error: string = errorMessage?.trim() ?? ''
             return { date, device, error }
           },

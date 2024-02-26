@@ -6,26 +6,10 @@ import {
   type ListDeviceAny,
   type LoginCredentials,
 } from './melcloud/types'
-import type { DeviceLookup, MELCloudDevice } from './types'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './melcloud/api'
+import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
-
-const flattenDevices = (
-  flattenedDevices: DeviceLookup,
-  devices: readonly ListDeviceAny[],
-): DeviceLookup =>
-  devices.reduce<DeviceLookup>(
-    (acc, device) => {
-      acc.devicesPerId[device.DeviceID] = device
-      acc.devicesPerType[device.Device.DeviceType].push(device)
-      return acc
-    },
-    {
-      devicesPerId: { ...flattenedDevices.devicesPerId },
-      devicesPerType: { ...flattenedDevices.devicesPerType },
-    },
-  )
 
 export = class MELCloudApp extends withTimers(App) {
   public readonly melcloudAPI: MELCloudAPI = new MELCloudAPI(
@@ -34,9 +18,9 @@ export = class MELCloudApp extends withTimers(App) {
     this.error.bind(this),
   )
 
-  #devicesPerId: Record<number, ListDeviceAny> = {}
+  #devicesPerId: Partial<Record<number, readonly ListDeviceAny[]>> = {}
 
-  #devicesPerType: Record<string, readonly ListDeviceAny[]> = {
+  #devicesPerType: Partial<Record<HeatPumpType, readonly ListDeviceAny[]>> = {
     [HeatPumpType.Ata]: [],
     [HeatPumpType.Atw]: [],
     [HeatPumpType.Erv]: [],
@@ -44,11 +28,9 @@ export = class MELCloudApp extends withTimers(App) {
 
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
 
-  public get devicesPerId(): Record<number, ListDeviceAny> {
-    return this.#devicesPerId
-  }
-
-  public get devicesPerType(): Record<string, readonly ListDeviceAny[]> {
+  public get devicesPerType(): Partial<
+    Record<HeatPumpType, readonly ListDeviceAny[]>
+  > {
     return this.#devicesPerType
   }
 
@@ -75,6 +57,15 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       throw new Error(error instanceof Error ? error.message : String(error))
     }
+  }
+
+  public getDeviceFromList(id: number): ListDeviceAny | null {
+    const [device]: readonly ListDeviceAny[] = this.#devicesPerId[id] ?? []
+    return (device as ListDeviceAny | undefined) ?? null
+  }
+
+  public getDeviceIds(): string[] {
+    return Object.keys(this.#devicesPerId)
   }
 
   public getDevices({
@@ -118,37 +109,45 @@ export = class MELCloudApp extends withTimers(App) {
 
   async #syncFromDeviceList(): Promise<void> {
     try {
-      const { devicesPerId, devicesPerType } = (
+      const buildingDevices: ListDeviceAny[] = (
         await this.getBuildings()
-      ).reduce<DeviceLookup>(
-        (
-          acc,
-          { Structure: { Devices: devices, Areas: areas, Floors: floors } },
-        ) => {
-          let newAcc = { ...acc }
-          newAcc = flattenDevices(newAcc, devices)
-          areas.forEach(({ Devices: areaDevices }) => {
-            newAcc = flattenDevices(newAcc, areaDevices)
-          })
-          floors.forEach((floor) => {
-            newAcc = flattenDevices(newAcc, floor.Devices)
-            floor.Areas.forEach(({ Devices: floorAreaDevices }) => {
-              newAcc = flattenDevices(newAcc, floorAreaDevices)
-            })
-          })
-          return newAcc
-        },
-        {
-          devicesPerId: {},
-          devicesPerType: {
-            [HeatPumpType.Ata]: [],
-            [HeatPumpType.Atw]: [],
-            [HeatPumpType.Erv]: [],
-          },
-        },
+      ).flatMap(
+        ({
+          Structure: { Devices: devices, Areas: areas, Floors: floors },
+        }): ListDeviceAny[] => [
+          ...devices,
+          ...areas.flatMap(
+            ({ Devices: areaDevices }): readonly ListDeviceAny[] => areaDevices,
+          ),
+          ...floors.flatMap((floor): ListDeviceAny[] => [
+            ...floor.Devices,
+            ...floor.Areas.flatMap(
+              ({ Devices: areaDevices }): readonly ListDeviceAny[] =>
+                areaDevices,
+            ),
+          ]),
+        ],
       )
-      this.#devicesPerId = devicesPerId
-      this.#devicesPerType = devicesPerType
+      /* eslint-disable
+        @typescript-eslint/no-unsafe-assignment,
+        @typescript-eslint/no-unsafe-call,
+        @typescript-eslint/no-unsafe-member-access,
+        @typescript-eslint/no-unsafe-return
+      */
+      this.#devicesPerId = Object.groupBy<number, ListDeviceAny>(
+        buildingDevices,
+        ({ DeviceID }) => DeviceID,
+      )
+      this.#devicesPerType = Object.groupBy<HeatPumpType, ListDeviceAny>(
+        buildingDevices,
+        ({ Device }) => Device.DeviceType,
+      )
+      /* eslint-enable
+        @typescript-eslint/no-unsafe-assignment,
+        @typescript-eslint/no-unsafe-call,
+        @typescript-eslint/no-unsafe-member-access,
+        @typescript-eslint/no-unsafe-return
+      */
       await this.#syncFromDevices()
     } catch (error: unknown) {
       // Pass

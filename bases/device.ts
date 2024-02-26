@@ -267,8 +267,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   public async syncFromDevice(): Promise<void> {
     const data: ListDevice<T>['Device'] | null =
-      (this.#app.devicesPerId[this.#id] as ListDevice<T> | undefined)?.Device ??
-      null
+      this.#app.getDeviceFromList(this.#id)?.Device ?? null
     this.log('Syncing from device list:', data)
     await this.#updateCapabilities(data)
   }
