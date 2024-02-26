@@ -1,11 +1,11 @@
 import 'core-js/actual/object/group-by'
 import 'source-map-support/register'
 import { App, type Driver } from 'homey'
-import {
-  type Building,
+import type {
+  Building,
   HeatPumpType,
-  type ListDeviceAny,
-  type LoginCredentials,
+  ListDeviceAny,
+  LoginCredentials,
 } from './melcloud/types'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './melcloud/api'
@@ -19,15 +19,15 @@ export = class MELCloudApp extends withTimers(App) {
     this.error.bind(this),
   )
 
-  #devicesPerId: Partial<Record<number, readonly ListDeviceAny[]>> = {}
+  #devices: Partial<Record<number, ListDeviceAny>> = {}
 
-  #devicesPerType: Partial<Record<HeatPumpType, readonly ListDeviceAny[]>> = {
-    [HeatPumpType.Ata]: [],
-    [HeatPumpType.Atw]: [],
-    [HeatPumpType.Erv]: [],
-  }
+  #devicesPerType: Partial<Record<HeatPumpType, readonly ListDeviceAny[]>> = {}
 
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
+
+  public get devices(): Partial<Record<number, ListDeviceAny>> {
+    return this.#devices
+  }
 
   public get devicesPerType(): Partial<
     Record<HeatPumpType, readonly ListDeviceAny[]>
@@ -58,15 +58,6 @@ export = class MELCloudApp extends withTimers(App) {
     } catch (error: unknown) {
       throw new Error(error instanceof Error ? error.message : String(error))
     }
-  }
-
-  public getDeviceFromList(id: number): ListDeviceAny | null {
-    const [device]: readonly ListDeviceAny[] = this.#devicesPerId[id] ?? []
-    return (device as ListDeviceAny | undefined) ?? null
-  }
-
-  public getDeviceIds(): string[] {
-    return Object.keys(this.#devicesPerId)
   }
 
   public getDevices({
@@ -129,26 +120,28 @@ export = class MELCloudApp extends withTimers(App) {
           ]),
         ],
       )
-      /* eslint-disable
-        @typescript-eslint/no-unsafe-assignment,
-        @typescript-eslint/no-unsafe-call,
-        @typescript-eslint/no-unsafe-member-access,
-        @typescript-eslint/no-unsafe-return
-      */
-      this.#devicesPerId = Object.groupBy<number, ListDeviceAny>(
-        buildingDevices,
-        ({ DeviceID }) => DeviceID,
-      )
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
+      const devicesPerId: Partial<Record<number, readonly ListDeviceAny[]>> =
+        Object.groupBy<number, ListDeviceAny>(
+          buildingDevices,
+          ({ DeviceID }) => DeviceID,
+        )
       this.#devicesPerType = Object.groupBy<HeatPumpType, ListDeviceAny>(
         buildingDevices,
         ({ Device }) => Device.DeviceType,
       )
-      /* eslint-enable
-        @typescript-eslint/no-unsafe-assignment,
-        @typescript-eslint/no-unsafe-call,
-        @typescript-eslint/no-unsafe-member-access,
-        @typescript-eslint/no-unsafe-return
-      */
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
+      this.#devices = Object.fromEntries(
+        Object.entries(devicesPerId).map(
+          ([id, devices]: [string, readonly ListDeviceAny[] | undefined]): [
+            string,
+            ListDeviceAny,
+          ] => {
+            const [device]: readonly ListDeviceAny[] = devices ?? []
+            return [id, device]
+          },
+        ),
+      )
       await this.#syncFromDevices()
     } catch (error: unknown) {
       // Pass
