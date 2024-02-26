@@ -304,9 +304,9 @@ export interface FrostProtectionPostData {
   readonly MinimumTemperature: number
 }
 export interface FrostProtectionData {
-  FPEnabled: boolean
-  FPMaxTemperature: number
-  FPMinTemperature: number
+  readonly FPEnabled: boolean
+  readonly FPMaxTemperature: number
+  readonly FPMinTemperature: number
 }
 
 export interface HolidayModePostData {
@@ -330,9 +330,9 @@ export interface HolidayModePostData {
   } | null
 }
 export interface HolidayModeData {
-  HMEnabled: boolean
-  HMEndDate: string | null
-  HMStartDate: string | null
+  readonly HMEnabled: boolean
+  readonly HMEndDate: string | null
+  readonly HMStartDate: string | null
 }
 
 export interface SuccessData {
@@ -358,7 +358,7 @@ export interface ListDeviceErv extends BaseListDevice {
   readonly Device: DeviceDataFromListErv
 }
 export type ListDeviceAny = ListDeviceAta | ListDeviceAtw | ListDeviceErv
-export interface Building extends Readonly<BuildingData> {
+export interface Building extends BuildingData {
   readonly ID: number
   readonly Name: string
   readonly Structure: {
