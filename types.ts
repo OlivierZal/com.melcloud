@@ -44,7 +44,6 @@ export type BooleanString = 'false' | 'true'
 
 export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
 
-export type TypedString<T> = T & string
 export type ValueOf<T> = T[keyof T]
 
 export interface Settings

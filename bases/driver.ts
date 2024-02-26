@@ -5,7 +5,6 @@ import type {
   ReportCapabilityTagMappingAny,
   SetCapabilityTagMappingAny,
   Store,
-  TypedString,
 } from '../types'
 import {
   HeatPumpType,
@@ -124,16 +123,21 @@ export default abstract class BaseMELCloudDriver<
 
   #setProducedAndConsumedTagMappings(): void {
     Object.entries(this.reportCapabilityTagMapping).forEach(
-      ([capability, tags]: [string, TypedString<keyof ReportData<T>>[]]) => {
+      ([capability, tags]: [
+        string,
+        Extract<keyof ReportData<T>, string>[],
+      ]) => {
         ;(this.producedTagMapping[
           capability as keyof ReportCapabilityTagMappingAny
-        ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
-          (tag: TypedString<keyof ReportData<T>>) => !tag.endsWith('Consumed'),
+        ] as Extract<keyof ReportData<T>, string>[]) = tags.filter(
+          (tag: Extract<keyof ReportData<T>, string>) =>
+            !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMappingAny
-        ] as TypedString<keyof ReportData<T>>[]) = tags.filter(
-          (tag: TypedString<keyof ReportData<T>>) => tag.endsWith('Consumed'),
+        ] as Extract<keyof ReportData<T>, string>[]) = tags.filter(
+          (tag: Extract<keyof ReportData<T>, string>) =>
+            tag.endsWith('Consumed'),
         )
       },
     )

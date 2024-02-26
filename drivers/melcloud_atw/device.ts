@@ -13,7 +13,6 @@ import type {
   SetCapabilitiesAtw,
   SetCapabilitiesWithThermostatModeAtw,
   Store,
-  TypedString,
 } from '../../types'
 import type AtwDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
@@ -32,7 +31,7 @@ export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
   }
 
   protected convertFromDevice<K extends keyof OpCapabilitiesAtw>(
-    capability: TypedString<K>,
+    capability: Extract<K, string>,
     value:
       | NonEffectiveFlagsValueOf<DeviceDataAtw>
       | NonEffectiveFlagsValueOf<DeviceDataFromListAtw>,
