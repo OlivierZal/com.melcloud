@@ -581,7 +581,13 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
   async #setCapabilityValues<
     K extends keyof OpCapabilities<T>,
     D extends DeviceData<T> | ListDevice<T>['Device'],
-  >(capabilityTagEntries: [K, OpDeviceData<T>][], data: D): Promise<void> {
+  >(
+    capabilityTagEntries: [K, OpDeviceData<T>][] | null,
+    data: D,
+  ): Promise<void> {
+    if (!capabilityTagEntries) {
+      return
+    }
     await Promise.all(
       capabilityTagEntries.map(
         async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
@@ -667,34 +673,23 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
       'operation_mode_state.zone1',
       'operation_mode_state.zone2',
     ]
-    const [regularCapabilityTagEntries, lastCapabilityTagEntries]: [
-      TypedString<keyof OpCapabilities<T>>,
-      OpDeviceData<T>,
-    ][][] = updateCapabilityTagEntries.reduce<
-      [TypedString<keyof OpCapabilities<T>>, OpDeviceData<T>][][]
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+    const capabilityTagEntries: {
+      last?: [TypedString<keyof OpCapabilities<T>>, OpDeviceData<T>][]
+      regular?: [TypedString<keyof OpCapabilities<T>>, OpDeviceData<T>][]
+    } = Object.groupBy<
+      'last' | 'regular',
+      [TypedString<keyof OpCapabilities<T>>, OpDeviceData<T>]
     >(
-      (
-        acc,
-        [capability, capabilityData]: [
-          TypedString<keyof OpCapabilities<T>>,
-          OpDeviceData<T>,
-        ],
-      ) => {
-        const [regular, last]: [
-          TypedString<keyof OpCapabilities<T>>,
-          OpDeviceData<T>,
-        ][][] = acc
-        if (keysToUpdateLast.includes(capability)) {
-          last.push([capability, capabilityData])
-        } else {
-          regular.push([capability, capabilityData])
-        }
-        return acc
-      },
-      [[], []],
+      updateCapabilityTagEntries,
+      ([capability]: [
+        TypedString<keyof OpCapabilities<T>>,
+        OpDeviceData<T>,
+      ]) => (keysToUpdateLast.includes(capability) ? 'last' : 'regular'),
     )
-    await this.#setCapabilityValues(regularCapabilityTagEntries, data)
-    await this.#setCapabilityValues(lastCapabilityTagEntries, data)
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+    await this.#setCapabilityValues(capabilityTagEntries.regular ?? null, data)
+    await this.#setCapabilityValues(capabilityTagEntries.last ?? null, data)
     await this.updateThermostatMode()
   }
 
