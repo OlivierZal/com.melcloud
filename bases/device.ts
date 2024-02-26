@@ -12,7 +12,6 @@ import type {
   NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpDeviceData,
-  PostData,
   ReportCapabilities,
   ReportCapabilityTagMapping,
   ReportData,
@@ -605,13 +604,12 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
 
   async #setDeviceData(): Promise<DeviceData<T> | null> {
     try {
-      const postData: PostData<T> = {
-        DeviceID: this.id,
-        HasPendingCommand: true,
-        ...this.#buildUpdateData(),
-      }
       return (
-        await this.#app.melcloudAPI.set(this.driver.heatPumpType, postData)
+        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
+          DeviceID: this.id,
+          HasPendingCommand: true,
+          ...this.#buildUpdateData(),
+        })
       ).data as DeviceData<T>
     } catch (error: unknown) {
       return null

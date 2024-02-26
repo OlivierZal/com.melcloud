@@ -1,5 +1,5 @@
+import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
-  BasePostData,
   DeviceDataAta,
   DeviceDataAtw,
   DeviceDataErv,
@@ -23,7 +23,6 @@ import type {
   SetDeviceDataErv,
   Vertical,
 } from './melcloud/types'
-import type { DateObjectUnits, DurationLike } from 'luxon'
 import type AtaDevice from './drivers/melcloud/device'
 import type AtaDriver from './drivers/melcloud/driver'
 import type AtwDevice from './drivers/melcloud_atw/device'
@@ -152,7 +151,6 @@ export type SetDeviceData<T extends MELCloudDriver> = MELCloudDriver &
   : T extends AtwDriver
     ? SetDeviceDataAtw
     : SetDeviceDataErv
-export type PostData<T extends MELCloudDriver> = BasePostData & SetDeviceData<T>
 export type DeviceData<T extends MELCloudDriver> = T extends AtaDriver
   ? DeviceDataAta
   : T extends AtwDriver

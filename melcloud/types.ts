@@ -69,7 +69,7 @@ interface BaseDeviceData {
   readonly Power?: boolean
   EffectiveFlags: number
 }
-export interface BasePostData {
+interface BasePostData {
   readonly DeviceID: number
   readonly HasPendingCommand: true
 }
