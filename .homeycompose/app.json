@@ -139,7 +139,7 @@
       "method": "GET",
       "path": "/buildings"
     },
-    "getUnitErrorLog": {
+    "getErrors": {
       "method": "GET",
       "path": "/errors"
     },

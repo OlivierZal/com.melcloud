@@ -1,3 +1,4 @@
+import 'core-js/actual/object/group-by'
 import 'source-map-support/register'
 import { App, type Driver } from 'homey'
 import {

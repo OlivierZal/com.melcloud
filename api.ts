@@ -64,7 +64,7 @@ const handleResponse = (data: FailureData | SuccessData): void => {
   }
 }
 
-const getUnitErrorLog = async (
+const getErrors = async (
   homey: Homey,
   fromDate: DateTime,
   toDate: DateTime,
@@ -239,6 +239,45 @@ export = {
       )
     )
   },
+  async getErrors({
+    homey,
+    query,
+  }: {
+    homey: Homey
+    query: ErrorLogQuery
+  }): Promise<ErrorLog> {
+    const app: MELCloudApp = homey.app as MELCloudApp
+    const { fromDate, toDate, period } = handleErrorLogQuery(query)
+    const nextToDate: DateTime = fromDate.minus({ days: 1 })
+    return {
+      errors: (await getErrors(homey, fromDate, toDate))
+        .map(
+          ({
+            DeviceId: deviceId,
+            ErrorMessage: errorMessage,
+            StartDate: startDate,
+          }): ErrorDetails => {
+            const date: string =
+              DateTime.fromISO(startDate).year > YEAR_1
+                ? fromUTC(startDate, homey.i18n.getLanguage())
+                : ''
+            const device: string =
+              getDevice(app, deviceId)?.getName() ??
+              app.getDeviceFromList(deviceId)?.DeviceName ??
+              ''
+            const error: string = errorMessage?.trim() ?? ''
+            return { date, device, error }
+          },
+        )
+        .filter((error: ErrorDetails) => error.date && error.error)
+        .reverse(),
+      fromDateHuman: fromDate
+        .setLocale(homey.i18n.getLanguage())
+        .toLocaleString(DateTime.DATE_FULL),
+      nextFromDate: nextToDate.minus({ days: period }).toISODate() ?? '',
+      nextToDate: nextToDate.toISODate() ?? '',
+    }
+  },
   async getFrostProtectionSettings({
     homey,
     params,
@@ -272,45 +311,6 @@ export = {
   },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()
-  },
-  async getUnitErrorLog({
-    homey,
-    query,
-  }: {
-    homey: Homey
-    query: ErrorLogQuery
-  }): Promise<ErrorLog> {
-    const app: MELCloudApp = homey.app as MELCloudApp
-    const { fromDate, toDate, period } = handleErrorLogQuery(query)
-    const nextToDate: DateTime = fromDate.minus({ days: 1 })
-    return {
-      errors: (await getUnitErrorLog(homey, fromDate, toDate))
-        .map(
-          ({
-            DeviceId: deviceId,
-            ErrorMessage: errorMessage,
-            StartDate: startDate,
-          }): ErrorDetails => {
-            const date: string =
-              DateTime.fromISO(startDate).year > YEAR_1
-                ? fromUTC(startDate, homey.i18n.getLanguage())
-                : ''
-            const device: string =
-              getDevice(app, deviceId)?.getName() ??
-              app.getDeviceFromList(deviceId)?.DeviceName ??
-              ''
-            const error: string = errorMessage?.trim() ?? ''
-            return { date, device, error }
-          },
-        )
-        .filter((error: ErrorDetails) => error.date && error.error)
-        .reverse(),
-      fromDateHuman: fromDate
-        .setLocale(homey.i18n.getLanguage())
-        .toLocaleString(DateTime.DATE_FULL),
-      nextFromDate: nextToDate.minus({ days: period }).toISODate() ?? '',
-      nextToDate: nextToDate.toISODate() ?? '',
-    }
   },
   async login({
     homey,
