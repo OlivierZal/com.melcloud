@@ -10,23 +10,20 @@ import type {
   SetCapabilitiesErv,
 } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
-import type ErvDriver from './driver'
 
-export = class ErvDevice extends BaseMELCloudDevice<ErvDriver> {
+export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
   protected readonly reportPlanParameters: null = null
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof OpCapabilities<ErvDriver>>(
+  protected convertFromDevice<K extends keyof OpCapabilities['Erv']>(
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceDataErv>
       | NonEffectiveFlagsValueOf<DeviceDataFromListErv>,
-  ): OpCapabilities<ErvDriver>[K] {
+  ): OpCapabilities['Erv'][K] {
     return capability === 'ventilation_mode'
-      ? (VentilationMode[
-          value as VentilationMode
-        ] as OpCapabilities<ErvDriver>[K])
-      : (value as OpCapabilities<ErvDriver>[K])
+      ? (VentilationMode[value as VentilationMode] as OpCapabilities['Erv'][K])
+      : (value as OpCapabilities['Erv'][K])
   }
 
   protected convertToDevice<K extends keyof SetCapabilitiesErv>(

@@ -14,7 +14,6 @@ import {
   type SetCapabilitiesWithThermostatModeAta,
   ThermostatMode,
 } from '../../types'
-import type AtaDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 import { NUMBER_0 } from '../../constants'
 
@@ -25,7 +24,7 @@ const isThermostatMode = (
 ): value is ThermostatMode & keyof typeof OperationMode =>
   value in ThermostatMode
 
-export = class AtaDevice extends BaseMELCloudDevice<AtaDriver> {
+export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { hours: 1 },
     interval: { hours: 1 },

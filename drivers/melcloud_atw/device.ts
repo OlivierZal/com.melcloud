@@ -14,7 +14,6 @@ import type {
   SetCapabilitiesWithThermostatModeAtw,
   Store,
 } from '../../types'
-import type AtwDriver from './driver'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
@@ -22,7 +21,7 @@ import { K_MULTIPLIER } from '../../constants'
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
 
-export = class AtwDevice extends BaseMELCloudDevice<AtwDriver> {
+export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { days: 1 },
     interval: { days: 1 },

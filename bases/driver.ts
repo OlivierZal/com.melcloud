@@ -1,9 +1,9 @@
 import type {
   DeviceDetails,
-  GetCapabilityTagMappingAny,
-  ListCapabilityTagMappingAny,
-  ReportCapabilityTagMappingAny,
-  SetCapabilityTagMappingAny,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  ReportCapabilityTagMapping,
+  SetCapabilityTagMapping,
   Store,
 } from '../types'
 import {
@@ -37,9 +37,11 @@ const getCapabilityOptions = (
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly consumedTagMapping: ReportCapabilityTagMappingAny = {}
+  public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
+    {}
 
-  public readonly producedTagMapping: ReportCapabilityTagMappingAny = {}
+  public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
+    {}
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
@@ -48,13 +50,13 @@ export default abstract class BaseMELCloudDriver<
     | typeof effectiveFlagsAtw
     | typeof effectiveFlagsErv
 
-  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMappingAny
+  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
 
-  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMappingAny
+  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping[T]
 
-  public abstract readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAny
+  public abstract readonly reportCapabilityTagMapping: ReportCapabilityTagMapping[T]
 
-  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMappingAny
+  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
   protected abstract readonly deviceType: DeviceType
 
@@ -128,12 +130,12 @@ export default abstract class BaseMELCloudDriver<
         Extract<keyof ReportData[T], string>[],
       ]) => {
         ;(this.producedTagMapping[
-          capability as keyof ReportCapabilityTagMappingAny
+          capability as keyof ReportCapabilityTagMapping[T]
         ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
           (tag) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
-          capability as keyof ReportCapabilityTagMappingAny
+          capability as keyof ReportCapabilityTagMapping[T]
         ] as Extract<keyof ReportData[T], string>[]) = tags.filter((tag) =>
           tag.endsWith('Consumed'),
         )

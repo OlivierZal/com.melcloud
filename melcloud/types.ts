@@ -219,26 +219,26 @@ export interface DeviceDataFromListErv
 }
 
 export interface SetDeviceData {
-  Ata: SetDeviceDataAta
-  Atw: SetDeviceDataAtw
-  Erv: SetDeviceDataErv
+  readonly Ata: SetDeviceDataAta
+  readonly Atw: SetDeviceDataAtw
+  readonly Erv: SetDeviceDataErv
 }
 export type PostData<T extends keyof typeof DeviceType> = BasePostData &
   (T extends keyof SetDeviceData ? SetDeviceData[T] : never)
 export interface DeviceData {
-  Ata: DeviceDataAta
-  Atw: DeviceDataAtw
-  Erv: DeviceDataErv
+  readonly Ata: DeviceDataAta
+  readonly Atw: DeviceDataAtw
+  readonly Erv: DeviceDataErv
 }
 export interface DeviceDataFromGet {
-  Ata: DeviceDataFromGetAta
-  Atw: DeviceDataFromGetAtw
-  Erv: DeviceDataFromGetErv
+  readonly Ata: DeviceDataFromGetAta
+  readonly Atw: DeviceDataFromGetAtw
+  readonly Erv: DeviceDataFromGetErv
 }
 export interface DeviceDataFromList {
-  Ata: DeviceDataFromListAta
-  Atw: DeviceDataFromListAtw
-  Erv: DeviceDataFromListErv
+  readonly Ata: DeviceDataFromListAta
+  readonly Atw: DeviceDataFromListAtw
+  readonly Erv: DeviceDataFromListErv
 }
 
 export interface ReportPostData {
@@ -272,9 +272,9 @@ export interface ReportDataAtw {
   readonly TotalHotWaterProduced: number
 }
 export interface ReportData {
-  Ata: ReportDataAta
-  Atw: ReportDataAtw
-  Erv: never
+  readonly Ata: ReportDataAta
+  readonly Atw: ReportDataAtw
+  readonly Erv: never
 }
 
 export interface LoginCredentials {
@@ -353,6 +353,11 @@ export interface ListDeviceAtw extends BaseListDevice {
 }
 export interface ListDeviceErv extends BaseListDevice {
   readonly Device: DeviceDataFromListErv
+}
+export interface ListDevice {
+  readonly Ata: ListDeviceAta
+  readonly Atw: ListDeviceAtw
+  readonly Erv: ListDeviceErv
 }
 export type ListDeviceAny = ListDeviceAta | ListDeviceAtw | ListDeviceErv
 export interface Building extends BuildingData {
