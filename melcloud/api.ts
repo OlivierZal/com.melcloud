@@ -155,9 +155,8 @@ export default class MELCloudAPI {
     if (response.data.LoginData) {
       this.#settingManager.set('username', postData.Email)
       this.#settingManager.set('password', postData.Password)
-      const { ContextKey: contextKey, Expiry: expiry } = response.data.LoginData
-      this.#settingManager.set('contextKey', contextKey)
-      this.#settingManager.set('expiry', expiry)
+      this.#settingManager.set('contextKey', response.data.LoginData.ContextKey)
+      this.#settingManager.set('expiry', response.data.LoginData.Expiry)
     }
     return response
   }
