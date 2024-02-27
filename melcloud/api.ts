@@ -168,13 +168,10 @@ export default class MELCloudAPI {
   }
 
   public async set<T extends keyof typeof DeviceType>(
-    deviceType: T,
+    heatPumpType: T,
     postData: PostData<T>,
   ): Promise<{ data: DeviceData[T] }> {
-    return this.#api.post<DeviceData[T]>(
-      `/Device/Set${String(deviceType)}`,
-      postData,
-    )
+    return this.#api.post<DeviceData[T]>(`/Device/Set${heatPumpType}`, postData)
   }
 
   public async updateFrostProtection(
