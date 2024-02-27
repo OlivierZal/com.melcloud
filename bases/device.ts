@@ -5,6 +5,7 @@ import type {
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
+  MELCloudDriver,
   NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpDeviceData,
@@ -28,11 +29,8 @@ import {
   type SetDeviceData,
 } from '../melcloud/types'
 import { K_MULTIPLIER, NUMBER_0, NUMBER_1 } from '../constants'
-import type AtaDriver from '../drivers/melcloud/driver'
-import type AtwDriver from '../drivers/melcloud_atw/driver'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
-import type ErvDriver from '../drivers/melcloud_erv/driver'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
@@ -49,13 +47,7 @@ const filterEnergyKeys = (key: string, total: boolean): boolean => {
 abstract class BaseMELCloudDevice<
   T extends keyof typeof DeviceType,
 > extends withTimers(Device) {
-  public declare readonly driver: T extends 'Ata'
-    ? AtaDriver
-    : T extends 'Atw'
-      ? AtwDriver
-      : T extends 'Erv'
-        ? ErvDriver
-        : never
+  public declare readonly driver: MELCloudDriver[T]
 
   protected readonly diff: Map<
     keyof SetCapabilities[T],

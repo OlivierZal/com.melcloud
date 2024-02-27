@@ -25,8 +25,11 @@ import type {
   Vertical,
 } from './melcloud/types'
 import type AtaDevice from './drivers/melcloud/device'
+import type AtaDriver from './drivers/melcloud/driver'
 import type AtwDevice from './drivers/melcloud_atw/device'
+import type AtwDriver from './drivers/melcloud_atw/driver'
 import type ErvDevice from './drivers/melcloud_erv/device'
+import type ErvDriver from './drivers/melcloud_erv/driver'
 
 export enum ThermostatMode {
   auto = 'auto',
@@ -35,6 +38,11 @@ export enum ThermostatMode {
   off = 'off',
 }
 
+export interface MELCloudDriver {
+  readonly Ata: AtaDriver
+  readonly Atw: AtwDriver
+  readonly Erv: ErvDriver
+}
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 
 export type BooleanString = 'false' | 'true'
