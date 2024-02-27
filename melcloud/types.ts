@@ -223,8 +223,11 @@ export interface SetDeviceData {
   readonly Atw: SetDeviceDataAtw
   readonly Erv: SetDeviceDataErv
 }
-export type PostData<T extends keyof typeof DeviceType> = BasePostData &
-  (T extends keyof SetDeviceData ? SetDeviceData[T] : never)
+export interface PostData {
+  readonly Ata: PostDataAta
+  readonly Atw: PostDataAtw
+  readonly Erv: PostDataErv
+}
 export interface DeviceData {
   readonly Ata: DeviceDataAta
   readonly Atw: DeviceDataAtw
