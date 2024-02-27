@@ -13,7 +13,7 @@ import {
   reportCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
 } from '../../types'
-import { HeatPumpType, effectiveFlagsAtw } from '../../melcloud/types'
+import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
@@ -31,7 +31,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   public readonly setCapabilityTagMapping: SetCapabilityTagMappingAtw =
     setCapabilityTagMappingAtw
 
-  protected readonly deviceType: HeatPumpType = HeatPumpType.Atw
+  protected readonly deviceType: DeviceType = DeviceType.Atw
 
   readonly #capabilities: (keyof OpCapabilitiesAtw)[] = [
     'onoff',

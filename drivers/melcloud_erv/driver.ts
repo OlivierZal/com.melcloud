@@ -1,3 +1,4 @@
+import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import {
   type FlowArgsErv,
   type GetCapabilityTagMappingErv,
@@ -11,7 +12,6 @@ import {
   reportCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types'
-import { HeatPumpType, effectiveFlagsErv } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
@@ -29,7 +29,7 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   public readonly setCapabilityTagMapping: SetCapabilityTagMappingErv =
     setCapabilityTagMappingErv
 
-  protected readonly deviceType: HeatPumpType = HeatPumpType.Erv
+  protected readonly deviceType: DeviceType = DeviceType.Erv
 
   readonly #flowCapabilities: (keyof SetCapabilitiesErv)[] = [
     'ventilation_mode',

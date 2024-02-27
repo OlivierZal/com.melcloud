@@ -1,3 +1,4 @@
+import { DeviceType, effectiveFlagsAta } from '../../melcloud/types'
 import {
   type FlowArgsAta,
   type GetCapabilityTagMappingAta,
@@ -10,7 +11,6 @@ import {
   reportCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from '../../types'
-import { HeatPumpType, effectiveFlagsAta } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
@@ -28,7 +28,7 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   public readonly setCapabilityTagMapping: SetCapabilityTagMappingAta =
     setCapabilityTagMappingAta
 
-  protected readonly deviceType: HeatPumpType = HeatPumpType.Ata
+  protected readonly deviceType: DeviceType = DeviceType.Ata
 
   readonly #flowCapabilities: (keyof SetCapabilitiesAta)[] = [
     'operation_mode',

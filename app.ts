@@ -3,7 +3,7 @@ import 'source-map-support/register'
 import { App, type Driver } from 'homey'
 import type {
   Building,
-  HeatPumpType,
+  DeviceType,
   ListDeviceAny,
   LoginCredentials,
 } from './melcloud/types'
@@ -21,7 +21,7 @@ export = class MELCloudApp extends withTimers(App) {
 
   #devices: Partial<Record<number, ListDeviceAny>> = {}
 
-  #devicesPerType: Partial<Record<HeatPumpType, readonly ListDeviceAny[]>> = {}
+  #devicesPerType: Partial<Record<DeviceType, readonly ListDeviceAny[]>> = {}
 
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
 
@@ -30,7 +30,7 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public get devicesPerType(): Partial<
-    Record<HeatPumpType, readonly ListDeviceAny[]>
+    Record<DeviceType, readonly ListDeviceAny[]>
   > {
     return this.#devicesPerType
   }
@@ -121,7 +121,7 @@ export = class MELCloudApp extends withTimers(App) {
         ],
       )
       /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
-      this.#devicesPerType = Object.groupBy<HeatPumpType, ListDeviceAny>(
+      this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
         buildingDevices,
         ({ Device }) => Device.DeviceType,
       )

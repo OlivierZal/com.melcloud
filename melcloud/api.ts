@@ -4,12 +4,12 @@ import {
   type Building,
   type DeviceData,
   type DeviceDataFromGet,
+  type DeviceType,
   type ErrorLogData,
   type ErrorLogPostData,
   type FailureData,
   type FrostProtectionData,
   type FrostProtectionPostData,
-  type HeatPumpType,
   type HolidayModeData,
   type HolidayModePostData,
   type LoginCredentials,
@@ -120,11 +120,11 @@ export default class MELCloudAPI {
     )
   }
 
-  public async get<T extends keyof typeof HeatPumpType>(
+  public async get<T extends keyof typeof DeviceType>(
     id: number,
     buildingId: number,
-  ): Promise<{ data: DeviceDataFromGet<T> }> {
-    return this.#api.get<DeviceDataFromGet<T>>('/Device/Get', {
+  ): Promise<{ data: DeviceDataFromGet[T] }> {
+    return this.#api.get<DeviceDataFromGet[T]>('/Device/Get', {
       params: { buildingId, id },
     })
   }
@@ -161,17 +161,20 @@ export default class MELCloudAPI {
     return response
   }
 
-  public async report<T extends keyof typeof HeatPumpType>(
+  public async report<T extends keyof typeof DeviceType>(
     postData: ReportPostData,
-  ): Promise<{ data: ReportData<T> }> {
-    return this.#api.post<ReportData<T>>('/EnergyCost/Report', postData)
+  ): Promise<{ data: ReportData[T] }> {
+    return this.#api.post<ReportData[T]>('/EnergyCost/Report', postData)
   }
 
-  public async set<T extends keyof typeof HeatPumpType>(
-    heatPumpType: T,
+  public async set<T extends keyof typeof DeviceType>(
+    deviceType: T,
     postData: PostData<T>,
-  ): Promise<{ data: DeviceData<T> }> {
-    return this.#api.post<DeviceData<T>>(`/Device/Set${heatPumpType}`, postData)
+  ): Promise<{ data: DeviceData[T] }> {
+    return this.#api.post<DeviceData[T]>(
+      `/Device/Set${String(deviceType)}`,
+      postData,
+    )
   }
 
   public async updateFrostProtection(

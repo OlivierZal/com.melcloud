@@ -10,7 +10,7 @@ export interface APISettings {
   readonly username?: string | null
 }
 
-export enum HeatPumpType {
+export enum DeviceType {
   Ata = 0,
   Atw = 1,
   Erv = 3,
@@ -109,7 +109,7 @@ export interface DeviceDataFromListAta
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     > {
   readonly ActualFanSpeed: number
-  readonly DeviceType: HeatPumpType.Ata
+  readonly DeviceType: DeviceType.Ata
   readonly FanSpeed: number
   readonly HasAutomaticFanSpeed: boolean
   readonly NumberOfFanSpeeds: number
@@ -169,7 +169,7 @@ export interface DeviceDataFromListAtw
   readonly CurrentEnergyConsumed: number
   readonly CurrentEnergyProduced: number
   readonly DefrostMode: number
-  readonly DeviceType: HeatPumpType.Atw
+  readonly DeviceType: DeviceType.Atw
   readonly EcoHotWater: boolean
   readonly FlowTemperature: number
   readonly FlowTemperatureZone1: number
@@ -210,7 +210,7 @@ export type DeviceDataFromGetErv = DeviceDataErv & {
 export interface DeviceDataFromListErv
   extends BaseDeviceDataFromList,
     DeviceDataFromGetErv {
-  readonly DeviceType: HeatPumpType.Erv
+  readonly DeviceType: DeviceType.Erv
   readonly HasAutomaticFanSpeed: boolean
   readonly HasCO2Sensor: boolean
   readonly HasPM25Sensor: boolean
@@ -218,32 +218,28 @@ export interface DeviceDataFromListErv
   readonly PM25Level: number
 }
 
-export type SetDeviceData<T extends keyof typeof HeatPumpType> =
-  T extends HeatPumpType.Ata
-    ? SetDeviceDataAta
-    : T extends HeatPumpType.Atw
-      ? SetDeviceDataAtw
-      : SetDeviceDataErv
-export type PostData<T extends keyof typeof HeatPumpType> = BasePostData &
-  SetDeviceData<T>
-export type DeviceData<T extends keyof typeof HeatPumpType> =
-  T extends HeatPumpType.Ata
-    ? DeviceDataAta
-    : T extends HeatPumpType.Atw
-      ? DeviceDataAtw
-      : DeviceDataErv
-export type DeviceDataFromGet<T extends keyof typeof HeatPumpType> =
-  T extends HeatPumpType.Ata
-    ? DeviceDataFromGetAta
-    : T extends HeatPumpType.Atw
-      ? DeviceDataFromGetAtw
-      : DeviceDataFromGetErv
-export type DeviceDataFromList<T extends keyof typeof HeatPumpType> =
-  T extends HeatPumpType.Ata
-    ? DeviceDataFromListAta
-    : T extends HeatPumpType.Atw
-      ? DeviceDataFromListAtw
-      : DeviceDataFromListErv
+export interface SetDeviceData {
+  Ata: SetDeviceDataAta
+  Atw: SetDeviceDataAtw
+  Erv: SetDeviceDataErv
+}
+export type PostData<T extends keyof typeof DeviceType> = BasePostData &
+  (T extends keyof SetDeviceData ? SetDeviceData[T] : never)
+export interface DeviceData {
+  Ata: DeviceDataAta
+  Atw: DeviceDataAtw
+  Erv: DeviceDataErv
+}
+export interface DeviceDataFromGet {
+  Ata: DeviceDataFromGetAta
+  Atw: DeviceDataFromGetAtw
+  Erv: DeviceDataFromGetErv
+}
+export interface DeviceDataFromList {
+  Ata: DeviceDataFromListAta
+  Atw: DeviceDataFromListAtw
+  Erv: DeviceDataFromListErv
+}
 
 export interface ReportPostData {
   readonly DeviceID: number
@@ -275,12 +271,11 @@ export interface ReportDataAtw {
   readonly TotalHotWaterConsumed: number
   readonly TotalHotWaterProduced: number
 }
-export type ReportData<T extends keyof typeof HeatPumpType> =
-  T extends HeatPumpType.Ata
-    ? ReportDataAta
-    : T extends HeatPumpType.Atw
-      ? ReportDataAtw
-      : never
+export interface ReportData {
+  Ata: ReportDataAta
+  Atw: ReportDataAtw
+  Erv: never
+}
 
 export interface LoginCredentials {
   readonly password: string

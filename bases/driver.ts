@@ -7,7 +7,7 @@ import type {
   Store,
 } from '../types'
 import {
-  HeatPumpType,
+  DeviceType,
   type ListDeviceAny,
   type LoginCredentials,
   type ReportData,
@@ -35,7 +35,7 @@ const getCapabilityOptions = (
     : {}
 
 export default abstract class BaseMELCloudDriver<
-  T extends keyof typeof HeatPumpType,
+  T extends keyof typeof DeviceType,
 > extends Driver {
   public readonly consumedTagMapping: ReportCapabilityTagMappingAny = {}
 
@@ -56,10 +56,10 @@ export default abstract class BaseMELCloudDriver<
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMappingAny
 
-  protected abstract readonly deviceType: HeatPumpType
+  protected abstract readonly deviceType: DeviceType
 
   public get heatPumpType(): T {
-    return HeatPumpType[this.deviceType] as T
+    return DeviceType[this.deviceType] as T
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -125,19 +125,17 @@ export default abstract class BaseMELCloudDriver<
     Object.entries(this.reportCapabilityTagMapping).forEach(
       ([capability, tags]: [
         string,
-        Extract<keyof ReportData<T>, string>[],
+        Extract<keyof ReportData[T], string>[],
       ]) => {
         ;(this.producedTagMapping[
           capability as keyof ReportCapabilityTagMappingAny
-        ] as Extract<keyof ReportData<T>, string>[]) = tags.filter(
-          (tag: Extract<keyof ReportData<T>, string>) =>
-            !tag.endsWith('Consumed'),
+        ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
+          (tag) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMappingAny
-        ] as Extract<keyof ReportData<T>, string>[]) = tags.filter(
-          (tag: Extract<keyof ReportData<T>, string>) =>
-            tag.endsWith('Consumed'),
+        ] as Extract<keyof ReportData[T], string>[]) = tags.filter((tag) =>
+          tag.endsWith('Consumed'),
         )
       },
     )

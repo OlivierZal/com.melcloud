@@ -540,7 +540,7 @@ abstract class BaseMELCloudDevice<T extends MELCloudDriver> extends withTimers(
           ToDate: toDate.toISODate() ?? '',
           UseCurrency: false,
         })
-      ).data
+      ).data as ReportData<T>
     } catch (error: unknown) {
       return null
     }

@@ -380,7 +380,7 @@ export const listCapabilityTagMappingAta: Record<
 export type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
 export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
-  readonly (keyof ReportDataAta)[]
+  readonly Extract<keyof ReportDataAta, string>[]
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -482,7 +482,7 @@ export const listCapabilityTagMappingAtw: Record<
 export type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
 export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
-  readonly (keyof ReportDataAtw)[]
+  readonly Extract<keyof ReportDataAtw, string>[]
 > = {
   meter_power: [
     'TotalCoolingConsumed',
