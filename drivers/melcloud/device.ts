@@ -1,6 +1,7 @@
 import {
   type DeviceDataAta,
   type DeviceDataFromListAta,
+  FanSpeed,
   Horizontal,
   OperationMode,
   type SetDeviceDataAta,
@@ -15,9 +16,6 @@ import {
   ThermostatMode,
 } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
-import { NUMBER_0 } from '../../constants'
-
-const NUMBER_255 = 255
 
 const isThermostatMode = (
   value: keyof typeof OperationMode,
@@ -47,7 +45,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       case 'horizontal':
         return Horizontal[value as Horizontal] as OpCapabilitiesAta[K]
       case 'fan_power':
-        return (value === NUMBER_255 ? NUMBER_0 : value) as OpCapabilitiesAta[K]
+        return (
+          value === FanSpeed.silent ? FanSpeed.auto : value
+        ) as OpCapabilitiesAta[K]
       default:
         return value as OpCapabilitiesAta[K]
     }

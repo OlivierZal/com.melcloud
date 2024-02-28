@@ -16,6 +16,16 @@ export enum DeviceType {
   Erv = 3,
 }
 
+export enum FanSpeed {
+  auto = 0,
+  very_slow = 1,
+  slow = 2,
+  moderate = 3,
+  fast = 4,
+  very_fast = 5,
+  silent = 255,
+}
+
 export enum OperationMode {
   heat = 1,
   dry = 2,
@@ -79,7 +89,7 @@ interface BaseDeviceDataFromList {
 
 export interface SetDeviceDataAta extends BaseDeviceData {
   readonly OperationMode?: OperationMode
-  readonly SetFanSpeed?: number
+  readonly SetFanSpeed?: FanSpeed
   readonly SetTemperature?: number
   readonly VaneHorizontal?: Horizontal
   readonly VaneVertical?: Vertical
@@ -110,7 +120,7 @@ export interface DeviceDataFromListAta
     > {
   readonly ActualFanSpeed: number
   readonly DeviceType: DeviceType.Ata
-  readonly FanSpeed: number
+  readonly FanSpeed: FanSpeed
   readonly HasAutomaticFanSpeed: boolean
   readonly NumberOfFanSpeeds: number
   readonly VaneHorizontalDirection: Horizontal
