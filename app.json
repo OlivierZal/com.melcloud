@@ -13,13 +13,13 @@
     "es": "MELCloud"
   },
   "description": {
-    "en": "Take control of your heat pumps",
-    "fr": "Prenez le contrôle de vos pompes à chaleur",
-    "nl": "Neem de controle over uw warmtepompen",
-    "sv": "Ta kontroll över dina värmepumpar",
-    "no": "Ta kontroll over varmepumpene dine",
-    "da": "Tag kontrol over dine varmepumper",
-    "es": "Tome el control de sus bombas de calor"
+    "en": "Take control of your heat pump",
+    "fr": "Prenez le contrôle de votre pompe à chaleur",
+    "nl": "Neem de controle over uw warmtepomp",
+    "sv": "Ta kontroll över din värmepump",
+    "no": "Ta kontroll over varmepumpen din",
+    "da": "Tag kontrol over din varmepumpe",
+    "es": "Tome el control de su bomba de calor"
   },
   "category": [
     "climate"
