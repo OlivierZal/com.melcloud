@@ -6,7 +6,6 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   MELCloudDriver,
-  NonEffectiveFlagsValueOf,
   OpCapabilities,
   OpDeviceData,
   ReportCapabilities,
@@ -25,6 +24,7 @@ import {
   FLAG_UNCHANGED,
   type ListDevice,
   type NonEffectiveFlagsKeyOf,
+  type NonEffectiveFlagsValueOf,
   type ReportData,
   type SetDeviceData,
 } from '../melcloud/types'

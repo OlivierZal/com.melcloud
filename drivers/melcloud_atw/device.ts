@@ -1,12 +1,12 @@
 import {
   type DeviceDataAtw,
   type DeviceDataFromListAtw,
+  type NonEffectiveFlagsValueOf,
   OperationModeState,
   OperationModeZone,
   type SetDeviceDataAtw,
 } from '../../melcloud/types'
 import type {
-  NonEffectiveFlagsValueOf,
   OpCapabilitiesAtw,
   OperationModeZoneCapabilities,
   ReportPlanParameters,

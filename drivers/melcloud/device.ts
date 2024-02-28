@@ -3,12 +3,12 @@ import {
   type DeviceDataFromListAta,
   FanSpeed,
   Horizontal,
+  type NonEffectiveFlagsValueOf,
   OperationMode,
   type SetDeviceDataAta,
   Vertical,
 } from '../../melcloud/types'
 import {
-  type NonEffectiveFlagsValueOf,
   type OpCapabilitiesAta,
   type ReportPlanParameters,
   type SetCapabilitiesAta,

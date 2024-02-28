@@ -2,6 +2,7 @@ export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0x0
 
 export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
+export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
 
 export interface APISettings {
   readonly contextKey?: string | null

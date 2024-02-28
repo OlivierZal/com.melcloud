@@ -1,11 +1,11 @@
 import {
   type DeviceDataErv,
   type DeviceDataFromListErv,
+  type NonEffectiveFlagsValueOf,
   type SetDeviceDataErv,
   VentilationMode,
 } from '../../melcloud/types'
 import type {
-  NonEffectiveFlagsValueOf,
   OpCapabilities,
   SetCapabilitiesErv,
 } from '../../types'

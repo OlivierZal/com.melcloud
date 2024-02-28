@@ -38,8 +38,6 @@ export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 
 export type BooleanString = 'false' | 'true'
 
-export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
-
 export type ValueOf<T> = T[keyof T]
 
 export interface Settings
