@@ -75,15 +75,15 @@ export enum VentilationMode {
   auto = 2,
 }
 
-interface BaseDeviceData {
+export interface BaseDeviceData {
   readonly Power?: boolean
   EffectiveFlags: number
 }
-interface BasePostData {
+export interface BasePostData {
   readonly DeviceID: number
   readonly HasPendingCommand: true
 }
-interface BaseDeviceDataFromList {
+export interface BaseDeviceDataFromList {
   readonly WifiSignalStrength: number
 }
 
@@ -353,7 +353,7 @@ export interface FailureData {
 }
 
 export interface BuildingData extends FrostProtectionData, HolidayModeData {}
-interface BaseListDevice {
+export interface BaseListDevice {
   readonly BuildingID: number
   readonly DeviceID: number
   readonly DeviceName: string
