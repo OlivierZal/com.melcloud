@@ -5,10 +5,7 @@ import {
   type SetDeviceDataErv,
   VentilationMode,
 } from '../../melcloud/types'
-import type {
-  OpCapabilities,
-  SetCapabilitiesErv,
-} from '../../types'
+import type { OpCapabilities, SetCapabilitiesErv } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
 
 export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
