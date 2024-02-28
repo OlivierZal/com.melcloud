@@ -30,7 +30,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   }
 
   protected convertFromDevice<K extends keyof OpCapabilities['Atw']>(
-    capability: Extract<K, string>,
+    capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData['Atw']>
       | NonEffectiveFlagsValueOf<ListDevice['Atw']['Device']>,

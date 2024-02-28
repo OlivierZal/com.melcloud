@@ -350,7 +350,7 @@ export const listCapabilityTagMappingAta: Record<
 type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
 export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
-  readonly Extract<keyof ReportData['Ata'], string>[]
+  readonly (keyof ReportData['Ata'])[]
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -418,7 +418,6 @@ export const getCapabilityTagMappingAtw: Record<
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
   operation_mode_state: 'OperationMode',
-  // Must follow `operation_mode_state`
   'operation_mode_state.zone1': 'IdleZone1',
   'operation_mode_state.zone2': 'IdleZone2',
 } as const
@@ -452,7 +451,7 @@ export const listCapabilityTagMappingAtw: Record<
 type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
 export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
-  readonly Extract<keyof ReportData['Atw'], string>[]
+  readonly (keyof ReportData['Atw'])[]
 > = {
   meter_power: [
     'TotalCoolingConsumed',

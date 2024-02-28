@@ -27,13 +27,14 @@ import {
   type ReportData,
   type SetDeviceData,
 } from '../melcloud/types'
-import { K_MULTIPLIER, NUMBER_0, NUMBER_1 } from '../constants'
+import { K_MULTIPLIER, NUMBER_1 } from '../constants'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
 import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
+const NUMBER_0 = 0
 const YEAR_1970 = 1970
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
@@ -119,28 +120,28 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public getCapabilityOptions<K extends keyof CapabilitiesOptions[T]>(
-    capability: Extract<K, string>,
-  ): CapabilitiesOptions[T][K] {
+  public getCapabilityOptions<
+    K extends Extract<keyof CapabilitiesOptions[T], string>,
+  >(capability: K): CapabilitiesOptions[T][K] {
     return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
   public getCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: Extract<K, string>,
+    capability: K & string,
   ): NonNullable<Capabilities<T>[K]> {
     return super.getCapabilityValue(capability) as NonNullable<
       Capabilities<T>[K]
     >
   }
 
-  public getSetting<K extends keyof Settings>(
-    setting: Extract<K, string>,
+  public getSetting<K extends Extract<keyof Settings, string>>(
+    setting: K,
   ): NonNullable<Settings[K]> {
     return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
-  public getStoreValue<K extends keyof Store[T]>(
-    key: Extract<K, string>,
+  public getStoreValue<K extends Extract<keyof Store[T], string>>(
+    key: K,
   ): Store[T][K] {
     return super.getStoreValue(key) as Store[T][K]
   }
@@ -176,6 +177,7 @@ abstract class BaseMELCloudDevice<
       number
     >
     await this.setWarning(null)
+    await this.#handleStore()
     await this.#handleCapabilities()
     this.#setReportCapabilityTagEntries()
     this.#registerCapabilityListeners()
@@ -246,17 +248,15 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async setCapabilityOptions<K extends keyof CapabilitiesOptions[T]>(
-    capability: Extract<K, string>,
-    options: CapabilitiesOptions[T][K] & object,
-  ): Promise<void> {
+  public async setCapabilityOptions<
+    K extends Extract<keyof CapabilitiesOptions[T], string>,
+  >(capability: K, options: CapabilitiesOptions[T][K] & object): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
-  public async setCapabilityValue<K extends keyof Capabilities<T>>(
-    capability: Extract<K, string>,
-    value: Capabilities<T>[K],
-  ): Promise<void> {
+  public async setCapabilityValue<
+    K extends Extract<keyof Capabilities<T>, string>,
+  >(capability: K, value: Capabilities<T>[K]): Promise<void> {
     if (value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value)
       this.log('Capability', capability, 'is', value)
@@ -284,13 +284,11 @@ abstract class BaseMELCloudDevice<
     await this.#updateCapabilities(data)
   }
 
-  protected getRequestedOrCurrentValue<K extends keyof SetCapabilities[T]>(
-    capability: K,
-  ): NonNullable<SetCapabilities[T][K]> {
+  protected getRequestedOrCurrentValue<
+    K extends Extract<keyof SetCapabilities[T], string>,
+  >(capability: K): NonNullable<SetCapabilities[T][K]> {
     return (this.diff.get(capability) ??
-      this.getCapabilityValue(capability as Extract<K, string>)) as NonNullable<
-      SetCapabilities[T][K]
-    >
+      this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
   }
 
   protected async setAlwaysOnWarning(): Promise<void> {
@@ -310,7 +308,9 @@ abstract class BaseMELCloudDevice<
     )
   }
 
-  #buildUpdateData(): SetDeviceData[T] {
+  #buildUpdateData<
+    K extends Extract<keyof SetCapabilities[T], string>,
+  >(): SetDeviceData[T] {
     return Object.entries(this.#setCapabilityTagMapping).reduce<
       SetDeviceData[T]
     >(
@@ -319,13 +319,11 @@ abstract class BaseMELCloudDevice<
         [capability, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>],
       ) => {
         acc[tag] = this.convertToDevice(
-          capability as keyof SetCapabilities[T],
-          this.getRequestedOrCurrentValue(
-            capability as keyof SetCapabilities[T],
-          ),
+          capability as K,
+          this.getRequestedOrCurrentValue(capability as K),
         )
-        if (this.diff.has(capability as keyof SetCapabilities[T])) {
-          this.diff.delete(capability as keyof SetCapabilities[T])
+        if (this.diff.has(capability as K)) {
+          this.diff.delete(capability as K)
           acc.EffectiveFlags = Number(
             // eslint-disable-next-line no-bitwise
             BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
@@ -337,48 +335,46 @@ abstract class BaseMELCloudDevice<
     )
   }
 
-  #calculateCopValue<K extends keyof ReportCapabilities[T]>(
-    data: ReportData[T],
-    capability: K & string,
-  ): number {
-    const producedTags: (keyof ReportData[T])[] = this.driver
-      .producedTagMapping[capability] as (keyof ReportData[T])[]
-    const consumedTags: (keyof ReportData[T])[] = this.driver
-      .consumedTagMapping[capability] as (keyof ReportData[T])[]
+  #calculateCopValue<
+    K extends keyof ReportData[T],
+    L extends keyof ReportCapabilities[T],
+  >(data: ReportData[T], capability: L & string): number {
+    const producedTags: K[] = this.driver.producedTagMapping[capability] as K[]
+    const consumedTags: K[] = this.driver.consumedTagMapping[capability] as K[]
     return (
       producedTags.reduce<number>(
-        (acc, tag: keyof ReportData[T]) => acc + (data[tag] as number),
+        (acc, tag: K) => acc + (data[tag] as number),
         NUMBER_0,
       ) /
       (consumedTags.length
         ? consumedTags.reduce<number>(
-            (acc, tag: keyof ReportData[T]) => acc + (data[tag] as number),
+            (acc, tag: K) => acc + (data[tag] as number),
             NUMBER_0,
           )
         : NUMBER_1)
     )
   }
 
-  #calculateEnergyValue(
+  #calculateEnergyValue<K extends keyof ReportData[T]>(
     data: ReportData[T],
-    tags: (keyof ReportData[T])[],
+    tags: K[],
   ): number {
     return (
       tags.reduce<number>(
-        (acc, tag: keyof ReportData[T]) => acc + (data[tag] as number),
+        (acc, tag: K) => acc + (data[tag] as number),
         NUMBER_0,
       ) / this.#linkedDeviceCount
     )
   }
 
-  #calculatePowerValue(
+  #calculatePowerValue<K extends keyof ReportData[T]>(
     data: ReportData[T],
-    tags: (keyof ReportData[T])[],
+    tags: K[],
     toDate: DateTime,
   ): number {
     return (
       tags.reduce<number>(
-        (acc, tag: keyof ReportData[T]) =>
+        (acc, tag: K) =>
           acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
         NUMBER_0,
       ) / this.#linkedDeviceCount
@@ -426,7 +422,7 @@ abstract class BaseMELCloudDevice<
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
         ] as [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
-      case this.diff.size > NUMBER_0:
+      case Boolean(this.diff.size):
       case this.#syncToDeviceTimeout !== null:
         return this.#listOnlyCapabilityTagEntries
       default:
@@ -491,6 +487,29 @@ abstract class BaseMELCloudDevice<
     }
   }
 
+  async #handleStore<
+    K extends Extract<keyof Store[T], string>,
+  >(): Promise<void> {
+    const data: ListDevice[T]['Device'] | null =
+      this.#app.devices[this.#id]?.Device ?? null
+    if (!data) {
+      return
+    }
+    await Promise.all(
+      Object.entries(
+        this.driver.getStore(
+          data as ListDevice['Ata']['Device'] &
+            ListDevice['Atw']['Device'] &
+            ListDevice['Erv']['Device'],
+        ),
+      ).map(async ([key, value]): Promise<void> => {
+        if (value !== this.getStoreValue(key as K)) {
+          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
+        }
+      }),
+    )
+  }
+
   #isCapability(setting: string): boolean {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return (this.driver.manifest.capabilities as string[]).includes(setting)
@@ -532,15 +551,19 @@ abstract class BaseMELCloudDevice<
     )
   }
 
-  #registerCapabilityListeners<K extends keyof SetCapabilities[T]>(): void {
-    ;[
-      ...Object.keys(this.driver.setCapabilityTagMapping),
-      'thermostat_mode',
-    ].forEach((capability: string) => {
+  #registerCapabilityListeners<
+    K extends Extract<keyof SetCapabilities[T], string>,
+  >(): void {
+    ;(
+      [
+        ...Object.keys(this.driver.setCapabilityTagMapping),
+        'thermostat_mode',
+      ] as K[]
+    ).forEach((capability: K) => {
       this.registerCapabilityListener(
         capability,
         async (value: SetCapabilities[T][K]): Promise<void> => {
-          await this.onCapability(capability as K, value)
+          await this.onCapability(capability, value)
         },
       )
     })
@@ -602,7 +625,7 @@ abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilityValues<
-    K extends keyof OpCapabilities[T],
+    K extends Extract<keyof OpCapabilities[T], string>,
     D extends DeviceData[T] | ListDevice[T]['Device'],
   >(
     capabilityTagEntries: [K, OpDeviceData<T>][] | null,
@@ -616,13 +639,13 @@ abstract class BaseMELCloudDevice<
         async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
           if (tag in data) {
             const value: OpCapabilities[T][K] = this.convertFromDevice(
-              capability as Extract<K, string>,
+              capability,
               data[tag as keyof D] as
                 | NonEffectiveFlagsValueOf<DeviceData[T]>
                 | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
             )
             await this.setCapabilityValue(
-              capability as Extract<K, string>,
+              capability,
               value as Capabilities<T>[K],
             )
           }
@@ -645,20 +668,16 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  #setListCapabilityTagMappings(): void {
+  #setListCapabilityTagMappings<
+    K extends Extract<keyof OpCapabilities[T], string>,
+  >(): void {
     this.#listCapabilityTagMapping = this.#cleanMapping(
       this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
     )
     this.#listOnlyCapabilityTagEntries = (
-      Object.entries(this.#listCapabilityTagMapping) as [
-        Extract<keyof OpCapabilities[T], string>,
-        OpDeviceData<T>,
-      ][]
+      Object.entries(this.#listCapabilityTagMapping) as [K, OpDeviceData<T>][]
     ).filter(
-      ([capability]: [
-        Extract<keyof OpCapabilities[T], string>,
-        OpDeviceData<T>,
-      ]) =>
+      ([capability]: [K, OpDeviceData<T>]) =>
         !Object.keys({
           ...this.#setCapabilityTagMapping,
           ...this.#getCapabilityTagMapping,
@@ -666,9 +685,10 @@ abstract class BaseMELCloudDevice<
     )
   }
 
-  #setReportCapabilityTagEntries(
-    totals: boolean[] | boolean = [false, true],
-  ): void {
+  #setReportCapabilityTagEntries<
+    K extends Extract<keyof ReportCapabilities[T], string>,
+    L extends keyof ReportData[T],
+  >(totals: boolean[] | boolean = [false, true]): void {
     ;(Array.isArray(totals) ? totals : [totals]).forEach((total: boolean) => {
       this.#reportCapabilityTagEntries[String(total) as BooleanString] =
         Object.entries(
@@ -676,12 +696,9 @@ abstract class BaseMELCloudDevice<
             this.driver
               .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
           ),
-        ).filter(([capability]: [string, keyof ReportData[T]]) =>
+        ).filter(([capability]: [string, L]) =>
           filterEnergyKeys(capability, total),
-        ) as [
-          Extract<keyof ReportCapabilities[T], string>,
-          (keyof ReportData[T])[],
-        ][]
+        ) as [K, L[]][]
     })
   }
 
@@ -695,27 +712,28 @@ abstract class BaseMELCloudDevice<
       Extract<keyof OpCapabilities[T], string>,
       OpDeviceData<T>,
     ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
-    const keysToUpdateLast: string[] = [
-      'operation_mode_state.zone1',
-      'operation_mode_state.zone2',
-    ]
     /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
-    const capabilityTagEntries: {
-      last?: [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
-      regular?: [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
-    } = Object.groupBy<
-      'last' | 'regular',
+    const {
+      0: firstCapabilitiesToUpdate,
+      1: lastCapabilitiesToUpdate,
+    }: Partial<
+      Record<
+        typeof NUMBER_0 | typeof NUMBER_1,
+        [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
+      >
+    > = Object.groupBy<
+      number,
       [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>]
-    >(
-      updateCapabilityTagEntries,
-      ([capability]: [
-        Extract<keyof OpCapabilities[T], string>,
-        OpDeviceData<T>,
-      ]) => (keysToUpdateLast.includes(capability) ? 'last' : 'regular'),
+    >(updateCapabilityTagEntries, ([capability]) =>
+      Number(
+        (this.driver.lastCapabilitiesToUpdate as string[]).includes(
+          capability as string,
+        ),
+      ),
     )
     /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
-    await this.#setCapabilityValues(capabilityTagEntries.regular ?? null, data)
-    await this.#setCapabilityValues(capabilityTagEntries.last ?? null, data)
+    await this.#setCapabilityValues(firstCapabilitiesToUpdate ?? null, data)
+    await this.#setCapabilityValues(lastCapabilitiesToUpdate ?? null, data)
     await this.updateThermostatMode()
   }
 
@@ -733,10 +751,10 @@ abstract class BaseMELCloudDevice<
     }
     await Promise.all(
       this.#reportCapabilityTagEntries[String(total) as BooleanString].map(
-        async <K extends keyof ReportCapabilities[T]>([capability, tags]: [
-          Extract<K, string>,
-          (keyof ReportData[T])[],
-        ]): Promise<void> => {
+        async <
+          K extends Extract<keyof ReportCapabilities[T], string>,
+          L extends keyof ReportData[T],
+        >([capability, tags]: [K, L[]]): Promise<void> => {
           switch (true) {
             case capability.includes('cop'):
               await this.setCapabilityValue(

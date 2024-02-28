@@ -27,6 +27,11 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   public readonly getCapabilityTagMapping: GetCapabilityTagMapping['Atw'] =
     getCapabilityTagMappingAtw
 
+  public readonly lastCapabilitiesToUpdate: (keyof OpCapabilities['Atw'])[] = [
+    'operation_mode_state.zone1',
+    'operation_mode_state.zone2',
+  ]
+
   public readonly listCapabilityTagMapping: ListCapabilityTagMapping['Atw'] =
     listCapabilityTagMappingAtw
 
@@ -101,17 +106,17 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getCapabilitiesOptions(): Partial<CapabilitiesOptions['Atw']> {
-    return {}
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getStore({
+  public getStore({
     CanCool: canCool,
     HasZone2: hasZone2,
     MaxTankTemperature: maxTankTemperature,
   }: ListDevice['Atw']['Device']): Store['Atw'] {
     return { canCool, hasZone2, maxTankTemperature }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilitiesOptions(): Partial<CapabilitiesOptions['Atw']> {
+    return {}
   }
 
   protected registerRunListeners(): void {

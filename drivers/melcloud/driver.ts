@@ -17,8 +17,8 @@ import {
   type ListDevice,
   effectiveFlagsAta,
 } from '../../melcloud/types'
-import { NUMBER_0, NUMBER_1 } from '../../constants'
 import BaseMELCloudDriver from '../../bases/driver'
+import { NUMBER_1 } from '../../constants'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   public readonly effectiveFlags: typeof effectiveFlagsAta = effectiveFlagsAta
@@ -56,20 +56,7 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getCapabilitiesOptions(
-    device: ListDevice['Ata']['Device'],
-  ): CapabilitiesOptions['Ata'] {
-    return {
-      fan_power: {
-        max: device.NumberOfFanSpeeds,
-        min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
-        step: NUMBER_1,
-      },
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getStore({
+  public getStore({
     MaxTempAutomatic: maxTempAutomatic,
     MaxTempCoolDry: maxTempCoolDry,
     MaxTempHeat: maxTempHeat,
@@ -84,6 +71,19 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
       minTempAutomatic,
       minTempCoolDry,
       minTempHeat,
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilitiesOptions(
+    device: ListDevice['Ata']['Device'],
+  ): CapabilitiesOptions['Ata'] {
+    return {
+      fan_power: {
+        max: device.NumberOfFanSpeeds,
+        min: Number(!device.HasAutomaticFanSpeed),
+        step: NUMBER_1,
+      },
     }
   }
 
