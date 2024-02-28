@@ -322,9 +322,7 @@ export interface ReportCapabilities {
 }
 export type Capabilities<T extends keyof typeof DeviceType> =
   OpCapabilities[T] &
-    ReportCapabilities[T] & {
-      thermostat_mode: ThermostatMode
-    }
+    ReportCapabilities[T] & { thermostat_mode: ThermostatMode }
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
