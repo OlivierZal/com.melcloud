@@ -1,5 +1,6 @@
 import {
   type Capabilities,
+  type CapabilitiesOptions,
   type FlowArgsErv,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
@@ -17,6 +18,7 @@ import {
   type ListDevice,
   effectiveFlagsErv,
 } from '../../melcloud/types'
+import { NUMBER_0, NUMBER_1 } from '../../constants'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
@@ -56,6 +58,19 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
       ...(hasCO2Sensor ? ['measure_co2'] : []),
       ...(hasPM25Sensor ? ['measure_pm25'] : []),
     ]
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilitiesOptions(
+    device: ListDevice['Erv']['Device'],
+  ): CapabilitiesOptions['Erv'] {
+    return {
+      fan_power: {
+        max: device.NumberOfFanSpeeds,
+        min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
+        step: NUMBER_1,
+      },
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

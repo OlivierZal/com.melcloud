@@ -1,6 +1,6 @@
 import {
   type DeviceData,
-  type DeviceDataFromList,
+  type ListDevice,
   type NonEffectiveFlagsValueOf,
   OperationModeState,
   OperationModeZone,
@@ -33,7 +33,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     capability: Extract<K, string>,
     value:
       | NonEffectiveFlagsValueOf<DeviceData['Atw']>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList['Atw']>,
+      | NonEffectiveFlagsValueOf<ListDevice['Atw']['Device']>,
   ): OpCapabilities['Atw'][K] {
     switch (true) {
       case capability === 'alarm_generic.defrost_mode':

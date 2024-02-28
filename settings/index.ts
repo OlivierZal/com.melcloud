@@ -1292,18 +1292,18 @@ const addEventListeners = (homey: Homey): void => {
 const load = async (homey: Homey): Promise<void> => {
   addEventListeners(homey)
   generateCommonChildrenElements(homey)
-  if (typeof homeySettings.contextKey !== 'undefined') {
+  if (typeof homeySettings.contextKey === 'undefined') {
+    needsAuthentication()
+  } else {
     Object.keys(deviceSettings).forEach((driverId: string) => {
       generateCheckboxChildrenElements(homey, driverId)
     })
     try {
       await generate(homey)
-      return
     } catch (error: unknown) {
-      // Pass
+      needsAuthentication()
     }
   }
-  needsAuthentication()
 }
 
 // eslint-disable-next-line func-style

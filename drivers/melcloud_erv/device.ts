@@ -1,6 +1,6 @@
 import {
   type DeviceData,
-  type DeviceDataFromList,
+  type ListDevice,
   type NonEffectiveFlagsValueOf,
   type SetDeviceData,
   VentilationMode,
@@ -16,7 +16,7 @@ export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData['Erv']>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList['Erv']>,
+      | NonEffectiveFlagsValueOf<ListDevice['Erv']['Device']>,
   ): OpCapabilities['Erv'][K] {
     return capability === 'ventilation_mode'
       ? (VentilationMode[value as VentilationMode] as OpCapabilities['Erv'][K])

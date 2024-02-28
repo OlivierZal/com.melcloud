@@ -1,7 +1,7 @@
 import type {
   BooleanString,
   Capabilities,
-  CapabilityOptionsEntries,
+  CapabilitiesOptions,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -19,7 +19,6 @@ import type {
 } from '../types'
 import {
   type DeviceData,
-  type DeviceDataFromList,
   type DeviceType,
   FLAG_UNCHANGED,
   type ListDevice,
@@ -120,10 +119,10 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public getCapabilityOptions<K extends keyof CapabilityOptionsEntries>(
-    capability: K,
-  ): CapabilityOptionsEntries[K] {
-    return super.getCapabilityOptions(capability) as CapabilityOptionsEntries[K]
+  public getCapabilityOptions<K extends keyof CapabilitiesOptions[T]>(
+    capability: Extract<K, string>,
+  ): CapabilitiesOptions[T][K] {
+    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
   public getCapabilityValue<K extends keyof Capabilities<T>>(
@@ -241,9 +240,9 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async setCapabilityOptions<K extends keyof CapabilityOptionsEntries>(
-    capability: K,
-    options: CapabilityOptionsEntries[K],
+  public async setCapabilityOptions<K extends keyof CapabilitiesOptions[T]>(
+    capability: Extract<K, string>,
+    options: CapabilitiesOptions[T][K] & object,
   ): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
@@ -607,7 +606,7 @@ abstract class BaseMELCloudDevice<
               capability as Extract<K, string>,
               data[tag as keyof D] as
                 | NonEffectiveFlagsValueOf<DeviceData[T]>
-                | NonEffectiveFlagsValueOf<DeviceDataFromList[T]>,
+                | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
             )
             await this.setCapabilityValue(
               capability as Extract<K, string>,
@@ -757,7 +756,7 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData[T]>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList[T]>,
+      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
   ): OpCapabilities[T][K]
 
   protected abstract convertToDevice<K extends keyof SetCapabilities[T]>(

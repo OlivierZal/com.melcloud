@@ -1,5 +1,5 @@
-import { DeviceType, effectiveFlagsAta } from '../../melcloud/types'
 import {
+  type CapabilitiesOptions,
   type FlowArgsAta,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
@@ -12,6 +12,12 @@ import {
   reportCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from '../../types'
+import {
+  DeviceType,
+  type ListDevice,
+  effectiveFlagsAta,
+} from '../../melcloud/types'
+import { NUMBER_0, NUMBER_1 } from '../../constants'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
@@ -47,6 +53,19 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
       }).filter((capability: string) => capability !== 'measure_power.wifi'),
       'thermostat_mode',
     ]
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilitiesOptions(
+    device: ListDevice['Ata']['Device'],
+  ): CapabilitiesOptions['Ata'] {
+    return {
+      fan_power: {
+        max: device.NumberOfFanSpeeds,
+        min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
+        step: NUMBER_1,
+      },
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

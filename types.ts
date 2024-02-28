@@ -1,10 +1,10 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
   DeviceData,
-  DeviceDataFromList,
   DeviceType,
   FrostProtectionPostData,
   Horizontal,
+  ListDevice,
   LoginCredentials,
   NonEffectiveFlagsKeyOf,
   OperationMode,
@@ -130,22 +130,9 @@ export interface LoginDriverSetting extends DriverSetting {
 export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
-type RangeOptions = object & {
-  readonly max: number
-  readonly min: number
-  readonly step: number
-}
-
-export interface CapabilityOptionsEntries {
-  readonly 'target_temperature.flow_cool': RangeOptions
-  readonly 'target_temperature.flow_cool_zone2': RangeOptions
-  readonly 'target_temperature.flow_heat': RangeOptions
-  readonly 'target_temperature.flow_heat_zone2': RangeOptions
-}
-
 export type OpDeviceData<T extends keyof typeof DeviceType> =
   | NonEffectiveFlagsKeyOf<DeviceData[T]>
-  | NonEffectiveFlagsKeyOf<DeviceDataFromList[T]>
+  | NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>
 
 interface SetCapabilitiesCommon {
   onoff?: boolean
@@ -344,7 +331,7 @@ export const getCapabilityTagMappingAta: Record<
 type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<DeviceDataFromList['Ata']>
+  NonEffectiveFlagsKeyOf<ListDevice['Ata']['Device']>
 > = {
   fan_power: 'FanSpeed',
   fan_power_state: 'ActualFanSpeed',
@@ -430,7 +417,7 @@ export const getCapabilityTagMappingAtw: Record<
 type GetCapabilityTagMappingAtw = typeof getCapabilityTagMappingAtw
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<DeviceDataFromList['Atw']>
+  NonEffectiveFlagsKeyOf<ListDevice['Atw']['Device']>
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',
@@ -541,7 +528,7 @@ export const getCapabilityTagMappingErv: Record<
 type GetCapabilityTagMappingErv = typeof getCapabilityTagMappingErv
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<DeviceDataFromList['Erv']>
+  NonEffectiveFlagsKeyOf<ListDevice['Erv']['Device']>
 > = {
   measure_pm25: 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',
@@ -580,14 +567,24 @@ export type FlowArgsAtw = {
 } & { readonly device: AtwDevice }
 export type FlowArgsErv = SetCapabilitiesErv & { readonly device: ErvDevice }
 
+interface RangeOptions {
+  readonly max: number
+  readonly min: number
+  readonly step: number
+}
 export interface CapabilitiesOptions {
   readonly Ata: { readonly fan_power: RangeOptions }
-  readonly Atw: Record<string, never>
+  readonly Atw: {
+    readonly 'target_temperature.flow_cool': RangeOptions
+    readonly 'target_temperature.flow_cool_zone2': RangeOptions
+    readonly 'target_temperature.flow_heat': RangeOptions
+    readonly 'target_temperature.flow_heat_zone2': RangeOptions
+  }
   readonly Erv: { readonly fan_power: RangeOptions }
 }
 export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: CapabilitiesOptions[T]
+  readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store[T]

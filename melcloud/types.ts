@@ -124,6 +124,12 @@ export interface DeviceDataFromListAta
   readonly DeviceType: DeviceType.Ata
   readonly FanSpeed: FanSpeed
   readonly HasAutomaticFanSpeed: boolean
+  readonly MaxTempAutomatic: number
+  readonly MaxTempCoolDry: number
+  readonly MaxTempHeat: number
+  readonly MinTempAutomatic: number
+  readonly MinTempCoolDry: number
+  readonly MinTempHeat: number
   readonly NumberOfFanSpeeds: number
   readonly VaneHorizontalDirection: Horizontal
   readonly VaneVerticalDirection: Vertical
@@ -256,11 +262,6 @@ export interface DeviceDataFromGet {
   readonly Ata: DeviceDataFromGetAta
   readonly Atw: DeviceDataFromGetAtw
   readonly Erv: DeviceDataFromGetErv
-}
-export interface DeviceDataFromList {
-  readonly Ata: DeviceDataFromListAta
-  readonly Atw: DeviceDataFromListAtw
-  readonly Erv: DeviceDataFromListErv
 }
 
 export interface ReportPostData {

@@ -1,5 +1,6 @@
 import {
   type Capabilities,
+  type CapabilitiesOptions,
   type FlowArgsAtw,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
@@ -97,6 +98,11 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
           ]
         : []),
     ]
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilitiesOptions(): Partial<CapabilitiesOptions['Atw']> {
+    return {}
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

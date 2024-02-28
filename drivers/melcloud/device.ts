@@ -1,8 +1,8 @@
 import {
   type DeviceData,
-  type DeviceDataFromList,
   FanSpeed,
   Horizontal,
+  type ListDevice,
   type NonEffectiveFlagsValueOf,
   OperationMode,
   type SetDeviceData,
@@ -35,7 +35,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     capability: K,
     value:
       | NonEffectiveFlagsValueOf<DeviceData['Ata']>
-      | NonEffectiveFlagsValueOf<DeviceDataFromList['Ata']>,
+      | NonEffectiveFlagsValueOf<ListDevice['Ata']['Device']>,
   ): OpCapabilities['Ata'][K] {
     switch (capability) {
       case 'operation_mode':

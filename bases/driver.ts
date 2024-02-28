@@ -14,7 +14,6 @@ import {
   type LoginCredentials,
   type ReportData,
 } from '../melcloud/types'
-import { NUMBER_0, NUMBER_1 } from '../constants'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
@@ -72,24 +71,6 @@ export default abstract class BaseMELCloudDriver<
     )
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getCapabilityOptions(
-    capabilities: string[],
-    device: ListDevice[T]['Device'],
-  ): CapabilitiesOptions[T] {
-    return (
-      capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
-        ? {
-            fan_power: {
-              max: device.NumberOfFanSpeeds,
-              min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
-              step: NUMBER_1,
-            },
-          }
-        : {}
-    ) as CapabilitiesOptions[T]
-  }
-
   // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return (this.#app.devicesPerType[this.deviceType] ?? []).map(
@@ -103,7 +84,7 @@ export default abstract class BaseMELCloudDriver<
         const capabilities: string[] = this.getCapabilities(store)
         return {
           capabilities,
-          capabilitiesOptions: this.getCapabilityOptions(capabilities, device),
+          capabilitiesOptions: this.getCapabilitiesOptions(device),
           data: { buildingid, id },
           name,
           store,
@@ -140,6 +121,10 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public abstract getCapabilities(store: Store[T]): string[]
+
+  protected abstract getCapabilitiesOptions(
+    device: ListDevice[T]['Device'],
+  ): Partial<CapabilitiesOptions[T]>
 
   protected abstract getStore(device: ListDevice[T]['Device']): Store[T]
 
