@@ -1,4 +1,5 @@
 import type {
+  CapabilitiesOptions,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -8,31 +9,15 @@ import type {
 } from '../types'
 import {
   DeviceType,
-  type ListDeviceAny,
+  type EffectiveFlags,
+  type ListDevice,
   type LoginCredentials,
   type ReportData,
-  type effectiveFlagsAta,
-  type effectiveFlagsAtw,
-  type effectiveFlagsErv,
 } from '../melcloud/types'
 import { NUMBER_0, NUMBER_1 } from '../constants'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import type PairSession from 'homey/lib/PairSession'
-
-const getCapabilityOptions = (
-  capabilities: string[],
-  device: ListDeviceAny['Device'],
-): DeviceDetails['capabilitiesOptions'] =>
-  capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
-    ? {
-        fan_power: {
-          max: device.NumberOfFanSpeeds,
-          min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
-          step: NUMBER_1,
-        },
-      }
-    : {}
 
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
@@ -45,10 +30,7 @@ export default abstract class BaseMELCloudDriver<
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
-  public abstract readonly effectiveFlags:
-    | typeof effectiveFlagsAta
-    | typeof effectiveFlagsAtw
-    | typeof effectiveFlagsErv
+  public abstract readonly effectiveFlags: EffectiveFlags[T]
 
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
 
@@ -78,7 +60,7 @@ export default abstract class BaseMELCloudDriver<
     )
     session.setHandler(
       'list_devices',
-      async (): Promise<DeviceDetails[]> => this.#discoverDevices(),
+      async (): Promise<DeviceDetails<T>[]> => this.#discoverDevices(),
     )
   }
 
@@ -90,26 +72,38 @@ export default abstract class BaseMELCloudDriver<
     )
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getCapabilityOptions(
+    capabilities: string[],
+    device: ListDevice[T]['Device'],
+  ): CapabilitiesOptions[T] {
+    return (
+      capabilities.includes('fan_power') && 'NumberOfFanSpeeds' in device
+        ? {
+            fan_power: {
+              max: device.NumberOfFanSpeeds,
+              min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
+              step: NUMBER_1,
+            },
+          }
+        : {}
+    ) as CapabilitiesOptions[T]
+  }
+
   // eslint-disable-next-line @typescript-eslint/require-await
-  async #discoverDevices(): Promise<DeviceDetails[]> {
+  async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return (this.#app.devicesPerType[this.deviceType] ?? []).map(
       ({
         DeviceName: name,
         DeviceID: id,
         BuildingID: buildingid,
         Device: device,
-      }): DeviceDetails => {
-        const store: Store = {
-          canCool: 'CanCool' in device ? device.CanCool : false,
-          hasCO2Sensor: 'HasCO2Sensor' in device ? device.HasCO2Sensor : false,
-          hasPM25Sensor:
-            'HasPM25Sensor' in device ? device.HasPM25Sensor : false,
-          hasZone2: 'HasZone2' in device ? device.HasZone2 : false,
-        }
-        const capabilities: string[] = this.getRequiredCapabilities(store)
+      }): DeviceDetails<T> => {
+        const store: Store[T] = this.getStore(device)
+        const capabilities: string[] = this.getCapabilities(store)
         return {
           capabilities,
-          capabilitiesOptions: getCapabilityOptions(capabilities, device),
+          capabilitiesOptions: this.getCapabilityOptions(capabilities, device),
           data: { buildingid, id },
           name,
           store,
@@ -132,18 +126,22 @@ export default abstract class BaseMELCloudDriver<
         ;(this.producedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
         ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
-          (tag) => !tag.endsWith('Consumed'),
+          (tag: Extract<keyof ReportData[T], string>) =>
+            !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as Extract<keyof ReportData[T], string>[]) = tags.filter((tag) =>
-          tag.endsWith('Consumed'),
+        ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
+          (tag: Extract<keyof ReportData[T], string>) =>
+            tag.endsWith('Consumed'),
         )
       },
     )
   }
 
-  public abstract getRequiredCapabilities(store: Store): string[]
+  public abstract getCapabilities(store: Store[T]): string[]
+
+  protected abstract getStore(device: ListDevice[T]['Device']): Store[T]
 
   protected abstract registerRunListeners(): void
 }

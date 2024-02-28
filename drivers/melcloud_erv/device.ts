@@ -1,11 +1,11 @@
 import {
-  type DeviceDataErv,
-  type DeviceDataFromListErv,
+  type DeviceData,
+  type DeviceDataFromList,
   type NonEffectiveFlagsValueOf,
-  type SetDeviceDataErv,
+  type SetDeviceData,
   VentilationMode,
 } from '../../melcloud/types'
-import type { OpCapabilities, SetCapabilitiesErv } from '../../types'
+import type { OpCapabilities, SetCapabilities } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
 
 export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
@@ -15,25 +15,25 @@ export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
   protected convertFromDevice<K extends keyof OpCapabilities['Erv']>(
     capability: K,
     value:
-      | NonEffectiveFlagsValueOf<DeviceDataErv>
-      | NonEffectiveFlagsValueOf<DeviceDataFromListErv>,
+      | NonEffectiveFlagsValueOf<DeviceData['Erv']>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList['Erv']>,
   ): OpCapabilities['Erv'][K] {
     return capability === 'ventilation_mode'
       ? (VentilationMode[value as VentilationMode] as OpCapabilities['Erv'][K])
       : (value as OpCapabilities['Erv'][K])
   }
 
-  protected convertToDevice<K extends keyof SetCapabilitiesErv>(
+  protected convertToDevice<K extends keyof SetCapabilities['Erv']>(
     capability: K,
-    value: SetCapabilitiesErv[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceDataErv> {
+    value: SetCapabilities['Erv'][K],
+  ): NonEffectiveFlagsValueOf<SetDeviceData['Erv']> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
       case 'ventilation_mode':
         return VentilationMode[value as keyof typeof VentilationMode]
       default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceDataErv>
+        return value as NonEffectiveFlagsValueOf<SetDeviceData['Erv']>
     }
   }
 

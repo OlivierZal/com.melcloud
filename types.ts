@@ -46,10 +46,15 @@ export interface Settings
 }
 
 export interface Store {
-  readonly canCool: boolean
-  readonly hasCO2Sensor: boolean
-  readonly hasPM25Sensor: boolean
-  readonly hasZone2: boolean
+  readonly Ata: Record<string, never>
+  readonly Atw: {
+    readonly canCool: boolean
+    readonly hasZone2: boolean
+  }
+  readonly Erv: {
+    readonly hasCO2Sensor: boolean
+    readonly hasPM25Sensor: boolean
+  }
 }
 
 export interface HomeySettingsUI {
@@ -125,7 +130,7 @@ export interface LoginDriverSetting extends DriverSetting {
 export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
-export type RangeOptions = object & {
+type RangeOptions = object & {
   readonly max: number
   readonly min: number
   readonly step: number
@@ -152,14 +157,14 @@ interface ListCapabilitiesCommon {
   readonly 'measure_power.wifi': number
 }
 
-export interface SetCapabilitiesAta extends SetCapabilitiesCommon {
+interface SetCapabilitiesAta extends SetCapabilitiesCommon {
   fan_power?: number
   horizontal?: keyof typeof Horizontal
   operation_mode?: keyof typeof OperationMode
   target_temperature?: number
   vertical?: keyof typeof Vertical
 }
-export type SetCapabilitiesWithThermostatModeAta = SetCapabilitiesAta & {
+type SetCapabilitiesWithThermostatModeAta = SetCapabilitiesAta & {
   thermostat_mode?: ThermostatMode
 }
 type GetCapabilitiesAta = GetCapabilitiesCommon
@@ -169,7 +174,7 @@ interface ListCapabilitiesAta extends ListCapabilitiesCommon {
   readonly horizontal: keyof typeof Horizontal
   readonly vertical: keyof typeof Vertical
 }
-export type OpCapabilitiesAta = GetCapabilitiesAta &
+type OpCapabilitiesAta = GetCapabilitiesAta &
   ListCapabilitiesAta &
   SetCapabilitiesAta
 interface ReportCapabilitiesAta {
@@ -202,7 +207,7 @@ export interface OperationModeZoneCapabilities {
   operation_mode_zone_with_cool?: keyof typeof OperationModeZone
   'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
 }
-export interface SetCapabilitiesAtw
+interface SetCapabilitiesAtw
   extends SetCapabilitiesCommon,
     OperationModeZoneCapabilities {
   'onoff.forced_hot_water'?: boolean
@@ -214,7 +219,7 @@ export interface SetCapabilitiesAtw
   'target_temperature.tank_water'?: number
   'target_temperature.zone2'?: number
 }
-export type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw & {
+type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw & {
   thermostat_mode?: ThermostatMode
 }
 interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
@@ -247,7 +252,7 @@ interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
   readonly 'measure_temperature.target_curve': number
   readonly 'measure_temperature.target_curve_zone2': number
 }
-export type OpCapabilitiesAtw = GetCapabilitiesAtw &
+type OpCapabilitiesAtw = GetCapabilitiesAtw &
   ListCapabilitiesAtw &
   SetCapabilitiesAtw
 interface ReportCapabilitiesAtw {
@@ -276,10 +281,8 @@ interface ReportCapabilitiesAtw {
   'meter_power.produced_heating'?: number
   'meter_power.produced_hotwater'?: number
 }
-export type CapabilitiesAtw = OpCapabilitiesAtw &
-  ReportCapabilitiesAtw & { thermostat_mode: ThermostatMode }
 
-export interface SetCapabilitiesErv extends SetCapabilitiesCommon {
+interface SetCapabilitiesErv extends SetCapabilitiesCommon {
   fan_power?: number
   ventilation_mode?: keyof typeof VentilationMode
 }
@@ -333,12 +336,12 @@ export const setCapabilityTagMappingAta: Record<
   target_temperature: 'SetTemperature',
   vertical: 'VaneVertical',
 } as const
-export type SetCapabilityTagMappingAta = typeof setCapabilityTagMappingAta
+type SetCapabilityTagMappingAta = typeof setCapabilityTagMappingAta
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
   NonEffectiveFlagsKeyOf<DeviceData['Ata']>
 > = { measure_temperature: 'RoomTemperature' } as const
-export type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
+type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
   NonEffectiveFlagsKeyOf<DeviceDataFromList['Ata']>
@@ -349,7 +352,7 @@ export const listCapabilityTagMappingAta: Record<
   'measure_power.wifi': 'WifiSignalStrength',
   vertical: 'VaneVerticalDirection',
 } as const
-export type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
+type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
 export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
   readonly Extract<keyof ReportData['Ata'], string>[]
@@ -390,7 +393,7 @@ export const reportCapabilityTagMappingAta: Record<
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
 } as const
-export type ReportCapabilityTagMappingAta = typeof reportCapabilityTagMappingAta
+type ReportCapabilityTagMappingAta = typeof reportCapabilityTagMappingAta
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
@@ -410,7 +413,7 @@ export const setCapabilityTagMappingAtw: Record<
   'target_temperature.tank_water': 'SetTankWaterTemperature',
   'target_temperature.zone2': 'SetTemperatureZone2',
 } as const
-export type SetCapabilityTagMappingAtw = typeof setCapabilityTagMappingAtw
+type SetCapabilityTagMappingAtw = typeof setCapabilityTagMappingAtw
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
   NonEffectiveFlagsKeyOf<DeviceData['Atw']>
@@ -424,7 +427,7 @@ export const getCapabilityTagMappingAtw: Record<
   'operation_mode_state.zone1': 'IdleZone1',
   'operation_mode_state.zone2': 'IdleZone2',
 } as const
-export type GetCapabilityTagMappingAtw = typeof getCapabilityTagMappingAtw
+type GetCapabilityTagMappingAtw = typeof getCapabilityTagMappingAtw
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
   NonEffectiveFlagsKeyOf<DeviceDataFromList['Atw']>
@@ -451,7 +454,7 @@ export const listCapabilityTagMappingAtw: Record<
   'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
 } as const
-export type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
+type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
 export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
   readonly Extract<keyof ReportData['Atw'], string>[]
@@ -516,7 +519,7 @@ export const reportCapabilityTagMappingAtw: Record<
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
 } as const
-export type ReportCapabilityTagMappingAtw = typeof reportCapabilityTagMappingAtw
+type ReportCapabilityTagMappingAtw = typeof reportCapabilityTagMappingAtw
 
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
@@ -526,7 +529,7 @@ export const setCapabilityTagMappingErv: Record<
   onoff: 'Power',
   ventilation_mode: 'VentilationMode',
 } as const
-export type SetCapabilityTagMappingErv = typeof setCapabilityTagMappingErv
+type SetCapabilityTagMappingErv = typeof setCapabilityTagMappingErv
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
   NonEffectiveFlagsKeyOf<DeviceData['Erv']>
@@ -535,7 +538,7 @@ export const getCapabilityTagMappingErv: Record<
   measure_temperature: 'RoomTemperature',
   'measure_temperature.outdoor': 'OutdoorTemperature',
 } as const
-export type GetCapabilityTagMappingErv = typeof getCapabilityTagMappingErv
+type GetCapabilityTagMappingErv = typeof getCapabilityTagMappingErv
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
   NonEffectiveFlagsKeyOf<DeviceDataFromList['Erv']>
@@ -543,9 +546,9 @@ export const listCapabilityTagMappingErv: Record<
   measure_pm25: 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',
 } as const
-export type ListCapabilityTagMappingErv = typeof listCapabilityTagMappingErv
+type ListCapabilityTagMappingErv = typeof listCapabilityTagMappingErv
 export const reportCapabilityTagMappingErv: Record<string, never> = {} as const
-export type ReportCapabilityTagMappingErv = typeof reportCapabilityTagMappingErv
+type ReportCapabilityTagMappingErv = typeof reportCapabilityTagMappingErv
 
 export interface SetCapabilityTagMapping {
   readonly Ata: SetCapabilityTagMappingAta
@@ -577,12 +580,17 @@ export type FlowArgsAtw = {
 } & { readonly device: AtwDevice }
 export type FlowArgsErv = SetCapabilitiesErv & { readonly device: ErvDevice }
 
-export interface DeviceDetails {
+export interface CapabilitiesOptions {
+  readonly Ata: { readonly fan_power: RangeOptions }
+  readonly Atw: Record<string, never>
+  readonly Erv: { readonly fan_power: RangeOptions }
+}
+export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: { readonly fan_power?: RangeOptions }
+  readonly capabilitiesOptions: CapabilitiesOptions[T]
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
-  readonly store: Store
+  readonly store: Store[T]
 }
 
 export interface ErrorLogQuery {

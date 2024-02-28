@@ -90,8 +90,8 @@ abstract class BaseMELCloudDevice<
 
   readonly #app: MELCloudApp = this.homey.app as MELCloudApp
 
-  readonly #data: DeviceDetails['data'] =
-    this.getData() as DeviceDetails['data']
+  readonly #data: DeviceDetails<T>['data'] =
+    this.getData() as DeviceDetails<T>['data']
 
   readonly #id: number = this.#data.id
 
@@ -429,7 +429,9 @@ abstract class BaseMELCloudDevice<
   async #handleCapabilities(): Promise<void> {
     const settings: Settings = this.getSettings() as Settings
     const capabilities: string[] = [
-      ...this.driver.getRequiredCapabilities(this.getStore() as Store),
+      ...this.driver.getCapabilities(
+        this.getStore() as Store['Ata'] & Store['Atw'] & Store['Erv'],
+      ),
       ...Object.keys(settings).filter(
         (setting: string) =>
           this.#isCapability(setting) &&

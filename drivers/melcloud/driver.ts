@@ -1,11 +1,12 @@
 import { DeviceType, effectiveFlagsAta } from '../../melcloud/types'
 import {
   type FlowArgsAta,
-  type GetCapabilityTagMappingAta,
-  type ListCapabilityTagMappingAta,
-  type ReportCapabilityTagMappingAta,
-  type SetCapabilitiesAta,
-  type SetCapabilityTagMappingAta,
+  type GetCapabilityTagMapping,
+  type ListCapabilityTagMapping,
+  type ReportCapabilityTagMapping,
+  type SetCapabilities,
+  type SetCapabilityTagMapping,
+  type Store,
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
   reportCapabilityTagMappingAta,
@@ -16,28 +17,28 @@ import BaseMELCloudDriver from '../../bases/driver'
 export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   public readonly effectiveFlags: typeof effectiveFlagsAta = effectiveFlagsAta
 
-  public readonly getCapabilityTagMapping: GetCapabilityTagMappingAta =
+  public readonly getCapabilityTagMapping: GetCapabilityTagMapping['Ata'] =
     getCapabilityTagMappingAta
 
-  public readonly listCapabilityTagMapping: ListCapabilityTagMappingAta =
+  public readonly listCapabilityTagMapping: ListCapabilityTagMapping['Ata'] =
     listCapabilityTagMappingAta
 
-  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAta =
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMapping['Ata'] =
     reportCapabilityTagMappingAta
 
-  public readonly setCapabilityTagMapping: SetCapabilityTagMappingAta =
+  public readonly setCapabilityTagMapping: SetCapabilityTagMapping['Ata'] =
     setCapabilityTagMappingAta
 
   protected readonly deviceType: DeviceType = DeviceType.Ata
 
-  readonly #flowCapabilities: (keyof SetCapabilitiesAta)[] = [
+  readonly #flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
     'operation_mode',
     'fan_power',
     'vertical',
     'horizontal',
   ]
 
-  public getRequiredCapabilities(): string[] {
+  public getCapabilities(): string[] {
     return [
       ...Object.keys({
         ...this.setCapabilityTagMapping,
@@ -48,21 +49,28 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
     ]
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getStore(): Store['Ata'] {
+    return {}
+  }
+
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach((capability: keyof SetCapabilitiesAta) => {
-      if (capability !== 'fan_power') {
+    this.#flowCapabilities.forEach(
+      (capability: keyof SetCapabilities['Ata']) => {
+        if (capability !== 'fan_power') {
+          this.homey.flow
+            .getConditionCard(`${capability}_condition`)
+            .registerRunListener(
+              (args: FlowArgsAta): boolean =>
+                args[capability] === args.device.getCapabilityValue(capability),
+            )
+        }
         this.homey.flow
-          .getConditionCard(`${capability}_condition`)
-          .registerRunListener(
-            (args: FlowArgsAta): boolean =>
-              args[capability] === args.device.getCapabilityValue(capability),
-          )
-      }
-      this.homey.flow
-        .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
-          await args.device.onCapability(capability, args[capability])
-        })
-    })
+          .getActionCard(`${capability}_action`)
+          .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+            await args.device.onCapability(capability, args[capability])
+          })
+      },
+    )
   }
 }

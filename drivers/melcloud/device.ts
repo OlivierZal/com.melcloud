@@ -1,18 +1,18 @@
 import {
-  type DeviceDataAta,
-  type DeviceDataFromListAta,
+  type DeviceData,
+  type DeviceDataFromList,
   FanSpeed,
   Horizontal,
   type NonEffectiveFlagsValueOf,
   OperationMode,
-  type SetDeviceDataAta,
+  type SetDeviceData,
   Vertical,
 } from '../../melcloud/types'
 import {
-  type OpCapabilitiesAta,
+  type OpCapabilities,
   type ReportPlanParameters,
-  type SetCapabilitiesAta,
-  type SetCapabilitiesWithThermostatModeAta,
+  type SetCapabilities,
+  type SetCapabilitiesWithThermostatMode,
   ThermostatMode,
 } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
@@ -31,32 +31,32 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof OpCapabilitiesAta>(
+  protected convertFromDevice<K extends keyof OpCapabilities['Ata']>(
     capability: K,
     value:
-      | NonEffectiveFlagsValueOf<DeviceDataAta>
-      | NonEffectiveFlagsValueOf<DeviceDataFromListAta>,
-  ): OpCapabilitiesAta[K] {
+      | NonEffectiveFlagsValueOf<DeviceData['Ata']>
+      | NonEffectiveFlagsValueOf<DeviceDataFromList['Ata']>,
+  ): OpCapabilities['Ata'][K] {
     switch (capability) {
       case 'operation_mode':
-        return OperationMode[value as OperationMode] as OpCapabilitiesAta[K]
+        return OperationMode[value as OperationMode] as OpCapabilities['Ata'][K]
       case 'vertical':
-        return Vertical[value as Vertical] as OpCapabilitiesAta[K]
+        return Vertical[value as Vertical] as OpCapabilities['Ata'][K]
       case 'horizontal':
-        return Horizontal[value as Horizontal] as OpCapabilitiesAta[K]
+        return Horizontal[value as Horizontal] as OpCapabilities['Ata'][K]
       case 'fan_power':
         return (
           value === FanSpeed.silent ? FanSpeed.auto : value
-        ) as OpCapabilitiesAta[K]
+        ) as OpCapabilities['Ata'][K]
       default:
-        return value as OpCapabilitiesAta[K]
+        return value as OpCapabilities['Ata'][K]
     }
   }
 
-  protected convertToDevice<K extends keyof SetCapabilitiesAta>(
+  protected convertToDevice<K extends keyof SetCapabilities['Ata']>(
     capability: K,
-    value: SetCapabilitiesAta[K],
-  ): NonEffectiveFlagsValueOf<SetDeviceDataAta> {
+    value: SetCapabilities['Ata'][K],
+  ): NonEffectiveFlagsValueOf<SetDeviceData['Ata']> {
     switch (capability) {
       case 'onoff':
         return this.getSetting('always_on') || (value as boolean)
@@ -67,15 +67,15 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       case 'horizontal':
         return Horizontal[value as keyof typeof Horizontal]
       default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceDataAta>
+        return value as NonEffectiveFlagsValueOf<SetDeviceData['Ata']>
     }
   }
 
   protected async specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatModeAta,
+    K extends keyof SetCapabilitiesWithThermostatMode['Ata'],
   >(
     capability: K,
-    value: SetCapabilitiesWithThermostatModeAta[K],
+    value: SetCapabilitiesWithThermostatMode['Ata'][K],
   ): Promise<void> {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off

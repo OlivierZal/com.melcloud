@@ -1,39 +1,43 @@
 import {
-  type CapabilitiesAtw,
+  type Capabilities,
   type FlowArgsAtw,
-  type GetCapabilityTagMappingAtw,
-  type ListCapabilityTagMappingAtw,
-  type OpCapabilitiesAtw,
-  type ReportCapabilityTagMappingAtw,
-  type SetCapabilitiesAtw,
-  type SetCapabilityTagMappingAtw,
+  type GetCapabilityTagMapping,
+  type ListCapabilityTagMapping,
+  type OpCapabilities,
+  type ReportCapabilityTagMapping,
+  type SetCapabilities,
+  type SetCapabilityTagMapping,
   type Store,
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   reportCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
 } from '../../types'
-import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
+import {
+  DeviceType,
+  type ListDevice,
+  effectiveFlagsAtw,
+} from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   public readonly effectiveFlags: typeof effectiveFlagsAtw = effectiveFlagsAtw
 
-  public readonly getCapabilityTagMapping: GetCapabilityTagMappingAtw =
+  public readonly getCapabilityTagMapping: GetCapabilityTagMapping['Atw'] =
     getCapabilityTagMappingAtw
 
-  public readonly listCapabilityTagMapping: ListCapabilityTagMappingAtw =
+  public readonly listCapabilityTagMapping: ListCapabilityTagMapping['Atw'] =
     listCapabilityTagMappingAtw
 
-  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingAtw =
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMapping['Atw'] =
     reportCapabilityTagMappingAtw
 
-  public readonly setCapabilityTagMapping: SetCapabilityTagMappingAtw =
+  public readonly setCapabilityTagMapping: SetCapabilityTagMapping['Atw'] =
     setCapabilityTagMappingAtw
 
   protected readonly deviceType: DeviceType = DeviceType.Atw
 
-  readonly #capabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #capabilities: (keyof OpCapabilities['Atw'])[] = [
     'onoff',
     'onoff.forced_hot_water',
     'measure_temperature',
@@ -50,29 +54,29 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.produced',
   ]
 
-  readonly #coolCapabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #coolCapabilities: (keyof OpCapabilities['Atw'])[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  readonly #coolZone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #coolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  readonly #flowCapabilities: (keyof CapabilitiesAtw)[] =
+  readonly #flowCapabilities: (keyof Capabilities<'Atw'>)[] =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as (keyof CapabilitiesAtw)[]
+    this.manifest.capabilities as (keyof Capabilities<'Atw'>)[]
 
-  readonly #notCoolCapabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #notCoolCapabilities: (keyof OpCapabilities['Atw'])[] = [
     'operation_mode_zone',
   ]
 
-  readonly #notCoolZone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #notCoolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
     'operation_mode_zone.zone2',
   ]
 
-  readonly #zone2Capabilities: (keyof OpCapabilitiesAtw)[] = [
+  readonly #zone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -80,7 +84,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_state.zone2',
   ]
 
-  public getRequiredCapabilities({ canCool, hasZone2 }: Store): string[] {
+  public getCapabilities({ canCool, hasZone2 }: Store['Atw']): string[] {
     return [
       ...this.#capabilities,
       ...(canCool ? this.#coolCapabilities : this.#notCoolCapabilities),
@@ -95,8 +99,16 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     ]
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getStore({
+    CanCool: canCool,
+    HasZone2: hasZone2,
+  }: ListDevice['Atw']['Device']): Store['Atw'] {
+    return { canCool, hasZone2 }
+  }
+
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach((capability: keyof CapabilitiesAtw) => {
+    this.#flowCapabilities.forEach((capability: keyof Capabilities<'Atw'>) => {
       switch (true) {
         case capability.startsWith('alarm_generic'):
         case capability.startsWith('onoff.'):
@@ -113,7 +125,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     })
   }
 
-  #registerBooleanRunListener(capability: keyof CapabilitiesAtw): void {
+  #registerBooleanRunListener(capability: keyof Capabilities<'Atw'>): void {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
@@ -125,14 +137,16 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
           await args.device.onCapability(
-            capability as keyof SetCapabilitiesAtw,
+            capability as keyof SetCapabilities['Atw'],
             args.onoff,
           )
         })
     }
   }
 
-  #registerOperationModeRunListener(capability: keyof CapabilitiesAtw): void {
+  #registerOperationModeRunListener(
+    capability: keyof Capabilities<'Atw'>,
+  ): void {
     const capabilityArg: 'operation_mode_state' | 'operation_mode_zone' =
       capability.startsWith('operation_mode_state')
         ? 'operation_mode_state'
@@ -148,7 +162,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
           await args.device.onCapability(
-            capability as keyof SetCapabilitiesAtw,
+            capability as keyof SetCapabilities['Atw'],
             args.operation_mode_zone,
           )
         })
@@ -156,13 +170,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   }
 
   #registerTargetTemperatureRunListener(
-    capability: keyof CapabilitiesAtw,
+    capability: keyof Capabilities<'Atw'>,
   ): void {
     this.homey.flow
       .getActionCard(`${capability}_action`)
       .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
         await args.device.onCapability(
-          capability as keyof SetCapabilitiesAtw,
+          capability as keyof SetCapabilities['Atw'],
           args.target_temperature,
         )
       })

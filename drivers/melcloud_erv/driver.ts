@@ -1,49 +1,54 @@
-import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import {
+  type Capabilities,
   type FlowArgsErv,
-  type GetCapabilityTagMappingErv,
-  type ListCapabilityTagMappingErv,
-  type ReportCapabilityTagMappingErv,
-  type SetCapabilitiesErv,
-  type SetCapabilityTagMappingErv,
+  type GetCapabilityTagMapping,
+  type ListCapabilityTagMapping,
+  type ReportCapabilityTagMapping,
+  type SetCapabilities,
+  type SetCapabilityTagMapping,
   type Store,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
   reportCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types'
+import {
+  DeviceType,
+  type ListDevice,
+  effectiveFlagsErv,
+} from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   public readonly effectiveFlags: typeof effectiveFlagsErv = effectiveFlagsErv
 
-  public readonly getCapabilityTagMapping: GetCapabilityTagMappingErv =
+  public readonly getCapabilityTagMapping: GetCapabilityTagMapping['Erv'] =
     getCapabilityTagMappingErv
 
-  public readonly listCapabilityTagMapping: ListCapabilityTagMappingErv =
+  public readonly listCapabilityTagMapping: ListCapabilityTagMapping['Erv'] =
     listCapabilityTagMappingErv
 
-  public readonly reportCapabilityTagMapping: ReportCapabilityTagMappingErv =
+  public readonly reportCapabilityTagMapping: ReportCapabilityTagMapping['Erv'] =
     reportCapabilityTagMappingErv
 
-  public readonly setCapabilityTagMapping: SetCapabilityTagMappingErv =
+  public readonly setCapabilityTagMapping: SetCapabilityTagMapping['Erv'] =
     setCapabilityTagMappingErv
 
   protected readonly deviceType: DeviceType = DeviceType.Erv
 
-  readonly #flowCapabilities: (keyof SetCapabilitiesErv)[] = [
+  readonly #flowCapabilities: (keyof SetCapabilities['Erv'])[] = [
     'ventilation_mode',
     'fan_power',
   ]
 
-  public getRequiredCapabilities({
+  public getCapabilities({
     hasCO2Sensor,
     hasPM25Sensor,
-  }: Store): string[] {
+  }: Store['Erv']): string[] {
     return [
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ...(this.manifest.capabilities as string[]).filter(
-        (capability: string) =>
+      ...(this.manifest.capabilities as (keyof Capabilities<'Erv'>)[]).filter(
+        (capability: keyof Capabilities<'Erv'>) =>
           !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
             capability,
           ),
@@ -53,8 +58,16 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
     ]
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected getStore({
+    HasCO2Sensor: hasCO2Sensor,
+    HasPM25Sensor: hasPM25Sensor,
+  }: ListDevice['Erv']['Device']): Store['Erv'] {
+    return { hasCO2Sensor, hasPM25Sensor }
+  }
+
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach((capability: keyof SetCapabilitiesErv) => {
+    this.#flowCapabilities.forEach((capability: keyof SetCapabilities['Erv']) => {
       if (capability !== 'fan_power') {
         this.homey.flow
           .getConditionCard(`${capability}_condition`)
