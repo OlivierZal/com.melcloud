@@ -139,6 +139,12 @@ abstract class BaseMELCloudDevice<
     return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
+  public getStoreValue<K extends keyof Store[T]>(
+    key: Extract<K, string>,
+  ): Store[T][K] {
+    return super.getStoreValue(key) as Store[T][K]
+  }
+
   public async onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode[T],
   >(
@@ -255,6 +261,13 @@ abstract class BaseMELCloudDevice<
       await super.setCapabilityValue(capability, value)
       this.log('Capability', capability, 'is', value)
     }
+  }
+
+  public async setStoreValue<K extends keyof Store[T]>(
+    key: Extract<K, string>,
+    value: Store[T][K],
+  ): Promise<void> {
+    await super.setStoreValue(key, value)
   }
 
   public async setWarning(warning: string | null): Promise<void> {

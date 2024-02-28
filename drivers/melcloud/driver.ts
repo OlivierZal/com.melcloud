@@ -69,8 +69,22 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getStore(): Store['Ata'] {
-    return {}
+  protected getStore({
+    MaxTempAutomatic: maxTempAutomatic,
+    MaxTempCoolDry: maxTempCoolDry,
+    MaxTempHeat: maxTempHeat,
+    MinTempAutomatic: minTempAutomatic,
+    MinTempCoolDry: minTempCoolDry,
+    MinTempHeat: minTempHeat,
+  }: ListDevice['Ata']['Device']): Store['Ata'] {
+    return {
+      maxTempAutomatic,
+      maxTempCoolDry,
+      maxTempHeat,
+      minTempAutomatic,
+      minTempCoolDry,
+      minTempHeat,
+    }
   }
 
   protected registerRunListeners(): void {

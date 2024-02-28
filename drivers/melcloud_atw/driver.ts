@@ -109,8 +109,9 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   protected getStore({
     CanCool: canCool,
     HasZone2: hasZone2,
+    MaxTankTemperature: maxTankTemperature,
   }: ListDevice['Atw']['Device']): Store['Atw'] {
-    return { canCool, hasZone2 }
+    return { canCool, hasZone2, maxTankTemperature }
   }
 
   protected registerRunListeners(): void {

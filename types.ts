@@ -46,8 +46,19 @@ export interface Settings
 }
 
 export interface Store {
-  readonly Ata: Record<string, never>
-  readonly Atw: { readonly canCool: boolean; readonly hasZone2: boolean }
+  readonly Ata: {
+    readonly maxTempAutomatic: number
+    readonly maxTempCoolDry: number
+    readonly maxTempHeat: number
+    readonly minTempAutomatic: number
+    readonly minTempCoolDry: number
+    readonly minTempHeat: number
+  }
+  readonly Atw: {
+    readonly canCool: boolean
+    readonly hasZone2: boolean
+    readonly maxTankTemperature: number
+  }
   readonly Erv: {
     readonly hasCO2Sensor: boolean
     readonly hasPM25Sensor: boolean

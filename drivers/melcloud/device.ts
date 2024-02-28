@@ -38,16 +38,16 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       | NonEffectiveFlagsValueOf<ListDevice['Ata']['Device']>,
   ): OpCapabilities['Ata'][K] {
     switch (capability) {
+      case 'fan_power':
+        return (
+          value === FanSpeed.silent ? FanSpeed.auto : value
+        ) as OpCapabilities['Ata'][K]
       case 'operation_mode':
         return OperationMode[value as OperationMode] as OpCapabilities['Ata'][K]
       case 'vertical':
         return Vertical[value as Vertical] as OpCapabilities['Ata'][K]
       case 'horizontal':
         return Horizontal[value as Horizontal] as OpCapabilities['Ata'][K]
-      case 'fan_power':
-        return (
-          value === FanSpeed.silent ? FanSpeed.auto : value
-        ) as OpCapabilities['Ata'][K]
       default:
         return value as OpCapabilities['Ata'][K]
     }
@@ -66,6 +66,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
         return Vertical[value as keyof typeof Vertical]
       case 'horizontal':
         return Horizontal[value as keyof typeof Horizontal]
+      case 'target_temperature':
+        return this.#getTargetTemperature(value as number)
       default:
         return value as NonEffectiveFlagsValueOf<SetDeviceData['Ata']>
     }
@@ -100,5 +102,20 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
         ? operationMode
         : ThermostatMode.off,
     )
+  }
+
+  readonly #getTargetTemperature = (value: number): number => {
+    const operationMode: OperationMode =
+      OperationMode[this.getRequestedOrCurrentValue('operation_mode')]
+    switch (operationMode) {
+      case OperationMode.auto:
+        return Math.max(value, this.getStoreValue('minTempAutomatic'))
+      case OperationMode.cool:
+        return Math.max(value, this.getStoreValue('minTempCoolDry'))
+      case OperationMode.heat:
+        return Math.max(value, this.getStoreValue('minTempHeat'))
+      default:
+        return value
+    }
   }
 }
