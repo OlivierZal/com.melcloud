@@ -1,26 +1,17 @@
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
   DeviceData,
-  DeviceDataAta,
-  DeviceDataAtw,
-  DeviceDataErv,
   DeviceDataFromList,
   DeviceType,
   FrostProtectionPostData,
   Horizontal,
-  ListDeviceAta,
-  ListDeviceAtw,
-  ListDeviceErv,
   LoginCredentials,
   NonEffectiveFlagsKeyOf,
   OperationMode,
   OperationModeState,
   OperationModeZone,
-  ReportDataAta,
-  ReportDataAtw,
-  SetDeviceDataAta,
-  SetDeviceDataAtw,
-  SetDeviceDataErv,
+  ReportData,
+  SetDeviceData,
   VentilationMode,
   Vertical,
 } from './melcloud/types'
@@ -337,7 +328,7 @@ export type Capabilities<T extends keyof typeof DeviceType> =
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<SetDeviceDataAta>
+  NonEffectiveFlagsKeyOf<SetDeviceData['Ata']>
 > = {
   fan_power: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
@@ -349,12 +340,12 @@ export const setCapabilityTagMappingAta: Record<
 export type SetCapabilityTagMappingAta = typeof setCapabilityTagMappingAta
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<DeviceDataAta>
+  NonEffectiveFlagsKeyOf<DeviceData['Ata']>
 > = { measure_temperature: 'RoomTemperature' } as const
 export type GetCapabilityTagMappingAta = typeof getCapabilityTagMappingAta
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<ListDeviceAta['Device']>
+  NonEffectiveFlagsKeyOf<DeviceDataFromList['Ata']>
 > = {
   fan_power: 'FanSpeed',
   fan_power_state: 'ActualFanSpeed',
@@ -365,7 +356,7 @@ export const listCapabilityTagMappingAta: Record<
 export type ListCapabilityTagMappingAta = typeof listCapabilityTagMappingAta
 export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
-  readonly Extract<keyof ReportDataAta, string>[]
+  readonly Extract<keyof ReportData['Ata'], string>[]
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
@@ -407,7 +398,7 @@ export type ReportCapabilityTagMappingAta = typeof reportCapabilityTagMappingAta
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<SetDeviceDataAtw>
+  NonEffectiveFlagsKeyOf<SetDeviceData['Atw']>
 > = {
   onoff: 'Power',
   'onoff.forced_hot_water': 'ForcedHotWaterMode',
@@ -426,7 +417,7 @@ export const setCapabilityTagMappingAtw: Record<
 export type SetCapabilityTagMappingAtw = typeof setCapabilityTagMappingAtw
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<DeviceDataAtw>
+  NonEffectiveFlagsKeyOf<DeviceData['Atw']>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
@@ -440,7 +431,7 @@ export const getCapabilityTagMappingAtw: Record<
 export type GetCapabilityTagMappingAtw = typeof getCapabilityTagMappingAtw
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<ListDeviceAtw['Device']>
+  NonEffectiveFlagsKeyOf<DeviceDataFromList['Atw']>
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',
@@ -467,7 +458,7 @@ export const listCapabilityTagMappingAtw: Record<
 export type ListCapabilityTagMappingAtw = typeof listCapabilityTagMappingAtw
 export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
-  readonly Extract<keyof ReportDataAtw, string>[]
+  readonly Extract<keyof ReportData['Atw'], string>[]
 > = {
   meter_power: [
     'TotalCoolingConsumed',
@@ -533,7 +524,7 @@ export type ReportCapabilityTagMappingAtw = typeof reportCapabilityTagMappingAtw
 
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<SetDeviceDataErv>
+  NonEffectiveFlagsKeyOf<SetDeviceData['Erv']>
 > = {
   fan_power: 'SetFanSpeed',
   onoff: 'Power',
@@ -542,7 +533,7 @@ export const setCapabilityTagMappingErv: Record<
 export type SetCapabilityTagMappingErv = typeof setCapabilityTagMappingErv
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<DeviceDataErv>
+  NonEffectiveFlagsKeyOf<DeviceData['Erv']>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
@@ -551,7 +542,7 @@ export const getCapabilityTagMappingErv: Record<
 export type GetCapabilityTagMappingErv = typeof getCapabilityTagMappingErv
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<ListDeviceErv['Device']>
+  NonEffectiveFlagsKeyOf<DeviceDataFromList['Erv']>
 > = {
   measure_pm25: 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',
