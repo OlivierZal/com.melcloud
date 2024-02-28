@@ -581,9 +581,7 @@ export type FlowArgsErv = SetCapabilitiesErv & { readonly device: ErvDevice }
 
 export interface DeviceDetails {
   readonly capabilities: readonly string[]
-  readonly capabilitiesOptions:
-    | Record<string, never>
-    | { readonly fan_power: RangeOptions }
+  readonly capabilitiesOptions: { readonly fan_power?: RangeOptions }
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store
