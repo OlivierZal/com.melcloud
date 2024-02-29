@@ -533,7 +533,7 @@ const generateErrorLogTableData = (
 
 const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
-    case count <= NUMBER_1:
+    case count < NUMBER_2:
       return homey.__(`settings.error_log.error_count.${count}`)
     case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % DIVISOR_10) &&
       ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % DIVISOR_100):
