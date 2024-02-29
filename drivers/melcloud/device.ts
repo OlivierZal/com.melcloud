@@ -111,6 +111,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       case OperationMode.auto:
         return Math.max(value, this.getStoreValue('minTempAutomatic'))
       case OperationMode.cool:
+      case OperationMode.dry:
         return Math.max(value, this.getStoreValue('minTempCoolDry'))
       case OperationMode.heat:
         return Math.max(value, this.getStoreValue('minTempHeat'))
