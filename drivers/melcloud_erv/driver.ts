@@ -18,8 +18,8 @@ import {
   type ListDevice,
   effectiveFlagsErv,
 } from '../../melcloud/types'
-import { NUMBER_0, NUMBER_1 } from '../../constants'
 import BaseMELCloudDriver from '../../bases/driver'
+import { NUMBER_1 } from '../../constants'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   public readonly effectiveFlags: typeof effectiveFlagsErv = effectiveFlagsErv
@@ -61,24 +61,24 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  public getStore({
+    HasCO2Sensor: hasCO2Sensor,
+    HasPM25Sensor: hasPM25Sensor,
+  }: ListDevice['Erv']['Device']): Store['Erv'] {
+    return { hasCO2Sensor, hasPM25Sensor }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected getCapabilitiesOptions(
     device: ListDevice['Erv']['Device'],
   ): CapabilitiesOptions['Erv'] {
     return {
       fan_power: {
         max: device.NumberOfFanSpeeds,
-        min: device.HasAutomaticFanSpeed ? NUMBER_0 : NUMBER_1,
+        min: Number(!device.HasAutomaticFanSpeed),
         step: NUMBER_1,
       },
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected getStore({
-    HasCO2Sensor: hasCO2Sensor,
-    HasPM25Sensor: hasPM25Sensor,
-  }: ListDevice['Erv']['Device']): Store['Erv'] {
-    return { hasCO2Sensor, hasPM25Sensor }
   }
 
   protected registerRunListeners(): void {

@@ -3,6 +3,7 @@ import type {
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
+  OpCapabilities,
   ReportCapabilityTagMapping,
   SetCapabilityTagMapping,
   Store,
@@ -23,6 +24,8 @@ export default abstract class BaseMELCloudDriver<
 > extends Driver {
   public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
+
+  public readonly lastCapabilitiesToUpdate: (keyof OpCapabilities[T])[] = []
 
   public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
@@ -98,35 +101,28 @@ export default abstract class BaseMELCloudDriver<
     return this.#app.applyLogin(data)
   }
 
-  #setProducedAndConsumedTagMappings(): void {
+  #setProducedAndConsumedTagMappings<
+    K extends Extract<keyof ReportData[T], string>,
+  >(): void {
     Object.entries(this.reportCapabilityTagMapping).forEach(
-      ([capability, tags]: [
-        string,
-        Extract<keyof ReportData[T], string>[],
-      ]) => {
+      ([capability, tags]: [string, K[]]) => {
         ;(this.producedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
-          (tag: Extract<keyof ReportData[T], string>) =>
-            !tag.endsWith('Consumed'),
-        )
+        ] as K[]) = tags.filter((tag: K) => !tag.endsWith('Consumed'))
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as Extract<keyof ReportData[T], string>[]) = tags.filter(
-          (tag: Extract<keyof ReportData[T], string>) =>
-            tag.endsWith('Consumed'),
-        )
+        ] as K[]) = tags.filter((tag: K) => tag.endsWith('Consumed'))
       },
     )
   }
 
   public abstract getCapabilities(store: Store[T]): string[]
 
+  public abstract getStore(device: ListDevice[T]['Device']): Store[T]
+
   protected abstract getCapabilitiesOptions(
     device: ListDevice[T]['Device'],
   ): Partial<CapabilitiesOptions[T]>
-
-  protected abstract getStore(device: ListDevice[T]['Device']): Store[T]
 
   protected abstract registerRunListeners(): void
 }
