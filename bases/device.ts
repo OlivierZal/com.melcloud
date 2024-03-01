@@ -114,9 +114,10 @@ abstract class BaseMELCloudDevice<
   }
 
   public async addCapability(capability: string): Promise<void> {
+    this.log('Adding capability', capability)
     if (!this.hasCapability(capability)) {
       await super.addCapability(capability)
-      this.log('Adding capability', capability)
+      this.log('Capability', capability, 'added')
     }
   }
 
@@ -242,9 +243,10 @@ abstract class BaseMELCloudDevice<
   }
 
   public async removeCapability(capability: string): Promise<void> {
+    this.log('Removing capability', capability)
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
-      this.log('Removing capability', capability)
+      this.log('Capability', capability, 'removed')
     }
   }
 
