@@ -257,9 +257,9 @@ abstract class BaseMELCloudDevice<
   public async setCapabilityValue<
     K extends Extract<keyof Capabilities<T>, string>,
   >(capability: K, value: Capabilities<T>[K]): Promise<void> {
+    this.log('Capability', capability, 'is', value)
     if (value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value)
-      this.log('Capability', capability, 'is', value)
     }
   }
 
@@ -267,7 +267,10 @@ abstract class BaseMELCloudDevice<
     key: Extract<K, string>,
     value: Store[T][K],
   ): Promise<void> {
-    await super.setStoreValue(key, value)
+    this.log('Store', key, 'is', value)
+    if (value !== super.getStoreValue(key)) {
+      await super.setStoreValue(key, value)
+    }
   }
 
   public async setWarning(warning: string | null): Promise<void> {
@@ -503,9 +506,7 @@ abstract class BaseMELCloudDevice<
             ListDevice['Erv']['Device'],
         ),
       ).map(async ([key, value]): Promise<void> => {
-        if (value !== this.getStoreValue(key as K)) {
-          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
-        }
+        await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
       }),
     )
   }
