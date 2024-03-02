@@ -48,8 +48,6 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   > = {
     horizontal: ((value: keyof typeof Horizontal) =>
       Horizontal[value]) as ConvertToDevice<'Ata'>,
-    onoff: ((value: boolean) =>
-      this.getSetting('always_on') || value) as ConvertToDevice<'Ata'>,
     operation_mode: ((value: keyof typeof OperationMode) =>
       OperationMode[value]) as ConvertToDevice<'Ata'>,
     target_temperature: ((value: number) =>

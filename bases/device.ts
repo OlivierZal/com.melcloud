@@ -446,8 +446,13 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value: SetCapabilities[T][K],
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
+    const newToDevice: Partial<Record<K, ConvertToDevice<T>>> = {
+      onoff: ((val: SetCapabilities[T][K]) =>
+        this.getSetting('always_on') || val) as ConvertToDevice<T>,
+      ...this.toDevice,
+    }
     return (
-      'capability' in this.toDevice ? this.toDevice[capability]?.(value) : value
+      'capability' in newToDevice ? newToDevice[capability]?.(value) : value
     ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 

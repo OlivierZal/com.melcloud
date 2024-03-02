@@ -84,8 +84,6 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilities['Atw'], ConvertToDevice<'Atw'>>
   > = {
-    onoff: ((value: boolean) =>
-      this.getSetting('always_on') || value) as ConvertToDevice<'Atw'>,
     operation_mode_zone: ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
     'operation_mode_zone.zone2': ((value: keyof typeof OperationModeZone) =>
