@@ -7,6 +7,7 @@ import type {
   ListDevice,
   LoginCredentials,
   NonEffectiveFlagsKeyOf,
+  NonEffectiveFlagsValueOf,
   OperationMode,
   OperationModeState,
   OperationModeZone,
@@ -565,14 +566,22 @@ export interface ReportCapabilityTagMapping {
   readonly Erv: ReportCapabilityTagMappingErv
 }
 
-export type FlowArgsAta = SetCapabilitiesAta & { readonly device: AtaDevice }
-export type FlowArgsAtw = {
-  readonly onoff?: boolean
-  readonly operation_mode_state?: keyof typeof OperationModeState
-  readonly operation_mode_zone?: keyof typeof OperationModeZone
-  readonly target_temperature?: number
-} & { readonly device: AtwDevice }
-export type FlowArgsErv = SetCapabilitiesErv & { readonly device: ErvDevice }
+export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
+  value:
+    | NonEffectiveFlagsValueOf<DeviceData[T]>
+    | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+) => OpCapabilities[T][keyof OpCapabilities[T]]
+
+export interface FlowArgs {
+  readonly Ata: SetCapabilitiesAta & { readonly device: AtaDevice }
+  readonly Atw: {
+    readonly onoff?: boolean
+    readonly operation_mode_state?: keyof typeof OperationModeState
+    readonly operation_mode_zone?: keyof typeof OperationModeZone
+    readonly target_temperature?: number
+  } & { readonly device: AtwDevice }
+  readonly Erv: SetCapabilitiesErv & { readonly device: ErvDevice }
+}
 
 interface RangeOptions {
   readonly max: number

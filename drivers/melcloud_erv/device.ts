@@ -8,20 +8,21 @@ import {
 import type { OpCapabilities, SetCapabilities } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
 
-export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
-  protected readonly reportPlanParameters: null = null
+type ConvertFromDevice = (
+  value:
+    | NonEffectiveFlagsValueOf<DeviceData['Erv']>
+    | NonEffectiveFlagsValueOf<ListDevice['Erv']['Device']>,
+) => OpCapabilities['Erv'][keyof OpCapabilities['Erv']]
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof OpCapabilities['Erv']>(
-    capability: K,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData['Erv']>
-      | NonEffectiveFlagsValueOf<ListDevice['Erv']['Device']>,
-  ): OpCapabilities['Erv'][K] {
-    return capability === 'ventilation_mode'
-      ? (VentilationMode[value as VentilationMode] as OpCapabilities['Erv'][K])
-      : (value as OpCapabilities['Erv'][K])
+export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
+  protected readonly fromDevice: Partial<
+    Record<keyof OpCapabilities['Erv'], ConvertFromDevice>
+  > = {
+    ventilation_mode: ((value: VentilationMode) =>
+      VentilationMode[value]) as ConvertFromDevice,
   }
+
+  protected readonly reportPlanParameters: null = null
 
   protected convertToDevice<K extends keyof SetCapabilities['Erv']>(
     capability: K,

@@ -1,12 +1,5 @@
-import {
-  type DeviceData,
-  type ListDevice,
-  type NonEffectiveFlagsValueOf,
-  OperationModeState,
-  OperationModeZone,
-  type SetDeviceData,
-} from '../../melcloud/types'
 import type {
+  ConvertFromDevice,
   OpCapabilities,
   OperationModeZoneCapabilities,
   ReportPlanParameters,
@@ -14,6 +7,12 @@ import type {
   SetCapabilitiesWithThermostatMode,
   Store,
 } from '../../types'
+import {
+  type NonEffectiveFlagsValueOf,
+  OperationModeState,
+  OperationModeZone,
+  type SetDeviceData,
+} from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
@@ -22,56 +21,68 @@ const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
 
 export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
+  protected readonly fromDevice: Partial<
+    Record<keyof OpCapabilities['Atw'], ConvertFromDevice<'Atw'>>
+  > = {
+    'alarm_generic.defrost_mode': ((value: number) =>
+      Boolean(value)) as ConvertFromDevice<'Atw'>,
+    last_legionella: ((value: string) =>
+      DateTime.fromISO(value, {
+        locale: this.homey.i18n.getLanguage(),
+      }).toLocaleString({
+        day: 'numeric',
+        month: 'short',
+        weekday: 'short',
+      })) as ConvertFromDevice<'Atw'>,
+    measure_power: ((value: number) =>
+      value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>,
+    'measure_power.produced': ((value: number) =>
+      value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>,
+    operation_mode_state: ((value: OperationModeState) =>
+      OperationModeState[value]) as ConvertFromDevice<'Atw'>,
+    'operation_mode_state.zone1': ((value: boolean) =>
+      value
+        ? OperationModeState.idle
+        : this.getCapabilityValue(
+            'operation_mode_state',
+          )) as ConvertFromDevice<'Atw'>,
+    'operation_mode_state.zone2': ((value: boolean) =>
+      value
+        ? OperationModeState.idle
+        : this.getCapabilityValue(
+            'operation_mode_state',
+          )) as ConvertFromDevice<'Atw'>,
+    operation_mode_zone: ((value: OperationModeZone) =>
+      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
+    'operation_mode_zone.zone2': ((value: OperationModeZone) =>
+      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
+    operation_mode_zone_with_cool: ((value: OperationModeZone) =>
+      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
+    'operation_mode_zone_with_cool.zone2': ((value: OperationModeZone) =>
+      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
+    'target_temperature.flow_cool': ((value: number) =>
+      value ||
+      this.getCapabilityOptions('target_temperature.flow_cool')
+        .min) as ConvertFromDevice<'Atw'>,
+    'target_temperature.flow_cool_zone2': ((value: number) =>
+      value ||
+      this.getCapabilityOptions('target_temperature.flow_cool_zone2')
+        .min) as ConvertFromDevice<'Atw'>,
+    'target_temperature.flow_heat': ((value: number) =>
+      value ||
+      this.getCapabilityOptions('target_temperature.flow_heat')
+        .min) as ConvertFromDevice<'Atw'>,
+    'target_temperature.flow_heat_zone2': ((value: number) =>
+      value ||
+      this.getCapabilityOptions('target_temperature.flow_heat_zone2')
+        .min) as ConvertFromDevice<'Atw'>,
+  }
+
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
-  }
-
-  protected convertFromDevice<K extends keyof OpCapabilities['Atw']>(
-    capability: K,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData['Atw']>
-      | NonEffectiveFlagsValueOf<ListDevice['Atw']['Device']>,
-  ): OpCapabilities['Atw'][K] {
-    switch (true) {
-      case capability === 'alarm_generic.defrost_mode':
-        return Boolean(value as number) as OpCapabilities['Atw'][K]
-      case capability === 'last_legionella':
-        return DateTime.fromISO(value as string, {
-          locale: this.homey.i18n.getLanguage(),
-        }).toLocaleString({
-          day: 'numeric',
-          month: 'short',
-          weekday: 'short',
-        }) as OpCapabilities['Atw'][K]
-      case capability === 'measure_power':
-      case capability === 'measure_power.produced':
-        return ((value as number) * K_MULTIPLIER) as OpCapabilities['Atw'][K]
-      case capability === 'operation_mode_state':
-        return OperationModeState[
-          value as OperationModeState
-        ] as OpCapabilities['Atw'][K]
-      case capability.startsWith('operation_mode_state.zone'):
-        return (
-          (value as boolean)
-            ? OperationModeState[OperationModeState.idle]
-            : this.getCapabilityValue('operation_mode_state')
-        ) as OpCapabilities['Atw'][K]
-      case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[
-          value as OperationModeZone
-        ] as OpCapabilities['Atw'][K]
-      case capability === 'target_temperature.flow_cool':
-      case capability === 'target_temperature.flow_cool_zone2':
-      case capability === 'target_temperature.flow_heat':
-      case capability === 'target_temperature.flow_heat_zone2':
-        return ((value as number) ||
-          this.getCapabilityOptions(capability).min) as OpCapabilities['Atw'][K]
-      default:
-        return value as OpCapabilities['Atw'][K]
-    }
   }
 
   protected convertToDevice<K extends keyof SetCapabilities['Atw']>(

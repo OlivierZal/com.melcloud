@@ -1,7 +1,7 @@
 import {
   type Capabilities,
   type CapabilitiesOptions,
-  type FlowArgsErv,
+  type FlowArgs,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
@@ -88,13 +88,13 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
           this.homey.flow
             .getConditionCard(`${capability}_condition`)
             .registerRunListener(
-              (args: FlowArgsErv): boolean =>
+              (args: FlowArgs['Erv']): boolean =>
                 args[capability] === args.device.getCapabilityValue(capability),
             )
         }
         this.homey.flow
           .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgsErv): Promise<void> => {
+          .registerRunListener(async (args: FlowArgs['Erv']): Promise<void> => {
             await args.device.onCapability(capability, args[capability])
           })
       },

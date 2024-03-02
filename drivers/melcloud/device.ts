@@ -1,20 +1,19 @@
 import {
-  type DeviceData,
-  FanSpeed,
-  Horizontal,
-  type ListDevice,
-  type NonEffectiveFlagsValueOf,
-  OperationMode,
-  type SetDeviceData,
-  Vertical,
-} from '../../melcloud/types'
-import {
+  type ConvertFromDevice,
   type OpCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
   type SetCapabilitiesWithThermostatMode,
   ThermostatMode,
 } from '../../types'
+import {
+  FanSpeed,
+  Horizontal,
+  type NonEffectiveFlagsValueOf,
+  OperationMode,
+  type SetDeviceData,
+  Vertical,
+} from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 
 const isThermostatMode = (
@@ -23,34 +22,26 @@ const isThermostatMode = (
   value in ThermostatMode
 
 export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
+  protected readonly fromDevice: Partial<
+    Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
+  > = {
+    fan_power: ((value: FanSpeed) =>
+      value === FanSpeed.silent
+        ? FanSpeed.auto
+        : value) as ConvertFromDevice<'Ata'>,
+    horizontal: ((value: Horizontal) =>
+      Horizontal[value]) as ConvertFromDevice<'Ata'>,
+    operation_mode: ((value: OperationMode) =>
+      OperationMode[value]) as ConvertFromDevice<'Ata'>,
+    vertical: ((value: Vertical) =>
+      Vertical[value]) as ConvertFromDevice<'Ata'>,
+  }
+
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
     values: { millisecond: 0, minute: 5, second: 0 },
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected convertFromDevice<K extends keyof OpCapabilities['Ata']>(
-    capability: K,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData['Ata']>
-      | NonEffectiveFlagsValueOf<ListDevice['Ata']['Device']>,
-  ): OpCapabilities['Ata'][K] {
-    switch (capability) {
-      case 'fan_power':
-        return (
-          value === FanSpeed.silent ? FanSpeed.auto : value
-        ) as OpCapabilities['Ata'][K]
-      case 'operation_mode':
-        return OperationMode[value as OperationMode] as OpCapabilities['Ata'][K]
-      case 'vertical':
-        return Vertical[value as Vertical] as OpCapabilities['Ata'][K]
-      case 'horizontal':
-        return Horizontal[value as Horizontal] as OpCapabilities['Ata'][K]
-      default:
-        return value as OpCapabilities['Ata'][K]
-    }
   }
 
   protected convertToDevice<K extends keyof SetCapabilities['Ata']>(

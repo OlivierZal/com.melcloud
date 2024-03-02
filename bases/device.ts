@@ -2,6 +2,7 @@ import type {
   BooleanString,
   Capabilities,
   CapabilitiesOptions,
+  ConvertFromDevice,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -102,6 +103,10 @@ abstract class BaseMELCloudDevice<
     false: NodeJS.Timeout | null
     true: NodeJS.Timeout | null
   } = { false: null, true: null }
+
+  protected abstract readonly fromDevice: Partial<
+    Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
+  >
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
@@ -419,6 +424,19 @@ abstract class BaseMELCloudDevice<
     this.log('Sync to device has been paused')
   }
 
+  #convertFromDevice<K extends keyof OpCapabilities[T]>(
+    capability: K,
+    value:
+      | NonEffectiveFlagsValueOf<DeviceData[T]>
+      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+  ): OpCapabilities[T][K] {
+    return (
+      'capability' in this.fromDevice
+        ? this.fromDevice[capability]?.(value)
+        : value
+    ) as OpCapabilities[T][K]
+  }
+
   #getUpdateCapabilityTagEntries(
     effectiveFlags: number,
   ): [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][] {
@@ -646,7 +664,7 @@ abstract class BaseMELCloudDevice<
       capabilityTagEntries.map(
         async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
           if (tag in data) {
-            const value: OpCapabilities[T][K] = this.convertFromDevice(
+            const value: OpCapabilities[T][K] = this.#convertFromDevice(
               capability,
               data[tag as keyof D] as
                 | NonEffectiveFlagsValueOf<DeviceData[T]>
@@ -790,13 +808,6 @@ abstract class BaseMELCloudDevice<
       ),
     )
   }
-
-  protected abstract convertFromDevice<K extends keyof OpCapabilities[T]>(
-    capability: K,
-    value:
-      | NonEffectiveFlagsValueOf<DeviceData[T]>
-      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
-  ): OpCapabilities[T][K]
 
   protected abstract convertToDevice<K extends keyof SetCapabilities[T]>(
     capability: K,

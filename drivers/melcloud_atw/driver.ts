@@ -1,7 +1,7 @@
 import {
   type Capabilities,
   type CapabilitiesOptions,
-  type FlowArgsAtw,
+  type FlowArgs,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type OpCapabilities,
@@ -141,13 +141,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
-        (args: FlowArgsAtw): boolean =>
+        (args: FlowArgs['Atw']): boolean =>
           args.device.getCapabilityValue(capability) as boolean,
       )
     if (capability.startsWith('onoff.')) {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
+        .registerRunListener(async (args: FlowArgs['Atw']): Promise<void> => {
           await args.device.onCapability(
             capability as keyof SetCapabilities['Atw'],
             args.onoff,
@@ -166,13 +166,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
-        (args: FlowArgsAtw): boolean =>
+        (args: FlowArgs['Atw']): boolean =>
           args[capabilityArg] === args.device.getCapabilityValue(capability),
       )
     if (capability.startsWith('operation_mode_zone')) {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
+        .registerRunListener(async (args: FlowArgs['Atw']): Promise<void> => {
           await args.device.onCapability(
             capability as keyof SetCapabilities['Atw'],
             args.operation_mode_zone,
@@ -186,7 +186,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   ): void {
     this.homey.flow
       .getActionCard(`${capability}_action`)
-      .registerRunListener(async (args: FlowArgsAtw): Promise<void> => {
+      .registerRunListener(async (args: FlowArgs['Atw']): Promise<void> => {
         await args.device.onCapability(
           capability as keyof SetCapabilities['Atw'],
           args.target_temperature,

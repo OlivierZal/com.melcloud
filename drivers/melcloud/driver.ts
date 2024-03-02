@@ -1,6 +1,6 @@
 import {
   type CapabilitiesOptions,
-  type FlowArgsAta,
+  type FlowArgs,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
@@ -94,13 +94,13 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
           this.homey.flow
             .getConditionCard(`${capability}_condition`)
             .registerRunListener(
-              (args: FlowArgsAta): boolean =>
+              (args: FlowArgs['Ata']): boolean =>
                 args[capability] === args.device.getCapabilityValue(capability),
             )
         }
         this.homey.flow
           .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgsAta): Promise<void> => {
+          .registerRunListener(async (args: FlowArgs['Ata']): Promise<void> => {
             await args.device.onCapability(capability, args[capability])
           })
       },
