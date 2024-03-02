@@ -1,5 +1,6 @@
 import {
   type ConvertFromDevice,
+  type ConvertToDevice,
   type OpCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
@@ -9,9 +10,7 @@ import {
 import {
   FanSpeed,
   Horizontal,
-  type NonEffectiveFlagsValueOf,
   OperationMode,
-  type SetDeviceData,
   Vertical,
 } from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
@@ -44,24 +43,19 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     values: { millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected convertToDevice<K extends keyof SetCapabilities['Ata']>(
-    capability: K,
-    value: SetCapabilities['Ata'][K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData['Ata']> {
-    switch (capability) {
-      case 'onoff':
-        return this.getSetting('always_on') || (value as boolean)
-      case 'operation_mode':
-        return OperationMode[value as keyof typeof OperationMode]
-      case 'vertical':
-        return Vertical[value as keyof typeof Vertical]
-      case 'horizontal':
-        return Horizontal[value as keyof typeof Horizontal]
-      case 'target_temperature':
-        return this.#getTargetTemperature(value as number)
-      default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData['Ata']>
-    }
+  protected readonly toDevice: Partial<
+    Record<keyof SetCapabilities['Ata'], ConvertToDevice<'Ata'>>
+  > = {
+    horizontal: ((value: keyof typeof Horizontal) =>
+      Horizontal[value]) as ConvertToDevice<'Ata'>,
+    onoff: ((value: boolean) =>
+      this.getSetting('always_on') || value) as ConvertToDevice<'Ata'>,
+    operation_mode: ((value: keyof typeof OperationMode) =>
+      OperationMode[value]) as ConvertToDevice<'Ata'>,
+    target_temperature: ((value: number) =>
+      this.#getTargetTemperature(value)) as ConvertToDevice<'Ata'>,
+    vertical: ((value: keyof typeof Vertical) =>
+      Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
   protected async specificOnCapability<

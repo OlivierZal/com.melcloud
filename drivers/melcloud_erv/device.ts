@@ -1,41 +1,29 @@
-import {
-  type DeviceData,
-  type ListDevice,
-  type NonEffectiveFlagsValueOf,
-  type SetDeviceData,
-  VentilationMode,
-} from '../../melcloud/types'
-import type { OpCapabilities, SetCapabilities } from '../../types'
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OpCapabilities,
+  SetCapabilities,
+} from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
-
-type ConvertFromDevice = (
-  value:
-    | NonEffectiveFlagsValueOf<DeviceData['Erv']>
-    | NonEffectiveFlagsValueOf<ListDevice['Erv']['Device']>,
-) => OpCapabilities['Erv'][keyof OpCapabilities['Erv']]
+import { VentilationMode } from '../../melcloud/types'
 
 export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
   protected readonly fromDevice: Partial<
-    Record<keyof OpCapabilities['Erv'], ConvertFromDevice>
+    Record<keyof OpCapabilities['Erv'], ConvertFromDevice<'Erv'>>
   > = {
     ventilation_mode: ((value: VentilationMode) =>
-      VentilationMode[value]) as ConvertFromDevice,
+      VentilationMode[value]) as ConvertFromDevice<'Erv'>,
   }
 
   protected readonly reportPlanParameters: null = null
 
-  protected convertToDevice<K extends keyof SetCapabilities['Erv']>(
-    capability: K,
-    value: SetCapabilities['Erv'][K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData['Erv']> {
-    switch (capability) {
-      case 'onoff':
-        return this.getSetting('always_on') || (value as boolean)
-      case 'ventilation_mode':
-        return VentilationMode[value as keyof typeof VentilationMode]
-      default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData['Erv']>
-    }
+  protected readonly toDevice: Partial<
+    Record<keyof SetCapabilities['Erv'], ConvertToDevice<'Erv'>>
+  > = {
+    onoff: ((value: boolean) =>
+      this.getSetting('always_on') || value) as ConvertToDevice<'Erv'>,
+    ventilation_mode: ((value: keyof typeof VentilationMode) =>
+      VentilationMode[value]) as ConvertToDevice<'Erv'>,
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

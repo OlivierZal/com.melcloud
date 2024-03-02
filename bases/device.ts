@@ -3,6 +3,7 @@ import type {
   Capabilities,
   CapabilitiesOptions,
   ConvertFromDevice,
+  ConvertToDevice,
   DeviceDetails,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
@@ -109,6 +110,10 @@ abstract class BaseMELCloudDevice<
   >
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
+
+  protected abstract readonly toDevice: Partial<
+    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
+  >
 
   public get buildingid(): number {
     return this.#data.buildingid
@@ -333,7 +338,7 @@ abstract class BaseMELCloudDevice<
         acc,
         [capability, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>],
       ) => {
-        acc[tag] = this.convertToDevice(
+        acc[tag] = this.#convertToDevice(
           capability as K,
           this.getRequestedOrCurrentValue(capability as K),
         )
@@ -435,6 +440,15 @@ abstract class BaseMELCloudDevice<
         ? this.fromDevice[capability]?.(value)
         : value
     ) as OpCapabilities[T][K]
+  }
+
+  #convertToDevice<K extends keyof SetCapabilities[T]>(
+    capability: K,
+    value: SetCapabilities[T][K],
+  ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
+    return (
+      'capability' in this.toDevice ? this.toDevice[capability]?.(value) : value
+    ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 
   #getUpdateCapabilityTagEntries(
@@ -808,11 +822,6 @@ abstract class BaseMELCloudDevice<
       ),
     )
   }
-
-  protected abstract convertToDevice<K extends keyof SetCapabilities[T]>(
-    capability: K,
-    value: NonNullable<SetCapabilities[T][K]>,
-  ): NonEffectiveFlagsValueOf<SetDeviceData[T]>
 
   protected abstract specificOnCapability<
     K extends keyof SetCapabilitiesWithThermostatMode[T],

@@ -571,6 +571,9 @@ export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
     | NonEffectiveFlagsValueOf<DeviceData[T]>
     | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
 ) => OpCapabilities[T][keyof OpCapabilities[T]]
+export type ConvertToDevice<T extends keyof typeof DeviceType> = (
+  value: SetCapabilities[T][keyof SetCapabilities[T]],
+) => NonEffectiveFlagsValueOf<SetDeviceData[T]>
 
 export interface FlowArgs {
   readonly Ata: SetCapabilitiesAta & { readonly device: AtaDevice }

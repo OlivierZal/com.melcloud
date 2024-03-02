@@ -1,5 +1,6 @@
 import type {
   ConvertFromDevice,
+  ConvertToDevice,
   OpCapabilities,
   OperationModeZoneCapabilities,
   ReportPlanParameters,
@@ -7,12 +8,7 @@ import type {
   SetCapabilitiesWithThermostatMode,
   Store,
 } from '../../types'
-import {
-  type NonEffectiveFlagsValueOf,
-  OperationModeState,
-  OperationModeZone,
-  type SetDeviceData,
-} from '../../melcloud/types'
+import { OperationModeState, OperationModeZone } from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
@@ -85,18 +81,20 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
-  protected convertToDevice<K extends keyof SetCapabilities['Atw']>(
-    capability: K,
-    value: SetCapabilities['Atw'][K],
-  ): NonEffectiveFlagsValueOf<SetDeviceData['Atw']> {
-    switch (true) {
-      case capability === 'onoff':
-        return this.getSetting('always_on') || (value as boolean)
-      case capability.startsWith('operation_mode_zone'):
-        return OperationModeZone[value as keyof typeof OperationModeZone]
-      default:
-        return value as NonEffectiveFlagsValueOf<SetDeviceData['Atw']>
-    }
+  protected readonly toDevice: Partial<
+    Record<keyof SetCapabilities['Atw'], ConvertToDevice<'Atw'>>
+  > = {
+    onoff: ((value: boolean) =>
+      this.getSetting('always_on') || value) as ConvertToDevice<'Atw'>,
+    operation_mode_zone: ((value: keyof typeof OperationModeZone) =>
+      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+    'operation_mode_zone.zone2': ((value: keyof typeof OperationModeZone) =>
+      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+    operation_mode_zone_with_cool: ((value: keyof typeof OperationModeZone) =>
+      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+    'operation_mode_zone_with_cool.zone2': ((
+      value: keyof typeof OperationModeZone,
+    ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
   protected handleOperationModeZones<
