@@ -9,13 +9,7 @@ import type {
   Store,
   TargetTemperatureFlowCapabilities,
 } from '../../types'
-import {
-  type DeviceData,
-  type ListDevice,
-  type NonEffectiveFlagsValueOf,
-  OperationModeState,
-  OperationModeZone,
-} from '../../melcloud/types'
+import { OperationModeState, OperationModeZone } from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
@@ -23,12 +17,9 @@ import { K_MULTIPLIER } from '../../constants'
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
 
-const convertToDeviceMeasurePower: ConvertFromDevice<'Atw'> = (
-  value:
-    | NonEffectiveFlagsValueOf<DeviceData['Atw']>
-    | NonEffectiveFlagsValueOf<ListDevice['Atw']['Device']>,
-): OpCapabilities['Atw'][keyof OpCapabilities['Atw']] =>
-  (value as number) * K_MULTIPLIER
+const convertToDeviceMeasurePower: ConvertFromDevice<'Atw'> = ((
+  value: number,
+) => value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>
 
 const convertToDeviceOperationZone: ConvertFromDevice<'Atw'> = ((
   value: OperationModeZone,
