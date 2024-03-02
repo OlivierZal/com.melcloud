@@ -237,9 +237,9 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async onUninit(): Promise<void> {
     this.onDeleted()
+    return Promise.resolve()
   }
 
   public async removeCapability(capability: string): Promise<void> {
@@ -300,6 +300,11 @@ abstract class BaseMELCloudDevice<
     if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
     }
+  }
+
+  protected async updateThermostatMode(): Promise<void> {
+    this.log('thermostat_mode is not implemented')
+    return Promise.resolve()
   }
 
   #applySyncToDevice(): void {
@@ -801,8 +806,6 @@ abstract class BaseMELCloudDevice<
   protected abstract specificOnCapability<
     K extends keyof SetCapabilitiesWithThermostatMode[T],
   >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void
-
-  protected abstract updateThermostatMode(): Promise<void>
 }
 
 export default BaseMELCloudDevice

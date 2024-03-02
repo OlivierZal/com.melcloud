@@ -122,11 +122,6 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected async updateThermostatMode(): Promise<void> {
-    // Not implemented
-  }
-
   #getOtherZoneValue(
     otherZoneCapability: keyof OperationModeZoneCapabilities,
     zoneValue: OperationModeZone,

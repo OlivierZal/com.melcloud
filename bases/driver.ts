@@ -48,13 +48,12 @@ export default abstract class BaseMELCloudDriver<
     return DeviceType[this.deviceType] as T
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.registerRunListeners()
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async onPair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
@@ -64,35 +63,37 @@ export default abstract class BaseMELCloudDriver<
       'list_devices',
       async (): Promise<DeviceDetails<T>[]> => this.#discoverDevices(),
     )
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public async onRepair(session: PairSession): Promise<void> {
     session.setHandler(
       'login',
       async (data: LoginCredentials): Promise<boolean> => this.#login(data),
     )
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
-    return (this.#app.devicesPerType[this.deviceType] ?? []).map(
-      ({
-        DeviceName: name,
-        DeviceID: id,
-        BuildingID: buildingid,
-        Device: device,
-      }): DeviceDetails<T> => {
-        const store: Store[T] = this.getStore(device)
-        const capabilities: string[] = this.getCapabilities(store)
-        return {
-          capabilities,
-          capabilitiesOptions: this.getCapabilitiesOptions(device),
-          data: { buildingid, id },
-          name,
-          store,
-        }
-      },
+    return Promise.resolve(
+      (this.#app.devicesPerType[this.deviceType] ?? []).map(
+        ({
+          DeviceName: name,
+          DeviceID: id,
+          BuildingID: buildingid,
+          Device: device,
+        }): DeviceDetails<T> => {
+          const store: Store[T] = this.getStore(device)
+          const capabilities: string[] = this.getCapabilities(store)
+          return {
+            capabilities,
+            capabilitiesOptions: this.getCapabilitiesOptions(device),
+            data: { buildingid, id },
+            name,
+            store,
+          }
+        },
+      ),
     )
   }
 

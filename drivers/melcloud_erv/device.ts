@@ -41,9 +41,4 @@ export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
   protected async specificOnCapability(): Promise<void> {
     // Not implemented
   }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected async updateThermostatMode(): Promise<void> {
-    // Not implemented
-  }
 }
