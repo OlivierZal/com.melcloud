@@ -7,14 +7,32 @@ import type {
   SetCapabilities,
   SetCapabilitiesWithThermostatMode,
   Store,
+  TargetTemperatureFlowCapabilities,
 } from '../../types'
-import { OperationModeState, OperationModeZone } from '../../melcloud/types'
+import {
+  type DeviceData,
+  type ListDevice,
+  type NonEffectiveFlagsValueOf,
+  OperationModeState,
+  OperationModeZone,
+} from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
 
 const ROOM_FLOW_GAP: number = OperationModeZone.flow
 const HEAT_COOL_GAP: number = OperationModeZone.room_cool
+
+const convertToDeviceMeasurePower: ConvertFromDevice<'Atw'> = (
+  value:
+    | NonEffectiveFlagsValueOf<DeviceData['Atw']>
+    | NonEffectiveFlagsValueOf<ListDevice['Atw']['Device']>,
+): OpCapabilities['Atw'][keyof OpCapabilities['Atw']] =>
+  (value as number) * K_MULTIPLIER
+
+const convertToDeviceOperationZone: ConvertFromDevice<'Atw'> = ((
+  value: OperationModeZone,
+) => OperationModeZone[value]) as ConvertFromDevice<'Atw'>
 
 export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
@@ -30,48 +48,34 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
         month: 'short',
         weekday: 'short',
       })) as ConvertFromDevice<'Atw'>,
-    measure_power: ((value: number) =>
-      value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>,
-    'measure_power.produced': ((value: number) =>
-      value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>,
+    measure_power: convertToDeviceMeasurePower,
+    'measure_power.produced': convertToDeviceMeasurePower,
     operation_mode_state: ((value: OperationModeState) =>
       OperationModeState[value]) as ConvertFromDevice<'Atw'>,
-    'operation_mode_state.zone1': ((value: boolean) =>
-      value
-        ? OperationModeState.idle
-        : this.getCapabilityValue(
-            'operation_mode_state',
-          )) as ConvertFromDevice<'Atw'>,
-    'operation_mode_state.zone2': ((value: boolean) =>
-      value
-        ? OperationModeState.idle
-        : this.getCapabilityValue(
-            'operation_mode_state',
-          )) as ConvertFromDevice<'Atw'>,
-    operation_mode_zone: ((value: OperationModeZone) =>
-      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
-    'operation_mode_zone.zone2': ((value: OperationModeZone) =>
-      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
-    operation_mode_zone_with_cool: ((value: OperationModeZone) =>
-      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
-    'operation_mode_zone_with_cool.zone2': ((value: OperationModeZone) =>
-      OperationModeZone[value]) as ConvertFromDevice<'Atw'>,
-    'target_temperature.flow_cool': ((value: number) =>
-      value ||
-      this.getCapabilityOptions('target_temperature.flow_cool')
-        .min) as ConvertFromDevice<'Atw'>,
-    'target_temperature.flow_cool_zone2': ((value: number) =>
-      value ||
-      this.getCapabilityOptions('target_temperature.flow_cool_zone2')
-        .min) as ConvertFromDevice<'Atw'>,
-    'target_temperature.flow_heat': ((value: number) =>
-      value ||
-      this.getCapabilityOptions('target_temperature.flow_heat')
-        .min) as ConvertFromDevice<'Atw'>,
-    'target_temperature.flow_heat_zone2': ((value: number) =>
-      value ||
-      this.getCapabilityOptions('target_temperature.flow_heat_zone2')
-        .min) as ConvertFromDevice<'Atw'>,
+    'operation_mode_state.zone1': this.#convertToDeviceOperationModeStateZone(
+      'operation_mode_state.zone1',
+    ),
+    'operation_mode_state.zone2': this.#convertToDeviceOperationModeStateZone(
+      'operation_mode_state.zone1',
+    ),
+    operation_mode_zone: convertToDeviceOperationZone,
+    'operation_mode_zone.zone2': convertToDeviceOperationZone,
+    operation_mode_zone_with_cool: convertToDeviceOperationZone,
+    'operation_mode_zone_with_cool.zone2': convertToDeviceOperationZone,
+    'target_temperature.flow_cool': this.#convertToDeviceTargetTemperatureFlow(
+      'target_temperature.flow_cool',
+    ),
+    'target_temperature.flow_cool_zone2':
+      this.#convertToDeviceTargetTemperatureFlow(
+        'target_temperature.flow_cool_zone2',
+      ),
+    'target_temperature.flow_heat': this.#convertToDeviceTargetTemperatureFlow(
+      'target_temperature.flow_heat',
+    ),
+    'target_temperature.flow_heat_zone2':
+      this.#convertToDeviceTargetTemperatureFlow(
+        'target_temperature.flow_heat_zone2',
+      ),
   }
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
@@ -127,6 +131,23 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
         value as keyof typeof OperationModeZone,
       )
     }
+  }
+
+  #convertToDeviceOperationModeStateZone(
+    capability: keyof OpCapabilities['Atw'],
+  ): ConvertFromDevice<'Atw'> {
+    return ((value: boolean) =>
+      value
+        ? OperationModeState.idle
+        : this.getCapabilityValue(capability)) as ConvertFromDevice<'Atw'>
+  }
+
+  #convertToDeviceTargetTemperatureFlow(
+    capability: keyof TargetTemperatureFlowCapabilities,
+  ): ConvertFromDevice<'Atw'> {
+    return ((value: number) =>
+      value ||
+      this.getCapabilityOptions(capability).min) as ConvertFromDevice<'Atw'>
   }
 
   #getOtherZoneValue(

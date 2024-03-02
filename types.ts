@@ -203,15 +203,18 @@ export interface OperationModeZoneCapabilities {
   operation_mode_zone_with_cool?: keyof typeof OperationModeZone
   'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
 }
-interface SetCapabilitiesAtw
-  extends SetCapabilitiesCommon,
-    OperationModeZoneCapabilities {
-  'onoff.forced_hot_water'?: boolean
-  target_temperature?: number
+export interface TargetTemperatureFlowCapabilities {
   'target_temperature.flow_cool'?: number
   'target_temperature.flow_cool_zone2'?: number
   'target_temperature.flow_heat'?: number
   'target_temperature.flow_heat_zone2'?: number
+}
+interface SetCapabilitiesAtw
+  extends SetCapabilitiesCommon,
+    OperationModeZoneCapabilities,
+    TargetTemperatureFlowCapabilities {
+  'onoff.forced_hot_water'?: boolean
+  target_temperature?: number
   'target_temperature.tank_water'?: number
   'target_temperature.zone2'?: number
 }
