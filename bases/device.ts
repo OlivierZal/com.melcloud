@@ -23,7 +23,6 @@ import {
   type DeviceData,
   type DeviceType,
   FLAG_UNCHANGED,
-  Horizontal,
   type ListDevice,
   type NonEffectiveFlagsKeyOf,
   type NonEffectiveFlagsValueOf,
