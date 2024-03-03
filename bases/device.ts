@@ -296,7 +296,7 @@ abstract class BaseMELCloudDevice<
     const data: ListDevice[T]['Device'] | null =
       this.#app.devices[this.#id]?.Device ?? null
     this.log('Syncing from device list:', data)
-    await this.#updateCapabilities(data)
+    await this.updateCapabilities(data)
   }
 
   protected getRequestedOrCurrentValue<
@@ -320,15 +320,44 @@ abstract class BaseMELCloudDevice<
     // Override in subclasses if needed
   }
 
-  protected async updateThermostatMode(): Promise<void> {
-    this.log('updateThermostatMode is not implemented')
-    return Promise.resolve()
+  protected async updateCapabilities(
+    data: DeviceData[T] | ListDevice[T]['Device'] | null,
+  ): Promise<void> {
+    if (!data) {
+      return
+    }
+    const updateCapabilityTagEntries: [
+      Extract<keyof OpCapabilities[T], string>,
+      OpDeviceData<T>,
+    ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+    const {
+      0: firstCapabilitiesToUpdate,
+      1: lastCapabilitiesToUpdate,
+    }: Partial<
+      Record<
+        typeof NUMBER_0 | typeof NUMBER_1,
+        [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
+      >
+    > = Object.groupBy<
+      number,
+      [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>]
+    >(updateCapabilityTagEntries, ([capability]) =>
+      Number(
+        (this.driver.lastCapabilitiesToUpdate as string[]).includes(
+          capability as string,
+        ),
+      ),
+    )
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+    await this.#setCapabilityValues(firstCapabilitiesToUpdate ?? null, data)
+    await this.#setCapabilityValues(lastCapabilitiesToUpdate ?? null, data)
   }
 
   #applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.#updateCapabilities(await this.#setDeviceData())
+        await this.updateCapabilities(await this.#setDeviceData())
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -753,41 +782,6 @@ abstract class BaseMELCloudDevice<
           filterEnergyKeys(capability, total),
         ) as [K, L[]][]
     })
-  }
-
-  async #updateCapabilities(
-    data: DeviceData[T] | ListDevice[T]['Device'] | null,
-  ): Promise<void> {
-    if (!data) {
-      return
-    }
-    const updateCapabilityTagEntries: [
-      Extract<keyof OpCapabilities[T], string>,
-      OpDeviceData<T>,
-    ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
-    const {
-      0: firstCapabilitiesToUpdate,
-      1: lastCapabilitiesToUpdate,
-    }: Partial<
-      Record<
-        typeof NUMBER_0 | typeof NUMBER_1,
-        [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
-      >
-    > = Object.groupBy<
-      number,
-      [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>]
-    >(updateCapabilityTagEntries, ([capability]) =>
-      Number(
-        (this.driver.lastCapabilitiesToUpdate as string[]).includes(
-          capability as string,
-        ),
-      ),
-    )
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
-    await this.#setCapabilityValues(firstCapabilitiesToUpdate ?? null, data)
-    await this.#setCapabilityValues(lastCapabilitiesToUpdate ?? null, data)
-    await this.updateThermostatMode()
   }
 
   async #updateReportCapabilities(

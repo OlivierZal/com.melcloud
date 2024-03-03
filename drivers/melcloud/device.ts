@@ -8,8 +8,10 @@ import {
   ThermostatMode,
 } from '../../types'
 import {
+  type DeviceData,
   FanSpeed,
   Horizontal,
+  type ListDevice,
   OperationMode,
   Vertical,
 } from '../../melcloud/types'
@@ -75,16 +77,11 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     }
   }
 
-  protected async updateThermostatMode(): Promise<void> {
-    const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: keyof typeof OperationMode =
-      this.getCapabilityValue('operation_mode')
-    await this.setCapabilityValue(
-      'thermostat_mode',
-      isOn && isThermostatMode(operationMode)
-        ? operationMode
-        : ThermostatMode.off,
-    )
+  protected async updateCapabilities(
+    data: DeviceData['Ata'] | ListDevice['Ata']['Device'] | null,
+  ): Promise<void> {
+    await super.updateCapabilities(data)
+    await this.#updateThermostatMode()
   }
 
   readonly #getTargetTemperature = (value: number): number => {
@@ -101,5 +98,17 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       default:
         return value
     }
+  }
+
+  async #updateThermostatMode(): Promise<void> {
+    const isOn: boolean = this.getCapabilityValue('onoff')
+    const operationMode: keyof typeof OperationMode =
+      this.getCapabilityValue('operation_mode')
+    await this.setCapabilityValue(
+      'thermostat_mode',
+      isOn && isThermostatMode(operationMode)
+        ? operationMode
+        : ThermostatMode.off,
+    )
   }
 }
