@@ -23,6 +23,7 @@ import {
   type DeviceData,
   type DeviceType,
   FLAG_UNCHANGED,
+  Horizontal,
   type ListDevice,
   type NonEffectiveFlagsKeyOf,
   type NonEffectiveFlagsValueOf,
@@ -436,7 +437,7 @@ abstract class BaseMELCloudDevice<
       | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
   ): OpCapabilities[T][K] {
     return (
-      'capability' in this.fromDevice
+      capability in this.fromDevice
         ? this.fromDevice[capability]?.(value)
         : value
     ) as OpCapabilities[T][K]
@@ -452,7 +453,7 @@ abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     return (
-      'capability' in newToDevice ? newToDevice[capability]?.(value) : value
+      capability in newToDevice ? newToDevice[capability]?.(value) : value
     ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 
