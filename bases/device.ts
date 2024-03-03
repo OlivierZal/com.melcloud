@@ -166,9 +166,7 @@ abstract class BaseMELCloudDevice<
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
     }
-    if (capability !== 'thermostat_mode') {
-      this.diff.set(capability, value)
-    }
+    this.diff.set(capability, value)
     this.#applySyncToDevice()
   }
 

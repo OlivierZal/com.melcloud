@@ -97,12 +97,14 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     value: SetCapabilitiesWithThermostatMode['Atw'][K],
   ): Promise<void> {
     if (capability.startsWith('operation_mode_zone')) {
-      this.#handleOperationModeZones(
+      this.diff.set(capability, value)
+      this.#handleOtherOperationModeZone(
         capability as keyof OperationModeZoneCapabilities,
         value as keyof typeof OperationModeZone,
       )
+    } else {
+      await super.onCapability(capability, value)
     }
-    await super.onCapability(capability, value)
   }
 
   #convertToDeviceOperationModeStateZone(
@@ -150,7 +152,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     return otherZoneValue
   }
 
-  #handleOperationModeZones<K extends keyof OperationModeZoneCapabilities>(
+  #handleOtherOperationModeZone<K extends keyof OperationModeZoneCapabilities>(
     capability: K,
     value: keyof typeof OperationModeZone,
   ): void {

@@ -218,9 +218,7 @@ interface SetCapabilitiesAtw
   'target_temperature.tank_water'?: number
   'target_temperature.zone2'?: number
 }
-type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw & {
-  thermostat_mode?: ThermostatMode
-}
+type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw
 interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
@@ -285,9 +283,7 @@ interface SetCapabilitiesErv extends SetCapabilitiesCommon {
   fan_power?: number
   ventilation_mode?: keyof typeof VentilationMode
 }
-type SetCapabilitiesWithThermostatModeErv = SetCapabilitiesErv & {
-  thermostat_mode?: ThermostatMode
-}
+type SetCapabilitiesWithThermostatModeErv = SetCapabilitiesErv
 interface GetCapabilitiesErv extends GetCapabilitiesCommon {
   readonly measure_co2: number
   readonly measure_temperature: number

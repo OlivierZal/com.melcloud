@@ -74,8 +74,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
         )
       }
       await this.setAlwaysOnWarning()
+    } else {
+      await super.onCapability(capability, value)
     }
-    await super.onCapability(capability, value)
   }
 
   protected async updateCapabilities(
