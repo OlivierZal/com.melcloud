@@ -72,7 +72,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   readonly #flowCapabilities: (keyof Capabilities<'Atw'>)[] =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as (keyof Capabilities<'Atw'>)[]
+    (this.manifest.capabilities as (keyof Capabilities<'Atw'>)[]).filter(
+      (capability: keyof Capabilities<'Atw'>) =>
+        capability.startsWith('alarm_generic') ||
+        capability.startsWith('onoff.') ||
+        capability.startsWith('operation_mode') ||
+        capability.startsWith('target_temperature.'),
+    )
 
   readonly #notCoolCapabilities: (keyof OpCapabilities['Atw'])[] = [
     'operation_mode_zone',
