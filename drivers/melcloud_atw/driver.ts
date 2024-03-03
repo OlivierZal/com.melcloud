@@ -124,10 +124,10 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
       switch (true) {
         case capability.startsWith('alarm_generic'):
         case capability.startsWith('onoff.'):
-          this.#registerBooleanRunListener(capability)
+          this.#registerBooleanRunListeners(capability)
           break
         case capability.startsWith('operation_mode'):
-          this.#registerOperationModeRunListener(capability)
+          this.#registerOperationModeRunListeners(capability)
           break
         case capability.startsWith('target_temperature.'):
           this.#registerTargetTemperatureRunListener(capability)
@@ -137,7 +137,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     })
   }
 
-  #registerBooleanRunListener(capability: keyof Capabilities<'Atw'>): void {
+  #registerBooleanRunListeners(capability: keyof Capabilities<'Atw'>): void {
     this.homey.flow
       .getConditionCard(`${capability}_condition`)
       .registerRunListener(
@@ -156,7 +156,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     }
   }
 
-  #registerOperationModeRunListener(
+  #registerOperationModeRunListeners(
     capability: keyof Capabilities<'Atw'>,
   ): void {
     const capabilityArg: 'operation_mode_state' | 'operation_mode_zone' =
