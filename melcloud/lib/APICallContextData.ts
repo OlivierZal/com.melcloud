@@ -6,7 +6,8 @@ const ORDER: string[] = [
   'url',
   'params',
   'headers',
-  'data',
+  'requestData',
+  'responseData',
   'status',
   'errorMessage',
 ]
