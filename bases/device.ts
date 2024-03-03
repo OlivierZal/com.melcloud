@@ -312,15 +312,12 @@ abstract class BaseMELCloudDevice<
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected specificOnCapability<
     K extends keyof SetCapabilitiesWithThermostatMode[T],
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
-    this.log(
-      'No specificOnCapability for capability',
-      capability,
-      'and value',
-      value,
-    )
+    // Override in subclasses if needed
   }
 
   protected async updateThermostatMode(): Promise<void> {
