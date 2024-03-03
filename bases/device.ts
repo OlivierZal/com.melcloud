@@ -324,7 +324,7 @@ abstract class BaseMELCloudDevice<
   }
 
   protected async updateThermostatMode(): Promise<void> {
-    this.log('thermostat_mode is not implemented')
+    this.log('updateThermostatMode is not implemented')
     return Promise.resolve()
   }
 
