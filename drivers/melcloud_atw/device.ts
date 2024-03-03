@@ -90,38 +90,19 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected handleOperationModeZones<
-    K extends keyof OperationModeZoneCapabilities,
-  >(capability: K, value: keyof typeof OperationModeZone): void {
-    const { canCool, hasZone2 } = this.getStore() as Store['Atw']
-    if (hasZone2) {
-      const zoneValue: OperationModeZone = OperationModeZone[value]
-      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
-        capability.endsWith('.zone2')
-          ? capability.replace(/.zone2$/u, '')
-          : `${capability}.zone2`
-      ) as keyof OperationModeZoneCapabilities
-      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
-        otherZoneCapability,
-        zoneValue,
-        canCool,
-      )
-      this.diff.set(
-        otherZoneCapability,
-        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
-      )
-    }
-  }
-
-  protected specificOnCapability<
+  public async onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode['Atw'],
-  >(capability: K, value: SetCapabilitiesWithThermostatMode['Atw'][K]): void {
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode['Atw'][K],
+  ): Promise<void> {
     if (capability.startsWith('operation_mode_zone')) {
-      this.handleOperationModeZones(
+      this.#handleOperationModeZones(
         capability as keyof OperationModeZoneCapabilities,
         value as keyof typeof OperationModeZone,
       )
     }
+    await super.onCapability(capability, value)
   }
 
   #convertToDeviceOperationModeStateZone(
@@ -167,5 +148,29 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       otherZoneValue += ROOM_FLOW_GAP
     }
     return otherZoneValue
+  }
+
+  #handleOperationModeZones<K extends keyof OperationModeZoneCapabilities>(
+    capability: K,
+    value: keyof typeof OperationModeZone,
+  ): void {
+    const { canCool, hasZone2 } = this.getStore() as Store['Atw']
+    if (hasZone2) {
+      const zoneValue: OperationModeZone = OperationModeZone[value]
+      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
+        capability.endsWith('.zone2')
+          ? capability.replace(/.zone2$/u, '')
+          : `${capability}.zone2`
+      ) as keyof OperationModeZoneCapabilities
+      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
+        otherZoneCapability,
+        zoneValue,
+        canCool,
+      )
+      this.diff.set(
+        otherZoneCapability,
+        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
+      )
+    }
   }
 }

@@ -58,7 +58,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  protected async specificOnCapability<
+  public async onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode['Ata'],
   >(
     capability: K,
@@ -75,6 +75,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       }
       await this.setAlwaysOnWarning()
     }
+    await super.onCapability(capability, value)
   }
 
   protected async updateCapabilities(

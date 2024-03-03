@@ -163,14 +163,12 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value: SetCapabilitiesWithThermostatMode[T][K],
   ): Promise<void> {
-    this.#clearSyncToDevice()
     if (capability === 'onoff') {
       await this.setAlwaysOnWarning()
     }
     if (capability !== 'thermostat_mode') {
       this.diff.set(capability, value)
     }
-    this.specificOnCapability(capability, value)
     this.#applySyncToDevice()
   }
 
@@ -310,14 +308,6 @@ abstract class BaseMELCloudDevice<
     if (this.getSetting('always_on')) {
       await this.setWarning(this.homey.__('warnings.always_on'))
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode[T],
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
-    // Override in subclasses if needed
   }
 
   protected async updateCapabilities(
@@ -645,6 +635,7 @@ abstract class BaseMELCloudDevice<
       this.registerCapabilityListener(
         capability,
         async (value: SetCapabilities[T][K]): Promise<void> => {
+          this.#clearSyncToDevice()
           await this.onCapability(capability, value)
         },
       )
