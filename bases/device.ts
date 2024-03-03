@@ -315,11 +315,16 @@ abstract class BaseMELCloudDevice<
   protected specificOnCapability<
     K extends keyof SetCapabilitiesWithThermostatMode[T],
   >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
-    this.log('No specificOnCapability for', capability, 'and', value)
+    this.log(
+      'No specificOnCapability for capability',
+      capability,
+      'and value',
+      value,
+    )
   }
 
   protected async updateThermostatMode(): Promise<void> {
-    this.log('updateThermostatMode is not implemented')
+    this.log('thermostat_mode is not implemented')
     return Promise.resolve()
   }
 
