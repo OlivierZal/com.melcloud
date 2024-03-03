@@ -95,7 +95,10 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
         this.homey.flow
           .getActionCard(`${capability}_action`)
           .registerRunListener(async (args: FlowArgs['Erv']): Promise<void> => {
-            await args.device.onCapability(capability, args[capability])
+            await args.device.triggerCapabilityListener(
+              capability,
+              args[capability],
+            )
           })
       },
     )

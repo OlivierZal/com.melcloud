@@ -167,7 +167,6 @@ abstract class BaseMELCloudDevice<
       await this.setAlwaysOnWarning()
     }
     this.diff.set(capability, value)
-    this.#applySyncToDevice()
   }
 
   public onDeleted(): void {
@@ -213,7 +212,7 @@ abstract class BaseMELCloudDevice<
       newSettings.always_on === true &&
       !this.getCapabilityValue('onoff')
     ) {
-      await this.onCapability('onoff', true)
+      await this.triggerCapabilityListener('onoff', true)
     } else if (
       changedKeys.some(
         (setting: string) =>
@@ -635,6 +634,7 @@ abstract class BaseMELCloudDevice<
         async (value: SetCapabilities[T][K]): Promise<void> => {
           this.#clearSyncToDevice()
           await this.onCapability(capability, value)
+          this.#applySyncToDevice()
         },
       )
     })

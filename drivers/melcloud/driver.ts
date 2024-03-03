@@ -101,7 +101,10 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
         this.homey.flow
           .getActionCard(`${capability}_action`)
           .registerRunListener(async (args: FlowArgs['Ata']): Promise<void> => {
-            await args.device.onCapability(capability, args[capability])
+            await args.device.triggerCapabilityListener(
+              capability,
+              args[capability],
+            )
           })
       },
     )
