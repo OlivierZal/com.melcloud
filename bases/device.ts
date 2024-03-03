@@ -312,8 +312,14 @@ abstract class BaseMELCloudDevice<
     }
   }
 
+  protected specificOnCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode[T],
+  >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
+    this.log('No specificOnCapability for', capability, 'and', value)
+  }
+
   protected async updateThermostatMode(): Promise<void> {
-    this.log('thermostat_mode is not implemented')
+    this.log('updateThermostatMode is not implemented')
     return Promise.resolve()
   }
 
@@ -827,10 +833,6 @@ abstract class BaseMELCloudDevice<
       ),
     )
   }
-
-  protected abstract specificOnCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode[T],
-  >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void
 }
 
 export default BaseMELCloudDevice
