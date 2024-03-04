@@ -6,11 +6,12 @@ import {
   type ReportCapabilityTagMapping,
   type SetCapabilities,
   type SetCapabilityTagMapping,
-  type Store,
+  type StoreMapping,
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
   reportCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
+  storeMappingAta,
 } from '../../types'
 import {
   DeviceType,
@@ -37,6 +38,8 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
 
   protected readonly deviceType: DeviceType = DeviceType.Ata
 
+  protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
+
   readonly #flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
     'operation_mode',
     'fan_power',
@@ -53,25 +56,6 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
       }).filter((capability: string) => capability !== 'measure_power.wifi'),
       'thermostat_mode',
     ]
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  public getStore({
-    MaxTempAutomatic: maxTempAutomatic,
-    MaxTempCoolDry: maxTempCoolDry,
-    MaxTempHeat: maxTempHeat,
-    MinTempAutomatic: minTempAutomatic,
-    MinTempCoolDry: minTempCoolDry,
-    MinTempHeat: minTempHeat,
-  }: ListDevice['Ata']['Device']): Store['Ata'] {
-    return {
-      maxTempAutomatic,
-      maxTempCoolDry,
-      maxTempHeat,
-      minTempAutomatic,
-      minTempCoolDry,
-      minTempHeat,
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

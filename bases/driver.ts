@@ -7,12 +7,15 @@ import type {
   ReportCapabilityTagMapping,
   SetCapabilityTagMapping,
   Store,
+  StoreMapping,
 } from '../types'
 import {
   DeviceType,
   type EffectiveFlags,
   type ListDevice,
   type LoginCredentials,
+  type NonEffectiveFlagsKeyOf,
+  type NonEffectiveFlagsValueOf,
   type ReportData,
 } from '../melcloud/types'
 import { Driver } from 'homey'
@@ -44,8 +47,24 @@ export default abstract class BaseMELCloudDriver<
 
   protected abstract readonly deviceType: DeviceType
 
+  protected abstract readonly storeMapping: StoreMapping[T]
+
   public get heatPumpType(): T {
     return DeviceType[this.deviceType] as T
+  }
+
+  public getStore(device: ListDevice[T]['Device']): Store[T] {
+    return Object.fromEntries(
+      Object.entries(this.storeMapping).map(
+        ([key, value]: [string, string]): [
+          keyof Store[T],
+          NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+        ] => [
+          key as keyof Store[T],
+          device[value as NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>],
+        ],
+      ),
+    ) as unknown as Store[T]
   }
 
   public async onInit(): Promise<void> {
@@ -118,8 +137,6 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public abstract getCapabilities(store: Store[T]): string[]
-
-  public abstract getStore(device: ListDevice[T]['Device']): Store[T]
 
   protected abstract getCapabilitiesOptions(
     device: ListDevice[T]['Device'],

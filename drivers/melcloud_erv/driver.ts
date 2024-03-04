@@ -8,10 +8,12 @@ import {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Store,
+  type StoreMapping,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
   reportCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
+  storeMappingErv,
 } from '../../types'
 import {
   DeviceType,
@@ -38,6 +40,8 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
 
   protected readonly deviceType: DeviceType = DeviceType.Erv
 
+  protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
+
   readonly #flowCapabilities: (keyof SetCapabilities['Erv'])[] = [
     'ventilation_mode',
     'fan_power',
@@ -58,14 +62,6 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
       ...(hasCO2Sensor ? ['measure_co2'] : []),
       ...(hasPM25Sensor ? ['measure_pm25'] : []),
     ]
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  public getStore({
-    HasCO2Sensor: hasCO2Sensor,
-    HasPM25Sensor: hasPM25Sensor,
-  }: ListDevice['Erv']['Device']): Store['Erv'] {
-    return { hasCO2Sensor, hasPM25Sensor }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

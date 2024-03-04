@@ -9,16 +9,14 @@ import {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Store,
+  type StoreMapping,
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   reportCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
+  storeMappingAtw,
 } from '../../types'
-import {
-  DeviceType,
-  type ListDevice,
-  effectiveFlagsAtw,
-} from '../../melcloud/types'
+import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
@@ -42,6 +40,8 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     setCapabilityTagMappingAtw
 
   protected readonly deviceType: DeviceType = DeviceType.Atw
+
+  protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 
   readonly #capabilities: (keyof OpCapabilities['Atw'])[] = [
     'onoff',
@@ -109,15 +109,6 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
           ]
         : []),
     ]
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  public getStore({
-    CanCool: canCool,
-    HasZone2: hasZone2,
-    MaxTankTemperature: maxTankTemperature,
-  }: ListDevice['Atw']['Device']): Store['Atw'] {
-    return { canCool, hasZone2, maxTankTemperature }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
