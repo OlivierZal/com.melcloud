@@ -171,17 +171,17 @@ export type OpDeviceData<T extends keyof typeof DeviceType> =
   | NonEffectiveFlagsKeyOf<DeviceData[T]>
   | NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>
 
-interface SetCapabilitiesCommon {
+interface BaseSetCapabilities {
   onoff?: boolean
 }
-interface GetCapabilitiesCommon {
+interface BaseGetCapabilities {
   readonly measure_temperature: number
 }
-interface ListCapabilitiesCommon {
+interface BaseListCapabilities {
   readonly 'measure_power.wifi': number
 }
 
-interface SetCapabilitiesAta extends SetCapabilitiesCommon {
+interface SetCapabilitiesAta extends BaseSetCapabilities {
   fan_power?: number
   horizontal?: keyof typeof Horizontal
   operation_mode?: keyof typeof OperationMode
@@ -191,8 +191,8 @@ interface SetCapabilitiesAta extends SetCapabilitiesCommon {
 type SetCapabilitiesWithThermostatModeAta = SetCapabilitiesAta & {
   thermostat_mode?: ThermostatMode
 }
-type GetCapabilitiesAta = GetCapabilitiesCommon
-interface ListCapabilitiesAta extends ListCapabilitiesCommon {
+type GetCapabilitiesAta = BaseGetCapabilities
+interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly fan_power: number
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
@@ -238,7 +238,7 @@ export interface TargetTemperatureFlowCapabilities {
   'target_temperature.flow_heat_zone2'?: number
 }
 interface SetCapabilitiesAtw
-  extends SetCapabilitiesCommon,
+  extends BaseSetCapabilities,
     OperationModeZoneCapabilities,
     TargetTemperatureFlowCapabilities {
   'onoff.forced_hot_water'?: boolean
@@ -247,7 +247,7 @@ interface SetCapabilitiesAtw
   'target_temperature.zone2'?: number
 }
 type SetCapabilitiesWithThermostatModeAtw = SetCapabilitiesAtw
-interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
+interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
@@ -255,7 +255,7 @@ interface GetCapabilitiesAtw extends GetCapabilitiesCommon {
   readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
   readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
 }
-interface ListCapabilitiesAtw extends ListCapabilitiesCommon {
+interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
@@ -307,17 +307,17 @@ interface ReportCapabilitiesAtw {
   'meter_power.produced_hotwater'?: number
 }
 
-interface SetCapabilitiesErv extends SetCapabilitiesCommon {
+interface SetCapabilitiesErv extends BaseSetCapabilities {
   fan_power?: number
   ventilation_mode?: keyof typeof VentilationMode
 }
 type SetCapabilitiesWithThermostatModeErv = SetCapabilitiesErv
-interface GetCapabilitiesErv extends GetCapabilitiesCommon {
+interface GetCapabilitiesErv extends BaseGetCapabilities {
   readonly measure_co2: number
   readonly measure_temperature: number
   readonly 'measure_temperature.outdoor': number
 }
-interface ListCapabilitiesErv extends ListCapabilitiesCommon {
+interface ListCapabilitiesErv extends BaseListCapabilities {
   readonly measure_pm25: number
 }
 type OpCapabilitiesErv = GetCapabilitiesErv &
