@@ -14,10 +14,7 @@ import {
   setCapabilityTagMappingErv,
   storeMappingErv,
 } from '../../types'
-import {
-  DeviceType,
-  effectiveFlagsErv,
-} from '../../melcloud/types'
+import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
