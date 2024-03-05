@@ -35,10 +35,10 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
   protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
 
   readonly #flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
-    'operation_mode',
     'fan_power',
-    'vertical',
     'horizontal',
+    'operation_mode',
+    'vertical',
   ]
 
   public getCapabilities(): string[] {
