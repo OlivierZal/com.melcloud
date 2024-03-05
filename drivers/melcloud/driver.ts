@@ -1,7 +1,4 @@
-import {
-  DeviceType,
-  effectiveFlagsAta,
-} from '../../melcloud/types'
+import { DeviceType, effectiveFlagsAta } from '../../melcloud/types'
 import {
   type FlowArgs,
   type GetCapabilityTagMapping,
