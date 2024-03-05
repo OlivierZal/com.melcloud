@@ -20,7 +20,21 @@ import {
 } from '../melcloud/types'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
+import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
+
+const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
+  device: ListDevice[T]['Device'],
+): CapabilitiesOptions[T] =>
+  ('NumberOfFanSpeeds' in device
+    ? {
+        fan_power: {
+          max: device.NumberOfFanSpeeds,
+          min: Number(!device.HasAutomaticFanSpeed),
+          step: NUMBER_1,
+        },
+      }
+    : {}) as CapabilitiesOptions[T]
 
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
@@ -103,10 +117,9 @@ export default abstract class BaseMELCloudDriver<
           Device: device,
         }): DeviceDetails<T> => {
           const store: Store[T] = this.getStore(device)
-          const capabilities: string[] = this.getCapabilities(store)
           return {
-            capabilities,
-            capabilitiesOptions: this.getCapabilitiesOptions(device),
+            capabilities: this.getCapabilities(store),
+            capabilitiesOptions: getCapabilitiesOptions(device),
             data: { buildingid, id },
             name,
             store,
@@ -137,10 +150,6 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public abstract getCapabilities(store: Store[T]): string[]
-
-  protected abstract getCapabilitiesOptions(
-    device: ListDevice[T]['Device'],
-  ): Partial<CapabilitiesOptions[T]>
 
   protected abstract registerRunListeners(): void
 }

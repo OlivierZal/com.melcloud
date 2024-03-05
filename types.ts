@@ -618,7 +618,7 @@ export interface CapabilitiesOptions {
 }
 export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
+  readonly capabilitiesOptions: CapabilitiesOptions[T]
   readonly data: { readonly buildingid: number; readonly id: number }
   readonly name: string
   readonly store: Store[T]
