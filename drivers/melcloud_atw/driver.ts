@@ -40,6 +40,16 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly deviceType: DeviceType = DeviceType.Atw
 
+  protected readonly flowCapabilities: (keyof Capabilities<'Atw'>)[] =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    (this.manifest.capabilities as (keyof Capabilities<'Atw'>)[]).filter(
+      (capability: keyof Capabilities<'Atw'>) =>
+        capability.startsWith('alarm_generic') ||
+        capability.startsWith('onoff.') ||
+        capability.startsWith('operation_mode') ||
+        capability.startsWith('target_temperature.'),
+    )
+
   protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 
   readonly #capabilities: (keyof OpCapabilities['Atw'])[] = [
@@ -68,16 +78,6 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
-
-  readonly #flowCapabilities: (keyof Capabilities<'Atw'>)[] =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    (this.manifest.capabilities as (keyof Capabilities<'Atw'>)[]).filter(
-      (capability: keyof Capabilities<'Atw'>) =>
-        capability.startsWith('alarm_generic') ||
-        capability.startsWith('onoff.') ||
-        capability.startsWith('operation_mode') ||
-        capability.startsWith('target_temperature.'),
-    )
 
   readonly #notCoolCapabilities: (keyof OpCapabilities['Atw'])[] = [
     'operation_mode_zone',
@@ -111,7 +111,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   }
 
   protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach((capability: keyof Capabilities<'Atw'>) => {
+    this.flowCapabilities.forEach((capability: keyof Capabilities<'Atw'>) => {
       switch (true) {
         case capability.startsWith('alarm_generic'):
         case capability.startsWith('onoff.'):

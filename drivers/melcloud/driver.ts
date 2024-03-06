@@ -1,6 +1,5 @@
 import { DeviceType, effectiveFlagsAta } from '../../melcloud/types'
 import {
-  type FlowArgs,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
@@ -32,14 +31,14 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
 
   protected readonly deviceType: DeviceType = DeviceType.Ata
 
-  protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
-
-  readonly #flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
+  protected readonly flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
     'fan_power',
     'horizontal',
     'operation_mode',
     'vertical',
   ]
+
+  protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
 
   public getCapabilities(): string[] {
     return [
@@ -50,28 +49,5 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
       }).filter((capability: string) => capability !== 'measure_power.wifi'),
       'thermostat_mode',
     ]
-  }
-
-  protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach(
-      (capability: keyof SetCapabilities['Ata']) => {
-        if (capability !== 'fan_power') {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: FlowArgs['Ata']): boolean =>
-                args[capability] === args.device.getCapabilityValue(capability),
-            )
-        }
-        this.homey.flow
-          .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgs['Ata']): Promise<void> => {
-            await args.device.triggerCapabilityListener(
-              capability,
-              args[capability],
-            )
-          })
-      },
-    )
   }
 }

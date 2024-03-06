@@ -597,7 +597,8 @@ export interface FlowArgs {
     readonly operation_mode_state?: keyof typeof OperationModeState
     readonly operation_mode_zone?: keyof typeof OperationModeZone
     readonly target_temperature?: number
-  } & { readonly device: AtwDevice }
+    readonly device: AtwDevice
+  }
   readonly Erv: SetCapabilitiesErv & { readonly device: ErvDevice }
 }
 

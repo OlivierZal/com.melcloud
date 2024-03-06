@@ -1,6 +1,8 @@
 import type {
+  Capabilities,
   CapabilitiesOptions,
   DeviceDetails,
+  FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   OpCapabilities,
@@ -9,6 +11,7 @@ import type {
   Store,
   StoreMapping,
 } from '../types'
+import { type Device, Driver } from 'homey'
 import {
   DeviceType,
   type EffectiveFlags,
@@ -18,7 +21,6 @@ import {
   type NonEffectiveFlagsValueOf,
   type ReportData,
 } from '../melcloud/types'
-import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
@@ -60,6 +62,11 @@ export default abstract class BaseMELCloudDriver<
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
   protected abstract readonly deviceType: DeviceType
+
+  protected abstract readonly flowCapabilities: Extract<
+    keyof Capabilities<T>,
+    string
+  >[]
 
   protected abstract readonly storeMapping: StoreMapping[T]
 
@@ -107,6 +114,30 @@ export default abstract class BaseMELCloudDriver<
     return Promise.resolve()
   }
 
+  protected registerRunListeners(): void {
+    this.flowCapabilities.forEach(
+      (capability: Extract<keyof Capabilities<T>, string>) => {
+        if (capability !== 'fan_power') {
+          this.homey.flow
+            .getConditionCard(`${capability}_condition`)
+            .registerRunListener(
+              (args: FlowArgs[T]): boolean =>
+                args[capability as Exclude<keyof FlowArgs[T], 'device'>] ===
+                (args.device as Device).getCapabilityValue(capability),
+            )
+        }
+        this.homey.flow
+          .getActionCard(`${capability}_action`)
+          .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
+            await args.device.triggerCapabilityListener(
+              capability,
+              args[capability as Exclude<keyof FlowArgs[T], 'device'>],
+            )
+          })
+      },
+    )
+  }
+
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
       (this.#app.devicesPerType[this.deviceType] ?? []).map(
@@ -150,6 +181,4 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public abstract getCapabilities(store: Store[T]): string[]
-
-  protected abstract registerRunListeners(): void
 }

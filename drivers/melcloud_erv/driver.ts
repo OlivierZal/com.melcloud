@@ -1,6 +1,5 @@
 import {
   type Capabilities,
-  type FlowArgs,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
@@ -34,12 +33,12 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
 
   protected readonly deviceType: DeviceType = DeviceType.Erv
 
-  protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
-
-  readonly #flowCapabilities: (keyof SetCapabilities['Erv'])[] = [
+  protected readonly flowCapabilities: (keyof SetCapabilities['Erv'])[] = [
     'ventilation_mode',
     'fan_power',
   ]
+
+  protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
 
   public getCapabilities({
     hasCO2Sensor,
@@ -56,28 +55,5 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
       ...(hasCO2Sensor ? ['measure_co2'] : []),
       ...(hasPM25Sensor ? ['measure_pm25'] : []),
     ]
-  }
-
-  protected registerRunListeners(): void {
-    this.#flowCapabilities.forEach(
-      (capability: keyof SetCapabilities['Erv']) => {
-        if (capability !== 'fan_power') {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: FlowArgs['Erv']): boolean =>
-                args[capability] === args.device.getCapabilityValue(capability),
-            )
-        }
-        this.homey.flow
-          .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgs['Erv']): Promise<void> => {
-            await args.device.triggerCapabilityListener(
-              capability,
-              args[capability],
-            )
-          })
-      },
-    )
   }
 }
