@@ -317,7 +317,6 @@ abstract class BaseMELCloudDevice<
       Extract<keyof OpCapabilities[T], string>,
       OpDeviceData<T>,
     ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
     const {
       0: firstCapabilitiesToUpdate,
       1: lastCapabilitiesToUpdate,
@@ -336,7 +335,6 @@ abstract class BaseMELCloudDevice<
         ),
       ),
     )
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
     await this.#setCapabilityValues(firstCapabilitiesToUpdate ?? null, data)
     await this.#setCapabilityValues(lastCapabilitiesToUpdate ?? null, data)
   }

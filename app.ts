@@ -1,4 +1,3 @@
-import 'core-js/actual/object/group-by'
 import 'source-map-support/register'
 import { App, type Driver } from 'homey'
 import type {
@@ -120,7 +119,6 @@ export = class MELCloudApp extends withTimers(App) {
           ]),
         ],
       )
-      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
       this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
         buildingDevices,
         ({ Device }) => Device.DeviceType,
@@ -130,7 +128,6 @@ export = class MELCloudApp extends withTimers(App) {
           buildingDevices,
           ({ DeviceID }) => DeviceID,
         )
-      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
       this.#devices = Object.fromEntries(
         Object.entries(devicesPerId).map(
           ([id, devices]: [string, readonly ListDeviceAny[] | undefined]): [
