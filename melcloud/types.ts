@@ -197,7 +197,6 @@ export interface DeviceDataFromListAtw
   readonly HeatPumpFrequency: number
   readonly ImmersionHeaterStatus: boolean
   readonly LastLegionellaActivationTime: string
-  readonly MaxTankTemperature: number
   readonly MixingTankWaterTemperature: number
   readonly ReturnTemperature: number
   readonly ReturnTemperatureZone1: number

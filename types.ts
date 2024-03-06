@@ -58,7 +58,6 @@ export interface Store {
   readonly Atw: {
     readonly canCool: boolean
     readonly hasZone2: boolean
-    readonly maxTankTemperature: number
   }
   readonly Erv: {
     readonly hasCO2Sensor: boolean
@@ -82,7 +81,6 @@ export const storeMappingAtw: Record<
 > = {
   canCool: 'CanCool',
   hasZone2: 'HasZone2',
-  maxTankTemperature: 'MaxTankTemperature',
 } as const
 export const storeMappingErv: Record<
   keyof Store['Erv'],
