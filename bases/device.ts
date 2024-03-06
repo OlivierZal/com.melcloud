@@ -509,7 +509,7 @@ abstract class BaseMELCloudDevice<
     const settings: Settings = this.getSettings() as Settings
     const capabilities: string[] = [
       ...this.driver.getCapabilities(
-        this.getStore() as Store['Ata'] & Store['Atw'] & Store['Erv'],
+        this.getStore() as Store['Atw'] & Store['Erv'],
       ),
       ...Object.keys(settings).filter(
         (setting: string) =>
