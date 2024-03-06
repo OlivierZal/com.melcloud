@@ -11,7 +11,6 @@ import type {
   Store,
   StoreMapping,
 } from '../types'
-import { type Device, Driver } from 'homey'
 import {
   DeviceType,
   type EffectiveFlags,
@@ -21,6 +20,8 @@ import {
   type NonEffectiveFlagsValueOf,
   type ReportData,
 } from '../melcloud/types'
+import type BaseMELCloudDevice from './device'
+import { Driver } from 'homey'
 import type MELCloudApp from '../app'
 import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
@@ -123,7 +124,9 @@ export default abstract class BaseMELCloudDriver<
             .registerRunListener(
               (args: FlowArgs[T]): boolean =>
                 args[capability as Exclude<keyof FlowArgs[T], 'device'>] ===
-                (args.device as Device).getCapabilityValue(capability),
+                (
+                  args.device as unknown as BaseMELCloudDevice<T>
+                ).getCapabilityValue(capability),
             )
         }
         this.homey.flow
