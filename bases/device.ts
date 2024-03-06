@@ -344,7 +344,7 @@ abstract class BaseMELCloudDevice<
   #applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.updateCapabilities(await this.#setDeviceData())
+        await this.updateCapabilities(await this.#deviceData())
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -478,6 +478,20 @@ abstract class BaseMELCloudDevice<
     return (
       capability in newToDevice ? newToDevice[capability]?.(value) : value
     ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
+  }
+
+  async #deviceData(): Promise<DeviceData[T] | null> {
+    try {
+      return (
+        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
+          DeviceID: this.id,
+          HasPendingCommand: true,
+          ...this.#buildUpdateData(),
+        })
+      ).data as DeviceData[T]
+    } catch (error: unknown) {
+      return null
+    }
   }
 
   #getUpdateCapabilityTagEntries(
@@ -723,20 +737,6 @@ abstract class BaseMELCloudDevice<
         },
       ),
     )
-  }
-
-  async #setDeviceData(): Promise<DeviceData[T] | null> {
-    try {
-      return (
-        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
-          DeviceID: this.id,
-          HasPendingCommand: true,
-          ...this.#buildUpdateData(),
-        })
-      ).data as DeviceData[T]
-    } catch (error: unknown) {
-      return null
-    }
   }
 
   #setListCapabilityTagMappings<

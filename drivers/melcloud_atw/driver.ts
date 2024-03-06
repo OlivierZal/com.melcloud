@@ -124,6 +124,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
           this.#registerTargetTemperatureRunListener(capability)
           break
         default:
+          super.registerRunListeners()
       }
     })
   }
