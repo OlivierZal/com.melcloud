@@ -55,10 +55,7 @@ export interface Store {
     readonly minTempCoolDry: number
     readonly minTempHeat: number
   }
-  readonly Atw: {
-    readonly canCool: boolean
-    readonly hasZone2: boolean
-  }
+  readonly Atw: { readonly canCool: boolean; readonly hasZone2: boolean }
   readonly Erv: {
     readonly hasCO2Sensor: boolean
     readonly hasPM25Sensor: boolean
@@ -78,10 +75,7 @@ export const storeMappingAta: Record<
 export const storeMappingAtw: Record<
   keyof Store['Atw'],
   NonEffectiveFlagsKeyOf<ListDevice['Atw']['Device']>
-> = {
-  canCool: 'CanCool',
-  hasZone2: 'HasZone2',
-} as const
+> = { canCool: 'CanCool', hasZone2: 'HasZone2' } as const
 export const storeMappingErv: Record<
   keyof Store['Erv'],
   NonEffectiveFlagsKeyOf<ListDevice['Erv']['Device']>
