@@ -508,8 +508,8 @@ abstract class BaseMELCloudDevice<
   async #handleCapabilities(): Promise<void> {
     const settings: Settings = this.getSettings() as Settings
     const capabilities: string[] = [
-      ...this.driver.getCapabilities(
-        this.getStore() as Store['Atw'] & Store['Erv'],
+      ...(this.driver.getCapabilities as (store: Store[T]) => string[])(
+        this.getStore() as Store[T],
       ),
       ...Object.keys(settings).filter(
         (setting: string) =>
