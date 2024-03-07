@@ -79,7 +79,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     data: DeviceData['Ata'] | ListDevice['Ata']['Device'] | null,
   ): Promise<void> {
     await super.updateCapabilities(data)
-    await this.#updateThermostatMode()
+    if (data) {
+      await this.#updateThermostatMode()
+    }
   }
 
   readonly #getTargetTemperature = (value: number): number => {

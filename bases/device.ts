@@ -351,11 +351,16 @@ abstract class BaseMELCloudDevice<
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
+          if (
+            this.diff.get(capability as K) !==
+            this.getCapabilityValue(capability as K)
+          ) {
+            acc.EffectiveFlags = Number(
+              // eslint-disable-next-line no-bitwise
+              BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
+            )
+          }
           this.diff.delete(capability as K)
-          acc.EffectiveFlags = Number(
-            // eslint-disable-next-line no-bitwise
-            BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
-          )
         }
         return acc
       },
@@ -469,6 +474,9 @@ abstract class BaseMELCloudDevice<
   }
 
   async #deviceData(): Promise<DeviceData[T] | null> {
+    if (this.#buildUpdateData().EffectiveFlags === FLAG_UNCHANGED) {
+      return null
+    }
     try {
       return (
         await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
