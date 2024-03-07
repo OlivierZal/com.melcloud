@@ -101,7 +101,7 @@ export default class MELCloudAPI {
             Persist: true,
           })
         ).data
-        if (LoginData !== null && onSuccess) {
+        if (LoginData && onSuccess) {
           await onSuccess()
         }
         return LoginData !== null
