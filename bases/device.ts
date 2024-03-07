@@ -453,8 +453,6 @@ abstract class BaseMELCloudDevice<
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
-    const value: SetCapabilities[T][K] =
-      this.getRequestedOrCurrentValue(capability)
     const newToDevice: Partial<Record<K, ConvertToDevice<T>>> = {
       onoff: (onoff: SetCapabilities[T]['onoff']) =>
         this.getSetting('always_on') || onoff,
@@ -463,6 +461,8 @@ abstract class BaseMELCloudDevice<
     if (capability === 'onoff') {
       this.#setAlwaysOnWarning()
     }
+    const value: SetCapabilities[T][K] =
+      this.getRequestedOrCurrentValue(capability)
     return (
       capability in newToDevice ? newToDevice[capability]?.(value) : value
     ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
