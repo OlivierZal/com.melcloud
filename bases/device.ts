@@ -360,6 +360,9 @@ abstract class BaseMELCloudDevice<
           )
           /* eslint-enable no-bitwise */
           this.diff.delete(capability as K)
+          if (capability === 'onoff') {
+            this.#setAlwaysOnWarning()
+          }
         }
         return acc
       },
@@ -461,9 +464,6 @@ abstract class BaseMELCloudDevice<
       onoff: (onoff: SetCapabilities[T]['onoff']) =>
         this.getSetting('always_on') || onoff,
       ...this.toDevice,
-    }
-    if (capability === 'onoff') {
-      this.#setAlwaysOnWarning()
     }
     const value: SetCapabilities[T][K] =
       this.getRequestedOrCurrentValue(capability)
