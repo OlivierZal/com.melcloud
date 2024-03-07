@@ -1,4 +1,5 @@
 import 'source-map-support/register'
+import 'core-js/actual/object/group-by'
 import { App, type Driver } from 'homey'
 import type {
   Building,

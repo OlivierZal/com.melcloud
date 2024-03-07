@@ -58,7 +58,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  public async onCapability<
+  protected async onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode['Ata'],
   >(
     capability: K,

@@ -157,18 +157,6 @@ abstract class BaseMELCloudDevice<
     return super.getStoreValue(key) as Store[T][K]
   }
 
-  public async onCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode[T],
-  >(
-    capability: K,
-    value: SetCapabilitiesWithThermostatMode[T][K],
-  ): Promise<void> {
-    if (capability === 'onoff') {
-      await this.setAlwaysOnWarning()
-    }
-    this.diff.set(capability, value)
-  }
-
   public onDeleted(): void {
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.homey.clearTimeout(this.#reportTimeout.false)
@@ -299,6 +287,18 @@ abstract class BaseMELCloudDevice<
   >(capability: K): NonNullable<SetCapabilities[T][K]> {
     return (this.diff.get(capability) ??
       this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
+  }
+
+  protected async onCapability<
+    K extends keyof SetCapabilitiesWithThermostatMode[T],
+  >(
+    capability: K,
+    value: SetCapabilitiesWithThermostatMode[T][K],
+  ): Promise<void> {
+    if (capability === 'onoff') {
+      await this.setAlwaysOnWarning()
+    }
+    this.diff.set(capability, value)
   }
 
   protected async setAlwaysOnWarning(): Promise<void> {

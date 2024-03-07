@@ -90,7 +90,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  public async onCapability<
+  protected async onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode['Atw'],
   >(
     capability: K,
