@@ -349,10 +349,7 @@ abstract class BaseMELCloudDevice<
         acc,
         [capability, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>],
       ) => {
-        acc[tag] = this.#convertToDevice(
-          capability as K,
-          this.getRequestedOrCurrentValue(capability as K),
-        )
+        acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           this.diff.delete(capability as K)
           acc.EffectiveFlags = Number(
@@ -453,10 +450,11 @@ abstract class BaseMELCloudDevice<
     ) as OpCapabilities[T][K]
   }
 
-  #convertToDevice<K extends keyof SetCapabilities[T]>(
+  #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
-    value: SetCapabilities[T][K],
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
+    const value: SetCapabilities[T][K] =
+      this.getRequestedOrCurrentValue(capability)
     const newToDevice: Partial<Record<K, ConvertToDevice<T>>> = {
       onoff: (onoff: SetCapabilities[T]['onoff']) =>
         this.getSetting('always_on') || onoff,
