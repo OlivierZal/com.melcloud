@@ -351,14 +351,10 @@ abstract class BaseMELCloudDevice<
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
-          /* eslint-disable no-bitwise */
           acc.EffectiveFlags = Number(
-            this.diff.get(capability as K) ===
-              this.getCapabilityValue(capability as K)
-              ? BigInt(acc.EffectiveFlags) & ~BigInt(this.#effectiveFlags[tag])
-              : BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
+            // eslint-disable-next-line no-bitwise
+            BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
-          /* eslint-enable no-bitwise */
           this.diff.delete(capability as K)
           if (capability === 'onoff') {
             this.#setAlwaysOnWarning()
