@@ -58,12 +58,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  protected async onCapability<
+  protected onCapability<
     K extends keyof SetCapabilitiesWithThermostatMode['Ata'],
-  >(
-    capability: K,
-    value: SetCapabilitiesWithThermostatMode['Ata'][K],
-  ): Promise<void> {
+  >(capability: K, value: SetCapabilitiesWithThermostatMode['Ata'][K]): void {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off
       this.diff.set('onoff', isOn)
@@ -73,9 +70,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
           value as Exclude<ThermostatMode, ThermostatMode.off>,
         )
       }
-      await this.setAlwaysOnWarning()
     } else {
-      await super.onCapability(capability, value)
+      super.onCapability(capability, value)
     }
   }
 

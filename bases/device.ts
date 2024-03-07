@@ -289,22 +289,11 @@ abstract class BaseMELCloudDevice<
       this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
   }
 
-  protected async onCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode[T],
-  >(
+  protected onCapability<K extends keyof SetCapabilitiesWithThermostatMode[T]>(
     capability: K,
     value: SetCapabilitiesWithThermostatMode[T][K],
-  ): Promise<void> {
-    if (capability === 'onoff') {
-      await this.setAlwaysOnWarning()
-    }
+  ): void {
     this.diff.set(capability, value)
-  }
-
-  protected async setAlwaysOnWarning(): Promise<void> {
-    if (this.getSetting('always_on')) {
-      await this.setWarning(this.homey.__('warnings.always_on'))
-    }
   }
 
   protected async updateCapabilities(
@@ -472,6 +461,9 @@ abstract class BaseMELCloudDevice<
       onoff: (onoff: SetCapabilities[T]['onoff']) =>
         this.getSetting('always_on') || onoff,
       ...this.toDevice,
+    }
+    if (capability === 'onoff') {
+      this.#setAlwaysOnWarning()
     }
     return (
       capability in newToDevice ? newToDevice[capability]?.(value) : value
@@ -643,9 +635,9 @@ abstract class BaseMELCloudDevice<
     ).forEach((capability: K) => {
       this.registerCapabilityListener(
         capability,
-        async (value: SetCapabilities[T][K]): Promise<void> => {
+        (value: SetCapabilities[T][K]): void => {
           this.#clearSyncToDevice()
-          await this.onCapability(capability, value)
+          this.onCapability(capability, value)
           this.#applySyncToDevice()
         },
       )
@@ -695,6 +687,16 @@ abstract class BaseMELCloudDevice<
   async #runEnergyReports(): Promise<void> {
     await this.#runEnergyReport()
     await this.#runEnergyReport(true)
+  }
+
+  #setAlwaysOnWarning(): void {
+    if (this.getSetting('always_on')) {
+      this.setWarning(this.homey.__('warnings.always_on')).catch(
+        ({ message }) => {
+          this.error(message)
+        },
+      )
+    }
   }
 
   #setCapabilityTagMappings(): void {
