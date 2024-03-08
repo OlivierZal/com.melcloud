@@ -182,14 +182,18 @@ export default abstract class BaseMELCloudDriver<
         const value = getDevice(args).getCapabilityValue(capability)
         return typeof value === 'boolean'
           ? value
-          : (value as string) === args[getArg(capability)]
+          : (value as number | string) === args[getArg(capability)]
       })
   }
 
   #registerRunListeners(): void {
     this.flowCapabilities.forEach(
       (capability: Extract<keyof Capabilities<T>, string>) => {
-        this.#registerConditionRunListener(capability)
+        try {
+          this.#registerConditionRunListener(capability)
+        } catch (error: unknown) {
+          this.error(error instanceof Error ? error.message : error)
+        }
         if (capability in this.setCapabilityTagMapping) {
           this.#registerActionRunListener(
             capability as Extract<keyof SetCapabilities[T], string>,
