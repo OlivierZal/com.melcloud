@@ -12,6 +12,7 @@
   "capabilities": [
     "onoff",
     "measure_temperature",
+    "measure_temperature.outdoor",
     "target_temperature",
     "operation_mode",
     "fan_power",
@@ -43,6 +44,17 @@
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
+      }
+    },
     "target_temperature": {
       "min": 10,
       "max": 38

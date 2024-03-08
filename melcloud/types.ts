@@ -131,6 +131,7 @@ export interface DeviceDataFromListAta
   readonly MinTempCoolDry: number
   readonly MinTempHeat: number
   readonly NumberOfFanSpeeds: number
+  readonly OutdoorTemperature: number
   readonly VaneHorizontalDirection: Horizontal
   readonly VaneVerticalDirection: Vertical
 }

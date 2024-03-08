@@ -188,6 +188,8 @@ interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly fan_power: number
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
+  readonly 'measure_temperature.outdoor': number
+
   readonly vertical: keyof typeof Vertical
 }
 type OpCapabilitiesAta = GetCapabilitiesAta &
@@ -363,6 +365,7 @@ export const listCapabilityTagMappingAta: Record<
   fan_power_state: 'ActualFanSpeed',
   horizontal: 'VaneHorizontalDirection',
   'measure_power.wifi': 'WifiSignalStrength',
+  'measure_temperature.outdoor': 'OutdoorTemperature',
   vertical: 'VaneVerticalDirection',
 } as const
 export const reportCapabilityTagMappingAta: Record<
