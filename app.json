@@ -1388,18 +1388,6 @@
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
                 }
-              },
-              {
-                "id": "prohibit",
-                "title": {
-                  "en": "Prohibited",
-                  "fr": "Interdit",
-                  "nl": "Verboden",
-                  "sv": "Förbjuden",
-                  "no": "Forbudt",
-                  "da": "Forbudt",
-                  "es": "Prohibido"
-                }
               }
             ]
           }
@@ -1506,18 +1494,6 @@
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
                 }
-              },
-              {
-                "id": "prohibit",
-                "title": {
-                  "en": "Prohibited",
-                  "fr": "Interdit",
-                  "nl": "Verboden",
-                  "sv": "Förbjuden",
-                  "no": "Forbudt",
-                  "da": "Forbudt",
-                  "es": "Prohibido"
-                }
               }
             ]
           }
@@ -1623,18 +1599,6 @@
                   "no": "Anti-legionella",
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
-                }
-              },
-              {
-                "id": "prohibit",
-                "title": {
-                  "en": "Prohibited",
-                  "fr": "Interdit",
-                  "nl": "Verboden",
-                  "sv": "Förbjuden",
-                  "no": "Forbudt",
-                  "da": "Forbudt",
-                  "es": "Prohibido"
                 }
               }
             ]
@@ -4144,11 +4108,6 @@
         "operation_mode_state.zone2",
         "boolean.idle_zone1",
         "boolean.idle_zone2",
-        "boolean.prohibit_hot_water",
-        "boolean.prohibit_heating_zone1",
-        "boolean.prohibit_heating_zone2",
-        "boolean.prohibit_cooling_zone1",
-        "boolean.prohibit_cooling_zone2",
         "last_legionella",
         "alarm_generic.booster_heater1",
         "alarm_generic.booster_heater2",
@@ -6360,18 +6319,6 @@
             "no": "Anti-legionella",
             "da": "Anti-legionella",
             "es": "Anti-legionela"
-          }
-        },
-        {
-          "id": "prohibit",
-          "title": {
-            "en": "Prohibited",
-            "fr": "Interdit",
-            "nl": "Verboden",
-            "sv": "Förbjuden",
-            "no": "Forbudt",
-            "da": "Forbudt",
-            "es": "Prohibido"
           }
         }
       ],

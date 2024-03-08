@@ -84,18 +84,6 @@
         "da": "Anti-legionella",
         "es": "Anti-legionela"
       }
-    },
-    {
-      "id": "prohibit",
-      "title": {
-        "en": "Prohibited",
-        "fr": "Interdit",
-        "nl": "Verboden",
-        "sv": "Förbjuden",
-        "no": "Forbudt",
-        "da": "Forbudt",
-        "es": "Prohibido"
-      }
     }
   ],
   "icon": "/assets/operation_mode_state.svg"

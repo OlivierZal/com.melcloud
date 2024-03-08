@@ -244,15 +244,10 @@ type SetCapabilitiesExtendedAtw = SetCapabilitiesAtw
 interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'boolean.idle_zone1': boolean
   readonly 'boolean.idle_zone2': boolean
-  readonly 'boolean.prohibit_cooling': boolean
-  readonly 'boolean.prohibit_cooling_zone2': boolean
-  readonly 'boolean.prohibit_heating': boolean
-  readonly 'boolean.prohibit_heating_zone2': boolean
-  readonly 'boolean.prohibit_hot_water': boolean
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operation_mode_state: keyof typeof OperationModeState | 'prohibit'
+  readonly operation_mode_state: keyof typeof OperationModeState
 }
 interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
@@ -346,9 +341,8 @@ export interface ReportCapabilities {
 export type Capabilities<T extends keyof typeof DeviceType> =
   OpCapabilities[T] &
     ReportCapabilities[T] & {
-      readonly 'operation_mode_state.zone1':
-        | keyof typeof OperationModeState
-        | 'prohibit'
+      readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
+      readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
       readonly thermostat_mode: ThermostatMode
     }
 
@@ -443,11 +437,6 @@ export const getCapabilityTagMappingAtw: Record<
 > = {
   'boolean.idle_zone1': 'IdleZone1',
   'boolean.idle_zone2': 'IdleZone2',
-  'boolean.prohibit_cooling': 'ProhibitCoolingZone1',
-  'boolean.prohibit_cooling_zone2': 'ProhibitCoolingZone2',
-  'boolean.prohibit_heating': 'ProhibitHeatingZone1',
-  'boolean.prohibit_heating_zone2': 'ProhibitHeatingZone2',
-  'boolean.prohibit_hot_water': 'ProhibitHotWater',
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   'measure_temperature.tank_water': 'TankWaterTemperature',
@@ -604,7 +593,7 @@ export interface FlowArgs {
   readonly Ata: SetCapabilitiesAta & { readonly device: AtaDevice }
   readonly Atw: {
     readonly onoff?: boolean
-    readonly operation_mode_state?: keyof typeof OperationModeState | 'prohibit'
+    readonly operation_mode_state?: keyof typeof OperationModeState
     readonly operation_mode_zone?: keyof typeof OperationModeZone
     readonly target_temperature?: number
     readonly device: AtwDevice

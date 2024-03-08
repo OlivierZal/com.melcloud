@@ -9,7 +9,12 @@ import type {
   Store,
   TargetTemperatureFlowCapabilities,
 } from '../../types'
-import { OperationModeState, OperationModeZone } from '../../melcloud/types'
+import {
+  type DeviceData,
+  type ListDevice,
+  OperationModeState,
+  OperationModeZone,
+} from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
@@ -99,6 +104,15 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     }
   }
 
+  protected async updateCapabilities(
+    data: DeviceData['Atw'] | ListDevice['Atw']['Device'] | null,
+  ): Promise<void> {
+    await super.updateCapabilities(data)
+    if (data) {
+      await this.#updateOperationModeStates()
+    }
+  }
+
   #convertToDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<'Atw'> {
@@ -157,5 +171,35 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
         OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
       )
     }
+  }
+
+  async #updateOperationModeStates(): Promise<void> {
+    await Promise.all(
+      ['zone1', 'zone2'].map(async (zone: string): Promise<void> => {
+        await this.#updateOperationModeStateZone(
+          this.getCapabilityValue('operation_mode_state'),
+          `operation_mode_state.${zone}` as
+            | 'operation_mode_state.zone1'
+            | 'operation_mode_state.zone2',
+          `boolean.idle_${zone}` as 'boolean.idle_zone1' | 'boolean.idle_zone2',
+        )
+      }),
+    )
+  }
+
+  async #updateOperationModeStateZone(
+    operationModeState: keyof typeof OperationModeState,
+    operationModeStateZoneCapability:
+      | 'operation_mode_state.zone1'
+      | 'operation_mode_state.zone2',
+    idleCapability: 'boolean.idle_zone1' | 'boolean.idle_zone2',
+  ): Promise<void> {
+    if (!this.getStoreValue('hasZone2')) {
+      return
+    }
+    await this.setCapabilityValue(
+      operationModeStateZoneCapability,
+      this.getCapabilityValue(idleCapability) ? 'idle' : operationModeState,
+    )
   }
 }

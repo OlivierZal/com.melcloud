@@ -1,5 +1,5 @@
-import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import {
+  type Capabilities,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type OpCapabilities,
@@ -13,6 +13,7 @@ import {
   setCapabilityTagMappingAtw,
   storeMappingAtw,
 } from '../../types'
+import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
@@ -37,13 +38,11 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
   readonly #coolCapabilities: (keyof OpCapabilities['Atw'])[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
-    'boolean.prohibit_cooling',
   ]
 
   readonly #coolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
-    'boolean.prohibit_cooling_zone2',
   ]
 
   readonly #notCoolCapabilities: (keyof OpCapabilities['Atw'])[] = [
@@ -65,21 +64,20 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
-    'boolean.prohibit_hot_water',
-    'boolean.prohibit_heating',
   ]
 
   readonly #notCoolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
     'operation_mode_zone.zone2',
   ]
 
-  readonly #zone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #zone2Capabilities: (keyof Capabilities<'Atw'>)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
+    'operation_mode_state.zone1',
+    'operation_mode_state.zone2',
     'boolean.idle_zone1',
     'boolean.idle_zone2',
-    'boolean.prohibit_heating_zone2',
   ]
 
   public getCapabilities({ canCool, hasZone2 }: Store['Atw']): string[] {
