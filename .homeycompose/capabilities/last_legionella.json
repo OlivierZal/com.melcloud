@@ -1,13 +1,13 @@
 {
   "type": "string",
   "title": {
-    "en": "Last legionella operation",
-    "fr": "Dernière opération legionella",
-    "nl": "Laatste legionella-bedrijf",
-    "sv": "Senaste legionella-drift",
-    "no": "Siste legionella-drift",
-    "da": "Seneste legionella-drift",
-    "es": "Última operación legionella"
+    "en": "Last anti-legionella operation",
+    "fr": "Dernière opération antilégionelle",
+    "nl": "Laatste anti-legionella operatie",
+    "sv": "Senaste anti-legionelladriften",
+    "no": "Siste anti-legionella drift",
+    "da": "Seneste anti-legionella drift",
+    "es": "Última operación anti-legionela"
   },
   "getable": true,
   "setable": false,
