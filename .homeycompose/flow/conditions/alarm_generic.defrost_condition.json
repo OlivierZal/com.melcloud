@@ -12,7 +12,7 @@
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
     }
   ]
 }

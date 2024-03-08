@@ -34,9 +34,9 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Atw'], ConvertFromDevice<'Atw'>>
   > = {
-    'alarm_generic.defrost_mode': ((value: number) =>
+    'alarm_generic.defrost': ((value: number) =>
       Boolean(value)) as ConvertFromDevice<'Atw'>,
-    last_legionella: ((value: string) =>
+    legionella: ((value: string) =>
       DateTime.fromISO(value, {
         locale: this.homey.i18n.getLanguage(),
       }).toLocaleString({

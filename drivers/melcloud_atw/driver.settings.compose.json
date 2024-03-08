@@ -16,7 +16,7 @@
     },
     "children": [
       {
-        "id": "last_legionella",
+        "id": "legionella",
         "type": "checkbox",
         "label": {
           "en": "Last anti-legionella operation",
@@ -114,7 +114,7 @@
         "value": false
       },
       {
-        "id": "alarm_generic.defrost_mode",
+        "id": "alarm_generic.defrost",
         "type": "checkbox",
         "label": {
           "en": "Defrost mode",

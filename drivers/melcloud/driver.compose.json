@@ -20,6 +20,7 @@
     "vertical",
     "horizontal",
     "thermostat_mode",
+    "alarm_generic.silent",
     "measure_power",
     "measure_power.auto",
     "measure_power.cooling",
@@ -58,6 +59,17 @@
     "target_temperature": {
       "min": 10,
       "max": 38
+    },
+    "alarm_generic.silent": {
+      "title": {
+        "en": "Silent mode",
+        "fr": "Mode silencieux",
+        "nl": "Stille modus",
+        "sv": "Tyst läge",
+        "no": "Stille modus",
+        "da": "Stille tilstand",
+        "es": "Modo silencioso"
+      }
     },
     "measure_power": {
       "approximated": true

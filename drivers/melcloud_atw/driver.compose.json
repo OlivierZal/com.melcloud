@@ -42,11 +42,11 @@
     "operation_mode_state.zone2",
     "boolean.idle_zone1",
     "boolean.idle_zone2",
-    "last_legionella",
+    "legionella",
     "alarm_generic.booster_heater1",
     "alarm_generic.booster_heater2",
     "alarm_generic.booster_heater2_plus",
-    "alarm_generic.defrost_mode",
+    "alarm_generic.defrost",
     "alarm_generic.eco_hot_water",
     "alarm_generic.immersion_heater",
     "measure_power.heat_pump_frequency",
@@ -469,7 +469,7 @@
         "es": "Calentador de refuerzo 2+ desactivado"
       }
     },
-    "alarm_generic.defrost_mode": {
+    "alarm_generic.defrost": {
       "title": {
         "en": "Defrost mode",
         "fr": "Mode dégivrage",

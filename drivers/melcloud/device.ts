@@ -26,6 +26,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
   > = {
+    'alarm_generic.silent': ((value: FanSpeed) =>
+      value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
     fan_power: ((value: FanSpeed) =>
       value === FanSpeed.silent
         ? FanSpeed.auto

@@ -191,8 +191,11 @@ interface SetCapabilitiesAta extends BaseSetCapabilities {
 type SetCapabilitiesExtendedAta = SetCapabilitiesAta & {
   readonly thermostat_mode?: ThermostatMode
 }
-type GetCapabilitiesAta = BaseGetCapabilities
+type GetCapabilitiesAta = BaseGetCapabilities & {
+  readonly 'alarm_generic.silent': boolean
+}
 interface ListCapabilitiesAta extends BaseListCapabilities {
+  readonly 'alarm_generic.silent': boolean
   readonly fan_power: number
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
@@ -261,10 +264,10 @@ interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
-  readonly 'alarm_generic.defrost_mode': boolean
+  readonly 'alarm_generic.defrost': boolean
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
-  readonly last_legionella: string
+  readonly legionella: string
   readonly measure_power: number
   readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_power.produced': number
@@ -368,11 +371,15 @@ export const setCapabilityTagMappingAta: Record<
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
   NonEffectiveFlagsKeyOf<DeviceData['Ata']>
-> = { measure_temperature: 'RoomTemperature' } as const
+> = {
+  'alarm_generic.silent': 'SetFanSpeed',
+  measure_temperature: 'RoomTemperature',
+} as const
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
   NonEffectiveFlagsKeyOf<ListDevice['Ata']['Device']>
 > = {
+  'alarm_generic.silent': 'FanSpeed',
   fan_power: 'FanSpeed',
   fan_power_state: 'ActualFanSpeed',
   horizontal: 'VaneHorizontalDirection',
@@ -458,10 +465,10 @@ export const listCapabilityTagMappingAtw: Record<
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',
   'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
-  'alarm_generic.defrost_mode': 'DefrostMode',
+  'alarm_generic.defrost': 'DefrostMode',
   'alarm_generic.eco_hot_water': 'EcoHotWater',
   'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
-  last_legionella: 'LastLegionellaActivationTime',
+  legionella: 'LastLegionellaActivationTime',
   measure_power: 'CurrentEnergyConsumed',
   'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
   'measure_power.produced': 'CurrentEnergyProduced',

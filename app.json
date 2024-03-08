@@ -314,10 +314,10 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
           }
         ],
-        "id": "alarm_generic.defrost_mode_false"
+        "id": "alarm_generic.defrost_false"
       },
       {
         "title": {
@@ -333,10 +333,10 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
           }
         ],
-        "id": "alarm_generic.defrost_mode_true"
+        "id": "alarm_generic.defrost_true"
       },
       {
         "title": {
@@ -1002,10 +1002,10 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost_mode"
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
           }
         ],
-        "id": "alarm_generic.defrost_mode_condition"
+        "id": "alarm_generic.defrost_condition"
       },
       {
         "title": {
@@ -3291,6 +3291,7 @@
         "vertical",
         "horizontal",
         "thermostat_mode",
+        "alarm_generic.silent",
         "measure_power",
         "measure_power.auto",
         "measure_power.cooling",
@@ -3329,6 +3330,17 @@
         "target_temperature": {
           "min": 10,
           "max": 38
+        },
+        "alarm_generic.silent": {
+          "title": {
+            "en": "Silent mode",
+            "fr": "Mode silencieux",
+            "nl": "Stille modus",
+            "sv": "Tyst läge",
+            "no": "Stille modus",
+            "da": "Stille tilstand",
+            "es": "Modo silencioso"
+          }
         },
         "measure_power": {
           "approximated": true
@@ -4108,11 +4120,11 @@
         "operation_mode_state.zone2",
         "boolean.idle_zone1",
         "boolean.idle_zone2",
-        "last_legionella",
+        "legionella",
         "alarm_generic.booster_heater1",
         "alarm_generic.booster_heater2",
         "alarm_generic.booster_heater2_plus",
-        "alarm_generic.defrost_mode",
+        "alarm_generic.defrost",
         "alarm_generic.eco_hot_water",
         "alarm_generic.immersion_heater",
         "measure_power.heat_pump_frequency",
@@ -4535,7 +4547,7 @@
             "es": "Calentador de refuerzo 2+ desactivado"
           }
         },
-        "alarm_generic.defrost_mode": {
+        "alarm_generic.defrost": {
           "title": {
             "en": "Defrost mode",
             "fr": "Mode dégivrage",
@@ -5069,7 +5081,7 @@
           },
           "children": [
             {
-              "id": "last_legionella",
+              "id": "legionella",
               "type": "checkbox",
               "label": {
                 "en": "Last anti-legionella operation",
@@ -5167,7 +5179,7 @@
               "value": false
             },
             {
-              "id": "alarm_generic.defrost_mode",
+              "id": "alarm_generic.defrost",
               "type": "checkbox",
               "label": {
                 "en": "Defrost mode",
@@ -6155,7 +6167,23 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/last_legionella.svg"
+      "icon": "/assets/legionella.svg"
+    },
+    "legionella": {
+      "type": "string",
+      "title": {
+        "en": "Last anti-legionella operation",
+        "fr": "Dernière opération antilégionelle",
+        "nl": "Laatste anti-legionella operatie",
+        "sv": "Senaste anti-legionella drift",
+        "no": "Siste anti-legionella drift",
+        "da": "Seneste anti-legionella drift",
+        "es": "Última operación anti-legionela"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/legionella.svg"
     },
     "operation_mode": {
       "type": "enum",
