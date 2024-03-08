@@ -94,7 +94,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     K extends keyof SetCapabilitiesWithThermostatMode['Atw'],
   >(capability: K, value: SetCapabilitiesWithThermostatMode['Atw'][K]): void {
     if (capability.startsWith('operation_mode_zone')) {
-      this.diff.set(capability, value)
+      this.setDiff(capability, value)
       this.#handleOtherOperationModeZone(
         capability as keyof OperationModeZoneCapabilities,
         value as keyof typeof OperationModeZone,
@@ -166,7 +166,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
         zoneValue,
         canCool,
       )
-      this.diff.set(
+      this.setDiff(
         otherZoneCapability,
         OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
       )

@@ -63,9 +63,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   >(capability: K, value: SetCapabilitiesWithThermostatMode['Ata'][K]): void {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off
-      this.diff.set('onoff', isOn)
+      this.setDiff('onoff', isOn)
       if (isOn) {
-        this.diff.set(
+        this.setDiff(
           'operation_mode',
           value as Exclude<ThermostatMode, ThermostatMode.off>,
         )

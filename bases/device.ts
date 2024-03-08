@@ -51,12 +51,12 @@ abstract class BaseMELCloudDevice<
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]
 
-  protected readonly diff: Map<
+  protected readonly diff = new Map<
     keyof SetCapabilities[T],
-    SetCapabilities[T][keyof SetCapabilities[T]]
-  > = new Map<
-    keyof SetCapabilities[T],
-    SetCapabilities[T][keyof SetCapabilities[T]]
+    {
+      initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
+      value: SetCapabilities[T][keyof SetCapabilities[T]]
+    }
   >()
 
   #effectiveFlags!: Record<NonEffectiveFlagsKeyOf<SetDeviceData[T]>, number>
@@ -285,15 +285,35 @@ abstract class BaseMELCloudDevice<
   protected getRequestedOrCurrentValue<
     K extends Extract<keyof SetCapabilities[T], string>,
   >(capability: K): NonNullable<SetCapabilities[T][K]> {
-    return (this.diff.get(capability) ??
+    return (this.diff.get(capability)?.value ??
       this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
   }
 
-  protected onCapability<K extends keyof SetCapabilitiesWithThermostatMode[T]>(
+  protected onCapability<
+    K extends Extract<keyof SetCapabilitiesWithThermostatMode[T], string>,
+  >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
+    if (this.diff.has(capability)) {
+      const diffValue: {
+        initialValue: SetCapabilitiesWithThermostatMode[T][K]
+        value: SetCapabilitiesWithThermostatMode[T][K]
+      } = this.diff.get(capability) as {
+        initialValue: SetCapabilitiesWithThermostatMode[T][K]
+        value: SetCapabilitiesWithThermostatMode[T][K]
+      }
+      diffValue.value = value
+    } else {
+      this.setDiff(capability, value)
+    }
+  }
+
+  protected setDiff<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
     value: SetCapabilitiesWithThermostatMode[T][K],
   ): void {
-    this.diff.set(capability, value)
+    this.diff.set(capability, {
+      initialValue: this.getCapabilityValue(capability),
+      value,
+    })
   }
 
   protected async updateCapabilities(
@@ -351,10 +371,19 @@ abstract class BaseMELCloudDevice<
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
+          const effectiveFlags = BigInt(acc.EffectiveFlags)
+          const effectiveFlag = BigInt(this.#effectiveFlags[tag])
+          const { initialValue, value } = this.diff.get(capability as K) as {
+            initialValue: SetCapabilities[T][K]
+            value: SetCapabilities[T][K]
+          }
+          /* eslint-disable no-bitwise */
           acc.EffectiveFlags = Number(
-            // eslint-disable-next-line no-bitwise
-            BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
+            value === initialValue
+              ? effectiveFlags & ~effectiveFlag
+              : effectiveFlags | effectiveFlag,
           )
+          /* eslint-enable no-bitwise */
           this.diff.delete(capability as K)
           if (capability === 'onoff') {
             this.#setAlwaysOnWarning()
@@ -469,7 +498,8 @@ abstract class BaseMELCloudDevice<
   }
 
   async #deviceData(): Promise<DeviceData[T] | null> {
-    if (this.#buildUpdateData().EffectiveFlags === FLAG_UNCHANGED) {
+    const updateData: SetDeviceData[T] = this.#buildUpdateData()
+    if (updateData.EffectiveFlags === FLAG_UNCHANGED) {
       return null
     }
     try {
@@ -477,7 +507,7 @@ abstract class BaseMELCloudDevice<
         await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
           DeviceID: this.id,
           HasPendingCommand: true,
-          ...this.#buildUpdateData(),
+          ...updateData,
         })
       ).data as DeviceData[T]
     } catch (error: unknown) {
