@@ -3,7 +3,6 @@ import {
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
-  type SetCapabilities,
   type SetCapabilityTagMapping,
   type Store,
   type StoreMapping,
@@ -32,11 +31,6 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
     setCapabilityTagMappingErv
 
   protected readonly deviceType: DeviceType = DeviceType.Erv
-
-  protected readonly flowCapabilities: (keyof SetCapabilities['Erv'])[] = [
-    'ventilation_mode',
-    'fan_power',
-  ]
 
   protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
 

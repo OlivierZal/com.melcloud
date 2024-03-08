@@ -56,9 +56,9 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly capabilities: (keyof Capabilities<T>)[] =
+  public readonly capabilities: Extract<keyof Capabilities<T>, string>[] =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as (keyof Capabilities<T>)[]
+    this.manifest.capabilities as Extract<keyof Capabilities<T>, string>[]
 
   public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
@@ -81,11 +81,6 @@ export default abstract class BaseMELCloudDriver<
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
   protected abstract readonly deviceType: DeviceType
-
-  protected abstract readonly flowCapabilities: Extract<
-    keyof Capabilities<T>,
-    string
-  >[]
 
   protected abstract readonly storeMapping: StoreMapping[T]
 
@@ -163,37 +158,41 @@ export default abstract class BaseMELCloudDriver<
   #registerActionRunListener(
     capability: Extract<keyof SetCapabilities[T], string>,
   ): void {
-    this.homey.flow
-      .getActionCard(`${capability}_action`)
-      .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
-        await args.device.triggerCapabilityListener(
-          capability,
-          args[getArg(capability)],
-        )
-      })
+    try {
+      this.homey.flow
+        .getActionCard(`${capability}_action`)
+        .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
+          await args.device.triggerCapabilityListener(
+            capability,
+            args[getArg(capability)],
+          )
+        })
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
+    }
   }
 
   #registerConditionRunListener(
     capability: Extract<keyof Capabilities<T>, string>,
   ): void {
-    this.homey.flow
-      .getConditionCard(`${capability}_condition`)
-      .registerRunListener((args: FlowArgs[T]): boolean => {
-        const value = getDevice(args).getCapabilityValue(capability)
-        return typeof value === 'boolean'
-          ? value
-          : (value as number | string) === args[getArg(capability)]
-      })
+    try {
+      this.homey.flow
+        .getConditionCard(`${capability}_condition`)
+        .registerRunListener((args: FlowArgs[T]): boolean => {
+          const value = getDevice(args).getCapabilityValue(capability)
+          return typeof value === 'boolean'
+            ? value
+            : (value as number | string) === args[getArg(capability)]
+        })
+    } catch (error: unknown) {
+      this.error(error instanceof Error ? error.message : error)
+    }
   }
 
   #registerRunListeners(): void {
-    this.flowCapabilities.forEach(
+    this.capabilities.forEach(
       (capability: Extract<keyof Capabilities<T>, string>) => {
-        try {
-          this.#registerConditionRunListener(capability)
-        } catch (error: unknown) {
-          this.error(error instanceof Error ? error.message : error)
-        }
+        this.#registerConditionRunListener(capability)
         if (capability in this.setCapabilityTagMapping) {
           this.#registerActionRunListener(
             capability as Extract<keyof SetCapabilities[T], string>,

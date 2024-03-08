@@ -1,5 +1,5 @@
+import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import {
-  type Capabilities,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type OpCapabilities,
@@ -13,7 +13,6 @@ import {
   setCapabilityTagMappingAtw,
   storeMappingAtw,
 } from '../../types'
-import { DeviceType, effectiveFlagsAtw } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
@@ -32,15 +31,6 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     setCapabilityTagMappingAtw
 
   protected readonly deviceType: DeviceType = DeviceType.Atw
-
-  protected readonly flowCapabilities: (keyof Capabilities<'Atw'>)[] =
-    this.capabilities.filter(
-      (capability: keyof Capabilities<'Atw'>) =>
-        capability.startsWith('alarm_generic') ||
-        capability.startsWith('onoff.') ||
-        capability.startsWith('operation_mode') ||
-        capability.startsWith('target_temperature.'),
-    )
 
   protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 

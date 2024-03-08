@@ -3,7 +3,6 @@ import {
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ReportCapabilityTagMapping,
-  type SetCapabilities,
   type SetCapabilityTagMapping,
   type StoreMapping,
   getCapabilityTagMappingAta,
@@ -30,13 +29,6 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
     setCapabilityTagMappingAta
 
   protected readonly deviceType: DeviceType = DeviceType.Ata
-
-  protected readonly flowCapabilities: (keyof SetCapabilities['Ata'])[] = [
-    'fan_power',
-    'horizontal',
-    'operation_mode',
-    'vertical',
-  ]
 
   protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
 
