@@ -1388,6 +1388,18 @@
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
                 }
+              },
+              {
+                "id": "prohibit",
+                "title": {
+                  "en": "Prohibited",
+                  "fr": "Interdit",
+                  "nl": "Verboden",
+                  "sv": "Förbjuden",
+                  "no": "Forbudt",
+                  "da": "Forbudt",
+                  "es": "Prohibido"
+                }
               }
             ]
           }
@@ -1494,6 +1506,18 @@
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
                 }
+              },
+              {
+                "id": "prohibit",
+                "title": {
+                  "en": "Prohibited",
+                  "fr": "Interdit",
+                  "nl": "Verboden",
+                  "sv": "Förbjuden",
+                  "no": "Forbudt",
+                  "da": "Forbudt",
+                  "es": "Prohibido"
+                }
               }
             ]
           }
@@ -1599,6 +1623,18 @@
                   "no": "Anti-legionella",
                   "da": "Anti-legionella",
                   "es": "Anti-legionela"
+                }
+              },
+              {
+                "id": "prohibit",
+                "title": {
+                  "en": "Prohibited",
+                  "fr": "Interdit",
+                  "nl": "Verboden",
+                  "sv": "Förbjuden",
+                  "no": "Forbudt",
+                  "da": "Forbudt",
+                  "es": "Prohibido"
                 }
               }
             ]
@@ -4106,6 +4142,13 @@
         "operation_mode_state",
         "operation_mode_state.zone1",
         "operation_mode_state.zone2",
+        "boolean.idle_zone1",
+        "boolean.idle_zone2",
+        "boolean.prohibit_hot_water",
+        "boolean.prohibit_heating_zone1",
+        "boolean.prohibit_heating_zone2",
+        "boolean.prohibit_cooling_zone1",
+        "boolean.prohibit_cooling_zone2",
         "last_legionella",
         "alarm_generic.booster_heater1",
         "alarm_generic.booster_heater2",
@@ -5980,6 +6023,16 @@
     }
   ],
   "capabilities": {
+    "boolean": {
+      "type": "boolean",
+      "title": {
+        "en": "Generic boolean capability (hidden)"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null
+    },
     "fan_power": {
       "type": "number",
       "title": {
@@ -6308,6 +6361,18 @@
             "da": "Anti-legionella",
             "es": "Anti-legionela"
           }
+        },
+        {
+          "id": "prohibit",
+          "title": {
+            "en": "Prohibited",
+            "fr": "Interdit",
+            "nl": "Verboden",
+            "sv": "Förbjuden",
+            "no": "Forbudt",
+            "da": "Forbudt",
+            "es": "Prohibido"
+          }
         }
       ],
       "icon": "/assets/operation_mode_state.svg"
@@ -6455,7 +6520,6 @@
       },
       "getable": true,
       "setable": true,
-      "insights": true,
       "uiComponent": "picker",
       "values": [
         {

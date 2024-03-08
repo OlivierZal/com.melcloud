@@ -171,6 +171,11 @@ export interface DeviceDataAtw extends SetDeviceDataAtw {
   readonly IdleZone2: boolean
   readonly OperationMode: OperationModeState
   readonly OutdoorTemperature: number
+  readonly ProhibitCoolingZone1: boolean
+  readonly ProhibitCoolingZone2: boolean
+  readonly ProhibitHeatingZone1: boolean
+  readonly ProhibitHeatingZone2: boolean
+  readonly ProhibitHotWater: boolean
   readonly RoomTemperatureZone1: number
   readonly RoomTemperatureZone2: number
   readonly TankWaterTemperature: number

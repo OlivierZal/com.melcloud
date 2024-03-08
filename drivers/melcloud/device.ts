@@ -4,7 +4,7 @@ import {
   type OpCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
-  type SetCapabilitiesWithThermostatMode,
+  type SetCapabilitiesExtended,
   ThermostatMode,
 } from '../../types'
 import {
@@ -58,9 +58,10 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  protected onCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode['Ata'],
-  >(capability: K, value: SetCapabilitiesWithThermostatMode['Ata'][K]): void {
+  protected onCapability<K extends keyof SetCapabilitiesExtended['Ata']>(
+    capability: K,
+    value: SetCapabilitiesExtended['Ata'][K],
+  ): void {
     if (capability === 'thermostat_mode') {
       const isOn: boolean = value !== ThermostatMode.off
       this.setDiff('onoff', isOn)

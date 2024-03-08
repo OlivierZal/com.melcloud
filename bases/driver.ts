@@ -7,6 +7,7 @@ import type {
   ListCapabilityTagMapping,
   OpCapabilities,
   ReportCapabilityTagMapping,
+  SetCapabilities,
   SetCapabilityTagMapping,
   Store,
   StoreMapping,
@@ -26,6 +27,19 @@ import type MELCloudApp from '../app'
 import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
 
+const getArg = <T extends keyof typeof DeviceType>(
+  capability: Extract<keyof Capabilities<T>, string>,
+): keyof FlowArgs[T] => {
+  const [arg]: (keyof FlowArgs[T])[] = capability.split(
+    '.',
+  ) as (keyof FlowArgs[T])[]
+  return arg
+}
+
+const getDevice = <T extends keyof typeof DeviceType>(
+  args: FlowArgs[T],
+): BaseMELCloudDevice<T> => args.device as unknown as BaseMELCloudDevice<T>
+
 const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
   device: ListDevice[T]['Device'],
 ): CapabilitiesOptions[T] =>
@@ -42,6 +56,10 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
+  public readonly capabilities: (keyof Capabilities<T>)[] =
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    this.manifest.capabilities as (keyof Capabilities<T>)[]
+
   public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
 
@@ -91,7 +109,7 @@ export default abstract class BaseMELCloudDriver<
 
   public async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
-    this.registerRunListeners()
+    this.#registerRunListeners()
     return Promise.resolve()
   }
 
@@ -113,32 +131,6 @@ export default abstract class BaseMELCloudDriver<
       async (data: LoginCredentials): Promise<boolean> => this.#login(data),
     )
     return Promise.resolve()
-  }
-
-  protected registerRunListeners(): void {
-    this.flowCapabilities.forEach(
-      (capability: Extract<keyof Capabilities<T>, string>) => {
-        if (capability !== 'fan_power') {
-          this.homey.flow
-            .getConditionCard(`${capability}_condition`)
-            .registerRunListener(
-              (args: FlowArgs[T]): boolean =>
-                args[capability as Exclude<keyof FlowArgs[T], 'device'>] ===
-                (
-                  args.device as unknown as BaseMELCloudDevice<T>
-                ).getCapabilityValue(capability),
-            )
-        }
-        this.homey.flow
-          .getActionCard(`${capability}_action`)
-          .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
-            await args.device.triggerCapabilityListener(
-              capability,
-              args[capability as Exclude<keyof FlowArgs[T], 'device'>],
-            )
-          })
-      },
-    )
   }
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
@@ -166,6 +158,45 @@ export default abstract class BaseMELCloudDriver<
   async #login(data: LoginCredentials): Promise<boolean> {
     this.#app.clearSyncFromDevices()
     return this.#app.applyLogin(data)
+  }
+
+  #registerActionRunListener(
+    capability: Extract<keyof SetCapabilities[T], string>,
+  ): void {
+    this.homey.flow
+      .getActionCard(`${capability}_action`)
+      .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
+        await args.device.triggerCapabilityListener(
+          capability,
+          args[getArg(capability)],
+        )
+      })
+  }
+
+  #registerConditionRunListener(
+    capability: Extract<keyof Capabilities<T>, string>,
+  ): void {
+    this.homey.flow
+      .getConditionCard(`${capability}_condition`)
+      .registerRunListener((args: FlowArgs[T]): boolean => {
+        const value = getDevice(args).getCapabilityValue(capability)
+        return typeof value === 'boolean'
+          ? value
+          : (value as string) === args[getArg(capability)]
+      })
+  }
+
+  #registerRunListeners(): void {
+    this.flowCapabilities.forEach(
+      (capability: Extract<keyof Capabilities<T>, string>) => {
+        this.#registerConditionRunListener(capability)
+        if (capability in this.setCapabilityTagMapping) {
+          this.#registerActionRunListener(
+            capability as Extract<keyof SetCapabilities[T], string>,
+          )
+        }
+      },
+    )
   }
 
   #setProducedAndConsumedTagMappings<

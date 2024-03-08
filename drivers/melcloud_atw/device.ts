@@ -5,7 +5,7 @@ import type {
   OperationModeZoneCapabilities,
   ReportPlanParameters,
   SetCapabilities,
-  SetCapabilitiesWithThermostatMode,
+  SetCapabilitiesExtended,
   Store,
   TargetTemperatureFlowCapabilities,
 } from '../../types'
@@ -43,12 +43,6 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     'measure_power.produced': convertToDeviceMeasurePower,
     operation_mode_state: ((value: OperationModeState) =>
       OperationModeState[value]) as ConvertFromDevice<'Atw'>,
-    'operation_mode_state.zone1': this.#convertToDeviceOperationModeStateZone(
-      'operation_mode_state.zone1',
-    ),
-    'operation_mode_state.zone2': this.#convertToDeviceOperationModeStateZone(
-      'operation_mode_state.zone1',
-    ),
     operation_mode_zone: convertToDeviceOperationZone,
     'operation_mode_zone.zone2': convertToDeviceOperationZone,
     operation_mode_zone_with_cool: convertToDeviceOperationZone,
@@ -90,9 +84,10 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected onCapability<
-    K extends keyof SetCapabilitiesWithThermostatMode['Atw'],
-  >(capability: K, value: SetCapabilitiesWithThermostatMode['Atw'][K]): void {
+  protected onCapability<K extends keyof SetCapabilitiesExtended['Atw']>(
+    capability: K,
+    value: SetCapabilitiesExtended['Atw'][K],
+  ): void {
     if (capability.startsWith('operation_mode_zone')) {
       this.setDiff(capability, value)
       this.#handleOtherOperationModeZone(
@@ -102,15 +97,6 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     } else {
       super.onCapability(capability, value)
     }
-  }
-
-  #convertToDeviceOperationModeStateZone(
-    capability: keyof OpCapabilities['Atw'],
-  ): ConvertFromDevice<'Atw'> {
-    return ((value: boolean) =>
-      value
-        ? OperationModeState.idle
-        : this.getCapabilityValue(capability)) as ConvertFromDevice<'Atw'>
   }
 
   #convertToDeviceTargetTemperatureFlow(

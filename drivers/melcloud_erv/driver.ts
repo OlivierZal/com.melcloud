@@ -45,8 +45,7 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
     hasPM25Sensor,
   }: Store['Erv']): string[] {
     return [
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ...(this.manifest.capabilities as (keyof Capabilities<'Erv'>)[]).filter(
+      ...this.capabilities.filter(
         (capability: keyof Capabilities<'Erv'>) =>
           !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
             capability,

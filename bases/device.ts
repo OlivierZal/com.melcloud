@@ -14,7 +14,7 @@ import type {
   ReportCapabilityTagMapping,
   ReportPlanParameters,
   SetCapabilities,
-  SetCapabilitiesWithThermostatMode,
+  SetCapabilitiesExtended,
   SetCapabilityTagMapping,
   Settings,
   Store,
@@ -61,13 +61,11 @@ abstract class BaseMELCloudDevice<
 
   #effectiveFlags!: Record<NonEffectiveFlagsKeyOf<SetDeviceData[T]>, number>
 
-  #getCapabilityTagMapping: Partial<NonNullable<GetCapabilityTagMapping[T]>> =
-    {}
+  #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
   #linkedDeviceCount = NUMBER_1
 
-  #listCapabilityTagMapping: Partial<NonNullable<ListCapabilityTagMapping[T]>> =
-    {}
+  #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
   #listOnlyCapabilityTagEntries: [
     Extract<keyof OpCapabilities[T], string>,
@@ -85,8 +83,7 @@ abstract class BaseMELCloudDevice<
     ][]
   } = { false: [], true: [] }
 
-  #setCapabilityTagMapping: Partial<NonNullable<SetCapabilityTagMapping[T]>> =
-    {}
+  #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
@@ -290,15 +287,15 @@ abstract class BaseMELCloudDevice<
   }
 
   protected onCapability<
-    K extends Extract<keyof SetCapabilitiesWithThermostatMode[T], string>,
-  >(capability: K, value: SetCapabilitiesWithThermostatMode[T][K]): void {
+    K extends Extract<keyof SetCapabilitiesExtended[T], string>,
+  >(capability: K, value: SetCapabilitiesExtended[T][K]): void {
     if (this.diff.has(capability)) {
       const diffValue: {
-        initialValue: SetCapabilitiesWithThermostatMode[T][K]
-        value: SetCapabilitiesWithThermostatMode[T][K]
+        initialValue: SetCapabilitiesExtended[T][K]
+        value: SetCapabilitiesExtended[T][K]
       } = this.diff.get(capability) as {
-        initialValue: SetCapabilitiesWithThermostatMode[T][K]
-        value: SetCapabilitiesWithThermostatMode[T][K]
+        initialValue: SetCapabilitiesExtended[T][K]
+        value: SetCapabilitiesExtended[T][K]
       }
       diffValue.value = value
     } else {
@@ -308,7 +305,7 @@ abstract class BaseMELCloudDevice<
 
   protected setDiff<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
-    value: SetCapabilitiesWithThermostatMode[T][K],
+    value: SetCapabilitiesExtended[T][K],
   ): void {
     this.diff.set(capability, {
       initialValue: this.getCapabilityValue(capability),
@@ -326,26 +323,7 @@ abstract class BaseMELCloudDevice<
       Extract<keyof OpCapabilities[T], string>,
       OpDeviceData<T>,
     ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
-    const {
-      0: firstCapabilitiesToUpdate,
-      1: lastCapabilitiesToUpdate,
-    }: Partial<
-      Record<
-        typeof NUMBER_0 | typeof NUMBER_1,
-        [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
-      >
-    > = Object.groupBy<
-      number,
-      [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>]
-    >(updateCapabilityTagEntries, ([capability]) =>
-      Number(
-        (this.driver.lastCapabilitiesToUpdate as string[]).includes(
-          capability as string,
-        ),
-      ),
-    )
-    await this.#setCapabilityValues(firstCapabilitiesToUpdate ?? null, data)
-    await this.#setCapabilityValues(lastCapabilitiesToUpdate ?? null, data)
+    await this.#setCapabilityValues(updateCapabilityTagEntries, data)
   }
 
   #applySyncToDevice(): void {
@@ -447,12 +425,12 @@ abstract class BaseMELCloudDevice<
       | ListCapabilityTagMapping[T]
       | ReportCapabilityTagMapping[T]
       | SetCapabilityTagMapping[T],
-  >(capabilityTagMapping: M): Partial<NonNullable<M>> {
+  >(capabilityTagMapping: M): Partial<M> {
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
         this.hasCapability(capability),
       ),
-    ) as Partial<NonNullable<M>>
+    ) as Partial<M>
   }
 
   #clearEnergyReportPlan(total = false): void {
@@ -615,8 +593,7 @@ abstract class BaseMELCloudDevice<
   }
 
   #isCapability(setting: string): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    return (this.driver.manifest.capabilities as string[]).includes(setting)
+    return (this.driver.capabilities as string[]).includes(setting)
   }
 
   #isReportCapability(setting: string): boolean {
