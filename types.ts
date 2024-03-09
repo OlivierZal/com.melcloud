@@ -173,7 +173,7 @@ export type OpDeviceData<T extends keyof typeof DeviceType> =
   | NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>
 
 interface BaseSetCapabilities {
-  onoff?: boolean
+  readonly onoff: boolean
 }
 interface BaseGetCapabilities {
   readonly measure_temperature: number
@@ -183,11 +183,11 @@ interface BaseListCapabilities {
 }
 
 interface SetCapabilitiesAta extends BaseSetCapabilities {
-  fan_power?: FanSpeed
-  horizontal?: keyof typeof Horizontal
-  operation_mode?: keyof typeof OperationMode
-  target_temperature?: number
-  vertical?: keyof typeof Vertical
+  readonly fan_power: FanSpeed
+  readonly horizontal: keyof typeof Horizontal
+  readonly operation_mode: keyof typeof OperationMode
+  readonly target_temperature: number
+  readonly vertical: keyof typeof Vertical
 }
 type SetCapabilitiesExtendedAta = SetCapabilitiesAta & {
   readonly thermostat_mode?: ThermostatMode
@@ -208,49 +208,49 @@ type OpCapabilitiesAta = GetCapabilitiesAta &
   ListCapabilitiesAta &
   SetCapabilitiesAta
 interface ReportCapabilitiesAta {
-  measure_power?: number
-  'measure_power.auto'?: number
-  'measure_power.cooling'?: number
-  'measure_power.dry'?: number
-  'measure_power.fan'?: number
-  'measure_power.heating'?: number
-  'measure_power.other'?: number
-  meter_power?: number
-  'meter_power.auto'?: number
-  'meter_power.cooling'?: number
-  'meter_power.daily'?: number
-  'meter_power.daily_auto'?: number
-  'meter_power.daily_cooling'?: number
-  'meter_power.daily_dry'?: number
-  'meter_power.daily_fan'?: number
-  'meter_power.daily_heating'?: number
-  'meter_power.daily_other'?: number
-  'meter_power.dry'?: number
-  'meter_power.fan'?: number
-  'meter_power.heating'?: number
-  'meter_power.other'?: number
+  readonly measure_power: number
+  readonly 'measure_power.auto': number
+  readonly 'measure_power.cooling': number
+  readonly 'measure_power.dry': number
+  readonly 'measure_power.fan': number
+  readonly 'measure_power.heating': number
+  readonly 'measure_power.other': number
+  readonly meter_power: number
+  readonly 'meter_power.auto': number
+  readonly 'meter_power.cooling': number
+  readonly 'meter_power.daily': number
+  readonly 'meter_power.daily_auto': number
+  readonly 'meter_power.daily_cooling': number
+  readonly 'meter_power.daily_dry': number
+  readonly 'meter_power.daily_fan': number
+  readonly 'meter_power.daily_heating': number
+  readonly 'meter_power.daily_other': number
+  readonly 'meter_power.dry': number
+  readonly 'meter_power.fan': number
+  readonly 'meter_power.heating': number
+  readonly 'meter_power.other': number
 }
 
 export interface OperationModeZoneCapabilities {
-  operation_mode_zone?: keyof typeof OperationModeZone
-  'operation_mode_zone.zone2'?: keyof typeof OperationModeZone
-  operation_mode_zone_with_cool?: keyof typeof OperationModeZone
-  'operation_mode_zone_with_cool.zone2'?: keyof typeof OperationModeZone
+  readonly operation_mode_zone: keyof typeof OperationModeZone
+  readonly 'operation_mode_zone.zone2': keyof typeof OperationModeZone
+  readonly operation_mode_zone_with_cool: keyof typeof OperationModeZone
+  readonly 'operation_mode_zone_with_cool.zone2': keyof typeof OperationModeZone
 }
 export interface TargetTemperatureFlowCapabilities {
-  'target_temperature.flow_cool'?: number
-  'target_temperature.flow_cool_zone2'?: number
-  'target_temperature.flow_heat'?: number
-  'target_temperature.flow_heat_zone2'?: number
+  readonly 'target_temperature.flow_cool': number
+  readonly 'target_temperature.flow_cool_zone2': number
+  readonly 'target_temperature.flow_heat': number
+  readonly 'target_temperature.flow_heat_zone2': number
 }
 interface SetCapabilitiesAtw
   extends BaseSetCapabilities,
     OperationModeZoneCapabilities,
     TargetTemperatureFlowCapabilities {
-  'onoff.forced_hot_water'?: boolean
-  target_temperature?: number
-  'target_temperature.tank_water'?: number
-  'target_temperature.zone2'?: number
+  readonly 'onoff.forced_hot_water': boolean
+  readonly target_temperature: number
+  readonly 'target_temperature.tank_water': number
+  readonly 'target_temperature.zone2': number
 }
 type SetCapabilitiesExtendedAtw = SetCapabilitiesAtw
 interface GetCapabilitiesAtw extends BaseGetCapabilities {
@@ -287,35 +287,35 @@ type OpCapabilitiesAtw = GetCapabilitiesAtw &
   ListCapabilitiesAtw &
   SetCapabilitiesAtw
 interface ReportCapabilitiesAtw {
-  meter_power?: number
-  'meter_power.cooling'?: number
-  'meter_power.cop'?: number
-  'meter_power.cop_cooling'?: number
-  'meter_power.cop_daily'?: number
-  'meter_power.cop_daily_cooling'?: number
-  'meter_power.cop_daily_heating'?: number
-  'meter_power.cop_daily_hotwater'?: number
-  'meter_power.cop_heating'?: number
-  'meter_power.cop_hotwater'?: number
-  'meter_power.daily'?: number
-  'meter_power.daily_cooling'?: number
-  'meter_power.daily_heating'?: number
-  'meter_power.daily_hotwater'?: number
-  'meter_power.heating'?: number
-  'meter_power.hotwater'?: number
-  'meter_power.produced'?: number
-  'meter_power.produced_cooling'?: number
-  'meter_power.produced_daily'?: number
-  'meter_power.produced_daily_cooling'?: number
-  'meter_power.produced_daily_heating'?: number
-  'meter_power.produced_daily_hotwater'?: number
-  'meter_power.produced_heating'?: number
-  'meter_power.produced_hotwater'?: number
+  readonly meter_power: number
+  readonly 'meter_power.cooling': number
+  readonly 'meter_power.cop': number
+  readonly 'meter_power.cop_cooling': number
+  readonly 'meter_power.cop_daily': number
+  readonly 'meter_power.cop_daily_cooling': number
+  readonly 'meter_power.cop_daily_heating': number
+  readonly 'meter_power.cop_daily_hotwater': number
+  readonly 'meter_power.cop_heating': number
+  readonly 'meter_power.cop_hotwater': number
+  readonly 'meter_power.daily': number
+  readonly 'meter_power.daily_cooling': number
+  readonly 'meter_power.daily_heating': number
+  readonly 'meter_power.daily_hotwater': number
+  readonly 'meter_power.heating': number
+  readonly 'meter_power.hotwater': number
+  readonly 'meter_power.produced': number
+  readonly 'meter_power.produced_cooling': number
+  readonly 'meter_power.produced_daily': number
+  readonly 'meter_power.produced_daily_cooling': number
+  readonly 'meter_power.produced_daily_heating': number
+  readonly 'meter_power.produced_daily_hotwater': number
+  readonly 'meter_power.produced_heating': number
+  readonly 'meter_power.produced_hotwater': number
 }
 
 interface SetCapabilitiesErv extends BaseSetCapabilities {
-  fan_power?: FanSpeed
-  ventilation_mode?: keyof typeof VentilationMode
+  readonly fan_power: FanSpeed
+  readonly ventilation_mode: keyof typeof VentilationMode
 }
 type SetCapabilitiesExtendedErv = SetCapabilitiesErv
 interface GetCapabilitiesErv extends BaseGetCapabilities {
