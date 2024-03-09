@@ -70,7 +70,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_zone.zone2',
   ]
 
-  readonly #zone2Capabilities: (keyof Capabilities<'Atw'>)[] = [
+  readonly #zone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',

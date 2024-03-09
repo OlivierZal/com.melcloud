@@ -28,7 +28,7 @@ import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
 
 const getArg = <T extends keyof typeof DeviceType>(
-  capability: Extract<keyof Capabilities<T>, string>,
+  capability: Extract<keyof Capabilities[T], string>,
 ): keyof FlowArgs[T] => {
   const [arg]: (keyof FlowArgs[T])[] = capability.split(
     '.',
@@ -56,9 +56,9 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly capabilities: Extract<keyof Capabilities<T>, string>[] =
+  public readonly capabilities: Extract<keyof Capabilities[T], string>[] =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as Extract<keyof Capabilities<T>, string>[]
+    this.manifest.capabilities as Extract<keyof Capabilities[T], string>[]
 
   public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
@@ -173,7 +173,7 @@ export default abstract class BaseMELCloudDriver<
   }
 
   #registerConditionRunListener(
-    capability: Extract<keyof Capabilities<T>, string>,
+    capability: Extract<keyof Capabilities[T], string>,
   ): void {
     try {
       this.homey.flow
@@ -191,7 +191,7 @@ export default abstract class BaseMELCloudDriver<
 
   #registerRunListeners(): void {
     this.capabilities.forEach(
-      (capability: Extract<keyof Capabilities<T>, string>) => {
+      (capability: Extract<keyof Capabilities[T], string>) => {
         this.#registerConditionRunListener(capability)
         if (capability in this.setCapabilityTagMapping) {
           this.#registerActionRunListener(

@@ -134,11 +134,11 @@ abstract class BaseMELCloudDevice<
     return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
-  public getCapabilityValue<K extends keyof Capabilities<T>>(
+  public getCapabilityValue<K extends keyof Capabilities[T]>(
     capability: K & string,
-  ): NonNullable<Capabilities<T>[K]> {
+  ): NonNullable<Capabilities[T][K]> {
     return super.getCapabilityValue(capability) as NonNullable<
-      Capabilities<T>[K]
+      Capabilities[T][K]
     >
   }
 
@@ -195,7 +195,7 @@ abstract class BaseMELCloudDevice<
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      !this.getCapabilityValue('onoff')
+      this.getCapabilityValue('onoff')
     ) {
       await this.triggerCapabilityListener('onoff', true)
     } else if (
@@ -247,8 +247,8 @@ abstract class BaseMELCloudDevice<
   }
 
   public async setCapabilityValue<
-    K extends Extract<keyof Capabilities<T>, string>,
-  >(capability: K, value: Capabilities<T>[K]): Promise<void> {
+    K extends Extract<keyof Capabilities[T], string>,
+  >(capability: K, value: Capabilities[T][K]): Promise<void> {
     this.log('Capability', capability, 'is', value)
     if (value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value)
@@ -739,7 +739,7 @@ abstract class BaseMELCloudDevice<
             )
             await this.setCapabilityValue(
               capability,
-              value as Capabilities<T>[K],
+              value as Capabilities[T][K],
             )
           }
         },
@@ -803,7 +803,7 @@ abstract class BaseMELCloudDevice<
             case capability.includes('cop'):
               await this.setCapabilityValue(
                 capability,
-                this.#calculateCopValue(data, capability) as Capabilities<T>[K],
+                this.#calculateCopValue(data, capability) as Capabilities[T][K],
               )
               break
             case capability.startsWith('measure_power'):
@@ -813,13 +813,13 @@ abstract class BaseMELCloudDevice<
                   data,
                   tags,
                   toDate,
-                ) as Capabilities<T>[K],
+                ) as Capabilities[T][K],
               )
               break
             default:
               await this.setCapabilityValue(
                 capability,
-                this.#calculateEnergyValue(data, tags) as Capabilities<T>[K],
+                this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
               )
           }
         },

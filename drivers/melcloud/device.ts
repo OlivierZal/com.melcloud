@@ -1,4 +1,5 @@
 import {
+  type Capabilities,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilities,
@@ -58,6 +59,18 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       this.#getTargetTemperature(value)) as ConvertToDevice<'Ata'>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
+  }
+
+  public getCapabilityValue<K extends keyof Capabilities['Ata']>(
+    capability: K & string,
+  ): NonNullable<Capabilities['Ata'][K]> {
+    if (
+      capability === 'fan_power' &&
+      this.getCapabilityValue('alarm_generic.silent')
+    ) {
+      return FanSpeed.silent as NonNullable<Capabilities['Ata'][K]>
+    }
+    return super.getCapabilityValue(capability)
   }
 
   protected onCapability<K extends keyof SetCapabilitiesExtended['Ata']>(

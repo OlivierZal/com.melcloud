@@ -183,7 +183,7 @@ interface BaseListCapabilities {
 }
 
 interface SetCapabilitiesAta extends BaseSetCapabilities {
-  fan_power?: keyof typeof FanSpeed
+  fan_power?: FanSpeed
   horizontal?: keyof typeof Horizontal
   operation_mode?: keyof typeof OperationMode
   target_temperature?: number
@@ -197,7 +197,7 @@ type GetCapabilitiesAta = BaseGetCapabilities & {
 }
 interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
-  readonly fan_power: keyof typeof FanSpeed
+  readonly fan_power: FanSpeed
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
@@ -314,7 +314,7 @@ interface ReportCapabilitiesAtw {
 }
 
 interface SetCapabilitiesErv extends BaseSetCapabilities {
-  fan_power?: keyof typeof FanSpeed
+  fan_power?: FanSpeed
   ventilation_mode?: keyof typeof VentilationMode
 }
 type SetCapabilitiesExtendedErv = SetCapabilitiesErv
@@ -350,13 +350,16 @@ export interface ReportCapabilities {
   readonly Atw: ReportCapabilitiesAtw
   readonly Erv: Record<string, never>
 }
-export type Capabilities<T extends keyof typeof DeviceType> =
-  OpCapabilities[T] &
-    ReportCapabilities[T] & {
+export interface Capabilities {
+  Ata: OpCapabilities['Ata'] &
+    ReportCapabilities['Ata'] & { readonly thermostat_mode: ThermostatMode }
+  Atw: OpCapabilities['Atw'] &
+    ReportCapabilities['Atw'] & {
       readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
       readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
-      readonly thermostat_mode: ThermostatMode
     }
+  Erv: OpCapabilities['Erv'] & ReportCapabilities['Erv']
+}
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
