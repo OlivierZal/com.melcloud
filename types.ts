@@ -2,6 +2,7 @@ import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
   DeviceData,
   DeviceType,
+  FanSpeed,
   FrostProtectionPostData,
   Horizontal,
   ListDevice,
@@ -182,7 +183,7 @@ interface BaseListCapabilities {
 }
 
 interface SetCapabilitiesAta extends BaseSetCapabilities {
-  fan_power?: number
+  fan_power?: keyof typeof FanSpeed
   horizontal?: keyof typeof Horizontal
   operation_mode?: keyof typeof OperationMode
   target_temperature?: number
@@ -196,7 +197,7 @@ type GetCapabilitiesAta = BaseGetCapabilities & {
 }
 interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
-  readonly fan_power: number
+  readonly fan_power: keyof typeof FanSpeed
   readonly fan_power_state: number
   readonly horizontal: keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
@@ -313,7 +314,7 @@ interface ReportCapabilitiesAtw {
 }
 
 interface SetCapabilitiesErv extends BaseSetCapabilities {
-  fan_power?: number
+  fan_power?: keyof typeof FanSpeed
   ventilation_mode?: keyof typeof VentilationMode
 }
 type SetCapabilitiesExtendedErv = SetCapabilitiesErv
