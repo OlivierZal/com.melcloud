@@ -416,6 +416,44 @@
       },
       {
         "title": {
+          "en": "The silent mode turned off",
+          "fr": "Le mode silencieux s'est désactivé",
+          "nl": "De stille modus ging uit",
+          "sv": "Tyst läget är inaktiverat",
+          "no": "Stille modusen er deaktivert",
+          "da": "Stille tilstanden blev deaktiveret",
+          "es": "El modo silencioso se ha desactivado"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ],
+        "id": "alarm_generic.silent_false"
+      },
+      {
+        "title": {
+          "en": "The silent mode turned on",
+          "fr": "Le mode silencieux s'est activé",
+          "nl": "De stille modus gaat aan",
+          "sv": "Tyst läget är aktiverat",
+          "no": "Stille modusen er aktivert",
+          "da": "Stille tilstanden blev aktiveret",
+          "es": "El modo silencioso se ha activado"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ],
+        "id": "alarm_generic.silent_true"
+      },
+      {
+        "title": {
           "en": "The fan speed has changed",
           "fr": "La vitesse du ventilateur a été modifiée",
           "nl": "De ventilatiesnelheid is veranderd",
@@ -1044,6 +1082,25 @@
           }
         ],
         "id": "alarm_generic.immersion_heater_condition"
+      },
+      {
+        "title": {
+          "en": "The silent mode is !{{on|off}}",
+          "fr": "Le mode silencieux est !{{en marche|arrêté}}",
+          "nl": "De stille modus is !{{aan|uit}}",
+          "sv": "Tyst läget är !{{på|av}}",
+          "no": "Stille modusen er !{{på|av}}",
+          "da": "Stille tilstanden er !{{tændt|slukket}}",
+          "es": "El modo silencioso está !{{activada|desactivada}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
+          }
+        ],
+        "id": "alarm_generic.silent_condition"
       },
       {
         "title": {
@@ -3340,6 +3397,24 @@
             "no": "Stille modus",
             "da": "Stille tilstand",
             "es": "Modo silencioso"
+          },
+          "insightsTitleTrue": {
+            "en": "Silent mode turned on",
+            "fr": "Mode silencieux s'est activé",
+            "nl": "Stille modus ging af",
+            "sv": "Tyst läge aktiverat",
+            "no": "Stille modus aktivert",
+            "da": "Stille tilstand blev aktiveret",
+            "es": "Modo silencioso activado"
+          },
+          "insightsTitleFalse": {
+            "en": "Silent mode turned off",
+            "fr": "Mode silencieux s'est désactivé",
+            "nl": "Stille modus ging uit",
+            "sv": "Tyst läge inaktiverat",
+            "no": "Stille modus deaktivert",
+            "da": "Stille tilstand blev deaktiveret",
+            "es": "Modo silencioso desactivado"
           }
         },
         "measure_power": {

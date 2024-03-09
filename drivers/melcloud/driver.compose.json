@@ -69,6 +69,24 @@
         "no": "Stille modus",
         "da": "Stille tilstand",
         "es": "Modo silencioso"
+      },
+      "insightsTitleTrue": {
+        "en": "Silent mode turned on",
+        "fr": "Mode silencieux s'est activé",
+        "nl": "Stille modus ging af",
+        "sv": "Tyst läge aktiverat",
+        "no": "Stille modus aktivert",
+        "da": "Stille tilstand blev aktiveret",
+        "es": "Modo silencioso activado"
+      },
+      "insightsTitleFalse": {
+        "en": "Silent mode turned off",
+        "fr": "Mode silencieux s'est désactivé",
+        "nl": "Stille modus ging uit",
+        "sv": "Tyst läge inaktiverat",
+        "no": "Stille modus deaktivert",
+        "da": "Stille tilstand blev deaktiveret",
+        "es": "Modo silencioso desactivado"
       }
     },
     "measure_power": {

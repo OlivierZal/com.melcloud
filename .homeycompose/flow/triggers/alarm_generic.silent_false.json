@@ -1,0 +1,18 @@
+{
+  "title": {
+    "en": "The silent mode turned off",
+    "fr": "Le mode silencieux s'est désactivé",
+    "nl": "De stille modus ging uit",
+    "sv": "Tyst läget är inaktiverat",
+    "no": "Stille modusen er deaktivert",
+    "da": "Stille tilstanden blev deaktiveret",
+    "es": "El modo silencioso se ha desactivado"
+  },
+  "args": [
+    {
+      "type": "device",
+      "name": "device",
+      "filter": "driver_id=melcloud_atw"
+    }
+  ]
+}
