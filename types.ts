@@ -611,11 +611,11 @@ export type ConvertToDevice<T extends keyof typeof DeviceType> = (
 export interface FlowArgs {
   readonly Ata: SetCapabilitiesAta & { readonly device: AtaDevice }
   readonly Atw: {
-    readonly onoff?: boolean
-    readonly operation_mode_state?: keyof typeof OperationModeState
-    readonly operation_mode_zone?: keyof typeof OperationModeZone
-    readonly target_temperature?: number
     readonly device: AtwDevice
+    readonly onoff: boolean
+    readonly operation_mode_state: keyof typeof OperationModeState
+    readonly operation_mode_zone: keyof typeof OperationModeZone
+    readonly target_temperature: number
   }
   readonly Erv: SetCapabilitiesErv & { readonly device: ErvDevice }
 }
