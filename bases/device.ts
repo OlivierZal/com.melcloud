@@ -289,17 +289,26 @@ abstract class BaseMELCloudDevice<
   protected onCapability<
     K extends Extract<keyof SetCapabilitiesExtended[T], string>,
   >(capability: K, value: SetCapabilitiesExtended[T][K]): void {
-    if (this.diff.has(capability)) {
+    if (!(capability in this.#setCapabilityTagMapping)) {
+      return
+    }
+    if (this.diff.has(capability as keyof SetCapabilities[T])) {
       const diffValue: {
         initialValue: SetCapabilitiesExtended[T][K]
         value: SetCapabilitiesExtended[T][K]
-      } = this.diff.get(capability) as {
+      } = this.diff.get(capability as keyof SetCapabilities[T]) as {
         initialValue: SetCapabilitiesExtended[T][K]
         value: SetCapabilitiesExtended[T][K]
       }
       diffValue.value = value
     } else {
-      this.setDiff(capability, value)
+      this.setDiff(
+        capability as Extract<keyof SetCapabilities[T], string>,
+        value as SetCapabilitiesExtended[T][Extract<
+          keyof SetCapabilities[T],
+          string
+        >],
+      )
     }
   }
 
@@ -633,7 +642,7 @@ abstract class BaseMELCloudDevice<
   }
 
   #registerCapabilityListeners<
-    K extends Extract<keyof SetCapabilities[T], string>,
+    K extends Extract<keyof SetCapabilitiesExtended[T], string>,
   >(): void {
     ;(
       [
@@ -643,7 +652,7 @@ abstract class BaseMELCloudDevice<
     ).forEach((capability: K) => {
       this.registerCapabilityListener(
         capability,
-        (value: SetCapabilities[T][K]): void => {
+        (value: SetCapabilitiesExtended[T][K]): void => {
           this.#clearSyncToDevice()
           this.onCapability(capability, value)
           this.#applySyncToDevice()

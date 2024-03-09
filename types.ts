@@ -190,7 +190,7 @@ interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly vertical: keyof typeof Vertical
 }
 type SetCapabilitiesExtendedAta = SetCapabilitiesAta & {
-  readonly thermostat_mode?: ThermostatMode
+  readonly thermostat_mode: ThermostatMode
 }
 type GetCapabilitiesAta = BaseGetCapabilities & {
   readonly 'alarm_generic.silent': boolean
