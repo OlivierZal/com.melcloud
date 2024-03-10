@@ -168,7 +168,7 @@ export default abstract class BaseMELCloudDriver<
           )
         })
     } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
+      this.log(error instanceof Error ? error.message : error)
     }
   }
 
