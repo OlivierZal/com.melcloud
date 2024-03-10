@@ -194,12 +194,11 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       | 'operation_mode_state.zone2',
     idleCapability: 'boolean.idle_zone1' | 'boolean.idle_zone2',
   ): Promise<void> {
-    if (!this.getStoreValue('hasZone2')) {
-      return
+    if (this.hasCapability(idleCapability)) {
+      await this.setCapabilityValue(
+        operationModeStateZoneCapability,
+        this.getCapabilityValue(idleCapability) ? 'idle' : operationModeState,
+      )
     }
-    await this.setCapabilityValue(
-      operationModeStateZoneCapability,
-      this.getCapabilityValue(idleCapability) ? 'idle' : operationModeState,
-    )
   }
 }
