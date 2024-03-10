@@ -355,6 +355,7 @@ export interface Capabilities {
     ReportCapabilities['Ata'] & { readonly thermostat_mode: ThermostatMode }
   Atw: OpCapabilities['Atw'] &
     ReportCapabilities['Atw'] & {
+      readonly 'operation_mode_state.hot_water': keyof typeof OperationModeState
       readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
       readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
     }

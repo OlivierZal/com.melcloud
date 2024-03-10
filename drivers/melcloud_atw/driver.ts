@@ -2,7 +2,6 @@ import {
   type Capabilities,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
-  type OpCapabilities,
   type ReportCapabilityTagMapping,
   type SetCapabilityTagMapping,
   type Store,
@@ -35,21 +34,21 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 
-  readonly #coolCapabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #coolCapabilities: (keyof Capabilities['Atw'])[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
   ]
 
-  readonly #coolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #coolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
   ]
 
-  readonly #notCoolCapabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #notCoolCapabilities: (keyof Capabilities['Atw'])[] = [
     'operation_mode_zone',
   ]
 
-  readonly #notCoolNotZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #notCoolNotZone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'onoff',
     'onoff.forced_hot_water',
     'measure_temperature',
@@ -61,12 +60,15 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.tank_water',
     'target_temperature.flow_heat',
     'operation_mode_state',
+    'operation_mode_state.hot_water',
+    'operation_mode_state.zone1',
+    'boolean.idle_zone1',
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
   ]
 
-  readonly #notCoolZone2Capabilities: (keyof OpCapabilities['Atw'])[] = [
+  readonly #notCoolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'operation_mode_zone.zone2',
   ]
 
@@ -74,9 +76,7 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
-    'operation_mode_state.zone1',
     'operation_mode_state.zone2',
-    'boolean.idle_zone1',
     'boolean.idle_zone2',
   ]
 
