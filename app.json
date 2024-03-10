@@ -673,6 +673,43 @@
       },
       {
         "title": {
+          "en": "The current operation has changed for domestic hot water",
+          "fr": "L'opération en cours a été modifiée pour l'eau chaude sanitaire",
+          "nl": "De huidige bedrijf is veranderd voor het sanitair warm water",
+          "sv": "Aktuell drift ändrades för varmvattenladdning",
+          "no": "Gjeldende drift ble endret for varmvannslastning",
+          "da": "Den aktuelle drift er blevet ændret for varmtvandsindlæsning",
+          "es": "La operación actual ha cambiado para el agua caliente sanitaria"
+        },
+        "tokens": [
+          {
+            "name": "operation_mode_state.hot_water",
+            "type": "string",
+            "title": {
+              "en": "Current operation",
+              "fr": "Opération en cours",
+              "nl": "Huidige bedrijf",
+              "sv": "Aktuell drift",
+              "no": "Gjeldende drift",
+              "da": "Aktuel drift",
+              "es": "Operación actual"
+            },
+            "example": {
+              "en": "idle"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=melcloud_atw"
+          }
+        ],
+        "id": "operation_mode_state.hot_water_changed"
+      },
+      {
+        "title": {
           "en": "The current operation has changed in zone 1",
           "fr": "L'opération en cours a été modifiée dans la zone 2",
           "nl": "De huidige bedrijf is veranderd in zone 1",
@@ -695,7 +732,7 @@
               "es": "Operación actual"
             },
             "example": {
-              "en": "heating"
+              "en": "idle"
             }
           }
         ],
@@ -703,7 +740,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
+            "filter": "driver_id=melcloud_atw"
           }
         ],
         "id": "operation_mode_state.zone1_changed"
@@ -732,7 +769,7 @@
               "es": "Operación actual"
             },
             "example": {
-              "en": "heating"
+              "en": "idle"
             }
           }
         ],
@@ -1474,7 +1511,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
+            "filter": "driver_id=melcloud_atw"
           },
           {
             "name": "operation_mode_state",
@@ -1556,7 +1593,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_state.zone1"
+            "filter": "driver_id=melcloud_atw"
           },
           {
             "name": "operation_mode_state",
