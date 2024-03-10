@@ -18,11 +18,6 @@ import {
 } from '../../melcloud/types'
 import BaseMELCloudDevice from '../../bases/device'
 
-const isThermostatMode = (
-  value: keyof typeof OperationMode,
-): value is ThermostatMode & keyof typeof OperationMode =>
-  value in ThermostatMode
-
 export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
@@ -122,8 +117,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
       'thermostat_mode',
-      isOn && isThermostatMode(operationMode)
-        ? operationMode
+      isOn && operationMode in ThermostatMode
+        ? (operationMode as ThermostatMode)
         : ThermostatMode.off,
     )
   }

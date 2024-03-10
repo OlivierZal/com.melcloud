@@ -1,13 +1,15 @@
-import type {
-  ConvertFromDevice,
-  ConvertToDevice,
-  OpCapabilities,
-  OperationModeZoneCapabilities,
-  ReportPlanParameters,
-  SetCapabilities,
-  SetCapabilitiesExtended,
-  Store,
-  TargetTemperatureFlowCapabilities,
+import {
+  type ConvertFromDevice,
+  type ConvertToDevice,
+  type OpCapabilities,
+  OperationModeStateHotWaterCapability,
+  OperationModeStateZoneCapability,
+  type OperationModeZoneCapabilities,
+  type ReportPlanParameters,
+  type SetCapabilities,
+  type SetCapabilitiesExtended,
+  type Store,
+  type TargetTemperatureFlowCapabilities,
 } from '../../types'
 import {
   type DeviceData,
@@ -178,7 +180,11 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       this.getCapabilityValue('operation_mode_state')
     await this.setCapabilityValue(
       'operation_mode_state.hot_water',
-      operationModeState,
+      operationModeState in OperationModeStateHotWaterCapability
+        ? OperationModeStateHotWaterCapability[
+            operationModeState as OperationModeStateHotWaterCapability
+          ]
+        : OperationModeStateHotWaterCapability.idle,
     )
     await Promise.all(
       ['zone1', 'zone2'].map(async (zone: string): Promise<void> => {
@@ -206,7 +212,12 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) {
       await this.setCapabilityValue(
         operationModeStateZoneCapability,
-        this.getCapabilityValue(idleCapability) ? 'idle' : operationModeState,
+        !this.getCapabilityValue(idleCapability) &&
+          operationModeState in OperationModeStateZoneCapability
+          ? OperationModeStateZoneCapability[
+              operationModeState as OperationModeStateZoneCapability
+            ]
+          : OperationModeStateZoneCapability.idle,
       )
     }
   }

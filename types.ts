@@ -26,9 +26,24 @@ import type ErvDriver from './drivers/melcloud_erv/driver'
 
 export enum ThermostatMode {
   auto = 'auto',
-  heat = 'heat',
   cool = 'cool',
+  heat = 'heat',
   off = 'off',
+}
+
+export enum OperationModeStateHotWaterCapability {
+  dhw = 'dhw',
+  idle = 'idle',
+  legionella = 'legionella',
+  prohibited = 'prohibited',
+}
+
+export enum OperationModeStateZoneCapability {
+  cooling = 'cooling',
+  defrost = 'defrost',
+  heating = 'heating',
+  idle = 'idle',
+  prohibited = 'prohibited',
 }
 
 export interface MELCloudDriver {
@@ -355,9 +370,9 @@ export interface Capabilities {
     ReportCapabilities['Ata'] & { readonly thermostat_mode: ThermostatMode }
   Atw: OpCapabilities['Atw'] &
     ReportCapabilities['Atw'] & {
-      readonly 'operation_mode_state.hot_water': keyof typeof OperationModeState
-      readonly 'operation_mode_state.zone1': keyof typeof OperationModeState
-      readonly 'operation_mode_state.zone2': keyof typeof OperationModeState
+      readonly 'operation_mode_state.hot_water': OperationModeStateHotWaterCapability
+      readonly 'operation_mode_state.zone1': OperationModeStateZoneCapability
+      readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
     }
   Erv: OpCapabilities['Erv'] & ReportCapabilities['Erv']
 }
