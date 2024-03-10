@@ -40,18 +40,6 @@
           }
         },
         {
-          "id": "dhw",
-          "title": {
-            "en": "Domestic hot water",
-            "fr": "Eau chaude sanitaire",
-            "nl": "Sanitair warm water",
-            "sv": "Varmvattenladdning",
-            "no": "Varmvannslastning",
-            "da": "Varmtvandsindlæsning",
-            "es": "Agua caliente sanitaria"
-          }
-        },
-        {
           "id": "heating",
           "title": {
             "en": "Heating",
@@ -85,18 +73,6 @@
             "no": "Avfrosting",
             "da": "Afrimning",
             "es": "Descongelación"
-          }
-        },
-        {
-          "id": "legionella",
-          "title": {
-            "en": "Anti-legionella",
-            "fr": "Antilégionelle",
-            "nl": "Anti-legionella",
-            "sv": "Anti-legionella",
-            "no": "Anti-legionella",
-            "da": "Anti-legionella",
-            "es": "Anti-legionela"
           }
         },
         {

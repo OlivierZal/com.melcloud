@@ -52,42 +52,6 @@
           }
         },
         {
-          "id": "heating",
-          "title": {
-            "en": "Heating",
-            "fr": "Chauffage",
-            "nl": "Verwarming",
-            "sv": "Uppvärmning",
-            "no": "Oppvarming",
-            "da": "Opvarmning",
-            "es": "Calefacción"
-          }
-        },
-        {
-          "id": "cooling",
-          "title": {
-            "en": "Cooling",
-            "fr": "Refroidissement",
-            "nl": "Koeling",
-            "sv": "Kylning",
-            "no": "Kjøling",
-            "da": "Køling",
-            "es": "Enfriamiento"
-          }
-        },
-        {
-          "id": "defrost",
-          "title": {
-            "en": "Defrost",
-            "fr": "Dégivrage",
-            "nl": "Ontdooien",
-            "sv": "Avfrostning",
-            "no": "Avfrosting",
-            "da": "Afrimning",
-            "es": "Descongelación"
-          }
-        },
-        {
           "id": "legionella",
           "title": {
             "en": "Anti-legionella",

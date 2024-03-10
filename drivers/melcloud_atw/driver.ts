@@ -62,13 +62,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_state',
     'operation_mode_state.hot_water',
     'operation_mode_state.zone1',
+    'measure_power.heat_pump_frequency',
+    'measure_power',
+    'measure_power.produced',
     'boolean.idle_zone1',
     'boolean.prohibit_hot_water',
     'boolean.prohibit_cooling_zone1',
     'boolean.prohibit_heating_zone1',
-    'measure_power.heat_pump_frequency',
-    'measure_power',
-    'measure_power.produced',
   ]
 
   readonly #notCoolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
