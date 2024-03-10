@@ -166,5 +166,8 @@
   },
   "32.3.0": {
     "en": "Improved fan_power handling (air-to-air and erv devices)."
+  },
+  "33.0.0": {
+    "en": "Added new capabilities: readonly silent mode and outdoor temperature (air-to-air devices), prohibit (air-to-water devices)."
   }
 }
