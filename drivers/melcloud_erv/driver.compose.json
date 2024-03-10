@@ -21,17 +21,6 @@
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
-    "measure_temperature.outdoor": {
-      "title": {
-        "en": "Outdoor temperature",
-        "fr": "Température extérieure",
-        "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
-        "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
-      }
-    },
     "measure_power.wifi": {
       "title": {
         "en": "Wi-Fi signal strength",
@@ -50,6 +39,17 @@
         "no": "dBm",
         "da": "dBm",
         "es": "dBm"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
       }
     }
   }

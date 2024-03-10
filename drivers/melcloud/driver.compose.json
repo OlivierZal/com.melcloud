@@ -45,21 +45,6 @@
     "measure_power.wifi"
   ],
   "capabilitiesOptions": {
-    "measure_temperature.outdoor": {
-      "title": {
-        "en": "Outdoor temperature",
-        "fr": "Température extérieure",
-        "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
-        "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
-      }
-    },
-    "target_temperature": {
-      "min": 10,
-      "max": 38
-    },
     "alarm_generic.silent": {
       "title": {
         "en": "Silent mode",
@@ -156,6 +141,37 @@
         "no": "Effekt - annet",
         "da": "Effekt - andet",
         "es": "Potencia - otro"
+      }
+    },
+    "measure_power.wifi": {
+      "title": {
+        "en": "Wi-Fi signal strength",
+        "fr": "Puissance du signal Wi-Fi",
+        "nl": "Wi-Fi signaalsterkte",
+        "sv": "Wi-Fi signalstyrka",
+        "no": "Wi-Fi signalstyrke",
+        "da": "Wi-Fi signalstyrke",
+        "es": "Potencia de la señal Wi-Fi"
+      },
+      "units": {
+        "en": "dBm",
+        "fr": "dBm",
+        "nl": "dBm",
+        "sv": "dBm",
+        "no": "dBm",
+        "da": "dBm",
+        "es": "dBm"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor temperature",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "sv": "Utomhustemperatur",
+        "no": "Utetemperatur",
+        "da": "Udendørstemperatur",
+        "es": "Temperatura exterior"
       }
     },
     "meter_power.auto": {
@@ -301,25 +317,9 @@
         "es": "Energía diaria - otro"
       }
     },
-    "measure_power.wifi": {
-      "title": {
-        "en": "Wi-Fi signal strength",
-        "fr": "Puissance du signal Wi-Fi",
-        "nl": "Wi-Fi signaalsterkte",
-        "sv": "Wi-Fi signalstyrka",
-        "no": "Wi-Fi signalstyrke",
-        "da": "Wi-Fi signalstyrke",
-        "es": "Potencia de la señal Wi-Fi"
-      },
-      "units": {
-        "en": "dBm",
-        "fr": "dBm",
-        "nl": "dBm",
-        "sv": "dBm",
-        "no": "dBm",
-        "da": "dBm",
-        "es": "dBm"
-      }
+    "target_temperature": {
+      "min": 10,
+      "max": 38
     }
   }
 }
