@@ -271,6 +271,11 @@ type SetCapabilitiesExtendedAtw = SetCapabilitiesAtw
 interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'boolean.idle_zone1': boolean
   readonly 'boolean.idle_zone2': boolean
+  readonly 'boolean.prohibit_cooling_zone1': boolean
+  readonly 'boolean.prohibit_cooling_zone2': boolean
+  readonly 'boolean.prohibit_heating_zone1': boolean
+  readonly 'boolean.prohibit_heating_zone2': boolean
+  readonly 'boolean.prohibit_hot_water': boolean
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
@@ -472,6 +477,11 @@ export const getCapabilityTagMappingAtw: Record<
 > = {
   'boolean.idle_zone1': 'IdleZone1',
   'boolean.idle_zone2': 'IdleZone2',
+  'boolean.prohibit_cooling_zone1': 'ProhibitCoolingZone1',
+  'boolean.prohibit_cooling_zone2': 'ProhibitCoolingZone2',
+  'boolean.prohibit_heating_zone1': 'ProhibitHeatingZone1',
+  'boolean.prohibit_heating_zone2': 'ProhibitHeatingZone2',
+  'boolean.prohibit_hot_water': 'ProhibitHotWater',
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   'measure_temperature.tank_water': 'TankWaterTemperature',

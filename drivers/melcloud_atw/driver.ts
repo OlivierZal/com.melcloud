@@ -63,6 +63,9 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'operation_mode_state.hot_water',
     'operation_mode_state.zone1',
     'boolean.idle_zone1',
+    'boolean.prohibit_hot_water',
+    'boolean.prohibit_cooling_zone1',
+    'boolean.prohibit_heating_zone1',
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
@@ -78,6 +81,8 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.flow_heat_zone2',
     'operation_mode_state.zone2',
     'boolean.idle_zone2',
+    'boolean.prohibit_cooling_zone2',
+    'boolean.prohibit_heating_zone2',
   ]
 
   public getCapabilities({ canCool, hasZone2 }: Store['Atw']): string[] {
