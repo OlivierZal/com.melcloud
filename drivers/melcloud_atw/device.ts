@@ -177,10 +177,10 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     await Promise.all(
       ['zone1', 'zone2'].map(async (zone: string): Promise<void> => {
         await this.#updateOperationModeStateZone(
-          this.getCapabilityValue('operation_mode_state'),
           `operation_mode_state.${zone}` as
             | 'operation_mode_state.zone1'
             | 'operation_mode_state.zone2',
+          this.getCapabilityValue('operation_mode_state'),
           `boolean.idle_${zone}` as 'boolean.idle_zone1' | 'boolean.idle_zone2',
         )
       }),
@@ -188,13 +188,16 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   }
 
   async #updateOperationModeStateZone(
-    operationModeState: keyof typeof OperationModeState,
     operationModeStateZoneCapability:
       | 'operation_mode_state.zone1'
       | 'operation_mode_state.zone2',
+    operationModeState: keyof typeof OperationModeState,
     idleCapability: 'boolean.idle_zone1' | 'boolean.idle_zone2',
   ): Promise<void> {
-    if (this.hasCapability(idleCapability)) {
+    if (
+      this.hasCapability(operationModeStateZoneCapability) &&
+      this.hasCapability(idleCapability)
+    ) {
       await this.setCapabilityValue(
         operationModeStateZoneCapability,
         this.getCapabilityValue(idleCapability) ? 'idle' : operationModeState,
