@@ -185,7 +185,7 @@ export default abstract class BaseMELCloudDriver<
             : (value as number | string) === args[getArg(capability)]
         })
     } catch (error: unknown) {
-      this.error(error instanceof Error ? error.message : error)
+      this.log(error instanceof Error ? error.message : error)
     }
   }
 
