@@ -198,16 +198,16 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     await Promise.all(
       ['zone1', 'zone2'].map(async (zone: string): Promise<void> => {
         await this.#updateOperationModeStateZone(
-          operationModeState,
           zone as 'zone1' | 'zone2',
+          operationModeState,
         )
       }),
     )
   }
 
   async #updateOperationModeStateZone(
-    operationModeState: keyof typeof OperationModeState,
     zone: 'zone1' | 'zone2',
+    operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     if (this.hasCapability(`operation_mode_state.${zone}`)) {
       let value: OperationModeStateZoneCapability =
