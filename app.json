@@ -428,7 +428,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud"
           }
         ],
         "id": "alarm_generic.silent_false"
@@ -447,7 +447,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw"
+            "filter": "driver_id=melcloud"
           }
         ],
         "id": "alarm_generic.silent_true"
@@ -1134,7 +1134,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
+            "filter": "driver_id=melcloud"
           }
         ],
         "id": "alarm_generic.silent_condition"

@@ -85,7 +85,10 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'boolean.prohibit_heating_zone2',
   ]
 
-  public getCapabilities({ canCool, hasZone2 }: Store['Atw']): string[] {
+  public getRequiredCapabilities({
+    canCool,
+    hasZone2,
+  }: Store['Atw']): string[] {
     return [
       ...this.#notCoolNotZone2Capabilities,
       ...(canCool ? this.#coolCapabilities : this.#notCoolCapabilities),

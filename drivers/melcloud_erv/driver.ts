@@ -34,7 +34,7 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
 
   protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
 
-  public getCapabilities({
+  public getRequiredCapabilities({
     hasCO2Sensor,
     hasPM25Sensor,
   }: Store['Erv']): string[] {

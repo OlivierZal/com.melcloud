@@ -139,7 +139,7 @@ export default abstract class BaseMELCloudDriver<
         }): DeviceDetails<T> => {
           const store: Store[T] = this.getStore(device)
           return {
-            capabilities: this.getCapabilities(store),
+            capabilities: this.getRequiredCapabilities(store),
             capabilitiesOptions: getCapabilitiesOptions(device),
             data: { buildingid, id },
             name,
@@ -217,5 +217,5 @@ export default abstract class BaseMELCloudDriver<
     )
   }
 
-  public abstract getCapabilities(store: Store[T]): string[]
+  public abstract getRequiredCapabilities(store: Store[T]): string[]
 }

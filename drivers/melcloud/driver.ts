@@ -32,7 +32,7 @@ export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
 
   protected readonly storeMapping: StoreMapping['Ata'] = storeMappingAta
 
-  public getCapabilities(): string[] {
+  public getRequiredCapabilities(): string[] {
     return [
       ...Object.keys({
         ...this.setCapabilityTagMapping,
