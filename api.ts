@@ -340,42 +340,29 @@ export = {
     body: Settings
     homey: Homey
   }): Promise<void> {
-    try {
-      await Promise.all(
-        (homey.app as MELCloudApp)
-          .getDevices({ driverId: query?.driverId })
-          .map(async (device: MELCloudDevice): Promise<void> => {
-            const deviceChangedKeys: string[] = Object.keys(body).filter(
-              (changedKey: string) =>
-                body[changedKey] !== device.getSetting(changedKey),
+    await Promise.all(
+      (homey.app as MELCloudApp)
+        .getDevices({ driverId: query?.driverId })
+        .map(async (device: MELCloudDevice): Promise<void> => {
+          const changedKeys: string[] = Object.keys(body).filter(
+            (changedKey: string) =>
+              body[changedKey] !== device.getSetting(changedKey),
+          )
+          if (changedKeys.length) {
+            const deviceSettings: Settings = Object.fromEntries(
+              changedKeys.map((key: string): [string, ValueOf<Settings>] => [
+                key,
+                body[key],
+              ]),
             )
-            if (deviceChangedKeys.length) {
-              const deviceSettings: Settings = Object.fromEntries(
-                deviceChangedKeys.map(
-                  (key: string): [string, ValueOf<Settings>] => [
-                    key,
-                    body[key],
-                  ],
-                ),
-              )
-              try {
-                await device.setSettings(deviceSettings)
-                await device.onSettings({
-                  changedKeys: deviceChangedKeys,
-                  newSettings: device.getSettings() as Settings,
-                })
-              } catch (error: unknown) {
-                const errorMessage: string =
-                  error instanceof Error ? error.message : String(error)
-                device.error('Settings:', errorMessage)
-                throw new Error(errorMessage)
-              }
-            }
-          }),
-      )
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : String(error))
-    }
+            await device.setSettings(deviceSettings)
+            await device.onSettings({
+              changedKeys,
+              newSettings: device.getSettings() as Settings,
+            })
+          }
+        }),
+    )
   },
   async updateFrostProtectionSettings({
     homey,
