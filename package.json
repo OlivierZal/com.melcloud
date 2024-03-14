@@ -14,7 +14,7 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^1.6.3",
+    "@stylistic/eslint-plugin": "^1.7.0",
     "@tsconfig/node21": "^21.0.1",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.5",
     "@types/luxon": "^3.4.2",
