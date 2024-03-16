@@ -7,7 +7,6 @@ import {
   type OperationModeZoneCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
-  type SetCapabilitiesExtended,
   type Store,
   type TargetTemperatureFlowCapabilities,
 } from '../../types'
@@ -91,9 +90,9 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected onCapability<K extends keyof SetCapabilitiesExtended['Atw']>(
+  protected onCapability<K extends keyof SetCapabilities['Atw']>(
     capability: K,
-    value: SetCapabilitiesExtended['Atw'][K],
+    value: SetCapabilities['Atw'][K],
   ): void {
     if (capability.startsWith('operation_mode_zone')) {
       this.setDiff(capability, value)

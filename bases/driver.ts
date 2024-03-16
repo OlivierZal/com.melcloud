@@ -189,17 +189,21 @@ export default abstract class BaseMELCloudDriver<
     }
   }
 
-  #registerRunListeners(): void {
-    this.capabilities.forEach(
-      (capability: Extract<keyof Capabilities[T], string>) => {
-        this.#registerConditionRunListener(capability)
-        if (capability in this.setCapabilityTagMapping) {
-          this.#registerActionRunListener(
-            capability as Extract<keyof SetCapabilities[T], string>,
-          )
-        }
-      },
-    )
+  #registerRunListeners<
+    K extends Extract<keyof Capabilities[T], string>,
+  >(): void {
+    Object.keys({
+      ...this.setCapabilityTagMapping,
+      ...this.getCapabilityTagMapping,
+      ...this.listCapabilityTagMapping,
+    }).forEach((capability: string) => {
+      this.#registerConditionRunListener(capability as K)
+      if (capability in this.setCapabilityTagMapping) {
+        this.#registerActionRunListener(
+          capability as Extract<keyof SetCapabilities[T], string>,
+        )
+      }
+    })
   }
 
   #setProducedAndConsumedTagMappings<

@@ -5,7 +5,6 @@ import {
   type OpCapabilities,
   type ReportPlanParameters,
   type SetCapabilities,
-  type SetCapabilitiesExtended,
   ThermostatMode,
 } from '../../types'
 import {
@@ -68,22 +67,19 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     return super.getCapabilityValue(capability)
   }
 
-  protected onCapability<K extends keyof SetCapabilitiesExtended['Ata']>(
-    capability: K,
-    value: SetCapabilitiesExtended['Ata'][K],
-  ): void {
-    if (capability === 'thermostat_mode') {
-      const isOn: boolean = value !== ThermostatMode.off
-      this.setDiff('onoff', isOn)
-      if (isOn) {
-        this.setDiff(
-          'operation_mode',
-          value as Exclude<ThermostatMode, ThermostatMode.off>,
-        )
-      }
-    } else {
-      super.onCapability(capability, value)
-    }
+  protected registerCapabilityListeners(): void {
+    super.registerCapabilityListeners()
+    this.registerCapabilityListener(
+      'thermostat_mode',
+      (value: ThermostatMode): void => {
+        this.clearSyncToDevice()
+        this.setDiff('onoff', value !== ThermostatMode.off)
+        if (value !== ThermostatMode.off) {
+          this.setDiff('operation_mode', value)
+        }
+        this.applySyncToDevice()
+      },
+    )
   }
 
   protected async updateCapabilities(

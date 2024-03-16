@@ -14,7 +14,6 @@ import type {
   ReportCapabilityTagMapping,
   ReportPlanParameters,
   SetCapabilities,
-  SetCapabilitiesExtended,
   SetCapabilityTagMapping,
   Settings,
   Store,
@@ -170,8 +169,7 @@ abstract class BaseMELCloudDevice<
     await this.setWarning(null)
     await this.#handleStore()
     await this.#handleCapabilities()
-    this.#setReportCapabilityTagEntries()
-    this.#registerCapabilityListeners()
+    this.registerCapabilityListeners()
     await this.syncFromDevice()
     await this.#runEnergyReports()
   }
@@ -279,6 +277,23 @@ abstract class BaseMELCloudDevice<
     await this.updateCapabilities(data)
   }
 
+  protected applySyncToDevice(): void {
+    this.#syncToDeviceTimeout = this.setTimeout(
+      async (): Promise<void> => {
+        await this.updateCapabilities(await this.#deviceData())
+        this.#syncToDeviceTimeout = null
+      },
+      { seconds: 1 },
+      { actionType: 'sync to device', units: ['seconds'] },
+    )
+  }
+
+  protected clearSyncToDevice(): void {
+    this.homey.clearTimeout(this.#syncToDeviceTimeout)
+    this.#syncToDeviceTimeout = null
+    this.log('Sync to device has been paused')
+  }
+
   protected getRequestedOrCurrentValue<
     K extends Extract<keyof SetCapabilities[T], string>,
   >(capability: K): NonNullable<SetCapabilities[T][K]> {
@@ -286,9 +301,10 @@ abstract class BaseMELCloudDevice<
       this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
   }
 
-  protected onCapability<
-    K extends Extract<keyof SetCapabilitiesExtended[T], string>,
-  >(capability: K, value: SetCapabilitiesExtended[T][K]): void {
+  protected onCapability<K extends Extract<keyof SetCapabilities[T], string>>(
+    capability: K,
+    value: SetCapabilities[T][K],
+  ): void {
     if (!(capability in this.#setCapabilityTagMapping)) {
       return
     }
@@ -307,6 +323,21 @@ abstract class BaseMELCloudDevice<
         value as SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
       )
     }
+  }
+
+  protected registerCapabilityListeners<
+    K extends Extract<keyof SetCapabilities[T], string>,
+  >(): void {
+    Object.keys(this.#setCapabilityTagMapping).forEach((capability: string) => {
+      this.registerCapabilityListener(
+        capability,
+        (value: SetCapabilities[T][K]): void => {
+          this.clearSyncToDevice()
+          this.onCapability(capability as K, value)
+          this.applySyncToDevice()
+        },
+      )
+    })
   }
 
   protected setDiff<K extends Extract<keyof SetCapabilities[T], string>>(
@@ -330,17 +361,6 @@ abstract class BaseMELCloudDevice<
       OpDeviceData<T>,
     ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
     await this.#setCapabilityValues(updateCapabilityTagEntries, data)
-  }
-
-  #applySyncToDevice(): void {
-    this.#syncToDeviceTimeout = this.setTimeout(
-      async (): Promise<void> => {
-        await this.updateCapabilities(await this.#deviceData())
-        this.#syncToDeviceTimeout = null
-      },
-      { seconds: 1 },
-      { actionType: 'sync to device', units: ['seconds'] },
-    )
   }
 
   #buildUpdateData<
@@ -447,12 +467,6 @@ abstract class BaseMELCloudDevice<
     this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
   }
 
-  #clearSyncToDevice(): void {
-    this.homey.clearTimeout(this.#syncToDeviceTimeout)
-    this.#syncToDeviceTimeout = null
-    this.log('Sync to device has been paused')
-  }
-
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value:
@@ -551,6 +565,7 @@ abstract class BaseMELCloudDevice<
         await this.removeCapability(capability)
       }, Promise.resolve())
     this.#setCapabilityTagMappings()
+    this.#setReportCapabilityTagEntries()
   }
 
   async #handleOptionalCapabilities(
@@ -636,26 +651,6 @@ abstract class BaseMELCloudDevice<
       DateTime.now().plus(duration).set(values).diffNow(),
       { actionType, units: ['hours', 'minutes'] },
     )
-  }
-
-  #registerCapabilityListeners<
-    K extends Extract<keyof SetCapabilitiesExtended[T], string>,
-  >(): void {
-    ;(
-      [
-        ...Object.keys(this.driver.setCapabilityTagMapping),
-        'thermostat_mode',
-      ] as K[]
-    ).forEach((capability: K) => {
-      this.registerCapabilityListener(
-        capability,
-        (value: SetCapabilitiesExtended[T][K]): void => {
-          this.#clearSyncToDevice()
-          this.onCapability(capability, value)
-          this.#applySyncToDevice()
-        },
-      )
-    })
   }
 
   async #reportEnergyCost(

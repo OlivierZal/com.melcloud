@@ -204,9 +204,6 @@ interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly target_temperature: number
   readonly vertical: keyof typeof Vertical
 }
-type SetCapabilitiesExtendedAta = SetCapabilitiesAta & {
-  readonly thermostat_mode: ThermostatMode
-}
 type GetCapabilitiesAta = BaseGetCapabilities & {
   readonly 'alarm_generic.silent': boolean
 }
@@ -267,7 +264,6 @@ interface SetCapabilitiesAtw
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
 }
-type SetCapabilitiesExtendedAtw = SetCapabilitiesAtw
 interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'boolean.idle_zone1': boolean
   readonly 'boolean.idle_zone2': boolean
@@ -337,7 +333,6 @@ interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
   readonly ventilation_mode: keyof typeof VentilationMode
 }
-type SetCapabilitiesExtendedErv = SetCapabilitiesErv
 interface GetCapabilitiesErv extends BaseGetCapabilities {
   readonly measure_co2: number
   readonly measure_temperature: number
@@ -354,11 +349,6 @@ export interface SetCapabilities {
   readonly Ata: SetCapabilitiesAta
   readonly Atw: SetCapabilitiesAtw
   readonly Erv: SetCapabilitiesErv
-}
-export interface SetCapabilitiesExtended {
-  readonly Ata: SetCapabilitiesExtendedAta
-  readonly Atw: SetCapabilitiesExtendedAtw
-  readonly Erv: SetCapabilitiesExtendedErv
 }
 export interface OpCapabilities {
   readonly Ata: OpCapabilitiesAta
