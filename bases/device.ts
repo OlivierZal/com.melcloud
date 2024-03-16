@@ -294,27 +294,24 @@ abstract class BaseMELCloudDevice<
     }
     if (this.diff.has(capability as keyof SetCapabilities[T])) {
       const diffValue: {
-        initialValue: SetCapabilitiesExtended[T][K]
-        value: SetCapabilitiesExtended[T][K]
+        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
+        value: SetCapabilities[T][keyof SetCapabilities[T]]
       } = this.diff.get(capability as keyof SetCapabilities[T]) as {
-        initialValue: SetCapabilitiesExtended[T][K]
-        value: SetCapabilitiesExtended[T][K]
+        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
+        value: SetCapabilities[T][keyof SetCapabilities[T]]
       }
-      diffValue.value = value
+      diffValue.value = value as SetCapabilities[T][keyof SetCapabilities[T]]
     } else {
       this.setDiff(
         capability as Extract<keyof SetCapabilities[T], string>,
-        value as SetCapabilitiesExtended[T][Extract<
-          keyof SetCapabilities[T],
-          string
-        >],
+        value as SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
       )
     }
   }
 
   protected setDiff<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
-    value: SetCapabilitiesExtended[T][K],
+    value: SetCapabilities[T][K],
   ): void {
     this.diff.set(capability, {
       initialValue: this.getCapabilityValue(capability),
