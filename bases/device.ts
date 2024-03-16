@@ -709,7 +709,7 @@ abstract class BaseMELCloudDevice<
   #setAlwaysOnWarning(): void {
     if (this.getSetting('always_on')) {
       this.setWarning(this.homey.__('warnings.always_on')).catch(
-        ({ message }) => {
+        ({ message }): void => {
           this.error(message)
         },
       )
