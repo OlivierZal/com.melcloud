@@ -701,8 +701,8 @@ abstract class BaseMELCloudDevice<
   #setAlwaysOnWarning(): void {
     if (this.getSetting('always_on')) {
       this.setWarning(this.homey.__('warnings.always_on')).catch(
-        ({ message }): void => {
-          this.error(message)
+        (error: unknown): void => {
+          this.error(error instanceof Error ? error.message : String(error))
         },
       )
     }
