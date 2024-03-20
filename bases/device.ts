@@ -490,20 +490,20 @@ abstract class BaseMELCloudDevice<
 
   async #deviceData(): Promise<DeviceData[T] | null> {
     const updateData: SetDeviceData[T] = this.#buildUpdateData()
-    if (updateData.EffectiveFlags === FLAG_UNCHANGED) {
-      return null
+    if (updateData.EffectiveFlags !== FLAG_UNCHANGED) {
+      try {
+        return (
+          await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
+            DeviceID: this.id,
+            HasPendingCommand: true,
+            ...updateData,
+          })
+        ).data as DeviceData[T]
+      } catch (error: unknown) {
+        return null
+      }
     }
-    try {
-      return (
-        await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
-          DeviceID: this.id,
-          HasPendingCommand: true,
-          ...updateData,
-        })
-      ).data as DeviceData[T]
-    } catch (error: unknown) {
-      return null
-    }
+    return null
   }
 
   #getUpdateCapabilityTagEntries(
