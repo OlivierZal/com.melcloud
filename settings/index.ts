@@ -141,9 +141,9 @@ const disableButton = (elementId: string, value = true): void => {
   }
   if (value) {
     element.classList.add('is-disabled')
-  } else {
-    element.classList.remove('is-disabled')
+    return
   }
+  element.classList.remove('is-disabled')
 }
 
 const disableButtons = (setting: string, value = true): void => {
@@ -154,9 +154,9 @@ const disableButtons = (setting: string, value = true): void => {
       Object.keys(deviceSettings).forEach((driverId: string) => {
         disableButton(`${action}-${baseSetting}-${driverId}`, value)
       })
-    } else {
-      disableButton(`${action}-${baseSetting}-common`, value)
+      return
     }
+    disableButton(`${action}-${baseSetting}-common`, value)
   })
 }
 
@@ -736,14 +736,14 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
         flatDeviceSettings[settingId] = [settingValue]
       },
     )
-  } else {
-    Object.entries(body).forEach(
-      ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
-        deviceSettings[driverId][settingId] = [settingValue]
-      },
-    )
-    getFlatDeviceSettings()
+    return
   }
+  Object.entries(body).forEach(
+    ([settingId, settingValue]: [string, ValueOf<Settings>]) => {
+      deviceSettings[driverId][settingId] = [settingValue]
+    },
+  )
+  getFlatDeviceSettings()
 }
 
 const setDeviceSettings = (
@@ -825,9 +825,9 @@ const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   if (values && new Set(values).size === NUMBER_1) {
     const [value]: ValueOf<Settings>[] = values
     element.value = String(value)
-  } else {
-    element.value = ''
+    return
   }
+  element.value = ''
 }
 
 const addRefreshSettingsCommonEventListener = (
@@ -844,14 +844,14 @@ const updateCheckboxChildrenElement = (
   const values: boolean[] = deviceSettings[driverId][settingId] as boolean[]
   if (new Set(values).size === NUMBER_1) {
     ;[element.checked] = values
-  } else {
-    element.indeterminate = true
-    element.addEventListener('change', (): void => {
-      if (element.indeterminate) {
-        element.indeterminate = false
-      }
-    })
+    return
   }
+  element.indeterminate = true
+  element.addEventListener('change', (): void => {
+    if (element.indeterminate) {
+      element.indeterminate = false
+    }
+  })
 }
 
 const addRefreshSettingsDriverEventListener = (
@@ -922,11 +922,8 @@ const createSelectElement = (
 }
 
 const generateCommonChildrenElements = (homey: Homey): void => {
-  driverSettingsCommon
-    .filter((setting: DriverSetting) =>
-      ['checkbox', 'dropdown'].includes(setting.type),
-    )
-    .forEach((setting: DriverSetting) => {
+  driverSettingsCommon.forEach((setting: DriverSetting) => {
+    if (['checkbox', 'dropdown'].includes(setting.type)) {
       const divElement: HTMLDivElement = createDivElement()
       const selectElement: HTMLSelectElement = createSelectElement(
         homey,
@@ -938,7 +935,8 @@ const generateCommonChildrenElements = (homey: Homey): void => {
       divElement.appendChild(labelElement)
       divElement.appendChild(selectElement)
       settingsCommonElement.appendChild(divElement)
-    })
+    }
+  })
   addSettingsEventListeners(
     homey,
     Array.from(settingsCommonElement.querySelectorAll('select')),
@@ -984,9 +982,8 @@ const generateCheckboxChildrenElements = (
     document.createElement('fieldset')
   fieldSetElement.classList.add('homey-form-checkbox-set')
   let previousGroupLabel: string | undefined = ''
-  driverSettingsDrivers[driverId]
-    .filter((setting: DriverSetting) => setting.type === 'checkbox')
-    .forEach((setting: DriverSetting) => {
+  driverSettingsDrivers[driverId].forEach((setting: DriverSetting) => {
+    if (setting.type === 'checkbox') {
       if (setting.groupLabel !== previousGroupLabel) {
         previousGroupLabel = setting.groupLabel
         const legendElement: HTMLLegendElement = createLegendElement({
@@ -1003,7 +1000,8 @@ const generateCheckboxChildrenElements = (
         { text: setting.title },
       )
       fieldSetElement.appendChild(labelElement)
-    })
+    }
+  })
   settingsElement.appendChild(fieldSetElement)
   addSettingsEventListeners(
     homey,
@@ -1142,10 +1140,10 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
-        } else {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(homey.__('settings.success'))
+          return
         }
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(homey.__('settings.success'))
       },
     )
   })
@@ -1200,10 +1198,10 @@ const updateFrostProtectionData = (
       if (error) {
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
-      } else {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(homey.__('settings.success'))
+        return
       }
+      // @ts-expect-error: `homey` is partially typed
+      await homey.alert(homey.__('settings.success'))
     },
   )
 }
@@ -1300,15 +1298,15 @@ const load = async (homey: Homey): Promise<void> => {
   generateCommonChildrenElements(homey)
   if (typeof homeySettings.contextKey === 'undefined') {
     needsAuthentication()
-  } else {
-    Object.keys(deviceSettings).forEach((driverId: string) => {
-      generateCheckboxChildrenElements(homey, driverId)
-    })
-    try {
-      await generate(homey)
-    } catch (error: unknown) {
-      needsAuthentication()
-    }
+    return
+  }
+  Object.keys(deviceSettings).forEach((driverId: string) => {
+    generateCheckboxChildrenElements(homey, driverId)
+  })
+  try {
+    await generate(homey)
+  } catch (error: unknown) {
+    needsAuthentication()
   }
 }
 

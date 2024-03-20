@@ -69,17 +69,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
 
   protected registerCapabilityListeners(): void {
     super.registerCapabilityListeners()
-    this.registerCapabilityListener(
-      'thermostat_mode',
-      (value: ThermostatMode): void => {
-        this.clearSyncToDevice()
-        this.setDiff('onoff', value !== ThermostatMode.off)
-        if (value !== ThermostatMode.off) {
-          this.setDiff('operation_mode', value)
-        }
-        this.applySyncToDevice()
-      },
-    )
+    this.#registerThermostatModeListener()
   }
 
   protected async updateCapabilities(
@@ -105,6 +95,20 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       default:
         return value
     }
+  }
+
+  #registerThermostatModeListener(): void {
+    this.registerCapabilityListener(
+      'thermostat_mode',
+      (value: ThermostatMode): void => {
+        this.clearSyncToDevice()
+        this.setDiff('onoff', value !== ThermostatMode.off)
+        if (value !== ThermostatMode.off) {
+          this.setDiff('operation_mode', value)
+        }
+        this.applySyncToDevice()
+      },
+    )
   }
 
   async #updateThermostatMode(): Promise<void> {

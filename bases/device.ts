@@ -317,12 +317,12 @@ abstract class BaseMELCloudDevice<
         value: SetCapabilities[T][keyof SetCapabilities[T]]
       }
       diffValue.value = value as SetCapabilities[T][keyof SetCapabilities[T]]
-    } else {
-      this.setDiff(
-        capability as Extract<keyof SetCapabilities[T], string>,
-        value as SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
-      )
+      return
     }
+    this.setDiff(
+      capability as Extract<keyof SetCapabilities[T], string>,
+      value as SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
+    )
   }
 
   protected registerCapabilityListeners<
@@ -577,9 +577,9 @@ abstract class BaseMELCloudDevice<
         await acc
         if (newSettings[capability] as boolean) {
           await this.addCapability(capability)
-        } else {
-          await this.removeCapability(capability)
+          return
         }
+        await this.removeCapability(capability)
       },
       Promise.resolve(),
     )

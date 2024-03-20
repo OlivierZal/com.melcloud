@@ -100,9 +100,9 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
         capability as keyof OperationModeZoneCapabilities,
         value as keyof typeof OperationModeZone,
       )
-    } else {
-      super.onCapability(capability, value)
+      return
     }
+    super.onCapability(capability, value)
   }
 
   protected async updateCapabilities(
