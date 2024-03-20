@@ -85,18 +85,17 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   async #runSyncFromDevices(): Promise<void> {
-    if (this.#syncFromDevicesInterval) {
-      return
+    if (!this.#syncFromDevicesInterval) {
+      this.clearSyncFromDevices()
+      await this.#syncFromDeviceList()
+      this.#syncFromDevicesInterval = this.setInterval(
+        async (): Promise<void> => {
+          await this.#syncFromDeviceList()
+        },
+        { minutes: 5 },
+        { actionType: 'device list refresh', units: ['minutes'] },
+      )
     }
-    this.clearSyncFromDevices()
-    await this.#syncFromDeviceList()
-    this.#syncFromDevicesInterval = this.setInterval(
-      async (): Promise<void> => {
-        await this.#syncFromDeviceList()
-      },
-      { minutes: 5 },
-      { actionType: 'device list refresh', units: ['minutes'] },
-    )
   }
 
   async #syncFromDeviceList(): Promise<void> {

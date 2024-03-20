@@ -305,24 +305,18 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value: SetCapabilities[T][K],
   ): void {
-    if (!(capability in this.#setCapabilityTagMapping)) {
-      return
-    }
-    if (this.diff.has(capability as keyof SetCapabilities[T])) {
+    if (this.diff.has(capability)) {
       const diffValue: {
         initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
         value: SetCapabilities[T][keyof SetCapabilities[T]]
-      } = this.diff.get(capability as keyof SetCapabilities[T]) as {
+      } = this.diff.get(capability) as {
         initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
         value: SetCapabilities[T][keyof SetCapabilities[T]]
       }
-      diffValue.value = value as SetCapabilities[T][keyof SetCapabilities[T]]
+      diffValue.value = value
       return
     }
-    this.setDiff(
-      capability as Extract<keyof SetCapabilities[T], string>,
-      value as SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
-    )
+    this.setDiff(capability, value)
   }
 
   protected registerCapabilityListeners<
@@ -353,14 +347,13 @@ abstract class BaseMELCloudDevice<
   protected async updateCapabilities(
     data: DeviceData[T] | ListDevice[T]['Device'] | null,
   ): Promise<void> {
-    if (!data) {
-      return
+    if (data) {
+      const updateCapabilityTagEntries: [
+        Extract<keyof OpCapabilities[T], string>,
+        OpDeviceData<T>,
+      ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
+      await this.#setCapabilityValues(updateCapabilityTagEntries, data)
     }
-    const updateCapabilityTagEntries: [
-      Extract<keyof OpCapabilities[T], string>,
-      OpDeviceData<T>,
-    ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
-    await this.#setCapabilityValues(updateCapabilityTagEntries, data)
   }
 
   #buildUpdateData<
@@ -597,20 +590,19 @@ abstract class BaseMELCloudDevice<
   >(): Promise<void> {
     const data: ListDevice[T]['Device'] | null =
       this.#app.devices[this.#id]?.Device ?? null
-    if (!data) {
-      return
+    if (data) {
+      await Promise.all(
+        Object.entries(
+          this.driver.getStore(
+            data as ListDevice['Ata']['Device'] &
+              ListDevice['Atw']['Device'] &
+              ListDevice['Erv']['Device'],
+          ),
+        ).map(async ([key, value]): Promise<void> => {
+          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
+        }),
+      )
     }
-    await Promise.all(
-      Object.entries(
-        this.driver.getStore(
-          data as ListDevice['Ata']['Device'] &
-            ListDevice['Atw']['Device'] &
-            ListDevice['Erv']['Device'],
-        ),
-      ).map(async ([key, value]): Promise<void> => {
-        await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
-      }),
-    )
   }
 
   #isCapability(setting: string): boolean {
@@ -626,31 +618,30 @@ abstract class BaseMELCloudDevice<
     total = false,
   ): void {
     const totalString: BooleanString = String(total) as BooleanString
-    if (this.#reportTimeout[totalString]) {
-      return
+    if (!this.#reportTimeout[totalString]) {
+      const actionType = `${total ? 'total' : 'regular'} energy report`
+      const { interval, duration, values } = total
+        ? {
+            duration: { days: 1 },
+            interval: { days: 1 },
+            values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+          }
+        : reportPlanParameters
+      this.#reportTimeout[totalString] = this.setTimeout(
+        async (): Promise<void> => {
+          await this.#runEnergyReport(total)
+          this.#reportInterval[totalString] = this.setInterval(
+            async (): Promise<void> => {
+              await this.#runEnergyReport(total)
+            },
+            interval,
+            { actionType, units: ['days', 'hours'] },
+          )
+        },
+        DateTime.now().plus(duration).set(values).diffNow(),
+        { actionType, units: ['hours', 'minutes'] },
+      )
     }
-    const actionType = `${total ? 'total' : 'regular'} energy report`
-    const { interval, duration, values } = total
-      ? {
-          duration: { days: 1 },
-          interval: { days: 1 },
-          values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-        }
-      : reportPlanParameters
-    this.#reportTimeout[totalString] = this.setTimeout(
-      async (): Promise<void> => {
-        await this.#runEnergyReport(total)
-        this.#reportInterval[totalString] = this.setInterval(
-          async (): Promise<void> => {
-            await this.#runEnergyReport(total)
-          },
-          interval,
-          { actionType, units: ['days', 'hours'] },
-        )
-      },
-      DateTime.now().plus(duration).set(values).diffNow(),
-      { actionType, units: ['hours', 'minutes'] },
-    )
   }
 
   async #reportEnergyCost(
@@ -672,25 +663,24 @@ abstract class BaseMELCloudDevice<
   }
 
   async #runEnergyReport(total = false): Promise<void> {
-    if (!this.reportPlanParameters) {
-      return
+    if (this.reportPlanParameters) {
+      if (
+        !this.#reportCapabilityTagEntries[String(total) as BooleanString].length
+      ) {
+        this.#clearEnergyReportPlan(total)
+        return
+      }
+      const toDate: DateTime = DateTime.now().minus(
+        this.reportPlanParameters.minus,
+      )
+      const fromDate: DateTime = total ? DateTime.local(YEAR_1970) : toDate
+      const data: ReportData[T] | null = await this.#reportEnergyCost(
+        fromDate,
+        toDate,
+      )
+      await this.#updateReportCapabilities(data, toDate, total)
+      this.#planEnergyReport(this.reportPlanParameters, total)
     }
-    if (
-      !this.#reportCapabilityTagEntries[String(total) as BooleanString].length
-    ) {
-      this.#clearEnergyReportPlan(total)
-      return
-    }
-    const toDate: DateTime = DateTime.now().minus(
-      this.reportPlanParameters.minus,
-    )
-    const fromDate: DateTime = total ? DateTime.local(YEAR_1970) : toDate
-    const data: ReportData[T] | null = await this.#reportEnergyCost(
-      fromDate,
-      toDate,
-    )
-    await this.#updateReportCapabilities(data, toDate, total)
-    this.#planEnergyReport(this.reportPlanParameters, total)
   }
 
   async #runEnergyReports(): Promise<void> {
@@ -725,27 +715,26 @@ abstract class BaseMELCloudDevice<
     capabilityTagEntries: [K, OpDeviceData<T>][] | null,
     data: D,
   ): Promise<void> {
-    if (!capabilityTagEntries) {
-      return
+    if (capabilityTagEntries) {
+      await Promise.all(
+        capabilityTagEntries.map(
+          async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
+            if (tag in data) {
+              const value: OpCapabilities[T][K] = this.#convertFromDevice(
+                capability,
+                data[tag as keyof D] as
+                  | NonEffectiveFlagsValueOf<DeviceData[T]>
+                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+              )
+              await this.setCapabilityValue(
+                capability,
+                value as Capabilities[T][K],
+              )
+            }
+          },
+        ),
+      )
     }
-    await Promise.all(
-      capabilityTagEntries.map(
-        async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
-          if (tag in data) {
-            const value: OpCapabilities[T][K] = this.#convertFromDevice(
-              capability,
-              data[tag as keyof D] as
-                | NonEffectiveFlagsValueOf<DeviceData[T]>
-                | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
-            )
-            await this.setCapabilityValue(
-              capability,
-              value as Capabilities[T][K],
-            )
-          }
-        },
-      ),
-    )
   }
 
   #setListCapabilityTagMappings<
@@ -787,45 +776,47 @@ abstract class BaseMELCloudDevice<
     toDate: DateTime,
     total = false,
   ): Promise<void> {
-    if (!data) {
-      return
+    if (data) {
+      if ('UsageDisclaimerPercentages' in data) {
+        this.#linkedDeviceCount =
+          data.UsageDisclaimerPercentages.split(',').length
+      }
+      await Promise.all(
+        this.#reportCapabilityTagEntries[String(total) as BooleanString].map(
+          async <
+            K extends Extract<keyof ReportCapabilities[T], string>,
+            L extends keyof ReportData[T],
+          >([capability, tags]: [K, L[]]): Promise<void> => {
+            switch (true) {
+              case capability.includes('cop'):
+                await this.setCapabilityValue(
+                  capability,
+                  this.#calculateCopValue(
+                    data,
+                    capability,
+                  ) as Capabilities[T][K],
+                )
+                break
+              case capability.startsWith('measure_power'):
+                await this.setCapabilityValue(
+                  capability,
+                  this.#calculatePowerValue(
+                    data,
+                    tags,
+                    toDate,
+                  ) as Capabilities[T][K],
+                )
+                break
+              default:
+                await this.setCapabilityValue(
+                  capability,
+                  this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
+                )
+            }
+          },
+        ),
+      )
     }
-    if ('UsageDisclaimerPercentages' in data) {
-      this.#linkedDeviceCount =
-        data.UsageDisclaimerPercentages.split(',').length
-    }
-    await Promise.all(
-      this.#reportCapabilityTagEntries[String(total) as BooleanString].map(
-        async <
-          K extends Extract<keyof ReportCapabilities[T], string>,
-          L extends keyof ReportData[T],
-        >([capability, tags]: [K, L[]]): Promise<void> => {
-          switch (true) {
-            case capability.includes('cop'):
-              await this.setCapabilityValue(
-                capability,
-                this.#calculateCopValue(data, capability) as Capabilities[T][K],
-              )
-              break
-            case capability.startsWith('measure_power'):
-              await this.setCapabilityValue(
-                capability,
-                this.#calculatePowerValue(
-                  data,
-                  tags,
-                  toDate,
-                ) as Capabilities[T][K],
-              )
-              break
-            default:
-              await this.setCapabilityValue(
-                capability,
-                this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
-              )
-          }
-        },
-      ),
-    )
   }
 }
 

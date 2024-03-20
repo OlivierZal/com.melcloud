@@ -136,14 +136,13 @@ const disableButton = (elementId: string, value = true): void => {
   const element: HTMLButtonElement | null = document.getElementById(
     elementId,
   ) as HTMLButtonElement | null
-  if (!element) {
-    return
+  if (element) {
+    if (value) {
+      element.classList.add('is-disabled')
+      return
+    }
+    element.classList.remove('is-disabled')
   }
-  if (value) {
-    element.classList.add('is-disabled')
-    return
-  }
-  element.classList.remove('is-disabled')
 }
 
 const disableButtons = (setting: string, value = true): void => {
@@ -516,9 +515,6 @@ const generateErrorLogTableData = (
   homey: Homey,
   errors: ErrorDetails[],
 ): void => {
-  if (!errors.length) {
-    return
-  }
   errors.forEach((error: ErrorDetails) => {
     if (!errorLogTBodyElement) {
       errorLogTBodyElement = generateErrorLogTable(homey, Object.keys(error))
@@ -975,40 +971,39 @@ const generateCheckboxChildrenElements = (
   const settingsElement: HTMLDivElement | null = document.getElementById(
     `settings-${driverId}`,
   ) as HTMLDivElement | null
-  if (!settingsElement) {
-    return
-  }
-  const fieldSetElement: HTMLFieldSetElement =
-    document.createElement('fieldset')
-  fieldSetElement.classList.add('homey-form-checkbox-set')
-  let previousGroupLabel: string | undefined = ''
-  driverSettingsDrivers[driverId].forEach((setting: DriverSetting) => {
-    if (setting.type === 'checkbox') {
-      if (setting.groupLabel !== previousGroupLabel) {
-        previousGroupLabel = setting.groupLabel
-        const legendElement: HTMLLegendElement = createLegendElement({
-          text: setting.groupLabel,
-        })
-        fieldSetElement.appendChild(legendElement)
+  if (settingsElement) {
+    const fieldSetElement: HTMLFieldSetElement =
+      document.createElement('fieldset')
+    fieldSetElement.classList.add('homey-form-checkbox-set')
+    let previousGroupLabel: string | undefined = ''
+    driverSettingsDrivers[driverId].forEach((setting: DriverSetting) => {
+      if (setting.type === 'checkbox') {
+        if (setting.groupLabel !== previousGroupLabel) {
+          previousGroupLabel = setting.groupLabel
+          const legendElement: HTMLLegendElement = createLegendElement({
+            text: setting.groupLabel,
+          })
+          fieldSetElement.appendChild(legendElement)
+        }
+        const checkboxElement: HTMLInputElement = createCheckboxElement(
+          { id: setting.id },
+          driverId,
+        )
+        const labelElement: HTMLLabelElement = createLabelElement(
+          checkboxElement,
+          { text: setting.title },
+        )
+        fieldSetElement.appendChild(labelElement)
       }
-      const checkboxElement: HTMLInputElement = createCheckboxElement(
-        { id: setting.id },
-        driverId,
-      )
-      const labelElement: HTMLLabelElement = createLabelElement(
-        checkboxElement,
-        { text: setting.title },
-      )
-      fieldSetElement.appendChild(labelElement)
-    }
-  })
-  settingsElement.appendChild(fieldSetElement)
-  addSettingsEventListeners(
-    homey,
-    Array.from(fieldSetElement.querySelectorAll('input')),
-    driverId,
-  )
-  unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
+    })
+    settingsElement.appendChild(fieldSetElement)
+    addSettingsEventListeners(
+      homey,
+      Array.from(fieldSetElement.querySelectorAll('input')),
+      driverId,
+    )
+    unhide(document.getElementById(`has-devices-${driverId}`) as HTMLDivElement)
+  }
 }
 
 const generate = async (homey: Homey): Promise<void> => {
