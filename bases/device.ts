@@ -711,30 +711,25 @@ abstract class BaseMELCloudDevice<
   async #setCapabilityValues<
     K extends Extract<keyof OpCapabilities[T], string>,
     D extends DeviceData[T] | ListDevice[T]['Device'],
-  >(
-    capabilityTagEntries: [K, OpDeviceData<T>][] | null,
-    data: D,
-  ): Promise<void> {
-    if (capabilityTagEntries) {
-      await Promise.all(
-        capabilityTagEntries.map(
-          async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
-            if (tag in data) {
-              const value: OpCapabilities[T][K] = this.#convertFromDevice(
-                capability,
-                data[tag as keyof D] as
-                  | NonEffectiveFlagsValueOf<DeviceData[T]>
-                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
-              )
-              await this.setCapabilityValue(
-                capability,
-                value as Capabilities[T][K],
-              )
-            }
-          },
-        ),
-      )
-    }
+  >(capabilityTagEntries: [K, OpDeviceData<T>][], data: D): Promise<void> {
+    await Promise.all(
+      capabilityTagEntries.map(
+        async ([capability, tag]: [K, OpDeviceData<T>]): Promise<void> => {
+          if (tag in data) {
+            const value: OpCapabilities[T][K] = this.#convertFromDevice(
+              capability,
+              data[tag as keyof D] as
+                | NonEffectiveFlagsValueOf<DeviceData[T]>
+                | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+            )
+            await this.setCapabilityValue(
+              capability,
+              value as Capabilities[T][K],
+            )
+          }
+        },
+      ),
+    )
   }
 
   #setListCapabilityTagMappings<
