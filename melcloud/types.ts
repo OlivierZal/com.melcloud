@@ -219,11 +219,7 @@ export interface SetDeviceDataErv extends BaseDeviceData {
 export const effectiveFlagsErv: Record<
   NonEffectiveFlagsKeyOf<SetDeviceDataErv>,
   number
-> = {
-  Power: 0x1,
-  SetFanSpeed: 0x8,
-  VentilationMode: 0x4,
-} as const
+> = { Power: 0x1, SetFanSpeed: 0x8, VentilationMode: 0x4 } as const
 export type EffectiveFlagsErv = typeof effectiveFlagsErv
 export type PostDataErv = BasePostData & Readonly<SetDeviceDataErv>
 export interface DeviceDataErv extends SetDeviceDataErv {
