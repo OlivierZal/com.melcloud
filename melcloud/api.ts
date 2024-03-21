@@ -20,14 +20,15 @@ import {
   type ReportPostData,
   type SuccessData,
 } from './types'
-import { DateTime, Duration } from 'luxon'
-import axios, {
+import {
   type AxiosError,
   type AxiosInstance,
   type AxiosResponse,
   HttpStatusCode,
   type InternalAxiosRequestConfig,
+  create as createAxiosInstance,
 } from 'axios'
+import { DateTime, Duration } from 'luxon'
 import createAPICallErrorData, {
   type APICallContextDataWithErrorMessage,
 } from './lib/APICallErrorData'
@@ -77,7 +78,7 @@ export default class MELCloudAPI {
     this.#settingManager = settingManager
     this.#logger = logger
     this.#errorLogger = errorLogger
-    this.#api = axios.create({
+    this.#api = createAxiosInstance({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
     })
     this.#setupAxiosInterceptors()
