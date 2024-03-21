@@ -53,8 +53,6 @@ export interface MELCloudDriver {
 }
 export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 
-export type BooleanString = 'false' | 'true'
-
 export type ValueOf<T> = T[keyof T]
 
 export interface Settings
