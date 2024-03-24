@@ -30,9 +30,10 @@ import type PairSession from 'homey/lib/PairSession'
 const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof Capabilities[T], string>,
 ): keyof FlowArgs[T] => {
-  const [arg]: (keyof FlowArgs[T])[] = capability.split(
-    '.',
-  ) as (keyof FlowArgs[T])[]
+  const [arg]: [keyof FlowArgs[T], ...string[]] = capability.split('.') as [
+    keyof FlowArgs[T],
+    ...string[],
+  ]
   return arg
 }
 
