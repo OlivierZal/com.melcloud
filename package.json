@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.7.0",
-    "@tsconfig/node21": "^21.0.1",
+    "@tsconfig/node21": "^21.0.2",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.5",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.11.30",
