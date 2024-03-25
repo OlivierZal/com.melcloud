@@ -169,5 +169,8 @@
   },
   "33.0.0": {
     "en": "Added new capabilities: readonly silent mode and outdoor temperature (air-to-air devices), prohibit (air-to-water devices)."
+  },
+  "33.0.2": {
+    "en": "Fixed a flow issue for cooling-support air-to-water devices."
   }
 }
