@@ -282,6 +282,10 @@ interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.defrost': boolean
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
+  readonly 'boolean.cooling_zone1': boolean
+  readonly 'boolean.cooling_zone2': boolean
+  readonly 'boolean.heating_zone1': boolean
+  readonly 'boolean.heating_zone2': boolean
   readonly legionella: string
   readonly measure_power: number
   readonly 'measure_power.heat_pump_frequency': number
@@ -486,6 +490,10 @@ export const listCapabilityTagMappingAtw: Record<
   'alarm_generic.defrost': 'DefrostMode',
   'alarm_generic.eco_hot_water': 'EcoHotWater',
   'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
+  'boolean.cooling_zone1': 'Zone1InCoolMode',
+  'boolean.cooling_zone2': 'Zone2InCoolMode',
+  'boolean.heating_zone1': 'Zone1InHeatMode',
+  'boolean.heating_zone2': 'Zone2InHeatMode',
   legionella: 'LastLegionellaActivationTime',
   measure_power: 'CurrentEnergyConsumed',
   'measure_power.heat_pump_frequency': 'HeatPumpFrequency',

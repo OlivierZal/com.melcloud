@@ -210,6 +210,10 @@ export interface DeviceDataFromListAtw
   readonly ReturnTemperatureZone2: number
   readonly TargetHCTemperatureZone1: number
   readonly TargetHCTemperatureZone2: number
+  readonly Zone1InCoolMode: boolean
+  readonly Zone1InHeatMode: boolean
+  readonly Zone2InCoolMode: boolean
+  readonly Zone2InHeatMode: boolean
 }
 
 export interface SetDeviceDataErv extends BaseDeviceData {

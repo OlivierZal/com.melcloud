@@ -212,10 +212,10 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       let value: OperationModeStateZoneCapability =
         OperationModeStateZoneCapability.idle
       if (
-        (this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`) &&
-          operationModeState === OperationModeStateZoneCapability.cooling) ||
-        (this.getCapabilityValue(`boolean.prohibit_heating_${zone}`) &&
-          operationModeState === OperationModeStateZoneCapability.heating)
+        (this.getCapabilityValue(`boolean.cooling_${zone}`) &&
+          this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`)) ||
+        (this.getCapabilityValue(`boolean.heating_${zone}`) &&
+          this.getCapabilityValue(`boolean.prohibit_heating_${zone}`))
       ) {
         value = OperationModeStateZoneCapability.prohibited
       } else if (

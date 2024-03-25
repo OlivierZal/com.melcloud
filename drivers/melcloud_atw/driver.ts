@@ -34,21 +34,21 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 
-  readonly #coolCapabilities: (keyof Capabilities['Atw'])[] = [
+  readonly #coolZone1Capabilities: (keyof Capabilities['Atw'])[] = [
     'target_temperature.flow_cool',
     'operation_mode_zone_with_cool',
+    'boolean.cooling_zone1',
+    'boolean.prohibit_cooling_zone1',
   ]
 
   readonly #coolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'target_temperature.flow_cool_zone2',
     'operation_mode_zone_with_cool.zone2',
+    'boolean.cooling_zone2',
+    'boolean.prohibit_cooling_zone2',
   ]
 
-  readonly #notCoolCapabilities: (keyof Capabilities['Atw'])[] = [
-    'operation_mode_zone',
-  ]
-
-  readonly #notCoolNotZone2Capabilities: (keyof Capabilities['Atw'])[] = [
+  readonly #zone1Capabilities: (keyof Capabilities['Atw'])[] = [
     'onoff',
     'onoff.forced_hot_water',
     'measure_temperature',
@@ -65,14 +65,10 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
+    'boolean.heating_zone1',
     'boolean.idle_zone1',
     'boolean.prohibit_hot_water',
-    'boolean.prohibit_cooling_zone1',
     'boolean.prohibit_heating_zone1',
-  ]
-
-  readonly #notCoolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
-    'operation_mode_zone.zone2',
   ]
 
   readonly #zone2Capabilities: (keyof Capabilities['Atw'])[] = [
@@ -80,8 +76,8 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
     'operation_mode_state.zone2',
+    'boolean.heating_zone2',
     'boolean.idle_zone2',
-    'boolean.prohibit_cooling_zone2',
     'boolean.prohibit_heating_zone2',
   ]
 
@@ -90,14 +86,14 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     hasZone2,
   }: Store['Atw']): string[] {
     return [
-      ...this.#notCoolNotZone2Capabilities,
-      ...(canCool ? this.#coolCapabilities : this.#notCoolCapabilities),
+      ...this.#zone1Capabilities,
+      ...(canCool ? this.#coolZone1Capabilities : ['operation_mode_zone']),
       ...(hasZone2
         ? [
             ...this.#zone2Capabilities,
             ...(canCool
               ? this.#coolZone2Capabilities
-              : this.#notCoolZone2Capabilities),
+              : ['operation_mode_zone.zone2']),
           ]
         : []),
     ]
