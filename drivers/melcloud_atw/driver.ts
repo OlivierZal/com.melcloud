@@ -51,8 +51,8 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
-    'boolean.heating_zone1',
     'boolean.idle_zone1',
+    'boolean.heating_zone1',
     'boolean.prohibit_heating_zone1',
     'boolean.prohibit_hot_water',
   ]
@@ -69,8 +69,8 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
     'operation_mode_state.zone2',
-    'boolean.heating_zone2',
     'boolean.idle_zone2',
+    'boolean.heating_zone2',
     'boolean.prohibit_heating_zone2',
   ]
 
