@@ -170,7 +170,7 @@ export default abstract class BaseMELCloudDriver<
           )
         })
     } catch (error: unknown) {
-      this.log(error instanceof Error ? error.message : error)
+      // Skip
     }
   }
 
@@ -187,7 +187,7 @@ export default abstract class BaseMELCloudDriver<
             : (value as number | string) === args[getArg(capability)]
         })
     } catch (error: unknown) {
-      this.log(error instanceof Error ? error.message : error)
+      // Skip
     }
   }
 
