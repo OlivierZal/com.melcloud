@@ -34,20 +34,6 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
 
   protected readonly storeMapping: StoreMapping['Atw'] = storeMappingAtw
 
-  readonly #coolZone1Capabilities: (keyof Capabilities['Atw'])[] = [
-    'target_temperature.flow_cool',
-    'operation_mode_zone_with_cool',
-    'boolean.cooling_zone1',
-    'boolean.prohibit_cooling_zone1',
-  ]
-
-  readonly #coolZone2Capabilities: (keyof Capabilities['Atw'])[] = [
-    'target_temperature.flow_cool_zone2',
-    'operation_mode_zone_with_cool.zone2',
-    'boolean.cooling_zone2',
-    'boolean.prohibit_cooling_zone2',
-  ]
-
   readonly #zone1Capabilities: (keyof Capabilities['Atw'])[] = [
     'onoff',
     'onoff.forced_hot_water',
@@ -71,6 +57,13 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'boolean.prohibit_heating_zone1',
   ]
 
+  readonly #zone1CoolCapabilities: (keyof Capabilities['Atw'])[] = [
+    'target_temperature.flow_cool',
+    'operation_mode_zone_with_cool',
+    'boolean.cooling_zone1',
+    'boolean.prohibit_cooling_zone1',
+  ]
+
   readonly #zone2Capabilities: (keyof Capabilities['Atw'])[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
@@ -81,18 +74,25 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     'boolean.prohibit_heating_zone2',
   ]
 
+  readonly #zone2CoolCapabilities: (keyof Capabilities['Atw'])[] = [
+    'target_temperature.flow_cool_zone2',
+    'operation_mode_zone_with_cool.zone2',
+    'boolean.cooling_zone2',
+    'boolean.prohibit_cooling_zone2',
+  ]
+
   public getRequiredCapabilities({
     canCool,
     hasZone2,
   }: Store['Atw']): string[] {
     return [
       ...this.#zone1Capabilities,
-      ...(canCool ? this.#coolZone1Capabilities : ['operation_mode_zone']),
+      ...(canCool ? this.#zone1CoolCapabilities : ['operation_mode_zone']),
       ...(hasZone2
         ? [
             ...this.#zone2Capabilities,
             ...(canCool
-              ? this.#coolZone2Capabilities
+              ? this.#zone2CoolCapabilities
               : ['operation_mode_zone.zone2']),
           ]
         : []),
