@@ -4,13 +4,6 @@ export const FLAG_UNCHANGED = 0x0
 export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
 export type NonEffectiveFlagsValueOf<T> = T[NonEffectiveFlagsKeyOf<T>]
 
-export interface APISettings {
-  readonly contextKey?: string | null
-  readonly expiry?: string | null
-  readonly password?: string | null
-  readonly username?: string | null
-}
-
 export enum DeviceType {
   Ata = 0,
   Atw = 1,

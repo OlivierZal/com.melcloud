@@ -1,5 +1,4 @@
 import {
-  type APISettings,
   APP_VERSION,
   type Building,
   type DeviceData,
@@ -35,15 +34,22 @@ import createAPICallErrorData, {
 import APICallRequestData from './lib/APICallRequestData'
 import APICallResponseData from './lib/APICallResponseData'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Logger = (...args: any[]) => void
+
+interface APISettings {
+  readonly contextKey?: string | null
+  readonly expiry?: string | null
+  readonly password?: string | null
+  readonly username?: string | null
+}
+
 interface SettingManager {
   get: <K extends keyof APISettings>(
     key: K,
   ) => APISettings[K] | null | undefined
   set: <K extends keyof APISettings>(key: K, value: APISettings[K]) => void
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Logger = (...args: any[]) => void
 
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
