@@ -1051,14 +1051,10 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    getBuildingHolidayModeSettings(homey).catch(
-      async (error: unknown): Promise<void> => {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(
-          error instanceof Error ? error.message : String(error),
-        )
-      },
-    )
+    getBuildingHolidayModeSettings(homey).catch(async (error: unknown) => {
+      // @ts-expect-error: `homey` is partially typed
+      await homey.alert(error instanceof Error ? error.message : String(error))
+    })
   })
 }
 
@@ -1114,14 +1110,10 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
 
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
-    getBuildingFrostProtectionSettings(homey).catch(
-      async (error: unknown): Promise<void> => {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(
-          error instanceof Error ? error.message : String(error),
-        )
-      },
-    )
+    getBuildingFrostProtectionSettings(homey).catch(async (error: unknown) => {
+      // @ts-expect-error: `homey` is partially typed
+      await homey.alert(error instanceof Error ? error.message : String(error))
+    })
   })
 }
 
@@ -1202,7 +1194,7 @@ const addEventListeners = (homey: Homey): void => {
   authenticateElement.addEventListener('click', () => {
     authenticateElement.classList.add('is-disabled')
     login(homey)
-      .catch(async (error): Promise<void> => {
+      .catch(async (error: unknown) => {
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(
           error instanceof Error ? error.message : String(error),
