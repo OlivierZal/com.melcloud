@@ -1,5 +1,5 @@
+import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import {
-  type Capabilities,
   type Store,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
@@ -7,7 +7,6 @@ import {
   setCapabilityTagMappingErv,
   storeMappingErv,
 } from '../../types'
-import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
@@ -31,7 +30,7 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   }: Store['Erv']): string[] {
     return [
       ...this.capabilities.filter(
-        (capability: keyof Capabilities['Erv']) =>
+        (capability) =>
           !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
             capability,
           ),

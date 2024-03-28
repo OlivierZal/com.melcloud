@@ -712,7 +712,7 @@ abstract class BaseMELCloudDevice<
     this.#listOnlyCapabilityTagEntries = (
       Object.entries(this.#listCapabilityTagMapping) as [K, OpDeviceData<T>][]
     ).filter(
-      ([capability]: [K, OpDeviceData<T>]) =>
+      ([capability]) =>
         !Object.keys({
           ...this.#setCapabilityTagMapping,
           ...this.#getCapabilityTagMapping,
@@ -730,9 +730,10 @@ abstract class BaseMELCloudDevice<
           this.driver
             .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
         ),
-      ).filter(([capability]: [string, L]) =>
-        filterEnergyKeys(capability, total),
-      ) as [K, L[]][]
+      ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
+        K,
+        L[],
+      ][]
     })
   }
 
