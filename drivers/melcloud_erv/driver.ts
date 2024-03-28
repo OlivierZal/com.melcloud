@@ -1,11 +1,6 @@
 import {
   type Capabilities,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type ReportCapabilityTagMapping,
-  type SetCapabilityTagMapping,
   type Store,
-  type StoreMapping,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
   reportCapabilityTagMappingErv,
@@ -16,23 +11,19 @@ import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
-  public readonly effectiveFlags: typeof effectiveFlagsErv = effectiveFlagsErv
+  public readonly effectiveFlags = effectiveFlagsErv
 
-  public readonly getCapabilityTagMapping: GetCapabilityTagMapping['Erv'] =
-    getCapabilityTagMappingErv
+  public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
 
-  public readonly listCapabilityTagMapping: ListCapabilityTagMapping['Erv'] =
-    listCapabilityTagMappingErv
+  public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
 
-  public readonly reportCapabilityTagMapping: ReportCapabilityTagMapping['Erv'] =
-    reportCapabilityTagMappingErv
+  public readonly reportCapabilityTagMapping = reportCapabilityTagMappingErv
 
-  public readonly setCapabilityTagMapping: SetCapabilityTagMapping['Erv'] =
-    setCapabilityTagMappingErv
+  public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
 
-  protected readonly deviceType: DeviceType = DeviceType.Erv
+  protected readonly deviceType = DeviceType.Erv
 
-  protected readonly storeMapping: StoreMapping['Erv'] = storeMappingErv
+  protected readonly storeMapping = storeMappingErv
 
   public getRequiredCapabilities({
     hasCO2Sensor,

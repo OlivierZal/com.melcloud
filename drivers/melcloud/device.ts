@@ -3,7 +3,6 @@ import {
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilities,
-  type ReportPlanParameters,
   type SetCapabilities,
   ThermostatMode,
 } from '../../types'
@@ -35,7 +34,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertFromDevice<'Ata'>,
   }
 
-  protected readonly reportPlanParameters: ReportPlanParameters = {
+  protected readonly reportPlanParameters = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
@@ -82,7 +81,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   }
 
   readonly #getTargetTemperature = (value: number): number => {
-    const operationMode: OperationMode =
+    const operationMode =
       OperationMode[this.getRequestedOrCurrentValue('operation_mode')]
     switch (operationMode) {
       case OperationMode.auto:
@@ -112,9 +111,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   }
 
   async #updateThermostatMode(): Promise<void> {
-    const isOn: boolean = this.getCapabilityValue('onoff')
-    const operationMode: keyof typeof OperationMode =
-      this.getCapabilityValue('operation_mode')
+    const isOn = this.getCapabilityValue('onoff')
+    const operationMode = this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
       'thermostat_mode',
       isOn && operationMode in ThermostatMode

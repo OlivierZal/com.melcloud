@@ -10,7 +10,6 @@ import type {
 import type {
   DeviceSettings,
   DriverSetting,
-  ErrorDetails,
   ErrorLog,
   ErrorLogQuery,
   FrostProtectionSettings,
@@ -18,11 +17,8 @@ import type {
   LoginSetting,
   MELCloudDevice,
   ManifestDriver,
-  ManifestDriverSetting,
-  ManifestDriverSettingData,
   PairSetting,
   Settings,
-  ValueOf,
 } from './types'
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
@@ -39,7 +35,7 @@ const getDevice = (
   app.getDevices().find(({ id }) => id === deviceId)
 
 const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
-  const device: MELCloudDevice | undefined = (homey.app as MELCloudApp)
+  const device = (homey.app as MELCloudApp)
     .getDevices({ buildingId })
     .find(({ id }) => typeof id !== 'undefined')
   if (!device) {
@@ -49,11 +45,8 @@ const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
 }
 
 const handleFailure = (data: FailureData): never => {
-  const errorMessage: string = Object.entries(data.AttributeErrors)
-    .map(
-      ([error, messages]: [string, readonly string[]]): string =>
-        `${error}: ${messages.join(', ')}`,
-    )
+  const errorMessage = Object.entries(data.AttributeErrors)
+    .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
     .join('\n')
   throw new Error(errorMessage)
 }
@@ -69,7 +62,7 @@ const getErrors = async (
   fromDate: DateTime,
   toDate: DateTime,
 ): Promise<ErrorLogData[]> => {
-  const app: MELCloudApp = homey.app as MELCloudApp
+  const app = homey.app as MELCloudApp
   const { data } = await app.melcloudAPI.errors({
     DeviceIDs: Object.keys(app.devices),
     FromDate: fromDate.toISODate() ?? '',
@@ -85,45 +78,31 @@ const getDriverSettings = (
   driver: ManifestDriver,
   language: string,
 ): DriverSetting[] =>
-  (driver.settings ?? []).flatMap(
-    (setting: ManifestDriverSetting): DriverSetting[] =>
-      (setting.children ?? []).map(
-        ({
-          id,
-          max,
-          min,
-          label,
-          type,
-          units,
-          values,
-        }: ManifestDriverSettingData): DriverSetting => ({
-          driverId: driver.id,
-          groupId: setting.id,
-          groupLabel: setting.label[language],
-          id,
-          max,
-          min,
-          title: label[language],
-          type,
-          units,
-          values: values?.map(
-            (value: {
-              id: string
-              label: Record<string, string>
-            }): { id: string; label: string } => ({
-              id: value.id,
-              label: value.label[language],
-            }),
-          ),
-        }),
-      ),
+  (driver.settings ?? []).flatMap((setting) =>
+    (setting.children ?? []).map(
+      ({ id, max, min, label, type, units, values }) => ({
+        driverId: driver.id,
+        groupId: setting.id,
+        groupLabel: setting.label[language],
+        id,
+        max,
+        min,
+        title: label[language],
+        type,
+        units,
+        values: values?.map((value) => ({
+          id: value.id,
+          label: value.label[language],
+        })),
+      }),
+    ),
   )
 
 const getDriverLoginSetting = (
   { id: driverId, pair }: ManifestDriver,
   language: string,
 ): DriverSetting[] => {
-  const driverLoginSetting: LoginSetting | undefined = pair?.find(
+  const driverLoginSetting = pair?.find(
     (pairSetting: PairSetting): pairSetting is LoginSetting =>
       pairSetting.id === 'login',
   )
@@ -131,11 +110,9 @@ const getDriverLoginSetting = (
     ? Object.values(
         Object.entries(driverLoginSetting.options).reduce<
           Record<string, DriverSetting>
-        >((acc, [option, label]: [string, Record<string, string>]) => {
-          const isPassword: boolean = option.startsWith('password')
-          const key: keyof LoginCredentials = isPassword
-            ? 'password'
-            : 'username'
+        >((acc, [option, label]) => {
+          const isPassword = option.startsWith('password')
+          const key = isPassword ? 'password' : 'username'
           if (!(key in acc)) {
             acc[key] = {
               driverId,
@@ -157,11 +134,11 @@ const fromUTC = (utcDate: string | null, language?: string): string => {
   if (utcDate === null) {
     return ''
   }
-  const localDateTime: DateTime = DateTime.fromISO(utcDate, {
+  const localDateTime = DateTime.fromISO(utcDate, {
     locale: language,
     zone: 'utc',
   }).toLocal()
-  const localDate: string | null =
+  const localDate =
     typeof language === 'undefined'
       ? localDateTime.toISO({ includeOffset: false })
       : localDateTime.toLocaleString(DateTime.DATETIME_MED)
@@ -174,23 +151,23 @@ const toUTC = (date: string, enabled: boolean): DateTime | null =>
 const handleErrorLogQuery = (
   query: ErrorLogQuery,
 ): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const from: DateTime | null =
+  const from =
     typeof query.from !== 'undefined' && query.from
       ? DateTime.fromISO(query.from)
       : null
-  const to: DateTime =
+  const to =
     typeof query.to !== 'undefined' && query.to
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
-  let period: number = Number.parseInt(String(query.limit), 10)
+  let period = Number.parseInt(String(query.limit), 10)
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
-  let offset: number = Number.parseInt(String(query.offset), 10)
+  let offset = Number.parseInt(String(query.offset), 10)
   offset = from !== null || Number.isNaN(offset) ? DEFAULT_OFFSET : offset
 
-  const limit: number = from ? DEFAULT_LIMIT : period
-  const days: number = limit * offset + offset
+  const limit = from ? DEFAULT_LIMIT : period
+  const days = limit * offset + offset
   return {
     fromDate: from ?? to.minus({ days: days + limit }),
     period,
@@ -200,17 +177,15 @@ const handleErrorLogQuery = (
 
 export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
-    const app: MELCloudApp = homey.app as MELCloudApp
+    const app = homey.app as MELCloudApp
     return (await app.getBuildings())
       .filter(({ ID: buildingId }) => app.getDevices({ buildingId }).length)
-      .map(
-        (building: Building): Building => ({
-          ...building,
-          HMEndDate: fromUTC(building.HMEndDate),
-          HMStartDate: fromUTC(building.HMStartDate),
-        }),
-      )
-      .sort((building1: Building, building2: Building) =>
+      .map((building) => ({
+        ...building,
+        HMEndDate: fromUTC(building.HMEndDate),
+        HMStartDate: fromUTC(building.HMStartDate),
+      }))
+      .sort((building1, building2) =>
         building1.Name.localeCompare(building2.Name),
       )
   },
@@ -218,12 +193,12 @@ export = {
     return (homey.app as MELCloudApp)
       .getDevices()
       .reduce<DeviceSettings>((acc, device) => {
-        const driverId: string = device.driver.id
+        const driverId = device.driver.id
         if (!(driverId in acc)) {
           acc[driverId] = {}
         }
         Object.entries(device.getSettings() as Settings).forEach(
-          ([settingId, value]: [string, ValueOf<Settings>]) => {
+          ([settingId, value]) => {
             if (!(settingId in acc[driverId])) {
               acc[driverId][settingId] = []
             }
@@ -236,11 +211,11 @@ export = {
       }, {})
   },
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
-    const language: string = homey.i18n.getLanguage()
+    const language = homey.i18n.getLanguage()
     return (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       ((homey.app as MELCloudApp).manifest.drivers as ManifestDriver[]).flatMap(
-        (driver: ManifestDriver): DriverSetting[] => [
+        (driver) => [
           ...getDriverSettings(driver, language),
           ...getDriverLoginSetting(driver, language),
         ],
@@ -254,9 +229,9 @@ export = {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    const app: MELCloudApp = homey.app as MELCloudApp
+    const app = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
-    const nextToDate: DateTime = fromDate.minus({ days: 1 })
+    const nextToDate = fromDate.minus({ days: 1 })
     return {
       errors: (await getErrors(homey, fromDate, toDate))
         .map(
@@ -264,20 +239,20 @@ export = {
             DeviceId: deviceId,
             ErrorMessage: errorMessage,
             StartDate: startDate,
-          }): ErrorDetails => {
-            const date: string =
+          }) => {
+            const date =
               DateTime.fromISO(startDate).year > YEAR_1
                 ? fromUTC(startDate, homey.i18n.getLanguage())
                 : ''
-            const device: string =
+            const device =
               getDevice(app, deviceId)?.getName() ??
               app.devices[deviceId]?.DeviceName ??
               ''
-            const error: string = errorMessage?.trim() ?? ''
+            const error = errorMessage?.trim() ?? ''
             return { date, device, error }
           },
         )
-        .filter((error: ErrorDetails) => error.date && error.error)
+        .filter((error) => error.date && error.error)
         .reverse(),
       fromDateHuman: fromDate
         .setLocale(homey.i18n.getLanguage())
@@ -327,7 +302,7 @@ export = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    const app: MELCloudApp = homey.app as MELCloudApp
+    const app = homey.app as MELCloudApp
     app.clearSyncFromDevices()
     return app.applyLogin(body, true)
   },
@@ -343,17 +318,13 @@ export = {
     await Promise.all(
       (homey.app as MELCloudApp)
         .getDevices({ driverId: query?.driverId })
-        .map(async (device: MELCloudDevice): Promise<void> => {
-          const changedKeys: string[] = Object.keys(body).filter(
-            (changedKey: string) =>
-              body[changedKey] !== device.getSetting(changedKey),
+        .map(async (device) => {
+          const changedKeys = Object.keys(body).filter(
+            (changedKey) => body[changedKey] !== device.getSetting(changedKey),
           )
           if (changedKeys.length) {
-            const deviceSettings: Settings = Object.fromEntries(
-              changedKeys.map((key: string): [string, ValueOf<Settings>] => [
-                key,
-                body[key],
-              ]),
+            const deviceSettings = Object.fromEntries(
+              changedKeys.map((key) => [key, body[key]]),
             )
             await device.setSettings(deviceSettings)
             await device.onSettings({
@@ -395,8 +366,8 @@ export = {
     if (enabled && (!startDate || !endDate)) {
       throw new Error(homey.__('app.holiday_mode.date_missing'))
     }
-    const utcStartDate: DateTime | null = toUTC(startDate, enabled)
-    const utcEndDate: DateTime | null = toUTC(endDate, enabled)
+    const utcStartDate = toUTC(startDate, enabled)
+    const utcEndDate = toUTC(endDate, enabled)
     handleResponse(
       (
         await (homey.app as MELCloudApp).melcloudAPI.updateHolidayMode({

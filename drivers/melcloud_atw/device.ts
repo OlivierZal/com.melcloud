@@ -5,7 +5,6 @@ import {
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   type OperationModeZoneCapabilities,
-  type ReportPlanParameters,
   type SetCapabilities,
   type Store,
   type TargetTemperatureFlowCapabilities,
@@ -20,16 +19,14 @@ import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 import { K_MULTIPLIER } from '../../constants'
 
-const HEAT_COOL_GAP: number = OperationModeZone.room_cool
-const ROOM_FLOW_GAP: number = OperationModeZone.flow
+const HEAT_COOL_GAP = OperationModeZone.room_cool
+const ROOM_FLOW_GAP = OperationModeZone.flow
 
-const convertToDeviceMeasurePower: ConvertFromDevice<'Atw'> = ((
-  value: number,
-) => value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>
+const convertToDeviceMeasurePower = ((value: number) =>
+  value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>
 
-const convertToDeviceOperationZone: ConvertFromDevice<'Atw'> = ((
-  value: OperationModeZone,
-) => OperationModeZone[value]) as ConvertFromDevice<'Atw'>
+const convertToDeviceOperationZone = ((value: OperationModeZone) =>
+  OperationModeZone[value]) as ConvertFromDevice<'Atw'>
 
 export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
@@ -69,7 +66,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       ),
   }
 
-  protected readonly reportPlanParameters: ReportPlanParameters = {
+  protected readonly reportPlanParameters = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
@@ -127,7 +124,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     zoneValue: OperationModeZone,
     canCool: boolean,
   ): OperationModeZone {
-    let otherZoneValue: OperationModeZone =
+    let otherZoneValue =
       OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
     if (canCool) {
       if (zoneValue > OperationModeZone.curve) {
@@ -156,13 +153,13 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   ): void {
     const { canCool, hasZone2 } = this.getStore() as Store['Atw']
     if (hasZone2) {
-      const zoneValue: OperationModeZone = OperationModeZone[value]
-      const otherZoneCapability: keyof OperationModeZoneCapabilities = (
+      const zoneValue = OperationModeZone[value]
+      const otherZoneCapability = (
         capability.endsWith('.zone2')
           ? capability.replace(/.zone2$/u, '')
           : `${capability}.zone2`
       ) as keyof OperationModeZoneCapabilities
-      const otherZoneValue: OperationModeZone = this.#getOtherZoneValue(
+      const otherZoneValue = this.#getOtherZoneValue(
         otherZoneCapability,
         zoneValue,
         canCool,
@@ -177,8 +174,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   async #updateOperationModeStateHotWater(
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    let value: OperationModeStateHotWaterCapability =
-      OperationModeStateHotWaterCapability.idle
+    let value = OperationModeStateHotWaterCapability.idle
     if (this.getCapabilityValue('boolean.prohibit_hot_water')) {
       value = OperationModeStateHotWaterCapability.prohibited
     } else if (operationModeState in OperationModeStateHotWaterCapability) {
@@ -191,11 +187,10 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   }
 
   async #updateOperationModeStates(): Promise<void> {
-    const operationModeState: keyof typeof OperationModeState =
-      this.getCapabilityValue('operation_mode_state')
+    const operationModeState = this.getCapabilityValue('operation_mode_state')
     await this.#updateOperationModeStateHotWater(operationModeState)
     await Promise.all(
-      ['zone1', 'zone2'].map(async (zone: string): Promise<void> => {
+      ['zone1', 'zone2'].map(async (zone) => {
         await this.#updateOperationModeStateZone(
           zone as 'zone1' | 'zone2',
           operationModeState,
@@ -209,8 +204,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     if (this.hasCapability(`operation_mode_state.${zone}`)) {
-      let value: OperationModeStateZoneCapability =
-        OperationModeStateZoneCapability.idle
+      let value = OperationModeStateZoneCapability.idle
       if (
         (this.getCapabilityValue(`boolean.cooling_${zone}`) &&
           this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`)) ||

@@ -76,7 +76,7 @@ const withTimers = <
       options: TimerOptions,
     ): NodeJS.Timeout {
       const { actionType, timerWords, timerType, units } = options
-      const duration: Duration = Duration.fromDurationLike(interval)
+      const duration = Duration.fromDurationLike(interval)
       this.log(
         `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType
           .slice(SECOND_CHAR)

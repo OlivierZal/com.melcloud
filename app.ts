@@ -1,19 +1,19 @@
 import 'source-map-support/register'
 import 'core-js/actual/object/group-by'
-import { App, type Driver } from 'homey'
 import type {
   Building,
   DeviceType,
   ListDeviceAny,
   LoginCredentials,
 } from './melcloud/types'
+import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import MELCloudAPI from './melcloud/api'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
 export = class MELCloudApp extends withTimers(App) {
-  public readonly melcloudAPI: MELCloudAPI = new MELCloudAPI(
+  public readonly melcloudAPI = new MELCloudAPI(
     this.homey.settings,
     this.log.bind(this),
     this.error.bind(this),
@@ -55,7 +55,7 @@ export = class MELCloudApp extends withTimers(App) {
   public async getBuildings(): Promise<Building[]> {
     try {
       return (await this.melcloudAPI.list()).data
-    } catch (error: unknown) {
+    } catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error))
     }
   }
@@ -64,14 +64,11 @@ export = class MELCloudApp extends withTimers(App) {
     buildingId,
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
-    let devices: MELCloudDevice[] = (
+    let devices = (
       typeof driverId === 'undefined'
         ? Object.values(this.homey.drivers.getDrivers())
         : [this.homey.drivers.getDriver(driverId)]
-    ).flatMap(
-      (driver: Driver): MELCloudDevice[] =>
-        driver.getDevices() as MELCloudDevice[],
-    )
+    ).flatMap((driver) => driver.getDevices() as MELCloudDevice[])
     if (typeof buildingId !== 'undefined') {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
@@ -100,22 +97,13 @@ export = class MELCloudApp extends withTimers(App) {
 
   async #syncFromDeviceList(): Promise<void> {
     try {
-      const buildingDevices: ListDeviceAny[] = (
-        await this.getBuildings()
-      ).flatMap(
-        ({
-          Structure: { Devices: devices, Areas: areas, Floors: floors },
-        }): ListDeviceAny[] => [
+      const buildingDevices = (await this.getBuildings()).flatMap(
+        ({ Structure: { Devices: devices, Areas: areas, Floors: floors } }) => [
           ...devices,
-          ...areas.flatMap(
-            ({ Devices: areaDevices }): readonly ListDeviceAny[] => areaDevices,
-          ),
-          ...floors.flatMap((floor): ListDeviceAny[] => [
+          ...areas.flatMap(({ Devices: areaDevices }) => areaDevices),
+          ...floors.flatMap((floor) => [
             ...floor.Devices,
-            ...floor.Areas.flatMap(
-              ({ Devices: areaDevices }): readonly ListDeviceAny[] =>
-                areaDevices,
-            ),
+            ...floor.Areas.flatMap(({ Devices: areaDevices }) => areaDevices),
           ]),
         ],
       )
@@ -123,33 +111,25 @@ export = class MELCloudApp extends withTimers(App) {
         buildingDevices,
         ({ Device }) => Device.DeviceType,
       )
-      const devicesPerId: Partial<Record<number, readonly ListDeviceAny[]>> =
-        Object.groupBy<number, ListDeviceAny>(
-          buildingDevices,
-          ({ DeviceID }) => DeviceID,
-        )
+      const devicesPerId = Object.groupBy<number, ListDeviceAny>(
+        buildingDevices,
+        ({ DeviceID }) => DeviceID,
+      )
       this.#devices = Object.fromEntries(
-        Object.entries(devicesPerId).map(
-          ([id, devices]: [string, readonly ListDeviceAny[] | undefined]): [
-            string,
-            ListDeviceAny,
-          ] => {
-            const [device]: readonly ListDeviceAny[] = devices ?? []
-            return [id, device]
-          },
-        ),
+        Object.entries(devicesPerId).map(([id, devices]) => {
+          const [device] = devices ?? []
+          return [id, device]
+        }),
       )
       await this.#syncFromDevices()
-    } catch (error: unknown) {
+    } catch (error) {
       // Error handling is delegated to the interceptor
     }
   }
 
   async #syncFromDevices(): Promise<void> {
     await Promise.all(
-      this.getDevices().map(async (device: MELCloudDevice) =>
-        device.syncFromDevice(),
-      ),
+      this.getDevices().map(async (device) => device.syncFromDevice()),
     )
   }
 }

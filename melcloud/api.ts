@@ -28,11 +28,9 @@ import {
   create as createAxiosInstance,
 } from 'axios'
 import { DateTime, Duration } from 'luxon'
-import createAPICallErrorData, {
-  type APICallContextDataWithErrorMessage,
-} from './lib/APICallErrorData'
 import APICallRequestData from './lib/APICallRequestData'
 import APICallResponseData from './lib/APICallResponseData'
+import createAPICallErrorData from './lib/APICallErrorData'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Logger = (...args: any[]) => void
@@ -61,7 +59,7 @@ const throwIfRequested = (error: unknown, raise: boolean): void => {
 }
 
 export default class MELCloudAPI {
-  #holdAPIListUntil: DateTime = DateTime.now()
+  #holdAPIListUntil = DateTime.now()
 
   #retry = true
 
@@ -112,7 +110,7 @@ export default class MELCloudAPI {
           await onSuccess()
         }
         return LoginData !== null
-      } catch (error: unknown) {
+      } catch (error) {
         throwIfRequested(error, raise)
       }
     }
@@ -156,10 +154,7 @@ export default class MELCloudAPI {
   }
 
   public async login(postData: LoginPostData): Promise<{ data: LoginData }> {
-    const response: AxiosResponse<LoginData> = await this.#api.post<LoginData>(
-      LOGIN_URL,
-      postData,
-    )
+    const response = await this.#api.post<LoginData>(LOGIN_URL, postData)
     if (response.data.LoginData) {
       this.#settingManager.set('username', postData.Email)
       this.#settingManager.set('password', postData.Password)
@@ -201,8 +196,7 @@ export default class MELCloudAPI {
   }
 
   async #handleError(error: AxiosError): Promise<AxiosError> {
-    const apiCallData: APICallContextDataWithErrorMessage =
-      createAPICallErrorData(error)
+    const apiCallData = createAPICallErrorData(error)
     this.#errorLogger(String(apiCallData))
     switch (error.response?.status) {
       case HttpStatusCode.Unauthorized:
@@ -224,7 +218,7 @@ export default class MELCloudAPI {
   async #handleRequest(
     config: InternalAxiosRequestConfig,
   ): Promise<InternalAxiosRequestConfig> {
-    const newConfig: InternalAxiosRequestConfig = { ...config }
+    const newConfig = { ...config }
     if (newConfig.url === LIST_URL && this.#holdAPIListUntil > DateTime.now()) {
       throw new Error(
         `API requests to ${LIST_URL} are on hold for ${this.#holdAPIListUntil
@@ -234,7 +228,7 @@ export default class MELCloudAPI {
       )
     }
     if (newConfig.url !== LOGIN_URL) {
-      const expiry: string = this.#settingManager.get('expiry') ?? ''
+      const expiry = this.#settingManager.get('expiry') ?? ''
       if (expiry && DateTime.fromISO(expiry) < DateTime.now()) {
         await this.applyLogin()
       }

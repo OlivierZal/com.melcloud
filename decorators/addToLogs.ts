@@ -20,24 +20,21 @@ const addToLogs =
 
       #commonLog(logType: 'error' | 'log', ...args: any[]): void {
         super[logType](
-          ...logs.flatMap((log: string): [any, '-'] => {
+          ...logs.flatMap((log): [any, '-'] => {
             if (log in this) {
               return [this[log as keyof this], '-']
             }
             if (log.endsWith(PARENTHESES)) {
-              const funcName: string = log.slice(
-                FIRST_CHAR,
-                -PARENTHESES.length,
-              )
+              const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
                 !(funcName in this) ||
                 typeof this[funcName as keyof this] !== 'function'
               ) {
                 return [log, '-']
               }
-              const func: (...funcArgs: any[]) => any = this[
-                funcName as keyof this
-              ] as (...funcArgs: any[]) => any
+              const func = this[funcName as keyof this] as (
+                ...funcArgs: any[]
+              ) => any
               if (!func.length) {
                 return [func.call(this), '-']
               }

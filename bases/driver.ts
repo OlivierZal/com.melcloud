@@ -18,7 +18,6 @@ import {
   type ListDevice,
   type LoginCredentials,
   type NonEffectiveFlagsKeyOf,
-  type NonEffectiveFlagsValueOf,
   type ReportData,
 } from '../melcloud/types'
 import type BaseMELCloudDevice from './device'
@@ -30,11 +29,7 @@ import type PairSession from 'homey/lib/PairSession'
 const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof Capabilities[T], string>,
 ): keyof FlowArgs[T] => {
-  const [arg]: [Extract<keyof FlowArgs[T], string> | string, ...string[]] =
-    capability.split('.') as [
-      Extract<keyof FlowArgs[T], string> | string,
-      ...string[],
-    ]
+  const [arg] = capability.split('.')
   return arg.replace(/_with_cool$/u, '') as keyof FlowArgs[T]
 }
 
@@ -58,7 +53,7 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly capabilities: Extract<keyof Capabilities[T], string>[] =
+  public readonly capabilities =
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     this.manifest.capabilities as Extract<keyof Capabilities[T], string>[]
 
@@ -70,7 +65,7 @@ export default abstract class BaseMELCloudDriver<
   public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}
 
-  readonly #app: MELCloudApp = this.homey.app as MELCloudApp
+  readonly #app = this.homey.app as MELCloudApp
 
   public abstract readonly effectiveFlags: EffectiveFlags[T]
 
@@ -92,15 +87,10 @@ export default abstract class BaseMELCloudDriver<
 
   public getStore(device: ListDevice[T]['Device']): Store[T] {
     return Object.fromEntries(
-      Object.entries(this.storeMapping).map(
-        ([key, value]: [string, string]): [
-          keyof Store[T],
-          NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
-        ] => [
-          key as keyof Store[T],
-          device[value as NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>],
-        ],
-      ),
+      Object.entries(this.storeMapping).map(([key, value]) => [
+        key as keyof Store[T],
+        device[value as NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>],
+      ]),
     ) as unknown as Store[T]
   }
 
@@ -111,21 +101,16 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public async onPair(session: PairSession): Promise<void> {
-    session.setHandler(
-      'login',
-      async (data: LoginCredentials): Promise<boolean> => this.#login(data),
+    session.setHandler('login', async (data: LoginCredentials) =>
+      this.#login(data),
     )
-    session.setHandler(
-      'list_devices',
-      async (): Promise<DeviceDetails<T>[]> => this.#discoverDevices(),
-    )
+    session.setHandler('list_devices', async () => this.#discoverDevices())
     return Promise.resolve()
   }
 
   public async onRepair(session: PairSession): Promise<void> {
-    session.setHandler(
-      'login',
-      async (data: LoginCredentials): Promise<boolean> => this.#login(data),
+    session.setHandler('login', async (data: LoginCredentials) =>
+      this.#login(data),
     )
     return Promise.resolve()
   }
@@ -138,8 +123,8 @@ export default abstract class BaseMELCloudDriver<
           DeviceID: id,
           BuildingID: buildingid,
           Device: device,
-        }): DeviceDetails<T> => {
-          const store: Store[T] = this.getStore(device)
+        }) => {
+          const store = this.getStore(device)
           return {
             capabilities: this.getRequiredCapabilities(store),
             capabilitiesOptions: getCapabilitiesOptions(device),
@@ -163,13 +148,13 @@ export default abstract class BaseMELCloudDriver<
     try {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgs[T]): Promise<void> => {
+        .registerRunListener(async (args: FlowArgs[T]) => {
           await args.device.triggerCapabilityListener(
             capability,
             args[getArg(capability)],
           )
         })
-    } catch (error: unknown) {
+    } catch (error) {
       // Skip
     }
   }
@@ -180,13 +165,13 @@ export default abstract class BaseMELCloudDriver<
     try {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
-        .registerRunListener((args: FlowArgs[T]): boolean => {
+        .registerRunListener((args: FlowArgs[T]) => {
           const value = getDevice(args).getCapabilityValue(capability)
           return typeof value === 'boolean'
             ? value
             : (value as number | string) === args[getArg(capability)]
         })
-    } catch (error: unknown) {
+    } catch (error) {
       // Skip
     }
   }
@@ -198,7 +183,7 @@ export default abstract class BaseMELCloudDriver<
       ...this.setCapabilityTagMapping,
       ...this.getCapabilityTagMapping,
       ...this.listCapabilityTagMapping,
-    }).forEach((capability: string) => {
+    }).forEach((capability) => {
       this.#registerConditionRunListener(capability as K)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
@@ -215,10 +200,10 @@ export default abstract class BaseMELCloudDriver<
       ([capability, tags]: [string, K[]]) => {
         ;(this.producedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag: K) => !tag.endsWith('Consumed'))
+        ] as K[]) = tags.filter((tag) => !tag.endsWith('Consumed'))
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag: K) => tag.endsWith('Consumed'))
+        ] as K[]) = tags.filter((tag) => tag.endsWith('Consumed'))
       },
     )
   }

@@ -15,7 +15,7 @@ export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
       VentilationMode[value]) as ConvertFromDevice<'Erv'>,
   }
 
-  protected readonly reportPlanParameters: null = null
+  protected readonly reportPlanParameters = null
 
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilities['Erv'], ConvertToDevice<'Erv'>>

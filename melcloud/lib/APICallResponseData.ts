@@ -6,7 +6,7 @@ export default class APICallResponseData extends APICallContextData {
 
   public readonly status?: AxiosResponse['status']
 
-  public readonly dataType: string = 'API response'
+  public readonly dataType = 'API response'
 
   public readonly requestData: InternalAxiosRequestConfig['data']
 

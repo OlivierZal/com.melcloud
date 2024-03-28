@@ -4,7 +4,7 @@ import type { InternalAxiosRequestConfig } from 'axios'
 export default class APICallRequestData extends APICallContextData {
   public readonly headers?: InternalAxiosRequestConfig['headers']
 
-  public readonly dataType: string = 'API request'
+  public readonly dataType = 'API request'
 
   public readonly requestData: InternalAxiosRequestConfig['data']
 

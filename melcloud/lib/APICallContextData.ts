@@ -1,6 +1,6 @@
 import type { InternalAxiosRequestConfig } from 'axios'
 
-const ORDER: string[] = [
+const ORDER = [
   'dataType',
   'method',
   'url',
@@ -29,7 +29,7 @@ export default abstract class APICallContextData {
   }
 
   public toString(): string {
-    return ORDER.map((key: string): string | null => {
+    return ORDER.map((key) => {
       if (key in this) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const value: any = this[key as keyof this]
@@ -43,7 +43,7 @@ export default abstract class APICallContextData {
       }
       return null
     })
-      .filter((line: string | null) => line !== null)
+      .filter((line) => line !== null)
       .join('\n')
   }
 }
