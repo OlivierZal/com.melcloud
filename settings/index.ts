@@ -212,7 +212,7 @@ const getDeviceSettings = async (homey: Homey): Promise<void> =>
 
 const getFlatDeviceSettings = (): void => {
   flatDeviceSettings = Object.values(deviceSettings).reduce<DeviceSetting>(
-    (flattenedDeviceSettings, settings: DeviceSetting) =>
+    (flattenedDeviceSettings, settings) =>
       Object.entries(settings).reduce<DeviceSetting>(
         (acc, [settingId, settingValues]) => {
           if (!(settingId in acc)) {
@@ -364,12 +364,10 @@ const updateCredentialElement = (
   return null
 }
 
-const credentialKeys: (keyof LoginCredentials)[] = ['username', 'password']
-
 const updateCredentialElements = (): void => {
-  ;[usernameElement, passwordElement] = credentialKeys.map(
-    updateCredentialElement,
-  )
+  ;[usernameElement, passwordElement] = (
+    ['username', 'password'] as (keyof LoginCredentials)[]
+  ).map(updateCredentialElement)
 }
 
 const int = (
@@ -572,7 +570,7 @@ const refreshBuildingFrostProtectionSettings = (
 }
 
 const refreshBuildingSettings = (): void => {
-  const settings: BuildingData = buildingMapping[buildingElement.value]
+  const settings = buildingMapping[buildingElement.value]
   refreshBuildingHolidayModeSettings(settings)
   refreshBuildingFrostProtectionSettings(settings)
 }
@@ -758,7 +756,7 @@ const addApplySettingsEventListener = (
     homey.confirm(
       homey.__('settings.devices.apply.confirm'),
       null,
-      async (error: Error | null, ok: boolean): Promise<void> => {
+      async (error: Error | null, ok: boolean) => {
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
@@ -1061,7 +1059,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    const data: HolidayModeData = buildingMapping[buildingElement.value]
+    const data = buildingMapping[buildingElement.value]
     const enabled = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
       enabled,
@@ -1169,7 +1167,7 @@ const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
-    const data: FrostProtectionData = buildingMapping[buildingElement.value]
+    const data = buildingMapping[buildingElement.value]
     try {
       const [min, max] = fixAndGetFpMinMax(homey)
       updateFrostProtectionData(
