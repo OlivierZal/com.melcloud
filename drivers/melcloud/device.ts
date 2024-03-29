@@ -3,6 +3,7 @@ import {
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilities,
+  type ReportPlanParameters,
   type SetCapabilities,
   ThermostatMode,
 } from '../../types'
@@ -34,7 +35,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertFromDevice<'Ata'>,
   }
 
-  protected readonly reportPlanParameters = {
+  protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
@@ -99,7 +100,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   #registerThermostatModeListener(): void {
     this.registerCapabilityListener(
       'thermostat_mode',
-      (value: ThermostatMode): void => {
+      (value: ThermostatMode) => {
         this.clearSyncToDevice()
         this.setDiff('onoff', value !== ThermostatMode.off)
         if (value !== ThermostatMode.off) {

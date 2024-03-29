@@ -8,8 +8,10 @@ import type {
   ListCapabilityTagMapping,
   MELCloudDriver,
   OpCapabilities,
+  OpCapabilityTagEntries,
   OpDeviceData,
   ReportCapabilities,
+  ReportCapabilityTagEntries,
   ReportCapabilityTagMapping,
   ReportPlanParameters,
   SetCapabilities,
@@ -64,20 +66,11 @@ abstract class BaseMELCloudDevice<
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
-  #listOnlyCapabilityTagEntries: [
-    Extract<keyof OpCapabilities[T], string>,
-    OpDeviceData<T>,
-  ][] = []
+  #listOnlyCapabilityTagEntries: OpCapabilityTagEntries<T> = []
 
   #reportCapabilityTagEntries: {
-    false: [
-      Extract<keyof ReportCapabilities[T], string>,
-      (keyof ReportData[T])[],
-    ][]
-    true: [
-      Extract<keyof ReportCapabilities[T], string>,
-      (keyof ReportData[T])[],
-    ][]
+    false: ReportCapabilityTagEntries<T>
+    true: ReportCapabilityTagEntries<T>
   } = { false: [], true: [] }
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
@@ -321,7 +314,7 @@ abstract class BaseMELCloudDevice<
     Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
       this.registerCapabilityListener(
         capability,
-        (value: SetCapabilities[T][K]): void => {
+        (value: SetCapabilities[T][K]) => {
           this.clearSyncToDevice()
           this.onCapability(capability as K, value)
           this.applySyncToDevice()
@@ -344,10 +337,9 @@ abstract class BaseMELCloudDevice<
     data: DeviceData[T] | ListDevice[T]['Device'] | null,
   ): Promise<void> {
     if (data) {
-      const updateCapabilityTagEntries: [
-        Extract<keyof OpCapabilities[T], string>,
-        OpDeviceData<T>,
-      ][] = this.#getUpdateCapabilityTagEntries(data.EffectiveFlags)
+      const updateCapabilityTagEntries = this.#getUpdateCapabilityTagEntries(
+        data.EffectiveFlags,
+      )
       await this.#setCapabilityValues(updateCapabilityTagEntries, data)
     }
   }
@@ -500,7 +492,7 @@ abstract class BaseMELCloudDevice<
 
   #getUpdateCapabilityTagEntries(
     effectiveFlags: number,
-  ): [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][] {
+  ): OpCapabilityTagEntries<T> {
     switch (true) {
       case effectiveFlags !== FLAG_UNCHANGED:
         return [
@@ -510,7 +502,7 @@ abstract class BaseMELCloudDevice<
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
-        ] as [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
+        ] as OpCapabilityTagEntries<T>
       case Boolean(this.diff.size):
       case this.#syncToDeviceTimeout !== null:
         return this.#listOnlyCapabilityTagEntries
@@ -519,7 +511,7 @@ abstract class BaseMELCloudDevice<
           ...this.#setCapabilityTagMapping,
           ...this.#getCapabilityTagMapping,
           ...this.#listCapabilityTagMapping,
-        }) as [Extract<keyof OpCapabilities[T], string>, OpDeviceData<T>][]
+        }) as OpCapabilityTagEntries<T>
     }
   }
 

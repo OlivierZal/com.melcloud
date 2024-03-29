@@ -5,9 +5,11 @@ import {
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   type OperationModeZoneCapabilities,
+  type ReportPlanParameters,
   type SetCapabilities,
   type Store,
   type TargetTemperatureFlowCapabilities,
+  type Zone,
 } from '../../types'
 import {
   type DeviceData,
@@ -66,7 +68,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
       ),
   }
 
-  protected readonly reportPlanParameters = {
+  protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
@@ -192,7 +194,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     await Promise.all(
       ['zone1', 'zone2'].map(async (zone) => {
         await this.#updateOperationModeStateZone(
-          zone as 'zone1' | 'zone2',
+          zone as Zone,
           operationModeState,
         )
       }),
@@ -200,7 +202,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   }
 
   async #updateOperationModeStateZone(
-    zone: 'zone1' | 'zone2',
+    zone: Zone,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     if (this.hasCapability(`operation_mode_state.${zone}`)) {

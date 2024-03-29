@@ -32,9 +32,6 @@ import APICallRequestData from './lib/APICallRequestData'
 import APICallResponseData from './lib/APICallResponseData'
 import createAPICallErrorData from './lib/APICallErrorData'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Logger = (...args: any[]) => void
-
 interface APISettings {
   readonly contextKey?: string | null
   readonly expiry?: string | null
@@ -67,17 +64,17 @@ export default class MELCloudAPI {
 
   readonly #api: AxiosInstance
 
-  readonly #errorLogger: Logger
+  readonly #errorLogger
 
-  readonly #logger: Logger
+  readonly #logger
 
   readonly #settingManager: SettingManager
 
   public constructor(
     settingManager: SettingManager,
     // eslint-disable-next-line no-console
-    logger: Logger = console.log,
-    errorLogger: Logger = logger,
+    logger = console.log,
+    errorLogger = logger,
   ) {
     this.#settingManager = settingManager
     this.#logger = logger
