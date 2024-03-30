@@ -323,9 +323,9 @@ abstract class BaseMELCloudDevice<
       }
       if (value === diff.initialValue) {
         this.diff.delete(capability)
-        return
+      } else {
+        diff.value = value
       }
-      diff.value = value
       return
     }
     this.diff.set(capability, {
