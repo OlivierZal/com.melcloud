@@ -121,10 +121,10 @@ export = class MELCloudApp extends withTimers(App) {
           return [id, device]
         }),
       )
+      await this.#syncFromDevices()
     } catch (error) {
-      return
+      // Error handling is delegated to the interceptor
     }
-    await this.#syncFromDevices()
   }
 
   async #syncFromDevices(): Promise<void> {
