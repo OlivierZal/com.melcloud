@@ -107,13 +107,13 @@ export = class MELCloudApp extends withTimers(App) {
           ]),
         ],
       )
-      this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
-        buildingDevices,
-        ({ Device }) => Device.DeviceType,
-      )
       const devicesPerId = Object.groupBy<number, ListDeviceAny>(
         buildingDevices,
         ({ DeviceID }) => DeviceID,
+      )
+      this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
+        buildingDevices,
+        ({ Device }) => Device.DeviceType,
       )
       this.#devices = Object.fromEntries(
         Object.entries(devicesPerId).map(([id, devices]) => {
@@ -121,10 +121,10 @@ export = class MELCloudApp extends withTimers(App) {
           return [id, device]
         }),
       )
-      await this.#syncFromDevices()
     } catch (error) {
-      // Error handling is delegated to the interceptor
+      return
     }
+    await this.#syncFromDevices()
   }
 
   async #syncFromDevices(): Promise<void> {
