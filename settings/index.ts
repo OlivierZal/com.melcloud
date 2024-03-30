@@ -1061,19 +1061,18 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
         enableButtons('holiday-mode')
         try {
           await getBuildingHolidayModeSettings(homey, true)
+          if (error) {
+            // @ts-expect-error: `homey` is partially typed
+            await homey.alert(error.message)
+            return
+          }
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(homey.__('settings.success'))
         } catch (err) {
           refreshBuildingHolidayModeSettings(data)
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
-          return
         }
-        if (error) {
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(error.message)
-          return
-        }
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(homey.__('settings.success'))
       },
     )
   })
@@ -1115,19 +1114,18 @@ const updateFrostProtectionData = (
       enableButtons('frost-protection')
       try {
         await getBuildingFrostProtectionSettings(homey, true)
+        if (error) {
+          // @ts-expect-error: `homey` is partially typed
+          await homey.alert(error.message)
+          return
+        }
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(homey.__('settings.success'))
       } catch (err) {
         refreshBuildingFrostProtectionSettings(data)
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(err.message)
-        return
       }
-      if (error) {
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(error.message)
-        return
-      }
-      // @ts-expect-error: `homey` is partially typed
-      await homey.alert(homey.__('settings.success'))
     },
   )
 }
@@ -1222,18 +1220,17 @@ const addEventListeners = (homey: Homey): void => {
 const load = async (homey: Homey): Promise<void> => {
   addEventListeners(homey)
   generateCommonChildrenElements(homey)
-  if (typeof homeySettings.contextKey === 'undefined') {
-    needsAuthentication()
-    return
+  if (typeof homeySettings.contextKey !== 'undefined') {
+    Object.keys(deviceSettings).forEach((driverId) => {
+      generateCheckboxChildrenElements(homey, driverId)
+    })
+    try {
+      await generate(homey)
+    } catch (error) {
+      // Skip
+    }
   }
-  Object.keys(deviceSettings).forEach((driverId) => {
-    generateCheckboxChildrenElements(homey, driverId)
-  })
-  try {
-    await generate(homey)
-  } catch (error) {
-    needsAuthentication()
-  }
+  needsAuthentication()
 }
 
 // eslint-disable-next-line func-style
