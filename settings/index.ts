@@ -396,16 +396,9 @@ const int = (
 }
 
 const processSettingValue = (
-  homey: Homey,
   element: HTMLInputElement | HTMLSelectElement,
 ): ValueOf<Settings> => {
   if (element.value) {
-    const intValue = Number.parseInt(element.value, 10)
-    if (!Number.isNaN(intValue)) {
-      return element instanceof HTMLInputElement
-        ? int(homey, element, intValue)
-        : intValue
-    }
     if (element instanceof HTMLInputElement && element.type === 'checkbox') {
       if (element.indeterminate) {
         return null
@@ -450,7 +443,7 @@ const buildSettingsBody = (
     elements
       .map((element) => {
         const [settingId] = element.id.split('--')
-        const settingValue = processSettingValue(homey, element)
+        const settingValue = processSettingValue(element)
         return shouldUpdate(settingId, settingValue, driverId)
           ? [settingId, settingValue]
           : [null]
@@ -739,14 +732,7 @@ const addApplySettingsEventListener = (
     `apply-${settings}`,
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
-    let body: Settings = {}
-    try {
-      body = buildSettingsBody(homey, elements, driverId)
-    } catch (error) {
-      // @ts-expect-error: `homey` is partially typed
-      homey.alert(error instanceof Error ? error.message : String(error))
-      return
-    }
+    const body = buildSettingsBody(homey, elements, driverId)
     if (!Object.keys(body).length) {
       // @ts-expect-error: `homey` is partially typed
       homey.alert(homey.__('settings.devices.apply.nothing'))
