@@ -37,16 +37,15 @@ export = class MELCloudApp extends withTimers(App) {
 
   public async applyLogin(
     data?: LoginCredentials,
-    raise = false,
-    clearSyncFromDevices = false,
+    clearSyncAndRaise = false,
   ): Promise<boolean> {
-    if (clearSyncFromDevices) {
+    if (clearSyncAndRaise) {
       this.#clearSyncFromDevices()
     }
     return this.melcloudAPI.applyLogin(
       data,
       async (): Promise<void> => this.#runSyncFromDevices(),
-      raise,
+      clearSyncAndRaise,
     )
   }
 

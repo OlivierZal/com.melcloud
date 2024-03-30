@@ -102,12 +102,12 @@ export default abstract class BaseMELCloudDriver<
 
   public async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
-      if (view === 'login' && (await this.#login())) {
+      if (view === 'login' && (await this.#app.applyLogin())) {
         await session.showView('list_devices')
       }
     })
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#login(data),
+      this.#app.applyLogin(data, true),
     )
     session.setHandler('list_devices', async () => this.#discoverDevices())
     return Promise.resolve()
@@ -115,7 +115,7 @@ export default abstract class BaseMELCloudDriver<
 
   public async onRepair(session: PairSession): Promise<void> {
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#login(data),
+      this.#app.applyLogin(data, true),
     )
     return Promise.resolve()
   }
@@ -140,10 +140,6 @@ export default abstract class BaseMELCloudDriver<
         },
       ),
     )
-  }
-
-  async #login(data?: LoginCredentials): Promise<boolean> {
-    return this.#app.applyLogin(data, false, true)
   }
 
   #registerActionRunListener(
