@@ -317,11 +317,15 @@ abstract class BaseMELCloudDevice<
     value: SetCapabilities[T][K],
   ): void {
     if (this.diff.has(capability)) {
-      const diffValue = this.diff.get(capability) as {
+      const diff = this.diff.get(capability) as {
         initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
         value: SetCapabilities[T][keyof SetCapabilities[T]]
       }
-      diffValue.value = value
+      if (value === diff.initialValue) {
+        this.diff.delete(capability)
+        return
+      }
+      diff.value = value
       return
     }
     this.diff.set(capability, {
@@ -353,19 +357,10 @@ abstract class BaseMELCloudDevice<
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
-          const effectiveFlags = BigInt(acc.EffectiveFlags)
-          const effectiveFlag = BigInt(this.#effectiveFlags[tag])
-          const { initialValue, value } = this.diff.get(capability as K) as {
-            initialValue: SetCapabilities[T][K]
-            value: SetCapabilities[T][K]
-          }
-          /* eslint-disable no-bitwise */
           acc.EffectiveFlags = Number(
-            value === initialValue
-              ? effectiveFlags & ~effectiveFlag
-              : effectiveFlags | effectiveFlag,
+            // eslint-disable-next-line no-bitwise
+            BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
-          /* eslint-enable no-bitwise */
           this.diff.delete(capability as K)
           if (capability === 'onoff') {
             this.#setAlwaysOnWarning()
