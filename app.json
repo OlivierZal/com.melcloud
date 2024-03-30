@@ -3323,9 +3323,6 @@
         {
           "id": "login",
           "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
@@ -4148,9 +4145,6 @@
         {
           "id": "login",
           "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
           "options": {
             "logo": "logo.png",
             "usernameLabel": {
@@ -5975,9 +5969,6 @@
         {
           "id": "login",
           "template": "login_credentials",
-          "navigation": {
-            "next": "list_devices"
-          },
           "options": {
             "logo": "logo.png",
             "usernameLabel": {

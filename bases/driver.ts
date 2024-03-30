@@ -101,6 +101,11 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public async onPair(session: PairSession): Promise<void> {
+    session.setHandler('showView', async (view) => {
+      if (view === 'login' && (await this.#login())) {
+        await session.showView('list_devices')
+      }
+    })
     session.setHandler('login', async (data: LoginCredentials) =>
       this.#login(data),
     )
@@ -137,9 +142,8 @@ export default abstract class BaseMELCloudDriver<
     )
   }
 
-  async #login(data: LoginCredentials): Promise<boolean> {
-    this.#app.clearSyncFromDevices()
-    return this.#app.applyLogin(data)
+  async #login(data?: LoginCredentials): Promise<boolean> {
+    return this.#app.applyLogin(data, false, true)
   }
 
   #registerActionRunListener(

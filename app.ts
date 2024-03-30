@@ -38,18 +38,16 @@ export = class MELCloudApp extends withTimers(App) {
   public async applyLogin(
     data?: LoginCredentials,
     raise = false,
+    clearSyncFromDevices = false,
   ): Promise<boolean> {
+    if (clearSyncFromDevices) {
+      this.#clearSyncFromDevices()
+    }
     return this.melcloudAPI.applyLogin(
       data,
       async (): Promise<void> => this.#runSyncFromDevices(),
       raise,
     )
-  }
-
-  public clearSyncFromDevices(): void {
-    this.homey.clearInterval(this.#syncFromDevicesInterval)
-    this.#syncFromDevicesInterval = null
-    this.log('Device list refresh has been paused')
   }
 
   public async getBuildings(): Promise<Building[]> {
@@ -81,9 +79,15 @@ export = class MELCloudApp extends withTimers(App) {
     await this.applyLogin()
   }
 
+  #clearSyncFromDevices(): void {
+    this.homey.clearInterval(this.#syncFromDevicesInterval)
+    this.#syncFromDevicesInterval = null
+    this.log('Device list refresh has been paused')
+  }
+
   async #runSyncFromDevices(): Promise<void> {
     if (!this.#syncFromDevicesInterval) {
-      this.clearSyncFromDevices()
+      this.#clearSyncFromDevices()
       await this.#syncFromDeviceList()
       this.#syncFromDevicesInterval = this.setInterval(
         async (): Promise<void> => {
