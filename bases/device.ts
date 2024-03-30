@@ -294,17 +294,6 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value: SetCapabilities[T][K],
   ): void {
-    if (this.diff.has(capability)) {
-      const diffValue: {
-        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
-        value: SetCapabilities[T][keyof SetCapabilities[T]]
-      } = this.diff.get(capability) as {
-        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
-        value: SetCapabilities[T][keyof SetCapabilities[T]]
-      }
-      diffValue.value = value
-      return
-    }
     this.setDiff(capability, value)
   }
 
@@ -327,6 +316,14 @@ abstract class BaseMELCloudDevice<
     capability: K,
     value: SetCapabilities[T][K],
   ): void {
+    if (this.diff.has(capability)) {
+      const diffValue = this.diff.get(capability) as {
+        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
+        value: SetCapabilities[T][keyof SetCapabilities[T]]
+      }
+      diffValue.value = value
+      return
+    }
     this.diff.set(capability, {
       initialValue: this.getCapabilityValue(capability),
       value,
