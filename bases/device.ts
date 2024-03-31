@@ -182,7 +182,7 @@ abstract class BaseMELCloudDevice<
     }
     if (
       changedKeys.includes('always_on') &&
-      newSettings.always_on === true &&
+      (newSettings.always_on ?? false) &&
       this.getCapabilityValue('onoff')
     ) {
       await this.triggerCapabilityListener('onoff', true)
@@ -540,7 +540,7 @@ abstract class BaseMELCloudDevice<
   ): Promise<void> {
     await changedCapabilities.reduce<Promise<void>>(async (acc, capability) => {
       await acc
-      if (newSettings[capability] as boolean) {
+      if (newSettings[capability] === true) {
         await this.addCapability(capability)
         return
       }
