@@ -192,11 +192,8 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     const operationModeState = this.getCapabilityValue('operation_mode_state')
     await this.#updateOperationModeStateHotWater(operationModeState)
     await Promise.all(
-      ['zone1', 'zone2'].map(async (zone) => {
-        await this.#updateOperationModeStateZone(
-          zone as Zone,
-          operationModeState,
-        )
+      (['zone1', 'zone2'] as Zone[]).map(async (zone) => {
+        await this.#updateOperationModeStateZone(zone, operationModeState)
       }),
     )
   }

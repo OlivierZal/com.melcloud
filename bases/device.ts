@@ -188,7 +188,7 @@ abstract class BaseMELCloudDevice<
       await this.triggerCapabilityListener('onoff', true)
     } else if (
       changedKeys.some(
-        (setting: string) =>
+        (setting) =>
           setting !== 'always_on' &&
           !(setting in this.driver.reportCapabilityTagMapping),
       )

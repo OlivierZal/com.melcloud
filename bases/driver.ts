@@ -101,7 +101,7 @@ export default abstract class BaseMELCloudDriver<
   }
 
   public async onPair(session: PairSession): Promise<void> {
-    session.setHandler('showView', async (view: string) => {
+    session.setHandler('showView', async (view) => {
       if (view === 'loading') {
         if (await this.#app.applyLogin()) {
           await session.showView('list_devices')
