@@ -49,9 +49,12 @@ interface SettingManager {
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
 
-const throwIfRequested = (error: unknown, raise: boolean): void => {
-  if (raise) {
-    throw new Error(error instanceof Error ? error.message : String(error))
+const handleOnSuccess = async (
+  loginData: LoginData['LoginData'],
+  onSuccess?: () => Promise<void>,
+): Promise<void> => {
+  if (loginData && onSuccess) {
+    await onSuccess()
   }
 }
 
@@ -86,16 +89,16 @@ export default class MELCloudAPI {
   }
 
   public async applyLogin(
-    { password, username }: LoginCredentials = {
+    data?: LoginCredentials,
+    onSuccess?: () => Promise<void>,
+  ): Promise<boolean> {
+    const { password, username } = data ?? {
       password: this.#settingManager.get('password') ?? '',
       username: this.#settingManager.get('username') ?? '',
-    },
-    onSuccess?: () => Promise<void>,
-    raise = false,
-  ): Promise<boolean> {
+    }
     if (username && password) {
       try {
-        const { LoginData } = (
+        const { LoginData: loginData } = (
           await this.login({
             AppVersion: APP_VERSION,
             Email: username,
@@ -103,12 +106,14 @@ export default class MELCloudAPI {
             Persist: true,
           })
         ).data
-        if (LoginData && onSuccess) {
-          await onSuccess()
-        }
-        return LoginData !== null
+        await handleOnSuccess(loginData, onSuccess)
+        return loginData !== null
       } catch (error) {
-        throwIfRequested(error, raise)
+        if (typeof data !== 'undefined') {
+          throw new Error(
+            error instanceof Error ? error.message : String(error),
+          )
+        }
       }
     }
     return false
