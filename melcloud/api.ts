@@ -49,15 +49,6 @@ interface SettingManager {
 const LIST_URL = '/User/ListDevices'
 const LOGIN_URL = '/Login/ClientLogin'
 
-const handleOnSuccess = async (
-  loginData: LoginData['LoginData'],
-  onSuccess?: () => Promise<void>,
-): Promise<void> => {
-  if (loginData && onSuccess) {
-    await onSuccess()
-  }
-}
-
 export default class MELCloudAPI {
   #holdAPIListUntil = DateTime.now()
 
@@ -106,7 +97,9 @@ export default class MELCloudAPI {
             Persist: true,
           })
         ).data
-        await handleOnSuccess(loginData, onSuccess)
+        if (loginData) {
+          await onSuccess?.()
+        }
         return loginData !== null
       } catch (error) {
         if (typeof data !== 'undefined') {
