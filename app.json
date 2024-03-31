@@ -3321,6 +3321,10 @@
       "class": "thermostat",
       "pair": [
         {
+          "id": "loading",
+          "template": "loading"
+        },
+        {
           "id": "login",
           "template": "login_credentials",
           "options": {
@@ -4142,6 +4146,10 @@
       "icon": "/drivers/melcloud_atw/assets/icon.svg",
       "class": "thermostat",
       "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
         {
           "id": "login",
           "template": "login_credentials",
@@ -5966,6 +5974,10 @@
       "icon": "/drivers/melcloud_erv/assets/icon.svg",
       "class": "fan",
       "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
         {
           "id": "login",
           "template": "login_credentials",
