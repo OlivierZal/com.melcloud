@@ -443,11 +443,8 @@ abstract class BaseMELCloudDevice<
       | NonEffectiveFlagsValueOf<DeviceData[T]>
       | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
   ): OpCapabilities[T][K] {
-    return (
-      capability in this.fromDevice
-        ? this.fromDevice[capability]?.(value)
-        : value
-    ) as OpCapabilities[T][K]
+    return (this.fromDevice[capability]?.(value) ??
+      value) as OpCapabilities[T][K]
   }
 
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
@@ -459,9 +456,8 @@ abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     const value = this.getRequestedOrCurrentValue(capability)
-    return (
-      capability in newToDevice ? newToDevice[capability]?.(value) : value
-    ) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
+    return (newToDevice[capability]?.(value) ??
+      value) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 
   async #deviceData(): Promise<DeviceData[T] | null> {
