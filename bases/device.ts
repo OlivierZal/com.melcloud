@@ -263,13 +263,13 @@ abstract class BaseMELCloudDevice<
   public async syncFromDevice(): Promise<void> {
     const data = this.#app.devices[this.#id]?.Device ?? null
     this.log('Syncing from device list:', data)
-    await this.updateCapabilities(data)
+    await this.setCapabilities(data)
   }
 
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.updateCapabilities(await this.#deviceData())
+        await this.setCapabilities(await this.#deviceData())
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -312,6 +312,32 @@ abstract class BaseMELCloudDevice<
     })
   }
 
+  protected async setCapabilities<
+    D extends DeviceData[T] | ListDevice[T]['Device'],
+    K extends Extract<keyof OpCapabilities[T], string>,
+  >(data: D | null): Promise<void> {
+    if (data) {
+      await Promise.all(
+        this.#getUpdateCapabilityTagEntries(data.EffectiveFlags).map(
+          async ([capability, tag]) => {
+            if (tag in data) {
+              const value = this.#convertFromDevice(
+                capability,
+                data[tag as keyof D] as
+                  | NonEffectiveFlagsValueOf<DeviceData[T]>
+                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+              )
+              await this.setCapabilityValue(
+                capability,
+                value as Capabilities[T][K],
+              )
+            }
+          },
+        ),
+      )
+    }
+  }
+
   protected setDiff<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
     value: SetCapabilities[T][K],
@@ -329,17 +355,6 @@ abstract class BaseMELCloudDevice<
       initialValue: this.getCapabilityValue(capability),
       value,
     })
-  }
-
-  protected async updateCapabilities(
-    data: DeviceData[T] | ListDevice[T]['Device'] | null,
-  ): Promise<void> {
-    if (data) {
-      const updateCapabilityTagEntries = this.#getUpdateCapabilityTagEntries(
-        data.EffectiveFlags,
-      )
-      await this.#setCapabilityValues(updateCapabilityTagEntries, data)
-    }
   }
 
   #buildUpdateData<
@@ -631,7 +646,7 @@ abstract class BaseMELCloudDevice<
       const toDate = DateTime.now().minus(this.reportPlanParameters.minus)
       const fromDate = total ? DateTime.local(YEAR_1970) : toDate
       const data = await this.#reportEnergyCost(fromDate, toDate)
-      await this.#updateReportCapabilities(data, toDate, total)
+      await this.#setReportCapabilities(data, toDate, total)
       this.#planEnergyReport(this.reportPlanParameters, total)
     }
   }
@@ -664,25 +679,6 @@ abstract class BaseMELCloudDevice<
     this.#setListCapabilityTagMappings()
   }
 
-  async #setCapabilityValues<
-    K extends Extract<keyof OpCapabilities[T], string>,
-    D extends DeviceData[T] | ListDevice[T]['Device'],
-  >(capabilityTagEntries: [K, OpDeviceData<T>][], data: D): Promise<void> {
-    await Promise.all(
-      capabilityTagEntries.map(async ([capability, tag]) => {
-        if (tag in data) {
-          const value = this.#convertFromDevice(
-            capability,
-            data[tag as keyof D] as
-              | NonEffectiveFlagsValueOf<DeviceData[T]>
-              | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
-          )
-          await this.setCapabilityValue(capability, value as Capabilities[T][K])
-        }
-      }),
-    )
-  }
-
   #setListCapabilityTagMappings<
     K extends Extract<keyof OpCapabilities[T], string>,
   >(): void {
@@ -700,24 +696,7 @@ abstract class BaseMELCloudDevice<
     )
   }
 
-  #setReportCapabilityTagEntries<
-    K extends Extract<keyof ReportCapabilities[T], string>,
-    L extends keyof ReportData[T],
-  >(totals: boolean[] | boolean = [false, true]): void {
-    ;(Array.isArray(totals) ? totals : [totals]).forEach((total) => {
-      this.#reportCapabilityTagEntries[`${total}`] = Object.entries(
-        this.#cleanMapping(
-          this.driver
-            .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
-        ),
-      ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
-        K,
-        L[],
-      ][]
-    })
-  }
-
-  async #updateReportCapabilities(
+  async #setReportCapabilities(
     data: ReportData[T] | null,
     toDate: DateTime,
     total = false,
@@ -763,6 +742,23 @@ abstract class BaseMELCloudDevice<
         ),
       )
     }
+  }
+
+  #setReportCapabilityTagEntries<
+    K extends Extract<keyof ReportCapabilities[T], string>,
+    L extends keyof ReportData[T],
+  >(totals: boolean[] | boolean = [false, true]): void {
+    ;(Array.isArray(totals) ? totals : [totals]).forEach((total) => {
+      this.#reportCapabilityTagEntries[`${total}`] = Object.entries(
+        this.#cleanMapping(
+          this.driver
+            .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
+        ),
+      ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
+        K,
+        L[],
+      ][]
+    })
   }
 }
 

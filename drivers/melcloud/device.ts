@@ -72,12 +72,12 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     this.#registerThermostatModeListener()
   }
 
-  protected async updateCapabilities(
+  protected async setCapabilities(
     data: DeviceData['Ata'] | ListDevice['Ata']['Device'] | null,
   ): Promise<void> {
-    await super.updateCapabilities(data)
+    await super.setCapabilities(data)
     if (data) {
-      await this.#updateThermostatMode()
+      await this.#setThermostatMode()
     }
   }
 
@@ -111,7 +111,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     )
   }
 
-  async #updateThermostatMode(): Promise<void> {
+  async #setThermostatMode(): Promise<void> {
     const isOn = this.getCapabilityValue('onoff')
     const operationMode = this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
