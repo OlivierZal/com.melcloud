@@ -317,13 +317,10 @@ abstract class BaseMELCloudDevice<
     value: SetCapabilities[T][K],
   ): void {
     if (this.diff.has(capability)) {
-      const diff = this.diff.get(capability) as {
-        initialValue: SetCapabilities[T][keyof SetCapabilities[T]]
-        value: SetCapabilities[T][keyof SetCapabilities[T]]
-      }
-      if (value === diff.initialValue) {
+      const diff = this.diff.get(capability)
+      if (value === diff?.initialValue) {
         this.diff.delete(capability)
-      } else {
+      } else if (diff) {
         diff.value = value
       }
       return
@@ -348,6 +345,7 @@ abstract class BaseMELCloudDevice<
   #buildUpdateData<
     K extends Extract<keyof SetCapabilities[T], string>,
   >(): SetDeviceData[T] {
+    this.#setAlwaysOnWarning()
     return Object.entries(this.#setCapabilityTagMapping).reduce<
       SetDeviceData[T]
     >(
@@ -362,9 +360,6 @@ abstract class BaseMELCloudDevice<
             BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
           this.diff.delete(capability as K)
-          if (capability === 'onoff') {
-            this.#setAlwaysOnWarning()
-          }
         }
         return acc
       },
@@ -647,7 +642,10 @@ abstract class BaseMELCloudDevice<
   }
 
   #setAlwaysOnWarning(): void {
-    if (this.getSetting('always_on')) {
+    if (
+      this.getSetting('always_on') &&
+      this.diff.get('onoff')?.value === false
+    ) {
       this.setWarning(this.homey.__('warnings.always_on')).catch(
         (error: unknown) => {
           this.error(error instanceof Error ? error.message : String(error))
