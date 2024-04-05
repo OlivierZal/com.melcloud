@@ -30,8 +30,8 @@ jobs:
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node-modules-
           save-always: true
-      - name: Install dependencies
-        run: npm i
+      - name: Update package-lock.json
+        run: npm install
       - name: Lint and fix errors
         run: npm run lint:fix
       - name: Format code
