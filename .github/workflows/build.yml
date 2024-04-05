@@ -42,7 +42,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git add -A
           if ! git diff --cached --exit-code; then
-            git commit -m "Code maintenance: bump version, lint & format"
+            git commit -m "Code maintenance: bump version, lint and format"
             if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
               echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
               BRANCH_NAME="maintenance-$(date +'%Y%m%d%H%M%S')"
