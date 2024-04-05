@@ -1,6 +1,6 @@
 {
   "title": {
-    "en": "The current fan speed has changed",
+    "en": "The actual fan speed has changed",
     "fr": "La vitesse actuelle du ventilateur a été modifiée",
     "nl": "De huidige ventilatiesnelheid is veranderd",
     "sv": "Aktuell fläkthastigheten ändrades",
@@ -13,7 +13,7 @@
       "name": "fan_power_state",
       "type": "number",
       "title": {
-        "en": "Current fan speed",
+        "en": "Actual fan speed",
         "fr": "Vitesse actuelle du ventilateur",
         "nl": "Huidige ventilatiesnelheid",
         "sv": "Aktuell fläkthastighet",

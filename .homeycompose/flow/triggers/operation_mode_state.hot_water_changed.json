@@ -1,7 +1,7 @@
 {
   "title": {
-    "en": "The current operation has changed for domestic hot water",
-    "fr": "L'opération en cours a été modifiée pour l'eau chaude sanitaire",
+    "en": "The actual operation has changed for domestic hot water",
+    "fr": "L'opération actuelle a été modifiée pour l'eau chaude sanitaire",
     "nl": "De huidige bedrijf is veranderd voor het sanitair warm water",
     "sv": "Aktuell drift ändrades för varmvattenladdning",
     "no": "Gjeldende drift ble endret for varmvannslastning",
@@ -13,8 +13,8 @@
       "name": "operation_mode_state.hot_water",
       "type": "string",
       "title": {
-        "en": "Current operation",
-        "fr": "Opération en cours",
+        "en": "Actual operation",
+        "fr": "Opération actuelle",
         "nl": "Huidige bedrijf",
         "sv": "Aktuell drift",
         "no": "Gjeldende drift",

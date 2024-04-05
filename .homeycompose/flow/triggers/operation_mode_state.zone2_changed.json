@@ -1,7 +1,7 @@
 {
   "title": {
-    "en": "The current operation has changed in zone 2",
-    "fr": "L'opération en cours a été modifiée dans la zone 2",
+    "en": "The actual operation has changed in zone 2",
+    "fr": "L'opération actuelle a été modifiée dans la zone 2",
     "nl": "De huidige bedrijf is veranderd in zone 2",
     "sv": "Aktuell drift ändrades i zon 2",
     "no": "Gjeldende drift ble endret i sone 2",
@@ -13,8 +13,8 @@
       "name": "operation_mode_state.zone2",
       "type": "string",
       "title": {
-        "en": "Current operation",
-        "fr": "Opération en cours",
+        "en": "Actual operation",
+        "fr": "Opération actuelle",
         "nl": "Huidige bedrijf",
         "sv": "Aktuell drift",
         "no": "Gjeldende drift",

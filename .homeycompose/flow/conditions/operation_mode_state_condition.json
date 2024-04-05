@@ -1,7 +1,7 @@
 {
   "title": {
-    "en": "The current operation !{{is|is not}}",
-    "fr": "L'opération en cours !{{est|n'est pas}}",
+    "en": "The actual operation !{{is|is not}}",
+    "fr": "L'opération actuelle !{{est|n'est pas}}",
     "nl": "De huidige bedrijf !{{is|is niet}}",
     "sv": "Aktuell drift !{{är|är inte}}",
     "no": "Gjeldende drift !{{er|er ikke}}",
@@ -9,8 +9,8 @@
     "es": "La operación actual !{{está|no está}}"
   },
   "titleFormatted": {
-    "en": "The current operation !{{is|is not}} [[operation_mode_state]]",
-    "fr": "L'opération en cours !{{est|n'est pas}} [[operation_mode_state]]",
+    "en": "The actual operation !{{is|is not}} [[operation_mode_state]]",
+    "fr": "L'opération actuelle !{{est|n'est pas}} [[operation_mode_state]]",
     "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]]",
     "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]]",
     "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]]",

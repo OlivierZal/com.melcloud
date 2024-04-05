@@ -1,7 +1,7 @@
 {
   "type": "number",
   "title": {
-    "en": "Current fan speed",
+    "en": "Actual fan speed",
     "fr": "Vitesse actuelle du ventilateur",
     "nl": "Huidige ventilatiesnelheid",
     "sv": "Aktuell fläkthastighet",

@@ -1,7 +1,7 @@
 {
   "title": {
-    "en": "The current operation !{{is|is not}} in zone 1",
-    "fr": "L'opération en cours !{{est|n'est pas}} dans la zone 1",
+    "en": "The actual operation !{{is|is not}} in zone 1",
+    "fr": "L'opération actuelle !{{est|n'est pas}} dans la zone 1",
     "nl": "De huidige bedrijf !{{is|is niet}} in zone 1",
     "sv": "Aktuell drift !{{är|är inte}} i zon 1",
     "no": "Gjeldende drift !{{er|er ikke}} i sone 1",
@@ -9,8 +9,8 @@
     "es": "La operación actual !{{está|no está}} en zona 1"
   },
   "titleFormatted": {
-    "en": "The current operation !{{is|is not}} [[operation_mode_state]] in zone 1",
-    "fr": "L'opération en cours !{{est|n'est pas}} [[operation_mode_state]] dans la zone 1",
+    "en": "The actual operation !{{is|is not}} [[operation_mode_state]] in zone 1",
+    "fr": "L'opération actuelle !{{est|n'est pas}} [[operation_mode_state]] dans la zone 1",
     "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] in zone 1",
     "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] i zon 1",
     "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] i sone 1",

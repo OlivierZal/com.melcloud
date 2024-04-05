@@ -1,8 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Current operation",
-    "fr": "Opération en cours",
+    "en": "Actual operation",
+    "fr": "Opération actuelle",
     "nl": "Huidige bedrijf",
     "sv": "Aktuell drift",
     "no": "Gjeldende drift",
