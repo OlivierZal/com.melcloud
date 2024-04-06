@@ -40,30 +40,30 @@ const getDevice = <T extends keyof typeof DeviceType>(
 const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
   device: ListDevice[T]['Device'],
 ): CapabilitiesOptions[T] =>
-  ('NumberOfFanSpeeds' in device
-    ? {
-        fan_power: {
-          max: device.NumberOfFanSpeeds,
-          min: Number(!device.HasAutomaticFanSpeed),
-          step: NUMBER_1,
-        },
-      }
-    : {}) as CapabilitiesOptions[T]
+    ('NumberOfFanSpeeds' in device
+      ? {
+          fan_power: {
+            max: device.NumberOfFanSpeeds,
+            min: Number(!device.HasAutomaticFanSpeed),
+            step: NUMBER_1,
+          },
+        }
+      : {}) as CapabilitiesOptions[T]
 
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly capabilities =
+  public readonly capabilities
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as Extract<keyof Capabilities[T], string>[]
+    = this.manifest.capabilities as Extract<keyof Capabilities[T], string>[]
 
-  public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
-    {}
+  public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]>
+    = {}
 
   public readonly lastCapabilitiesToUpdate: (keyof OpCapabilities[T])[] = []
 
-  public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
-    {}
+  public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]>
+    = {}
 
   readonly #app = this.homey.app as MELCloudApp
 
@@ -73,7 +73,8 @@ export default abstract class BaseMELCloudDriver<
 
   public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping[T]
 
-  public abstract readonly reportCapabilityTagMapping: ReportCapabilityTagMapping[T]
+  public abstract readonly reportCapabilityTagMapping:
+  ReportCapabilityTagMapping[T]
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
@@ -158,7 +159,8 @@ export default abstract class BaseMELCloudDriver<
             args[getArg(capability)],
           )
         })
-    } catch (error) {
+    }
+    catch (error) {
       // Skip
     }
   }
@@ -175,7 +177,8 @@ export default abstract class BaseMELCloudDriver<
             ? value
             : (value as number | string) === args[getArg(capability)]
         })
-    } catch (error) {
+    }
+    catch (error) {
       // Skip
     }
   }
@@ -202,12 +205,12 @@ export default abstract class BaseMELCloudDriver<
   >(): void {
     Object.entries(this.reportCapabilityTagMapping).forEach(
       ([capability, tags]: [string, K[]]) => {
-        ;(this.producedTagMapping[
+        (this.producedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag) => !tag.endsWith('Consumed'))
+        ] as K[]) = tags.filter(tag => !tag.endsWith('Consumed'))
         ;(this.consumedTagMapping[
           capability as keyof ReportCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag) => tag.endsWith('Consumed'))
+        ] as K[]) = tags.filter(tag => tag.endsWith('Consumed'))
       },
     )
   }

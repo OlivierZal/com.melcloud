@@ -34,39 +34,41 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Atw'], ConvertFromDevice<'Atw'>>
   > = {
-    'alarm_generic.defrost': ((value: number) =>
-      Boolean(value)) as ConvertFromDevice<'Atw'>,
-    legionella: ((value: string) =>
-      DateTime.fromISO(value, {
-        locale: this.homey.i18n.getLanguage(),
-      }).toLocaleString({
-        day: 'numeric',
-        month: 'short',
-        weekday: 'short',
-      })) as ConvertFromDevice<'Atw'>,
-    measure_power: convertToDeviceMeasurePower,
-    'measure_power.produced': convertToDeviceMeasurePower,
-    operation_mode_state: ((value: OperationModeState) =>
-      OperationModeState[value]) as ConvertFromDevice<'Atw'>,
-    operation_mode_zone: convertToDeviceOperationZone,
-    'operation_mode_zone.zone2': convertToDeviceOperationZone,
-    operation_mode_zone_with_cool: convertToDeviceOperationZone,
-    'operation_mode_zone_with_cool.zone2': convertToDeviceOperationZone,
-    'target_temperature.flow_cool': this.#convertToDeviceTargetTemperatureFlow(
-      'target_temperature.flow_cool',
-    ),
-    'target_temperature.flow_cool_zone2':
-      this.#convertToDeviceTargetTemperatureFlow(
-        'target_temperature.flow_cool_zone2',
-      ),
-    'target_temperature.flow_heat': this.#convertToDeviceTargetTemperatureFlow(
-      'target_temperature.flow_heat',
-    ),
-    'target_temperature.flow_heat_zone2':
-      this.#convertToDeviceTargetTemperatureFlow(
-        'target_temperature.flow_heat_zone2',
-      ),
-  }
+      'alarm_generic.defrost': ((value: number) =>
+        Boolean(value)) as ConvertFromDevice<'Atw'>,
+      'legionella': ((value: string) =>
+        DateTime.fromISO(value, {
+          locale: this.homey.i18n.getLanguage(),
+        }).toLocaleString({
+          day: 'numeric',
+          month: 'short',
+          weekday: 'short',
+        })) as ConvertFromDevice<'Atw'>,
+      'measure_power': convertToDeviceMeasurePower,
+      'measure_power.produced': convertToDeviceMeasurePower,
+      'operation_mode_state': ((value: OperationModeState) =>
+        OperationModeState[value]) as ConvertFromDevice<'Atw'>,
+      'operation_mode_zone': convertToDeviceOperationZone,
+      'operation_mode_zone.zone2': convertToDeviceOperationZone,
+      'operation_mode_zone_with_cool': convertToDeviceOperationZone,
+      'operation_mode_zone_with_cool.zone2': convertToDeviceOperationZone,
+      'target_temperature.flow_cool':
+        this.#convertToDeviceTargetTemperatureFlow(
+          'target_temperature.flow_cool',
+        ),
+      'target_temperature.flow_cool_zone2':
+        this.#convertToDeviceTargetTemperatureFlow(
+          'target_temperature.flow_cool_zone2',
+        ),
+      'target_temperature.flow_heat':
+        this.#convertToDeviceTargetTemperatureFlow(
+          'target_temperature.flow_heat',
+        ),
+      'target_temperature.flow_heat_zone2':
+        this.#convertToDeviceTargetTemperatureFlow(
+          'target_temperature.flow_heat_zone2',
+        ),
+    }
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { days: 1 },
@@ -78,16 +80,17 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilities['Atw'], ConvertToDevice<'Atw'>>
   > = {
-    operation_mode_zone: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    'operation_mode_zone.zone2': ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    operation_mode_zone_with_cool: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    'operation_mode_zone_with_cool.zone2': ((
-      value: keyof typeof OperationModeZone,
-    ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-  }
+      'operation_mode_zone': ((value: keyof typeof OperationModeZone) =>
+        OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+      'operation_mode_zone.zone2': ((value: keyof typeof OperationModeZone) =>
+        OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+      'operation_mode_zone_with_cool': (
+        (value: keyof typeof OperationModeZone) => OperationModeZone[value]
+      ) as ConvertToDevice<'Atw'>,
+      'operation_mode_zone_with_cool.zone2': ((
+        value: keyof typeof OperationModeZone,
+      ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+    }
 
   protected onCapability<K extends keyof SetCapabilities['Atw']>(
     capability: K,
@@ -117,8 +120,8 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<'Atw'> {
     return ((value: number) =>
-      value ||
-      this.getCapabilityOptions(capability).min) as ConvertFromDevice<'Atw'>
+      value
+      || this.getCapabilityOptions(capability).min) as ConvertFromDevice<'Atw'>
   }
 
   #getOtherZoneValue(
@@ -126,23 +129,24 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     zoneValue: OperationModeZone,
     canCool: boolean,
   ): OperationModeZone {
-    let otherZoneValue =
-      OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
+    let otherZoneValue
+      = OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
     if (canCool) {
       if (zoneValue > OperationModeZone.curve) {
-        otherZoneValue =
-          otherZoneValue === OperationModeZone.curve
+        otherZoneValue
+          = otherZoneValue === OperationModeZone.curve
             ? HEAT_COOL_GAP
             : otherZoneValue + HEAT_COOL_GAP
-      } else if (otherZoneValue > OperationModeZone.curve) {
+      }
+      else if (otherZoneValue > OperationModeZone.curve) {
         otherZoneValue -= HEAT_COOL_GAP
       }
     }
     if (
       [OperationModeZone.room, OperationModeZone.room_cool].includes(
         zoneValue,
-      ) &&
-      otherZoneValue === zoneValue
+      )
+      && otherZoneValue === zoneValue
     ) {
       otherZoneValue += ROOM_FLOW_GAP
     }
@@ -179,9 +183,10 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     let value = OperationModeStateHotWaterCapability.idle
     if (this.getCapabilityValue('boolean.prohibit_hot_water')) {
       value = OperationModeStateHotWaterCapability.prohibited
-    } else if (operationModeState in OperationModeStateHotWaterCapability) {
-      value =
-        OperationModeStateHotWaterCapability[
+    }
+    else if (operationModeState in OperationModeStateHotWaterCapability) {
+      value
+        = OperationModeStateHotWaterCapability[
           operationModeState as OperationModeStateHotWaterCapability
         ]
     }
@@ -205,18 +210,19 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     if (this.hasCapability(`operation_mode_state.${zone}`)) {
       let value = OperationModeStateZoneCapability.idle
       if (
-        (this.getCapabilityValue(`boolean.cooling_${zone}`) &&
-          this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`)) ||
-        (this.getCapabilityValue(`boolean.heating_${zone}`) &&
-          this.getCapabilityValue(`boolean.prohibit_heating_${zone}`))
+        (this.getCapabilityValue(`boolean.cooling_${zone}`)
+        && this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`))
+        || (this.getCapabilityValue(`boolean.heating_${zone}`)
+        && this.getCapabilityValue(`boolean.prohibit_heating_${zone}`))
       ) {
         value = OperationModeStateZoneCapability.prohibited
-      } else if (
-        operationModeState in OperationModeStateZoneCapability &&
-        !this.getCapabilityValue(`boolean.idle_${zone}`)
+      }
+      else if (
+        operationModeState in OperationModeStateZoneCapability
+        && !this.getCapabilityValue(`boolean.idle_${zone}`)
       ) {
-        value =
-          OperationModeStateZoneCapability[
+        value
+          = OperationModeStateZoneCapability[
             operationModeState as OperationModeStateZoneCapability
           ]
       }

@@ -11,11 +11,11 @@ interface APICallContextDataWithErrorMessage extends APICallContextData {
 const withErrorMessage = <T extends new (...args: any[]) => APICallContextData>(
   base: T,
   error: AxiosError,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): new (...args: any[]) => APICallContextDataWithErrorMessage =>
-  class extends base {
-    public readonly errorMessage = error.message
-  }
+    class extends base {
+      public readonly errorMessage = error.message
+    }
 
 const createAPICallErrorData = (
   error: AxiosError,

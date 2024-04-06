@@ -66,7 +66,6 @@ export default class MELCloudAPI {
 
   public constructor(
     settingManager: SettingManager,
-    // eslint-disable-next-line no-console
     logger = console.log,
     errorLogger = logger,
   ) {
@@ -101,7 +100,8 @@ export default class MELCloudAPI {
           await onSuccess?.()
         }
         return loginData !== null
-      } catch (error) {
+      }
+      catch (error) {
         if (typeof data !== 'undefined') {
           throw new Error(
             error instanceof Error ? error.message : String(error),

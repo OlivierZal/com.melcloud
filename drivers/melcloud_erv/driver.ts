@@ -30,7 +30,7 @@ export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
   }: Store['Erv']): string[] {
     return [
       ...this.capabilities.filter(
-        (capability) =>
+        capability =>
           !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
             capability,
           ),

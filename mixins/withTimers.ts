@@ -14,7 +14,7 @@ interface BaseTimerOptions {
 
 interface TimerOptions extends BaseTimerOptions {
   readonly timerType: 'setInterval' | 'setTimeout'
-  readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
+  readonly timerWords: { dateSpecifier: string, timeSpecifier: string }
 }
 
 type Timer = (
@@ -32,52 +32,51 @@ type TimerClass = new (...args: any[]) => {
 const FIRST_CHAR = 0
 const SECOND_CHAR = 1
 
-// eslint-disable-next-line max-lines-per-function
 const withTimers = <
   T extends new (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...args: any[]
   ) => SimpleClass & { readonly homey: Homey },
 >(
-  base: T,
-): T & TimerClass =>
-  class extends base {
-    public setInterval(
-      callback: () => Promise<void>,
-      interval: DurationLike,
-      options: BaseTimerOptions,
-    ): NodeJS.Timeout {
-      const { actionType, units } = options
-      return this.#setTimer(callback, interval, {
-        actionType,
-        timerType: 'setInterval',
-        timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
-        units,
-      })
-    }
+    base: T,
+  ): T & TimerClass =>
+    class extends base {
+      public setInterval(
+        callback: () => Promise<void>,
+        interval: DurationLike,
+        options: BaseTimerOptions,
+      ): NodeJS.Timeout {
+        const { actionType, units } = options
+        return this.#setTimer(callback, interval, {
+          actionType,
+          timerType: 'setInterval',
+          timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
+          units,
+        })
+      }
 
-    public setTimeout(
-      callback: () => Promise<void>,
-      interval: DurationLike,
-      options: BaseTimerOptions,
-    ): NodeJS.Timeout {
-      const { actionType, units } = options
-      return this.#setTimer(callback, interval, {
-        actionType,
-        timerType: 'setTimeout',
-        timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
-        units,
-      })
-    }
+      public setTimeout(
+        callback: () => Promise<void>,
+        interval: DurationLike,
+        options: BaseTimerOptions,
+      ): NodeJS.Timeout {
+        const { actionType, units } = options
+        return this.#setTimer(callback, interval, {
+          actionType,
+          timerType: 'setTimeout',
+          timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
+          units,
+        })
+      }
 
-    #setTimer(
-      callback: () => Promise<void>,
-      interval: DurationLike,
-      options: TimerOptions,
-    ): NodeJS.Timeout {
-      const { actionType, timerWords, timerType, units } = options
-      const duration = Duration.fromDurationLike(interval)
-      this.log(
+      #setTimer(
+        callback: () => Promise<void>,
+        interval: DurationLike,
+        options: TimerOptions,
+      ): NodeJS.Timeout {
+        const { actionType, timerWords, timerType, units } = options
+        const duration = Duration.fromDurationLike(interval)
+        this.log(
         `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType
           .slice(SECOND_CHAR)
           .toLowerCase()}`,
@@ -88,9 +87,9 @@ const withTimers = <
         DateTime.now()
           .plus(duration)
           .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
-      )
-      return this.homey[timerType](callback, duration.as('milliseconds'))
+        )
+        return this.homey[timerType](callback, duration.as('milliseconds'))
+      }
     }
-  }
 
 export default withTimers

@@ -48,7 +48,8 @@ export = class MELCloudApp extends withTimers(App) {
   public async getBuildings(): Promise<Building[]> {
     try {
       return (await this.melcloudAPI.list()).data
-    } catch (error) {
+    }
+    catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error))
     }
   }
@@ -56,12 +57,12 @@ export = class MELCloudApp extends withTimers(App) {
   public getDevices({
     buildingId,
     driverId,
-  }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
+  }: { buildingId?: number, driverId?: string } = {}): MELCloudDevice[] {
     let devices = (
       typeof driverId === 'undefined'
         ? Object.values(this.homey.drivers.getDrivers())
         : [this.homey.drivers.getDriver(driverId)]
-    ).flatMap((driver) => driver.getDevices() as MELCloudDevice[])
+    ).flatMap(driver => driver.getDevices() as MELCloudDevice[])
     if (typeof buildingId !== 'undefined') {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }
@@ -100,7 +101,7 @@ export = class MELCloudApp extends withTimers(App) {
         ({ Structure: { Devices: devices, Areas: areas, Floors: floors } }) => [
           ...devices,
           ...areas.flatMap(({ Devices: areaDevices }) => areaDevices),
-          ...floors.flatMap((floor) => [
+          ...floors.flatMap(floor => [
             ...floor.Devices,
             ...floor.Areas.flatMap(({ Devices: areaDevices }) => areaDevices),
           ]),
@@ -121,14 +122,15 @@ export = class MELCloudApp extends withTimers(App) {
         }),
       )
       await this.#syncFromDevices()
-    } catch (error) {
+    }
+    catch (error) {
       // Error handling is delegated to the interceptor
     }
   }
 
   async #syncFromDevices(): Promise<void> {
     await Promise.all(
-      this.getDevices().map(async (device) => device.syncFromDevice()),
+      this.getDevices().map(async device => device.syncFromDevice()),
     )
   }
 }

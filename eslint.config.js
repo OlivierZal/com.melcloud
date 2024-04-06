@@ -1,65 +1,32 @@
+const eslint = require('@eslint/js')
 const globals = require('globals')
 const importPlugin = require('eslint-plugin-import')
-const js = require('@eslint/js')
-const parser = require('@typescript-eslint/parser')
-const prettier = require('eslint-config-prettier')
 const stylistic = require('@stylistic/eslint-plugin')
-const tsPlugin = require('@typescript-eslint/eslint-plugin')
+const tseslint = require('typescript-eslint')
 
-const [jsOverrides] = tsPlugin.configs['eslint-recommended'].overrides
-
-module.exports = [
+module.exports = tseslint.config(
   { ignores: ['.homeybuild/'] },
   {
-    languageOptions: {
-      ecmaVersion: 'latest',
-      parser,
-      parserOptions: { project: './tsconfig.json' },
-      sourceType: 'module',
-    },
+    languageOptions: { parserOptions: { project: true } },
     linterOptions: { reportUnusedDisableDirectives: true },
-    plugins: {
-      '@stylistic': stylistic,
-      '@typescript-eslint': tsPlugin,
-      import: importPlugin,
-    },
+    plugins: { import: importPlugin },
+  },
+  eslint.configs.recommended,
+  ...tseslint.configs.strictTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
+  stylistic.configs['recommended-flat'],
+  {
     rules: {
-      ...js.configs.all.rules,
-      ...importPlugin.configs.recommended.rules,
-      '@stylistic/lines-between-class-members': 'error',
-      camelcase: [
-        'error',
-        {
-          allow: [
-            '^fan_power$',
-            '^fan_power_state$',
-            '^measure_co2$',
-            '^measure_pm25$',
-            '^measure_power$',
-            '^measure_temperature$',
-            '^meter_power$',
-            '^operation_mode$',
-            '^operation_mode_state$',
-            '^operation_mode_zone$',
-            '^operation_mode_zone_with_cool$',
-            '^target_temperature$',
-            '^ventilation_mode$',
-          ],
-        },
-      ],
-      'max-lines': 'off',
-      'no-ternary': 'off',
+      'func-style': 'error',
+      'max-len': ['error', 80],
       'no-underscore-dangle': ['error', { allow: ['__'] }],
-      'one-var': 'off',
+      'sort-imports': 'error',
+      'sort-keys': 'error',
+      'sort-vars': 'error',
     },
   },
-  { files: ['**/*.js'], languageOptions: { globals: globals.node } },
   {
-    files: ['**/*.ts'],
     rules: {
-      ...jsOverrides.rules,
-      ...tsPlugin.configs.all.rules,
-      ...importPlugin.configs.typescript.rules,
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -181,13 +148,21 @@ module.exports = [
           },
         },
       ],
-      '@typescript-eslint/naming-convention': 'off',
-      '@typescript-eslint/no-magic-numbers': ['error', { ignoreEnums: true }],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { varsIgnorePattern: 'onHomeyReady' },
       ],
-      '@typescript-eslint/prefer-readonly-parameter-types': 'off',
+    },
+  },
+  {
+    rules: {
+      '@stylistic/lines-between-class-members': ['error', 'always'],
+    },
+  },
+  {
+    rules: {
+      ...importPlugin.configs.recommended.rules,
+      ...importPlugin.configs.typescript.rules,
       'import/no-duplicates': ['error', { 'prefer-inline': true }],
     },
     settings: {
@@ -199,5 +174,12 @@ module.exports = [
       },
     },
   },
-  prettier,
-]
+  {
+    files: ['**/*.js'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      ...tseslint.configs.disableTypeChecked.rules,
+      '@typescript-eslint/no-var-requires': 'off',
+    },
+  },
+)

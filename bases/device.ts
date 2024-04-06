@@ -83,8 +83,8 @@ abstract class BaseMELCloudDevice<
 
   readonly #id = this.#data.id
 
-  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
-    {}
+  readonly #reportInterval: { false?: NodeJS.Timeout, true?: NodeJS.Timeout }
+    = {}
 
   readonly #reportTimeout: {
     false: NodeJS.Timeout | null
@@ -172,38 +172,39 @@ abstract class BaseMELCloudDevice<
     newSettings: Settings
   }): Promise<void> {
     const changedCapabilities = changedKeys.filter(
-      (setting) =>
-        this.#isCapability(setting) &&
-        typeof newSettings[setting] === 'boolean',
+      setting =>
+        this.#isCapability(setting)
+        && typeof newSettings[setting] === 'boolean',
     )
     if (changedCapabilities.length) {
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
     if (
-      changedKeys.includes('always_on') &&
-      newSettings.always_on === true &&
-      this.getCapabilityValue('onoff')
+      changedKeys.includes('always_on')
+      && newSettings.always_on === true
+      && this.getCapabilityValue('onoff')
     ) {
       await this.triggerCapabilityListener('onoff', true)
-    } else if (
+    }
+    else if (
       changedKeys.some(
-        (setting) =>
-          setting !== 'always_on' &&
-          !(setting in this.driver.reportCapabilityTagMapping),
+        setting =>
+          setting !== 'always_on'
+          && !(setting in this.driver.reportCapabilityTagMapping),
       )
     ) {
       await this.syncFromDevice()
     }
 
-    const changedEnergyKeys = changedCapabilities.filter((setting) =>
+    const changedEnergyKeys = changedCapabilities.filter(setting =>
       this.#isReportCapability(setting),
     )
     if (changedEnergyKeys.length) {
       await Promise.all(
         [false, true].map(async (total) => {
           if (
-            changedEnergyKeys.some((setting) =>
+            changedEnergyKeys.some(setting =>
               filterEnergyKeys(setting, total),
             )
           ) {
@@ -286,8 +287,9 @@ abstract class BaseMELCloudDevice<
   protected getRequestedOrCurrentValue<
     K extends Extract<keyof SetCapabilities[T], string>,
   >(capability: K): NonNullable<SetCapabilities[T][K]> {
-    return (this.diff.get(capability)?.value ??
-      this.getCapabilityValue(capability)) as NonNullable<SetCapabilities[T][K]>
+    return (
+      this.diff.get(capability)?.value ?? this.getCapabilityValue(capability)
+    ) as NonNullable<SetCapabilities[T][K]>
   }
 
   protected onCapability<K extends Extract<keyof SetCapabilities[T], string>>(
@@ -324,8 +326,8 @@ abstract class BaseMELCloudDevice<
               const value = this.#convertFromDevice(
                 capability,
                 data[tag as keyof D] as
-                  | NonEffectiveFlagsValueOf<DeviceData[T]>
-                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+                | NonEffectiveFlagsValueOf<DeviceData[T]>
+                | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
               )
               await this.setCapabilityValue(
                 capability,
@@ -346,7 +348,8 @@ abstract class BaseMELCloudDevice<
       const diff = this.diff.get(capability)
       if (value === diff?.initialValue) {
         this.diff.delete(capability)
-      } else if (diff) {
+      }
+      else if (diff) {
         diff.value = value
       }
       return
@@ -371,7 +374,7 @@ abstract class BaseMELCloudDevice<
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           acc.EffectiveFlags = Number(
-            // eslint-disable-next-line no-bitwise
+
             BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
           this.diff.delete(capability as K)
@@ -392,12 +395,12 @@ abstract class BaseMELCloudDevice<
       producedTags.reduce<number>(
         (acc, tag) => acc + (data[tag] as number),
         NUMBER_0,
-      ) /
-      (consumedTags.length
+      )
+      / (consumedTags.length
         ? consumedTags.reduce<number>(
-            (acc, tag) => acc + (data[tag] as number),
-            NUMBER_0,
-          )
+          (acc, tag) => acc + (data[tag] as number),
+          NUMBER_0,
+        )
         : NUMBER_1)
     )
   }
@@ -407,8 +410,8 @@ abstract class BaseMELCloudDevice<
     tags: K[],
   ): number {
     return (
-      tags.reduce<number>((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
-      this.#linkedDeviceCount
+      tags.reduce<number>((acc, tag) => acc + (data[tag] as number), NUMBER_0)
+      / this.#linkedDeviceCount
     )
   }
 
@@ -427,10 +430,10 @@ abstract class BaseMELCloudDevice<
 
   #cleanMapping<
     M extends
-      | GetCapabilityTagMapping[T]
-      | ListCapabilityTagMapping[T]
-      | ReportCapabilityTagMapping[T]
-      | SetCapabilityTagMapping[T],
+    | GetCapabilityTagMapping[T]
+    | ListCapabilityTagMapping[T]
+    | ReportCapabilityTagMapping[T]
+    | SetCapabilityTagMapping[T],
   >(capabilityTagMapping: M): Partial<M> {
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
@@ -440,7 +443,7 @@ abstract class BaseMELCloudDevice<
   }
 
   #clearEnergyReportPlan(total = false): void {
-    const totalString: `${boolean}` = `${total}`
+    const totalString = String(total) as `${boolean}`
     this.homey.clearTimeout(this.#reportTimeout[totalString])
     this.homey.clearInterval(this.#reportInterval[totalString])
     this.#reportTimeout[totalString] = null
@@ -453,8 +456,8 @@ abstract class BaseMELCloudDevice<
       | NonEffectiveFlagsValueOf<DeviceData[T]>
       | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
   ): OpCapabilities[T][K] {
-    return (this.fromDevice[capability]?.(value) ??
-      value) as OpCapabilities[T][K]
+    return (this.fromDevice[capability]?.(value)
+      ?? value) as OpCapabilities[T][K]
   }
 
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
@@ -466,8 +469,8 @@ abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     const value = this.getRequestedOrCurrentValue(capability)
-    return (newToDevice[capability]?.(value) ??
-      value) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
+    return (newToDevice[capability]?.(value)
+      ?? value) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 
   async #deviceData(): Promise<DeviceData[T] | null> {
@@ -481,7 +484,8 @@ abstract class BaseMELCloudDevice<
             ...updateData,
           })
         ).data as DeviceData[T]
-      } catch (error) {
+      }
+      catch (error) {
         return null
       }
     }
@@ -496,7 +500,7 @@ abstract class BaseMELCloudDevice<
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
             ([, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>]) =>
-              // eslint-disable-next-line no-bitwise
+
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
@@ -520,10 +524,10 @@ abstract class BaseMELCloudDevice<
         this.getStore() as Store[T],
       ),
       ...Object.keys(settings).filter(
-        (setting) =>
-          this.#isCapability(setting) &&
-          typeof settings[setting] === 'boolean' &&
-          settings[setting],
+        setting =>
+          this.#isCapability(setting)
+          && typeof settings[setting] === 'boolean'
+          && settings[setting],
       ),
     ]
     await capabilities.reduce<Promise<void>>(async (acc, capability) => {
@@ -531,7 +535,7 @@ abstract class BaseMELCloudDevice<
       return this.addCapability(capability)
     }, Promise.resolve())
     await this.getCapabilities()
-      .filter((capability) => !capabilities.includes(capability))
+      .filter(capability => !capabilities.includes(capability))
       .reduce<Promise<void>>(async (acc, capability) => {
         await acc
         await this.removeCapability(capability)
@@ -554,7 +558,7 @@ abstract class BaseMELCloudDevice<
     }, Promise.resolve())
     if (
       changedCapabilities.some(
-        (capability) => !this.#isReportCapability(capability),
+        capability => !this.#isReportCapability(capability),
       )
     ) {
       this.#setListCapabilityTagMappings()
@@ -570,8 +574,8 @@ abstract class BaseMELCloudDevice<
         Object.entries(
           this.driver.getStore(
             data as ListDevice['Ata']['Device'] &
-              ListDevice['Atw']['Device'] &
-              ListDevice['Erv']['Device'],
+            ListDevice['Atw']['Device'] &
+            ListDevice['Erv']['Device'],
           ),
         ).map(async ([key, value]) => {
           await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
@@ -592,7 +596,7 @@ abstract class BaseMELCloudDevice<
     reportPlanParameters: ReportPlanParameters,
     total = false,
   ): void {
-    const totalString: `${boolean}` = `${total}`
+    const totalString = String(total) as `${boolean}`
     if (!this.#reportTimeout[totalString]) {
       const actionType = `${total ? 'total' : 'regular'} energy report`
       const { interval, duration, values } = total
@@ -632,14 +636,17 @@ abstract class BaseMELCloudDevice<
           UseCurrency: false,
         })
       ).data as ReportData[T]
-    } catch (error) {
+    }
+    catch (error) {
       return null
     }
   }
 
   async #runEnergyReport(total = false): Promise<void> {
     if (this.reportPlanParameters) {
-      if (!this.#reportCapabilityTagEntries[`${total}`].length) {
+      if (
+        !this.#reportCapabilityTagEntries[String(total) as `${boolean}`].length
+      ) {
         this.#clearEnergyReportPlan(total)
         return
       }
@@ -658,8 +665,8 @@ abstract class BaseMELCloudDevice<
 
   #setAlwaysOnWarning(): void {
     if (
-      this.getSetting('always_on') &&
-      this.diff.get('onoff')?.value === false
+      this.getSetting('always_on')
+      && this.diff.get('onoff')?.value === false
     ) {
       this.setWarning(this.homey.__('warnings.always_on')).catch(
         (error: unknown) => {
@@ -703,11 +710,11 @@ abstract class BaseMELCloudDevice<
   ): Promise<void> {
     if (data) {
       if ('UsageDisclaimerPercentages' in data) {
-        this.#linkedDeviceCount =
-          data.UsageDisclaimerPercentages.split(',').length
+        this.#linkedDeviceCount
+          = data.UsageDisclaimerPercentages.split(',').length
       }
       await Promise.all(
-        this.#reportCapabilityTagEntries[`${total}`].map(
+        this.#reportCapabilityTagEntries[String(total) as `${boolean}`].map(
           async <
             K extends Extract<keyof ReportCapabilities[T], string>,
             L extends keyof ReportData[T],
@@ -748,8 +755,10 @@ abstract class BaseMELCloudDevice<
     K extends Extract<keyof ReportCapabilities[T], string>,
     L extends keyof ReportData[T],
   >(totals: boolean[] | boolean = [false, true]): void {
-    ;(Array.isArray(totals) ? totals : [totals]).forEach((total) => {
-      this.#reportCapabilityTagEntries[`${total}`] = Object.entries(
+    (Array.isArray(totals) ? totals : [totals]).forEach((total) => {
+      this.#reportCapabilityTagEntries[
+        String(total) as `${boolean}`
+      ] = Object.entries(
         this.#cleanMapping(
           this.driver
             .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],

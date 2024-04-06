@@ -78,7 +78,7 @@ const getDriverSettings = (
   driver: ManifestDriver,
   language: string,
 ): DriverSetting[] =>
-  (driver.settings ?? []).flatMap((setting) =>
+  (driver.settings ?? []).flatMap(setting =>
     (setting.children ?? []).map(
       ({ id, max, min, label, type, units, values }) => ({
         driverId: driver.id,
@@ -90,7 +90,7 @@ const getDriverSettings = (
         title: label[language],
         type,
         units,
-        values: values?.map((value) => ({
+        values: values?.map(value => ({
           id: value.id,
           label: value.label[language],
         })),
@@ -108,7 +108,7 @@ const getDriverLoginSetting = (
   )
   return driverLoginSetting
     ? Object.values(
-        Object.entries(driverLoginSetting.options).reduce<
+      Object.entries(driverLoginSetting.options).reduce<
           Record<string, DriverSetting>
         >((acc, [option, label]) => {
           const isPassword = option.startsWith('password')
@@ -122,11 +122,11 @@ const getDriverLoginSetting = (
               type: isPassword ? 'password' : 'text',
             }
           }
-          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-            label[language]
+          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title']
+            = label[language]
           return acc
         }, {}),
-      )
+    )
     : []
 }
 
@@ -138,8 +138,8 @@ const fromUTC = (utcDate: string | null, language?: string): string => {
     locale: language,
     zone: 'utc',
   }).toLocal()
-  const localDate =
-    typeof language === 'undefined'
+  const localDate
+    = typeof language === 'undefined'
       ? localDateTime.toISO({ includeOffset: false })
       : localDateTime.toLocaleString(DateTime.DATETIME_MED)
   return localDate ?? ''
@@ -150,13 +150,13 @@ const toUTC = (date: string, enabled: boolean): DateTime | null =>
 
 const handleErrorLogQuery = (
   query: ErrorLogQuery,
-): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const from =
-    typeof query.from !== 'undefined' && query.from
+): { fromDate: DateTime, period: number, toDate: DateTime } => {
+  const from
+    = typeof query.from !== 'undefined' && query.from
       ? DateTime.fromISO(query.from)
       : null
-  const to =
-    typeof query.to !== 'undefined' && query.to
+  const to
+    = typeof query.to !== 'undefined' && query.to
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
@@ -180,7 +180,7 @@ export = {
     const app = homey.app as MELCloudApp
     return (await app.getBuildings())
       .filter(({ ID: buildingId }) => app.getDevices({ buildingId }).length)
-      .map((building) => ({
+      .map(building => ({
         ...building,
         HMEndDate: fromUTC(building.HMEndDate),
         HMStartDate: fromUTC(building.HMStartDate),
@@ -215,7 +215,7 @@ export = {
     return (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       ((homey.app as MELCloudApp).manifest.drivers as ManifestDriver[]).flatMap(
-        (driver) => [
+        driver => [
           ...getDriverSettings(driver, language),
           ...getDriverLoginSetting(driver, language),
         ],
@@ -240,19 +240,19 @@ export = {
             ErrorMessage: errorMessage,
             StartDate: startDate,
           }) => {
-            const date =
-              DateTime.fromISO(startDate).year > YEAR_1
+            const date
+              = DateTime.fromISO(startDate).year > YEAR_1
                 ? fromUTC(startDate, homey.i18n.getLanguage())
                 : ''
-            const device =
-              getDevice(app, deviceId)?.getName() ??
-              app.devices[deviceId]?.DeviceName ??
-              ''
+            const device
+              = getDevice(app, deviceId)?.getName()
+              ?? app.devices[deviceId]?.DeviceName
+              ?? ''
             const error = errorMessage?.trim() ?? ''
             return { date, device, error }
           },
         )
-        .filter((error) => error.date && error.error)
+        .filter(error => error.date && error.error)
         .reverse(),
       fromDateHuman: fromDate
         .setLocale(homey.i18n.getLanguage())
@@ -318,11 +318,11 @@ export = {
         .getDevices({ driverId: query?.driverId })
         .map(async (device) => {
           const changedKeys = Object.keys(body).filter(
-            (changedKey) => body[changedKey] !== device.getSetting(changedKey),
+            changedKey => body[changedKey] !== device.getSetting(changedKey),
           )
           if (changedKeys.length) {
             const deviceSettings = Object.fromEntries(
-              changedKeys.map((key) => [key, body[key]]),
+              changedKeys.map(key => [key, body[key]]),
             )
             await device.setSettings(deviceSettings)
             await device.onSettings({

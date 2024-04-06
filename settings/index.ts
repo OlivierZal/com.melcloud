@@ -251,7 +251,7 @@ const getDriverSettingsAll = async (homey: Homey): Promise<void> =>
   })
 
 const getDriverSettings = (): void => {
-  ;({ driverSettingsCommon, driverSettingsDrivers } = driverSettingsAll.reduce<{
+  ({ driverSettingsCommon, driverSettingsDrivers } = driverSettingsAll.reduce<{
     driverSettingsCommon: DriverSetting[]
     driverSettingsDrivers: Record<string, DriverSetting[]>
   }>(
@@ -261,11 +261,12 @@ const getDriverSettings = (): void => {
       }
       if (setting.groupId === 'options') {
         if (
-          !acc.driverSettingsCommon.some((option) => option.id === setting.id)
+          !acc.driverSettingsCommon.some(option => option.id === setting.id)
         ) {
           acc.driverSettingsCommon.push(setting)
         }
-      } else {
+      }
+      else {
         const { driverId } = setting
         if (!(driverId in acc.driverSettingsDrivers)) {
           acc.driverSettingsDrivers[driverId] = []
@@ -333,7 +334,8 @@ const createLabelElement = (
   labelElement.htmlFor = element.id
   if (isCheckbox) {
     addTextToCheckbox(labelElement, element as HTMLInputElement, text)
-  } else {
+  }
+  else {
     labelElement.innerText = text
   }
   return labelElement
@@ -365,7 +367,7 @@ const updateCredentialElement = (
 }
 
 const updateCredentialElements = (): void => {
-  ;[usernameElement, passwordElement] = (
+  [usernameElement, passwordElement] = (
     ['username', 'password'] as (keyof LoginCredentials)[]
   ).map(updateCredentialElement)
 }
@@ -376,9 +378,9 @@ const int = (
   value = Number.parseInt(element.value, 10),
 ): number => {
   if (
-    Number.isNaN(value) ||
-    value < Number(element.min) ||
-    value > Number(element.max)
+    Number.isNaN(value)
+    || value < Number(element.min)
+    || value > Number(element.max)
   ) {
     element.value = ''
     const labelElement: HTMLLabelElement | null = document.querySelector(
@@ -420,8 +422,8 @@ const shouldUpdate = (
   if (settingValue === null) {
     return false
   }
-  const deviceSetting =
-    typeof driverId === 'undefined'
+  const deviceSetting
+    = typeof driverId === 'undefined'
       ? flatDeviceSettings[settingId]
       : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
   if (typeof deviceSetting === 'undefined') {
@@ -491,9 +493,9 @@ const generateErrorLogTableData = (
 const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
     case count < NUMBER_2:
-      return homey.__(`settings.error_log.error_count.${count}`)
-    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % DIVISOR_10) &&
-      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % DIVISOR_100):
+      return homey.__(`settings.error_log.error_count.${String(count)}`)
+    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % DIVISOR_10)
+      && ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % DIVISOR_100):
       return homey.__('settings.error_log.error_count.234')
     default:
       return homey.__('settings.error_log.error_count.plural')
@@ -501,14 +503,15 @@ const getErrorCountText = (homey: Homey, count: number): string => {
 }
 
 const updateErrorLogElements = (homey: Homey, data: ErrorLog): void => {
-  ;({ fromDateHuman } = data)
+  ({ fromDateHuman } = data)
   periodLabelElement.innerText = homey.__('settings.error_log.period', {
     fromDateHuman,
   })
   sinceElement.value = data.nextFromDate
   to = data.nextToDate
   errorCount += data.errors.length
-  errorCountLabelElement.innerText = `${errorCount} ${getErrorCountText(homey, errorCount)}`
+  errorCountLabelElement.innerText
+    = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
 }
 
 const generateErrorLog = (homey: Homey): void => {
@@ -591,7 +594,8 @@ const getBuildingHolidayModeSettings = async (
         if (error) {
           if (raise) {
             reject(new Error(error.message))
-          } else {
+          }
+          else {
             // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             resolve()
@@ -619,7 +623,8 @@ const getBuildingFrostProtectionSettings = async (
         if (error) {
           if (raise) {
             reject(new Error(error.message))
-          } else {
+          }
+          else {
             // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             resolve()
@@ -783,7 +788,7 @@ const updateCheckboxChildrenElement = (
   const [settingId] = element.id.split('--')
   const values = deviceSettings[driverId][settingId] as boolean[]
   if (new Set(values).size === NUMBER_1) {
-    ;[element.checked] = values
+    [element.checked] = values
     return
   }
   element.indeterminate = true
@@ -815,7 +820,8 @@ const addRefreshSettingsEventListener = (
     disableButtons(settings)
     if (typeof driverId === 'undefined') {
       addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
-    } else {
+    }
+    else {
       addRefreshSettingsDriverEventListener(
         elements as HTMLInputElement[],
         driverId,
@@ -844,12 +850,12 @@ const createSelectElement = (
   ;[
     { id: '' },
     ...(setting.type === 'checkbox'
-      ? ['false', 'true'].map((id) => ({
+      ? ['false', 'true'].map(id => ({
           id,
           label: homey.__(`settings.boolean.${id}`),
         }))
       : setting.values ?? []),
-  ].forEach(({ id, label }: { label?: string; id: string }) => {
+  ].forEach(({ id, label }: { label?: string, id: string }) => {
     const optionElement = document.createElement('option')
     optionElement.value = id
     if (typeof label !== 'undefined') {
@@ -1012,9 +1018,10 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
-    } else if (
-      !holidayModeEndDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
+    }
+    else if (
+      !holidayModeEndDateElement.value
+      && holidayModeEnabledElement.value === 'true'
     ) {
       holidayModeEnabledElement.value = 'false'
     }
@@ -1025,9 +1032,10 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
-    } else if (
-      !holidayModeStartDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
+    }
+    else if (
+      !holidayModeStartDateElement.value
+      && holidayModeEnabledElement.value === 'true'
     ) {
       holidayModeEnabledElement.value = 'false'
     }
@@ -1068,7 +1076,8 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
           }
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(homey.__('settings.success'))
-        } catch (err) {
+        }
+        catch (err) {
           refreshBuildingHolidayModeSettings(data)
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
@@ -1121,7 +1130,8 @@ const updateFrostProtectionData = (
         }
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
-      } catch (err) {
+      }
+      catch (err) {
         refreshBuildingFrostProtectionSettings(data)
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(err.message)
@@ -1136,7 +1146,7 @@ const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
     int(homey, frostProtectionMaxTemperatureElement),
   ]
   if (min > max) {
-    ;[min, max] = [max, min]
+    [min, max] = [max, min]
   }
   if (max - min < FP_MIN_MAX_GAP) {
     max = min + FP_MIN_MAX_GAP
@@ -1163,7 +1173,8 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
         },
         data,
       )
-    } catch (error) {
+    }
+    catch (error) {
       refreshBuildingFrostProtectionSettings(data)
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
@@ -1189,9 +1200,9 @@ const addEventListeners = (homey: Homey): void => {
 
   sinceElement.addEventListener('change', () => {
     if (
-      to &&
-      sinceElement.value &&
-      Date.parse(sinceElement.value) > Date.parse(to)
+      to
+      && sinceElement.value
+      && Date.parse(sinceElement.value) > Date.parse(to)
     ) {
       sinceElement.value = to
       // @ts-expect-error: `homey` is partially typed
@@ -1227,7 +1238,8 @@ const load = async (homey: Homey): Promise<void> => {
     try {
       await generate(homey)
       return
-    } catch (error) {
+    }
+    catch (error) {
       // Skip
     }
   }

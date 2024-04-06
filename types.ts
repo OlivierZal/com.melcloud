@@ -170,7 +170,7 @@ export interface DriverSetting {
   readonly max?: number
   readonly min?: number
   readonly units?: string
-  readonly values?: readonly { readonly id: string; readonly label: string }[]
+  readonly values?: readonly { readonly id: string, readonly label: string }[]
   title: string
   readonly driverId: string
   readonly id: string
@@ -209,25 +209,25 @@ type GetCapabilitiesAta = BaseGetCapabilities & {
 }
 interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
-  readonly fan_power: FanSpeed
-  readonly fan_power_state: number
-  readonly horizontal: keyof typeof Horizontal
+  readonly 'fan_power': FanSpeed
+  readonly 'fan_power_state': number
+  readonly 'horizontal': keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
 
-  readonly vertical: keyof typeof Vertical
+  readonly 'vertical': keyof typeof Vertical
 }
 type OpCapabilitiesAta = GetCapabilitiesAta &
   ListCapabilitiesAta &
   SetCapabilitiesAta
 interface ReportCapabilitiesAta {
-  readonly measure_power: number
+  readonly 'measure_power': number
   readonly 'measure_power.auto': number
   readonly 'measure_power.cooling': number
   readonly 'measure_power.dry': number
   readonly 'measure_power.fan': number
   readonly 'measure_power.heating': number
   readonly 'measure_power.other': number
-  readonly meter_power: number
+  readonly 'meter_power': number
   readonly 'meter_power.auto': number
   readonly 'meter_power.cooling': number
   readonly 'meter_power.daily': number
@@ -244,9 +244,9 @@ interface ReportCapabilitiesAta {
 }
 
 export interface OperationModeZoneCapabilities {
-  readonly operation_mode_zone: keyof typeof OperationModeZone
+  readonly 'operation_mode_zone': keyof typeof OperationModeZone
   readonly 'operation_mode_zone.zone2': keyof typeof OperationModeZone
-  readonly operation_mode_zone_with_cool: keyof typeof OperationModeZone
+  readonly 'operation_mode_zone_with_cool': keyof typeof OperationModeZone
   readonly 'operation_mode_zone_with_cool.zone2': keyof typeof OperationModeZone
 }
 export interface TargetTemperatureFlowCapabilities {
@@ -257,10 +257,10 @@ export interface TargetTemperatureFlowCapabilities {
 }
 interface SetCapabilitiesAtw
   extends BaseSetCapabilities,
-    OperationModeZoneCapabilities,
-    TargetTemperatureFlowCapabilities {
+  OperationModeZoneCapabilities,
+  TargetTemperatureFlowCapabilities {
   readonly 'onoff.forced_hot_water': boolean
-  readonly target_temperature: number
+  readonly 'target_temperature': number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
 }
@@ -275,7 +275,7 @@ interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operation_mode_state: keyof typeof OperationModeState
+  readonly 'operation_mode_state': keyof typeof OperationModeState
 }
 interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
@@ -288,8 +288,8 @@ interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'boolean.cooling_zone2': boolean
   readonly 'boolean.heating_zone1': boolean
   readonly 'boolean.heating_zone2': boolean
-  readonly legionella: string
-  readonly measure_power: number
+  readonly 'legionella': string
+  readonly 'measure_power': number
   readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_power.produced': number
   readonly 'measure_temperature.condensing': number
@@ -307,7 +307,7 @@ type OpCapabilitiesAtw = GetCapabilitiesAtw &
   ListCapabilitiesAtw &
   SetCapabilitiesAtw
 interface ReportCapabilitiesAtw {
-  readonly meter_power: number
+  readonly 'meter_power': number
   readonly 'meter_power.cooling': number
   readonly 'meter_power.cop': number
   readonly 'meter_power.cop_cooling': number
@@ -338,8 +338,8 @@ interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly ventilation_mode: keyof typeof VentilationMode
 }
 interface GetCapabilitiesErv extends BaseGetCapabilities {
-  readonly measure_co2: number
-  readonly measure_temperature: number
+  readonly 'measure_co2': number
+  readonly 'measure_temperature': number
   readonly 'measure_temperature.outdoor': number
 }
 interface ListCapabilitiesErv extends BaseListCapabilities {
@@ -366,13 +366,14 @@ export interface ReportCapabilities {
 }
 export interface Capabilities {
   Ata: OpCapabilities['Ata'] &
-    ReportCapabilities['Ata'] & { readonly thermostat_mode: ThermostatMode }
+  ReportCapabilities['Ata'] & { readonly thermostat_mode: ThermostatMode }
   Atw: OpCapabilities['Atw'] &
-    ReportCapabilities['Atw'] & {
-      readonly 'operation_mode_state.hot_water': OperationModeStateHotWaterCapability
-      readonly 'operation_mode_state.zone1': OperationModeStateZoneCapability
-      readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
-    }
+  ReportCapabilities['Atw'] & {
+    readonly 'operation_mode_state.hot_water':
+    OperationModeStateHotWaterCapability
+    readonly 'operation_mode_state.zone1': OperationModeStateZoneCapability
+    readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
+  }
   Erv: OpCapabilities['Erv'] & ReportCapabilities['Erv']
 }
 
@@ -392,32 +393,32 @@ export const getCapabilityTagMappingAta: Record<
   NonEffectiveFlagsKeyOf<DeviceData['Ata']>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
-  measure_temperature: 'RoomTemperature',
+  'measure_temperature': 'RoomTemperature',
 } as const
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
   NonEffectiveFlagsKeyOf<ListDevice['Ata']['Device']>
 > = {
   'alarm_generic.silent': 'FanSpeed',
-  fan_power: 'FanSpeed',
-  fan_power_state: 'ActualFanSpeed',
-  horizontal: 'VaneHorizontalDirection',
+  'fan_power': 'FanSpeed',
+  'fan_power_state': 'ActualFanSpeed',
+  'horizontal': 'VaneHorizontalDirection',
   'measure_power.wifi': 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',
-  vertical: 'VaneVerticalDirection',
+  'vertical': 'VaneVerticalDirection',
 } as const
 export const reportCapabilityTagMappingAta: Record<
   keyof ReportCapabilitiesAta,
   readonly (keyof ReportData['Ata'])[]
 > = {
-  measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
+  'measure_power': ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],
   'measure_power.cooling': ['Cooling'],
   'measure_power.dry': ['Dry'],
   'measure_power.fan': ['Fan'],
   'measure_power.heating': ['Heating'],
   'measure_power.other': ['Other'],
-  meter_power: [
+  'meter_power': [
     'TotalAutoConsumed',
     'TotalCoolingConsumed',
     'TotalDryConsumed',
@@ -451,13 +452,13 @@ export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
   NonEffectiveFlagsKeyOf<SetDeviceData['Atw']>
 > = {
-  onoff: 'Power',
+  'onoff': 'Power',
   'onoff.forced_hot_water': 'ForcedHotWaterMode',
-  operation_mode_zone: 'OperationModeZone1',
+  'operation_mode_zone': 'OperationModeZone1',
   'operation_mode_zone.zone2': 'OperationModeZone2',
-  operation_mode_zone_with_cool: 'OperationModeZone1',
+  'operation_mode_zone_with_cool': 'OperationModeZone1',
   'operation_mode_zone_with_cool.zone2': 'OperationModeZone2',
-  target_temperature: 'SetTemperatureZone1',
+  'target_temperature': 'SetTemperatureZone1',
   'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
   'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
   'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
@@ -476,11 +477,11 @@ export const getCapabilityTagMappingAtw: Record<
   'boolean.prohibit_heating_zone1': 'ProhibitHeatingZone1',
   'boolean.prohibit_heating_zone2': 'ProhibitHeatingZone2',
   'boolean.prohibit_hot_water': 'ProhibitHotWater',
-  measure_temperature: 'RoomTemperatureZone1',
+  'measure_temperature': 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
-  operation_mode_state: 'OperationMode',
+  'operation_mode_state': 'OperationMode',
 } as const
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
@@ -496,8 +497,8 @@ export const listCapabilityTagMappingAtw: Record<
   'boolean.cooling_zone2': 'Zone2InCoolMode',
   'boolean.heating_zone1': 'Zone1InHeatMode',
   'boolean.heating_zone2': 'Zone2InHeatMode',
-  legionella: 'LastLegionellaActivationTime',
-  measure_power: 'CurrentEnergyConsumed',
+  'legionella': 'LastLegionellaActivationTime',
+  'measure_power': 'CurrentEnergyConsumed',
   'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
   'measure_power.produced': 'CurrentEnergyProduced',
   'measure_power.wifi': 'WifiSignalStrength',
@@ -516,7 +517,7 @@ export const reportCapabilityTagMappingAtw: Record<
   keyof ReportCapabilitiesAtw,
   readonly (keyof ReportData['Atw'])[]
 > = {
-  meter_power: [
+  'meter_power': [
     'TotalCoolingConsumed',
     'TotalHeatingConsumed',
     'TotalHotWaterConsumed',
@@ -589,15 +590,15 @@ export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
   NonEffectiveFlagsKeyOf<DeviceData['Erv']>
 > = {
-  measure_co2: 'RoomCO2Level',
-  measure_temperature: 'RoomTemperature',
+  'measure_co2': 'RoomCO2Level',
+  'measure_temperature': 'RoomTemperature',
   'measure_temperature.outdoor': 'OutdoorTemperature',
 } as const
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
   NonEffectiveFlagsKeyOf<ListDevice['Erv']['Device']>
 > = {
-  measure_pm25: 'PM25Level',
+  'measure_pm25': 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',
 } as const
 export const reportCapabilityTagMappingErv: Record<string, never> = {} as const
@@ -671,7 +672,7 @@ export interface CapabilitiesOptions {
 export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions: CapabilitiesOptions[T]
-  readonly data: { readonly buildingid: number; readonly id: number }
+  readonly data: { readonly buildingid: number, readonly id: number }
   readonly name: string
   readonly store: Store[T]
 }
