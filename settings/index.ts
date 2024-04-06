@@ -372,11 +372,8 @@ const updateCredentialElements = (): void => {
   ).map(updateCredentialElement)
 }
 
-const int = (
-  homey: Homey,
-  element: HTMLInputElement,
-  value = Number.parseInt(element.value, 10),
-): number => {
+const int = (homey: Homey, element: HTMLInputElement): number => {
+  const value = Number.parseInt(element.value)
   if (
     Number.isNaN(value)
     || value < Number(element.min)

@@ -160,10 +160,10 @@ const handleErrorLogQuery = (
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
-  let period = Number.parseInt(String(query.limit), 10)
+  let period = Number.parseInt(String(query.limit))
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
-  let offset = Number.parseInt(String(query.offset), 10)
+  let offset = Number.parseInt(String(query.offset))
   offset = from !== null || Number.isNaN(offset) ? DEFAULT_OFFSET : offset
 
   const limit = from ? DEFAULT_LIMIT : period
