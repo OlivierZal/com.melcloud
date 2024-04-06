@@ -368,7 +368,7 @@ const updateCredentialElement = (
 
 const updateCredentialElements = (): void => {
   [usernameElement, passwordElement] = (
-    ['username', 'password'] as (keyof LoginCredentials)[]
+    ['username', 'password'] satisfies (keyof LoginCredentials)[]
   ).map(updateCredentialElement)
 }
 
