@@ -34,11 +34,11 @@ export default abstract class APICallContextData {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const value: any = this[key as keyof this]
         if (typeof value !== 'undefined') {
-          return `${key}: ${String(
+          return `${key}: ${
             typeof value === 'object'
               ? JSON.stringify(value, null, SPACE)
-              : value,
-          )}`
+              : String(value)
+          }`
         }
       }
       return null
