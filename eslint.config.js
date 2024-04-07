@@ -6,27 +6,18 @@ const tseslint = require('typescript-eslint')
 
 module.exports = tseslint.config(
   { ignores: ['.homeybuild/'] },
-  {
-    languageOptions: { parserOptions: { project: true } },
-    linterOptions: { reportUnusedDisableDirectives: true },
-    plugins: { import: importPlugin },
-  },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   stylistic.configs['recommended-flat'],
   {
-    rules: {
-      'func-style': 'error',
-      'max-len': ['error', 80],
-      'no-underscore-dangle': ['error', { allow: ['__'] }],
-      'sort-imports': 'error',
-      'sort-keys': 'error',
-      'sort-vars': 'error',
-    },
+    languageOptions: { parserOptions: { project: true } },
+    linterOptions: { reportUnusedDisableDirectives: true },
+    plugins: { import: importPlugin },
   },
   {
     rules: {
+      '@stylistic/lines-between-class-members': ['error', 'always'],
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -152,11 +143,12 @@ module.exports = tseslint.config(
         'error',
         { varsIgnorePattern: 'onHomeyReady' },
       ],
-    },
-  },
-  {
-    rules: {
-      '@stylistic/lines-between-class-members': ['error', 'always'],
+      'func-style': 'error',
+      'max-len': ['error', 80],
+      'no-underscore-dangle': ['error', { allow: ['__'] }],
+      'sort-imports': 'error',
+      'sort-keys': 'error',
+      'sort-vars': 'error',
     },
   },
   {
@@ -176,7 +168,10 @@ module.exports = tseslint.config(
   },
   {
     files: ['**/*.js'],
-    languageOptions: { globals: globals.node },
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: { sourceType: 'script' },
+    },
     rules: {
       ...tseslint.configs.disableTypeChecked.rules,
       '@typescript-eslint/no-var-requires': 'off',
