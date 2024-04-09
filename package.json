@@ -19,7 +19,7 @@
     "globals": "^15.0.0",
     "homey": "^3.2.3",
     "typescript": "^5.4.4",
-    "typescript-eslint": "^7.5.0"
+    "typescript-eslint": "^7.6.0"
   },
   "dependencies": {
     "axios": "^1.6.8",
