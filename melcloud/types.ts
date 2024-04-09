@@ -108,7 +108,7 @@ export type DeviceDataFromGetAta = DeviceDataAta & {
 }
 export interface DeviceDataFromListAta
   extends BaseDeviceDataFromList,
-  Omit<
+    Omit<
       DeviceDataFromGetAta,
       'SetFanSpeed' | 'VaneHorizontal' | 'VaneVertical'
     > {
@@ -176,7 +176,7 @@ export type DeviceDataFromGetAtw = DeviceDataAtw & {
 }
 export interface DeviceDataFromListAtw
   extends BaseDeviceDataFromList,
-  DeviceDataFromGetAtw {
+    DeviceDataFromGetAtw {
   readonly BoosterHeater1Status: boolean
   readonly BoosterHeater2PlusStatus: boolean
   readonly BoosterHeater2Status: boolean
@@ -226,7 +226,7 @@ export type DeviceDataFromGetErv = DeviceDataErv & {
 }
 export interface DeviceDataFromListErv
   extends BaseDeviceDataFromList,
-  DeviceDataFromGetErv {
+    DeviceDataFromGetErv {
   readonly DeviceType: DeviceType.Erv
   readonly HasAutomaticFanSpeed: boolean
   readonly HasCO2Sensor: boolean

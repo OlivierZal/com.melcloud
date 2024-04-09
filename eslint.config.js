@@ -1,19 +1,19 @@
 const eslint = require('@eslint/js')
 const globals = require('globals')
 const importPlugin = require('eslint-plugin-import')
+const prettier = require('eslint-config-prettier')
 const stylistic = require('@stylistic/eslint-plugin')
-const tseslint = require('typescript-eslint')
+const tsEslint = require('typescript-eslint')
 
-module.exports = tseslint.config(
+module.exports = tsEslint.config(
   { ignores: ['.homeybuild/'] },
   eslint.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
-  stylistic.configs['recommended-flat'],
+  ...tsEslint.configs.strictTypeChecked,
+  ...tsEslint.configs.stylisticTypeChecked,
   {
     languageOptions: { parserOptions: { project: true } },
     linterOptions: { reportUnusedDisableDirectives: true },
-    plugins: { import: importPlugin },
+    plugins: { '@stylistic': stylistic, import: importPlugin },
   },
   {
     rules: {
@@ -135,7 +135,7 @@ module.exports = tseslint.config(
               'protected-abstract-method',
             ],
             optionalityOrder: 'optional-first',
-            order: 'natural-case-insensitive',
+            order: 'natural',
           },
         },
       ],
@@ -144,11 +144,9 @@ module.exports = tseslint.config(
         { varsIgnorePattern: 'onHomeyReady' },
       ],
       'func-style': 'error',
-      'max-len': ['error', 80],
       'no-underscore-dangle': ['error', { allow: ['__'] }],
       'sort-imports': 'error',
-      'sort-keys': 'error',
-      'sort-vars': 'error',
+      'sort-keys': ['error', 'asc', { natural: true }],
     },
   },
   {
@@ -173,8 +171,9 @@ module.exports = tseslint.config(
       parserOptions: { sourceType: 'script' },
     },
     rules: {
-      ...tseslint.configs.disableTypeChecked.rules,
+      ...tsEslint.configs.disableTypeChecked.rules,
       '@typescript-eslint/no-var-requires': 'off',
     },
   },
+  prettier,
 )

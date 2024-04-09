@@ -6,9 +6,9 @@ import type { SimpleClass } from 'homey'
 const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
-const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
-  ...logs: string[]
-) => (target: T, context: ClassDecoratorContext<T>): T => {
+const addToLogs =
+  <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
+  (target: T, context: ClassDecoratorContext<T>): T => {
     abstract class LogsDecorator extends target {
       public error(...args: any[]): void {
         this.#commonLog('error', ...args)
@@ -27,8 +27,8 @@ const addToLogs = <T extends abstract new (...args: any[]) => SimpleClass>(
             if (log.endsWith(PARENTHESES)) {
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
-                !(funcName in this)
-                || typeof this[funcName as keyof this] !== 'function'
+                !(funcName in this) ||
+                typeof this[funcName as keyof this] !== 'function'
               ) {
                 return [log, '-']
               }

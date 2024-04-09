@@ -43,7 +43,7 @@ export default abstract class APICallContextData {
       }
       return null
     })
-      .filter(line => line !== null)
+      .filter((line) => line !== null)
       .join('\n')
   }
 }

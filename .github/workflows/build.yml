@@ -32,8 +32,10 @@ jobs:
           save-always: true
       - name: Update package-lock.json
         run: npm install
-      - name: Lint and fix errors, and format code
+      - name: Lint and fix errors
         run: npm run lint:fix
+      - name: Format code
+        run: npm run format:fix
       - name: Commit changes
         run: |
           git config --local user.name "GitHub Actions"

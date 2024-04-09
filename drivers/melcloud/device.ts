@@ -21,19 +21,19 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
   > = {
-      'alarm_generic.silent': ((value: FanSpeed) =>
-        value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
-      'fan_power': ((value: FanSpeed) =>
-        value === FanSpeed.silent
-          ? FanSpeed.auto
-          : value) as ConvertFromDevice<'Ata'>,
-      'horizontal': ((value: Horizontal) =>
-        Horizontal[value]) as ConvertFromDevice<'Ata'>,
-      'operation_mode': ((value: OperationMode) =>
-        OperationMode[value]) as ConvertFromDevice<'Ata'>,
-      'vertical': ((value: Vertical) =>
-        Vertical[value]) as ConvertFromDevice<'Ata'>,
-    }
+    'alarm_generic.silent': ((value: FanSpeed) =>
+      value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
+    fan_power: ((value: FanSpeed) =>
+      value === FanSpeed.silent
+        ? FanSpeed.auto
+        : value) as ConvertFromDevice<'Ata'>,
+    horizontal: ((value: Horizontal) =>
+      Horizontal[value]) as ConvertFromDevice<'Ata'>,
+    operation_mode: ((value: OperationMode) =>
+      OperationMode[value]) as ConvertFromDevice<'Ata'>,
+    vertical: ((value: Vertical) =>
+      Vertical[value]) as ConvertFromDevice<'Ata'>,
+  }
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { hours: 1 },
@@ -45,22 +45,22 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilities['Ata'], ConvertToDevice<'Ata'>>
   > = {
-      horizontal: ((value: keyof typeof Horizontal) =>
-        Horizontal[value]) as ConvertToDevice<'Ata'>,
-      operation_mode: ((value: keyof typeof OperationMode) =>
-        OperationMode[value]) as ConvertToDevice<'Ata'>,
-      target_temperature: ((value: number) =>
-        this.#getTargetTemperature(value)) as ConvertToDevice<'Ata'>,
-      vertical: ((value: keyof typeof Vertical) =>
-        Vertical[value]) as ConvertToDevice<'Ata'>,
-    }
+    horizontal: ((value: keyof typeof Horizontal) =>
+      Horizontal[value]) as ConvertToDevice<'Ata'>,
+    operation_mode: ((value: keyof typeof OperationMode) =>
+      OperationMode[value]) as ConvertToDevice<'Ata'>,
+    target_temperature: ((value: number) =>
+      this.#getTargetTemperature(value)) as ConvertToDevice<'Ata'>,
+    vertical: ((value: keyof typeof Vertical) =>
+      Vertical[value]) as ConvertToDevice<'Ata'>,
+  }
 
   public getCapabilityValue<K extends keyof Capabilities['Ata']>(
     capability: K & string,
   ): NonNullable<Capabilities['Ata'][K]> {
     if (
-      capability === 'fan_power'
-      && this.getCapabilityValue('alarm_generic.silent')
+      capability === 'fan_power' &&
+      this.getCapabilityValue('alarm_generic.silent')
     ) {
       return FanSpeed.silent as NonNullable<Capabilities['Ata'][K]>
     }
@@ -82,8 +82,8 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
   }
 
   readonly #getTargetTemperature = (value: number): number => {
-    const operationMode
-      = OperationMode[this.getRequestedOrCurrentValue('operation_mode')]
+    const operationMode =
+      OperationMode[this.getRequestedOrCurrentValue('operation_mode')]
     switch (operationMode) {
       case OperationMode.auto:
         return Math.max(value, this.getStoreValue('minTempAutomatic'))
