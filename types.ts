@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
   DeviceData,

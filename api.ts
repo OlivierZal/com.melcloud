@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type {
   Building,
   ErrorLogData,
@@ -160,10 +161,10 @@ const handleErrorLogQuery = (
       ? DateTime.fromISO(query.to)
       : DateTime.now()
 
-  let period = Number.parseInt(String(query.limit))
+  let period = Number.parseInt(String(query.limit), 10)
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
-  let offset = Number.parseInt(String(query.offset))
+  let offset = Number.parseInt(String(query.offset), 10)
   offset = from !== null || Number.isNaN(offset) ? DEFAULT_OFFSET : offset
 
   const limit = from ? DEFAULT_LIMIT : period

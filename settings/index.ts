@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-call, max-lines */
 import type {
   Building,
   BuildingData,
@@ -371,7 +371,7 @@ const updateCredentialElements = (): void => {
 }
 
 const int = (homey: Homey, element: HTMLInputElement): number => {
-  const value = Number.parseInt(element.value)
+  const value = Number.parseInt(element.value, 10)
   if (
     Number.isNaN(value) ||
     value < Number(element.min) ||

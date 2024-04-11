@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -371,6 +372,7 @@ abstract class BaseMELCloudDevice<
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           acc.EffectiveFlags = Number(
+            // eslint-disable-next-line no-bitwise
             BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
           this.diff.delete(capability as K)
@@ -495,6 +497,7 @@ abstract class BaseMELCloudDevice<
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
             ([, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>]) =>
+              // eslint-disable-next-line no-bitwise
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),

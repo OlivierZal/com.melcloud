@@ -32,6 +32,7 @@ type TimerClass = new (...args: any[]) => {
 const FIRST_CHAR = 0
 const SECOND_CHAR = 1
 
+// eslint-disable-next-line max-lines-per-function
 const withTimers = <
   T extends new (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

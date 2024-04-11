@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0x0
 
