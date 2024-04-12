@@ -1,5 +1,8 @@
+coverage/*
 docs/*
+tests/*
 eslint.config.js
+jest.config.ts
 sonar-project.properties
 LICENSE
 README.md
