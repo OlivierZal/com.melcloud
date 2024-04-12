@@ -1127,7 +1127,7 @@ const updateFrostProtectionData = (
   )
 }
 
-const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
+const fixAndGetFpMinMax = (homey: Homey): { max: number; min: number } => {
   let [min, max] = [
     int(homey, frostProtectionMinTemperatureElement),
     int(homey, frostProtectionMaxTemperatureElement),
@@ -1142,7 +1142,7 @@ const fixAndGetFpMinMax = (homey: Homey): [number, number] => {
     frostProtectionMinTemperatureElement.value = String(min)
     frostProtectionMaxTemperatureElement.value = String(max)
   }
-  return [min, max]
+  return { max, min }
 }
 
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
@@ -1150,7 +1150,7 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
     disableButtons('frost-protection')
     const data = buildingMapping[buildingElement.value]
     try {
-      const [min, max] = fixAndGetFpMinMax(homey)
+      const { max, min } = fixAndGetFpMinMax(homey)
       updateFrostProtectionData(
         homey,
         {
