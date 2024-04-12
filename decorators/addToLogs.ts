@@ -28,16 +28,15 @@ const addToLogs =
             if (log.endsWith(PARENTHESES)) {
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
-                !(funcName in this) ||
+                funcName in this &&
                 typeof this[funcName as keyof this] !== 'function'
               ) {
-                return [log, '-']
-              }
-              const func = this[funcName as keyof this] as (
-                ...funcArgs: any[]
-              ) => any
-              if (!func.length) {
-                return [func.call(this), '-']
+                const func = this[funcName as keyof this] as (
+                  ...funcArgs: any[]
+                ) => any
+                if (!func.length) {
+                  return [func.call(this), '-']
+                }
               }
             }
             return [log, '-']
@@ -46,6 +45,7 @@ const addToLogs =
         )
       }
     }
+
     Object.defineProperty(LogsDecorator, 'name', { value: context.name })
     return LogsDecorator
   }
