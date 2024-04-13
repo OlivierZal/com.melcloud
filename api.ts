@@ -107,8 +107,8 @@ const getDriverLoginSetting = (
     (pairSetting: PairSetting): pairSetting is LoginSetting =>
       pairSetting.id === 'login',
   )
-  return driverLoginSetting
-    ? Object.values(
+  return driverLoginSetting ?
+      Object.values(
         Object.entries(driverLoginSetting.options).reduce<
           Record<string, DriverSetting>
         >((acc, [option, label]) => {
@@ -140,9 +140,9 @@ const fromUTC = (utcDate: string | null, language?: string): string => {
     zone: 'utc',
   }).toLocal()
   const localDate =
-    typeof language === 'undefined'
-      ? localDateTime.toISO({ includeOffset: false })
-      : localDateTime.toLocaleString(DateTime.DATETIME_MED)
+    typeof language === 'undefined' ?
+      localDateTime.toISO({ includeOffset: false })
+    : localDateTime.toLocaleString(DateTime.DATETIME_MED)
   return localDate ?? ''
 }
 
@@ -153,13 +153,13 @@ const handleErrorLogQuery = (
   query: ErrorLogQuery,
 ): { fromDate: DateTime; period: number; toDate: DateTime } => {
   const from =
-    typeof query.from !== 'undefined' && query.from
-      ? DateTime.fromISO(query.from)
-      : null
+    typeof query.from !== 'undefined' && query.from ?
+      DateTime.fromISO(query.from)
+    : null
   const to =
-    typeof query.to !== 'undefined' && query.to
-      ? DateTime.fromISO(query.to)
-      : DateTime.now()
+    typeof query.to !== 'undefined' && query.to ?
+      DateTime.fromISO(query.to)
+    : DateTime.now()
 
   let period = Number.parseInt(String(query.limit), 10)
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
@@ -242,9 +242,9 @@ export = {
             StartDate: startDate,
           }) => {
             const date =
-              DateTime.fromISO(startDate).year > YEAR_1
-                ? fromUTC(startDate, homey.i18n.getLanguage())
-                : ''
+              DateTime.fromISO(startDate).year > YEAR_1 ?
+                fromUTC(startDate, homey.i18n.getLanguage())
+              : ''
             const device =
               getDevice(app, deviceId)?.getName() ??
               app.devices[deviceId]?.DeviceName ??
@@ -371,8 +371,9 @@ export = {
       (
         await (homey.app as MELCloudApp).melcloudAPI.updateHolidayMode({
           Enabled: enabled,
-          EndDate: utcEndDate
-            ? {
+          EndDate:
+            utcEndDate ?
+              {
                 Day: utcEndDate.day,
                 Hour: utcEndDate.hour,
                 Minute: utcEndDate.minute,
@@ -382,8 +383,9 @@ export = {
               }
             : null,
           HMTimeZones: [{ Buildings: [Number(params.buildingId)] }],
-          StartDate: utcStartDate
-            ? {
+          StartDate:
+            utcStartDate ?
+              {
                 Day: utcStartDate.day,
                 Hour: utcStartDate.hour,
                 Minute: utcStartDate.minute,

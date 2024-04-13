@@ -402,8 +402,8 @@ const processSettingValue = (
       }
       return element.checked
     }
-    return ['true', 'false'].includes(element.value)
-      ? element.value === 'true'
+    return ['true', 'false'].includes(element.value) ?
+        element.value === 'true'
       : element.value
   }
   return null
@@ -418,9 +418,9 @@ const shouldUpdate = (
     return false
   }
   const deviceSetting =
-    typeof driverId === 'undefined'
-      ? flatDeviceSettings[settingId]
-      : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
+    typeof driverId === 'undefined' ?
+      flatDeviceSettings[settingId]
+    : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
   if (typeof deviceSetting === 'undefined') {
     return false
   }
@@ -441,8 +441,8 @@ const buildSettingsBody = (
       .map((element) => {
         const [settingId] = element.id.split('--')
         const settingValue = processSettingValue(element)
-        return shouldUpdate(settingId, settingValue, driverId)
-          ? [settingId, settingValue]
+        return shouldUpdate(settingId, settingValue, driverId) ?
+            [settingId, settingValue]
           : [null]
       })
       .filter((entry): entry is [string, ValueOf<Settings>] => {
@@ -840,12 +840,12 @@ const createSelectElement = (
   selectElement.id = `${setting.id}--setting`
   ;[
     { id: '' },
-    ...(setting.type === 'checkbox'
-      ? ['false', 'true'].map((id) => ({
-          id,
-          label: homey.__(`settings.boolean.${id}`),
-        }))
-      : setting.values ?? []),
+    ...(setting.type === 'checkbox' ?
+      ['false', 'true'].map((id) => ({
+        id,
+        label: homey.__(`settings.boolean.${id}`),
+      }))
+    : setting.values ?? []),
   ].forEach(({ id, label }: { label?: string; id: string }) => {
     const optionElement = document.createElement('option')
     optionElement.value = id

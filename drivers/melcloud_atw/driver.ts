@@ -79,14 +79,14 @@ export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
     return [
       ...this.#zone1Capabilities,
       ...(canCool ? this.#zone1CoolCapabilities : ['operation_mode_zone']),
-      ...(hasZone2
-        ? [
-            ...this.#zone2Capabilities,
-            ...(canCool
-              ? this.#zone2CoolCapabilities
-              : ['operation_mode_zone.zone2']),
-          ]
-        : []),
+      ...(hasZone2 ?
+        [
+          ...this.#zone2Capabilities,
+          ...(canCool ?
+            this.#zone2CoolCapabilities
+          : ['operation_mode_zone.zone2']),
+        ]
+      : []),
     ]
   }
 }

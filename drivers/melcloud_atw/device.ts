@@ -131,9 +131,9 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     if (canCool) {
       if (zoneValue > OperationModeZone.curve) {
         otherZoneValue =
-          otherZoneValue === OperationModeZone.curve
-            ? HEAT_COOL_GAP
-            : otherZoneValue + HEAT_COOL_GAP
+          otherZoneValue === OperationModeZone.curve ?
+            HEAT_COOL_GAP
+          : otherZoneValue + HEAT_COOL_GAP
       } else if (otherZoneValue > OperationModeZone.curve) {
         otherZoneValue -= HEAT_COOL_GAP
       }
@@ -157,10 +157,9 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     if (hasZone2) {
       const zoneValue = OperationModeZone[value]
       const otherZoneCapability = (
-        capability.endsWith('.zone2')
-          ? capability.replace(/.zone2$/u, '')
-          : `${capability}.zone2`
-      ) as keyof OperationModeZoneCapabilities
+        capability.endsWith('.zone2') ?
+          capability.replace(/.zone2$/u, '')
+        : `${capability}.zone2`) as keyof OperationModeZoneCapabilities
       const otherZoneValue = this.#getOtherZoneValue(
         otherZoneCapability,
         zoneValue,

@@ -40,15 +40,15 @@ const getDevice = <T extends keyof typeof DeviceType>(
 const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
   device: ListDevice[T]['Device'],
 ): CapabilitiesOptions[T] =>
-  ('NumberOfFanSpeeds' in device
-    ? {
-        fan_power: {
-          max: device.NumberOfFanSpeeds,
-          min: Number(!device.HasAutomaticFanSpeed),
-          step: NUMBER_1,
-        },
-      }
-    : {}) as CapabilitiesOptions[T]
+  ('NumberOfFanSpeeds' in device ?
+    {
+      fan_power: {
+        max: device.NumberOfFanSpeeds,
+        min: Number(!device.HasAutomaticFanSpeed),
+        step: NUMBER_1,
+      },
+    }
+  : {}) as CapabilitiesOptions[T]
 
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
@@ -171,9 +171,9 @@ export default abstract class BaseMELCloudDriver<
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs[T]) => {
           const value = getDevice(args).getCapabilityValue(capability)
-          return typeof value === 'boolean'
-            ? value
-            : (value as number | string) === args[getArg(capability)]
+          return typeof value === 'boolean' ? value : (
+              (value as number | string) === args[getArg(capability)]
+            )
         })
     } catch (error) {
       // Skip

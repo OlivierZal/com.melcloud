@@ -3,6 +3,7 @@
   "version": "34.0.0",
   "main": "app.ts",
   "prettier": {
+    "experimentalTernaries": true,
     "semi": false,
     "singleQuote": true
   },

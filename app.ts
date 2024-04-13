@@ -58,10 +58,11 @@ export = class MELCloudApp extends withTimers(App) {
     driverId,
   }: { buildingId?: number; driverId?: string } = {}): MELCloudDevice[] {
     let devices = (
-      typeof driverId === 'undefined'
-        ? Object.values(this.homey.drivers.getDrivers())
-        : [this.homey.drivers.getDriver(driverId)]
-    ).flatMap((driver) => driver.getDevices() as MELCloudDevice[])
+      typeof driverId === 'undefined' ?
+        Object.values(this.homey.drivers.getDrivers())
+      : [this.homey.drivers.getDriver(driverId)]).flatMap(
+      (driver) => driver.getDevices() as MELCloudDevice[],
+    )
     if (typeof buildingId !== 'undefined') {
       devices = devices.filter(({ buildingid }) => buildingid === buildingId)
     }

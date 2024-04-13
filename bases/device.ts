@@ -394,12 +394,12 @@ abstract class BaseMELCloudDevice<
         (acc, tag) => acc + (data[tag] as number),
         NUMBER_0,
       ) /
-      (consumedTags.length
-        ? consumedTags.reduce<number>(
-            (acc, tag) => acc + (data[tag] as number),
-            NUMBER_0,
-          )
-        : NUMBER_1)
+      (consumedTags.length ?
+        consumedTags.reduce<number>(
+          (acc, tag) => acc + (data[tag] as number),
+          NUMBER_0,
+        )
+      : NUMBER_1)
     )
   }
 
@@ -596,8 +596,9 @@ abstract class BaseMELCloudDevice<
     const totalString = String(total) as `${boolean}`
     if (!this.#reportTimeout[totalString]) {
       const actionType = `${total ? 'total' : 'regular'} energy report`
-      const { interval, duration, values } = total
-        ? {
+      const { interval, duration, values } =
+        total ?
+          {
             duration: { days: 1 },
             interval: { days: 1 },
             values: { hour: 1, millisecond: 0, minute: 5, second: 0 },

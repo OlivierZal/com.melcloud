@@ -30,7 +30,7 @@ module.exports = tsEslint.config(
   },
   {
     rules: {
-      '@stylistic/lines-between-class-members': ['error', 'always'],
+      '@stylistic/lines-between-class-members': 'error',
       '@typescript-eslint/member-ordering': [
         'error',
         {

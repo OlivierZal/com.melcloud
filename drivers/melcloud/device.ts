@@ -24,9 +24,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     'alarm_generic.silent': ((value: FanSpeed) =>
       value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
     fan_power: ((value: FanSpeed) =>
-      value === FanSpeed.silent
-        ? FanSpeed.auto
-        : value) as ConvertFromDevice<'Ata'>,
+      value === FanSpeed.silent ?
+        FanSpeed.auto
+      : value) as ConvertFromDevice<'Ata'>,
     horizontal: ((value: Horizontal) =>
       Horizontal[value]) as ConvertFromDevice<'Ata'>,
     operation_mode: ((value: OperationMode) =>
@@ -116,9 +116,9 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     const operationMode = this.getCapabilityValue('operation_mode')
     await this.setCapabilityValue(
       'thermostat_mode',
-      isOn && operationMode in ThermostatMode
-        ? (operationMode as ThermostatMode)
-        : ThermostatMode.off,
+      isOn && operationMode in ThermostatMode ?
+        (operationMode as ThermostatMode)
+      : ThermostatMode.off,
     )
   }
 }

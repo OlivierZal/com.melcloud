@@ -35,9 +35,9 @@ export default abstract class APICallContextData {
         const value: any = this[key as keyof this]
         if (typeof value !== 'undefined') {
           return `${key}: ${
-            typeof value === 'object'
-              ? JSON.stringify(value, null, SPACE)
-              : String(value)
+            typeof value === 'object' ?
+              JSON.stringify(value, null, SPACE)
+            : String(value)
           }`
         }
       }
