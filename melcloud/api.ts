@@ -207,7 +207,7 @@ export default class MELCloudAPI {
         break
       default:
     }
-    return Promise.reject(error)
+    throw error
   }
 
   async #handleRequest(
