@@ -45,17 +45,14 @@ const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
   return device.id
 }
 
-const handleFailure = (errors: FailureData['AttributeErrors']): never => {
-  throw new Error(
-    Object.entries(errors)
-      .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
-      .join('\n'),
-  )
-}
+const formatErrors = (errors: Record<string, readonly string[]>): string =>
+  Object.entries(errors)
+    .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
+    .join('\n')
 
 const handleResponse = (data: FailureData | SuccessData): void => {
   if (data.AttributeErrors) {
-    handleFailure(data.AttributeErrors)
+    throw new Error(formatErrors(data.AttributeErrors))
   }
 }
 
@@ -71,7 +68,7 @@ const getErrors = async (
     ToDate: toDate.toISODate() ?? '',
   })
   if ('AttributeErrors' in data) {
-    return handleFailure(data.AttributeErrors)
+    throw new Error(formatErrors(data.AttributeErrors))
   }
   return data
 }
