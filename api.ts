@@ -46,10 +46,11 @@ const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
 }
 
 const handleFailure = (data: FailureData): never => {
-  const errorMessage = Object.entries(data.AttributeErrors)
-    .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
-    .join('\n')
-  throw new Error(errorMessage)
+  throw new Error(
+    Object.entries(data.AttributeErrors)
+      .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
+      .join('\n'),
+  )
 }
 
 const handleResponse = (data: FailureData | SuccessData): void => {
