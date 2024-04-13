@@ -45,9 +45,9 @@ const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
   return device.id
 }
 
-const handleFailure = (data: FailureData): never => {
+const handleFailure = (errors: FailureData['AttributeErrors']): never => {
   throw new Error(
-    Object.entries(data.AttributeErrors)
+    Object.entries(errors)
       .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
       .join('\n'),
   )
@@ -55,7 +55,7 @@ const handleFailure = (data: FailureData): never => {
 
 const handleResponse = (data: FailureData | SuccessData): void => {
   if (data.AttributeErrors) {
-    handleFailure(data)
+    handleFailure(data.AttributeErrors)
   }
 }
 
@@ -71,7 +71,7 @@ const getErrors = async (
     ToDate: toDate.toISODate() ?? '',
   })
   if ('AttributeErrors' in data) {
-    return handleFailure(data)
+    return handleFailure(data.AttributeErrors)
   }
   return data
 }
