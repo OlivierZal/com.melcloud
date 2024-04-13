@@ -574,25 +574,16 @@ const updateBuildingMapping = (
   }
 }
 
-const getBuildingHolidayModeSettings = async (
-  homey: Homey,
-  raise = false,
-): Promise<void> =>
+const getBuildingHolidayModeSettings = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       `/settings/buildings/${buildingElement.value}/holiday_mode`,
-      async (error: Error | null, data: HolidayModeData) => {
+      (error: Error | null, data: HolidayModeData) => {
         enableButtons('holiday-mode')
         if (error) {
-          if (raise) {
-            reject(new Error(error.message))
-          } else {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            resolve()
-          }
+          reject(new Error(error.message))
           return
         }
         updateBuildingMapping(data)
@@ -604,23 +595,16 @@ const getBuildingHolidayModeSettings = async (
 
 const getBuildingFrostProtectionSettings = async (
   homey: Homey,
-  raise = false,
 ): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       `/settings/buildings/${buildingElement.value}/frost_protection`,
-      async (error: Error | null, data: FrostProtectionData) => {
+      (error: Error | null, data: FrostProtectionData) => {
         enableButtons('frost-protection')
         if (error) {
-          if (raise) {
-            reject(new Error(error.message))
-          } else {
-            // @ts-expect-error: `homey` is partially typed
-            await homey.alert(error.message)
-            resolve()
-          }
+          reject(new Error(error.message))
           return
         }
         updateBuildingMapping(data)
@@ -1057,7 +1041,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       async (error: Error | null) => {
         enableButtons('holiday-mode')
         try {
-          await getBuildingHolidayModeSettings(homey, true)
+          await getBuildingHolidayModeSettings(homey)
           if (error) {
             // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
@@ -1110,7 +1094,7 @@ const updateFrostProtectionData = (
     async (error: Error | null) => {
       enableButtons('frost-protection')
       try {
-        await getBuildingFrostProtectionSettings(homey, true)
+        await getBuildingFrostProtectionSettings(homey)
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
