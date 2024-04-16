@@ -39,6 +39,11 @@ interface APISettings {
   readonly username?: string | null
 }
 
+interface Logger {
+  readonly error: Console['error']
+  readonly log: Console['log']
+}
+
 interface SettingManager {
   get: <K extends keyof APISettings>(
     key: K,
@@ -58,21 +63,13 @@ export default class MELCloudAPI {
 
   readonly #api: AxiosInstance
 
-  readonly #errorLogger
-
-  readonly #logger
+  readonly #logger: Logger
 
   readonly #settingManager: SettingManager
 
-  public constructor(
-    settingManager: SettingManager,
-    // eslint-disable-next-line no-console
-    logger = console.log,
-    errorLogger = logger,
-  ) {
+  public constructor(settingManager: SettingManager, logger: Logger = console) {
     this.#settingManager = settingManager
     this.#logger = logger
-    this.#errorLogger = errorLogger
     this.#api = createAxiosInstance({
       baseURL: 'https://app.melcloud.com/Mitsubishi.Wifi.Client',
     })
@@ -192,7 +189,7 @@ export default class MELCloudAPI {
 
   async #handleError(error: AxiosError): Promise<AxiosError> {
     const apiCallData = createAPICallErrorData(error)
-    this.#errorLogger(String(apiCallData))
+    this.#logger.error(String(apiCallData))
     switch (error.response?.status) {
       case HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
@@ -232,12 +229,12 @@ export default class MELCloudAPI {
         this.#settingManager.get('contextKey'),
       )
     }
-    this.#logger(String(new APICallRequestData(newConfig)))
+    this.#logger.log(String(new APICallRequestData(newConfig)))
     return newConfig
   }
 
   #handleResponse(response: AxiosResponse): AxiosResponse {
-    this.#logger(String(new APICallResponseData(response)))
+    this.#logger.log(String(new APICallResponseData(response)))
     return response
   }
 
