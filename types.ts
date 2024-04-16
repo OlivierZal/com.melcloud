@@ -161,8 +161,11 @@ export interface ManifestDriver {
   >
   readonly pair?: LoginSetting & readonly PairSetting[]
   readonly settings?: readonly ManifestDriverSetting[]
+  readonly capabilities: readonly string[]
   readonly id: string
 }
+
+export type Manifest = object & { readonly drivers: readonly ManifestDriver[] }
 
 export interface DriverSetting {
   placeholder?: string

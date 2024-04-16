@@ -17,6 +17,7 @@ import type {
   HolidayModeSettings,
   LoginSetting,
   MELCloudDevice,
+  Manifest,
   ManifestDriver,
   PairSetting,
   Settings,
@@ -211,14 +212,11 @@ export = {
   },
   getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
     const language = homey.i18n.getLanguage()
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ((homey.app as MELCloudApp).manifest.drivers as ManifestDriver[]).flatMap(
-        (driver) => [
-          ...getDriverSettings(driver, language),
-          ...getDriverLoginSetting(driver, language),
-        ],
-      )
+    return ((homey.app as MELCloudApp).manifest as Manifest).drivers.flatMap(
+      (driver) => [
+        ...getDriverSettings(driver, language),
+        ...getDriverLoginSetting(driver, language),
+      ],
     )
   },
   async getErrors({

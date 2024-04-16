@@ -5,6 +5,7 @@ import type {
   FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
+  ManifestDriver,
   OpCapabilities,
   ReportCapabilityTagMapping,
   SetCapabilities,
@@ -53,9 +54,7 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
 export default abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
-  public readonly capabilities =
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    this.manifest.capabilities as Extract<keyof Capabilities[T], string>[]
+  public readonly capabilities = (this.manifest as ManifestDriver).capabilities
 
   public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
     {}

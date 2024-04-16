@@ -582,7 +582,7 @@ abstract class BaseMELCloudDevice<
   }
 
   #isCapability(setting: string): boolean {
-    return (this.driver.capabilities as string[]).includes(setting)
+    return this.driver.capabilities.includes(setting)
   }
 
   #isReportCapability(setting: string): boolean {
