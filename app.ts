@@ -42,11 +42,7 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public async getBuildings(): Promise<Building[]> {
-    try {
-      return (await this.melcloudAPI.list()).data
-    } catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error))
-    }
+    return (await this.melcloudAPI.list()).data
   }
 
   public getDevices({

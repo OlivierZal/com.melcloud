@@ -100,9 +100,7 @@ export default class MELCloudAPI {
         return loginData !== null
       } catch (error) {
         if (typeof data !== 'undefined') {
-          throw new Error(
-            error instanceof Error ? error.message : String(error),
-          )
+          throw error
         }
       }
     }
