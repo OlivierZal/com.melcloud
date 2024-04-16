@@ -186,8 +186,7 @@ export default class MELCloudAPI {
   }
 
   async #handleError(error: AxiosError): Promise<AxiosError> {
-    const apiCallErrorData = createAPICallErrorData(error)
-    this.#logger.error(String(apiCallErrorData))
+    this.#logger.error(String(createAPICallErrorData(error)))
     switch (error.response?.status) {
       case HttpStatusCode.Unauthorized:
         if (this.#retry && error.config?.url !== LOGIN_URL) {
