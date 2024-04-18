@@ -6,21 +6,9 @@ const prettier = require('eslint-config-prettier')
 const stylistic = require('@stylistic/eslint-plugin')
 const tsEslint = require('typescript-eslint')
 
-const eslintConfig = (function filteredEslintConfig() {
-  'use strict'
-  return {
-    ...eslint.configs.all,
-    rules: Object.fromEntries(
-      Object.entries(eslint.configs.all.rules).filter(
-        ([rule]) => rule !== 'no-useless-assignment',
-      ),
-    ),
-  }
-})()
-
 module.exports = tsEslint.config(
   { ignores: ['.homeybuild/'] },
-  eslintConfig,
+  eslint.configs.all,
   ...tsEslint.configs.all,
   ...markdown.configs.recommended,
   {
@@ -187,7 +175,7 @@ module.exports = tsEslint.config(
   },
   {
     rules: {
-      ...importPlugin.configs.recommended.rules,
+      // ...importPlugin.configs.recommended.rules,
       ...importPlugin.configs.typescript.rules,
       'import/no-duplicates': ['error', { 'prefer-inline': true }],
     },
