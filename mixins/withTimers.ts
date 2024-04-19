@@ -12,6 +12,8 @@ interface BaseTimerOptions {
   readonly units: readonly (keyof DurationLikeObject)[]
 }
 
+type HomeyClass = SimpleClass & { readonly homey: Homey }
+
 interface TimerOptions extends BaseTimerOptions {
   readonly timerType: 'setInterval' | 'setTimeout'
   readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
@@ -32,13 +34,11 @@ type TimerClass = new (...args: any[]) => {
 const FIRST_CHAR = 0
 const SECOND_CHAR = 1
 
-// eslint-disable-next-line max-lines-per-function
-const withTimers = <
-  T extends new (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...args: any[]
-  ) => SimpleClass & { readonly homey: Homey },
->(
+const formatActionType = (actionType: string): string =>
+  `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType.slice(SECOND_CHAR).toLowerCase()}`
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const withTimers = <T extends new (...args: any[]) => HomeyClass>(
   base: T,
 ): T & TimerClass =>
   class extends base {
@@ -47,12 +47,11 @@ const withTimers = <
       interval: DurationLike,
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
-      const { actionType, units } = options
       return this.#setTimer(callback, interval, {
-        actionType,
+        actionType: options.actionType,
         timerType: 'setInterval',
         timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
-        units,
+        units: options.units,
       })
     }
 
@@ -61,12 +60,11 @@ const withTimers = <
       interval: DurationLike,
       options: BaseTimerOptions,
     ): NodeJS.Timeout {
-      const { actionType, units } = options
       return this.#setTimer(callback, interval, {
-        actionType,
+        actionType: options.actionType,
         timerType: 'setTimeout',
         timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
-        units,
+        units: options.units,
       })
     }
 
@@ -78,9 +76,7 @@ const withTimers = <
       const { actionType, timerWords, timerType, units } = options
       const duration = Duration.fromDurationLike(interval)
       this.log(
-        `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType
-          .slice(SECOND_CHAR)
-          .toLowerCase()}`,
+        formatActionType(actionType),
         'will run',
         timerWords.timeSpecifier,
         duration.shiftTo(...units).toHuman(),
