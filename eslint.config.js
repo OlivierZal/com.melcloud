@@ -18,6 +18,7 @@ module.exports = tsEslint.config(
   },
   {
     rules: {
+      // ...importPlugin.configs.recommended.rules,
       '@stylistic/lines-between-class-members': 'error',
       '@typescript-eslint/member-ordering': [
         'error',
@@ -173,11 +174,6 @@ module.exports = tsEslint.config(
       'sort-keys': ['error', 'asc', { natural: true }],
     },
   },
-  /*
-   * {
-   *   rules: importPlugin.configs.recommended.rules,
-   * },
-   */
   {
     files: ['**/*.ts'],
     rules: {
