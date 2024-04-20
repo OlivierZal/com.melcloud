@@ -12,7 +12,10 @@ interface BaseTimerOptions {
   readonly units: readonly (keyof DurationLikeObject)[]
 }
 
-type HomeyClass = SimpleClass & { readonly homey: Homey }
+type HomeyClass = new (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+) => SimpleClass & { readonly homey: Homey }
 
 interface TimerOptions extends BaseTimerOptions {
   readonly timerType: 'setInterval' | 'setTimeout'
@@ -33,14 +36,10 @@ type TimerClass = new (...args: any[]) => {
 
 const FIRST_CHAR = 0
 const SECOND_CHAR = 1
-
 const formatActionType = (actionType: string): string =>
   `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType.slice(SECOND_CHAR).toLowerCase()}`
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const withTimers = <T extends new (...args: any[]) => HomeyClass>(
-  base: T,
-): T & TimerClass =>
+const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
     public setInterval(
       callback: () => Promise<void>,

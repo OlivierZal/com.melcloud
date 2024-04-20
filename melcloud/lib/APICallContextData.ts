@@ -31,8 +31,7 @@ export default abstract class APICallContextData {
   public toString(): string {
     return ORDER.map((key) => {
       if (key in this) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const value: any = this[key as keyof this]
+        const value = this[key as keyof this]
         if (typeof value !== 'undefined') {
           return `${key}: ${
             typeof value === 'object' ?
