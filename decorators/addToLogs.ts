@@ -1,27 +1,30 @@
-/* eslint-disable
-  @typescript-eslint/no-explicit-any,
-  @typescript-eslint/no-unsafe-argument
-*/
 import type { SimpleClass } from 'homey'
 
 const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
 const addToLogs =
-  <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
+  <
+    T extends abstract new (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...args: any[]
+    ) => SimpleClass,
+  >(
+    ...logs: string[]
+  ) =>
   (target: T, context: ClassDecoratorContext<T>): T => {
     abstract class LogsDecorator extends target {
-      public error(...args: any[]): void {
+      public error(...args: unknown[]): void {
         this.#commonLog('error', ...args)
       }
 
-      public log(...args: any[]): void {
+      public log(...args: unknown[]): void {
         this.#commonLog('log', ...args)
       }
 
-      #commonLog(logType: 'error' | 'log', ...args: any[]): void {
+      #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
-          ...logs.flatMap((log): [any, '-'] => {
+          ...logs.flatMap((log): [unknown, '-'] => {
             if (log in this) {
               return [this[log as keyof this], '-']
             }
@@ -32,8 +35,8 @@ const addToLogs =
                 typeof this[funcName as keyof this] !== 'function'
               ) {
                 const func = this[funcName as keyof this] as (
-                  ...funcArgs: any[]
-                ) => any
+                  ...funcArgs: unknown[]
+                ) => unknown
                 if (!func.length) {
                   return [func.call(this), '-']
                 }
