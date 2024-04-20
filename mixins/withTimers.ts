@@ -7,15 +7,15 @@ import {
 import type Homey from 'homey/lib/Homey'
 import type { SimpleClass } from 'homey'
 
-interface BaseTimerOptions {
-  readonly actionType: string
-  readonly units: readonly (keyof DurationLikeObject)[]
-}
-
 type HomeyClass = new (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) => SimpleClass & { readonly homey: Homey }
+
+interface BaseTimerOptions {
+  readonly actionType: string
+  readonly units: readonly (keyof DurationLikeObject)[]
+}
 
 interface TimerOptions extends BaseTimerOptions {
   readonly timerType: 'setInterval' | 'setTimeout'
