@@ -8,7 +8,6 @@ import type Homey from 'homey/lib/Homey'
 import type { SimpleClass } from 'homey'
 
 type HomeyClass = new (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
 ) => SimpleClass & { readonly homey: Homey }
 
@@ -28,7 +27,6 @@ type Timer = (
   options: BaseTimerOptions,
 ) => NodeJS.Timeout
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TimerClass = new (...args: any[]) => {
   setInterval: Timer
   setTimeout: Timer

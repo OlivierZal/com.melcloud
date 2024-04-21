@@ -4,14 +4,7 @@ const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
 const addToLogs =
-  <
-    T extends abstract new (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...args: any[]
-    ) => SimpleClass,
-  >(
-    ...logs: string[]
-  ) =>
+  <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, context: ClassDecoratorContext<T>): T => {
     abstract class LogsDecorator extends target {
       public error(...args: unknown[]): void {
