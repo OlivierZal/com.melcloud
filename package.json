@@ -9,10 +9,12 @@
   },
   "scripts": {
     "build": "homey app validate --level publish",
+    "deploy": "homey app install",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "publish": "homey app publish"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.7.2",
@@ -20,7 +22,7 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.5",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.12.7",
-    "eslint": "^9.0.0",
+    "eslint": "^9.1.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
