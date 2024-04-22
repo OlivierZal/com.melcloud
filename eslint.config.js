@@ -159,32 +159,6 @@ module.exports = tsEslint.config(
   {
     files: ['**/*.ts'],
     rules: {
-      '@typescript-eslint/naming-convention': 'off',
-      camelcase: [
-        'error',
-        {
-          allow: [
-            '^fan_power$',
-            '^fan_power_state$',
-            '^measure_co2$',
-            '^measure_pm25$',
-            '^measure_temperature$',
-            '^measure_power$',
-            '^meter_power$',
-            '^operation_mode$',
-            '^operation_mode_state$',
-            '^operation_mode_zone$',
-            '^operation_mode_zone_with_cool$',
-            '^target_temperature$',
-            '^ventilation_mode$',
-          ],
-        },
-      ],
-    },
-  },
-  {
-    files: ['**/*.ts'],
-    rules: {
       ...importPlugin.configs.typescript.rules,
       'import/no-duplicates': ['error', { 'prefer-inline': true }],
     },
