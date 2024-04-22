@@ -93,13 +93,13 @@ export default abstract class BaseMELCloudDriver<
     ) as unknown as Store[T]
   }
 
-  public async onInit(): Promise<void> {
+  public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
     return Promise.resolve()
   }
 
-  public async onPair(session: PairSession): Promise<void> {
+  public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
         if (await this.#app.applyLogin()) {
@@ -116,7 +116,7 @@ export default abstract class BaseMELCloudDriver<
     return Promise.resolve()
   }
 
-  public async onRepair(session: PairSession): Promise<void> {
+  public override async onRepair(session: PairSession): Promise<void> {
     session.setHandler('login', async (data: LoginCredentials) =>
       this.#app.applyLogin(data),
     )

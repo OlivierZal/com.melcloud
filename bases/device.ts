@@ -110,7 +110,7 @@ abstract class BaseMELCloudDevice<
     return this.#id
   }
 
-  public async addCapability(capability: string): Promise<void> {
+  public override async addCapability(capability: string): Promise<void> {
     this.log('Adding capability', capability)
     if (!this.hasCapability(capability)) {
       await super.addCapability(capability)
@@ -118,13 +118,13 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public getCapabilityOptions<
+  public override getCapabilityOptions<
     K extends Extract<keyof CapabilitiesOptions[T], string>,
   >(capability: K): CapabilitiesOptions[T][K] {
     return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
-  public getCapabilityValue<K extends keyof Capabilities[T]>(
+  public override getCapabilityValue<K extends keyof Capabilities[T]>(
     capability: K & string,
   ): NonNullable<Capabilities[T][K]> {
     return super.getCapabilityValue(capability) as NonNullable<
@@ -132,19 +132,19 @@ abstract class BaseMELCloudDevice<
     >
   }
 
-  public getSetting<K extends Extract<keyof Settings, string>>(
+  public override getSetting<K extends Extract<keyof Settings, string>>(
     setting: K,
   ): NonNullable<Settings[K]> {
     return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
-  public getStoreValue<K extends Extract<keyof Store[T], string>>(
+  public override getStoreValue<K extends Extract<keyof Store[T], string>>(
     key: K,
   ): Store[T][K] {
     return super.getStoreValue(key) as Store[T][K]
   }
 
-  public onDeleted(): void {
+  public override onDeleted(): void {
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.homey.clearTimeout(this.#reportTimeout.false)
     this.homey.clearTimeout(this.#reportTimeout.true)
@@ -152,7 +152,7 @@ abstract class BaseMELCloudDevice<
     this.homey.clearInterval(this.#reportInterval.true)
   }
 
-  public async onInit(): Promise<void> {
+  public override async onInit(): Promise<void> {
     this.#effectiveFlags = this.driver.effectiveFlags as Record<
       NonEffectiveFlagsKeyOf<SetDeviceData[T]>,
       number
@@ -165,7 +165,7 @@ abstract class BaseMELCloudDevice<
     await this.#runEnergyReports()
   }
 
-  public async onSettings({
+  public override async onSettings({
     changedKeys,
     newSettings,
   }: {
@@ -216,12 +216,12 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async onUninit(): Promise<void> {
+  public override async onUninit(): Promise<void> {
     this.onDeleted()
     return Promise.resolve()
   }
 
-  public async removeCapability(capability: string): Promise<void> {
+  public override async removeCapability(capability: string): Promise<void> {
     this.log('Removing capability', capability)
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
@@ -229,13 +229,13 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async setCapabilityOptions<
+  public override async setCapabilityOptions<
     K extends Extract<keyof CapabilitiesOptions[T], string>,
   >(capability: K, options: CapabilitiesOptions[T][K] & object): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
-  public async setCapabilityValue<
+  public override async setCapabilityValue<
     K extends Extract<keyof Capabilities[T], string>,
   >(capability: K, value: Capabilities[T][K]): Promise<void> {
     this.log('Capability', capability, 'is', value)
@@ -244,7 +244,7 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async setStoreValue<K extends keyof Store[T]>(
+  public override async setStoreValue<K extends keyof Store[T]>(
     key: Extract<K, string>,
     value: Store[T][K],
   ): Promise<void> {
@@ -254,7 +254,7 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  public async setWarning(warning: string | null): Promise<void> {
+  public override async setWarning(warning: string | null): Promise<void> {
     if (warning !== null) {
       await super.setWarning(warning)
     }

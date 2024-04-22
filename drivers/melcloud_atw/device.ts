@@ -89,7 +89,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected onCapability<K extends keyof SetCapabilities['Atw']>(
+  protected override onCapability<K extends keyof SetCapabilities['Atw']>(
     capability: K,
     value: SetCapabilities['Atw'][K],
   ): void {
@@ -104,7 +104,7 @@ export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
     super.onCapability(capability, value)
   }
 
-  protected async setCapabilities(
+  protected override async setCapabilities(
     data: DeviceData['Atw'] | ListDevice['Atw']['Device'] | null,
   ): Promise<void> {
     await super.setCapabilities(data)

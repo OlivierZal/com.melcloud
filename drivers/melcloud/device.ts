@@ -55,7 +55,7 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  public getCapabilityValue<K extends keyof Capabilities['Ata']>(
+  public override getCapabilityValue<K extends keyof Capabilities['Ata']>(
     capability: K & string,
   ): NonNullable<Capabilities['Ata'][K]> {
     if (
@@ -67,12 +67,12 @@ export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
     return super.getCapabilityValue(capability)
   }
 
-  protected registerCapabilityListeners(): void {
+  protected override registerCapabilityListeners(): void {
     super.registerCapabilityListeners()
     this.#registerThermostatModeListener()
   }
 
-  protected async setCapabilities(
+  protected override async setCapabilities(
     data: DeviceData['Ata'] | ListDevice['Ata']['Device'] | null,
   ): Promise<void> {
     await super.setCapabilities(data)

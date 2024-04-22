@@ -7,11 +7,11 @@ const addToLogs =
   <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, context: ClassDecoratorContext<T>): T => {
     abstract class LogsDecorator extends target {
-      public error(...args: unknown[]): void {
+      public override error(...args: unknown[]): void {
         this.#commonLog('error', ...args)
       }
 
-      public log(...args: unknown[]): void {
+      public override log(...args: unknown[]): void {
         this.#commonLog('log', ...args)
       }
 

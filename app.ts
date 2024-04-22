@@ -61,7 +61,7 @@ export = class MELCloudApp extends withTimers(App) {
     return devices
   }
 
-  public async onInit(): Promise<void> {
+  public override async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     await this.applyLogin()
