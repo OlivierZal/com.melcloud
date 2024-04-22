@@ -462,8 +462,7 @@ abstract class BaseMELCloudDevice<
     capability: K,
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
     const newToDevice = {
-      onoff: (onoff: SetCapabilities[T]['onoff']) =>
-        this.getSetting('always_on') || onoff,
+      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
       ...this.toDevice,
     }
     const value = this.getRequestedOrCurrentValue(capability)
