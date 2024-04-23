@@ -441,7 +441,7 @@ abstract class BaseMELCloudDevice<
   }
 
   #clearEnergyReportPlan(total = false): void {
-    const totalString = String(total) as `${boolean}`
+    const totalString: `${boolean}` = `${total}`
     this.homey.clearTimeout(this.#reportTimeout[totalString])
     this.homey.clearInterval(this.#reportInterval[totalString])
     this.#reportTimeout[totalString] = null
@@ -592,7 +592,7 @@ abstract class BaseMELCloudDevice<
     reportPlanParameters: ReportPlanParameters,
     total = false,
   ): void {
-    const totalString = String(total) as `${boolean}`
+    const totalString: `${boolean}` = `${total}`
     if (!this.#reportTimeout[totalString]) {
       const actionType = `${total ? 'total' : 'regular'} energy report`
       const { interval, duration, values } =
@@ -640,9 +640,7 @@ abstract class BaseMELCloudDevice<
 
   async #runEnergyReport(total = false): Promise<void> {
     if (this.reportPlanParameters) {
-      if (
-        !this.#reportCapabilityTagEntries[String(total) as `${boolean}`].length
-      ) {
+      if (!this.#reportCapabilityTagEntries[`${total}`].length) {
         this.#clearEnergyReportPlan(total)
         return
       }
@@ -710,7 +708,7 @@ abstract class BaseMELCloudDevice<
           data.UsageDisclaimerPercentages.split(',').length
       }
       await Promise.all(
-        this.#reportCapabilityTagEntries[String(total) as `${boolean}`].map(
+        this.#reportCapabilityTagEntries[`${total}`].map(
           async <
             K extends Extract<keyof ReportCapabilities[T], string>,
             L extends keyof ReportData[T],
@@ -747,21 +745,19 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  #setReportCapabilityTagEntries<
-    K extends Extract<keyof ReportCapabilities[T], string>,
-    L extends keyof ReportData[T],
-  >(totals: boolean[] | boolean = [false, true]): void {
+  #setReportCapabilityTagEntries(
+    totals: boolean[] | boolean = [false, true],
+  ): void {
     ;(Array.isArray(totals) ? totals : [totals]).forEach((total) => {
-      this.#reportCapabilityTagEntries[String(total) as `${boolean}`] =
-        Object.entries(
-          this.#cleanMapping(
-            this.driver
-              .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
-          ),
-        ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
-          K,
-          L[],
-        ][]
+      this.#reportCapabilityTagEntries[`${total}`] = Object.entries(
+        this.#cleanMapping(
+          this.driver
+            .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
+        ),
+      ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
+        Extract<keyof ReportCapabilities[T], string>,
+        (keyof ReportData[T])[],
+      ][]
     })
   }
 }
