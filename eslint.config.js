@@ -141,7 +141,63 @@ module.exports = tsEslint.config(
           },
         },
       ],
-      '@typescript-eslint/naming-convention': 'off',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          filter: {
+            match: true,
+            regex:
+              '^[a-z]+(?:_[a-z0-9]+)*(\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?)?$',
+          },
+          format: null,
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
+        {
+          filter: {
+            match: true,
+            regex: '^(Ata|Atw|Erv)$',
+          },
+          format: ['PascalCase'],
+          selector: 'enumMember',
+        },
+        {
+          format: ['snake_case'],
+          selector: 'enumMember',
+        },
+        {
+          format: ['camelCase', 'PascalCase'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
+        {
+          format: ['camelCase', 'PascalCase'],
+          selector: 'import',
+        },
+        {
+          format: ['PascalCase'],
+          prefix: ['can', 'did', 'has', 'is', 'should', 'will'],
+          selector: 'variable',
+          types: ['boolean'],
+        },
+        {
+          format: ['camelCase'],
+          modifiers: ['global'],
+          selector: 'variable',
+          types: ['function'],
+        },
+        {
+          format: ['camelCase', 'UPPER_CASE'],
+          modifiers: ['global'],
+          selector: 'variable',
+        },
+        {
+          format: ['PascalCase'],
+          selector: 'typeLike',
+        },
+        {
+          format: ['camelCase'],
+          selector: 'default',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': ['error', { ignoreRestArgs: true }],
       '@typescript-eslint/no-magic-numbers': ['error', { ignoreEnums: true }],
       '@typescript-eslint/no-unused-vars': [

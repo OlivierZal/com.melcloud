@@ -101,11 +101,11 @@ export = class MELCloudApp extends withTimers(App) {
       )
       const devicesPerId = Object.groupBy<number, ListDeviceAny>(
         buildingDevices,
-        ({ DeviceID }) => DeviceID,
+        ({ DeviceID: deviceId }) => deviceId,
       )
       this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
         buildingDevices,
-        ({ Device }) => Device.DeviceType,
+        ({ Device: { DeviceType: deviceType } }) => deviceType,
       )
       this.#devices = Object.fromEntries(
         Object.entries(devicesPerId).map(([id, devices]) => {

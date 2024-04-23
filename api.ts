@@ -357,16 +357,16 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    const { enabled, startDate, endDate } = body
-    if (enabled && (!startDate || !endDate)) {
+    const { endDate, isEnabled, startDate } = body
+    if (isEnabled && (!startDate || !endDate)) {
       throw new Error(homey.__('app.holiday_mode.date_missing'))
     }
-    const utcStartDate = toUTC(startDate, enabled)
-    const utcEndDate = toUTC(endDate, enabled)
+    const utcStartDate = toUTC(startDate, isEnabled)
+    const utcEndDate = toUTC(endDate, isEnabled)
     handleResponse(
       (
         await (homey.app as MELCloudApp).melcloudAPI.updateHolidayMode({
-          Enabled: enabled,
+          Enabled: isEnabled,
           EndDate:
             utcEndDate ?
               {

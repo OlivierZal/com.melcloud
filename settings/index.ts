@@ -537,24 +537,24 @@ const generateErrorLog = (homey: Homey): void => {
 
 const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
   const {
-    HMEnabled: enabled,
+    HMEnabled: isEnabled,
     HMEndDate: endDate,
     HMStartDate: startDate,
   } = data
-  holidayModeEnabledElement.value = String(enabled)
-  holidayModeEndDateElement.value = enabled ? endDate ?? '' : ''
-  holidayModeStartDateElement.value = enabled ? startDate ?? '' : ''
+  holidayModeEnabledElement.value = String(isEnabled)
+  holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
+  holidayModeStartDateElement.value = isEnabled ? startDate ?? '' : ''
 }
 
 const refreshBuildingFrostProtectionSettings = (
   data: FrostProtectionData,
 ): void => {
   const {
-    FPEnabled: enabled,
+    FPEnabled: isEnabled,
     FPMaxTemperature: max,
     FPMinTemperature: min,
   } = data
-  frostProtectionEnabledElement.value = String(enabled)
+  frostProtectionEnabledElement.value = String(isEnabled)
   frostProtectionMaxTemperatureElement.value = String(max)
   frostProtectionMinTemperatureElement.value = String(min)
 }
@@ -632,26 +632,26 @@ const getBuildings = async (
         buildingMapping = Object.fromEntries(
           buildings.map((building) => {
             const {
-              ID,
+              ID: id,
               Name: name,
-              FPEnabled: fpEnabled,
+              FPEnabled: isFpEnabled,
               FPMaxTemperature: fpMax,
               FPMinTemperature: fpMin,
-              HMEnabled: hmEnabled,
+              HMEnabled: isHmEnabled,
               HMEndDate: hmEndDate,
               HMStartDate: hmStartDate,
             } = building
             const optionElement = document.createElement('option')
-            optionElement.value = String(ID)
+            optionElement.value = String(id)
             optionElement.innerText = name
             buildingElement.appendChild(optionElement)
             return [
-              String(ID),
+              String(id),
               {
-                FPEnabled: fpEnabled,
+                FPEnabled: isFpEnabled,
                 FPMaxTemperature: fpMax,
                 FPMinTemperature: fpMin,
-                HMEnabled: hmEnabled,
+                HMEnabled: isHmEnabled,
                 HMEndDate: hmEndDate,
                 HMStartDate: hmStartDate,
               },
@@ -1026,17 +1026,17 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    const data = buildingMapping[buildingElement.value]
-    const enabled = holidayModeEnabledElement.value === 'true'
+    const isEnabled = holidayModeEnabledElement.value === 'true'
     const body: HolidayModeSettings = {
-      enabled,
-      endDate: enabled ? holidayModeEndDateElement.value : '',
-      startDate: enabled ? holidayModeStartDateElement.value : '',
+      endDate: isEnabled ? holidayModeEndDateElement.value : '',
+      isEnabled,
+      startDate: isEnabled ? holidayModeStartDateElement.value : '',
     }
+    const buildingId = buildingElement.value
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'PUT',
-      `/settings/buildings/${buildingElement.value}/holiday_mode`,
+      `/settings/buildings/${buildingId}/holiday_mode`,
       body,
       async (error: Error | null) => {
         enableButtons('holiday-mode')
@@ -1050,7 +1050,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(homey.__('settings.success'))
         } catch (err) {
-          refreshBuildingHolidayModeSettings(data)
+          refreshBuildingHolidayModeSettings(buildingMapping[buildingId])
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
         }

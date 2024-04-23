@@ -704,7 +704,7 @@ export type FrostProtectionSettings = Omit<
 >
 
 export interface HolidayModeSettings {
-  readonly enabled: boolean
   readonly endDate: string
+  readonly isEnabled: boolean
   readonly startDate: string
 }
