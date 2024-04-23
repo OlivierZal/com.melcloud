@@ -41,8 +41,8 @@ const NUMBER_0 = 0
 const YEAR_1970 = 1970
 
 const filterEnergyKeys = (key: string, total: boolean): boolean => {
-  const condition = key.startsWith('measure_power') || key.includes('daily')
-  return total ? !condition : condition
+  const isTotal = !key.startsWith('measure_power') && !key.includes('daily')
+  return total ? isTotal : !isTotal
 }
 
 @addToLogs('getName()')
