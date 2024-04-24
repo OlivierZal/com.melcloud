@@ -318,10 +318,9 @@ export = {
             (changedKey) => body[changedKey] !== device.getSetting(changedKey),
           )
           if (changedKeys.length) {
-            const deviceSettings = Object.fromEntries(
-              changedKeys.map((key) => [key, body[key]]),
+            await device.setSettings(
+              Object.fromEntries(changedKeys.map((key) => [key, body[key]])),
             )
-            await device.setSettings(deviceSettings)
             await device.onSettings({
               changedKeys,
               newSettings: device.getSettings() as Settings,
