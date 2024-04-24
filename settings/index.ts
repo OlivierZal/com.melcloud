@@ -529,22 +529,22 @@ const generateErrorLog = (homey: Homey): void => {
 
 const refreshBuildingHolidayModeSettings = ({
   HMEnabled: isEnabled,
-  HMEndDate: endDate,
   HMStartDate: startDate,
+  HMEndDate: endDate,
 }: HolidayModeData): void => {
   holidayModeEnabledElement.value = String(isEnabled)
-  holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
   holidayModeStartDateElement.value = isEnabled ? startDate ?? '' : ''
+  holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
 }
 
 const refreshBuildingFrostProtectionSettings = ({
   FPEnabled: isEnabled,
-  FPMaxTemperature: max,
   FPMinTemperature: min,
+  FPMaxTemperature: max,
 }: FrostProtectionData): void => {
   frostProtectionEnabledElement.value = String(isEnabled)
-  frostProtectionMaxTemperatureElement.value = String(max)
   frostProtectionMinTemperatureElement.value = String(min)
+  frostProtectionMaxTemperatureElement.value = String(max)
 }
 
 const refreshBuildingSettings = (): void => {
@@ -1123,7 +1123,7 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
     disableButtons('frost-protection')
     const data = buildingMapping[buildingElement.value]
     try {
-      const { max, min } = fixAndGetFpMinMax(homey)
+      const { min, max } = fixAndGetFpMinMax(homey)
       updateFrostProtectionData(
         homey,
         {

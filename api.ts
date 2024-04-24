@@ -2,11 +2,9 @@
 import type {
   Building,
   ErrorLogData,
-  FailureData,
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
-  SuccessData,
 } from './melcloud/types'
 import type {
   DeviceSettings,
@@ -51,9 +49,11 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
     .join('\n')
 
-const handleResponse = (data: FailureData | SuccessData): void => {
-  if (data.AttributeErrors) {
-    throw new Error(formatErrors(data.AttributeErrors))
+const handleResponse = (
+  errors: Record<string, readonly string[]> | null,
+): void => {
+  if (errors) {
+    throw new Error(formatErrors(errors))
   }
 }
 
@@ -75,13 +75,13 @@ const getErrors = async (
 }
 
 const getDriverSettings = (
-  driver: ManifestDriver,
+  { settings, id: driverId }: ManifestDriver,
   language: string,
 ): DriverSetting[] =>
-  (driver.settings ?? []).flatMap((setting) =>
+  (settings ?? []).flatMap((setting) =>
     (setting.children ?? []).map(
       ({ id, max, min, label, type, units, values }) => ({
-        driverId: driver.id,
+        driverId,
         groupId: setting.id,
         groupLabel: setting.label[language],
         id,
@@ -90,9 +90,9 @@ const getDriverSettings = (
         title: label[language],
         type,
         units,
-        values: values?.map((value) => ({
-          id: value.id,
-          label: value.label[language],
+        values: values?.map(({ id: valueId, label: valueLabel }) => ({
+          id: valueId,
+          label: valueLabel[language],
         })),
       }),
     ),
@@ -148,30 +148,30 @@ const fromUTC = (utcDate: string | null, language?: string): string => {
 const toUTC = (date: string, enabled: boolean): DateTime | null =>
   enabled ? DateTime.fromISO(date).toUTC() : null
 
-const handleErrorLogQuery = (
-  query: ErrorLogQuery,
-): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const from =
-    typeof query.from !== 'undefined' && query.from ?
-      DateTime.fromISO(query.from)
-    : null
-  const to =
-    typeof query.to !== 'undefined' && query.to ?
-      DateTime.fromISO(query.to)
-    : DateTime.now()
+const handleErrorLogQuery = ({
+  from,
+  to,
+  limit,
+  offset,
+}: ErrorLogQuery): { fromDate: DateTime; period: number; toDate: DateTime } => {
+  const fromData =
+    typeof from !== 'undefined' && from ? DateTime.fromISO(from) : null
+  const toDate =
+    typeof to !== 'undefined' && to ? DateTime.fromISO(to) : DateTime.now()
 
-  let period = Number.parseInt(String(query.limit), 10)
+  let period = Number.parseInt(String(limit), 10)
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
-  let offset = Number.parseInt(String(query.offset), 10)
-  offset = from !== null || Number.isNaN(offset) ? DEFAULT_OFFSET : offset
+  let daysOffset = Number.parseInt(String(offset), 10)
+  daysOffset =
+    fromData !== null || Number.isNaN(daysOffset) ? DEFAULT_OFFSET : daysOffset
 
-  const limit = from ? DEFAULT_LIMIT : period
-  const days = limit * offset + offset
+  const daysLimit = fromData ? DEFAULT_LIMIT : period
+  const days = daysLimit * daysOffset + daysOffset
   return {
-    fromDate: from ?? to.minus({ days: days + limit }),
+    fromDate: fromData ?? toDate.minus({ days: days + daysLimit }),
     period,
-    toDate: to.minus({ days }),
+    toDate: toDate.minus({ days }),
   }
 }
 
@@ -260,29 +260,27 @@ export = {
   },
   async getFrostProtectionSettings({
     homey,
-    params,
+    params: { buildingId },
   }: {
     homey: Homey
     params: { buildingId: number }
   }): Promise<FrostProtectionData> {
     return (
       await (homey.app as MELCloudApp).melcloudAPI.getFrostProtection(
-        getBuildingDeviceId(homey, Number(params.buildingId)),
+        getBuildingDeviceId(homey, Number(buildingId)),
       )
     ).data
   },
   async getHolidayModeSettings({
     homey,
-    params,
+    params: { buildingId },
   }: {
     homey: Homey
     params: { buildingId: number }
   }): Promise<HolidayModeData> {
     const { data } = await (
       homey.app as MELCloudApp
-    ).melcloudAPI.getHolidayMode(
-      getBuildingDeviceId(homey, Number(params.buildingId)),
-    )
+    ).melcloudAPI.getHolidayMode(getBuildingDeviceId(homey, Number(buildingId)))
     return {
       ...data,
       HMEndDate: fromUTC(data.HMEndDate),
@@ -331,7 +329,7 @@ export = {
   },
   async updateFrostProtectionSettings({
     homey,
-    params,
+    params: { buildingId },
     body,
   }: {
     body: FrostProtectionSettings
@@ -342,21 +340,20 @@ export = {
       (
         await (homey.app as MELCloudApp).melcloudAPI.updateFrostProtection({
           ...body,
-          BuildingIds: [Number(params.buildingId)],
+          BuildingIds: [Number(buildingId)],
         })
-      ).data,
+      ).data.AttributeErrors,
     )
   },
   async updateHolidayModeSettings({
     homey,
-    params,
-    body,
+    params: { buildingId },
+    body: { isEnabled, startDate, endDate },
   }: {
     body: HolidayModeSettings
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    const { endDate, isEnabled, startDate } = body
     if (isEnabled && (!startDate || !endDate)) {
       throw new Error(homey.__('app.holiday_mode.date_missing'))
     }
@@ -377,7 +374,7 @@ export = {
                 Year: utcEndDate.year,
               }
             : null,
-          HMTimeZones: [{ Buildings: [Number(params.buildingId)] }],
+          HMTimeZones: [{ Buildings: [Number(buildingId)] }],
           StartDate:
             utcStartDate ?
               {
@@ -390,7 +387,7 @@ export = {
               }
             : null,
         })
-      ).data,
+      ).data.AttributeErrors,
     )
   },
 }

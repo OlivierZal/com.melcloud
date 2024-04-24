@@ -586,35 +586,34 @@ abstract class BaseMELCloudDevice<
     return setting in this.driver.reportCapabilityTagMapping
   }
 
-  #planEnergyReport(
-    reportPlanParameters: ReportPlanParameters,
-    total = false,
-  ): void {
-    const totalString: `${boolean}` = `${total}`
-    if (!this.#reportTimeout[totalString]) {
-      const actionType = `${total ? 'total' : 'regular'} energy report`
-      const { interval, duration, values } =
-        total ?
-          {
-            duration: { days: 1 },
-            interval: { days: 1 },
-            values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-          }
-        : reportPlanParameters
-      this.#reportTimeout[totalString] = this.setTimeout(
-        async () => {
-          await this.#runEnergyReport(total)
-          this.#reportInterval[totalString] = this.setInterval(
-            async () => {
-              await this.#runEnergyReport(total)
-            },
-            interval,
-            { actionType, units: ['days', 'hours'] },
-          )
-        },
-        DateTime.now().plus(duration).set(values).diffNow(),
-        { actionType, units: ['hours', 'minutes'] },
-      )
+  #planEnergyReport(total = false): void {
+    if (this.reportPlanParameters) {
+      const totalString: `${boolean}` = `${total}`
+      if (!this.#reportTimeout[totalString]) {
+        const actionType = `${total ? 'total' : 'regular'} energy report`
+        const { duration, interval, values } =
+          total ?
+            {
+              duration: { days: 1 },
+              interval: { days: 1 },
+              values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+            }
+          : this.reportPlanParameters
+        this.#reportTimeout[totalString] = this.setTimeout(
+          async () => {
+            await this.#runEnergyReport(total)
+            this.#reportInterval[totalString] = this.setInterval(
+              async () => {
+                await this.#runEnergyReport(total)
+              },
+              interval,
+              { actionType, units: ['days', 'hours'] },
+            )
+          },
+          DateTime.now().plus(duration).set(values).diffNow(),
+          { actionType, units: ['hours', 'minutes'] },
+        )
+      }
     }
   }
 
@@ -646,7 +645,7 @@ abstract class BaseMELCloudDevice<
       const fromDate = total ? DateTime.local(YEAR_1970) : toDate
       const data = await this.#reportEnergyCost(fromDate, toDate)
       await this.#setReportCapabilities(data, toDate, total)
-      this.#planEnergyReport(this.reportPlanParameters, total)
+      this.#planEnergyReport(total)
     }
   }
 
