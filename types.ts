@@ -626,15 +626,15 @@ export interface ReportCapabilityTagMapping {
   readonly Atw: typeof reportCapabilityTagMappingAtw
   readonly Erv: typeof reportCapabilityTagMappingErv
 }
-export type OpCapabilityTagEntries<T extends keyof typeof DeviceType> = [
+
+export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
   Extract<keyof OpCapabilities[T], string>,
   OpDeviceData<T>,
-][]
-
-export type ReportCapabilityTagEntries<T extends keyof typeof DeviceType> = [
+]
+export type ReportCapabilityTagEntry<T extends keyof typeof DeviceType> = [
   Extract<keyof ReportCapabilities[T], string>,
   (keyof ReportData[T])[],
-][]
+]
 
 export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
   value:

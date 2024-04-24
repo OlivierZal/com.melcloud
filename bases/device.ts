@@ -9,10 +9,10 @@ import type {
   ListCapabilityTagMapping,
   MELCloudDriver,
   OpCapabilities,
-  OpCapabilityTagEntries,
+  OpCapabilityTagEntry,
   OpDeviceData,
   ReportCapabilities,
-  ReportCapabilityTagEntries,
+  ReportCapabilityTagEntry,
   ReportCapabilityTagMapping,
   ReportPlanParameters,
   SetCapabilities,
@@ -40,10 +40,8 @@ import withTimers from '../mixins/withTimers'
 const NUMBER_0 = 0
 const YEAR_1970 = 1970
 
-const filterEnergyKeys = (key: string, total: boolean): boolean => {
-  const isTotal = !key.startsWith('measure_power') && !key.includes('daily')
-  return total ? isTotal : !isTotal
-}
+const isTotalEnergyKey = (key: string): boolean =>
+  !key.startsWith('measure_power') && !key.includes('daily')
 
 @addToLogs('getName()')
 abstract class BaseMELCloudDevice<
@@ -67,12 +65,12 @@ abstract class BaseMELCloudDevice<
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
-  #listOnlyCapabilityTagEntries: OpCapabilityTagEntries<T> = []
+  #listOnlyCapabilityTagEntries: OpCapabilityTagEntry<T>[] = []
 
   #reportCapabilityTagEntries: {
-    false: ReportCapabilityTagEntries<T>
-    true: ReportCapabilityTagEntries<T>
-  } = { false: [], true: [] }
+    false?: ReportCapabilityTagEntry<T>[]
+    true?: ReportCapabilityTagEntry<T>[]
+  } = {}
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
@@ -204,8 +202,8 @@ abstract class BaseMELCloudDevice<
       await Promise.all(
         [false, true].map(async (total) => {
           if (
-            changedEnergyKeys.some((setting) =>
-              filterEnergyKeys(setting, total),
+            changedEnergyKeys.some(
+              (setting) => isTotalEnergyKey(setting) === total,
             )
           ) {
             this.#setReportCapabilityTagEntries(total)
@@ -490,7 +488,7 @@ abstract class BaseMELCloudDevice<
 
   #getUpdateCapabilityTagEntries(
     effectiveFlags: number,
-  ): OpCapabilityTagEntries<T> {
+  ): OpCapabilityTagEntry<T>[] {
     switch (true) {
       case effectiveFlags !== FLAG_UNCHANGED:
         return [
@@ -500,7 +498,7 @@ abstract class BaseMELCloudDevice<
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
-        ] as OpCapabilityTagEntries<T>
+        ] as OpCapabilityTagEntry<T>[]
       case Boolean(this.diff.size):
       case this.#syncToDeviceTimeout !== null:
         return this.#listOnlyCapabilityTagEntries
@@ -509,7 +507,7 @@ abstract class BaseMELCloudDevice<
           ...this.#setCapabilityTagMapping,
           ...this.#getCapabilityTagMapping,
           ...this.#listCapabilityTagMapping,
-        }) as OpCapabilityTagEntries<T>
+        }) as OpCapabilityTagEntry<T>[]
     }
   }
 
@@ -640,7 +638,7 @@ abstract class BaseMELCloudDevice<
 
   async #runEnergyReport(total = false): Promise<void> {
     if (this.reportPlanParameters) {
-      if (!this.#reportCapabilityTagEntries[`${total}`].length) {
+      if (!(this.#reportCapabilityTagEntries[`${total}`] ?? []).length) {
         this.#clearEnergyReportPlan(total)
         return
       }
@@ -708,7 +706,7 @@ abstract class BaseMELCloudDevice<
           data.UsageDisclaimerPercentages.split(',').length
       }
       await Promise.all(
-        this.#reportCapabilityTagEntries[`${total}`].map(
+        (this.#reportCapabilityTagEntries[`${total}`] ?? []).map(
           async <
             K extends Extract<keyof ReportCapabilities[T], string>,
             L extends keyof ReportData[T],
@@ -745,20 +743,26 @@ abstract class BaseMELCloudDevice<
     }
   }
 
-  #setReportCapabilityTagEntries(
-    totals: boolean[] | boolean = [false, true],
-  ): void {
-    ;(Array.isArray(totals) ? totals : [totals]).forEach((total) => {
-      this.#reportCapabilityTagEntries[`${total}`] = Object.entries(
-        this.#cleanMapping(
-          this.driver
-            .reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
-        ),
-      ).filter(([capability]) => filterEnergyKeys(capability, total)) as [
-        Extract<keyof ReportCapabilities[T], string>,
-        (keyof ReportData[T])[],
-      ][]
-    })
+  #setReportCapabilityTagEntries(total?: boolean): void {
+    const reportCapabilityTagEntries = Object.entries(
+      this.#cleanMapping(
+        this.driver.reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
+      ),
+    ) as ReportCapabilityTagEntry<T>[]
+    if (typeof total !== 'undefined') {
+      this.#reportCapabilityTagEntries[`${total}`] =
+        reportCapabilityTagEntries.filter(
+          ([capability]) => isTotalEnergyKey(capability) === total,
+        )
+      return
+    }
+    this.#reportCapabilityTagEntries = Object.groupBy<
+      `${boolean}`,
+      ReportCapabilityTagEntry<T>
+    >(
+      reportCapabilityTagEntries,
+      ([capability]) => `${isTotalEnergyKey(capability)}`,
+    )
   }
 }
 

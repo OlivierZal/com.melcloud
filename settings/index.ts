@@ -421,14 +421,14 @@ const shouldUpdate = (
     typeof driverId === 'undefined' ?
       flatDeviceSettings[settingId]
     : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-  if (typeof deviceSetting === 'undefined') {
-    return false
-  }
-  if (new Set(deviceSetting).size !== NUMBER_1) {
+  if (typeof deviceSetting !== 'undefined') {
+    if (new Set(deviceSetting).size === NUMBER_1) {
+      const [deviceSettingValue] = deviceSetting
+      return settingValue !== deviceSettingValue
+    }
     return true
   }
-  const [deviceSettingValue] = deviceSetting
-  return settingValue !== deviceSettingValue
+  return false
 }
 
 const buildSettingsBody = (
@@ -664,19 +664,19 @@ const getBuildings = async (
   })
 
 const updateDeviceSettings = (body: Settings, driverId?: string): void => {
-  if (typeof driverId === 'undefined') {
+  if (typeof driverId !== 'undefined') {
     Object.entries(body).forEach(([settingId, settingValue]) => {
-      Object.keys(deviceSettings).forEach((driver) => {
-        deviceSettings[driver][settingId] = [settingValue]
-      })
-      flatDeviceSettings[settingId] = [settingValue]
+      deviceSettings[driverId][settingId] = [settingValue]
     })
+    getFlatDeviceSettings()
     return
   }
   Object.entries(body).forEach(([settingId, settingValue]) => {
-    deviceSettings[driverId][settingId] = [settingValue]
+    Object.keys(deviceSettings).forEach((driver) => {
+      deviceSettings[driver][settingId] = [settingValue]
+    })
+    flatDeviceSettings[settingId] = [settingValue]
   })
-  getFlatDeviceSettings()
 }
 
 const setDeviceSettings = (
