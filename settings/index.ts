@@ -414,18 +414,16 @@ const shouldUpdate = (
   settingValue: ValueOf<Settings>,
   driverId?: string,
 ): boolean => {
-  if (settingValue !== null) {
-    const deviceSetting =
-      typeof driverId === 'undefined' ?
-        flatDeviceSettings[settingId]
-      : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-    if (typeof deviceSetting !== 'undefined') {
-      if (new Set(deviceSetting).size === NUMBER_1) {
-        const [deviceSettingValue] = deviceSetting
-        return settingValue !== deviceSettingValue
-      }
-      return true
+  const deviceSetting =
+    typeof driverId === 'undefined' ?
+      flatDeviceSettings[settingId]
+    : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
+  if (typeof deviceSetting !== 'undefined') {
+    if (new Set(deviceSetting).size === NUMBER_1) {
+      const [deviceSettingValue] = deviceSetting
+      return settingValue !== deviceSettingValue
     }
+    return true
   }
   return false
 }
