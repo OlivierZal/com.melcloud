@@ -535,25 +535,21 @@ const generateErrorLog = (homey: Homey): void => {
   )
 }
 
-const refreshBuildingHolidayModeSettings = (data: HolidayModeData): void => {
-  const {
-    HMEnabled: isEnabled,
-    HMEndDate: endDate,
-    HMStartDate: startDate,
-  } = data
+const refreshBuildingHolidayModeSettings = ({
+  HMEnabled: isEnabled,
+  HMEndDate: endDate,
+  HMStartDate: startDate,
+}: HolidayModeData): void => {
   holidayModeEnabledElement.value = String(isEnabled)
   holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
   holidayModeStartDateElement.value = isEnabled ? startDate ?? '' : ''
 }
 
-const refreshBuildingFrostProtectionSettings = (
-  data: FrostProtectionData,
-): void => {
-  const {
-    FPEnabled: isEnabled,
-    FPMaxTemperature: max,
-    FPMinTemperature: min,
-  } = data
+const refreshBuildingFrostProtectionSettings = ({
+  FPEnabled: isEnabled,
+  FPMaxTemperature: max,
+  FPMinTemperature: min,
+}: FrostProtectionData): void => {
   frostProtectionEnabledElement.value = String(isEnabled)
   frostProtectionMaxTemperatureElement.value = String(max)
   frostProtectionMinTemperatureElement.value = String(min)
