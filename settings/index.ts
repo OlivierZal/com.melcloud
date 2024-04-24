@@ -626,8 +626,8 @@ const getBuildings = async (
           return
         }
         buildingMapping = Object.fromEntries(
-          buildings.map((building) => {
-            const {
+          buildings.map(
+            ({
               ID: id,
               Name: name,
               FPEnabled: isFpEnabled,
@@ -636,23 +636,24 @@ const getBuildings = async (
               HMEnabled: isHmEnabled,
               HMEndDate: hmEndDate,
               HMStartDate: hmStartDate,
-            } = building
-            const optionElement = document.createElement('option')
-            optionElement.value = String(id)
-            optionElement.innerText = name
-            buildingElement.appendChild(optionElement)
-            return [
-              String(id),
-              {
-                FPEnabled: isFpEnabled,
-                FPMaxTemperature: fpMax,
-                FPMinTemperature: fpMin,
-                HMEnabled: isHmEnabled,
-                HMEndDate: hmEndDate,
-                HMStartDate: hmStartDate,
-              },
-            ]
-          }),
+            }) => {
+              const optionElement = document.createElement('option')
+              optionElement.value = String(id)
+              optionElement.innerText = name
+              buildingElement.appendChild(optionElement)
+              return [
+                String(id),
+                {
+                  FPEnabled: isFpEnabled,
+                  FPMaxTemperature: fpMax,
+                  FPMinTemperature: fpMin,
+                  HMEnabled: isHmEnabled,
+                  HMEndDate: hmEndDate,
+                  HMStartDate: hmStartDate,
+                },
+              ]
+            },
+          ),
         )
         resolve(buildingMapping)
       },
