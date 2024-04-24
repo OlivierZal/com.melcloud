@@ -432,21 +432,17 @@ const buildSettingsBody = (
   homey: Homey,
   elements: (HTMLInputElement | HTMLSelectElement)[],
   driverId?: string,
-): Settings =>
-  Object.fromEntries(
-    elements
-      .map((element) => {
-        const [settingId] = element.id.split('--')
-        const settingValue = processSettingValue(element)
-        return shouldUpdate(settingId, settingValue, driverId) ?
-            [settingId, settingValue]
-          : [null]
-      })
-      .filter((entry): entry is [string, ValueOf<Settings>] => {
-        const [key] = entry
-        return key !== null
-      }),
-  )
+): Settings => {
+  const settings: Settings = {}
+  elements.forEach((element) => {
+    const [settingId] = element.id.split('--')
+    const settingValue = processSettingValue(element)
+    if (shouldUpdate(settingId, settingValue, driverId)) {
+      settings[settingId] = settingValue
+    }
+  })
+  return settings
+}
 
 const generateErrorLogTable = (
   homey: Homey,
