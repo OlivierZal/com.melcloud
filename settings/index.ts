@@ -397,10 +397,7 @@ const processSettingValue = (
 ): ValueOf<Settings> => {
   if (element.value) {
     if (element instanceof HTMLInputElement && element.type === 'checkbox') {
-      if (element.indeterminate) {
-        return null
-      }
-      return element.checked
+      return element.indeterminate ? null : element.checked
     }
     return ['true', 'false'].includes(element.value) ?
         element.value === 'true'
@@ -414,16 +411,18 @@ const shouldUpdate = (
   settingValue: ValueOf<Settings>,
   driverId?: string,
 ): boolean => {
-  const deviceSetting =
-    typeof driverId === 'undefined' ?
-      flatDeviceSettings[settingId]
-    : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
-  if (typeof deviceSetting !== 'undefined') {
-    if (new Set(deviceSetting).size === NUMBER_1) {
-      const [deviceSettingValue] = deviceSetting
-      return settingValue !== deviceSettingValue
+  if (settingValue !== null) {
+    const deviceSetting =
+      typeof driverId === 'undefined' ?
+        flatDeviceSettings[settingId]
+      : (deviceSettings[driverId] as DeviceSetting | undefined)?.[settingId]
+    if (typeof deviceSetting !== 'undefined') {
+      if (new Set(deviceSetting).size === NUMBER_1) {
+        const [deviceSettingValue] = deviceSetting
+        return settingValue !== deviceSettingValue
+      }
+      return true
     }
-    return true
   }
   return false
 }
