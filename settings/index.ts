@@ -678,17 +678,22 @@ const setDeviceSettings = (
     endPoint += `?${queryString}`
   }
   // @ts-expect-error: `homey` is partially typed
-  homey.api('PUT', endPoint, body, async (error: Error | null) => {
-    if (error) {
+  homey.api(
+    'PUT',
+    endPoint,
+    body satisfies Settings,
+    async (error: Error | null) => {
+      if (error) {
+        // @ts-expect-error: `homey` is partially typed
+        await homey.alert(error.message)
+        return
+      }
+      updateDeviceSettings(body, driverId)
+      enableButtons(`settings-${driverId ?? 'common'}`)
       // @ts-expect-error: `homey` is partially typed
-      await homey.alert(error.message)
-      return
-    }
-    updateDeviceSettings(body, driverId)
-    enableButtons(`settings-${driverId ?? 'common'}`)
-    // @ts-expect-error: `homey` is partially typed
-    await homey.alert(homey.__('settings.success'))
-  })
+      await homey.alert(homey.__('settings.success'))
+    },
+  )
 }
 
 const addApplySettingsEventListener = (
@@ -945,12 +950,11 @@ const login = async (homey: Homey): Promise<void> => {
     await homey.alert(homey.__('settings.authenticate.failure'))
     return
   }
-  const body: LoginCredentials = { password, username }
   // @ts-expect-error: `homey` is partially typed
   homey.api(
     'POST',
     '/sessions',
-    body,
+    { password, username } satisfies LoginCredentials,
     async (error: Error | null, loggedIn: boolean) => {
       if (error) {
         // @ts-expect-error: `homey` is partially typed
@@ -1015,17 +1019,16 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
     const isEnabled = holidayModeEnabledElement.value === 'true'
-    const body: HolidayModeSettings = {
-      endDate: isEnabled ? holidayModeEndDateElement.value : '',
-      isEnabled,
-      startDate: isEnabled ? holidayModeStartDateElement.value : '',
-    }
     const buildingId = buildingElement.value
     // @ts-expect-error: `homey` is partially typed
     homey.api(
       'PUT',
       `/settings/buildings/${buildingId}/holiday_mode`,
-      body,
+      {
+        endDate: isEnabled ? holidayModeEndDateElement.value : '',
+        isEnabled,
+        startDate: isEnabled ? holidayModeStartDateElement.value : '',
+      } satisfies HolidayModeSettings,
       async (error: Error | null) => {
         enableButtons('holiday-mode')
         try {
@@ -1078,7 +1081,7 @@ const updateFrostProtectionData = (
   homey.api(
     'PUT',
     `/settings/buildings/${buildingElement.value}/frost_protection`,
-    body,
+    body satisfies FrostProtectionSettings,
     async (error: Error | null) => {
       enableButtons('frost-protection')
       try {
