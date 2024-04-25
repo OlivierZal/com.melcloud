@@ -212,9 +212,11 @@ const getFlatDeviceSettings = (): void => {
     (flattenedDeviceSettings, settings) =>
       Object.entries(settings).reduce<DeviceSetting>(
         (acc, [settingId, settingValues]) => {
-          acc[settingId] ??= []
           acc[settingId] = Array.from(
-            new Set<ValueOf<Settings>>([...acc[settingId], ...settingValues]),
+            new Set<ValueOf<Settings>>([
+              ...(acc[settingId] ?? []),
+              ...settingValues,
+            ]),
           )
           return acc
         },
