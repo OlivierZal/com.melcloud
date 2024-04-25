@@ -47,6 +47,11 @@ let driverSettingsCommon: DriverSetting[] = []
 let driverSettingsDrivers: Record<string, DriverSetting[]> = {}
 let usernameElement: HTMLInputElement | null = null
 let passwordElement: HTMLInputElement | null = null
+let buildingMapping: Record<string, BuildingData> = {}
+let errorLogTBodyElement: HTMLTableSectionElement | null = null
+let errorCount = 0
+let from = ''
+let to = ''
 
 const minMinTemperature = 4
 const maxMinTemperature = 14
@@ -117,14 +122,6 @@ const frostProtectionEnabledElement = document.getElementById(
 const holidayModeEnabledElement = document.getElementById(
   'enabled-holiday-mode',
 ) as HTMLSelectElement
-
-let buildingMapping: Record<string, BuildingData> = {}
-
-let errorLogTBodyElement: HTMLTableSectionElement | null = null
-
-let errorCount = 0
-let from = ''
-let to = ''
 
 const disableButton = (elementId: string, value = true): void => {
   const element = document.getElementById(elementId)
