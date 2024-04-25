@@ -54,7 +54,7 @@
         "device": "Enhet",
         "error": "Fel"
       },
-      "error": "Välj ett datum före\n__fromDateHuman__.",
+      "error": "Välj ett datum före\n__from__.",
       "error_count": {
         "0": "fel",
         "1": "fel",
@@ -62,7 +62,7 @@
         "plural": "fel"
       },
       "legend": "Fellogg",
-      "period": "Sedan __fromDateHuman__:",
+      "period": "Sedan __from__:",
       "see": "Se alla fel",
       "since": "sedan"
     },

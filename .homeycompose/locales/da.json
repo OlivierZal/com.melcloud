@@ -54,7 +54,7 @@
         "device": "Enhed",
         "error": "Fejl"
       },
-      "error": "Vælg en dato før\n__fromDateHuman__.",
+      "error": "Vælg en dato før\n__from__.",
       "error_count": {
         "0": "fejl",
         "1": "fejl",
@@ -62,7 +62,7 @@
         "plural": "fejl"
       },
       "legend": "Fejllog",
-      "period": "Siden __fromDateHuman__:",
+      "period": "Siden __from__:",
       "see": "Se alle fejl",
       "since": "siden den"
     },

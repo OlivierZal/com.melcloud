@@ -54,7 +54,7 @@
         "device": "Enhet",
         "error": "Feil"
       },
-      "error": "Velg en dato før\n__fromDateHuman__.",
+      "error": "Velg en dato før\n__from__.",
       "error_count": {
         "0": "feil",
         "1": "feil",
@@ -62,7 +62,7 @@
         "plural": "feil"
       },
       "legend": "Feillogg",
-      "period": "Siden __fromDateHuman__:",
+      "period": "Siden __from__:",
       "see": "Se alle feil",
       "since": "siden"
     },

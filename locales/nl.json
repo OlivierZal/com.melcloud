@@ -54,7 +54,7 @@
         "device": "Apparaat",
         "error": "Fout"
       },
-      "error": "Kies een datum voor\n__fromDateHuman__.",
+      "error": "Kies een datum voor\n__from__.",
       "error_count": {
         "0": "fout",
         "1": "fout",
@@ -62,7 +62,7 @@
         "plural": "fouten"
       },
       "legend": "Foutenlogboek",
-      "period": "Sinds __fromDateHuman__:",
+      "period": "Sinds __from__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"
     },

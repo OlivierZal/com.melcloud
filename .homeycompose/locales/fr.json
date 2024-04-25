@@ -54,7 +54,7 @@
         "device": "Appareil",
         "error": "Erreur"
       },
-      "error": "Choisissez une date antérieure au\n__fromDateHuman__.",
+      "error": "Choisissez une date antérieure au\n__from__.",
       "error_count": {
         "0": "erreur",
         "1": "erreur",
@@ -62,7 +62,7 @@
         "plural": "erreurs"
       },
       "legend": "Journal des erreurs",
-      "period": "Depuis le __fromDateHuman__ :",
+      "period": "Depuis le __from__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"
     },

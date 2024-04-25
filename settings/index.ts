@@ -494,13 +494,11 @@ const updateErrorLogElements = (
   { errors, fromDateHuman, nextFromDate, nextToDate }: ErrorLog,
 ): void => {
   errorCount += errors.length
-  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
   from = fromDateHuman
-  periodLabelElement.innerText = homey.__('settings.error_log.period', {
-    fromDateHuman,
-  })
-  sinceElement.value = nextFromDate
   to = nextToDate
+  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
+  periodLabelElement.innerText = homey.__('settings.error_log.period', { from })
+  sinceElement.value = nextFromDate
 }
 
 const generateErrorLog = (homey: Homey): void => {
@@ -1168,7 +1166,7 @@ const addEventListeners = (homey: Homey): void => {
     ) {
       sinceElement.value = to
       // @ts-expect-error: `homey` is partially typed
-      homey.alert(homey.__('settings.error_log.error', { fromDateHuman: from }))
+      homey.alert(homey.__('settings.error_log.error', { from }))
     }
   })
 
