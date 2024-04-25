@@ -212,14 +212,10 @@ const getFlatDeviceSettings = (): void => {
     (flattenedDeviceSettings, settings) =>
       Object.entries(settings).reduce<DeviceSetting>(
         (acc, [settingId, settingValues]) => {
-          if (!(settingId in acc)) {
-            acc[settingId] = []
-          }
-          const values = new Set<ValueOf<Settings>>([
-            ...acc[settingId],
-            ...settingValues,
-          ])
-          acc[settingId] = Array.from(values)
+          acc[settingId] ??= []
+          acc[settingId] = Array.from(
+            new Set<ValueOf<Settings>>([...acc[settingId], ...settingValues]),
+          )
           return acc
         },
         flattenedDeviceSettings,
@@ -264,9 +260,7 @@ const getDriverSettings = (): void => {
         }
       } else {
         const { driverId } = setting
-        if (!(driverId in acc.driverSettingsDrivers)) {
-          acc.driverSettingsDrivers[driverId] = []
-        }
+        acc.driverSettingsDrivers[driverId] ??= []
         acc.driverSettingsDrivers[driverId].push(setting)
       }
       return acc
