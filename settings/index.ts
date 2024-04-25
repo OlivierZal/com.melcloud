@@ -502,17 +502,15 @@ const updateErrorLogElements = (
 }
 
 const generateErrorLog = (homey: Homey): void => {
-  const query = {
-    from: sinceElement.value,
-    limit: '29',
-    offset: '0',
-    to,
-  } satisfies ErrorLogQuery
-  const queryString = new URLSearchParams(query).toString()
   // @ts-expect-error: `homey` is partially typed
   homey.api(
     'GET',
-    `/errors?${queryString}`,
+    `/errors?${new URLSearchParams({
+      from: sinceElement.value,
+      limit: '29',
+      offset: '0',
+      to,
+    } satisfies ErrorLogQuery).toString()}`,
     async (error: Error | null, data: ErrorLog) => {
       seeElement.classList.remove('is-disabled')
       if (error) {
