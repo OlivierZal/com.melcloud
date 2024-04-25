@@ -502,15 +502,13 @@ const updateErrorLogElements = (
 }
 
 const generateErrorLog = (homey: Homey): void => {
-  const query: ErrorLogQuery = {
+  const query = {
     from: sinceElement.value,
     limit: '29',
     offset: '0',
     to,
-  }
-  const queryString = new URLSearchParams(
-    query as Record<string, string>,
-  ).toString()
+  } satisfies ErrorLogQuery
+  const queryString = new URLSearchParams(query).toString()
   // @ts-expect-error: `homey` is partially typed
   homey.api(
     'GET',
