@@ -669,7 +669,7 @@ const setDeviceSettings = (
 ): void => {
   let endPoint = '/settings/devices'
   if (typeof driverId !== 'undefined') {
-    endPoint += `?${new URLSearchParams({ driverId }).toString()}`
+    endPoint += `?${new URLSearchParams({ driverId } satisfies { driverId: string }).toString()}`
   }
   // @ts-expect-error: `homey` is partially typed
   homey.api(
