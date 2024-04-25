@@ -123,7 +123,7 @@ let buildingMapping: Record<string, BuildingData> = {}
 let errorLogTBodyElement: HTMLTableSectionElement | null = null
 
 let errorCount = 0
-let fromDateHuman = ''
+let from = ''
 let to = ''
 
 const disableButton = (elementId: string, value = true): void => {
@@ -489,15 +489,18 @@ const getErrorCountText = (homey: Homey, count: number): string => {
   }
 }
 
-const updateErrorLogElements = (homey: Homey, data: ErrorLog): void => {
-  ;({ fromDateHuman } = data)
+const updateErrorLogElements = (
+  homey: Homey,
+  { errors, fromDateHuman, nextFromDate, nextToDate }: ErrorLog,
+): void => {
+  errorCount += errors.length
+  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
+  from = fromDateHuman
   periodLabelElement.innerText = homey.__('settings.error_log.period', {
     fromDateHuman,
   })
-  sinceElement.value = data.nextFromDate
-  to = data.nextToDate
-  errorCount += data.errors.length
-  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
+  sinceElement.value = nextFromDate
+  to = nextToDate
 }
 
 const generateErrorLog = (homey: Homey): void => {
@@ -1165,7 +1168,7 @@ const addEventListeners = (homey: Homey): void => {
     ) {
       sinceElement.value = to
       // @ts-expect-error: `homey` is partially typed
-      homey.alert(homey.__('settings.error_log.error', { fromDateHuman }))
+      homey.alert(homey.__('settings.error_log.error', { fromDateHuman: from }))
     }
   })
 
