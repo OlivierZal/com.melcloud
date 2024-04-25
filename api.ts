@@ -154,7 +154,7 @@ const handleErrorLogQuery = ({
   limit,
   offset,
 }: ErrorLogQuery): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const fromData =
+  const fromDate =
     typeof from !== 'undefined' && from ? DateTime.fromISO(from) : null
   const toDate =
     typeof to !== 'undefined' && to ? DateTime.fromISO(to) : DateTime.now()
@@ -164,12 +164,12 @@ const handleErrorLogQuery = ({
 
   let daysOffset = Number.parseInt(String(offset), 10)
   daysOffset =
-    fromData !== null || Number.isNaN(daysOffset) ? DEFAULT_OFFSET : daysOffset
+    fromDate !== null || Number.isNaN(daysOffset) ? DEFAULT_OFFSET : daysOffset
 
-  const daysLimit = fromData ? DEFAULT_LIMIT : period
+  const daysLimit = fromDate ? DEFAULT_LIMIT : period
   const days = daysLimit * daysOffset + daysOffset
   return {
-    fromDate: fromData ?? toDate.minus({ days: days + daysLimit }),
+    fromDate: fromDate ?? toDate.minus({ days: days + daysLimit }),
     period,
     toDate: toDate.minus({ days }),
   }
@@ -179,7 +179,6 @@ export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
     const app = homey.app as MELCloudApp
     return (await app.getBuildings())
-      .filter(({ ID: buildingId }) => app.getDevices({ buildingId }).length)
       .map((building) => ({
         ...building,
         HMEndDate: fromUTC(building.HMEndDate),
