@@ -1,3 +1,4 @@
+import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -17,9 +18,7 @@ import {
   OperationModeState,
   OperationModeZone,
 } from '../../melcloud/types'
-import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
-import { K_MULTIPLIER } from '../../constants'
 
 const HEAT_COOL_GAP = OperationModeZone.room_cool
 const ROOM_FLOW_GAP = OperationModeZone.flow

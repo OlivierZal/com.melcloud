@@ -24,7 +24,6 @@ import {
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
 import type MELCloudApp from '../app'
-import { NUMBER_1 } from '../constants'
 import type PairSession from 'homey/lib/PairSession'
 
 const getArg = <T extends keyof typeof DeviceType>(
@@ -46,7 +45,7 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
       fan_power: {
         max: device.NumberOfFanSpeeds,
         min: Number(!device.HasAutomaticFanSpeed),
-        step: NUMBER_1,
+        step: 1,
       },
     }
   : {}) as CapabilitiesOptions[T]
