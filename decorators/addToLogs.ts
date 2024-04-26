@@ -25,7 +25,7 @@ const addToLogs =
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
                 funcName in this &&
-                typeof this[funcName as keyof this] !== 'function'
+                typeof this[funcName as keyof this] === 'function'
               ) {
                 const func = this[funcName as keyof this] as (
                   ...funcArgs: unknown[]
