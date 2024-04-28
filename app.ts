@@ -8,7 +8,7 @@ import type {
 } from './melcloud/types'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
-import MELCloudAPI from './melcloud/api'
+import MELCloudAPI from './melcloud'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 

@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-export const APP_VERSION = '1.32.1.0'
 export const FLAG_UNCHANGED = 0x0
 
 export type NonEffectiveFlagsKeyOf<T> = Exclude<keyof T, 'EffectiveFlags'>
@@ -303,7 +302,7 @@ export interface LoginCredentials {
   readonly username: string
 }
 export interface LoginPostData {
-  readonly AppVersion: typeof APP_VERSION
+  readonly AppVersion: string
   readonly Email: string
   readonly Password: string
   readonly Persist: true

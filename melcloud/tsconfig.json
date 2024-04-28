@@ -1,0 +1,9 @@
+{
+  "extends": "@tsconfig/node21/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "noImplicitOverride": true,
+    "outDir": "dist",
+    "sourceMap": true
+  }
+}
