@@ -1,12 +1,12 @@
 const eslint = require('@eslint/js')
-const globals = require('melcloud/node_modules/globals')
+const globals = require('globals')
 const importPlugin = require('eslint-plugin-import')
 const prettier = require('eslint-config-prettier')
 const stylistic = require('@stylistic/eslint-plugin')
 const tsEslint = require('typescript-eslint')
 
 module.exports = tsEslint.config(
-  { ignores: ['.homeybuild/'] },
+  { ignores: ['dist/'] },
   eslint.configs.all,
   ...tsEslint.configs.all,
   {
@@ -141,6 +141,31 @@ module.exports = tsEslint.config(
       ],
       '@typescript-eslint/naming-convention': [
         'error',
+        {
+          filter: {
+            match: true,
+            regex: '^(Ata|Atw|Erv)$',
+          },
+          format: null,
+          selector: 'enumMember',
+        },
+        {
+          format: ['snake_case'],
+          selector: 'enumMember',
+        },
+        {
+          filter: {
+            match: true,
+            regex:
+              '^[a-z]+(?:_[a-z0-9]+)*\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?$',
+          },
+          format: null,
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
+        {
+          format: ['camelCase', 'PascalCase', 'snake_case'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
         {
           format: ['camelCase', 'PascalCase'],
           selector: 'import',
