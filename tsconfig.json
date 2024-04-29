@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
-    "module": "node16",
+    "module": "NodeNext",
     "noImplicitOverride": true,
-    "outDir": "dist",
+    "outDir": ".homeybuild",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
