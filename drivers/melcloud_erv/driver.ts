@@ -1,4 +1,4 @@
-import { DeviceType, effectiveFlagsErv } from '../../melcloud/types'
+import { DeviceType, effectiveFlagsErv } from '../../melcloud'
 import {
   type Store,
   getCapabilityTagMappingErv,

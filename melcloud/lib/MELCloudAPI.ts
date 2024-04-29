@@ -1,6 +1,25 @@
 import {
   APICallRequestData,
   APICallResponseData,
+  APP_VERSION,
+  type Building,
+  type DeviceData,
+  type DeviceDataFromGet,
+  type DeviceType,
+  type ErrorLogData,
+  type ErrorLogPostData,
+  type FailureData,
+  type FrostProtectionData,
+  type FrostProtectionPostData,
+  type HolidayModeData,
+  type HolidayModePostData,
+  type LoginCredentials,
+  type LoginData,
+  type LoginPostData,
+  type PostData,
+  type ReportData,
+  type ReportPostData,
+  type SuccessData,
   createAPICallErrorData,
 } from '..'
 import {
@@ -11,26 +30,6 @@ import {
   type InternalAxiosRequestConfig,
   create as createAxiosInstance,
 } from 'axios'
-import type {
-  Building,
-  DeviceData,
-  DeviceDataFromGet,
-  DeviceType,
-  ErrorLogData,
-  ErrorLogPostData,
-  FailureData,
-  FrostProtectionData,
-  FrostProtectionPostData,
-  HolidayModeData,
-  HolidayModePostData,
-  LoginCredentials,
-  LoginData,
-  LoginPostData,
-  PostData,
-  ReportData,
-  ReportPostData,
-  SuccessData,
-} from '../types'
 import { DateTime, Duration } from 'luxon'
 
 interface APISettings {
@@ -89,7 +88,7 @@ export default class MELCloudAPI {
       try {
         const { LoginData: loginData } = (
           await this.login({
-            AppVersion: '1.32.1.0',
+            AppVersion: APP_VERSION,
             Email: username,
             Password: password,
             Persist: true,

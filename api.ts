@@ -5,7 +5,7 @@ import type {
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
-} from './melcloud/types'
+} from './melcloud'
 import type {
   DeviceSettings,
   DriverSetting,
@@ -22,7 +22,7 @@ import type {
 } from './types'
 import { DateTime } from 'luxon'
 import type Homey from 'homey/lib/Homey'
-import type MELCloudApp from './app'
+import type MELCloudApp from '.'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0

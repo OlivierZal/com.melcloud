@@ -29,10 +29,10 @@ import {
   type NonEffectiveFlagsValueOf,
   type ReportData,
   type SetDeviceData,
-} from '../melcloud/types'
+} from '../melcloud'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
-import type MELCloudApp from '../app'
+import type MELCloudApp from '..'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 

@@ -1,7 +1,8 @@
 {
   "name": "melcloud",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "prettier": {
     "experimentalTernaries": true,
     "semi": false,
@@ -12,11 +13,12 @@
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "prepack": "npm run lint:fix && npm run format:fix",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.7.2",
-    "@tsconfig/node21": "^21.0.3",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.12.7",
     "eslint": "^9.1.1",

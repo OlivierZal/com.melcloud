@@ -2,5 +2,5 @@
 /.vscode/*
 !/.vscode/settings.json
 /coverage/
-/node_modules/
 /env.json
+/node_modules/

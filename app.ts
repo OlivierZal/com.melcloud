@@ -1,14 +1,13 @@
 import 'source-map-support/register'
 import 'core-js/actual/object/group-by'
-import type {
-  Building,
-  DeviceType,
-  ListDeviceAny,
-  LoginCredentials,
-} from './melcloud/types'
+import MELCloudAPI, {
+  type Building,
+  type DeviceType,
+  type ListDeviceAny,
+  type LoginCredentials,
+} from './melcloud'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
-import MELCloudAPI from './melcloud'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
