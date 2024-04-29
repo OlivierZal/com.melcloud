@@ -5,7 +5,7 @@ import type {
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
-} from 'melcloud'
+} from 'melcloud-api'
 import type {
   DeviceSettings,
   DriverSetting,

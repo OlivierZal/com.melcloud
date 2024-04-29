@@ -29,12 +29,12 @@
     "homey": "^3.2.4",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.7.1"
+    "typescript-eslint": "^7.8.0"
   },
   "dependencies": {
     "core-js": "^3.37.0",
     "luxon": "^3.4.4",
-    "melcloud": "^1.0.0",
+    "melcloud-api": "^1.0.0",
     "source-map-support": "^0.5.21"
   }
 }

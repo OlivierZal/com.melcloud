@@ -1,4 +1,4 @@
-import { DeviceType, effectiveFlagsAta } from 'melcloud'
+import { DeviceType, effectiveFlagsAta } from 'melcloud-api'
 import {
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
