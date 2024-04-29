@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext", "DOM"],
+    "lib": ["DOM", "ESNext"],
     "module": "NodeNext",
     "noImplicitOverride": true,
     "outDir": ".homeybuild",
