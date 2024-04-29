@@ -17,7 +17,7 @@ import type {
   SetDeviceData,
   VentilationMode,
   Vertical,
-} from './melcloud'
+} from 'melcloud'
 import type AtaDevice from './drivers/melcloud/device'
 import type AtaDriver from './drivers/melcloud/driver'
 import type AtwDevice from './drivers/melcloud_atw/device'

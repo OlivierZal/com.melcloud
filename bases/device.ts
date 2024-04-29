@@ -29,7 +29,7 @@ import {
   type NonEffectiveFlagsValueOf,
   type ReportData,
   type SetDeviceData,
-} from '../melcloud'
+} from 'melcloud'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
 import type MELCloudApp from '..'

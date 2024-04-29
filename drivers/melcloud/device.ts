@@ -14,7 +14,7 @@ import {
   type ListDevice,
   OperationMode,
   Vertical,
-} from '../../melcloud'
+} from 'melcloud'
 import BaseMELCloudDevice from '../../bases/device'
 
 export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {

@@ -5,7 +5,7 @@ import type {
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
-} from '../melcloud'
+} from 'melcloud'
 import type {
   DeviceSetting,
   DeviceSettings,

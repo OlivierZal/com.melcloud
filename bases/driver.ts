@@ -20,7 +20,7 @@ import {
   type LoginCredentials,
   type NonEffectiveFlagsKeyOf,
   type ReportData,
-} from '../melcloud'
+} from 'melcloud'
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
 import type MELCloudApp from '..'
