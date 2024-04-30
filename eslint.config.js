@@ -6,7 +6,7 @@ const stylistic = require('@stylistic/eslint-plugin')
 const tsEslint = require('typescript-eslint')
 
 module.exports = tsEslint.config(
-  { ignores: ['.homeybuild/', 'melcloud/'] },
+  { ignores: ['.homeybuild/'] },
   eslint.configs.all,
   ...tsEslint.configs.all,
   {
