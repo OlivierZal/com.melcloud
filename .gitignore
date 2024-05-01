@@ -1,4 +1,5 @@
 /.homeybuild/
+/.npmrc
 /.vscode/*
 !/.vscode/settings.json
 /coverage/
