@@ -32,9 +32,9 @@
     "typescript-eslint": "^7.8.0"
   },
   "dependencies": {
+    "@olivierzal/melcloud-api": "^1.0.0",
     "core-js": "^3.37.0",
     "luxon": "^3.4.4",
-    "@olivierzal/melcloud-api": "^1.0.0",
     "source-map-support": "^0.5.21"
   }
 }
