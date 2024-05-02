@@ -7,7 +7,7 @@ import {
   setCapabilityTagMappingAtw,
   storeMappingAtw,
 } from '../../types'
-import { DeviceType, effectiveFlagsAtw } from 'melcloud-api'
+import { DeviceType, effectiveFlagsAtw } from '@olivierzal/melcloud-api'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {

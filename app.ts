@@ -5,7 +5,7 @@ import MELCloudAPI, {
   type DeviceType,
   type ListDeviceAny,
   type LoginCredentials,
-} from 'melcloud-api'
+} from '@olivierzal/melcloud-api'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import type { MELCloudDevice } from './types'

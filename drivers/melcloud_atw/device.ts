@@ -17,7 +17,7 @@ import {
   type ListDevice,
   OperationModeState,
   OperationModeZone,
-} from 'melcloud-api'
+} from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 const HEAT_COOL_GAP = OperationModeZone.room_cool

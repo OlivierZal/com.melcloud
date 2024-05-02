@@ -20,7 +20,7 @@ import {
   type LoginCredentials,
   type NonEffectiveFlagsKeyOf,
   type ReportData,
-} from 'melcloud-api'
+} from '@olivierzal/melcloud-api'
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
 import type MELCloudApp from '..'

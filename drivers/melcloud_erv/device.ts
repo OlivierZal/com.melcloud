@@ -5,7 +5,7 @@ import type {
   SetCapabilities,
 } from '../../types'
 import BaseMELCloudDevice from '../../bases/device'
-import { VentilationMode } from 'melcloud-api'
+import { VentilationMode } from '@olivierzal/melcloud-api'
 
 export = class ErvDevice extends BaseMELCloudDevice<'Erv'> {
   protected readonly fromDevice: Partial<
