@@ -23,9 +23,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@olivierzal'
           cache: 'npm'
       - name: Update package-lock.json
         run: npm install --force
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Lint and fix errors
         run: npm run lint:fix
       - name: Format code
