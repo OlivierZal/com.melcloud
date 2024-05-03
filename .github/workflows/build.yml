@@ -6,14 +6,13 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   build:
     name: npm scripts
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     strategy:
       matrix:
         node-version: ['12.x', '16.x', '22.x']
@@ -32,7 +31,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Update package-lock.json
-        run: npm install
+        run: npm install --force
       - name: Lint and fix errors
         run: npm run lint:fix
       - name: Format code
