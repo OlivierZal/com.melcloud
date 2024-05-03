@@ -35,6 +35,8 @@ jobs:
         run: npm run lint:fix
       - name: Format code
         run: npm run format:fix
+      - name: Build Homey app
+        run: npm run build
       - name: Commit changes
         run: |
           git config --local user.name "GitHub Actions"
