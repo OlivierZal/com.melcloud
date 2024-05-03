@@ -46,7 +46,7 @@ const isTotalEnergyKey = (key: string): boolean =>
   !key.startsWith('measure_power') && !key.includes('daily')
 
 @addToLogs('getName()')
-abstract class BaseMELCloudDevice<
+export default abstract class BaseMELCloudDevice<
   T extends keyof typeof DeviceType,
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]
@@ -766,5 +766,3 @@ abstract class BaseMELCloudDevice<
     )
   }
 }
-
-export default BaseMELCloudDevice
