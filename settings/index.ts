@@ -517,7 +517,7 @@ const generateErrorLog = (homey: Homey): void => {
   )
 }
 
-const refreshBuildingHolidayModeSettings = ({
+const refreshHolidayModeData = ({
   HMEnabled: isEnabled,
   HMStartDate: startDate,
   HMEndDate: endDate,
@@ -527,7 +527,7 @@ const refreshBuildingHolidayModeSettings = ({
   holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
 }
 
-const refreshBuildingFrostProtectionSettings = ({
+const refreshFrostProtectionData = ({
   FPEnabled: isEnabled,
   FPMinTemperature: min,
   FPMaxTemperature: max,
@@ -537,10 +537,10 @@ const refreshBuildingFrostProtectionSettings = ({
   frostProtectionMaxTemperatureElement.value = String(max)
 }
 
-const refreshBuildingSettings = (): void => {
-  const settings = buildingMapping[buildingElement.value]
-  refreshBuildingHolidayModeSettings(settings)
-  refreshBuildingFrostProtectionSettings(settings)
+const refreshBuildingData = (): void => {
+  const data = buildingMapping[buildingElement.value]
+  refreshHolidayModeData(data)
+  refreshFrostProtectionData(data)
 }
 
 const updateBuildingMapping = (
@@ -552,7 +552,7 @@ const updateBuildingMapping = (
   }
 }
 
-const getBuildingHolidayModeSettings = async (homey: Homey): Promise<void> =>
+const getHolidayModeData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -565,15 +565,13 @@ const getBuildingHolidayModeSettings = async (homey: Homey): Promise<void> =>
           return
         }
         updateBuildingMapping(data)
-        refreshBuildingHolidayModeSettings(data)
+        refreshHolidayModeData(data)
         resolve()
       },
     )
   })
 
-const getBuildingFrostProtectionSettings = async (
-  homey: Homey,
-): Promise<void> =>
+const getFrostProtectionData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     // @ts-expect-error: `homey` is partially typed
     homey.api(
@@ -586,7 +584,7 @@ const getBuildingFrostProtectionSettings = async (
           return
         }
         updateBuildingMapping(data)
-        refreshBuildingFrostProtectionSettings(data)
+        refreshFrostProtectionData(data)
         resolve()
       },
     )
@@ -608,12 +606,12 @@ const getBuildings = async (
           return
         }
         buildingMapping = Object.fromEntries(
-          buildings.map(({ ID: id, Name: name, ...buildingSettings }) => {
+          buildings.map(({ ID: id, Name: name, ...buildingData }) => {
             const optionElement = document.createElement('option')
             optionElement.value = String(id)
             optionElement.innerText = name
             buildingElement.appendChild(optionElement)
-            return [String(id), buildingSettings]
+            return [String(id), buildingData]
           }),
         )
         resolve(buildingMapping)
@@ -901,7 +899,7 @@ const generate = async (homey: Homey): Promise<void> => {
     await homey.alert(homey.__('settings.devices.none'))
     return
   }
-  refreshBuildingSettings()
+  refreshBuildingData()
   generateErrorLog(homey)
 }
 
@@ -979,7 +977,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    getBuildingHolidayModeSettings(homey).catch(async (error: unknown) => {
+    getHolidayModeData(homey).catch(async (error: unknown) => {
       // @ts-expect-error: `homey` is partially typed
       await homey.alert(error instanceof Error ? error.message : String(error))
     })
@@ -1003,7 +1001,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       async (error: Error | null) => {
         enableButtons('holiday-mode')
         try {
-          await getBuildingHolidayModeSettings(homey)
+          await getHolidayModeData(homey)
           if (error) {
             // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
@@ -1012,7 +1010,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(homey.__('settings.success'))
         } catch (err) {
-          refreshBuildingHolidayModeSettings(buildingMapping[buildingId])
+          refreshHolidayModeData(buildingMapping[buildingId])
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(err.message)
         }
@@ -1036,7 +1034,7 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
 
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
-    getBuildingFrostProtectionSettings(homey).catch(async (error: unknown) => {
+    getFrostProtectionData(homey).catch(async (error: unknown) => {
       // @ts-expect-error: `homey` is partially typed
       await homey.alert(error instanceof Error ? error.message : String(error))
     })
@@ -1056,7 +1054,7 @@ const updateFrostProtectionData = (
     async (error: Error | null) => {
       enableButtons('frost-protection')
       try {
-        await getBuildingFrostProtectionSettings(homey)
+        await getFrostProtectionData(homey)
         if (error) {
           // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
@@ -1065,7 +1063,7 @@ const updateFrostProtectionData = (
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
       } catch (err) {
-        refreshBuildingFrostProtectionSettings(data)
+        refreshFrostProtectionData(data)
         // @ts-expect-error: `homey` is partially typed
         await homey.alert(err.message)
       }
@@ -1107,7 +1105,7 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
         data,
       )
     } catch (error) {
-      refreshBuildingFrostProtectionSettings(data)
+      refreshFrostProtectionData(data)
       enableButtons('frost-protection')
       // @ts-expect-error: `homey` is partially typed
       homey.alert(error instanceof Error ? error.message : String(error))
@@ -1152,7 +1150,7 @@ const addEventListeners = (homey: Homey): void => {
     homey.openURL('https://homey.app/a/com.mecloud.extension')
   })
 
-  buildingElement.addEventListener('change', refreshBuildingSettings)
+  buildingElement.addEventListener('change', refreshBuildingData)
 
   addHolidayModeEventListeners(homey)
   addUpdateHolidayModeEventListener(homey)
