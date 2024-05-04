@@ -521,7 +521,7 @@ const refreshBuildingHolidayModeSettings = ({
   HMEnabled: isEnabled,
   HMStartDate: startDate,
   HMEndDate: endDate,
-}: HolidayModeData): void => {
+}: Omit<HolidayModeData, 'EndDate' | 'StartDate'>): void => {
   holidayModeEnabledElement.value = String(isEnabled)
   holidayModeStartDateElement.value = isEnabled ? startDate ?? '' : ''
   holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
@@ -608,34 +608,13 @@ const getBuildings = async (
           return
         }
         buildingMapping = Object.fromEntries(
-          buildings.map(
-            ({
-              ID: id,
-              Name: name,
-              FPEnabled: isFpEnabled,
-              FPMaxTemperature: fpMax,
-              FPMinTemperature: fpMin,
-              HMEnabled: isHmEnabled,
-              HMEndDate: hmEndDate,
-              HMStartDate: hmStartDate,
-            }) => {
-              const optionElement = document.createElement('option')
-              optionElement.value = String(id)
-              optionElement.innerText = name
-              buildingElement.appendChild(optionElement)
-              return [
-                String(id),
-                {
-                  FPEnabled: isFpEnabled,
-                  FPMaxTemperature: fpMax,
-                  FPMinTemperature: fpMin,
-                  HMEnabled: isHmEnabled,
-                  HMEndDate: hmEndDate,
-                  HMStartDate: hmStartDate,
-                },
-              ]
-            },
-          ),
+          buildings.map(({ ID: id, Name: name, ...buildingSettings }) => {
+            const optionElement = document.createElement('option')
+            optionElement.value = String(id)
+            optionElement.innerText = name
+            buildingElement.appendChild(optionElement)
+            return [String(id), buildingSettings]
+          }),
         )
         resolve(buildingMapping)
       },
