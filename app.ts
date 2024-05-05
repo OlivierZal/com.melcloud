@@ -14,7 +14,14 @@ import withTimers from './mixins/withTimers'
 export = class MELCloudApp extends withTimers(App) {
   public readonly melcloudAPI = new MELCloudAPI(
     this.homey.settings,
-    this,
+    {
+      error: (...args): void => {
+        this.error(...args)
+      },
+      log: (...args): void => {
+        this.log(...args)
+      },
+    },
     this.homey.i18n.getLanguage(),
   )
 
