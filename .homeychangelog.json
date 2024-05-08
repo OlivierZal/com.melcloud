@@ -172,5 +172,8 @@
   },
   "34.0.0": {
     "en": "Improved device pairing."
+  },
+  "35.0.0": {
+    "en": "Modularized API management."
   }
 }
