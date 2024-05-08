@@ -92,15 +92,15 @@ export default abstract class BaseMELCloudDevice<
     true: NodeJS.Timeout | null
   } = { false: null, true: null }
 
+  protected abstract toDevice: Partial<
+    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
+  >
+
   protected abstract readonly fromDevice: Partial<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
   >
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
-
-  protected abstract readonly toDevice: Partial<
-    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
-  >
 
   public get buildingid(): number {
     return this.#data.buildingid
@@ -157,6 +157,10 @@ export default abstract class BaseMELCloudDevice<
       NonEffectiveFlagsKeyOf<SetDeviceData[T]>,
       number
     >
+    this.toDevice = {
+      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
+      ...this.toDevice,
+    }
     await this.setWarning(null)
     await this.#handleStore()
     await this.#handleCapabilities()
@@ -461,12 +465,8 @@ export default abstract class BaseMELCloudDevice<
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
-    const newToDevice = {
-      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
-      ...this.toDevice,
-    }
     const value = this.getRequestedOrCurrentValue(capability)
-    return (newToDevice[capability]?.(value) ??
+    return (this.toDevice[capability]?.(value) ??
       value) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
   }
 
