@@ -466,8 +466,10 @@ export default abstract class BaseMELCloudDevice<
     capability: K,
   ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
     const value = this.getRequestedOrCurrentValue(capability)
-    return (this.toDevice[capability]?.(value) ??
-      value) as NonEffectiveFlagsValueOf<SetDeviceData[T]>
+    return (
+      this.toDevice[capability]?.(value) ??
+      (value as NonEffectiveFlagsValueOf<SetDeviceData[T]>)
+    )
   }
 
   async #deviceData(): Promise<DeviceData[T] | null> {
