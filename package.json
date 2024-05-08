@@ -17,7 +17,7 @@
     "publish": "homey app publish"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^1.8.0",
+    "@stylistic/eslint-plugin": "^1.8.1",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.5",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.12.10",
