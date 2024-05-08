@@ -4,7 +4,6 @@
 /.homeycompose/
 /.homeychangelog.json
 /.npmignore
-/.npmrc
 /.prettierignore
 /.vscode/
 /LICENSE
