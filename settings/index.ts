@@ -442,7 +442,6 @@ const generateErrorLogTable = (
 ): HTMLTableSectionElement => {
   const tableElement = document.createElement('table')
   tableElement.classList.add('bordered')
-  tableElement.setAttribute('aria-describedby', 'Error Log')
   const theadElement = tableElement.createTHead()
   const rowElement = theadElement.insertRow()
   keys.forEach((key) => {
