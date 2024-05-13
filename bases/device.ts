@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -376,7 +375,6 @@ export default abstract class BaseMELCloudDevice<
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           acc.EffectiveFlags = Number(
-            // eslint-disable-next-line no-bitwise
             BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
           )
           this.diff.delete(capability as K)
@@ -445,7 +443,7 @@ export default abstract class BaseMELCloudDevice<
   }
 
   #clearEnergyReportPlan(total = false): void {
-    const totalString: `${boolean}` = `${total}`
+    const totalString = String(total) as `${boolean}`
     this.homey.clearTimeout(this.#reportTimeout[totalString])
     this.homey.clearInterval(this.#reportInterval[totalString])
     this.#reportTimeout[totalString] = null
@@ -498,7 +496,6 @@ export default abstract class BaseMELCloudDevice<
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
             ([, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>]) =>
-              // eslint-disable-next-line no-bitwise
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
@@ -592,7 +589,7 @@ export default abstract class BaseMELCloudDevice<
 
   #planEnergyReport(total = false): void {
     if (this.reportPlanParameters) {
-      const totalString: `${boolean}` = `${total}`
+      const totalString = String(total) as `${boolean}`
       if (!this.#reportTimeout[totalString]) {
         const actionType = `${total ? 'total' : 'regular'} energy report`
         const { duration, interval, values } =
@@ -641,7 +638,10 @@ export default abstract class BaseMELCloudDevice<
 
   async #runEnergyReport(total = false): Promise<void> {
     if (this.reportPlanParameters) {
-      if (!(this.#reportCapabilityTagEntries[`${total}`] ?? []).length) {
+      if (
+        !(this.#reportCapabilityTagEntries[String(total) as `${boolean}`] ?? [])
+          .length
+      ) {
         this.#clearEnergyReportPlan(total)
         return
       }
@@ -709,7 +709,9 @@ export default abstract class BaseMELCloudDevice<
           data.UsageDisclaimerPercentages.split(',').length
       }
       await Promise.all(
-        (this.#reportCapabilityTagEntries[`${total}`] ?? []).map(
+        (
+          this.#reportCapabilityTagEntries[String(total) as `${boolean}`] ?? []
+        ).map(
           async <
             K extends Extract<keyof ReportCapabilities[T], string>,
             L extends keyof ReportData[T],
@@ -753,7 +755,7 @@ export default abstract class BaseMELCloudDevice<
       ),
     ) as ReportCapabilityTagEntry<T>[]
     if (typeof total !== 'undefined') {
-      this.#reportCapabilityTagEntries[`${total}`] =
+      this.#reportCapabilityTagEntries[String(total) as `${boolean}`] =
         reportCapabilityTagEntries.filter(
           ([capability]) => isTotalEnergyKey(capability) === total,
         )
@@ -764,7 +766,7 @@ export default abstract class BaseMELCloudDevice<
       ReportCapabilityTagEntry<T>
     >(
       reportCapabilityTagEntries,
-      ([capability]) => `${isTotalEnergyKey(capability)}`,
+      ([capability]) => String(isTotalEnergyKey(capability)) as `${boolean}`,
     )
   }
 }

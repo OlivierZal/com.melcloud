@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call, max-lines */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   Building,
   BuildingData,

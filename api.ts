@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import type {
   Building,
   ErrorLogData,
