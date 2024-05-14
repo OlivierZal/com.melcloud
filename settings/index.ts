@@ -1167,9 +1167,7 @@ const load = async (homey: Homey): Promise<void> => {
     try {
       await generate(homey)
       return
-    } catch (error) {
-      // Skip
-    }
+    } catch (_error) {}
   }
   needsAuthentication()
 }

@@ -481,7 +481,7 @@ export default abstract class BaseMELCloudDevice<
             ...updateData,
           })
         ).data as DeviceData[T]
-      } catch (error) {
+      } catch (_error) {
         return null
       }
     }
@@ -631,7 +631,7 @@ export default abstract class BaseMELCloudDevice<
           UseCurrency: false,
         })
       ).data as ReportData[T]
-    } catch (error) {
+    } catch (_error) {
       return null
     }
   }

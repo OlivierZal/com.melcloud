@@ -20,7 +20,7 @@
     "@stylistic/eslint-plugin": "^2.1.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.5",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.12.12",
     "eslint": "^9.2.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -29,11 +29,11 @@
     "homey": "^3.2.4",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.9.0"
+    "typescript-eslint": "^8.0.0-alpha.10"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^1.0.0",
-    "core-js": "^3.37.0",
+    "core-js": "^3.37.1",
     "luxon": "^3.4.4",
     "source-map-support": "^0.5.21"
   }

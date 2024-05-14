@@ -239,10 +239,18 @@ module.exports = tsEslint.config(
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
+          caughtErrorsIgnorePattern: '^_',
           varsIgnorePattern: 'onHomeyReady',
         },
       ],
       'func-style': 'error',
+      'no-empty': [
+        'error',
+        {
+          allowEmptyCatch: true,
+        },
+      ],
+      'no-inline-comments': 'error',
       'no-underscore-dangle': [
         'error',
         {
