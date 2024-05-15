@@ -170,18 +170,6 @@ module.exports = tsEslint.config(
         {
           filter: {
             match: true,
-            regex: '^(Ata|Atw|Erv)$',
-          },
-          format: null,
-          selector: 'enumMember',
-        },
-        {
-          format: ['snake_case'],
-          selector: 'enumMember',
-        },
-        {
-          filter: {
-            match: true,
             regex:
               '^[a-z]+(?:_[a-z0-9]+)*\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?$',
           },
