@@ -3,7 +3,7 @@
     "lib": ["DOM", "ESNext"],
     "module": "NodeNext",
     "noImplicitOverride": true,
-    "outDir": ".homeybuild",
+    "outDir": "${configDir}/.homeybuild",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
