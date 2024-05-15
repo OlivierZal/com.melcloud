@@ -29,7 +29,7 @@
     "homey": "^3.2.4",
     "prettier": "^3.2.5",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^8.0.0-alpha.10"
+    "typescript-eslint": "^8.0.0-alpha.12"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^1.0.0",
