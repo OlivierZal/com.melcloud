@@ -29,7 +29,7 @@ const convertToDeviceMeasurePower = ((value: number) =>
 const convertToDeviceOperationZone = ((value: OperationModeZone) =>
   OperationModeZone[value]) as ConvertFromDevice<'Atw'>
 
-export = class AtwDevice extends BaseMELCloudDevice<'Atw'> {
+export = class extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Atw'], ConvertFromDevice<'Atw'>>
   > = {

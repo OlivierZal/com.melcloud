@@ -17,7 +17,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import BaseMELCloudDevice from '../../bases/device'
 
-export = class AtaDevice extends BaseMELCloudDevice<'Ata'> {
+export = class extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
   > = {

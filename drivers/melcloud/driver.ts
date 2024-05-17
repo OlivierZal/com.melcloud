@@ -8,7 +8,7 @@ import {
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
 
-export = class AtaDriver extends BaseMELCloudDriver<'Ata'> {
+export = class extends BaseMELCloudDriver<'Ata'> {
   public readonly effectiveFlags = effectiveFlagsAta
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAta

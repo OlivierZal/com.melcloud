@@ -10,7 +10,7 @@ import {
 import { DeviceType, effectiveFlagsAtw } from '@olivierzal/melcloud-api'
 import BaseMELCloudDriver from '../../bases/driver'
 
-export = class AtwDriver extends BaseMELCloudDriver<'Atw'> {
+export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly effectiveFlags = effectiveFlagsAtw
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw

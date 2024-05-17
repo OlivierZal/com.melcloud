@@ -9,7 +9,7 @@ import {
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
 
-export = class ErvDriver extends BaseMELCloudDriver<'Erv'> {
+export = class extends BaseMELCloudDriver<'Erv'> {
   public readonly effectiveFlags = effectiveFlagsErv
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
