@@ -50,7 +50,7 @@ const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
     }
   : {}) as CapabilitiesOptions[T]
 
-export default abstract class BaseMELCloudDriver<
+export default abstract class<
   T extends keyof typeof DeviceType,
 > extends Driver {
   public readonly capabilities = (this.manifest as ManifestDriver).capabilities
