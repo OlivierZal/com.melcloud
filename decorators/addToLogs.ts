@@ -6,8 +6,8 @@ const PARENTHESES = '()'
 export default <T extends abstract new (...args: any[]) => SimpleClass>(
     ...logs: string[]
   ) =>
-  (target: T, context: ClassDecoratorContext<T>): T => {
-    abstract class LogsDecorator extends target {
+  (target: T): T => {
+    abstract class LogDecorator extends target {
       public override error(...args: unknown[]): void {
         this.#commonLog('error', ...args)
       }
@@ -42,7 +42,5 @@ export default <T extends abstract new (...args: any[]) => SimpleClass>(
         )
       }
     }
-
-    Object.defineProperty(LogsDecorator, 'name', { value: context.name })
-    return LogsDecorator
+    return LogDecorator
   }

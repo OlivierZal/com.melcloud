@@ -11,7 +11,7 @@ import { Settings as LuxonSettings } from 'luxon'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
-export = class extends withTimers(App) {
+export = class MELCloudApp extends withTimers(App) {
   public readonly melcloudAPI = new MELCloudAPI(
     this.homey.settings,
     {
