@@ -1,5 +1,5 @@
-'use strict'
 // @ts-check
+'use strict'
 
 const eslint = require('@eslint/js')
 const globals = require('globals')
