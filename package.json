@@ -26,10 +26,9 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
-    "globals": "^15.3.0",
     "homey": "^3.3.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.5.0-dev.20240520",
+    "typescript": "^5.4.5",
     "typescript-eslint": "^8.0.0-alpha.14"
   },
   "dependencies": {
