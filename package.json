@@ -29,7 +29,7 @@
     "globals": "^15.3.0",
     "homey": "^3.3.0",
     "prettier": "^3.2.5",
-    "typescript": "^5.5.0-dev.20240519",
+    "typescript": "^5.5.0-dev.20240520",
     "typescript-eslint": "^8.0.0-alpha.14"
   },
   "dependencies": {
