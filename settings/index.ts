@@ -955,8 +955,8 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    getHolidayModeData(homey).catch(async (error: unknown) => {
-      await homey.alert(error instanceof Error ? error.message : String(error))
+    getHolidayModeData(homey).catch(async (err: unknown) => {
+      await homey.alert(err instanceof Error ? err.message : String(err))
     })
   })
 }
@@ -1007,8 +1007,8 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
 
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
-    getFrostProtectionData(homey).catch(async (error: unknown) => {
-      await homey.alert(error instanceof Error ? error.message : String(error))
+    getFrostProtectionData(homey).catch(async (err: unknown) => {
+      await homey.alert(err instanceof Error ? err.message : String(err))
     })
   })
 }
@@ -1088,10 +1088,8 @@ const addEventListeners = (homey: Homey): void => {
   authenticateElement.addEventListener('click', () => {
     authenticateElement.classList.add('is-disabled')
     login(homey)
-      .catch(async (error: unknown) => {
-        await homey.alert(
-          error instanceof Error ? error.message : String(error),
-        )
+      .catch(async (err: unknown) => {
+        await homey.alert(err instanceof Error ? err.message : String(err))
       })
       .finally(() => {
         authenticateElement.classList.remove('is-disabled')
