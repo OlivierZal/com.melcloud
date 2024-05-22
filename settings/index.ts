@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import type {
   Building,
   BuildingData,
@@ -20,7 +19,7 @@ import type {
   Settings,
   ValueOf,
 } from '../types'
-import type Homey from 'homey/lib/Homey'
+import type Homey from 'homey/lib/HomeySettings'
 
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
@@ -162,7 +161,6 @@ const unhide = (element: HTMLDivElement, value = true): void => {
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api('GET', '/language', (error: Error | null, language: string) => {
       if (error) {
         reject(error)
@@ -175,10 +173,8 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> =>
 
 const getHomeySettings = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.get(async (error: Error | null, settings: HomeySettingsUI) => {
       if (error) {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
         reject(error)
         return
@@ -190,13 +186,11 @@ const getHomeySettings = async (homey: Homey): Promise<void> =>
 
 const getDeviceSettings = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       '/settings/devices',
       async (error: Error | null, settings: DeviceSettings) => {
         if (error) {
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           reject(error)
           return
@@ -228,13 +222,11 @@ const getFlatDeviceSettings = (): void => {
 
 const getDriverSettingsAll = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       '/settings/drivers',
       async (error: Error | null, driverSettings: DriverSetting[]) => {
         if (error) {
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           reject(error)
           return
@@ -494,7 +486,6 @@ const updateErrorLogElements = (
 }
 
 const generateErrorLog = (homey: Homey): void => {
-  // @ts-expect-error: `homey` is partially typed
   homey.api(
     'GET',
     `/errors?${new URLSearchParams({
@@ -506,7 +497,6 @@ const generateErrorLog = (homey: Homey): void => {
     async (error: Error | null, data: ErrorLog) => {
       seeElement.classList.remove('is-disabled')
       if (error) {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
         return
       }
@@ -553,7 +543,6 @@ const updateBuildingMapping = (
 
 const getHolidayModeData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       `/settings/buildings/${buildingElement.value}/holiday_mode`,
@@ -572,7 +561,6 @@ const getHolidayModeData = async (homey: Homey): Promise<void> =>
 
 const getFrostProtectionData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       `/settings/buildings/${buildingElement.value}/frost_protection`,
@@ -593,13 +581,11 @@ const getBuildings = async (
   homey: Homey,
 ): Promise<Record<string, BuildingData>> =>
   new Promise<Record<string, BuildingData>>((resolve, reject) => {
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'GET',
       '/buildings',
       async (error: Error | null, buildings: Building[]) => {
         if (error) {
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           reject(error)
           return
@@ -645,20 +631,17 @@ const setDeviceSettings = (
       driverId,
     } satisfies { driverId: string }).toString()}`
   }
-  // @ts-expect-error: `homey` is partially typed
   homey.api(
     'PUT',
     endPoint,
     body satisfies Settings,
     async (error: Error | null) => {
       if (error) {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
         return
       }
       updateDeviceSettings(body, driverId)
       enableButtons(`settings-${driverId ?? 'common'}`)
-      // @ts-expect-error: `homey` is partially typed
       await homey.alert(homey.__('settings.success'))
     },
   )
@@ -676,17 +659,18 @@ const addApplySettingsEventListener = (
   buttonElement.addEventListener('click', () => {
     const body = buildSettingsBody(homey, elements, driverId)
     if (!Object.keys(body).length) {
-      // @ts-expect-error: `homey` is partially typed
-      homey.alert(homey.__('settings.devices.apply.nothing'))
+      homey
+        .alert(homey.__('settings.devices.apply.nothing'))
+        .catch(async (err: unknown) => {
+          await homey.alert(err instanceof Error ? err.message : String(err))
+        })
       return
     }
-    // @ts-expect-error: `homey` is partially typed
     homey.confirm(
       homey.__('settings.devices.apply.confirm'),
       null,
       async (error: Error | null, ok: boolean) => {
         if (error) {
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
@@ -894,7 +878,6 @@ const generate = async (homey: Homey): Promise<void> => {
     disableButtons('frost-protection')
     disableButtons('holiday-mode')
     disableButtons('settings-common')
-    // @ts-expect-error: `homey` is partially typed
     await homey.alert(homey.__('settings.devices.none'))
     return
   }
@@ -914,23 +897,19 @@ const login = async (homey: Homey): Promise<void> => {
   const username = usernameElement?.value ?? ''
   const password = passwordElement?.value ?? ''
   if (!username || !password) {
-    // @ts-expect-error: `homey` is partially typed
     await homey.alert(homey.__('settings.authenticate.failure'))
     return
   }
-  // @ts-expect-error: `homey` is partially typed
   homey.api(
     'POST',
     '/sessions',
     { password, username } satisfies LoginCredentials,
     async (error: Error | null, loggedIn: boolean) => {
       if (error) {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(error.message)
         return
       }
       if (!loggedIn) {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.authenticate.failure'))
         return
       }
@@ -977,7 +956,6 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
     getHolidayModeData(homey).catch(async (error: unknown) => {
-      // @ts-expect-error: `homey` is partially typed
       await homey.alert(error instanceof Error ? error.message : String(error))
     })
   })
@@ -988,7 +966,6 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
     disableButtons('holiday-mode')
     const isEnabled = holidayModeEnabledElement.value === 'true'
     const buildingId = buildingElement.value
-    // @ts-expect-error: `homey` is partially typed
     homey.api(
       'PUT',
       `/settings/buildings/${buildingId}/holiday_mode`,
@@ -1002,16 +979,13 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
         try {
           await getHolidayModeData(homey)
           if (error) {
-            // @ts-expect-error: `homey` is partially typed
             await homey.alert(error.message)
             return
           }
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(homey.__('settings.success'))
         } catch (err) {
           refreshHolidayModeData(buildingMapping[buildingId])
-          // @ts-expect-error: `homey` is partially typed
-          await homey.alert(err.message)
+          await homey.alert(err instanceof Error ? err.message : String(err))
         }
       },
     )
@@ -1034,7 +1008,6 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
     getFrostProtectionData(homey).catch(async (error: unknown) => {
-      // @ts-expect-error: `homey` is partially typed
       await homey.alert(error instanceof Error ? error.message : String(error))
     })
   })
@@ -1045,7 +1018,6 @@ const updateFrostProtectionData = (
   body: FrostProtectionSettings,
   data: FrostProtectionData,
 ): void => {
-  // @ts-expect-error: `homey` is partially typed
   homey.api(
     'PUT',
     `/settings/buildings/${buildingElement.value}/frost_protection`,
@@ -1055,16 +1027,13 @@ const updateFrostProtectionData = (
       try {
         await getFrostProtectionData(homey)
         if (error) {
-          // @ts-expect-error: `homey` is partially typed
           await homey.alert(error.message)
           return
         }
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(homey.__('settings.success'))
       } catch (err) {
         refreshFrostProtectionData(data)
-        // @ts-expect-error: `homey` is partially typed
-        await homey.alert(err.message)
+        await homey.alert(err instanceof Error ? err.message : String(err))
       }
     },
   )
@@ -1106,8 +1075,11 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
     } catch (error) {
       refreshFrostProtectionData(data)
       enableButtons('frost-protection')
-      // @ts-expect-error: `homey` is partially typed
-      homey.alert(error instanceof Error ? error.message : String(error))
+      homey
+        .alert(error instanceof Error ? error.message : String(error))
+        .catch(async (err: unknown) => {
+          await homey.alert(err instanceof Error ? err.message : String(err))
+        })
     }
   })
 }
@@ -1117,7 +1089,6 @@ const addEventListeners = (homey: Homey): void => {
     authenticateElement.classList.add('is-disabled')
     login(homey)
       .catch(async (error: unknown) => {
-        // @ts-expect-error: `homey` is partially typed
         await homey.alert(
           error instanceof Error ? error.message : String(error),
         )
@@ -1134,8 +1105,11 @@ const addEventListeners = (homey: Homey): void => {
       Date.parse(sinceElement.value) > Date.parse(to)
     ) {
       sinceElement.value = to
-      // @ts-expect-error: `homey` is partially typed
-      homey.alert(homey.__('settings.error_log.error', { from }))
+      homey
+        .alert(homey.__('settings.error_log.error', { from }))
+        .catch(async (err: unknown) => {
+          await homey.alert(err instanceof Error ? err.message : String(err))
+        })
     }
   })
 
@@ -1145,8 +1119,11 @@ const addEventListeners = (homey: Homey): void => {
   })
 
   autoAdjustElement.addEventListener('click', () => {
-    // @ts-expect-error: `homey` is partially typed
-    homey.openURL('https://homey.app/a/com.mecloud.extension')
+    homey
+      .openURL('https://homey.app/a/com.mecloud.extension')
+      .catch(async (err: unknown) => {
+        await homey.alert(err instanceof Error ? err.message : String(err))
+      })
   })
 
   buildingElement.addEventListener('change', refreshBuildingData)
