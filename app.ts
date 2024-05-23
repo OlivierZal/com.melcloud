@@ -12,9 +12,9 @@ import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
 export = class MELCloudApp extends withTimers(App) {
-  public readonly melcloudAPI = new MELCloudAPI(
-    this.homey.settings,
-    {
+  public readonly melcloudAPI = new MELCloudAPI({
+    language: this.homey.i18n.getLanguage(),
+    logger: {
       error: (...args): void => {
         this.error(...args)
       },
@@ -22,8 +22,9 @@ export = class MELCloudApp extends withTimers(App) {
         this.log(...args)
       },
     },
-    this.homey.i18n.getLanguage(),
-  )
+    settingManager: this.homey.settings,
+    shouldVerifySSL: false,
+  })
 
   #devices: Partial<Record<number, ListDeviceAny>> = {}
 
