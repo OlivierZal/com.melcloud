@@ -481,8 +481,10 @@ export default abstract class<
             ...updateData,
           })
         ).data as DeviceData[T]
-      } catch (_error) {
-        return null
+      } catch (error) {
+        await this.setWarning(
+          error instanceof Error ? error.message : String(error),
+        )
       }
     }
     return null
@@ -631,7 +633,10 @@ export default abstract class<
           UseCurrency: false,
         })
       ).data as ReportData[T]
-    } catch (_error) {
+    } catch (error) {
+      await this.setWarning(
+        error instanceof Error ? error.message : String(error),
+      )
       return null
     }
   }
