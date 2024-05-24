@@ -23,7 +23,6 @@ export = class MELCloudApp extends withTimers(App) {
       },
     },
     settingManager: this.homey.settings,
-    shouldVerifySSL: false,
   })
 
   #devices: Partial<Record<number, ListDeviceAny>> = {}
