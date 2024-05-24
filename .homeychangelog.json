@@ -175,8 +175,5 @@
   },
   "35.0.0": {
     "en": "Modularized API management."
-  },
-  "35.0.3": {
-    "en": "Fix SSL issue."
   }
 }
