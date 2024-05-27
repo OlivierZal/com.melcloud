@@ -1,12 +1,8 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "lib": ["DOM", "ESNext"],
-    "module": "NodeNext",
-    "noImplicitOverride": true,
     "outDir": ".homeybuild",
-    "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
     "target": "ES2022"
   }
 }
