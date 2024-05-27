@@ -1,5 +1,5 @@
 import eslint from '@eslint/js'
-// @ts-expect-error: no existing type
+// @ts-expect-error: untyped module
 import importPlugin from 'eslint-plugin-import'
 import prettier from 'eslint-config-prettier'
 import stylistic from '@stylistic/eslint-plugin'
@@ -25,7 +25,7 @@ export default tsEslint.config(
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      // @ts-expect-error: wrongly typed
+      // @ts-expect-error: incorrect type
       '@stylistic': stylistic,
       import: importPlugin,
     },
