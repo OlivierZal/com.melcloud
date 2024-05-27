@@ -280,7 +280,7 @@ export default tsEslint.config(
     files: ['**/*.mjs'],
     languageOptions: {
       parserOptions: {
-        project: 'tsconfig.mjs.json',
+        project: 'tsconfig.checkjs.json',
       },
     },
   },

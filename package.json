@@ -8,7 +8,7 @@
     "singleQuote": true
   },
   "scripts": {
-    "build": "homey app validate --level publish && tsc -p 'tsconfig.mjs.json'",
+    "build": "homey app validate --level publish && tsc -p 'tsconfig.checkjs.json'",
     "deploy": "homey app install",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
