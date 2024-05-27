@@ -4,5 +4,5 @@
     "checkJs": true,
     "noEmit": true
   },
-  "includes": ["**/*.mjs"]
+  "include": ["**/*.mjs"]
 }
