@@ -1,12 +1,4 @@
 {
-  "app": {
-    "building": {
-      "no_device": "Bygningen __buildingId__ har ingen enhed."
-    },
-    "holiday_mode": {
-      "date_missing": "Startdato og/eller slutdato mangler."
-    }
-  },
   "settings": {
     "authenticate": {
       "button": "Log ind",
@@ -18,12 +10,16 @@
       "true": "Ja"
     },
     "buildings": {
+      "building": {
+        "not_found": "Bygning ikke fundet"
+      },
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
         "max": "Maksimal temperatur",
         "min": "Minimal temperatur"
       },
       "holiday_mode": {
+        "date_missing": "Startdato og/eller slutdato mangler.",
         "enabled": "Aktiver <strong>ferietilstand</strong>",
         "end_date": "Slutdato",
         "start_date": "Startdato"

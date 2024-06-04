@@ -1,11 +1,6 @@
 import 'source-map-support/register'
 import 'core-js/actual/object/group-by'
-import MELCloudAPI, {
-  type Building,
-  type DeviceType,
-  type ListDeviceAny,
-  type LoginCredentials,
-} from '@olivierzal/melcloud-api'
+import MELCloudAPI, { type LoginCredentials } from '@olivierzal/melcloud-api'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import type { MELCloudDevice } from './types'
@@ -23,23 +18,10 @@ export = class MELCloudApp extends withTimers(App) {
       },
     },
     settingManager: this.homey.settings,
+    timezone: this.homey.clock.getTimezone(),
   })
 
-  #devices: Partial<Record<number, ListDeviceAny>> = {}
-
-  #devicesPerType: Partial<Record<DeviceType, readonly ListDeviceAny[]>> = {}
-
   #syncFromDevicesInterval: NodeJS.Timeout | null = null
-
-  public get devices(): Partial<Record<number, ListDeviceAny>> {
-    return this.#devices
-  }
-
-  public get devicesPerType(): Partial<
-    Record<DeviceType, readonly ListDeviceAny[]>
-  > {
-    return this.#devicesPerType
-  }
 
   public async applyLogin(data?: LoginCredentials): Promise<boolean> {
     if (typeof data !== 'undefined') {
@@ -49,10 +31,6 @@ export = class MELCloudApp extends withTimers(App) {
       data,
       async (): Promise<void> => this.#runSyncFromDevices(),
     )
-  }
-
-  public async getBuildings(): Promise<Building[]> {
-    return (await this.melcloudAPI.list()).data
   }
 
   public getDevices({
@@ -66,7 +44,7 @@ export = class MELCloudApp extends withTimers(App) {
       (driver) => driver.getDevices() as MELCloudDevice[],
     )
     if (typeof buildingId !== 'undefined') {
-      return devices.filter(({ buildingid }) => buildingid === buildingId)
+      return devices.filter(({ buildingId: id }) => id === buildingId)
     }
     return devices
   }
@@ -99,30 +77,7 @@ export = class MELCloudApp extends withTimers(App) {
 
   async #syncFromDeviceList(): Promise<void> {
     try {
-      const buildingDevices = (await this.getBuildings()).flatMap(
-        ({ Structure: { Devices: devices, Areas: areas, Floors: floors } }) => [
-          ...devices,
-          ...areas.flatMap(({ Devices: areaDevices }) => areaDevices),
-          ...floors.flatMap((floor) => [
-            ...floor.Devices,
-            ...floor.Areas.flatMap(({ Devices: areaDevices }) => areaDevices),
-          ]),
-        ],
-      )
-      const devicesPerId = Object.groupBy<number, ListDeviceAny>(
-        buildingDevices,
-        ({ DeviceID: deviceId }) => deviceId,
-      )
-      this.#devicesPerType = Object.groupBy<DeviceType, ListDeviceAny>(
-        buildingDevices,
-        ({ Device: { DeviceType: deviceType } }) => deviceType,
-      )
-      this.#devices = Object.fromEntries(
-        Object.entries(devicesPerId).map(([id, devices]) => {
-          const [device] = devices ?? []
-          return [id, device]
-        }),
-      )
+      await this.melcloudAPI.fetchDevices()
       await this.#syncFromDevices()
     } catch (_error) {}
   }

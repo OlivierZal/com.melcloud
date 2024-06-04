@@ -1,9 +1,9 @@
 import {
   type Capabilities,
   type Store,
+  energyCapabilityTagMappingAtw,
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
-  reportCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
   storeMappingAtw,
 } from '../../types'
@@ -13,11 +13,11 @@ import BaseMELCloudDriver from '../../bases/driver'
 export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly effectiveFlags = effectiveFlagsAtw
 
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
+
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw
 
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAtw
-
-  public readonly reportCapabilityTagMapping = reportCapabilityTagMappingAtw
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
 

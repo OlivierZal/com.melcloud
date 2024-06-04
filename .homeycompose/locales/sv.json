@@ -1,12 +1,4 @@
 {
-  "app": {
-    "building": {
-      "no_device": "Byggnaden __buildingId__ har ingen enhet."
-    },
-    "holiday_mode": {
-      "date_missing": "Startdatum och/eller slutdatum saknas."
-    }
-  },
   "settings": {
     "authenticate": {
       "button": "Logga in",
@@ -18,12 +10,16 @@
       "true": "Ja"
     },
     "buildings": {
+      "building": {
+        "not_found": "Byggnad ej hittad"
+      },
       "frost_protection": {
         "enabled": "Aktivera <strong>frostskydd</strong>",
         "max": "Maximal temperatur",
         "min": "Minimal temperatur"
       },
       "holiday_mode": {
+        "date_missing": "Startdatum och/eller slutdatum saknas.",
         "enabled": "Aktivera <strong>semesterläge</strong>",
         "end_date": "Slutdatum",
         "start_date": "Startdatum"

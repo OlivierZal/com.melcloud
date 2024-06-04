@@ -1,8 +1,8 @@
 import { DeviceType, effectiveFlagsAta } from '@olivierzal/melcloud-api'
 import {
+  energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
-  reportCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
   storeMappingAta,
 } from '../../types'
@@ -11,11 +11,11 @@ import BaseMELCloudDriver from '../../bases/driver'
 export = class extends BaseMELCloudDriver<'Ata'> {
   public readonly effectiveFlags = effectiveFlagsAta
 
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
+
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAta
 
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
-
-  public readonly reportCapabilityTagMapping = reportCapabilityTagMappingAta
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
 

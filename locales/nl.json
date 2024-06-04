@@ -1,12 +1,4 @@
 {
-  "app": {
-    "building": {
-      "no_device": "Gebouw __buildingId__ heeft geen apparaat."
-    },
-    "holiday_mode": {
-      "date_missing": "Startdatum en/of einddatum ontbreekt."
-    }
-  },
   "settings": {
     "authenticate": {
       "button": "Inloggen",
@@ -18,12 +10,16 @@
       "true": "Ja"
     },
     "buildings": {
+      "building": {
+        "not_found": "Gebouw niet gevonden"
+      },
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
         "max": "Maximale temperatuur",
         "min": "Minimale temperatuur"
       },
       "holiday_mode": {
+        "date_missing": "Startdatum en/of einddatum ontbreekt.",
         "enabled": "<strong>Vakantiemodus</strong> inschakelen",
         "end_date": "Einddatum",
         "start_date": "Begindatum"

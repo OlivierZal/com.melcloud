@@ -1,12 +1,4 @@
 {
-  "app": {
-    "building": {
-      "no_device": "Le bâtiment __buildingId__ n'a pas d'appareil."
-    },
-    "holiday_mode": {
-      "date_missing": "La date de début et/ou la date de fin sont manquantes."
-    }
-  },
   "settings": {
     "authenticate": {
       "button": "Se connecter",
@@ -18,12 +10,16 @@
       "true": "Oui"
     },
     "buildings": {
+      "building": {
+        "not_found": "Bâtiment introuvable"
+      },
       "frost_protection": {
         "enabled": "Activer la <strong>protection contre le gel</strong>",
         "max": "Température maximale",
         "min": "Température minimale"
       },
       "holiday_mode": {
+        "date_missing": "La date de début et/ou la date de fin sont manquantes.",
         "enabled": "Activer le <strong>mode vacances</strong>",
         "end_date": "Date de fin",
         "start_date": "Date de début"
