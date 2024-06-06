@@ -1,6 +1,6 @@
 import type {
   Building,
-  BuildingData,
+  BuildingSettings,
   FrostProtectionData,
   HolidayModeData,
   LoginCredentials,
@@ -46,7 +46,7 @@ let driverSettingsCommon: DriverSetting[] = []
 let driverSettingsDrivers: Record<string, DriverSetting[]> = {}
 let usernameElement: HTMLInputElement | null = null
 let passwordElement: HTMLInputElement | null = null
-let buildingMapping: Record<string, BuildingData> = {}
+let buildingMapping: Record<string, BuildingSettings> = {}
 let errorLogTBodyElement: HTMLTableSectionElement | null = null
 let errorCount = 0
 let from = ''
@@ -526,7 +526,7 @@ const refreshFrostProtectionData = ({
   frostProtectionMaxTemperatureElement.value = String(max)
 }
 
-const refreshBuildingData = (): void => {
+const refreshBuildingSettings = (): void => {
   const data = buildingMapping[buildingElement.value]
   refreshHolidayModeData(data)
   refreshFrostProtectionData(data)
@@ -545,7 +545,7 @@ const getHolidayModeData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     homey.api(
       'GET',
-      `/settings/buildings/${buildingElement.value}/holiday_mode`,
+      `/settings/holiday_mode/buildings/${buildingElement.value}`,
       (error: Error | null, data: HolidayModeData) => {
         enableButtons('holiday-mode')
         if (error) {
@@ -563,7 +563,7 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
   new Promise<void>((resolve, reject) => {
     homey.api(
       'GET',
-      `/settings/buildings/${buildingElement.value}/frost_protection`,
+      `/settings/frost_protection/buildings/${buildingElement.value}`,
       (error: Error | null, data: FrostProtectionData) => {
         enableButtons('frost-protection')
         if (error) {
@@ -579,8 +579,8 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
 
 const getBuildings = async (
   homey: Homey,
-): Promise<Record<string, BuildingData>> =>
-  new Promise<Record<string, BuildingData>>((resolve, reject) => {
+): Promise<Record<string, BuildingSettings>> =>
+  new Promise<Record<string, BuildingSettings>>((resolve, reject) => {
     homey.api(
       'GET',
       '/buildings',
@@ -881,7 +881,7 @@ const generate = async (homey: Homey): Promise<void> => {
     await homey.alert(homey.__('settings.devices.none'))
     return
   }
-  refreshBuildingData()
+  refreshBuildingSettings()
   generateErrorLog(homey)
 }
 
@@ -968,7 +968,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
     const buildingId = buildingElement.value
     homey.api(
       'PUT',
-      `/settings/buildings/${buildingId}/holiday_mode`,
+      `/settings/holiday_mode/buildings/${buildingId}`,
       {
         endDate: isEnabled ? holidayModeEndDateElement.value : '',
         isEnabled,
@@ -1020,7 +1020,7 @@ const updateFrostProtectionData = (
 ): void => {
   homey.api(
     'PUT',
-    `/settings/buildings/${buildingElement.value}/frost_protection`,
+    `/settings/frost_protection/buildings/${buildingElement.value}`,
     body satisfies FrostProtectionSettings,
     async (error: Error | null) => {
       enableButtons('frost-protection')
@@ -1124,7 +1124,7 @@ const addEventListeners = (homey: Homey): void => {
       })
   })
 
-  buildingElement.addEventListener('change', refreshBuildingData)
+  buildingElement.addEventListener('change', refreshBuildingSettings)
 
   addHolidayModeEventListeners(homey)
   addUpdateHolidayModeEventListener(homey)

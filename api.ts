@@ -1,9 +1,11 @@
-import type {
-  Building,
-  ErrorLogData,
-  FrostProtectionData,
-  HolidayModeData,
-  LoginCredentials,
+import {
+  type BuildingData,
+  BuildingModel,
+  DeviceModel,
+  type ErrorData,
+  type FrostProtectionData,
+  type HolidayModeData,
+  type LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type {
   DeviceSettings,
@@ -13,7 +15,6 @@ import type {
   FrostProtectionSettings,
   HolidayModeSettings,
   LoginSetting,
-  MELCloudDevice,
   Manifest,
   ManifestDriver,
   PairSetting,
@@ -27,21 +28,13 @@ const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
 
-const getDevice = (
-  app: MELCloudApp,
-  deviceId: number,
-): MELCloudDevice | undefined =>
-  app.getDevices().find(({ id }) => id === deviceId)
-
-const getBuildingDeviceId = (homey: Homey, buildingId: number): number => {
-  const device = (homey.app as MELCloudApp)
-    .getDevices({ buildingId })
-    .find(({ id }) => typeof id !== 'undefined')
-  if (!device) {
-    throw new Error(homey.__('app.building.no_device', { buildingId }))
-  }
-  return device.id
-}
+const getDeviceName = (app: MELCloudApp, deviceId: number): string =>
+  app
+    .getDevices()
+    .find(({ id }) => id === deviceId)
+    ?.getName() ??
+  DeviceModel.getById(deviceId)?.name ??
+  ''
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -60,12 +53,14 @@ const getErrors = async (
   homey: Homey,
   fromDate: DateTime,
   toDate: DateTime,
-): Promise<ErrorLogData[]> => {
+): Promise<ErrorData[]> => {
   const app = homey.app as MELCloudApp
-  const { data } = await app.melcloudAPI.errors({
-    DeviceIDs: Object.keys(app.devices),
-    FromDate: fromDate.toISODate() ?? '',
-    ToDate: toDate.toISODate() ?? '',
+  const { data } = await app.melcloudAPI.getErrors({
+    postData: {
+      DeviceIDs: DeviceModel.getAll().map(({ id }) => id),
+      FromDate: fromDate.toISODate() ?? '',
+      ToDate: toDate.toISODate() ?? '',
+    },
   })
   if ('AttributeErrors' in data) {
     throw new Error(formatErrors(data.AttributeErrors))
@@ -173,13 +168,15 @@ const handleErrorLogQuery = ({
 }
 
 export = {
-  async getBuildings({ homey }: { homey: Homey }): Promise<Building[]> {
-    const app = homey.app as MELCloudApp
-    return (await app.getBuildings())
-      .map((building) => ({
-        ...building,
-        HMEndDate: fromUTC(building.HMEndDate),
-        HMStartDate: fromUTC(building.HMStartDate),
+  async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
+    await (homey.app as MELCloudApp).melcloudAPI.fetchDevices()
+    return Array.from(BuildingModel.getAll())
+      .map(({ id, data, name }) => ({
+        ...data,
+        HMEndDate: fromUTC(data.HMEndDate),
+        HMStartDate: fromUTC(data.HMStartDate),
+        ID: id,
+        Name: name,
       }))
       .sort((building1, building2) =>
         building1.Name.localeCompare(building2.Name),
@@ -218,7 +215,6 @@ export = {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    const app = homey.app as MELCloudApp
     const { fromDate, toDate, period } = handleErrorLogQuery(query)
     const nextToDate = fromDate.minus({ days: 1 })
     return {
@@ -228,18 +224,14 @@ export = {
             DeviceId: deviceId,
             ErrorMessage: errorMessage,
             StartDate: startDate,
-          }) => {
-            const date =
+          }) => ({
+            date:
               DateTime.fromISO(startDate).year > YEAR_1 ?
                 fromUTC(startDate, homey.i18n.getLanguage())
-              : ''
-            const device =
-              getDevice(app, deviceId)?.getName() ??
-              app.devices[deviceId]?.DeviceName ??
-              ''
-            const error = errorMessage?.trim() ?? ''
-            return { date, device, error }
-          },
+              : '',
+            device: getDeviceName(homey.app as MELCloudApp, deviceId),
+            error: errorMessage?.trim() ?? '',
+          }),
         )
         .filter((error) => error.date && error.error)
         .reverse(),
@@ -255,24 +247,26 @@ export = {
     params: { buildingId },
   }: {
     homey: Homey
-    params: { buildingId: number }
+    params: { buildingId: string }
   }): Promise<FrostProtectionData> {
-    return (
-      await (homey.app as MELCloudApp).melcloudAPI.getFrostProtection(
-        getBuildingDeviceId(homey, Number(buildingId)),
-      )
-    ).data
+    const building = BuildingModel.getById(Number(buildingId))
+    if (!building) {
+      throw new Error(homey.__('settings.buildings.building.not_found'))
+    }
+    return building.getFrostProtection()
   },
   async getHolidayModeSettings({
     homey,
     params: { buildingId },
   }: {
     homey: Homey
-    params: { buildingId: number }
+    params: { buildingId: string }
   }): Promise<HolidayModeData> {
-    const { data } = await (
-      homey.app as MELCloudApp
-    ).melcloudAPI.getHolidayMode(getBuildingDeviceId(homey, Number(buildingId)))
+    const building = BuildingModel.getById(Number(buildingId))
+    if (!building) {
+      throw new Error(homey.__('settings.buildings.building.not_found'))
+    }
+    const data = await building.getHolidayMode()
     return {
       ...data,
       HMEndDate: fromUTC(data.HMEndDate),
@@ -319,7 +313,7 @@ export = {
         }),
     )
   },
-  async updateFrostProtectionSettings({
+  async setFrostProtectionSettings({
     homey,
     params: { buildingId },
     body,
@@ -328,16 +322,13 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    handleResponse(
-      (
-        await (homey.app as MELCloudApp).melcloudAPI.updateFrostProtection({
-          ...body,
-          BuildingIds: [Number(buildingId)],
-        })
-      ).data.AttributeErrors,
-    )
+    const building = BuildingModel.getById(Number(buildingId))
+    if (!building) {
+      throw new Error(homey.__('settings.buildings.building.not_found'))
+    }
+    handleResponse((await building.setFrostProtection(body)).AttributeErrors)
   },
-  async updateHolidayModeSettings({
+  async setHolidayModeSettings({
     homey,
     params: { buildingId },
     body: { isEnabled, startDate, endDate },
@@ -346,14 +337,18 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
+    const building = BuildingModel.getById(Number(buildingId))
+    if (!building) {
+      throw new Error(homey.__('settings.buildings.building.not_found'))
+    }
     if (isEnabled && (!startDate || !endDate)) {
-      throw new Error(homey.__('app.holiday_mode.date_missing'))
+      throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
     const utcStartDate = toUTC(startDate, isEnabled)
     const utcEndDate = toUTC(endDate, isEnabled)
     handleResponse(
       (
-        await (homey.app as MELCloudApp).melcloudAPI.updateHolidayMode({
+        await building.setHolidayMode({
           Enabled: isEnabled,
           EndDate:
             utcEndDate ?
@@ -366,7 +361,6 @@ export = {
                 Year: utcEndDate.year,
               }
             : null,
-          HMTimeZones: [{ Buildings: [Number(buildingId)] }],
           StartDate:
             utcStartDate ?
               {
@@ -379,7 +373,7 @@ export = {
               }
             : null,
         })
-      ).data.AttributeErrors,
+      ).AttributeErrors,
     )
   },
 }

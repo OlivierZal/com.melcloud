@@ -1,12 +1,4 @@
 {
-  "app": {
-    "building": {
-      "no_device": "Building __buildingId__ has no device."
-    },
-    "holiday_mode": {
-      "date_missing": "Start Date and/or End Date are missing."
-    }
-  },
   "settings": {
     "authenticate": {
       "button": "Log in",
@@ -18,12 +10,16 @@
       "true": "Yes"
     },
     "buildings": {
+      "building": {
+        "not_found": "Building not found"
+      },
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
         "max": "Maximum temperature",
         "min": "Minimum temperature"
       },
       "holiday_mode": {
+        "date_missing": "Start date and/or end date is missing.",
         "enabled": "Enable <strong>holiday mode</strong>",
         "end_date": "End date",
         "start_date": "Start date"

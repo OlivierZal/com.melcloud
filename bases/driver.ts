@@ -2,24 +2,25 @@ import type {
   Capabilities,
   CapabilitiesOptions,
   DeviceDetails,
+  EnergyCapabilityTagMapping,
   FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   ManifestDriver,
   OpCapabilities,
-  ReportCapabilityTagMapping,
   SetCapabilities,
   SetCapabilityTagMapping,
   Store,
   StoreMapping,
 } from '../types'
 import {
+  DeviceModel,
   DeviceType,
   type EffectiveFlags,
+  type EnergyData,
   type ListDevice,
   type LoginCredentials,
   type NonEffectiveFlagsKeyOf,
-  type ReportData,
 } from '@olivierzal/melcloud-api'
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
@@ -55,23 +56,23 @@ export default abstract class<
 > extends Driver {
   public readonly capabilities = (this.manifest as ManifestDriver).capabilities
 
-  public readonly consumedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
+  public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
   public readonly lastCapabilitiesToUpdate: (keyof OpCapabilities[T])[] = []
 
-  public readonly producedTagMapping: Partial<ReportCapabilityTagMapping[T]> =
+  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
   readonly #app = this.homey.app as MELCloudApp
 
   public abstract readonly effectiveFlags: EffectiveFlags[T]
 
+  public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
+
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
 
   public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping[T]
-
-  public abstract readonly reportCapabilityTagMapping: ReportCapabilityTagMapping[T]
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
@@ -124,23 +125,16 @@ export default abstract class<
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
-      (this.#app.devicesPerType[this.deviceType] ?? []).map(
-        ({
-          DeviceName: name,
-          DeviceID: id,
-          BuildingID: buildingid,
-          Device: device,
-        }) => {
-          const store = this.getStore(device)
-          return {
-            capabilities: this.getRequiredCapabilities(store),
-            capabilitiesOptions: getCapabilitiesOptions(device),
-            data: { buildingid, id },
-            name,
-            store,
-          }
-        },
-      ),
+      DeviceModel.getByType(this.heatPumpType).map(({ data, id, name }) => {
+        const store = this.getStore(data)
+        return {
+          capabilities: this.getRequiredCapabilities(store),
+          capabilitiesOptions: getCapabilitiesOptions(data),
+          data: { id },
+          name,
+          store,
+        }
+      }),
     )
   }
 
@@ -192,15 +186,15 @@ export default abstract class<
   }
 
   #setProducedAndConsumedTagMappings<
-    K extends Extract<keyof ReportData[T], string>,
+    K extends Extract<keyof EnergyData[T], string>,
   >(): void {
-    Object.entries(this.reportCapabilityTagMapping).forEach(
+    Object.entries(this.energyCapabilityTagMapping).forEach(
       ([capability, tags]: [string, K[]]) => {
         ;(this.producedTagMapping[
-          capability as keyof ReportCapabilityTagMapping[T]
+          capability as keyof EnergyCapabilityTagMapping[T]
         ] as K[]) = tags.filter((tag) => !tag.endsWith('Consumed'))
         ;(this.consumedTagMapping[
-          capability as keyof ReportCapabilityTagMapping[T]
+          capability as keyof EnergyCapabilityTagMapping[T]
         ] as K[]) = tags.filter((tag) => tag.endsWith('Consumed'))
       },
     )

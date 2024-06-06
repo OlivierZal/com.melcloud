@@ -1,9 +1,9 @@
 import { DeviceType, effectiveFlagsErv } from '@olivierzal/melcloud-api'
 import {
   type Store,
+  energyCapabilityTagMappingErv,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
-  reportCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
   storeMappingErv,
 } from '../../types'
@@ -12,11 +12,11 @@ import BaseMELCloudDriver from '../../bases/driver'
 export = class extends BaseMELCloudDriver<'Erv'> {
   public readonly effectiveFlags = effectiveFlagsErv
 
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
+
   public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
 
   public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
-
-  public readonly reportCapabilityTagMapping = reportCapabilityTagMappingErv
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
 

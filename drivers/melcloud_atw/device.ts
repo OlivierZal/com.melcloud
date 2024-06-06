@@ -1,7 +1,7 @@
-import BaseMELCloudDevice, { K_MULTIPLIER } from '../../bases/device'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
+  K_MULTIPLIER,
   type OpCapabilities,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
@@ -13,11 +13,12 @@ import {
   type Zone,
 } from '../../types'
 import {
-  type DeviceData,
   type ListDevice,
   OperationModeState,
   OperationModeZone,
+  type SetDeviceData,
 } from '@olivierzal/melcloud-api'
+import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 
 const HEAT_COOL_GAP = OperationModeZone.room_cool
@@ -104,7 +105,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   }
 
   protected override async setCapabilities(
-    data: DeviceData['Atw'] | ListDevice['Atw']['Device'] | null,
+    data: ListDevice['Atw']['Device'] | SetDeviceData['Atw'] | null,
   ): Promise<void> {
     await super.setCapabilities(data)
     if (data) {

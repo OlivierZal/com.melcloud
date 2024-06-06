@@ -8,11 +8,11 @@ import {
   ThermostatMode,
 } from '../../types'
 import {
-  type DeviceData,
   FanSpeed,
   Horizontal,
   type ListDevice,
   OperationMode,
+  type SetDeviceData,
   Vertical,
 } from '@olivierzal/melcloud-api'
 import BaseMELCloudDevice from '../../bases/device'
@@ -73,7 +73,7 @@ export = class extends BaseMELCloudDevice<'Ata'> {
   }
 
   protected override async setCapabilities(
-    data: DeviceData['Ata'] | ListDevice['Ata']['Device'] | null,
+    data: ListDevice['Ata']['Device'] | SetDeviceData['Ata'] | null,
   ): Promise<void> {
     await super.setCapabilities(data)
     if (data) {

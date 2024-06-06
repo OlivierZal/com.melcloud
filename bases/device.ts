@@ -1,41 +1,41 @@
-import type {
-  Capabilities,
-  CapabilitiesOptions,
-  ConvertFromDevice,
-  ConvertToDevice,
-  DeviceDetails,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  MELCloudDriver,
-  OpCapabilities,
-  OpCapabilityTagEntry,
-  OpDeviceData,
-  ReportCapabilities,
-  ReportCapabilityTagEntry,
-  ReportCapabilityTagMapping,
-  ReportPlanParameters,
-  SetCapabilities,
-  SetCapabilityTagMapping,
-  Settings,
-  Store,
+import {
+  type Capabilities,
+  type CapabilitiesOptions,
+  type ConvertFromDevice,
+  type ConvertToDevice,
+  type DeviceDetails,
+  type EnergyCapabilities,
+  type EnergyCapabilityTagEntry,
+  type EnergyCapabilityTagMapping,
+  type GetCapabilityTagMapping,
+  K_MULTIPLIER,
+  type ListCapabilityTagMapping,
+  type MELCloudDriver,
+  type OpCapabilities,
+  type OpCapabilityTagEntry,
+  type OpDeviceData,
+  type ReportPlanParameters,
+  type SetCapabilities,
+  type SetCapabilityTagMapping,
+  type Settings,
+  type Store,
 } from '../types'
 import {
-  type DeviceData,
+  DeviceModel,
   type DeviceType,
+  type EnergyData,
   FLAG_UNCHANGED,
   type ListDevice,
   type NonEffectiveFlagsKeyOf,
   type NonEffectiveFlagsValueOf,
-  type ReportData,
   type SetDeviceData,
+  type SetDevicePostData,
+  type UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
-import type MELCloudApp from '..'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
-
-export const K_MULTIPLIER = 1000
 
 const NUMBER_0 = 0
 const NUMBER_1 = 1
@@ -58,7 +58,12 @@ export default abstract class<
     }
   >()
 
-  #effectiveFlags!: Record<NonEffectiveFlagsKeyOf<SetDeviceData[T]>, number>
+  #effectiveFlags!: Record<NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>, number>
+
+  #energyCapabilityTagEntries: {
+    false?: EnergyCapabilityTagEntry<T>[]
+    true?: EnergyCapabilityTagEntry<T>[]
+  } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
@@ -68,20 +73,13 @@ export default abstract class<
 
   #listOnlyCapabilityTagEntries: OpCapabilityTagEntry<T>[] = []
 
-  #reportCapabilityTagEntries: {
-    false?: ReportCapabilityTagEntry<T>[]
-    true?: ReportCapabilityTagEntry<T>[]
-  } = {}
-
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
-  readonly #app = this.homey.app as MELCloudApp
-
-  readonly #data = this.getData() as DeviceDetails<T>['data']
-
-  readonly #id = this.#data.id
+  readonly #device = DeviceModel.getById(
+    (this.getData() as DeviceDetails<T>['data']).id,
+  ) as DeviceModel<T>
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -101,12 +99,12 @@ export default abstract class<
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
-  public get buildingid(): number {
-    return this.#data.buildingid
+  public get buildingId(): number {
+    return this.#device.buildingId
   }
 
   public get id(): number {
-    return this.#id
+    return this.#device.id
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -153,7 +151,7 @@ export default abstract class<
 
   public override async onInit(): Promise<void> {
     this.#effectiveFlags = this.driver.effectiveFlags as Record<
-      NonEffectiveFlagsKeyOf<SetDeviceData[T]>,
+      NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>,
       number
     >
     this.toDevice = {
@@ -194,14 +192,14 @@ export default abstract class<
       changedKeys.some(
         (setting) =>
           setting !== 'always_on' &&
-          !(setting in this.driver.reportCapabilityTagMapping),
+          !(setting in this.driver.energyCapabilityTagMapping),
       )
     ) {
       await this.syncFromDevice()
     }
 
     const changedEnergyKeys = changedCapabilities.filter((setting) =>
-      this.#isReportCapability(setting),
+      this.#isEnergyCapability(setting),
     )
     if (changedEnergyKeys.length) {
       await Promise.all(
@@ -211,7 +209,7 @@ export default abstract class<
               (setting) => isTotalEnergyKey(setting) === total,
             )
           ) {
-            this.#setReportCapabilityTagEntries(total)
+            this.#setEnergyCapabilityTagEntries(total)
             await this.#runEnergyReport(total)
           }
         }),
@@ -265,7 +263,7 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const data = this.#app.devices[this.#id]?.Device ?? null
+    const { data } = this.#device
     this.log('Syncing from device list:', data)
     await this.setCapabilities(data)
   }
@@ -273,7 +271,7 @@ export default abstract class<
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.setCapabilities(await this.#deviceData())
+        await this.setCapabilities(await this.#set())
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -317,7 +315,7 @@ export default abstract class<
   }
 
   protected async setCapabilities<
-    D extends DeviceData[T] | ListDevice[T]['Device'],
+    D extends ListDevice[T]['Device'] | SetDeviceData[T],
     K extends Extract<keyof OpCapabilities[T], string>,
   >(data: D | null): Promise<void> {
     if (data) {
@@ -328,8 +326,8 @@ export default abstract class<
               const value = this.#convertFromDevice(
                 capability,
                 data[tag as keyof D] as
-                  | NonEffectiveFlagsValueOf<DeviceData[T]>
-                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>
+                  | NonEffectiveFlagsValueOf<SetDeviceData[T]>,
               )
               await this.setCapabilityValue(
                 capability,
@@ -363,14 +361,17 @@ export default abstract class<
 
   #buildUpdateData<
     K extends Extract<keyof SetCapabilities[T], string>,
-  >(): SetDeviceData[T] {
+  >(): UpdateDeviceData[T] {
     this.#setAlwaysOnWarning()
     return Object.entries(this.#setCapabilityTagMapping).reduce<
-      SetDeviceData[T]
+      UpdateDeviceData[T]
     >(
       (
         acc,
-        [capability, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>],
+        [capability, tag]: [
+          string,
+          NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>,
+        ],
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
@@ -386,9 +387,9 @@ export default abstract class<
   }
 
   #calculateCopValue<
-    K extends keyof ReportData[T],
-    L extends keyof ReportCapabilities[T],
-  >(data: ReportData[T], capability: L & string): number {
+    K extends keyof EnergyData[T],
+    L extends keyof EnergyCapabilities[T],
+  >(data: EnergyData[T], capability: L & string): number {
     const producedTags = this.driver.producedTagMapping[capability] as K[]
     const consumedTags = this.driver.consumedTagMapping[capability] as K[]
     return (
@@ -405,8 +406,8 @@ export default abstract class<
     )
   }
 
-  #calculateEnergyValue<K extends keyof ReportData[T]>(
-    data: ReportData[T],
+  #calculateEnergyValue<K extends keyof EnergyData[T]>(
+    data: EnergyData[T],
     tags: K[],
   ): number {
     return (
@@ -415,8 +416,8 @@ export default abstract class<
     )
   }
 
-  #calculatePowerValue<K extends keyof ReportData[T]>(
-    data: ReportData[T],
+  #calculatePowerValue<K extends keyof EnergyData[T]>(
+    data: EnergyData[T],
     tags: K[],
     toDate: DateTime,
   ): number {
@@ -430,9 +431,9 @@ export default abstract class<
 
   #cleanMapping<
     M extends
+      | EnergyCapabilityTagMapping[T]
       | GetCapabilityTagMapping[T]
       | ListCapabilityTagMapping[T]
-      | ReportCapabilityTagMapping[T]
       | SetCapabilityTagMapping[T],
   >(capabilityTagMapping: M): Partial<M> {
     return Object.fromEntries(
@@ -453,8 +454,8 @@ export default abstract class<
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value:
-      | NonEffectiveFlagsValueOf<DeviceData[T]>
-      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>,
+      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>
+      | NonEffectiveFlagsValueOf<SetDeviceData[T]>,
   ): OpCapabilities[T][K] {
     return (this.fromDevice[capability]?.(value) ??
       value) as OpCapabilities[T][K]
@@ -462,32 +463,29 @@ export default abstract class<
 
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
-  ): NonEffectiveFlagsValueOf<SetDeviceData[T]> {
+  ): NonEffectiveFlagsValueOf<UpdateDeviceData[T]> {
     const value = this.getRequestedOrCurrentValue(capability)
     return (
       this.toDevice[capability]?.(value) ??
-      (value as NonEffectiveFlagsValueOf<SetDeviceData[T]>)
+      (value as NonEffectiveFlagsValueOf<UpdateDeviceData[T]>)
     )
   }
 
-  async #deviceData(): Promise<DeviceData[T] | null> {
-    const updateData = this.#buildUpdateData()
-    if (updateData.EffectiveFlags !== FLAG_UNCHANGED) {
-      try {
-        return (
-          await this.#app.melcloudAPI.set(this.driver.heatPumpType, {
-            DeviceID: this.id,
-            HasPendingCommand: true,
-            ...updateData,
-          })
-        ).data as DeviceData[T]
-      } catch (error) {
-        await this.setWarning(
-          error instanceof Error ? error.message : String(error),
-        )
-      }
+  async #getEnergyReport(
+    fromDate: DateTime,
+    toDate: DateTime,
+  ): Promise<EnergyData[T] | null> {
+    try {
+      return await this.#device.getEnergyReport({
+        FromDate: fromDate.toISODate() ?? '',
+        ToDate: toDate.toISODate() ?? '',
+      })
+    } catch (error) {
+      await this.setWarning(
+        error instanceof Error ? error.message : String(error),
+      )
+      return null
     }
-    return null
   }
 
   #getUpdateCapabilityTagEntries(
@@ -497,7 +495,7 @@ export default abstract class<
       case effectiveFlags !== FLAG_UNCHANGED:
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
-            ([, tag]: [string, NonEffectiveFlagsKeyOf<SetDeviceData[T]>]) =>
+            ([, tag]: [string, NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>]) =>
               BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
@@ -538,7 +536,7 @@ export default abstract class<
         await this.removeCapability(capability)
       }, Promise.resolve())
     this.#setCapabilityTagMappings()
-    this.#setReportCapabilityTagEntries()
+    this.#setEnergyCapabilityTagEntries()
   }
 
   async #handleOptionalCapabilities(
@@ -555,7 +553,7 @@ export default abstract class<
     }, Promise.resolve())
     if (
       changedCapabilities.some(
-        (capability) => !this.#isReportCapability(capability),
+        (capability) => !this.#isEnergyCapability(capability),
       )
     ) {
       this.#setListCapabilityTagMappings()
@@ -565,28 +563,25 @@ export default abstract class<
   async #handleStore<
     K extends Extract<keyof Store[T], string>,
   >(): Promise<void> {
-    const data = this.#app.devices[this.#id]?.Device ?? null
-    if (data) {
-      await Promise.all(
-        Object.entries(
-          this.driver.getStore(
-            data as ListDevice['Ata']['Device'] &
-              ListDevice['Atw']['Device'] &
-              ListDevice['Erv']['Device'],
-          ),
-        ).map(async ([key, value]) => {
-          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
-        }),
-      )
-    }
+    await Promise.all(
+      Object.entries(
+        this.driver.getStore(
+          this.#device.data as ListDevice['Ata']['Device'] &
+            ListDevice['Atw']['Device'] &
+            ListDevice['Erv']['Device'],
+        ),
+      ).map(async ([key, value]) => {
+        await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
+      }),
+    )
   }
 
   #isCapability(setting: string): boolean {
     return this.driver.capabilities.includes(setting)
   }
 
-  #isReportCapability(setting: string): boolean {
-    return setting in this.driver.reportCapabilityTagMapping
+  #isEnergyCapability(setting: string): boolean {
+    return setting in this.driver.energyCapabilityTagMapping
   }
 
   #planEnergyReport(total = false): void {
@@ -620,31 +615,10 @@ export default abstract class<
     }
   }
 
-  async #reportEnergyCost(
-    fromDate: DateTime,
-    toDate: DateTime,
-  ): Promise<ReportData[T] | null> {
-    try {
-      return (
-        await this.#app.melcloudAPI.report({
-          DeviceID: this.#id,
-          FromDate: fromDate.toISODate() ?? '',
-          ToDate: toDate.toISODate() ?? '',
-          UseCurrency: false,
-        })
-      ).data as ReportData[T]
-    } catch (error) {
-      await this.setWarning(
-        error instanceof Error ? error.message : String(error),
-      )
-      return null
-    }
-  }
-
   async #runEnergyReport(total = false): Promise<void> {
     if (this.reportPlanParameters) {
       if (
-        !(this.#reportCapabilityTagEntries[String(total) as `${boolean}`] ?? [])
+        !(this.#energyCapabilityTagEntries[String(total) as `${boolean}`] ?? [])
           .length
       ) {
         this.#clearEnergyReportPlan(total)
@@ -652,8 +626,8 @@ export default abstract class<
       }
       const toDate = DateTime.now().minus(this.reportPlanParameters.minus)
       const fromDate = total ? DateTime.local(YEAR_1970) : toDate
-      const data = await this.#reportEnergyCost(fromDate, toDate)
-      await this.#setReportCapabilities(data, toDate, total)
+      const data = await this.#getEnergyReport(fromDate, toDate)
+      await this.#setEnergyCapabilities(data, toDate, total)
       this.#planEnergyReport(total)
     }
   }
@@ -661,6 +635,23 @@ export default abstract class<
   async #runEnergyReports(): Promise<void> {
     await this.#runEnergyReport()
     await this.#runEnergyReport(true)
+  }
+
+  async #set(): Promise<SetDeviceData[T] | null> {
+    const updateData = this.#buildUpdateData() as Omit<
+      SetDevicePostData[T],
+      'DeviceID'
+    >
+    if (updateData.EffectiveFlags !== FLAG_UNCHANGED) {
+      try {
+        return await this.#device.set(updateData)
+      } catch (error) {
+        await this.setWarning(
+          error instanceof Error ? error.message : String(error),
+        )
+      }
+    }
+    return null
   }
 
   #setAlwaysOnWarning(): void {
@@ -686,25 +677,8 @@ export default abstract class<
     this.#setListCapabilityTagMappings()
   }
 
-  #setListCapabilityTagMappings<
-    K extends Extract<keyof OpCapabilities[T], string>,
-  >(): void {
-    this.#listCapabilityTagMapping = this.#cleanMapping(
-      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
-    )
-    this.#listOnlyCapabilityTagEntries = (
-      Object.entries(this.#listCapabilityTagMapping) as [K, OpDeviceData<T>][]
-    ).filter(
-      ([capability]) =>
-        !Object.keys({
-          ...this.#setCapabilityTagMapping,
-          ...this.#getCapabilityTagMapping,
-        }).includes(capability),
-    )
-  }
-
-  async #setReportCapabilities(
-    data: ReportData[T] | null,
+  async #setEnergyCapabilities(
+    data: EnergyData[T] | null,
     toDate: DateTime,
     total = false,
   ): Promise<void> {
@@ -715,11 +689,11 @@ export default abstract class<
       }
       await Promise.all(
         (
-          this.#reportCapabilityTagEntries[String(total) as `${boolean}`] ?? []
+          this.#energyCapabilityTagEntries[String(total) as `${boolean}`] ?? []
         ).map(
           async <
-            K extends Extract<keyof ReportCapabilities[T], string>,
-            L extends keyof ReportData[T],
+            K extends Extract<keyof EnergyCapabilities[T], string>,
+            L extends keyof EnergyData[T],
           >([capability, tags]: [K, L[]]) => {
             switch (true) {
               case capability.includes('cop'):
@@ -753,25 +727,42 @@ export default abstract class<
     }
   }
 
-  #setReportCapabilityTagEntries(total?: boolean): void {
-    const reportCapabilityTagEntries = Object.entries(
+  #setEnergyCapabilityTagEntries(total?: boolean): void {
+    const energyCapabilityTagEntries = Object.entries(
       this.#cleanMapping(
-        this.driver.reportCapabilityTagMapping as ReportCapabilityTagMapping[T],
+        this.driver.energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
       ),
-    ) as ReportCapabilityTagEntry<T>[]
+    ) as EnergyCapabilityTagEntry<T>[]
     if (typeof total !== 'undefined') {
-      this.#reportCapabilityTagEntries[String(total) as `${boolean}`] =
-        reportCapabilityTagEntries.filter(
+      this.#energyCapabilityTagEntries[String(total) as `${boolean}`] =
+        energyCapabilityTagEntries.filter(
           ([capability]) => isTotalEnergyKey(capability) === total,
         )
       return
     }
-    this.#reportCapabilityTagEntries = Object.groupBy<
+    this.#energyCapabilityTagEntries = Object.groupBy<
       `${boolean}`,
-      ReportCapabilityTagEntry<T>
+      EnergyCapabilityTagEntry<T>
     >(
-      reportCapabilityTagEntries,
+      energyCapabilityTagEntries,
       ([capability]) => String(isTotalEnergyKey(capability)) as `${boolean}`,
+    )
+  }
+
+  #setListCapabilityTagMappings<
+    K extends Extract<keyof OpCapabilities[T], string>,
+  >(): void {
+    this.#listCapabilityTagMapping = this.#cleanMapping(
+      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
+    )
+    this.#listOnlyCapabilityTagEntries = (
+      Object.entries(this.#listCapabilityTagMapping) as [K, OpDeviceData<T>][]
+    ).filter(
+      ([capability]) =>
+        !Object.keys({
+          ...this.#setCapabilityTagMapping,
+          ...this.#getCapabilityTagMapping,
+        }).includes(capability),
     )
   }
 }
