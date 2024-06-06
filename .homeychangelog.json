@@ -175,5 +175,8 @@
   },
   "35.0.0": {
     "en": "Modularized API management."
+  },
+  "36.0.0": {
+    "en": "Improved API architecture design."
   }
 }
