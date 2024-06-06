@@ -178,8 +178,5 @@
   },
   "36.0.0": {
     "en": "Improved API architecture design."
-  },
-  "36.1.0": {
-    "en": "Improved API data storage."
   }
 }

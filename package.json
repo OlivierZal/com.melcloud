@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "36.1.0",
+  "version": "36.2.0",
   "main": "app.ts",
   "prettier": {
     "experimentalTernaries": true,
@@ -34,7 +34,7 @@
     "typescript-eslint": "^8.0.0-alpha.28"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^3.0.4",
+    "@olivierzal/melcloud-api": "^3.0.5",
     "core-js": "^3.37.1",
     "luxon": "^3.4.4",
     "source-map-support": "^0.5.21"
