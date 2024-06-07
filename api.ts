@@ -1,5 +1,6 @@
 import {
   type BuildingData,
+  BuildingFacade,
   BuildingModel,
   DeviceModel,
   type ErrorData,
@@ -253,7 +254,10 @@ export = {
     if (!building) {
       throw new Error(homey.__('settings.buildings.building.not_found'))
     }
-    return building.getFrostProtection()
+    return new BuildingFacade(
+      (homey.app as MELCloudApp).melcloudAPI,
+      building,
+    ).getFrostProtection()
   },
   async getHolidayModeSettings({
     homey,
@@ -266,7 +270,10 @@ export = {
     if (!building) {
       throw new Error(homey.__('settings.buildings.building.not_found'))
     }
-    const data = await building.getHolidayMode()
+    const data = await new BuildingFacade(
+      (homey.app as MELCloudApp).melcloudAPI,
+      building,
+    ).getHolidayMode()
     return {
       ...data,
       HMEndDate: fromUTC(data.HMEndDate),
@@ -326,7 +333,14 @@ export = {
     if (!building) {
       throw new Error(homey.__('settings.buildings.building.not_found'))
     }
-    handleResponse((await building.setFrostProtection(body)).AttributeErrors)
+    handleResponse(
+      (
+        await new BuildingFacade(
+          (homey.app as MELCloudApp).melcloudAPI,
+          building,
+        ).setFrostProtection(body)
+      ).AttributeErrors,
+    )
   },
   async setHolidayModeSettings({
     homey,
@@ -346,9 +360,11 @@ export = {
     }
     const utcStartDate = toUTC(startDate, isEnabled)
     const utcEndDate = toUTC(endDate, isEnabled)
+    const app = homey.app as MELCloudApp
+    const buildingFacade = new BuildingFacade(app.melcloudAPI, building)
     handleResponse(
       (
-        await building.setHolidayMode({
+        await buildingFacade.setHolidayMode({
           Enabled: isEnabled,
           EndDate:
             utcEndDate ?

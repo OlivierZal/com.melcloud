@@ -21,6 +21,7 @@ import {
   type Store,
 } from '../types'
 import {
+  DeviceFacade,
   DeviceModel,
   type DeviceType,
   type EnergyData,
@@ -29,11 +30,11 @@ import {
   type NonEffectiveFlagsKeyOf,
   type NonEffectiveFlagsValueOf,
   type SetDeviceData,
-  type SetDevicePostData,
   type UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 import { Device } from 'homey'
+import type MELCloudApp from '../app'
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 
@@ -80,6 +81,11 @@ export default abstract class<
   readonly #device = DeviceModel.getById(
     (this.getData() as DeviceDetails<T>['data']).id,
   ) as DeviceModel<T>
+
+  readonly #deviceFacade = new DeviceFacade(
+    (this.homey.app as MELCloudApp).melcloudAPI,
+    this.#device,
+  )
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -359,7 +365,7 @@ export default abstract class<
     })
   }
 
-  #buildUpdateData<
+  #buildPostData<
     K extends Extract<keyof SetCapabilities[T], string>,
   >(): UpdateDeviceData[T] {
     this.#setAlwaysOnWarning()
@@ -476,7 +482,7 @@ export default abstract class<
     toDate: DateTime,
   ): Promise<EnergyData[T] | null> {
     try {
-      return await this.#device.getEnergyReport({
+      return await this.#deviceFacade.getEnergyReport({
         FromDate: fromDate.toISODate() ?? '',
         ToDate: toDate.toISODate() ?? '',
       })
@@ -638,13 +644,10 @@ export default abstract class<
   }
 
   async #set(): Promise<SetDeviceData[T] | null> {
-    const updateData = this.#buildUpdateData() as Omit<
-      SetDevicePostData[T],
-      'DeviceID'
-    >
-    if (updateData.EffectiveFlags !== FLAG_UNCHANGED) {
+    const postData = this.#buildPostData()
+    if (postData.EffectiveFlags !== FLAG_UNCHANGED) {
       try {
-        return await this.#device.set(updateData)
+        return await this.#deviceFacade.set(postData)
       } catch (error) {
         await this.setWarning(
           error instanceof Error ? error.message : String(error),
