@@ -29,6 +29,21 @@ const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
 
+const buildings: Record<number, BuildingFacade> = {}
+const getOrCreateBuildingFacade = (
+  homey: Homey,
+  id: number,
+): BuildingFacade => {
+  if (!BuildingModel.getById(id)) {
+    throw new Error(homey.__('settings.buildings.building.not_found'))
+  }
+  buildings[id] ??= new BuildingFacade(
+    (homey.app as MELCloudApp).melcloudAPI,
+    id,
+  )
+  return buildings[id]
+}
+
 const getDeviceName = (app: MELCloudApp, deviceId: number): string =>
   app
     .getDevices()
@@ -250,13 +265,9 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<FrostProtectionData> {
-    const building = BuildingModel.getById(Number(buildingId))
-    if (!building) {
-      throw new Error(homey.__('settings.buildings.building.not_found'))
-    }
-    return new BuildingFacade(
-      (homey.app as MELCloudApp).melcloudAPI,
-      building,
+    return getOrCreateBuildingFacade(
+      homey,
+      Number(buildingId),
     ).getFrostProtection()
   },
   async getHolidayModeSettings({
@@ -266,13 +277,9 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<HolidayModeData> {
-    const building = BuildingModel.getById(Number(buildingId))
-    if (!building) {
-      throw new Error(homey.__('settings.buildings.building.not_found'))
-    }
-    const data = await new BuildingFacade(
-      (homey.app as MELCloudApp).melcloudAPI,
-      building,
+    const data = await getOrCreateBuildingFacade(
+      homey,
+      Number(buildingId),
     ).getHolidayMode()
     return {
       ...data,
@@ -329,15 +336,11 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    const building = BuildingModel.getById(Number(buildingId))
-    if (!building) {
-      throw new Error(homey.__('settings.buildings.building.not_found'))
-    }
     handleResponse(
       (
-        await new BuildingFacade(
-          (homey.app as MELCloudApp).melcloudAPI,
-          building,
+        await getOrCreateBuildingFacade(
+          homey,
+          Number(buildingId),
         ).setFrostProtection(body)
       ).AttributeErrors,
     )
@@ -351,20 +354,17 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    const building = BuildingModel.getById(Number(buildingId))
-    if (!building) {
-      throw new Error(homey.__('settings.buildings.building.not_found'))
-    }
     if (isEnabled && (!startDate || !endDate)) {
       throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
     const utcStartDate = toUTC(startDate, isEnabled)
     const utcEndDate = toUTC(endDate, isEnabled)
-    const app = homey.app as MELCloudApp
-    const buildingFacade = new BuildingFacade(app.melcloudAPI, building)
     handleResponse(
       (
-        await buildingFacade.setHolidayMode({
+        await getOrCreateBuildingFacade(
+          homey,
+          Number(buildingId),
+        ).setHolidayMode({
           Enabled: isEnabled,
           EndDate:
             utcEndDate ?

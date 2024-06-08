@@ -22,7 +22,6 @@ import {
 } from '../types'
 import {
   DeviceFacade,
-  DeviceModel,
   type DeviceType,
   type EnergyData,
   FLAG_UNCHANGED,
@@ -78,13 +77,9 @@ export default abstract class<
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
-  readonly #device = DeviceModel.getById(
-    (this.getData() as DeviceDetails<T>['data']).id,
-  ) as DeviceModel<T>
-
-  readonly #deviceFacade = new DeviceFacade(
+  readonly #device = new DeviceFacade(
     (this.homey.app as MELCloudApp).melcloudAPI,
-    this.#device,
+    (this.getData() as DeviceDetails<T>['data']).id,
   )
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
@@ -106,11 +101,11 @@ export default abstract class<
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
   public get buildingId(): number {
-    return this.#device.buildingId
+    return this.#device.model.buildingId
   }
 
   public get id(): number {
-    return this.#device.id
+    return this.#device.model.id
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -269,7 +264,7 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const { data } = this.#device
+    const { data } = this.#device.model
     this.log('Syncing from device list:', data)
     await this.setCapabilities(data)
   }
@@ -482,10 +477,10 @@ export default abstract class<
     toDate: DateTime,
   ): Promise<EnergyData[T] | null> {
     try {
-      return await this.#deviceFacade.getEnergyReport({
+      return (await this.#device.getEnergyReport({
         FromDate: fromDate.toISODate() ?? '',
         ToDate: toDate.toISODate() ?? '',
-      })
+      })) as EnergyData[T]
     } catch (error) {
       await this.setWarning(
         error instanceof Error ? error.message : String(error),
@@ -572,7 +567,7 @@ export default abstract class<
     await Promise.all(
       Object.entries(
         this.driver.getStore(
-          this.#device.data as ListDevice['Ata']['Device'] &
+          this.#device.model.data as ListDevice['Ata']['Device'] &
             ListDevice['Atw']['Device'] &
             ListDevice['Erv']['Device'],
         ),
@@ -647,7 +642,7 @@ export default abstract class<
     const postData = this.#buildPostData()
     if (postData.EffectiveFlags !== FLAG_UNCHANGED) {
       try {
-        return await this.#deviceFacade.set(postData)
+        return (await this.#device.set(postData)) as SetDeviceData[T]
       } catch (error) {
         await this.setWarning(
           error instanceof Error ? error.message : String(error),
