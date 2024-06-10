@@ -1,5 +1,5 @@
 import type {
-  Building,
+  BuildingData,
   BuildingSettings,
   FrostProtectionData,
   HolidayModeData,
@@ -584,19 +584,19 @@ const getBuildings = async (
     homey.api(
       'GET',
       '/buildings',
-      async (error: Error | null, buildings: Building[]) => {
+      async (error: Error | null, buildings: BuildingData[]) => {
         if (error) {
           await homey.alert(error.message)
           reject(error)
           return
         }
         buildingMapping = Object.fromEntries(
-          buildings.map(({ ID: id, Name: name, ...buildingData }) => {
+          buildings.map(({ ID: id, Name: name, ...data }) => {
             const optionElement = document.createElement('option')
             optionElement.value = String(id)
             optionElement.innerText = name
             buildingElement.appendChild(optionElement)
-            return [String(id), buildingData]
+            return [String(id), data]
           }),
         )
         resolve(buildingMapping)

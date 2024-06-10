@@ -44,14 +44,6 @@ const getOrCreateBuildingFacade = (
   return buildings[id]
 }
 
-const getDeviceName = (app: MELCloudApp, deviceId: number): string =>
-  app
-    .getDevices()
-    .find(({ id }) => id === deviceId)
-    ?.getName() ??
-  DeviceModel.getById(deviceId)?.name ??
-  ''
-
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -138,24 +130,6 @@ const getDriverLoginSetting = (
     : []
 }
 
-const fromUTC = (utcDate: string | null, language?: string): string => {
-  if (utcDate === null) {
-    return ''
-  }
-  const localDateTime = DateTime.fromISO(utcDate, {
-    locale: language,
-    zone: 'utc',
-  }).toLocal()
-  const localDate =
-    typeof language === 'undefined' ?
-      localDateTime.toISO({ includeOffset: false })
-    : localDateTime.toLocaleString(DateTime.DATETIME_MED)
-  return localDate ?? ''
-}
-
-const toUTC = (date: string, enabled: boolean): DateTime | null =>
-  enabled ? DateTime.fromISO(date).toUTC() : null
-
 const handleErrorLogQuery = ({
   from,
   to,
@@ -187,13 +161,7 @@ export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
     await (homey.app as MELCloudApp).melcloudAPI.fetchDevices()
     return Array.from(BuildingModel.getAll())
-      .map(({ id, data, name }) => ({
-        ...data,
-        HMEndDate: fromUTC(data.HMEndDate),
-        HMStartDate: fromUTC(data.HMStartDate),
-        ID: id,
-        Name: name,
-      }))
+      .map(({ id, data, name }) => ({ ...data, ID: id, Name: name }))
       .sort((building1, building2) =>
         building1.Name.localeCompare(building2.Name),
       )
@@ -243,9 +211,11 @@ export = {
           }) => ({
             date:
               DateTime.fromISO(startDate).year > YEAR_1 ?
-                fromUTC(startDate, homey.i18n.getLanguage())
+                DateTime.fromISO(startDate, {
+                  locale: homey.i18n.getLanguage(),
+                }).toLocaleString(DateTime.DATETIME_MED)
               : '',
-            device: getDeviceName(homey.app as MELCloudApp, deviceId),
+            device: DeviceModel.getById(deviceId)?.name ?? '',
             error: errorMessage?.trim() ?? '',
           }),
         )
@@ -277,15 +247,7 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<HolidayModeData> {
-    const data = await getOrCreateBuildingFacade(
-      homey,
-      Number(buildingId),
-    ).getHolidayMode()
-    return {
-      ...data,
-      HMEndDate: fromUTC(data.HMEndDate),
-      HMStartDate: fromUTC(data.HMStartDate),
-    }
+    return getOrCreateBuildingFacade(homey, Number(buildingId)).getHolidayMode()
   },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()
@@ -357,8 +319,8 @@ export = {
     if (isEnabled && (!startDate || !endDate)) {
       throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
-    const utcStartDate = toUTC(startDate, isEnabled)
-    const utcEndDate = toUTC(endDate, isEnabled)
+    const startDateTime = isEnabled ? DateTime.fromISO(startDate) : null
+    const endDateTime = isEnabled ? DateTime.fromISO(endDate) : null
     handleResponse(
       (
         await getOrCreateBuildingFacade(
@@ -367,25 +329,25 @@ export = {
         ).setHolidayMode({
           Enabled: isEnabled,
           EndDate:
-            utcEndDate ?
+            endDateTime ?
               {
-                Day: utcEndDate.day,
-                Hour: utcEndDate.hour,
-                Minute: utcEndDate.minute,
-                Month: utcEndDate.month,
-                Second: utcEndDate.second,
-                Year: utcEndDate.year,
+                Day: endDateTime.day,
+                Hour: endDateTime.hour,
+                Minute: endDateTime.minute,
+                Month: endDateTime.month,
+                Second: endDateTime.second,
+                Year: endDateTime.year,
               }
             : null,
           StartDate:
-            utcStartDate ?
+            startDateTime ?
               {
-                Day: utcStartDate.day,
-                Hour: utcStartDate.hour,
-                Minute: utcStartDate.minute,
-                Month: utcStartDate.month,
-                Second: utcStartDate.second,
-                Year: utcStartDate.year,
+                Day: startDateTime.day,
+                Hour: startDateTime.hour,
+                Minute: startDateTime.minute,
+                Month: startDateTime.month,
+                Second: startDateTime.second,
+                Year: startDateTime.year,
               }
             : null,
         })
