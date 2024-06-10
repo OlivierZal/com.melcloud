@@ -100,14 +100,6 @@ export default abstract class<
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
-  public get buildingId(): number {
-    return this.#device.model.buildingId
-  }
-
-  public get id(): number {
-    return this.#device.model.id
-  }
-
   public override async addCapability(capability: string): Promise<void> {
     this.log('Adding capability', capability)
     if (!this.hasCapability(capability)) {
