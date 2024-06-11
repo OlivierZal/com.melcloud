@@ -1,7 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "outDir": ".homeybuild",
-    "target": "ES2022"
+    "outDir": ".homeybuild"
   }
 }
