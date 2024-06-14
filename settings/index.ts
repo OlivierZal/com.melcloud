@@ -964,15 +964,14 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    const isEnabled = holidayModeEnabledElement.value === 'true'
     const buildingId = buildingElement.value
     homey.api(
       'PUT',
       `/settings/holiday_mode/buildings/${buildingId}`,
       {
-        endDate: isEnabled ? holidayModeEndDateElement.value : '',
-        isEnabled,
-        startDate: isEnabled ? holidayModeStartDateElement.value : '',
+        enable: holidayModeEnabledElement.value === 'true',
+        from: holidayModeStartDateElement.value,
+        to: holidayModeEndDateElement.value,
       } satisfies HolidayModeSettings,
       async (error: Error | null) => {
         enableButtons('holiday-mode')
@@ -1066,9 +1065,9 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
       updateFrostProtectionData(
         homey,
         {
-          Enabled: frostProtectionEnabledElement.value === 'true',
-          MaximumTemperature: max,
-          MinimumTemperature: min,
+          enable: frostProtectionEnabledElement.value === 'true',
+          max,
+          min,
         },
         data,
       )

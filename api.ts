@@ -310,46 +310,24 @@ export = {
   async setHolidayModeSettings({
     homey,
     params: { buildingId },
-    body: { isEnabled, startDate, endDate },
+    body: { enable, from, to },
   }: {
     body: HolidayModeSettings
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    if (isEnabled && (!startDate || !endDate)) {
+    if (enable === true && (typeof to === 'undefined' || to === null)) {
       throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
-    const startDateTime = isEnabled ? DateTime.fromISO(startDate) : null
-    const endDateTime = isEnabled ? DateTime.fromISO(endDate) : null
     handleResponse(
       (
         await getOrCreateBuildingFacade(
           homey,
           Number(buildingId),
         ).setHolidayMode({
-          Enabled: isEnabled,
-          EndDate:
-            endDateTime ?
-              {
-                Day: endDateTime.day,
-                Hour: endDateTime.hour,
-                Minute: endDateTime.minute,
-                Month: endDateTime.month,
-                Second: endDateTime.second,
-                Year: endDateTime.year,
-              }
-            : null,
-          StartDate:
-            startDateTime ?
-              {
-                Day: startDateTime.day,
-                Hour: startDateTime.hour,
-                Minute: startDateTime.minute,
-                Month: startDateTime.month,
-                Second: startDateTime.second,
-                Year: startDateTime.year,
-              }
-            : null,
+          enable,
+          from,
+          to,
         })
       ).AttributeErrors,
     )

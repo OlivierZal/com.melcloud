@@ -37,7 +37,6 @@ import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
   DeviceType,
   EnergyData,
-  FrostProtectionPostData,
   ListDevice,
   LoginCredentials,
   NonEffectiveFlagsKeyOf,
@@ -288,13 +287,14 @@ export interface ErrorLog {
   readonly nextToDate: string
 }
 
-export type FrostProtectionSettings = Omit<
-  FrostProtectionPostData,
-  'BuildingIds'
->
+export interface FrostProtectionSettings {
+  enable?: boolean
+  max: number
+  min: number
+}
 
 export interface HolidayModeSettings {
-  readonly endDate: string
-  readonly isEnabled: boolean
-  readonly startDate: string
+  readonly enable?: boolean
+  readonly from?: string | null
+  readonly to?: string | null
 }

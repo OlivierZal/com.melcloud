@@ -39,7 +39,6 @@ import withTimers from '../mixins/withTimers'
 
 const NUMBER_0 = 0
 const NUMBER_1 = 1
-const YEAR_1970 = 1970
 
 const isTotalEnergyKey = (key: string): boolean =>
   !key.startsWith('measure_power') && !key.includes('daily')
@@ -412,11 +411,11 @@ export default abstract class<
   #calculatePowerValue<K extends keyof EnergyData[T]>(
     data: EnergyData[T],
     tags: K[],
-    toDate: DateTime,
+    hour: number,
   ): number {
     return (
       tags.reduce<number>(
-        (acc, tag) => acc + (data[tag] as number[])[toDate.hour] * K_MULTIPLIER,
+        (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
         NUMBER_0,
       ) / this.#linkedDeviceCount
     )
@@ -465,14 +464,11 @@ export default abstract class<
   }
 
   async #getEnergyReport(
-    fromDate: DateTime,
-    toDate: DateTime,
+    from: string | null,
+    to: string | null,
   ): Promise<EnergyData[T] | null> {
     try {
-      return (await this.#device.getEnergyReport({
-        FromDate: fromDate.toISODate() ?? '',
-        ToDate: toDate.toISODate() ?? '',
-      })) as EnergyData[T]
+      return (await this.#device.getEnergyReport({ from, to })) as EnergyData[T]
     } catch (error) {
       await this.setWarning(
         error instanceof Error ? error.message : String(error),
@@ -617,10 +613,10 @@ export default abstract class<
         this.#clearEnergyReportPlan(total)
         return
       }
-      const toDate = DateTime.now().minus(this.reportPlanParameters.minus)
-      const fromDate = total ? DateTime.local(YEAR_1970) : toDate
-      const data = await this.#getEnergyReport(fromDate, toDate)
-      await this.#setEnergyCapabilities(data, toDate, total)
+      const toDateTime = DateTime.now().minus(this.reportPlanParameters.minus)
+      const to = toDateTime.toISODate()
+      const data = await this.#getEnergyReport(total ? null : to, to)
+      await this.#setEnergyCapabilities(data, toDateTime.hour, total)
       this.#planEnergyReport(total)
     }
   }
@@ -669,7 +665,7 @@ export default abstract class<
 
   async #setEnergyCapabilities(
     data: EnergyData[T] | null,
-    toDate: DateTime,
+    hour: number,
     total = false,
   ): Promise<void> {
     if (data) {
@@ -701,7 +697,7 @@ export default abstract class<
                   this.#calculatePowerValue(
                     data,
                     tags,
-                    toDate,
+                    hour,
                   ) as Capabilities[T][K],
                 )
                 break
