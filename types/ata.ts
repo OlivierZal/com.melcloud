@@ -2,7 +2,7 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
-} from '.'
+} from './bases'
 import type {
   EnergyDataAta,
   FanSpeed,
