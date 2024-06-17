@@ -23,7 +23,12 @@ import type Homey from 'homey/lib/HomeySettings'
 
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
-const FP_MIN_MAX_GAP = 2
+
+const MIN_TEMPERATURE_MIN = 4
+const MIN_TEMPERATURE_MAX = 14
+const MAX_TEMPERATURE_MIN = 6
+const MAX_TEMPERATURE_MAX = 16
+const MIN_MAX_GAP = 2
 
 const NUMBER_1 = 1
 const NUMBER_2 = 2
@@ -51,11 +56,6 @@ let errorLogTBodyElement: HTMLTableSectionElement | null = null
 let errorCount = 0
 let from = ''
 let to = ''
-
-const minMinTemperature = 4
-const maxMinTemperature = 14
-const minMaxTemperature = 6
-const maxMaxTemperature = 16
 
 const authenticateElement = document.getElementById(
   'authenticate',
@@ -93,13 +93,13 @@ const sinceElement = document.getElementById('since') as HTMLInputElement
 const frostProtectionMinTemperatureElement = document.getElementById(
   'min',
 ) as HTMLInputElement
-frostProtectionMinTemperatureElement.min = String(minMinTemperature)
-frostProtectionMinTemperatureElement.max = String(maxMinTemperature)
+frostProtectionMinTemperatureElement.min = String(MIN_TEMPERATURE_MIN)
+frostProtectionMinTemperatureElement.max = String(MIN_TEMPERATURE_MAX)
 const frostProtectionMaxTemperatureElement = document.getElementById(
   'max',
 ) as HTMLInputElement
-frostProtectionMaxTemperatureElement.min = String(minMaxTemperature)
-frostProtectionMaxTemperatureElement.max = String(maxMaxTemperature)
+frostProtectionMaxTemperatureElement.min = String(MAX_TEMPERATURE_MIN)
+frostProtectionMaxTemperatureElement.max = String(MAX_TEMPERATURE_MAX)
 const holidayModeStartDateElement = document.getElementById(
   'start-date',
 ) as HTMLInputElement
@@ -1046,8 +1046,8 @@ const fixAndGetFpMinMax = (homey: Homey): { max: number; min: number } => {
   if (min > max) {
     ;[min, max] = [max, min]
   }
-  if (max - min < FP_MIN_MAX_GAP) {
-    max = min + FP_MIN_MAX_GAP
+  if (max - min < MIN_MAX_GAP) {
+    max = min + MIN_MAX_GAP
   }
   if (frostProtectionMinTemperatureElement.value !== String(min)) {
     frostProtectionMinTemperatureElement.value = String(min)
