@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.5.0",
-    "@stylistic/eslint-plugin": "^2.1.0",
+    "@stylistic/eslint-plugin": "^2.2.0",
     "@types/eslint__js": "^8.42.3",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.6",
