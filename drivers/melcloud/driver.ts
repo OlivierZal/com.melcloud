@@ -1,4 +1,3 @@
-import { DeviceType, effectiveFlagsAta } from '@olivierzal/melcloud-api'
 import {
   energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
@@ -7,13 +6,14 @@ import {
   storeMappingAta,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
+import { DeviceType } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Ata'> {
-  public readonly effectiveFlags = effectiveFlagsAta
-
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAta
+
+  public override readonly heatPumpType = 'Ata'
 
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
 

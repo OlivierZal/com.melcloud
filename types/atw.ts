@@ -7,7 +7,7 @@ import type {
   EnergyDataAtw,
   GetDeviceDataAtw,
   ListDeviceAtw,
-  NonEffectiveFlagsKeyOf,
+  NonFlagsKeyOf,
   OperationModeState,
   OperationModeZone,
   UpdateDeviceDataAtw,
@@ -39,7 +39,7 @@ export interface StoreAtw {
 
 export const storeMappingAtw: Record<
   keyof StoreAtw,
-  NonEffectiveFlagsKeyOf<ListDeviceAtw['Device']>
+  NonFlagsKeyOf<ListDeviceAtw['Device']>
 > = {
   canCool: 'CanCool',
   hasZone2: 'HasZone2',
@@ -152,7 +152,7 @@ export interface CapabilitiesAtw
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<UpdateDeviceDataAtw>
+  NonFlagsKeyOf<UpdateDeviceDataAtw>
 > = {
   onoff: 'Power',
   'onoff.forced_hot_water': 'ForcedHotWaterMode',
@@ -171,7 +171,7 @@ export const setCapabilityTagMappingAtw: Record<
 
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<GetDeviceDataAtw>
+  NonFlagsKeyOf<GetDeviceDataAtw>
 > = {
   'boolean.idle_zone1': 'IdleZone1',
   'boolean.idle_zone2': 'IdleZone2',
@@ -189,7 +189,7 @@ export const getCapabilityTagMappingAtw: Record<
 
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
-  NonEffectiveFlagsKeyOf<ListDeviceAtw['Device']>
+  NonFlagsKeyOf<ListDeviceAtw['Device']>
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',

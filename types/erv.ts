@@ -7,7 +7,7 @@ import type {
   FanSpeed,
   GetDeviceDataErv,
   ListDeviceErv,
-  NonEffectiveFlagsKeyOf,
+  NonFlagsKeyOf,
   UpdateDeviceDataErv,
   VentilationMode,
 } from '@olivierzal/melcloud-api'
@@ -20,7 +20,7 @@ export interface StoreErv {
 
 export const storeMappingErv: Record<
   keyof StoreErv,
-  NonEffectiveFlagsKeyOf<ListDeviceErv['Device']>
+  NonFlagsKeyOf<ListDeviceErv['Device']>
 > = { hasCO2Sensor: 'HasCO2Sensor', hasPM25Sensor: 'HasPM25Sensor' } as const
 
 export interface SetCapabilitiesErv extends BaseSetCapabilities {
@@ -48,7 +48,7 @@ export type CapabilitiesErv = EnergyCapabilitiesErv & OpCapabilitiesErv
 
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<UpdateDeviceDataErv>
+  NonFlagsKeyOf<UpdateDeviceDataErv>
 > = {
   fan_power: 'SetFanSpeed',
   onoff: 'Power',
@@ -57,7 +57,7 @@ export const setCapabilityTagMappingErv: Record<
 
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<GetDeviceDataErv>
+  NonFlagsKeyOf<GetDeviceDataErv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
@@ -66,7 +66,7 @@ export const getCapabilityTagMappingErv: Record<
 
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
-  NonEffectiveFlagsKeyOf<ListDeviceErv['Device']>
+  NonFlagsKeyOf<ListDeviceErv['Device']>
 > = {
   measure_pm25: 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',

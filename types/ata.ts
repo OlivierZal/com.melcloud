@@ -9,7 +9,7 @@ import type {
   GetDeviceDataAta,
   Horizontal,
   ListDeviceAta,
-  NonEffectiveFlagsKeyOf,
+  NonFlagsKeyOf,
   OperationMode,
   UpdateDeviceDataAta,
   Vertical,
@@ -34,7 +34,7 @@ export interface StoreAta {
 
 export const storeMappingAta: Record<
   keyof StoreAta,
-  NonEffectiveFlagsKeyOf<ListDeviceAta['Device']>
+  NonFlagsKeyOf<ListDeviceAta['Device']>
 > = {
   maxTempAutomatic: 'MaxTempAutomatic',
   maxTempCoolDry: 'MaxTempCoolDry',
@@ -102,7 +102,7 @@ export interface CapabilitiesAta
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<UpdateDeviceDataAta>
+  NonFlagsKeyOf<UpdateDeviceDataAta>
 > = {
   fan_power: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
@@ -114,7 +114,7 @@ export const setCapabilityTagMappingAta: Record<
 
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<GetDeviceDataAta>
+  NonFlagsKeyOf<GetDeviceDataAta>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
@@ -122,7 +122,7 @@ export const getCapabilityTagMappingAta: Record<
 
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
-  NonEffectiveFlagsKeyOf<ListDeviceAta['Device']>
+  NonFlagsKeyOf<ListDeviceAta['Device']>
 > = {
   'alarm_generic.silent': 'FanSpeed',
   fan_power: 'FanSpeed',

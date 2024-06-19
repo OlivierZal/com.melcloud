@@ -15,12 +15,11 @@ import type {
 } from '../types'
 import {
   DeviceModel,
-  DeviceType,
-  type EffectiveFlags,
+  type DeviceType,
   type EnergyData,
   type ListDevice,
   type LoginCredentials,
-  type NonEffectiveFlagsKeyOf,
+  type NonFlagsKeyOf,
 } from '@olivierzal/melcloud-api'
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
@@ -64,13 +63,13 @@ export default abstract class<
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
-  readonly #app = this.homey.app as MELCloudApp
-
-  public abstract readonly effectiveFlags: EffectiveFlags[T]
+  readonly #melcloudAPI = (this.homey.app as MELCloudApp).melcloudAPI
 
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
 
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
+
+  public abstract readonly heatPumpType: T
 
   public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping[T]
 
@@ -80,15 +79,11 @@ export default abstract class<
 
   protected abstract readonly storeMapping: StoreMapping[T]
 
-  public get heatPumpType(): T {
-    return DeviceType[this.deviceType] as T
-  }
-
   public getStore(device: ListDevice[T]['Device']): Store[T] {
     return Object.fromEntries(
       Object.entries(this.storeMapping).map(([key, value]) => [
         key as keyof Store[T],
-        device[value as NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>],
+        device[value as NonFlagsKeyOf<ListDevice[T]['Device']>],
       ]),
     ) as unknown as Store[T]
   }
@@ -102,7 +97,7 @@ export default abstract class<
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
-        if (await this.#app.applyLogin()) {
+        if (await this.#melcloudAPI.applyLogin()) {
           await session.showView('list_devices')
           return
         }
@@ -110,7 +105,7 @@ export default abstract class<
       }
     })
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#app.applyLogin(data),
+      this.#melcloudAPI.applyLogin(data),
     )
     session.setHandler('list_devices', async () => this.#discoverDevices())
     return Promise.resolve()
@@ -118,7 +113,7 @@ export default abstract class<
 
   public override async onRepair(session: PairSession): Promise<void> {
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#app.applyLogin(data),
+      this.#melcloudAPI.applyLogin(data),
     )
     return Promise.resolve()
   }

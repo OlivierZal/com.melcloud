@@ -26,8 +26,8 @@ import {
   type EnergyData,
   FLAG_UNCHANGED,
   type ListDevice,
-  type NonEffectiveFlagsKeyOf,
-  type NonEffectiveFlagsValueOf,
+  type NonFlagsKeyOf,
+  type NonFlagsValueOf,
   type SetDeviceData,
   type UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -57,12 +57,12 @@ export default abstract class<
     }
   >()
 
-  #effectiveFlags!: Record<NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>, number>
-
   #energyCapabilityTagEntries: {
     false?: EnergyCapabilityTagEntry<T>[]
     true?: EnergyCapabilityTagEntry<T>[]
   } = {}
+
+  #flags!: Record<NonFlagsKeyOf<UpdateDeviceData[T]>, number>
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
@@ -142,8 +142,8 @@ export default abstract class<
   }
 
   public override async onInit(): Promise<void> {
-    this.#effectiveFlags = this.driver.effectiveFlags as Record<
-      NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>,
+    this.#flags = this.#device.flags as Record<
+      NonFlagsKeyOf<UpdateDeviceData[T]>,
       number
     >
     this.toDevice = {
@@ -255,7 +255,7 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const { data } = this.#device.model
+    const { data } = this.#device
     this.log('Syncing from device list:', data)
     await this.setCapabilities(data)
   }
@@ -318,8 +318,8 @@ export default abstract class<
               const value = this.#convertFromDevice(
                 capability,
                 data[tag as keyof D] as
-                  | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>
-                  | NonEffectiveFlagsValueOf<SetDeviceData[T]>,
+                  | NonFlagsValueOf<ListDevice[T]['Device']>
+                  | NonFlagsValueOf<SetDeviceData[T]>,
               )
               await this.setCapabilityValue(
                 capability,
@@ -360,15 +360,13 @@ export default abstract class<
     >(
       (
         acc,
-        [capability, tag]: [
-          string,
-          NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>,
-        ],
+        [capability, tag]: [string, NonFlagsKeyOf<UpdateDeviceData[T]>],
       ) => {
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           acc.EffectiveFlags = Number(
-            BigInt(acc.EffectiveFlags) | BigInt(this.#effectiveFlags[tag]),
+            BigInt(acc.EffectiveFlags ?? FLAG_UNCHANGED) |
+              BigInt(this.#flags[tag]),
           )
           this.diff.delete(capability as K)
         }
@@ -446,8 +444,8 @@ export default abstract class<
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value:
-      | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>
-      | NonEffectiveFlagsValueOf<SetDeviceData[T]>,
+      | NonFlagsValueOf<ListDevice[T]['Device']>
+      | NonFlagsValueOf<SetDeviceData[T]>,
   ): OpCapabilities[T][K] {
     return (this.fromDevice[capability]?.(value) ??
       value) as OpCapabilities[T][K]
@@ -455,11 +453,11 @@ export default abstract class<
 
   #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
     capability: K,
-  ): NonEffectiveFlagsValueOf<UpdateDeviceData[T]> {
+  ): NonFlagsValueOf<UpdateDeviceData[T]> {
     const value = this.getRequestedOrCurrentValue(capability)
     return (
       this.toDevice[capability]?.(value) ??
-      (value as NonEffectiveFlagsValueOf<UpdateDeviceData[T]>)
+      (value as NonFlagsValueOf<UpdateDeviceData[T]>)
     )
   }
 
@@ -484,8 +482,8 @@ export default abstract class<
       case effectiveFlags !== FLAG_UNCHANGED:
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
-            ([, tag]: [string, NonEffectiveFlagsKeyOf<UpdateDeviceData[T]>]) =>
-              BigInt(effectiveFlags) & BigInt(this.#effectiveFlags[tag]),
+            ([, tag]: [string, NonFlagsKeyOf<UpdateDeviceData[T]>]) =>
+              BigInt(effectiveFlags) & BigInt(this.#flags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
         ] as OpCapabilityTagEntry<T>[]
@@ -555,7 +553,7 @@ export default abstract class<
     await Promise.all(
       Object.entries(
         this.driver.getStore(
-          this.#device.model.data as ListDevice['Ata']['Device'] &
+          this.#device.data as ListDevice['Ata']['Device'] &
             ListDevice['Atw']['Device'] &
             ListDevice['Erv']['Device'],
         ),

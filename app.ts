@@ -1,8 +1,8 @@
 import 'source-map-support/register'
 import 'core-js/actual/object/group-by'
-import MELCloudAPI, { type LoginCredentials } from '@olivierzal/melcloud-api'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
+import MELCloudAPI from '@olivierzal/melcloud-api'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
@@ -18,20 +18,9 @@ export = class MELCloudApp extends withTimers(App) {
       },
     },
     settingManager: this.homey.settings,
+    syncFunction: async (): Promise<void> => this.#syncFromDevices(),
     timezone: this.homey.clock.getTimezone(),
   })
-
-  #syncFromDevicesInterval: NodeJS.Timeout | null = null
-
-  public async applyLogin(data?: LoginCredentials): Promise<boolean> {
-    if (typeof data !== 'undefined') {
-      this.#clearSyncFromDevices()
-    }
-    return this.melcloudAPI.applyLogin(
-      data,
-      async (): Promise<void> => this.#runSyncFromDevices(),
-    )
-  }
 
   public getDevices({
     driverId,
@@ -47,34 +36,12 @@ export = class MELCloudApp extends withTimers(App) {
   public override async onInit(): Promise<void> {
     LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.applyLogin()
+    await this.melcloudAPI.applyLogin()
   }
 
-  #clearSyncFromDevices(): void {
-    this.homey.clearInterval(this.#syncFromDevicesInterval)
-    this.#syncFromDevicesInterval = null
-    this.log('Device list refresh has been paused')
-  }
-
-  async #runSyncFromDevices(): Promise<void> {
-    if (!this.#syncFromDevicesInterval) {
-      this.#clearSyncFromDevices()
-      await this.#syncFromDeviceList()
-      this.#syncFromDevicesInterval = this.setInterval(
-        async (): Promise<void> => {
-          await this.#syncFromDeviceList()
-        },
-        { minutes: 5 },
-        { actionType: 'device list refresh', units: ['minutes'] },
-      )
-    }
-  }
-
-  async #syncFromDeviceList(): Promise<void> {
-    try {
-      await this.melcloudAPI.fetchDevices()
-      await this.#syncFromDevices()
-    } catch (_error) {}
+  public override async onUninit(): Promise<void> {
+    this.melcloudAPI.clearSync()
+    return Promise.resolve()
   }
 
   async #syncFromDevices(): Promise<void> {

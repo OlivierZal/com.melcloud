@@ -43,8 +43,8 @@ import type {
   EnergyData,
   ListDevice,
   LoginCredentials,
-  NonEffectiveFlagsKeyOf,
-  NonEffectiveFlagsValueOf,
+  NonFlagsKeyOf,
+  NonFlagsValueOf,
   SetDeviceData,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -169,8 +169,8 @@ export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
 export type OpDeviceData<T extends keyof typeof DeviceType> =
-  | NonEffectiveFlagsKeyOf<ListDevice[T]['Device']>
-  | NonEffectiveFlagsKeyOf<SetDeviceData[T]>
+  | NonFlagsKeyOf<ListDevice[T]['Device']>
+  | NonFlagsKeyOf<SetDeviceData[T]>
 
 export interface SetCapabilities {
   readonly Ata: SetCapabilitiesAta
@@ -232,13 +232,13 @@ export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
 
 export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
   value:
-    | NonEffectiveFlagsValueOf<ListDevice[T]['Device']>
-    | NonEffectiveFlagsValueOf<SetDeviceData[T]>,
+    | NonFlagsValueOf<ListDevice[T]['Device']>
+    | NonFlagsValueOf<SetDeviceData[T]>,
 ) => OpCapabilities[T][keyof OpCapabilities[T]]
 
 export type ConvertToDevice<T extends keyof typeof DeviceType> = (
   value: SetCapabilities[T][keyof SetCapabilities[T]],
-) => NonEffectiveFlagsValueOf<UpdateDeviceData[T]>
+) => NonFlagsValueOf<UpdateDeviceData[T]>
 
 export interface FlowArgs {
   readonly Ata: FlowArgsAta
