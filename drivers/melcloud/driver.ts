@@ -16,9 +16,9 @@ export = class extends BaseMELCloudDriver<'Ata'> {
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
 
-  protected readonly heatPumpType = 'Ata'
-
   protected readonly storeMapping = storeMappingAta
+
+  protected readonly type = 'Ata'
 
   public getRequiredCapabilities(): string[] {
     return [

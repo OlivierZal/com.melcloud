@@ -73,9 +73,9 @@ export default abstract class<
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
-  protected abstract readonly heatPumpType: T
-
   protected abstract readonly storeMapping: StoreMapping[T]
+
+  protected abstract readonly type: T
 
   public getStore(device: ListDevice[T]['Device']): Store[T] {
     return Object.fromEntries(
@@ -118,7 +118,7 @@ export default abstract class<
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
-      DeviceModel.getByType(this.heatPumpType).map(({ data, id, name }) => {
+      DeviceModel.getByType(this.type).map(({ data, id, name }) => {
         const store = this.getStore(data)
         return {
           capabilities: this.getRequiredCapabilities(store),
