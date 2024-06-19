@@ -8,7 +8,6 @@ import {
   storeMappingAtw,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
-import { DeviceType } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
@@ -18,8 +17,6 @@ export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAtw
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
-
-  protected readonly deviceType = DeviceType.Atw
 
   protected readonly heatPumpType = 'Atw'
 

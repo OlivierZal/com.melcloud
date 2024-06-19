@@ -73,8 +73,6 @@ export default abstract class<
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
-  protected abstract readonly deviceType: DeviceType
-
   protected abstract readonly heatPumpType: T
 
   protected abstract readonly storeMapping: StoreMapping[T]

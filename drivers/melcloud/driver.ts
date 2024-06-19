@@ -6,7 +6,6 @@ import {
   storeMappingAta,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
-import { DeviceType } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Ata'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
@@ -16,8 +15,6 @@ export = class extends BaseMELCloudDriver<'Ata'> {
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
-
-  protected readonly deviceType = DeviceType.Ata
 
   protected readonly heatPumpType = 'Ata'
 
