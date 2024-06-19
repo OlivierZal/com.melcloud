@@ -13,13 +13,13 @@ export = class extends BaseMELCloudDriver<'Ata'> {
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAta
 
-  public override readonly heatPumpType = 'Ata'
-
   public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
 
   protected readonly deviceType = DeviceType.Ata
+
+  protected readonly heatPumpType = 'Ata'
 
   protected readonly storeMapping = storeMappingAta
 
