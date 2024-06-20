@@ -21,10 +21,11 @@ import {
   type Store,
 } from '../types'
 import {
-  DeviceFacade,
+  DeviceModel,
   type DeviceType,
   type EnergyData,
   FLAG_UNCHANGED,
+  FacadeManager,
   type ListDevice,
   type NonFlagsKeyOf,
   type NonFlagsValueOf,
@@ -76,9 +77,12 @@ export default abstract class<
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
-  readonly #device = new DeviceFacade(
+  readonly #device = FacadeManager.getInstance(
     (this.homey.app as MELCloudApp).melcloudAPI,
-    (this.getData() as DeviceDetails<T>['data']).id,
+  ).get(
+    DeviceModel.getById(
+      (this.getData() as DeviceDetails<T>['data']).id,
+    ) as DeviceModel<T>,
   )
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
@@ -466,7 +470,7 @@ export default abstract class<
     to: string | null,
   ): Promise<EnergyData[T] | null> {
     try {
-      return (await this.#device.getEnergyReport({ from, to })) as EnergyData[T]
+      return await this.#device.getEnergyReport({ from, to })
     } catch (error) {
       await this.setWarning(
         error instanceof Error ? error.message : String(error),
@@ -628,7 +632,7 @@ export default abstract class<
     const postData = this.#buildPostData()
     if (postData.EffectiveFlags !== FLAG_UNCHANGED) {
       try {
-        return (await this.#device.set(postData)) as SetDeviceData[T]
+        return await this.#device.set(postData)
       } catch (error) {
         await this.setWarning(
           error instanceof Error ? error.message : String(error),

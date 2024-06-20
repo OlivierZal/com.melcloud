@@ -1,9 +1,10 @@
 import {
   type BuildingData,
-  BuildingFacade,
+  type BuildingFacade,
   BuildingModel,
   DeviceModel,
   type ErrorData,
+  FacadeManager,
   type FrostProtectionData,
   type HolidayModeData,
   type LoginCredentials,
@@ -29,28 +30,18 @@ const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
 
-const buildings = new Map<number, BuildingFacade>()
-
 const getOrCreateBuildingFacade = (
   homey: Homey,
-  id: number,
+  idOrModel: number | BuildingModel,
 ): BuildingFacade => {
-  if (!BuildingModel.getById(id)) {
+  const building =
+    typeof idOrModel === 'number' ? BuildingModel.getById(idOrModel) : idOrModel
+  if (typeof building === 'undefined') {
     throw new Error(homey.__('settings.buildings.building.not_found'))
   }
-  if (!buildings.has(id)) {
-    const buildingFacade = new BuildingFacade(
-      (homey.app as MELCloudApp).melcloudAPI,
-      id,
-    )
-    buildings.set(id, buildingFacade)
-    return buildingFacade
-  }
-  const buildingFacade = buildings.get(id)
-  if (typeof buildingFacade === 'undefined') {
-    throw new Error(homey.__('settings.buildings.building.not_found'))
-  }
-  return buildingFacade
+  return FacadeManager.getInstance((homey.app as MELCloudApp).melcloudAPI).get(
+    building,
+  )
 }
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
@@ -169,8 +160,8 @@ const handleErrorLogQuery = ({
 export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
     return Promise.all(
-      Array.from(BuildingModel.getAll()).map(async ({ id }) =>
-        getOrCreateBuildingFacade(homey, id).actualData(),
+      Array.from(BuildingModel.getAll()).map(async (building) =>
+        getOrCreateBuildingFacade(homey, building).actualData(),
       ),
     )
   },
