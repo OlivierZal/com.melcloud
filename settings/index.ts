@@ -317,7 +317,7 @@ const createLabelElement = (
   )
   labelElement.htmlFor = element.id
   if (isCheckbox) {
-    addTextToCheckbox(labelElement, element as HTMLInputElement, text)
+    addTextToCheckbox(labelElement, element, text)
   } else {
     labelElement.innerText = text
   }
@@ -835,9 +835,7 @@ const generateCheckboxChildrenElements = (
   homey: Homey,
   driverId: string,
 ): void => {
-  const settingsElement = document.getElementById(
-    `settings-${driverId}`,
-  ) as HTMLDivElement | null
+  const settingsElement = document.getElementById(`settings-${driverId}`)
   if (settingsElement) {
     const fieldSetElement = document.createElement('fieldset')
     fieldSetElement.classList.add('homey-form-checkbox-set')
