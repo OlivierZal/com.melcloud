@@ -4,7 +4,6 @@ import {
   BuildingModel,
   DeviceModel,
   type ErrorData,
-  FacadeManager,
   type FrostProtectionData,
   type HolidayModeData,
   type LoginCredentials,
@@ -39,9 +38,7 @@ const getOrCreateBuildingFacade = (
   if (typeof building === 'undefined') {
     throw new Error(homey.__('settings.buildings.building.not_found'))
   }
-  return FacadeManager.getInstance((homey.app as MELCloudApp).melcloudAPI).get(
-    building,
-  )
+  return (homey.app as MELCloudApp).facadeManager.get(building)
 }
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
@@ -62,8 +59,7 @@ const getErrors = async (
   fromDate: DateTime,
   toDate: DateTime,
 ): Promise<ErrorData[]> => {
-  const app = homey.app as MELCloudApp
-  const { data } = await app.melcloudAPI.getErrors({
+  const { data } = await (homey.app as MELCloudApp).api.getErrors({
     postData: {
       DeviceIDs: DeviceModel.getAll().map(({ id }) => id),
       FromDate: fromDate.toISODate() ?? '',
@@ -258,7 +254,7 @@ export = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return (homey.app as MELCloudApp).melcloudAPI.applyLogin(body)
+    return (homey.app as MELCloudApp).api.applyLogin(body)
   },
   async setDeviceSettings({
     homey,

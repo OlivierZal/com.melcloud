@@ -1,13 +1,15 @@
 import 'source-map-support/register'
 import 'core-js/actual/object/group-by'
+import MELCloudAPI, { FacadeManager } from '@olivierzal/melcloud-api'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
-import MELCloudAPI from '@olivierzal/melcloud-api'
 import type { MELCloudDevice } from './types'
 import withTimers from './mixins/withTimers'
 
+LuxonSettings.defaultLocale = 'en-us'
+
 export = class MELCloudApp extends withTimers(App) {
-  public readonly melcloudAPI = new MELCloudAPI({
+  public readonly api = new MELCloudAPI({
     language: this.homey.i18n.getLanguage(),
     logger: {
       error: (...args): void => {
@@ -22,6 +24,8 @@ export = class MELCloudApp extends withTimers(App) {
     timezone: this.homey.clock.getTimezone(),
   })
 
+  public readonly facadeManager = new FacadeManager(this.api)
+
   public getDevices({
     driverId,
   }: { driverId?: string } = {}): MELCloudDevice[] {
@@ -34,13 +38,12 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public override async onInit(): Promise<void> {
-    LuxonSettings.defaultLocale = 'en-us'
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    await this.melcloudAPI.applyLogin()
+    await this.api.applyLogin()
   }
 
   public override async onUninit(): Promise<void> {
-    this.melcloudAPI.clearSync()
+    this.api.clearSync()
     return Promise.resolve()
   }
 

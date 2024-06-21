@@ -63,7 +63,7 @@ export default abstract class<
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
-  readonly #melcloudAPI = (this.homey.app as MELCloudApp).melcloudAPI
+  readonly #api = (this.homey.app as MELCloudApp).api
 
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
 
@@ -95,7 +95,7 @@ export default abstract class<
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
-        if (await this.#melcloudAPI.applyLogin()) {
+        if (await this.#api.applyLogin()) {
           await session.showView('list_devices')
           return
         }
@@ -103,7 +103,7 @@ export default abstract class<
       }
     })
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#melcloudAPI.applyLogin(data),
+      this.#api.applyLogin(data),
     )
     session.setHandler('list_devices', async () => this.#discoverDevices())
     return Promise.resolve()
@@ -111,7 +111,7 @@ export default abstract class<
 
   public override async onRepair(session: PairSession): Promise<void> {
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#melcloudAPI.applyLogin(data),
+      this.#api.applyLogin(data),
     )
     return Promise.resolve()
   }

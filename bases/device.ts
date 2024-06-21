@@ -25,7 +25,6 @@ import {
   type DeviceType,
   type EnergyData,
   FLAG_UNCHANGED,
-  FacadeManager,
   type ListDevice,
   type NonFlagsKeyOf,
   type NonFlagsValueOf,
@@ -63,8 +62,6 @@ export default abstract class<
     true?: EnergyCapabilityTagEntry<T>[]
   } = {}
 
-  #flags!: Record<NonFlagsKeyOf<UpdateDeviceData[T]>, number>
-
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
   #linkedDeviceCount = NUMBER_1
@@ -77,13 +74,13 @@ export default abstract class<
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
-  readonly #device = FacadeManager.getInstance(
-    (this.homey.app as MELCloudApp).melcloudAPI,
-  ).get(
+  readonly #device = (this.homey.app as MELCloudApp).facadeManager.get(
     DeviceModel.getById(
       (this.getData() as DeviceDetails<T>['data']).id,
     ) as DeviceModel<T>,
   )
+
+  readonly #flags = this.#device.flags
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -146,10 +143,6 @@ export default abstract class<
   }
 
   public override async onInit(): Promise<void> {
-    this.#flags = this.#device.flags as Record<
-      NonFlagsKeyOf<UpdateDeviceData[T]>,
-      number
-    >
     this.toDevice = {
       onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
       ...this.toDevice,
