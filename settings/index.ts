@@ -203,13 +203,13 @@ const getDeviceSettings = async (homey: Homey): Promise<void> =>
 
 const getFlatDeviceSettings = (): void => {
   flatDeviceSettings = Object.values(deviceSettings).reduce(
-    (flattenedDeviceSettings, settings) =>
+    (flatAcc, settings) =>
       Object.entries(settings).reduce((acc, [settingId, settingValues]) => {
         acc[settingId] = Array.from(
           new Set([...(acc[settingId] ?? []), ...settingValues]),
         )
         return acc
-      }, flattenedDeviceSettings),
+      }, flatAcc),
     {},
   )
 }
