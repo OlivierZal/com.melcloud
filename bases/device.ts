@@ -380,15 +380,9 @@ export default abstract class<
     const producedTags = this.driver.producedTagMapping[capability] as K[]
     const consumedTags = this.driver.consumedTagMapping[capability] as K[]
     return (
-      producedTags.reduce<number>(
-        (acc, tag) => acc + (data[tag] as number),
-        NUMBER_0,
-      ) /
+      producedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
       (consumedTags.length ?
-        consumedTags.reduce<number>(
-          (acc, tag) => acc + (data[tag] as number),
-          NUMBER_0,
-        )
+        consumedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0)
       : NUMBER_1)
     )
   }
@@ -398,7 +392,7 @@ export default abstract class<
     tags: K[],
   ): number {
     return (
-      tags.reduce<number>((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
+      tags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
       this.#linkedDeviceCount
     )
   }
@@ -409,7 +403,7 @@ export default abstract class<
     hour: number,
   ): number {
     return (
-      tags.reduce<number>(
+      tags.reduce(
         (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
         NUMBER_0,
       ) / this.#linkedDeviceCount
@@ -509,13 +503,13 @@ export default abstract class<
           settings[setting],
       ),
     ]
-    await capabilities.reduce<Promise<void>>(async (acc, capability) => {
+    await capabilities.reduce(async (acc, capability) => {
       await acc
       return this.addCapability(capability)
     }, Promise.resolve())
     await this.getCapabilities()
       .filter((capability) => !capabilities.includes(capability))
-      .reduce<Promise<void>>(async (acc, capability) => {
+      .reduce(async (acc, capability) => {
         await acc
         await this.removeCapability(capability)
       }, Promise.resolve())
@@ -527,7 +521,7 @@ export default abstract class<
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
-    await changedCapabilities.reduce<Promise<void>>(async (acc, capability) => {
+    await changedCapabilities.reduce(async (acc, capability) => {
       await acc
       if (newSettings[capability] === true) {
         await this.addCapability(capability)
