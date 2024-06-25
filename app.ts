@@ -9,9 +9,17 @@ import withTimers from './mixins/withTimers'
 LuxonSettings.defaultLocale = 'en-us'
 
 export = class MELCloudApp extends withTimers(App) {
-  public api!: MELCloudAPI
+  #api!: MELCloudAPI
 
-  public readonly facadeManager = new FacadeManager(this.api)
+  #facadeManager!: FacadeManager
+
+  public get api(): MELCloudAPI {
+    return this.#api
+  }
+
+  public get facadeManager(): FacadeManager {
+    return this.#facadeManager
+  }
 
   public getDevices({
     driverId,
@@ -26,7 +34,7 @@ export = class MELCloudApp extends withTimers(App) {
 
   public override async onInit(): Promise<void> {
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
-    this.api = await MELCloudAPI.create({
+    this.#api = await MELCloudAPI.create({
       language: this.homey.i18n.getLanguage(),
       logger: {
         error: (...args): void => {
@@ -40,10 +48,11 @@ export = class MELCloudApp extends withTimers(App) {
       syncFunction: async (): Promise<void> => this.#syncFromDevices(),
       timezone: this.homey.clock.getTimezone(),
     })
+    this.#facadeManager = new FacadeManager(this.#api)
   }
 
   public override async onUninit(): Promise<void> {
-    this.api.clearSync()
+    this.#api.clearSync()
     return Promise.resolve()
   }
 
