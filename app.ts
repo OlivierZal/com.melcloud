@@ -40,7 +40,6 @@ export = class MELCloudApp extends withTimers(App) {
       syncFunction: async (): Promise<void> => this.#syncFromDevices(),
       timezone: this.homey.clock.getTimezone(),
     })
-    await this.api.applyLogin()
   }
 
   public override async onUninit(): Promise<void> {
