@@ -220,6 +220,7 @@ export default tsEslint.config(
           ignoreRestArgs: true,
         },
       ],
+      '@typescript-eslint/no-invalid-this': 'off',
       '@typescript-eslint/no-magic-numbers': [
         'error',
         {
