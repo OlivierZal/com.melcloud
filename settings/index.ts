@@ -160,7 +160,7 @@ const unhide = (element: HTMLDivElement, value = true): void => {
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api('GET', '/language', (error: Error | null, language: string) => {
       if (error) {
         reject(error)
@@ -172,7 +172,7 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> =>
   })
 
 const getHomeySettings = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.get(async (error: Error | null, settings: HomeySettingsUI) => {
       if (error) {
         await homey.alert(error.message)
@@ -185,7 +185,7 @@ const getHomeySettings = async (homey: Homey): Promise<void> =>
   })
 
 const getDeviceSettings = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api(
       'GET',
       '/settings/devices',
@@ -215,7 +215,7 @@ const getFlatDeviceSettings = (): void => {
 }
 
 const getDriverSettingsAll = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api(
       'GET',
       '/settings/drivers',
@@ -479,26 +479,29 @@ const updateErrorLogElements = (
   sinceElement.value = nextFromDate
 }
 
-const generateErrorLog = (homey: Homey): void => {
-  homey.api(
-    'GET',
-    `/errors?${new URLSearchParams({
-      from: sinceElement.value,
-      limit: '29',
-      offset: '0',
-      to,
-    } satisfies ErrorLogQuery).toString()}`,
-    async (error: Error | null, data: ErrorLog) => {
-      seeElement.classList.remove('is-disabled')
-      if (error) {
-        await homey.alert(error.message)
-        return
-      }
-      updateErrorLogElements(homey, data)
-      generateErrorLogTableData(homey, data.errors)
-    },
-  )
-}
+const generateErrorLog = async (homey: Homey): Promise<void> =>
+  new Promise((resolve, reject) => {
+    homey.api(
+      'GET',
+      `/errors?${new URLSearchParams({
+        from: sinceElement.value,
+        limit: '29',
+        offset: '0',
+        to,
+      } satisfies ErrorLogQuery).toString()}`,
+      async (error: Error | null, data: ErrorLog) => {
+        seeElement.classList.remove('is-disabled')
+        if (error) {
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        updateErrorLogElements(homey, data)
+        generateErrorLogTableData(homey, data.errors)
+        resolve()
+      },
+    )
+  })
 
 const refreshHolidayModeData = ({
   HMEnabled: isEnabled,
@@ -536,7 +539,7 @@ const updateBuildingMapping = (
 }
 
 const getHolidayModeData = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api(
       'GET',
       `/settings/holiday_mode/buildings/${buildingElement.value}`,
@@ -554,7 +557,7 @@ const getHolidayModeData = async (homey: Homey): Promise<void> =>
   })
 
 const getFrostProtectionData = async (homey: Homey): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api(
       'GET',
       `/settings/frost_protection/buildings/${buildingElement.value}`,
@@ -574,7 +577,7 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
 const getBuildings = async (
   homey: Homey,
 ): Promise<Record<string, BuildingSettings>> =>
-  new Promise<Record<string, BuildingSettings>>((resolve, reject) => {
+  new Promise((resolve, reject) => {
     homey.api(
       'GET',
       '/buildings',
@@ -614,31 +617,35 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   })
 }
 
-const setDeviceSettings = (
+const setDeviceSettings = async (
   homey: Homey,
   body: Settings,
   driverId?: string,
-): void => {
+): Promise<void> => {
   let endPoint = '/settings/devices'
   if (typeof driverId !== 'undefined') {
     endPoint += `?${new URLSearchParams({
       driverId,
     } satisfies { driverId: string }).toString()}`
   }
-  homey.api(
-    'PUT',
-    endPoint,
-    body satisfies Settings,
-    async (error: Error | null) => {
-      if (error) {
-        await homey.alert(error.message)
-        return
-      }
-      updateDeviceSettings(body, driverId)
-      enableButtons(`settings-${driverId ?? 'common'}`)
-      await homey.alert(homey.__('settings.success'))
-    },
-  )
+  return new Promise((resolve, reject) => {
+    homey.api(
+      'PUT',
+      endPoint,
+      body satisfies Settings,
+      async (error: Error | null) => {
+        if (error) {
+          await homey.alert(error.message)
+          reject(error)
+          return
+        }
+        updateDeviceSettings(body, driverId)
+        enableButtons(`settings-${driverId ?? 'common'}`)
+        await homey.alert(homey.__('settings.success'))
+        resolve()
+      },
+    )
+  })
 }
 
 const addApplySettingsEventListener = (
@@ -670,7 +677,7 @@ const addApplySettingsEventListener = (
         }
         if (ok) {
           disableButtons(settings)
-          setDeviceSettings(homey, body, driverId)
+          await setDeviceSettings(homey, body, driverId)
         }
       },
     )
@@ -874,7 +881,7 @@ const generate = async (homey: Homey): Promise<void> => {
     return
   }
   refreshBuildingSettings()
-  generateErrorLog(homey)
+  await generateErrorLog(homey)
 }
 
 const needsAuthentication = (value = true): void => {
@@ -1104,7 +1111,9 @@ const addEventListeners = (homey: Homey): void => {
 
   seeElement.addEventListener('click', () => {
     seeElement.classList.add('is-disabled')
-    generateErrorLog(homey)
+    generateErrorLog(homey).catch(async (err: unknown) => {
+      await homey.alert(err instanceof Error ? err.message : String(err))
+    })
   })
 
   autoAdjustElement.addEventListener('click', () => {
