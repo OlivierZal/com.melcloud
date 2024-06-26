@@ -122,8 +122,11 @@ const holidayModeEnabledElement = document.getElementById(
   'enabled-holiday-mode',
 ) as HTMLSelectElement
 
-const disableButton = (elementId: string, value = true): void => {
-  const element = document.getElementById(elementId)
+const noDeviceError = (homey: Homey): string =>
+  homey.__('settings.devices.none')
+
+const disableButton = (id: string, value = true): void => {
+  const element = document.getElementById(id)
   if (element) {
     if (value) {
       element.classList.add('is-disabled')
@@ -145,6 +148,12 @@ const disableButtons = (setting: string, value = true): void => {
     }
     disableButton(`${action}-${baseSetting}-common`, value)
   })
+}
+
+const disableSettingsButtons = (): void => {
+  disableButtons('frost-protection')
+  disableButtons('holiday-mode')
+  disableButtons('settings-common')
 }
 
 const enableButtons = (setting: string, value = true): void => {
@@ -546,7 +555,7 @@ const getHolidayModeData = async (homey: Homey): Promise<void> =>
       (error: Error | null, data: HolidayModeData) => {
         enableButtons('holiday-mode')
         if (error) {
-          reject(new Error(error.message))
+          reject(error)
           return
         }
         updateBuildingMapping(data)
@@ -564,7 +573,7 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
       (error: Error | null, data: FrostProtectionData) => {
         enableButtons('frost-protection')
         if (error) {
-          reject(new Error(error.message))
+          reject(error)
           return
         }
         updateBuildingMapping(data)
@@ -574,16 +583,16 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
     )
   })
 
-const getBuildings = async (
-  homey: Homey,
-): Promise<Record<string, BuildingSettings>> =>
+const getBuildings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
       '/buildings',
       async (error: Error | null, buildings: BuildingData[]) => {
         if (error) {
-          await homey.alert(error.message)
+          if (error.message !== noDeviceError(homey)) {
+            await homey.alert(error.message)
+          }
           reject(error)
           return
         }
@@ -596,7 +605,7 @@ const getBuildings = async (
             return [String(id), data]
           }),
         )
-        resolve(buildingMapping)
+        resolve()
       },
     )
   })
@@ -871,15 +880,7 @@ const generateCheckboxChildrenElements = (
 }
 
 const generate = async (homey: Homey): Promise<void> => {
-  buildingMapping = await getBuildings(homey)
-  if (!Object.keys(buildingMapping).length) {
-    seeElement.classList.add('is-disabled')
-    disableButtons('frost-protection')
-    disableButtons('holiday-mode')
-    disableButtons('settings-common')
-    await homey.alert(homey.__('settings.devices.none'))
-    return
-  }
+  await getBuildings(homey)
   refreshBuildingSettings()
   await generateErrorLog(homey)
 }
@@ -904,16 +905,23 @@ const login = async (homey: Homey): Promise<void> => {
     '/sessions',
     { password, username } satisfies LoginCredentials,
     async (error: Error | null, loggedIn: boolean) => {
-      if (error) {
-        await homey.alert(error.message)
+      if (error || !loggedIn) {
+        await homey.alert(
+          error ? error.message : homey.__('settings.authenticate.failure'),
+        )
         return
       }
-      if (!loggedIn) {
-        await homey.alert(homey.__('settings.authenticate.failure'))
-        return
+      try {
+        await generate(homey)
+      } catch (err) {
+        if (err instanceof Error && err.message === noDeviceError(homey)) {
+          seeElement.classList.add('is-disabled')
+          disableSettingsButtons()
+          await homey.alert(err.message)
+        }
+      } finally {
+        needsAuthentication(false)
       }
-      await generate(homey)
-      needsAuthentication(false)
     },
   )
 }
