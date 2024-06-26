@@ -21,6 +21,7 @@ import {
   type Store,
 } from '../types'
 import {
+  type DeviceFacade,
   DeviceModel,
   type DeviceType,
   type EnergyData,
@@ -57,6 +58,8 @@ export default abstract class<
     }
   >()
 
+  #device!: DeviceFacade<T> | null
+
   #energyCapabilityTagEntries: {
     false?: EnergyCapabilityTagEntry<T>[]
     true?: EnergyCapabilityTagEntry<T>[]
@@ -73,14 +76,6 @@ export default abstract class<
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
-
-  readonly #device = (this.homey.app as MELCloudApp).facadeManager.get(
-    DeviceModel.getById(
-      (this.getData() as DeviceDetails<T>['data']).id,
-    ) as DeviceModel<T>,
-  )
-
-  readonly #flags = this.#device.flags
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -99,6 +94,16 @@ export default abstract class<
   >
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
+
+  private get device(): DeviceFacade<T> | null {
+    if (this.#device) {
+      return this.#device
+    }
+    this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
+      DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id),
+    ) as DeviceFacade<T> | null
+    return this.#device
+  }
 
   public override async addCapability(capability: string): Promise<void> {
     this.log('Adding capability', capability)
@@ -252,9 +257,11 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const { data } = this.#device
-    this.log('Syncing from device list:', data)
-    await this.setCapabilities(data)
+    if (this.device) {
+      const { data } = this.device
+      this.log('Syncing from device list:', data)
+      await this.setCapabilities(data)
+    }
   }
 
   protected applySyncToDevice(): void {
@@ -307,24 +314,25 @@ export default abstract class<
     D extends ListDevice[T]['Device'] | SetDeviceData[T],
     K extends Extract<keyof OpCapabilities[T], string>,
   >(data: D | null): Promise<void> {
-    if (data) {
+    if (this.device && data) {
       await Promise.all(
-        this.#getUpdateCapabilityTagEntries(data.EffectiveFlags).map(
-          async ([capability, tag]) => {
-            if (tag in data) {
-              const value = this.#convertFromDevice(
-                capability,
-                data[tag as keyof D] as
-                  | NonFlagsValueOf<ListDevice[T]['Device']>
-                  | NonFlagsValueOf<SetDeviceData[T]>,
-              )
-              await this.setCapabilityValue(
-                capability,
-                value as Capabilities[T][K],
-              )
-            }
-          },
-        ),
+        this.#getUpdateCapabilityTagEntries(
+          data.EffectiveFlags,
+          this.device.flags,
+        ).map(async ([capability, tag]) => {
+          if (tag in data) {
+            const value = this.#convertFromDevice(
+              capability,
+              data[tag as keyof D] as
+                | NonFlagsValueOf<ListDevice[T]['Device']>
+                | NonFlagsValueOf<SetDeviceData[T]>,
+            )
+            await this.setCapabilityValue(
+              capability,
+              value as Capabilities[T][K],
+            )
+          }
+        }),
       )
     }
   }
@@ -348,9 +356,9 @@ export default abstract class<
     })
   }
 
-  #buildPostData<
-    K extends Extract<keyof SetCapabilities[T], string>,
-  >(): UpdateDeviceData[T] {
+  #buildPostData<K extends Extract<keyof SetCapabilities[T], string>>(
+    flags: Record<NonFlagsKeyOf<UpdateDeviceData[T]>, number>,
+  ): UpdateDeviceData[T] {
     this.#setAlwaysOnWarning()
     return Object.entries(this.#setCapabilityTagMapping).reduce<
       UpdateDeviceData[T]
@@ -362,8 +370,7 @@ export default abstract class<
         acc[tag] = this.#convertToDevice(capability as K)
         if (this.diff.has(capability as K)) {
           acc.EffectiveFlags = Number(
-            BigInt(acc.EffectiveFlags ?? FLAG_UNCHANGED) |
-              BigInt(this.#flags[tag]),
+            BigInt(acc.EffectiveFlags ?? FLAG_UNCHANGED) | BigInt(flags[tag]),
           )
           this.diff.delete(capability as K)
         }
@@ -456,25 +463,28 @@ export default abstract class<
     from: string | null,
     to: string | null,
   ): Promise<EnergyData[T] | null> {
-    try {
-      return await this.#device.getEnergyReport({ from, to })
-    } catch (error) {
-      await this.setWarning(
-        error instanceof Error ? error.message : String(error),
-      )
-      return null
+    if (this.device) {
+      try {
+        return await this.device.getEnergyReport({ from, to })
+      } catch (error) {
+        await this.setWarning(
+          error instanceof Error ? error.message : String(error),
+        )
+      }
     }
+    return null
   }
 
   #getUpdateCapabilityTagEntries(
     effectiveFlags: number,
+    flags: Record<NonFlagsKeyOf<UpdateDeviceData[T]>, number>,
   ): OpCapabilityTagEntry<T>[] {
     switch (true) {
       case effectiveFlags !== FLAG_UNCHANGED:
         return [
           ...Object.entries(this.#setCapabilityTagMapping).filter(
             ([, tag]: [string, NonFlagsKeyOf<UpdateDeviceData[T]>]) =>
-              BigInt(effectiveFlags) & BigInt(this.#flags[tag]),
+              BigInt(effectiveFlags) & BigInt(flags[tag]),
           ),
           ...Object.entries(this.#getCapabilityTagMapping),
         ] as OpCapabilityTagEntry<T>[]
@@ -541,17 +551,19 @@ export default abstract class<
   async #handleStore<
     K extends Extract<keyof Store[T], string>,
   >(): Promise<void> {
-    await Promise.all(
-      Object.entries(
-        this.driver.getStore(
-          this.#device.data as ListDevice['Ata']['Device'] &
-            ListDevice['Atw']['Device'] &
-            ListDevice['Erv']['Device'],
-        ),
-      ).map(async ([key, value]) => {
-        await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
-      }),
-    )
+    if (this.device) {
+      await Promise.all(
+        Object.entries(
+          this.driver.getStore(
+            this.device.data as ListDevice['Ata']['Device'] &
+              ListDevice['Atw']['Device'] &
+              ListDevice['Erv']['Device'],
+          ),
+        ).map(async ([key, value]) => {
+          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
+        }),
+      )
+    }
   }
 
   #isCapability(setting: string): boolean {
@@ -616,14 +628,16 @@ export default abstract class<
   }
 
   async #set(): Promise<SetDeviceData[T] | null> {
-    const postData = this.#buildPostData()
-    if (postData.EffectiveFlags !== FLAG_UNCHANGED) {
-      try {
-        return await this.#device.set(postData)
-      } catch (error) {
-        await this.setWarning(
-          error instanceof Error ? error.message : String(error),
-        )
+    if (this.device) {
+      const postData = this.#buildPostData(this.device.flags)
+      if (postData.EffectiveFlags !== FLAG_UNCHANGED) {
+        try {
+          return await this.device.set(postData)
+        } catch (error) {
+          await this.setWarning(
+            error instanceof Error ? error.message : String(error),
+          )
+        }
       }
     }
     return null
