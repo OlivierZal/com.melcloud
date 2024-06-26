@@ -103,7 +103,7 @@ export default abstract class<
       DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id),
     ) as DeviceFacade<T> | null
     if (!this.#device) {
-      this.setWarningSync(this.homey.__('warnings.device'))
+      this.setWarningSync(this.homey.__('warnings.device.not_found'))
     }
     return this.#device
   }
