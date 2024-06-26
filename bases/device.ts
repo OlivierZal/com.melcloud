@@ -260,7 +260,7 @@ export default abstract class<
   }
 
   public setWarningSync(warning: string | null): void {
-    super.setWarning(warning).catch((error: unknown) => {
+    this.setWarning(warning).catch((error: unknown) => {
       this.error(error instanceof Error ? error.message : String(error))
     })
   }
