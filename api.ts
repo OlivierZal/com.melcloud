@@ -155,12 +155,8 @@ const handleErrorLogQuery = ({
 
 export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
-    const buildings = BuildingModel.getAll()
-    if (!buildings.length) {
-      throw new Error(homey.__('settings.devices.none'))
-    }
     return Promise.all(
-      Array.from(buildings).map(async (building) =>
+      Array.from(BuildingModel.getAll()).map(async (building) =>
         getOrCreateBuildingFacade(homey, building).actualData(),
       ),
     )

@@ -21,6 +21,12 @@ import type {
 } from '../types'
 import type Homey from 'homey/lib/HomeySettings'
 
+class NoDeviceError extends Error {
+  public constructor(homey: Homey) {
+    super(homey.__('settings.devices.none'))
+  }
+}
+
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 
@@ -121,9 +127,6 @@ const frostProtectionEnabledElement = document.getElementById(
 const holidayModeEnabledElement = document.getElementById(
   'enabled-holiday-mode',
 ) as HTMLSelectElement
-
-const noDeviceError = (homey: Homey): string =>
-  homey.__('settings.devices.none')
 
 const disableButton = (id: string, value = true): void => {
   const element = document.getElementById(id)
@@ -589,11 +592,11 @@ const getBuildings = async (homey: Homey): Promise<void> =>
       'GET',
       '/buildings',
       async (error: Error | null, buildings: BuildingData[]) => {
-        if (error) {
-          if (error.message !== noDeviceError(homey)) {
+        if (error || !buildings.length) {
+          if (error) {
             await homey.alert(error.message)
           }
-          reject(error)
+          reject(error ?? new NoDeviceError(homey))
           return
         }
         buildingMapping = Object.fromEntries(
@@ -914,7 +917,7 @@ const login = async (homey: Homey): Promise<void> => {
       try {
         await generate(homey)
       } catch (err) {
-        if (err instanceof Error && err.message === noDeviceError(homey)) {
+        if (err instanceof NoDeviceError) {
           seeElement.classList.add('is-disabled')
           disableSettingsButtons()
           await homey.alert(err.message)
