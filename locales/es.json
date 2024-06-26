@@ -71,7 +71,7 @@
     "always_on": "Se ha desactivado el apagado desde Homey.",
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
     "device": {
-      "not_found": "Dispositivo no encontrado"
+      "not_found": "Dispositivo no encontrado."
     }
   }
 }
