@@ -33,8 +33,6 @@ export = class MELCloudApp extends withTimers(App) {
   }
 
   public override async onInit(): Promise<void> {
-    this.homey.settings.set('username', '')
-    this.homey.settings.set('contextKey', '')
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     this.#api = await MELCloudAPI.create({
       language: this.homey.i18n.getLanguage(),
