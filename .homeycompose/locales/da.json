@@ -69,6 +69,9 @@
   },
   "warnings": {
     "always_on": "Slukning fra Homey er blevet deaktiveret.",
-    "dashboard": "Forlad enheden og vend tilbage for at opdatere dit instrumentbræt."
+    "dashboard": "Forlad enheden og vend tilbage for at opdatere dit instrumentbræt.",
+    "device": {
+      "not found": "Enhed ikke fundet."
+    }
   }
 }

@@ -102,6 +102,9 @@ export default abstract class<
     this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
       DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id),
     ) as DeviceFacade<T> | null
+    if (!this.#device) {
+      this.setWarningSync(this.homey.__('warnings.device'))
+    }
     return this.#device
   }
 
@@ -254,6 +257,12 @@ export default abstract class<
       await super.setWarning(warning)
     }
     await super.setWarning(null)
+  }
+
+  public setWarningSync(warning: string | null): void {
+    super.setWarning(warning).catch((error: unknown) => {
+      this.error(error instanceof Error ? error.message : String(error))
+    })
   }
 
   public async syncFromDevice(): Promise<void> {
@@ -647,11 +656,7 @@ export default abstract class<
       this.getSetting('always_on') &&
       this.diff.get('onoff')?.value === false
     ) {
-      this.setWarning(this.homey.__('warnings.always_on')).catch(
-        (error: unknown) => {
-          this.error(error instanceof Error ? error.message : String(error))
-        },
-      )
+      this.setWarningSync(this.homey.__('warnings.always_on'))
     }
   }
 

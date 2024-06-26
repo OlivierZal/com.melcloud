@@ -69,6 +69,9 @@
   },
   "warnings": {
     "always_on": "L'extinction depuis Homey a été désactivée.",
-    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
+    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord.",
+    "device": {
+      "not_found": "Appareil introuvable."
+    }
   }
 }
