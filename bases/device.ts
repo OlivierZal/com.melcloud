@@ -58,7 +58,7 @@ export default abstract class<
     }
   >()
 
-  #device!: DeviceFacade<T> | null
+  #device: DeviceFacade<T> | null = null
 
   #energyCapabilityTagEntries: {
     false?: EnergyCapabilityTagEntry<T>[]
