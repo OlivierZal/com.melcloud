@@ -12,12 +12,7 @@ import {
   type TargetTemperatureFlowCapabilities,
   type Zone,
 } from '../../types'
-import {
-  type ListDevice,
-  OperationModeState,
-  OperationModeZone,
-  type SetDeviceData,
-} from '@olivierzal/melcloud-api'
+import { OperationModeState, OperationModeZone } from '@olivierzal/melcloud-api'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 
@@ -104,13 +99,9 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     super.onCapability(capability, value)
   }
 
-  protected override async setCapabilities(
-    data: ListDevice['Atw']['Device'] | SetDeviceData['Atw'] | null,
-  ): Promise<void> {
-    await super.setCapabilities(data)
-    if (data) {
-      await this.#setOperationModeStates()
-    }
+  protected override async setCapabilities(syncFrom = true): Promise<void> {
+    await super.setCapabilities(syncFrom)
+    await this.#setOperationModeStates()
   }
 
   #convertToDeviceTargetTemperatureFlow(

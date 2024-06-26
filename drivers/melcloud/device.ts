@@ -10,9 +10,7 @@ import {
 import {
   FanSpeed,
   Horizontal,
-  type ListDevice,
   OperationMode,
-  type SetDeviceData,
   Vertical,
 } from '@olivierzal/melcloud-api'
 import BaseMELCloudDevice from '../../bases/device'
@@ -72,13 +70,9 @@ export = class extends BaseMELCloudDevice<'Ata'> {
     this.#registerThermostatModeListener()
   }
 
-  protected override async setCapabilities(
-    data: ListDevice['Ata']['Device'] | SetDeviceData['Ata'] | null,
-  ): Promise<void> {
-    await super.setCapabilities(data)
-    if (data) {
-      await this.#setThermostatMode()
-    }
+  protected override async setCapabilities(syncFrom = true): Promise<void> {
+    await super.setCapabilities(syncFrom)
+    await this.#setThermostatMode()
   }
 
   readonly #getTargetTemperature = (value: number): number => {

@@ -257,17 +257,13 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    if (this.device) {
-      const { data } = this.device
-      this.log('Syncing from device list:', data)
-      await this.setCapabilities(data)
-    }
+    await this.setCapabilities()
   }
 
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.setCapabilities(await this.#set())
+        await this.setCapabilities(false)
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -311,29 +307,32 @@ export default abstract class<
   }
 
   protected async setCapabilities<
-    D extends ListDevice[T]['Device'] | SetDeviceData[T],
     K extends Extract<keyof OpCapabilities[T], string>,
-  >(data: D | null): Promise<void> {
-    if (this.device && data) {
-      await Promise.all(
-        this.#getUpdateCapabilityTagEntries(
-          data.EffectiveFlags,
-          this.device.flags,
-        ).map(async ([capability, tag]) => {
-          if (tag in data) {
-            const value = this.#convertFromDevice(
-              capability,
-              data[tag as keyof D] as
-                | NonFlagsValueOf<ListDevice[T]['Device']>
-                | NonFlagsValueOf<SetDeviceData[T]>,
-            )
-            await this.setCapabilityValue(
-              capability,
-              value as Capabilities[T][K],
-            )
-          }
-        }),
-      )
+  >(syncFrom = true): Promise<void> {
+    if (this.device) {
+      const data = syncFrom ? this.device.data : await this.#set()
+      if (data) {
+        await Promise.all(
+          this.#getUpdateCapabilityTagEntries(
+            data.EffectiveFlags,
+            this.device.flags,
+          ).map(async ([capability, tag]) => {
+            if (tag in data) {
+              await this.setCapabilityValue(
+                capability,
+                this.#convertFromDevice(
+                  capability,
+                  data[
+                    tag as keyof (ListDevice[T]['Device'] | SetDeviceData[T])
+                  ] as
+                    | NonFlagsValueOf<ListDevice[T]['Device']>
+                    | NonFlagsValueOf<SetDeviceData[T]>,
+                ) as Capabilities[T][K],
+              )
+            }
+          }),
+        )
+      }
     }
   }
 
