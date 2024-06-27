@@ -33,10 +33,6 @@ const getArg = <T extends keyof typeof DeviceType>(
   return arg.replace(/_with_cool$/u, '') as keyof FlowArgs[T]
 }
 
-const getDevice = <T extends keyof typeof DeviceType>(
-  args: FlowArgs[T],
-): BaseMELCloudDevice<T> => args.device as unknown as BaseMELCloudDevice<T>
-
 const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
   device: ListDevice[T]['Device'],
 ): CapabilitiesOptions[T] =>
@@ -153,7 +149,9 @@ export default abstract class<
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs[T]) => {
-          const value = getDevice(args).getCapabilityValue(capability)
+          const value = (
+            args.device as unknown as BaseMELCloudDevice<T>
+          ).getCapabilityValue(capability)
           return typeof value === 'boolean' ? value : (
               (value as number | string) === args[getArg(capability)]
             )
