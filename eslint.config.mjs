@@ -55,6 +55,7 @@ export default tsEslint.config(
               // Index signature
               'signature',
               'readonly-signature',
+              'call-signature',
 
               // Fields
               'public-static-field',
@@ -117,6 +118,39 @@ export default tsEslint.config(
               'protected-constructor',
               'private-constructor',
 
+              'constructor',
+
+              // Accessors
+              'public-static-accessor',
+              'protected-static-accessor',
+              'private-static-accessor',
+              '#private-static-accessor',
+
+              'public-decorated-accessor',
+              'protected-decorated-accessor',
+              'private-decorated-accessor',
+
+              'public-instance-accessor',
+              'protected-instance-accessor',
+              'private-instance-accessor',
+              '#private-instance-accessor',
+
+              'public-abstract-accessor',
+              'protected-abstract-accessor',
+
+              'public-accessor',
+              'protected-accessor',
+              'private-accessor',
+              '#private-accessor',
+
+              'static-accessor',
+              'instance-accessor',
+              'abstract-accessor',
+
+              'decorated-accessor',
+
+              'accessor',
+
               // Getters and setters
               ['public-static-get', 'public-static-set'],
               ['protected-static-get', 'protected-static-set'],
@@ -153,15 +187,31 @@ export default tsEslint.config(
               'protected-static-method',
               'private-static-method',
               '#private-static-method',
+
               'public-decorated-method',
               'protected-decorated-method',
               'private-decorated-method',
+
               'public-instance-method',
               'protected-instance-method',
               'private-instance-method',
               '#private-instance-method',
+
               'public-abstract-method',
               'protected-abstract-method',
+
+              'public-method',
+              'protected-method',
+              'private-method',
+              '#private-method',
+
+              'static-method',
+              'instance-method',
+              'abstract-method',
+
+              'decorated-method',
+
+              'method',
             ],
             optionalityOrder: 'optional-first',
             order: 'natural',
