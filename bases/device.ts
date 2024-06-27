@@ -300,24 +300,25 @@ export default abstract class<
     this.setDiff(capability, value)
   }
 
-  protected registerCapabilityListeners<
-    K extends Extract<keyof SetCapabilities[T], string>,
-  >(): void {
+  protected registerCapabilityListeners(): void {
     Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
       this.registerCapabilityListener(
         capability,
-        (value: SetCapabilities[T][K]) => {
+        (
+          value: SetCapabilities[T][Extract<keyof SetCapabilities[T], string>],
+        ) => {
           this.clearSyncToDevice()
-          this.onCapability(capability as K, value)
+          this.onCapability(
+            capability as Extract<keyof SetCapabilities[T], string>,
+            value,
+          )
           this.applySyncToDevice()
         },
       )
     })
   }
 
-  protected async setCapabilities<
-    K extends Extract<keyof OpCapabilities[T], string>,
-  >(syncFrom = true): Promise<void> {
+  protected async setCapabilities(syncFrom = true): Promise<void> {
     if (this.device) {
       const data = syncFrom ? this.device.data : await this.#set()
       if (data) {
@@ -336,7 +337,7 @@ export default abstract class<
                   ] as
                     | NonFlagsValueOf<ListDevice[T]['Device']>
                     | NonFlagsValueOf<SetDeviceData[T]>,
-                ) as Capabilities[T][K],
+                ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
               )
             }
           }),
@@ -364,7 +365,7 @@ export default abstract class<
     })
   }
 
-  #buildPostData<K extends Extract<keyof SetCapabilities[T], string>>(
+  #buildPostData(
     flags: Record<NonFlagsKeyOf<UpdateDeviceData[T]>, number>,
   ): UpdateDeviceData[T] {
     this.#setAlwaysOnWarning()
@@ -375,12 +376,18 @@ export default abstract class<
         acc,
         [capability, tag]: [string, NonFlagsKeyOf<UpdateDeviceData[T]>],
       ) => {
-        acc[tag] = this.#convertToDevice(capability as K)
-        if (this.diff.has(capability as K)) {
+        acc[tag] = this.#convertToDevice(
+          capability as Extract<keyof SetCapabilities[T], string>,
+        )
+        if (
+          this.diff.has(capability as Extract<keyof SetCapabilities[T], string>)
+        ) {
           acc.EffectiveFlags = Number(
             BigInt(acc.EffectiveFlags ?? FLAG_UNCHANGED) | BigInt(flags[tag]),
           )
-          this.diff.delete(capability as K)
+          this.diff.delete(
+            capability as Extract<keyof SetCapabilities[T], string>,
+          )
         }
         return acc
       },
@@ -388,12 +395,16 @@ export default abstract class<
     )
   }
 
-  #calculateCopValue<
-    K extends keyof EnergyData[T],
-    L extends keyof EnergyCapabilities[T],
-  >(data: EnergyData[T], capability: L & string): number {
-    const producedTags = this.driver.producedTagMapping[capability] as K[]
-    const consumedTags = this.driver.consumedTagMapping[capability] as K[]
+  #calculateCopValue(
+    data: EnergyData[T],
+    capability: keyof EnergyCapabilities[T] & string,
+  ): number {
+    const producedTags = this.driver.producedTagMapping[
+      capability
+    ] as (keyof EnergyData[T])[]
+    const consumedTags = this.driver.consumedTagMapping[
+      capability
+    ] as (keyof EnergyData[T])[]
     return (
       producedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
       (consumedTags.length ?
@@ -402,9 +413,9 @@ export default abstract class<
     )
   }
 
-  #calculateEnergyValue<K extends keyof EnergyData[T]>(
+  #calculateEnergyValue(
     data: EnergyData[T],
-    tags: K[],
+    tags: (keyof EnergyData[T])[],
   ): number {
     return (
       tags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
@@ -412,9 +423,9 @@ export default abstract class<
     )
   }
 
-  #calculatePowerValue<K extends keyof EnergyData[T]>(
+  #calculatePowerValue(
     data: EnergyData[T],
-    tags: K[],
+    tags: (keyof EnergyData[T])[],
     hour: number,
   ): number {
     return (
@@ -457,8 +468,8 @@ export default abstract class<
       value) as OpCapabilities[T][K]
   }
 
-  #convertToDevice<K extends Extract<keyof SetCapabilities[T], string>>(
-    capability: K,
+  #convertToDevice(
+    capability: Extract<keyof SetCapabilities[T], string>,
   ): NonFlagsValueOf<UpdateDeviceData[T]> {
     const value = this.getRequestedOrCurrentValue(capability)
     return (
@@ -556,9 +567,7 @@ export default abstract class<
     }
   }
 
-  async #handleStore<
-    K extends Extract<keyof Store[T], string>,
-  >(): Promise<void> {
+  async #handleStore(): Promise<void> {
     if (this.device) {
       await Promise.all(
         Object.entries(
@@ -568,7 +577,10 @@ export default abstract class<
               ListDevice['Erv']['Device'],
           ),
         ).map(async ([key, value]) => {
-          await this.setStoreValue(key as K, value as Store[T][keyof Store[T]])
+          await this.setStoreValue(
+            key as Extract<keyof Store[T], string>,
+            value as Store[T][keyof Store[T]],
+          )
         }),
       )
     }
@@ -742,14 +754,15 @@ export default abstract class<
     )
   }
 
-  #setListCapabilityTagMappings<
-    K extends Extract<keyof OpCapabilities[T], string>,
-  >(): void {
+  #setListCapabilityTagMappings(): void {
     this.#listCapabilityTagMapping = this.#cleanMapping(
       this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
     )
     this.#listOnlyCapabilityTagEntries = (
-      Object.entries(this.#listCapabilityTagMapping) as [K, OpDeviceData<T>][]
+      Object.entries(this.#listCapabilityTagMapping) as [
+        Extract<keyof OpCapabilities[T], string>,
+        OpDeviceData<T>,
+      ][]
     ).filter(
       ([capability]) =>
         !Object.keys({

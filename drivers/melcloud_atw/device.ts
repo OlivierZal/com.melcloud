@@ -84,9 +84,9 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected override onCapability<K extends keyof SetCapabilities['Atw']>(
-    capability: K,
-    value: SetCapabilities['Atw'][K],
+  protected override onCapability(
+    capability: keyof SetCapabilities['Atw'],
+    value: SetCapabilities['Atw'][keyof SetCapabilities['Atw']],
   ): void {
     if (capability.startsWith('operation_mode_zone')) {
       this.setDiff(capability, value)
@@ -140,8 +140,8 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     return otherZoneValue
   }
 
-  #handleOtherOperationModeZone<K extends keyof OperationModeZoneCapabilities>(
-    capability: K,
+  #handleOtherOperationModeZone(
+    capability: keyof OperationModeZoneCapabilities,
     value: keyof typeof OperationModeZone,
   ): void {
     const { canCool, hasZone2 } = this.getStore() as Store['Atw']

@@ -161,15 +161,15 @@ export default abstract class<
     } catch (_error) {}
   }
 
-  #registerRunListeners<
-    K extends Extract<keyof Capabilities[T], string>,
-  >(): void {
+  #registerRunListeners(): void {
     Object.keys({
       ...this.setCapabilityTagMapping,
       ...this.getCapabilityTagMapping,
       ...this.listCapabilityTagMapping,
     }).forEach((capability) => {
-      this.#registerConditionRunListener(capability as K)
+      this.#registerConditionRunListener(
+        capability as Extract<keyof Capabilities[T], string>,
+      )
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
           capability as Extract<keyof SetCapabilities[T], string>,
@@ -178,17 +178,22 @@ export default abstract class<
     })
   }
 
-  #setProducedAndConsumedTagMappings<
-    K extends Extract<keyof EnergyData[T], string>,
-  >(): void {
+  #setProducedAndConsumedTagMappings(): void {
     Object.entries(this.energyCapabilityTagMapping).forEach(
-      ([capability, tags]: [string, K[]]) => {
+      ([capability, tags]: [
+        string,
+        Extract<keyof EnergyData[T], string>[],
+      ]) => {
         ;(this.producedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag) => !tag.endsWith('Consumed'))
+        ] as Extract<keyof EnergyData[T], string>[]) = tags.filter(
+          (tag) => !tag.endsWith('Consumed'),
+        )
         ;(this.consumedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as K[]) = tags.filter((tag) => tag.endsWith('Consumed'))
+        ] as Extract<keyof EnergyData[T], string>[]) = tags.filter((tag) =>
+          tag.endsWith('Consumed'),
+        )
       },
     )
   }
