@@ -31,7 +31,7 @@
     "eslint-plugin-import": "^2.29.1",
     "homey": "^3.4.0",
     "prettier": "^3.3.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.0-alpha.38"
   },
   "dependencies": {
