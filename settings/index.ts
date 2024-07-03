@@ -259,9 +259,7 @@ const getDriverSettings = (): void => {
           acc.driverSettingsCommon.push(setting)
         }
       } else {
-        const { driverId } = setting
-        acc.driverSettingsDrivers[driverId] ??= []
-        acc.driverSettingsDrivers[driverId].push(setting)
+        ;(acc.driverSettingsDrivers[setting.driverId] ??= []).push(setting)
       }
       return acc
     },

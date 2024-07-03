@@ -111,14 +111,13 @@ const getDriverLoginSetting = (
         >((acc, [option, label]) => {
           const isPassword = option.startsWith('password')
           const key = isPassword ? 'password' : 'username'
-          acc[key] ??= {
+          ;(acc[key] ??= {
             driverId,
             groupId: 'login',
             id: key,
             title: '',
             type: isPassword ? 'password' : 'text',
-          }
-          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+          })[option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
             label[language]
           return acc
         }, {}),
@@ -166,10 +165,9 @@ export = {
       .getDevices()
       .reduce<DeviceSettings>((acc, device) => {
         const driverId = device.driver.id
-        acc[driverId] ??= {}
         Object.entries(device.getSettings() as Settings).forEach(
           ([settingId, value]) => {
-            acc[driverId][settingId] ??= []
+            ;(acc[driverId] ??= {})[settingId] ??= []
             if (!acc[driverId][settingId].includes(value)) {
               acc[driverId][settingId].push(value)
             }
