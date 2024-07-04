@@ -7,7 +7,6 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   ManifestDriver,
-  OpCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
   Store,
@@ -19,7 +18,6 @@ import {
   type EnergyData,
   type ListDevice,
   type LoginCredentials,
-  type NonFlagsKeyOf,
 } from '@olivierzal/melcloud-api'
 import type BaseMELCloudDevice from './device'
 import { Driver } from 'homey'
@@ -54,8 +52,6 @@ export default abstract class<
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
-  public readonly lastCapabilitiesToUpdate: (keyof OpCapabilities[T])[] = []
-
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
@@ -77,7 +73,7 @@ export default abstract class<
     return Object.fromEntries(
       Object.entries(this.storeMapping).map(([key, value]) => [
         key as keyof Store[T],
-        device[value as NonFlagsKeyOf<ListDevice[T]['Device']>],
+        device[value as keyof ListDevice[T]['Device']],
       ]),
     ) as unknown as Store[T]
   }

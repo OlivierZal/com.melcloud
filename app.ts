@@ -25,7 +25,7 @@ export = class MELCloudApp extends withTimers(App) {
     driverId,
   }: { driverId?: string } = {}): MELCloudDevice[] {
     return (
-      typeof driverId === 'undefined' ?
+      driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
       : [this.homey.drivers.getDriver(driverId)]).flatMap(
       (driver) => driver.getDevices() as MELCloudDevice[],

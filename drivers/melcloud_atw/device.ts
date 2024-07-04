@@ -2,13 +2,11 @@ import {
   type ConvertFromDevice,
   type ConvertToDevice,
   K_MULTIPLIER,
-  type OpCapabilities,
+  type OpCapabilitiesAtw,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
-  type OperationModeZoneCapabilities,
   type ReportPlanParameters,
-  type SetCapabilities,
-  type Store,
+  type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
   type Zone,
 } from '../../types'
@@ -16,18 +14,15 @@ import { OperationModeState, OperationModeZone } from '@olivierzal/melcloud-api'
 import BaseMELCloudDevice from '../../bases/device'
 import { DateTime } from 'luxon'
 
-const HEAT_COOL_GAP = OperationModeZone.room_cool
-const ROOM_FLOW_GAP = OperationModeZone.flow
-
-const convertToDeviceMeasurePower = ((value: number) =>
+const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>
 
-const convertToDeviceOperationZone = ((value: OperationModeZone) =>
+const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
   OperationModeZone[value]) as ConvertFromDevice<'Atw'>
 
 export = class extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
-    Record<keyof OpCapabilities['Atw'], ConvertFromDevice<'Atw'>>
+    Record<keyof OpCapabilitiesAtw, ConvertFromDevice<'Atw'>>
   > = {
     'alarm_generic.defrost': ((value: number) =>
       Boolean(value)) as ConvertFromDevice<'Atw'>,
@@ -39,26 +34,28 @@ export = class extends BaseMELCloudDevice<'Atw'> {
         month: 'short',
         weekday: 'short',
       })) as ConvertFromDevice<'Atw'>,
-    measure_power: convertToDeviceMeasurePower,
-    'measure_power.produced': convertToDeviceMeasurePower,
+    measure_power: convertFromDeviceMeasurePower,
+    'measure_power.produced': convertFromDeviceMeasurePower,
     operation_mode_state: ((value: OperationModeState) =>
       OperationModeState[value]) as ConvertFromDevice<'Atw'>,
-    operation_mode_zone: convertToDeviceOperationZone,
-    'operation_mode_zone.zone2': convertToDeviceOperationZone,
-    operation_mode_zone_with_cool: convertToDeviceOperationZone,
-    'operation_mode_zone_with_cool.zone2': convertToDeviceOperationZone,
-    'target_temperature.flow_cool': this.#convertToDeviceTargetTemperatureFlow(
-      'target_temperature.flow_cool',
-    ),
+    operation_mode_zone: convertFromDeviceOperationZone,
+    'operation_mode_zone.zone2': convertFromDeviceOperationZone,
+    operation_mode_zone_with_cool: convertFromDeviceOperationZone,
+    'operation_mode_zone_with_cool.zone2': convertFromDeviceOperationZone,
+    'target_temperature.flow_cool':
+      this.#convertFromDeviceTargetTemperatureFlow(
+        'target_temperature.flow_cool',
+      ),
     'target_temperature.flow_cool_zone2':
-      this.#convertToDeviceTargetTemperatureFlow(
+      this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool_zone2',
       ),
-    'target_temperature.flow_heat': this.#convertToDeviceTargetTemperatureFlow(
-      'target_temperature.flow_heat',
-    ),
+    'target_temperature.flow_heat':
+      this.#convertFromDeviceTargetTemperatureFlow(
+        'target_temperature.flow_heat',
+      ),
     'target_temperature.flow_heat_zone2':
-      this.#convertToDeviceTargetTemperatureFlow(
+      this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_heat_zone2',
       ),
   }
@@ -71,7 +68,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   }
 
   protected readonly toDevice: Partial<
-    Record<keyof SetCapabilities['Atw'], ConvertToDevice<'Atw'>>
+    Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
   > = {
     operation_mode_zone: ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
@@ -85,82 +82,27 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   }
 
   protected override onCapability(
-    capability: keyof SetCapabilities['Atw'],
-    value: SetCapabilities['Atw'][keyof SetCapabilities['Atw']],
+    capability: keyof SetCapabilitiesAtw,
+    value: SetCapabilitiesAtw[keyof SetCapabilitiesAtw],
   ): void {
     if (capability.startsWith('operation_mode_zone')) {
-      this.setDiff(capability, value)
-      this.#handleOtherOperationModeZone(
-        capability as keyof OperationModeZoneCapabilities,
-        value as keyof typeof OperationModeZone,
-      )
+      this.diff.set(capability, value)
       return
     }
     super.onCapability(capability, value)
   }
 
-  protected override async setCapabilities(syncFrom = true): Promise<void> {
-    await super.setCapabilities(syncFrom)
+  protected override async setCapabilities(): Promise<void> {
+    await super.setCapabilities()
     await this.#setOperationModeStates()
   }
 
-  #convertToDeviceTargetTemperatureFlow(
+  #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<'Atw'> {
     return ((value: number) =>
       value ||
       this.getCapabilityOptions(capability).min) as ConvertFromDevice<'Atw'>
-  }
-
-  #getOtherZoneValue(
-    otherZoneCapability: keyof OperationModeZoneCapabilities,
-    zoneValue: OperationModeZone,
-    canCool: boolean,
-  ): OperationModeZone {
-    let otherZoneValue =
-      OperationModeZone[this.getRequestedOrCurrentValue(otherZoneCapability)]
-    if (canCool) {
-      if (zoneValue > OperationModeZone.curve) {
-        otherZoneValue =
-          otherZoneValue === OperationModeZone.curve ?
-            HEAT_COOL_GAP
-          : otherZoneValue + HEAT_COOL_GAP
-      } else if (otherZoneValue > OperationModeZone.curve) {
-        otherZoneValue -= HEAT_COOL_GAP
-      }
-    }
-    if (
-      [OperationModeZone.room, OperationModeZone.room_cool].includes(
-        zoneValue,
-      ) &&
-      otherZoneValue === zoneValue
-    ) {
-      otherZoneValue += ROOM_FLOW_GAP
-    }
-    return otherZoneValue
-  }
-
-  #handleOtherOperationModeZone(
-    capability: keyof OperationModeZoneCapabilities,
-    value: keyof typeof OperationModeZone,
-  ): void {
-    const { canCool, hasZone2 } = this.getStore() as Store['Atw']
-    if (hasZone2) {
-      const zoneValue = OperationModeZone[value]
-      const otherZoneCapability = (
-        capability.endsWith('.zone2') ?
-          capability.replace(/.zone2$/u, '')
-        : `${capability}.zone2`) as keyof OperationModeZoneCapabilities
-      const otherZoneValue = this.#getOtherZoneValue(
-        otherZoneCapability,
-        zoneValue,
-        canCool,
-      )
-      this.setDiff(
-        otherZoneCapability,
-        OperationModeZone[otherZoneValue] as keyof typeof OperationModeZone,
-      )
-    }
   }
 
   async #setOperationModeStateHotWater(

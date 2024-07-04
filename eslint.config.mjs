@@ -302,6 +302,7 @@ export default tsEslint.config(
         },
       ],
       'no-ternary': 'off',
+      'no-undefined': 'off',
       'no-underscore-dangle': [
         'error',
         {
