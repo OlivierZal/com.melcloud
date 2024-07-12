@@ -311,13 +311,13 @@ export = {
   async setHolidayModeSettings({
     homey,
     params: { buildingId },
-    body: { enable, from, to },
+    body: { enabled, from, to },
   }: {
     body: HolidayModeSettings
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    if (enable === true && to === undefined) {
+    if (enabled === true && to === undefined) {
       throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
     handleResponse(
@@ -326,7 +326,7 @@ export = {
           homey,
           Number(buildingId),
         ).setHolidayMode({
-          enable,
+          enabled,
           from,
           to,
         })

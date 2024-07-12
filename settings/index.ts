@@ -803,7 +803,12 @@ const createSelectElement = (
 
 const generateCommonChildrenElements = (homey: Homey): void => {
   ;(driverSettings.options ?? []).forEach((setting) => {
-    if (['checkbox', 'dropdown'].includes(setting.type)) {
+    if (
+      !settingsCommonElement.querySelector(
+        `select[id="${setting.id}--setting"]`,
+      ) &&
+      ['checkbox', 'dropdown'].includes(setting.type)
+    ) {
       const divElement = createDivElement()
       const selectElement = createSelectElement(homey, setting)
       const labelElement = createLabelElement(selectElement, {
@@ -984,7 +989,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       'PUT',
       `/settings/holiday_mode/buildings/${buildingId}`,
       {
-        enable: holidayModeEnabledElement.value === 'true',
+        enabled: holidayModeEnabledElement.value === 'true',
         from: holidayModeStartDateElement.value,
         to: holidayModeEndDateElement.value,
       } satisfies HolidayModeSettings,
@@ -1081,7 +1086,7 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
         updateFrostProtectionData(
           homey,
           {
-            enable: frostProtectionEnabledElement.value === 'true',
+            enabled: frostProtectionEnabledElement.value === 'true',
             max,
             min,
           },

@@ -288,13 +288,13 @@ export interface ErrorLog {
 }
 
 export interface FrostProtectionSettings {
-  readonly enable?: boolean
+  readonly enabled?: boolean
   readonly max: number
   readonly min: number
 }
 
 export interface HolidayModeSettings {
-  readonly enable?: boolean
+  readonly enabled?: boolean
   readonly from?: string
   readonly to?: string
 }
