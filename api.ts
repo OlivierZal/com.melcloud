@@ -35,7 +35,7 @@ const getOrCreateBuildingFacade = (
 ): BuildingFacade => {
   const building =
     typeof idOrModel === 'number' ? BuildingModel.getById(idOrModel) : idOrModel
-  if (typeof building === 'undefined') {
+  if (!building) {
     throw new Error(homey.__('settings.buildings.building.not_found'))
   }
   return (homey.app as MELCloudApp).facadeManager.get(building)
@@ -111,13 +111,14 @@ const getDriverLoginSetting = (
         >((acc, [option, label]) => {
           const isPassword = option.startsWith('password')
           const key = isPassword ? 'password' : 'username'
-          ;(acc[key] ??= {
+          acc[key] ??= {
             driverId,
             groupId: 'login',
             id: key,
             title: '',
             type: isPassword ? 'password' : 'text',
-          })[option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+          }
+          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
             label[language]
           return acc
         }, {}),
@@ -132,16 +133,15 @@ const handleErrorLogQuery = ({
   offset,
 }: ErrorLogQuery): { fromDate: DateTime; period: number; toDate: DateTime } => {
   const fromDate =
-    typeof from !== 'undefined' && from ? DateTime.fromISO(from) : null
-  const toDate =
-    typeof to !== 'undefined' && to ? DateTime.fromISO(to) : DateTime.now()
+    from !== undefined && from ? DateTime.fromISO(from) : undefined
+  const toDate = to !== undefined && to ? DateTime.fromISO(to) : DateTime.now()
 
   let period = Number.parseInt(String(limit), 10)
   period = Number.isNaN(period) ? DEFAULT_LIMIT : period
 
   let daysOffset = Number.parseInt(String(offset), 10)
   daysOffset =
-    fromDate !== null || Number.isNaN(daysOffset) ? DEFAULT_OFFSET : daysOffset
+    fromDate || Number.isNaN(daysOffset) ? DEFAULT_OFFSET : daysOffset
 
   const daysLimit = fromDate ? DEFAULT_LIMIT : period
   const days = daysLimit * daysOffset + daysOffset
@@ -155,7 +155,7 @@ const handleErrorLogQuery = ({
 export = {
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
     return Promise.all(
-      Array.from(BuildingModel.getAll()).map(async (building) =>
+      BuildingModel.getAll().map(async (building) =>
         getOrCreateBuildingFacade(homey, building).actualData(),
       ),
     )
@@ -165,9 +165,10 @@ export = {
       .getDevices()
       .reduce<DeviceSettings>((acc, device) => {
         const driverId = device.driver.id
+        acc[driverId] ??= {}
         Object.entries(device.getSettings() as Settings).forEach(
           ([settingId, value]) => {
-            ;(acc[driverId] ??= {})[settingId] ??= []
+            acc[driverId][settingId] ??= []
             if (!acc[driverId][settingId].includes(value)) {
               acc[driverId][settingId].push(value)
             }
@@ -176,13 +177,20 @@ export = {
         return acc
       }, {})
   },
-  getDriverSettings({ homey }: { homey: Homey }): DriverSetting[] {
+  getDriverSettings({
+    homey,
+  }: {
+    homey: Homey
+  }): Partial<Record<string, DriverSetting[]>> {
     const language = homey.i18n.getLanguage()
-    return ((homey.app as MELCloudApp).manifest as Manifest).drivers.flatMap(
-      (driver) => [
-        ...getDriverSettings(driver, language),
-        ...getDriverLoginSetting(driver, language),
-      ],
+    return Object.groupBy(
+      ((homey.app as MELCloudApp).manifest as Manifest).drivers.flatMap(
+        (driver) => [
+          ...getDriverSettings(driver, language),
+          ...getDriverLoginSetting(driver, language),
+        ],
+      ),
+      ({ groupId, driverId }) => groupId ?? driverId,
     )
   },
   async getErrors({
@@ -309,7 +317,7 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    if (enable === true && (typeof to === 'undefined' || to === null)) {
+    if (enable === true && to === undefined) {
       throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
     }
     handleResponse(

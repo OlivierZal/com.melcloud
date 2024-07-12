@@ -1,22 +1,22 @@
 import {
-  energyCapabilityTagMappingAta,
-  getCapabilityTagMappingAta,
-  listCapabilityTagMappingAta,
-  setCapabilityTagMappingAta,
-  storeMappingAta,
+  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
+  GET_CAPABILITY_TAGS_MAPPING_ATA,
+  LIST_CAPABILITY_TAGS_MAPPING_ATA,
+  SET_CAPABILITY_TAGS_MAPPING_ATA,
+  STORE_MAPPING_ATA,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class extends BaseMELCloudDriver<'Ata'> {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
+  public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ATA
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMappingAta
+  public readonly getCapabilityTagMapping = GET_CAPABILITY_TAGS_MAPPING_ATA
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
+  public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ATA
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
+  public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATA
 
-  protected readonly storeMapping = storeMappingAta
+  protected readonly storeMapping = STORE_MAPPING_ATA
 
   protected readonly type = 'Ata'
 

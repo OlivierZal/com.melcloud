@@ -1,30 +1,30 @@
 import {
-  type Store,
-  energyCapabilityTagMappingErv,
-  getCapabilityTagMappingErv,
-  listCapabilityTagMappingErv,
-  setCapabilityTagMappingErv,
-  storeMappingErv,
+  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
+  GET_CAPABILITY_TAGS_MAPPING_ERV,
+  LIST_CAPABILITY_TAGS_MAPPING_ERV,
+  SET_CAPABILITY_TAGS_MAPPING_ERV,
+  STORE_MAPPING_ERV,
+  type StoreErv,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
 
 export = class extends BaseMELCloudDriver<'Erv'> {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
+  public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ERV
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
+  public readonly getCapabilityTagMapping = GET_CAPABILITY_TAGS_MAPPING_ERV
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
+  public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ERV
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
+  public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ERV
 
-  protected readonly storeMapping = storeMappingErv
+  protected readonly storeMapping = STORE_MAPPING_ERV
 
   protected readonly type = 'Erv'
 
   public getRequiredCapabilities({
     hasCO2Sensor,
     hasPM25Sensor,
-  }: Store['Erv']): string[] {
+  }: StoreErv): string[] {
     return [
       ...this.capabilities.filter(
         (capability) =>

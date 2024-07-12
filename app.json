@@ -3743,7 +3743,7 @@
         },
         "target_temperature": {
           "min": 10,
-          "max": 38
+          "max": 31
         }
       },
       "id": "melcloud",

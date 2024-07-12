@@ -9,7 +9,6 @@ import type {
   GetDeviceDataAta,
   Horizontal,
   ListDeviceAta,
-  NonFlagsKeyOf,
   OperationMode,
   UpdateDeviceDataAta,
   Vertical,
@@ -32,9 +31,9 @@ export interface StoreAta {
   readonly minTempHeat: number
 }
 
-export const storeMappingAta: Record<
+export const STORE_MAPPING_ATA: Record<
   keyof StoreAta,
-  NonFlagsKeyOf<ListDeviceAta['Device']>
+  keyof ListDeviceAta['Device']
 > = {
   maxTempAutomatic: 'MaxTempAutomatic',
   maxTempCoolDry: 'MaxTempCoolDry',
@@ -100,9 +99,9 @@ export interface CapabilitiesAta
   readonly thermostat_mode: ThermostatMode
 }
 
-export const setCapabilityTagMappingAta: Record<
+export const SET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof SetCapabilitiesAta,
-  NonFlagsKeyOf<UpdateDeviceDataAta>
+  keyof UpdateDeviceDataAta
 > = {
   fan_power: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
@@ -112,17 +111,17 @@ export const setCapabilityTagMappingAta: Record<
   vertical: 'VaneVertical',
 } as const
 
-export const getCapabilityTagMappingAta: Record<
+export const GET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof GetCapabilitiesAta,
-  NonFlagsKeyOf<GetDeviceDataAta>
+  keyof GetDeviceDataAta
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
 } as const
 
-export const listCapabilityTagMappingAta: Record<
+export const LIST_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof ListCapabilitiesAta,
-  NonFlagsKeyOf<ListDeviceAta['Device']>
+  keyof ListDeviceAta['Device']
 > = {
   'alarm_generic.silent': 'FanSpeed',
   fan_power: 'FanSpeed',
@@ -133,7 +132,7 @@ export const listCapabilityTagMappingAta: Record<
   vertical: 'VaneVerticalDirection',
 } as const
 
-export const energyCapabilityTagMappingAta: Record<
+export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
   keyof EnergyCapabilitiesAta,
   readonly (keyof EnergyDataAta)[]
 > = {

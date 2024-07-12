@@ -19,9 +19,8 @@ export default <T extends abstract new (...args: any[]) => SimpleClass>(
       #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
           ...logs.flatMap((log) => {
-            let arg: unknown = log
             if (log in this) {
-              arg = this[log as keyof this]
+              return [this[log as keyof this], '-']
             } else if (log.endsWith(PARENTHESES)) {
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
@@ -32,11 +31,11 @@ export default <T extends abstract new (...args: any[]) => SimpleClass>(
                   ...funcArgs: unknown[]
                 ) => unknown
                 if (!func.length) {
-                  arg = func.call(this)
+                  return [func.call(this), '-']
                 }
               }
             }
-            return [arg, '-']
+            return [log, '-']
           }),
           ...args,
         )

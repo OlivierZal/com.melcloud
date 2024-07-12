@@ -7,7 +7,6 @@ import type {
   EnergyDataAtw,
   GetDeviceDataAtw,
   ListDeviceAtw,
-  NonFlagsKeyOf,
   OperationModeState,
   OperationModeZone,
   UpdateDeviceDataAtw,
@@ -37,9 +36,9 @@ export interface StoreAtw {
   readonly maxTankTemperature: number
 }
 
-export const storeMappingAtw: Record<
+export const STORE_MAPPING_ATW: Record<
   keyof StoreAtw,
-  NonFlagsKeyOf<ListDeviceAtw['Device']>
+  keyof ListDeviceAtw['Device']
 > = {
   canCool: 'CanCool',
   hasZone2: 'HasZone2',
@@ -150,9 +149,9 @@ export interface CapabilitiesAtw
   readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
 }
 
-export const setCapabilityTagMappingAtw: Record<
+export const SET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof SetCapabilitiesAtw,
-  NonFlagsKeyOf<UpdateDeviceDataAtw>
+  keyof UpdateDeviceDataAtw
 > = {
   onoff: 'Power',
   'onoff.forced_hot_water': 'ForcedHotWaterMode',
@@ -169,9 +168,9 @@ export const setCapabilityTagMappingAtw: Record<
   'target_temperature.zone2': 'SetTemperatureZone2',
 } as const
 
-export const getCapabilityTagMappingAtw: Record<
+export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof GetCapabilitiesAtw,
-  NonFlagsKeyOf<GetDeviceDataAtw>
+  keyof GetDeviceDataAtw
 > = {
   'boolean.idle_zone1': 'IdleZone1',
   'boolean.idle_zone2': 'IdleZone2',
@@ -187,9 +186,9 @@ export const getCapabilityTagMappingAtw: Record<
   operation_mode_state: 'OperationMode',
 } as const
 
-export const listCapabilityTagMappingAtw: Record<
+export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof ListCapabilitiesAtw,
-  NonFlagsKeyOf<ListDeviceAtw['Device']>
+  keyof ListDeviceAtw['Device']
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',
@@ -218,7 +217,7 @@ export const listCapabilityTagMappingAtw: Record<
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
 } as const
 
-export const energyCapabilityTagMappingAtw: Record<
+export const ENERGY_CAPABILITY_TAG_MAPPING_ATW: Record<
   keyof EnergyCapabilitiesAtw,
   readonly (keyof EnergyDataAtw)[]
 > = {

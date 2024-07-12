@@ -1,41 +1,41 @@
 import type {
   CapabilitiesAta,
+  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
   EnergyCapabilitiesAta,
   FlowArgsAta,
+  GET_CAPABILITY_TAGS_MAPPING_ATA,
+  LIST_CAPABILITY_TAGS_MAPPING_ATA,
   OpCapabilitiesAta,
+  SET_CAPABILITY_TAGS_MAPPING_ATA,
+  STORE_MAPPING_ATA,
   SetCapabilitiesAta,
   StoreAta,
-  energyCapabilityTagMappingAta,
-  getCapabilityTagMappingAta,
-  listCapabilityTagMappingAta,
-  setCapabilityTagMappingAta,
-  storeMappingAta,
 } from './ata'
 import type {
   CapabilitiesAtw,
+  ENERGY_CAPABILITY_TAG_MAPPING_ATW,
   EnergyCapabilitiesAtw,
   FlowArgsAtw,
+  GET_CAPABILITY_TAGS_MAPPING_ATW,
+  LIST_CAPABILITY_TAGS_MAPPING_ATW,
   OpCapabilitiesAtw,
+  SET_CAPABILITY_TAGS_MAPPING_ATW,
+  STORE_MAPPING_ATW,
   SetCapabilitiesAtw,
   StoreAtw,
-  energyCapabilityTagMappingAtw,
-  getCapabilityTagMappingAtw,
-  listCapabilityTagMappingAtw,
-  setCapabilityTagMappingAtw,
-  storeMappingAtw,
 } from './atw'
 import type {
   CapabilitiesErv,
+  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
   EnergyCapabilitiesErv,
   FlowArgsErv,
+  GET_CAPABILITY_TAGS_MAPPING_ERV,
+  LIST_CAPABILITY_TAGS_MAPPING_ERV,
   OpCapabilitiesErv,
+  SET_CAPABILITY_TAGS_MAPPING_ERV,
+  STORE_MAPPING_ERV,
   SetCapabilitiesErv,
   StoreErv,
-  energyCapabilityTagMappingErv,
-  getCapabilityTagMappingErv,
-  listCapabilityTagMappingErv,
-  setCapabilityTagMappingErv,
-  storeMappingErv,
 } from './erv'
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
@@ -43,8 +43,6 @@ import type {
   EnergyData,
   ListDevice,
   LoginCredentials,
-  NonFlagsKeyOf,
-  NonFlagsValueOf,
   SetDeviceData,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -79,9 +77,9 @@ export interface Store {
 }
 
 export interface StoreMapping {
-  readonly Ata: typeof storeMappingAta
-  readonly Atw: typeof storeMappingAtw
-  readonly Erv: typeof storeMappingErv
+  readonly Ata: typeof STORE_MAPPING_ATA
+  readonly Atw: typeof STORE_MAPPING_ATW
+  readonly Erv: typeof STORE_MAPPING_ERV
 }
 
 export interface HomeySettingsUI {
@@ -169,8 +167,8 @@ export type DeviceSetting = Record<string, ValueOf<Settings>[]>
 export type DeviceSettings = Record<string, DeviceSetting>
 
 export type OpDeviceData<T extends keyof typeof DeviceType> =
-  | NonFlagsKeyOf<ListDevice[T]['Device']>
-  | NonFlagsKeyOf<SetDeviceData[T]>
+  | keyof ListDevice[T]['Device']
+  | keyof SetDeviceData[T]
 
 export interface SetCapabilities {
   readonly Ata: SetCapabilitiesAta
@@ -197,48 +195,46 @@ export interface Capabilities {
 }
 
 export interface SetCapabilityTagMapping {
-  readonly Ata: typeof setCapabilityTagMappingAta
-  readonly Atw: typeof setCapabilityTagMappingAtw
-  readonly Erv: typeof setCapabilityTagMappingErv
+  readonly Ata: typeof SET_CAPABILITY_TAGS_MAPPING_ATA
+  readonly Atw: typeof SET_CAPABILITY_TAGS_MAPPING_ATW
+  readonly Erv: typeof SET_CAPABILITY_TAGS_MAPPING_ERV
 }
 
 export interface GetCapabilityTagMapping {
-  readonly Ata: typeof getCapabilityTagMappingAta
-  readonly Atw: typeof getCapabilityTagMappingAtw
-  readonly Erv: typeof getCapabilityTagMappingErv
+  readonly Ata: typeof GET_CAPABILITY_TAGS_MAPPING_ATA
+  readonly Atw: typeof GET_CAPABILITY_TAGS_MAPPING_ATW
+  readonly Erv: typeof GET_CAPABILITY_TAGS_MAPPING_ERV
 }
 
 export interface ListCapabilityTagMapping {
-  readonly Ata: typeof listCapabilityTagMappingAta
-  readonly Atw: typeof listCapabilityTagMappingAtw
-  readonly Erv: typeof listCapabilityTagMappingErv
+  readonly Ata: typeof LIST_CAPABILITY_TAGS_MAPPING_ATA
+  readonly Atw: typeof LIST_CAPABILITY_TAGS_MAPPING_ATW
+  readonly Erv: typeof LIST_CAPABILITY_TAGS_MAPPING_ERV
 }
 
 export interface EnergyCapabilityTagMapping {
-  readonly Ata: typeof energyCapabilityTagMappingAta
-  readonly Atw: typeof energyCapabilityTagMappingAtw
-  readonly Erv: typeof energyCapabilityTagMappingErv
+  readonly Ata: typeof ENERGY_CAPABILITY_TAG_MAPPING_ATA
+  readonly Atw: typeof ENERGY_CAPABILITY_TAG_MAPPING_ATW
+  readonly Erv: typeof ENERGY_CAPABILITY_TAG_MAPPING_ERV
 }
 
 export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
-  Extract<keyof OpCapabilities[T], string>,
-  OpDeviceData<T>,
+  capability: Extract<keyof OpCapabilities[T], string>,
+  tag: OpDeviceData<T>,
 ]
 
 export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
-  Extract<keyof EnergyCapabilities[T], string>,
-  (keyof EnergyData[T])[],
+  capability: Extract<keyof EnergyCapabilities[T], string>,
+  tags: (keyof EnergyData[T])[],
 ]
 
 export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
-  value:
-    | NonFlagsValueOf<ListDevice[T]['Device']>
-    | NonFlagsValueOf<SetDeviceData[T]>,
+  value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
 ) => OpCapabilities[T][keyof OpCapabilities[T]]
 
 export type ConvertToDevice<T extends keyof typeof DeviceType> = (
   value: SetCapabilities[T][keyof SetCapabilities[T]],
-) => NonFlagsValueOf<UpdateDeviceData[T]>
+) => UpdateDeviceData[T][keyof UpdateDeviceData[T]]
 
 export interface FlowArgs {
   readonly Ata: FlowArgsAta
@@ -292,13 +288,13 @@ export interface ErrorLog {
 }
 
 export interface FrostProtectionSettings {
-  enable?: boolean
-  max: number
-  min: number
+  readonly enable?: boolean
+  readonly max: number
+  readonly min: number
 }
 
 export interface HolidayModeSettings {
   readonly enable?: boolean
-  readonly from?: string | null
-  readonly to?: string | null
+  readonly from?: string
+  readonly to?: string
 }

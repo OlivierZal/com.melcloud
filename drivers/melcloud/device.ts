@@ -1,10 +1,10 @@
 import {
-  type Capabilities,
+  type CapabilitiesAta,
   type ConvertFromDevice,
   type ConvertToDevice,
-  type OpCapabilities,
+  type OpCapabilitiesAta,
   type ReportPlanParameters,
-  type SetCapabilities,
+  type SetCapabilitiesAta,
   ThermostatMode,
 } from '../../types'
 import {
@@ -17,7 +17,7 @@ import BaseMELCloudDevice from '../../bases/device'
 
 export = class extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
-    Record<keyof OpCapabilities['Ata'], ConvertFromDevice<'Ata'>>
+    Record<keyof OpCapabilitiesAta, ConvertFromDevice<'Ata'>>
   > = {
     'alarm_generic.silent': ((value: FanSpeed) =>
       value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
@@ -41,26 +41,24 @@ export = class extends BaseMELCloudDevice<'Ata'> {
   }
 
   protected readonly toDevice: Partial<
-    Record<keyof SetCapabilities['Ata'], ConvertToDevice<'Ata'>>
+    Record<keyof SetCapabilitiesAta, ConvertToDevice<'Ata'>>
   > = {
     horizontal: ((value: keyof typeof Horizontal) =>
       Horizontal[value]) as ConvertToDevice<'Ata'>,
     operation_mode: ((value: keyof typeof OperationMode) =>
       OperationMode[value]) as ConvertToDevice<'Ata'>,
-    target_temperature: ((value: number) =>
-      this.#getTargetTemperature(value)) as ConvertToDevice<'Ata'>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
   }
 
-  public override getCapabilityValue<K extends keyof Capabilities['Ata']>(
+  public override getCapabilityValue<K extends keyof CapabilitiesAta>(
     capability: K & string,
-  ): NonNullable<Capabilities['Ata'][K]> {
+  ): NonNullable<CapabilitiesAta[K]> {
     if (
       capability === 'fan_power' &&
       this.getCapabilityValue('alarm_generic.silent')
     ) {
-      return FanSpeed.silent as NonNullable<Capabilities['Ata'][K]>
+      return FanSpeed.silent as NonNullable<CapabilitiesAta[K]>
     }
     return super.getCapabilityValue(capability)
   }
@@ -70,25 +68,9 @@ export = class extends BaseMELCloudDevice<'Ata'> {
     this.#registerThermostatModeListener()
   }
 
-  protected override async setCapabilities(syncFrom = true): Promise<void> {
-    await super.setCapabilities(syncFrom)
+  protected override async setCapabilities(): Promise<void> {
+    await super.setCapabilities()
     await this.#setThermostatMode()
-  }
-
-  readonly #getTargetTemperature = (value: number): number => {
-    const operationMode =
-      OperationMode[this.getRequestedOrCurrentValue('operation_mode')]
-    switch (operationMode) {
-      case OperationMode.auto:
-        return Math.max(value, this.getStoreValue('minTempAutomatic'))
-      case OperationMode.cool:
-      case OperationMode.dry:
-        return Math.max(value, this.getStoreValue('minTempCoolDry'))
-      case OperationMode.heat:
-        return Math.max(value, this.getStoreValue('minTempHeat'))
-      default:
-        return value
-    }
   }
 
   #registerThermostatModeListener(): void {
@@ -96,9 +78,9 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       'thermostat_mode',
       (value: ThermostatMode) => {
         this.clearSyncToDevice()
-        this.setDiff('onoff', value !== ThermostatMode.off)
+        this.diff.set('onoff', value !== ThermostatMode.off)
         if (value !== ThermostatMode.off) {
-          this.setDiff('operation_mode', value)
+          this.diff.set('operation_mode', value)
         }
         this.applySyncToDevice()
       },
