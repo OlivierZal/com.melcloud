@@ -186,7 +186,7 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> =>
     })
   })
 
-const getHomeySettings = async (homey: Homey): Promise<void> =>
+const fetchHomeySettings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.get(async (error: Error | null, settings: HomeySettingsUI) => {
       if (error) {
@@ -199,7 +199,7 @@ const getHomeySettings = async (homey: Homey): Promise<void> =>
     })
   })
 
-const getDeviceSettings = async (homey: Homey): Promise<void> =>
+const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
@@ -216,9 +216,9 @@ const getDeviceSettings = async (homey: Homey): Promise<void> =>
     )
   })
 
-const getFlatDeviceSettings = (): void => {
+const flattenDeviceSettings = (): void => {
   const groupedSettings = Object.groupBy(
-    Object.entries(deviceSettings).flatMap(([_deviceId, settings]) =>
+    Object.values(deviceSettings).flatMap((settings) =>
       Object.entries(settings ?? {}).map(([settingId, settingValues]) => ({
         settingId,
         settingValues,
@@ -239,7 +239,7 @@ const getFlatDeviceSettings = (): void => {
   )
 }
 
-const getDriverSettings = async (homey: Homey): Promise<void> =>
+const fetchDriverSettings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
@@ -320,7 +320,7 @@ const createLabelElement = (
   return labelElement
 }
 
-const getCredentialElement = (
+const createCredentialElement = (
   credentialKey: keyof LoginCredentials,
 ): HTMLInputElement | null => {
   const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
@@ -345,10 +345,10 @@ const getCredentialElement = (
   return null
 }
 
-const getCredentialElements = (): void => {
+const createCredentialElements = (): void => {
   ;[usernameElement, passwordElement] = (
     ['username', 'password'] satisfies (keyof LoginCredentials)[]
-  ).map(getCredentialElement)
+  ).map(createCredentialElement)
 }
 
 const int = (homey: Homey, element: HTMLInputElement): number => {
@@ -551,7 +551,7 @@ const updateBuildingMapping = (
   }
 }
 
-const getHolidayModeData = async (homey: Homey): Promise<void> =>
+const fetchHolidayModeData = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
@@ -569,7 +569,7 @@ const getHolidayModeData = async (homey: Homey): Promise<void> =>
     )
   })
 
-const getFrostProtectionData = async (homey: Homey): Promise<void> =>
+const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
@@ -587,7 +587,7 @@ const getFrostProtectionData = async (homey: Homey): Promise<void> =>
     )
   })
 
-const getBuildings = async (homey: Homey): Promise<void> =>
+const fetchBuildings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
     homey.api(
       'GET',
@@ -620,7 +620,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
       deviceSettings[driverId] ??= {}
       deviceSettings[driverId][settingId] = [settingValue]
     })
-    getFlatDeviceSettings()
+    flattenDeviceSettings()
     return
   }
   Object.entries(body).forEach(([settingId, settingValue]) => {
@@ -893,14 +893,14 @@ const generateCheckboxChildrenElements = (
 }
 
 const generate = async (homey: Homey): Promise<void> => {
-  await getBuildings(homey)
+  await fetchBuildings(homey)
   refreshBuildingSettings()
   await generateErrorLog(homey)
 }
 
 const needsAuthentication = (value = true): void => {
   if (!loginElement.childElementCount) {
-    getCredentialElements()
+    createCredentialElements()
   }
   hide(authenticatedElement, value)
   unhide(authenticatingElement, value)
@@ -975,7 +975,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
-    getHolidayModeData(homey).catch(async (err: unknown) => {
+    fetchHolidayModeData(homey).catch(async (err: unknown) => {
       await homey.alert(err instanceof Error ? err.message : String(err))
     })
   })
@@ -996,7 +996,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       async (error: Error | null) => {
         enableButtons('holiday-mode')
         try {
-          await getHolidayModeData(homey)
+          await fetchHolidayModeData(homey)
           if (error) {
             await homey.alert(error.message)
             return
@@ -1026,7 +1026,7 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
 
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
-    getFrostProtectionData(homey).catch(async (err: unknown) => {
+    fetchFrostProtectionData(homey).catch(async (err: unknown) => {
       await homey.alert(err instanceof Error ? err.message : String(err))
     })
   })
@@ -1044,7 +1044,7 @@ const updateFrostProtectionData = (
     async (error: Error | null) => {
       enableButtons('frost-protection')
       try {
-        await getFrostProtectionData(homey)
+        await fetchFrostProtectionData(homey)
         if (error) {
           await homey.alert(error.message)
           return
@@ -1173,10 +1173,10 @@ const load = async (homey: Homey): Promise<void> => {
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)
-  await getHomeySettings(homey)
-  await getDeviceSettings(homey)
-  getFlatDeviceSettings()
-  await getDriverSettings(homey)
+  await fetchHomeySettings(homey)
+  await fetchDeviceSettings(homey)
+  flattenDeviceSettings()
+  await fetchDriverSettings(homey)
   await load(homey)
   await homey.ready()
 }
