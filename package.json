@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "36.2.2",
+  "version": "36.2.1",
   "main": "app.ts",
   "prettier": {
     "experimentalTernaries": true,
