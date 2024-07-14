@@ -32,6 +32,7 @@ export default tsEslint.config(
     rules: {
       // ...importPlugin.configs.recommended.rules,
       '@stylistic/line-comment-position': 'error',
+      '@stylistic/lines-around-comment': 'error',
       '@stylistic/lines-between-class-members': ['error', 'always'],
       '@stylistic/spaced-comment': [
         'error',
