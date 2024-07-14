@@ -6,7 +6,8 @@ const PARENTHESES = '()'
 export default <T extends abstract new (...args: any[]) => SimpleClass>(
     ...logs: string[]
   ) =>
-  (target: T, _context: unknown): T => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (target: T, context: unknown): T => {
     abstract class LogDecorator extends target {
       public override error(...args: unknown[]): void {
         this.#commonLog('error', ...args)

@@ -31,6 +31,7 @@ export default tsEslint.config(
     },
     rules: {
       // ...importPlugin.configs.recommended.rules,
+      '@stylistic/line-comment-position': 'error',
       '@stylistic/lines-between-class-members': ['error', 'always'],
       '@stylistic/spaced-comment': [
         'error',
@@ -280,7 +281,6 @@ export default tsEslint.config(
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          argsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_',
           varsIgnorePattern: 'onHomeyReady',
         },

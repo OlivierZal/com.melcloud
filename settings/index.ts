@@ -515,8 +515,8 @@ const refreshHolidayModeData = (
       HMEndDate: endDate,
     } = data
     holidayModeEnabledElement.value = String(isEnabled)
-    holidayModeStartDateElement.value = isEnabled ? startDate ?? '' : ''
-    holidayModeEndDateElement.value = isEnabled ? endDate ?? '' : ''
+    holidayModeStartDateElement.value = isEnabled ? (startDate ?? '') : ''
+    holidayModeEndDateElement.value = isEnabled ? (endDate ?? '') : ''
   }
 }
 
@@ -788,7 +788,7 @@ const createSelectElement = (
         id,
         label: homey.__(`settings.boolean.${id}`),
       }))
-    : setting.values ?? []),
+    : (setting.values ?? [])),
   ].forEach(({ id, label }: { label?: string; id: string }) => {
     const optionElement = document.createElement('option')
     optionElement.value = id
