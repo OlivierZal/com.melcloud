@@ -34,6 +34,16 @@ export default tsEslint.config(
       '@stylistic/line-comment-position': 'error',
       '@stylistic/lines-around-comment': 'error',
       '@stylistic/lines-between-class-members': ['error', 'always'],
+      '@stylistic/padding-line-between-statements': 'error',
+      '@stylistic/quotes': [
+        'error',
+        'single',
+        {
+          allowTemplateLiterals: false,
+          avoidEscape: true,
+          ignoreStringLiterals: false,
+        },
+      ],
       '@stylistic/spaced-comment': [
         'error',
         'always',
@@ -49,6 +59,7 @@ export default tsEslint.config(
           },
         },
       ],
+      '@typescript-eslint/consistent-return': 'off',
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -266,6 +277,7 @@ export default tsEslint.config(
           selector: 'default',
         },
       ],
+      '@typescript-eslint/no-dupe-class-members': 'off',
       '@typescript-eslint/no-explicit-any': [
         'error',
         {
@@ -279,6 +291,7 @@ export default tsEslint.config(
           ignoreEnums: true,
         },
       ],
+      '@typescript-eslint/no-redeclare': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -287,6 +300,7 @@ export default tsEslint.config(
         },
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
+      '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
       'import/no-duplicates': [
         'error',
