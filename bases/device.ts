@@ -94,16 +94,15 @@ export default abstract class<
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
   private get device(): DeviceFacade[T] | undefined {
-    if (this.#device) {
-      return this.#device
-    }
-    this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
-      DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
-        | DeviceModel<T>
-        | undefined,
-    )
     if (!this.#device) {
-      this.setWarningSync(this.homey.__('warnings.device.not_found'))
+      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
+        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
+          | DeviceModel<T>
+          | undefined,
+      )
+      if (!this.#device) {
+        this.setWarningSync(this.homey.__('warnings.device.not_found'))
+      }
     }
     return this.#device
   }
