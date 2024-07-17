@@ -3,7 +3,6 @@ import {
   GET_CAPABILITY_TAGS_MAPPING_ATA,
   LIST_CAPABILITY_TAGS_MAPPING_ATA,
   SET_CAPABILITY_TAGS_MAPPING_ATA,
-  STORE_MAPPING_ATA,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
 
@@ -15,8 +14,6 @@ export = class extends BaseMELCloudDriver<'Ata'> {
   public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ATA
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATA
-
-  protected readonly storeMapping = STORE_MAPPING_ATA
 
   protected readonly type = 'Ata'
 

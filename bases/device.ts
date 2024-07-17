@@ -17,7 +17,6 @@ import {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,
-  type Store,
 } from '../types'
 import {
   type DeviceFacade,
@@ -100,7 +99,11 @@ export default abstract class<
           | DeviceModel<T>
           | undefined,
       )
-      if (!this.#device) {
+      if (this.#device) {
+        this.#init().catch((error: unknown) => {
+          this.setWarningSync(error)
+        })
+      } else {
         this.setWarningSync(this.homey.__('warnings.device.not_found'))
       }
     }
@@ -133,12 +136,6 @@ export default abstract class<
     return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
-  public override getStoreValue<K extends Extract<keyof Store[T], string>>(
-    key: K,
-  ): Store[T][K] {
-    return super.getStoreValue(key) as Store[T][K]
-  }
-
   public override onDeleted(): void {
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.homey.clearTimeout(this.#reportTimeout.false)
@@ -153,11 +150,7 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    await this.#handleStore()
-    await this.#handleCapabilities()
-    this.registerCapabilityListeners()
-    await this.syncFromDevice()
-    await this.#runEnergyReports()
+    await this.#init()
   }
 
   public override async onSettings({
@@ -236,16 +229,6 @@ export default abstract class<
     this.log('Capability', capability, 'is', value)
     if (value !== this.getCapabilityValue(capability)) {
       await super.setCapabilityValue(capability, value)
-    }
-  }
-
-  public override async setStoreValue<K extends keyof Store[T]>(
-    key: Extract<K, string>,
-    value: Store[T][K],
-  ): Promise<void> {
-    this.log('Store', key, 'is', value)
-    if (value !== super.getStoreValue(key)) {
-      await super.setStoreValue(key, value)
     }
   }
 
@@ -334,8 +317,10 @@ export default abstract class<
     }
   }
 
-  #buildUpdateData(): UpdateDeviceData[T] {
-    this.#setAlwaysOnWarning()
+  async #buildUpdateData(): Promise<UpdateDeviceData[T]> {
+    if (this.getSetting('always_on') && !this.diff.get('onoff')) {
+      await this.setWarning(this.homey.__('warnings.always_on'))
+    }
     this.log('Requested data:', Object.fromEntries(this.diff))
     const updateData = Object.fromEntries(
       [...this.diff].map(([capability, value]) => [
@@ -453,33 +438,6 @@ export default abstract class<
     }
   }
 
-  async #handleCapabilities(): Promise<void> {
-    const settings = this.getSettings() as Settings
-    const capabilities = [
-      ...(this.driver.getRequiredCapabilities as (store: Store[T]) => string[])(
-        this.getStore() as Store[T],
-      ),
-      ...Object.keys(settings).filter(
-        (setting) =>
-          this.#isCapability(setting) &&
-          typeof settings[setting] === 'boolean' &&
-          settings[setting],
-      ),
-    ]
-    await capabilities.reduce(async (acc, capability) => {
-      await acc
-      return this.addCapability(capability)
-    }, Promise.resolve())
-    await this.getCapabilities()
-      .filter((capability) => !capabilities.includes(capability))
-      .reduce(async (acc, capability) => {
-        await acc
-        await this.removeCapability(capability)
-      }, Promise.resolve())
-    this.#setCapabilityTagMappings()
-    this.#setEnergyCapabilityTagEntries()
-  }
-
   async #handleOptionalCapabilities(
     newSettings: Settings,
     changedCapabilities: string[],
@@ -501,22 +459,38 @@ export default abstract class<
     }
   }
 
-  async #handleStore(): Promise<void> {
+  async #init(): Promise<void> {
     if (this.device) {
-      await Promise.all(
-        Object.entries(
-          this.driver.getStore(
-            this.device.data as ListDevice['Ata']['Device'] &
-              ListDevice['Atw']['Device'] &
-              ListDevice['Erv']['Device'],
-          ),
-        ).map(async ([key, value]) => {
-          await this.setStoreValue(
-            key as Extract<keyof Store[T], string>,
-            value as Store[T][keyof Store[T]],
-          )
-        }),
-      )
+      const settings = this.getSettings() as Settings
+      const capabilities = [
+        ...(
+          this.driver.getRequiredCapabilities as (
+            data: ListDevice[T]['Device'],
+          ) => string[]
+        )(this.device.data),
+        ...Object.keys(settings).filter(
+          (setting) =>
+            this.#isCapability(setting) &&
+            typeof settings[setting] === 'boolean' &&
+            settings[setting],
+        ),
+      ]
+      await capabilities.reduce(async (acc, capability) => {
+        await acc
+        return this.addCapability(capability)
+      }, Promise.resolve())
+      await this.getCapabilities()
+        .filter((capability) => !capabilities.includes(capability))
+        .reduce(async (acc, capability) => {
+          await acc
+          await this.removeCapability(capability)
+        }, Promise.resolve())
+      this.#setCapabilityTagMappings()
+      this.#setEnergyCapabilityTagEntries()
+
+      this.registerCapabilityListeners()
+      await this.syncFromDevice()
+      await this.#runEnergyReports()
     }
   }
 
@@ -580,7 +554,7 @@ export default abstract class<
 
   async #set(): Promise<void> {
     if (this.device) {
-      const updateData = this.#buildUpdateData()
+      const updateData = await this.#buildUpdateData()
       if (Object.keys(updateData).length) {
         try {
           ;(await this.device.set(updateData)) as SetDeviceData[T]
@@ -590,12 +564,6 @@ export default abstract class<
           }
         }
       }
-    }
-  }
-
-  #setAlwaysOnWarning(): void {
-    if (this.getSetting('always_on') && !this.diff.get('onoff')) {
-      this.setWarningSync(this.homey.__('warnings.always_on'))
     }
   }
 

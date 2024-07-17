@@ -12,16 +12,6 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type ErvDevice from '../drivers/melcloud/device'
 
-export interface StoreErv {
-  readonly hasCO2Sensor: boolean
-  readonly hasPM25Sensor: boolean
-}
-
-export const STORE_MAPPING_ERV: Record<
-  keyof StoreErv,
-  keyof ListDeviceErv['Device']
-> = { hasCO2Sensor: 'HasCO2Sensor', hasPM25Sensor: 'HasPM25Sensor' } as const
-
 export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
   readonly ventilation_mode: keyof typeof VentilationMode

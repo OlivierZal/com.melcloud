@@ -30,21 +30,6 @@ export enum OperationModeStateZoneCapability {
 
 export type Zone = 'zone1' | 'zone2'
 
-export interface StoreAtw {
-  readonly canCool: boolean
-  readonly hasZone2: boolean
-  readonly maxTankTemperature: number
-}
-
-export const STORE_MAPPING_ATW: Record<
-  keyof StoreAtw,
-  keyof ListDeviceAtw['Device']
-> = {
-  canCool: 'CanCool',
-  hasZone2: 'HasZone2',
-  maxTankTemperature: 'MaxTankTemperature',
-} as const
-
 export interface OperationModeZoneCapabilities {
   readonly operation_mode_zone: keyof typeof OperationModeZone
   readonly 'operation_mode_zone.zone2': keyof typeof OperationModeZone

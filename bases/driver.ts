@@ -9,8 +9,6 @@ import type {
   ManifestDriver,
   SetCapabilities,
   SetCapabilityTagMapping,
-  Store,
-  StoreMapping,
 } from '../types'
 import {
   DeviceModel,
@@ -65,18 +63,7 @@ export default abstract class<
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
-  protected abstract readonly storeMapping: StoreMapping[T]
-
   protected abstract readonly type: T
-
-  public getStore(device: ListDevice[T]['Device']): Store[T] {
-    return Object.fromEntries(
-      Object.entries(this.storeMapping).map(([key, value]) => [
-        key as keyof Store[T],
-        device[value as keyof ListDevice[T]['Device']],
-      ]),
-    ) as unknown as Store[T]
-  }
 
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
@@ -110,16 +97,12 @@ export default abstract class<
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
-      DeviceModel.getByType(this.type).map(({ data, id, name }) => {
-        const store = this.getStore(data)
-        return {
-          capabilities: this.getRequiredCapabilities(store),
-          capabilitiesOptions: getCapabilitiesOptions(data),
-          data: { id },
-          name,
-          store,
-        }
-      }),
+      DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
+        capabilities: this.getRequiredCapabilities(data),
+        capabilitiesOptions: getCapabilitiesOptions(data),
+        data: { id },
+        name,
+      })),
     )
   }
 
@@ -192,5 +175,7 @@ export default abstract class<
     )
   }
 
-  public abstract getRequiredCapabilities(store: Store[T]): string[]
+  public abstract getRequiredCapabilities(
+    data: ListDevice[T]['Device'],
+  ): string[]
 }

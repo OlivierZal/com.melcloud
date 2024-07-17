@@ -3,10 +3,9 @@ import {
   GET_CAPABILITY_TAGS_MAPPING_ERV,
   LIST_CAPABILITY_TAGS_MAPPING_ERV,
   SET_CAPABILITY_TAGS_MAPPING_ERV,
-  STORE_MAPPING_ERV,
-  type StoreErv,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
+import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Erv'> {
   public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ERV
@@ -17,14 +16,12 @@ export = class extends BaseMELCloudDriver<'Erv'> {
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ERV
 
-  protected readonly storeMapping = STORE_MAPPING_ERV
-
   protected readonly type = 'Erv'
 
   public getRequiredCapabilities({
-    hasCO2Sensor,
-    hasPM25Sensor,
-  }: StoreErv): string[] {
+    HasCO2Sensor: hasCO2Sensor,
+    HasPM25Sensor: hasPM25Sensor,
+  }: ListDeviceDataErv): string[] {
     return [
       ...this.capabilities.filter(
         (capability) =>

@@ -9,12 +9,10 @@ export {
   type FlowArgsAta,
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
-  type StoreAta,
   ENERGY_CAPABILITY_TAG_MAPPING_ATA,
   GET_CAPABILITY_TAGS_MAPPING_ATA,
   LIST_CAPABILITY_TAGS_MAPPING_ATA,
   SET_CAPABILITY_TAGS_MAPPING_ATA,
-  STORE_MAPPING_ATA,
   ThermostatMode,
 } from './ata'
 export {
@@ -24,7 +22,6 @@ export {
   type OpCapabilitiesAtw,
   type OperationModeZoneCapabilities,
   type SetCapabilitiesAtw,
-  type StoreAtw,
   type TargetTemperatureFlowCapabilities,
   type Zone,
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
@@ -33,7 +30,6 @@ export {
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
-  STORE_MAPPING_ATW,
 } from './atw'
 export {
   type CapabilitiesErv,
@@ -41,12 +37,10 @@ export {
   type FlowArgsErv,
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
-  type StoreErv,
   ENERGY_CAPABILITY_TAG_MAPPING_ERV,
   GET_CAPABILITY_TAGS_MAPPING_ERV,
   LIST_CAPABILITY_TAGS_MAPPING_ERV,
   SET_CAPABILITY_TAGS_MAPPING_ERV,
-  STORE_MAPPING_ERV,
 } from './erv'
 export {
   type Capabilities,
@@ -83,8 +77,6 @@ export {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,
-  type Store,
-  type StoreMapping,
   type ValueOf,
   K_MULTIPLIER,
 } from './common'

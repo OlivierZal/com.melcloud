@@ -22,27 +22,6 @@ export enum ThermostatMode {
   off = 'off',
 }
 
-export interface StoreAta {
-  readonly maxTempAutomatic: number
-  readonly maxTempCoolDry: number
-  readonly maxTempHeat: number
-  readonly minTempAutomatic: number
-  readonly minTempCoolDry: number
-  readonly minTempHeat: number
-}
-
-export const STORE_MAPPING_ATA: Record<
-  keyof StoreAta,
-  keyof ListDeviceAta['Device']
-> = {
-  maxTempAutomatic: 'MaxTempAutomatic',
-  maxTempCoolDry: 'MaxTempCoolDry',
-  maxTempHeat: 'MaxTempHeat',
-  minTempAutomatic: 'MinTempAutomatic',
-  minTempCoolDry: 'MinTempCoolDry',
-  minTempHeat: 'MinTempHeat',
-} as const
-
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
   readonly horizontal: keyof typeof Horizontal

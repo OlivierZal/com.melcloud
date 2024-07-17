@@ -7,9 +7,7 @@ import type {
   LIST_CAPABILITY_TAGS_MAPPING_ATA,
   OpCapabilitiesAta,
   SET_CAPABILITY_TAGS_MAPPING_ATA,
-  STORE_MAPPING_ATA,
   SetCapabilitiesAta,
-  StoreAta,
 } from './ata'
 import type {
   CapabilitiesAtw,
@@ -20,9 +18,7 @@ import type {
   LIST_CAPABILITY_TAGS_MAPPING_ATW,
   OpCapabilitiesAtw,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
-  STORE_MAPPING_ATW,
   SetCapabilitiesAtw,
-  StoreAtw,
 } from './atw'
 import type {
   CapabilitiesErv,
@@ -33,9 +29,7 @@ import type {
   LIST_CAPABILITY_TAGS_MAPPING_ERV,
   OpCapabilitiesErv,
   SET_CAPABILITY_TAGS_MAPPING_ERV,
-  STORE_MAPPING_ERV,
   SetCapabilitiesErv,
-  StoreErv,
 } from './erv'
 import type { DateObjectUnits, DurationLike } from 'luxon'
 import type {
@@ -68,18 +62,6 @@ export type ValueOf<T> = T[keyof T]
 export interface Settings
   extends Record<string, boolean | number | string | null | undefined> {
   readonly always_on?: boolean
-}
-
-export interface Store {
-  readonly Ata: StoreAta
-  readonly Atw: StoreAtw
-  readonly Erv: StoreErv
-}
-
-export interface StoreMapping {
-  readonly Ata: typeof STORE_MAPPING_ATA
-  readonly Atw: typeof STORE_MAPPING_ATW
-  readonly Erv: typeof STORE_MAPPING_ERV
 }
 
 export interface HomeySettingsUI {
@@ -264,7 +246,6 @@ export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilitiesOptions: CapabilitiesOptions[T]
   readonly data: { readonly id: number }
   readonly name: string
-  readonly store: Store[T]
 }
 
 export interface ErrorLogQuery {

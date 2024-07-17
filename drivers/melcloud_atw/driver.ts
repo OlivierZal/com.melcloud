@@ -4,10 +4,9 @@ import {
   GET_CAPABILITY_TAGS_MAPPING_ATW,
   LIST_CAPABILITY_TAGS_MAPPING_ATW,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
-  STORE_MAPPING_ATW,
-  type StoreAtw,
 } from '../../types'
 import BaseMELCloudDriver from '../../bases/driver'
+import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ATW
@@ -17,8 +16,6 @@ export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ATW
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATW
-
-  protected readonly storeMapping = STORE_MAPPING_ATW
 
   protected readonly type = 'Atw'
 
@@ -69,7 +66,10 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'boolean.prohibit_cooling_zone2',
   ]
 
-  public getRequiredCapabilities({ canCool, hasZone2 }: StoreAtw): string[] {
+  public getRequiredCapabilities({
+    CanCool: canCool,
+    HasZone2: hasZone2,
+  }: ListDeviceDataAtw): string[] {
     return [
       ...this.#zone1Capabilities,
       ...(canCool ? this.#zone1CoolCapabilities : ['operation_mode_zone']),
