@@ -21,6 +21,9 @@ import type {
 } from '../types'
 import type Homey from 'homey/lib/HomeySettings'
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error)
+
 class NoDeviceError extends Error {
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
@@ -678,7 +681,7 @@ const addApplySettingsEventListener = (
       homey
         .alert(homey.__('settings.devices.apply.nothing'))
         .catch(async (err: unknown) => {
-          await homey.alert(err instanceof Error ? err.message : String(err))
+          await homey.alert(getErrorMessage(err))
         })
       return
     }
@@ -976,7 +979,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
   refreshHolidayModeElement.addEventListener('click', () => {
     disableButtons('holiday-mode')
     fetchHolidayModeData(homey).catch(async (err: unknown) => {
-      await homey.alert(err instanceof Error ? err.message : String(err))
+      await homey.alert(getErrorMessage(err))
     })
   })
 }
@@ -1004,7 +1007,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
           await homey.alert(homey.__('settings.success'))
         } catch (err) {
           refreshHolidayModeData(buildingMapping[buildingId])
-          await homey.alert(err instanceof Error ? err.message : String(err))
+          await homey.alert(getErrorMessage(err))
         }
       },
     )
@@ -1027,7 +1030,7 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
   refreshFrostProtectionElement.addEventListener('click', () => {
     disableButtons('frost-protection')
     fetchFrostProtectionData(homey).catch(async (err: unknown) => {
-      await homey.alert(err instanceof Error ? err.message : String(err))
+      await homey.alert(getErrorMessage(err))
     })
   })
 }
@@ -1052,7 +1055,7 @@ const updateFrostProtectionData = (
         await homey.alert(homey.__('settings.success'))
       } catch (err) {
         refreshFrostProtectionData(data)
-        await homey.alert(err instanceof Error ? err.message : String(err))
+        await homey.alert(getErrorMessage(err))
       }
     },
   )
@@ -1095,11 +1098,9 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
       } catch (error) {
         refreshFrostProtectionData(data)
         enableButtons('frost-protection')
-        homey
-          .alert(error instanceof Error ? error.message : String(error))
-          .catch(async (err: unknown) => {
-            await homey.alert(err instanceof Error ? err.message : String(err))
-          })
+        homey.alert(getErrorMessage(error)).catch(async (err: unknown) => {
+          await homey.alert(getErrorMessage(err))
+        })
       }
     }
   })
@@ -1110,7 +1111,7 @@ const addEventListeners = (homey: Homey): void => {
     authenticateElement.classList.add('is-disabled')
     login(homey)
       .catch(async (err: unknown) => {
-        await homey.alert(err instanceof Error ? err.message : String(err))
+        await homey.alert(getErrorMessage(err))
       })
       .finally(() => {
         authenticateElement.classList.remove('is-disabled')
@@ -1127,7 +1128,7 @@ const addEventListeners = (homey: Homey): void => {
       homey
         .alert(homey.__('settings.error_log.error', { from }))
         .catch(async (err: unknown) => {
-          await homey.alert(err instanceof Error ? err.message : String(err))
+          await homey.alert(getErrorMessage(err))
         })
     }
   })
@@ -1135,7 +1136,7 @@ const addEventListeners = (homey: Homey): void => {
   seeElement.addEventListener('click', () => {
     seeElement.classList.add('is-disabled')
     generateErrorLog(homey).catch(async (err: unknown) => {
-      await homey.alert(err instanceof Error ? err.message : String(err))
+      await homey.alert(getErrorMessage(err))
     })
   })
 
@@ -1143,7 +1144,7 @@ const addEventListeners = (homey: Homey): void => {
     homey
       .openURL('https://homey.app/a/com.mecloud.extension')
       .catch(async (err: unknown) => {
-        await homey.alert(err instanceof Error ? err.message : String(err))
+        await homey.alert(getErrorMessage(err))
       })
   })
 
