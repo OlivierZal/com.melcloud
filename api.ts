@@ -317,20 +317,26 @@ export = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> {
-    if (enabled === true && to === undefined) {
-      throw new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
+    try {
+      handleResponse(
+        (
+          await getOrCreateBuildingFacade(
+            homey,
+            Number(buildingId),
+          ).setHolidayMode({
+            enabled,
+            from,
+            to,
+          })
+        ).AttributeErrors,
+      )
+    } catch (error) {
+      throw (
+          error instanceof Error &&
+            error.message === 'Select either end date or days'
+        ) ?
+          new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
+        : error
     }
-    handleResponse(
-      (
-        await getOrCreateBuildingFacade(
-          homey,
-          Number(buildingId),
-        ).setHolidayMode({
-          enabled,
-          from,
-          to,
-        })
-      ).AttributeErrors,
-    )
   },
 }

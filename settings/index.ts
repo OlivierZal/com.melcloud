@@ -993,8 +993,8 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
       `/settings/holiday_mode/buildings/${buildingId}`,
       {
         enabled: holidayModeEnabledElement.value === 'true',
-        from: holidayModeStartDateElement.value,
-        to: holidayModeEndDateElement.value,
+        from: holidayModeStartDateElement.value || undefined,
+        to: holidayModeEndDateElement.value || undefined,
       } satisfies HolidayModeSettings,
       async (error: Error | null) => {
         enableButtons('holiday-mode')

@@ -294,7 +294,7 @@ export interface FrostProtectionSettings {
 }
 
 export interface HolidayModeSettings {
-  readonly enabled?: boolean
   readonly from?: string
   readonly to?: string
+  readonly enabled: boolean
 }
