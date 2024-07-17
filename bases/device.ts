@@ -585,7 +585,7 @@ export default abstract class<
         try {
           ;(await this.device.set(updateData)) as SetDeviceData[T]
         } catch (error) {
-          if (!(error instanceof Error) || error.message !== 'no_update') {
+          if (!(error instanceof Error) || error.message !== 'No data to set') {
             await this.setWarning(error)
           }
         }
