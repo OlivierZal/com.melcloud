@@ -37,6 +37,13 @@ import withTimers from '../mixins/withTimers'
 const NUMBER_0 = 0
 const NUMBER_1 = 1
 
+const getErrorMessage = (error: unknown): string | null => {
+  if (error !== null) {
+    return error instanceof Error ? error.message : String(error)
+  }
+  return null
+}
+
 const isTotalEnergyKey = (key: string): boolean =>
   !key.startsWith('measure_power') && !key.includes('daily')
 
@@ -243,16 +250,17 @@ export default abstract class<
     }
   }
 
-  public override async setWarning(warning: string | null): Promise<void> {
+  public override async setWarning(error: unknown): Promise<void> {
+    const warning = getErrorMessage(error)
     if (warning !== null) {
       await super.setWarning(warning)
     }
     await super.setWarning(null)
   }
 
-  public setWarningSync(warning: string | null): void {
-    this.setWarning(warning).catch((error: unknown) => {
-      this.error(error instanceof Error ? error.message : String(error))
+  public setWarningSync(error: unknown): void {
+    this.setWarning(error).catch((err: unknown) => {
+      this.error(getErrorMessage(err))
     })
   }
 
@@ -441,9 +449,7 @@ export default abstract class<
           total,
         )
       } catch (error) {
-        await this.setWarning(
-          error instanceof Error ? error.message : String(error),
-        )
+        await this.setWarning(error)
       }
     }
   }
@@ -580,9 +586,9 @@ export default abstract class<
         try {
           ;(await this.device.set(updateData)) as SetDeviceData[T]
         } catch (error) {
-          await this.setWarning(
-            error instanceof Error ? error.message : String(error),
-          )
+          if (!(error instanceof Error) || error.message !== 'no_update') {
+            await this.setWarning(error)
+          }
         }
       }
     }
