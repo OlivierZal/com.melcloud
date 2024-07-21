@@ -1025,16 +1025,15 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
 }
 
 const addFrostProtectionEventListeners = (homey: Homey): void => {
-  frostProtectionMinTemperatureElement.addEventListener('change', () => {
-    if (frostProtectionEnabledElement.value === 'false') {
-      frostProtectionEnabledElement.value = 'true'
-    }
-  })
-
-  frostProtectionMaxTemperatureElement.addEventListener('change', () => {
-    if (frostProtectionEnabledElement.value === 'false') {
-      frostProtectionEnabledElement.value = 'true'
-    }
+  ;[
+    frostProtectionMinTemperatureElement,
+    frostProtectionMaxTemperatureElement,
+  ].forEach((element) => {
+    element.addEventListener('change', () => {
+      if (element.value === 'false') {
+        element.value = 'true'
+      }
+    })
   })
 
   refreshFrostProtectionElement.addEventListener('click', () => {
