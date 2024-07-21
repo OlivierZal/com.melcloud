@@ -19,7 +19,7 @@
         "min": "Minimum temperature"
       },
       "holiday_mode": {
-        "date_missing": "Start date and/or end date is missing.",
+        "date_missing": "End date is missing.",
         "enabled": "Enable <strong>holiday mode</strong>",
         "end_date": "End date",
         "start_date": "Start date"

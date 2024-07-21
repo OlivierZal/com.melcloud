@@ -19,7 +19,7 @@
         "min": "Minimal temperatur"
       },
       "holiday_mode": {
-        "date_missing": "Startdatum och/eller slutdatum saknas.",
+        "date_missing": "Slutdatum saknas.",
         "enabled": "Aktivera <strong>semesterläge</strong>",
         "end_date": "Slutdatum",
         "start_date": "Startdatum"

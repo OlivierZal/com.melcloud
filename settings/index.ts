@@ -21,6 +21,8 @@ import type {
 } from '../types'
 import type Homey from 'homey/lib/HomeySettings'
 
+const DAYS_14 = 14
+
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
@@ -944,7 +946,15 @@ const login = async (homey: Homey): Promise<void> => {
 
 const addHolidayModeEventListeners = (homey: Homey): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
-    if (holidayModeEnabledElement.value === 'false') {
+    if (holidayModeEnabledElement.value === 'true') {
+      const startDate = new Date()
+      const [startDateValue] = startDate.toISOString().split('.')
+      const endDate = new Date(startDate)
+      endDate.setDate(startDate.getDate() + DAYS_14)
+      const [endDateValue] = endDate.toISOString().split('.')
+      holidayModeStartDateElement.value = startDateValue
+      holidayModeEndDateElement.value = endDateValue
+    } else {
       holidayModeStartDateElement.value = ''
       holidayModeEndDateElement.value = ''
     }

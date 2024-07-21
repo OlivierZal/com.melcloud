@@ -19,7 +19,7 @@
         "min": "Température minimale"
       },
       "holiday_mode": {
-        "date_missing": "La date de début et/ou la date de fin sont manquantes.",
+        "date_missing": "La date de fin est manquante.",
         "enabled": "Activer le <strong>mode vacances</strong>",
         "end_date": "Date de fin",
         "start_date": "Date de début"

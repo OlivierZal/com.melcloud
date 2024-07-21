@@ -19,7 +19,7 @@
         "min": "Minimal temperatur"
       },
       "holiday_mode": {
-        "date_missing": "Startdato og/eller slutdato mangler.",
+        "date_missing": "Slutdato mangler.",
         "enabled": "Aktiver <strong>ferietilstand</strong>",
         "end_date": "Slutdato",
         "start_date": "Startdato"

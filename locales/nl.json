@@ -19,7 +19,7 @@
         "min": "Minimale temperatuur"
       },
       "holiday_mode": {
-        "date_missing": "Startdatum en/of einddatum ontbreekt.",
+        "date_missing": "Einddatum ontbreekt.",
         "enabled": "<strong>Vakantiemodus</strong> inschakelen",
         "end_date": "Einddatum",
         "start_date": "Begindatum"
