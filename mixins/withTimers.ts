@@ -9,7 +9,7 @@ import type { SimpleClass } from 'homey'
 
 type HomeyClass = new (
   ...args: any[]
-) => SimpleClass & { readonly homey: Homey }
+) => { readonly homey: Homey } & SimpleClass
 
 interface BaseTimerOptions {
   readonly actionType: string

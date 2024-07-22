@@ -1,6 +1,8 @@
 import eslint from '@eslint/js'
 // @ts-expect-error: untyped module
 import importPlugin from 'eslint-plugin-import'
+// @ts-expect-error: untyped module
+import perfectionist from 'eslint-plugin-perfectionist'
 import prettier from 'eslint-config-prettier'
 import stylistic from '@stylistic/eslint-plugin'
 import tsEslint from 'typescript-eslint'
@@ -28,6 +30,7 @@ export default tsEslint.config(
       // @ts-expect-error: incorrect type
       '@stylistic': stylistic,
       import: importPlugin,
+      perfectionist,
     },
     rules: {
       // ...importPlugin.configs.recommended.rules,
@@ -325,6 +328,8 @@ export default tsEslint.config(
         },
       ],
       'one-var': ['error', 'never'],
+      'perfectionist/sort-intersection-types': 'error',
+      'perfectionist/sort-union-types': 'error',
       'sort-keys': [
         'error',
         'asc',

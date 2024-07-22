@@ -31,7 +31,7 @@ const YEAR_1 = 1
 
 const getOrCreateBuildingFacade = (
   homey: Homey,
-  idOrModel: number | BuildingModel,
+  idOrModel: BuildingModel | number,
 ): BuildingFacade => {
   const building =
     typeof idOrModel === 'number' ? BuildingModel.getById(idOrModel) : idOrModel
@@ -47,7 +47,7 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
     .join('\n')
 
 const handleResponse = (
-  errors: Record<string, readonly string[]> | null,
+  errors: null | Record<string, readonly string[]>,
 ): void => {
   if (errors) {
     throw new Error(formatErrors(errors))

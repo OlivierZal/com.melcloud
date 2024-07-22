@@ -60,7 +60,7 @@ export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 export type ValueOf<T> = T[keyof T]
 
 export interface Settings
-  extends Record<string, boolean | number | string | null | undefined> {
+  extends Record<string, boolean | null | number | string | undefined> {
   readonly always_on?: boolean
 }
 

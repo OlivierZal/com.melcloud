@@ -36,7 +36,7 @@ import withTimers from '../mixins/withTimers'
 const NUMBER_0 = 0
 const NUMBER_1 = 1
 
-const getErrorMessage = (error: unknown): string | null => {
+const getErrorMessage = (error: unknown): null | string => {
   if (error !== null) {
     return error instanceof Error ? error.message : String(error)
   }
@@ -90,7 +90,7 @@ export default abstract class<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
   >
 
-  protected abstract readonly reportPlanParameters: ReportPlanParameters | null
+  protected abstract readonly reportPlanParameters: null | ReportPlanParameters
 
   private get device(): DeviceFacade[T] | undefined {
     if (!this.#device) {
