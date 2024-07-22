@@ -23,9 +23,6 @@ import type Homey from 'homey/lib/HomeySettings'
 
 const DAYS_14 = 14
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
-
 class NoDeviceError extends Error {
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
@@ -48,6 +45,28 @@ const NUMBER_4 = 4
 const NUMBER_12 = 12
 const NUMBER_13 = 13
 const NUMBER_14 = 14
+
+const pad = (num: number): string => num.toString().padStart(NUMBER_2, '0')
+
+const formatDateTimeLocal = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = pad(date.getMonth() + NUMBER_1)
+  const day = pad(date.getDate())
+  const hours = pad(date.getHours())
+  const minutes = pad(date.getMinutes())
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+const now = (): string => formatDateTimeLocal(new Date())
+
+const nowPlus2Weeks = (): string => {
+  const date = new Date()
+  date.setDate(date.getDate() + DAYS_14)
+  return formatDateTimeLocal(date)
+}
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error)
 
 let homeySettings: HomeySettingsUI = {
   contextKey: '',
@@ -947,13 +966,8 @@ const login = async (homey: Homey): Promise<void> => {
 const addHolidayModeEventListeners = (homey: Homey): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
     if (holidayModeEnabledElement.value === 'true') {
-      const startDate = new Date()
-      const [startDateValue] = startDate.toISOString().split('.')
-      const endDate = new Date(startDate)
-      endDate.setDate(startDate.getDate() + DAYS_14)
-      const [endDateValue] = endDate.toISOString().split('.')
-      holidayModeStartDateElement.value = startDateValue
-      holidayModeEndDateElement.value = endDateValue
+      holidayModeStartDateElement.value = now()
+      holidayModeEndDateElement.value = nowPlus2Weeks()
     } else {
       holidayModeStartDateElement.value = ''
       holidayModeEndDateElement.value = ''
@@ -965,16 +979,21 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
-    } else if (
-      !holidayModeEndDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
-    ) {
-      holidayModeEnabledElement.value = 'false'
+      holidayModeEndDateElement.value = nowPlus2Weeks()
+    } else if (holidayModeEnabledElement.value === 'true') {
+      if (holidayModeEndDateElement.value) {
+        holidayModeStartDateElement.value = now()
+      } else {
+        holidayModeEnabledElement.value = 'false'
+      }
     }
   })
 
   holidayModeEndDateElement.addEventListener('change', () => {
     if (holidayModeEndDateElement.value) {
+      if (!holidayModeStartDateElement.value) {
+        holidayModeStartDateElement.value = now()
+      }
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
