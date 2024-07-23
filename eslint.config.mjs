@@ -1,11 +1,35 @@
 import eslint from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
+import prettier from 'eslint-config-prettier'
 // @ts-expect-error: untyped module
 import importPlugin from 'eslint-plugin-import'
-// @ts-expect-error: untyped module
 import perfectionist from 'eslint-plugin-perfectionist'
-import prettier from 'eslint-config-prettier'
-import stylistic from '@stylistic/eslint-plugin'
 import tsEslint from 'typescript-eslint'
+
+const naturalSortOptions = {
+  ignoreCase: false,
+  order: 'asc',
+  type: 'natural',
+}
+
+const naturalSortTypeOptions = {
+  ...naturalSortOptions,
+  groups: [
+    'conditional',
+    'function',
+    'import',
+    'intersection',
+    'keyword',
+    'literal',
+    'named',
+    'object',
+    'operator',
+    'tuple',
+    'union',
+    'nullish',
+    'unknown',
+  ],
+}
 
 export default tsEslint.config(
   {
@@ -30,6 +54,7 @@ export default tsEslint.config(
       // @ts-expect-error: incorrect type
       '@stylistic': stylistic,
       import: importPlugin,
+      // @ts-expect-error: incorrect type
       perfectionist,
     },
     rules: {
@@ -328,8 +353,14 @@ export default tsEslint.config(
         },
       ],
       'one-var': ['error', 'never'],
-      'perfectionist/sort-intersection-types': 'error',
-      'perfectionist/sort-union-types': 'error',
+      'perfectionist/sort-exports': ['error', naturalSortOptions],
+      'perfectionist/sort-imports': ['error', naturalSortOptions],
+      'perfectionist/sort-intersection-types': [
+        'error',
+        naturalSortTypeOptions,
+      ],
+      'perfectionist/sort-union-types': ['error', naturalSortTypeOptions],
+      'sort-imports': 'off',
       'sort-keys': [
         'error',
         'asc',

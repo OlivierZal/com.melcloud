@@ -1,4 +1,20 @@
 import type {
+  DeviceType,
+  EnergyData,
+  ListDevice,
+  LoginCredentials,
+  SetDeviceData,
+  UpdateDeviceData,
+} from '@olivierzal/melcloud-api'
+import type { DateObjectUnits, DurationLike } from 'luxon'
+
+import type AtaDevice from '../drivers/melcloud/device'
+import type AtaDriver from '../drivers/melcloud/driver'
+import type AtwDevice from '../drivers/melcloud_atw/device'
+import type AtwDriver from '../drivers/melcloud_atw/driver'
+import type ErvDevice from '../drivers/melcloud_erv/device'
+import type ErvDriver from '../drivers/melcloud_erv/driver'
+import type {
   CapabilitiesAta,
   ENERGY_CAPABILITY_TAG_MAPPING_ATA,
   EnergyCapabilitiesAta,
@@ -31,21 +47,6 @@ import type {
   SET_CAPABILITY_TAGS_MAPPING_ERV,
   SetCapabilitiesErv,
 } from './erv'
-import type { DateObjectUnits, DurationLike } from 'luxon'
-import type {
-  DeviceType,
-  EnergyData,
-  ListDevice,
-  LoginCredentials,
-  SetDeviceData,
-  UpdateDeviceData,
-} from '@olivierzal/melcloud-api'
-import type AtaDevice from '../drivers/melcloud/device'
-import type AtaDriver from '../drivers/melcloud/driver'
-import type AtwDevice from '../drivers/melcloud_atw/device'
-import type AtwDriver from '../drivers/melcloud_atw/driver'
-import type ErvDevice from '../drivers/melcloud_erv/device'
-import type ErvDriver from '../drivers/melcloud_erv/driver'
 
 export const K_MULTIPLIER = 1000
 
@@ -60,7 +61,7 @@ export type MELCloudDevice = AtaDevice | AtwDevice | ErvDevice
 export type ValueOf<T> = T[keyof T]
 
 export interface Settings
-  extends Record<string, boolean | null | number | string | undefined> {
+  extends Record<string, boolean | number | string | null | undefined> {
   readonly always_on?: boolean
 }
 

@@ -1,3 +1,15 @@
+import type PairSession from 'homey/lib/PairSession'
+
+import {
+  DeviceModel,
+  type DeviceType,
+  type EnergyData,
+  type ListDevice,
+  type LoginCredentials,
+} from '@olivierzal/melcloud-api'
+import { Driver } from 'homey'
+
+import type MELCloudApp from '..'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -10,17 +22,7 @@ import type {
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../types'
-import {
-  DeviceModel,
-  type DeviceType,
-  type EnergyData,
-  type ListDevice,
-  type LoginCredentials,
-} from '@olivierzal/melcloud-api'
 import type BaseMELCloudDevice from './device'
-import { Driver } from 'homey'
-import type MELCloudApp from '..'
-import type PairSession from 'homey/lib/PairSession'
 
 const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof Capabilities[T], string>,

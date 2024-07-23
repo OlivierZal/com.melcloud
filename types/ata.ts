@@ -1,9 +1,4 @@
 import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-} from './bases'
-import type {
   EnergyDataAta,
   FanSpeed,
   GetDeviceDataAta,
@@ -13,7 +8,13 @@ import type {
   UpdateDeviceDataAta,
   Vertical,
 } from '@olivierzal/melcloud-api'
+
 import type AtaDevice from '../drivers/melcloud/device'
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+} from './bases'
 
 export enum ThermostatMode {
   auto = 'auto',

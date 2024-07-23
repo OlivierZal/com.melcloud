@@ -1,9 +1,4 @@
 import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-} from './bases'
-import type {
   EnergyDataAtw,
   GetDeviceDataAtw,
   ListDeviceAtw,
@@ -11,7 +6,13 @@ import type {
   OperationModeZone,
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
+
 import type AtwDevice from '../drivers/melcloud/device'
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+} from './bases'
 
 export enum OperationModeStateHotWaterCapability {
   dhw = 'dhw',

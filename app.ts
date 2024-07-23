@@ -1,9 +1,11 @@
-import 'source-map-support/register'
-import 'core-js/actual/object/group-by'
 import MELCloudAPI, { FacadeManager } from '@olivierzal/melcloud-api'
+import 'core-js/actual/object/group-by'
 import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
+import 'source-map-support/register'
+
 import type { MELCloudDevice } from './types'
+
 import withTimers from './mixins/withTimers'
 
 LuxonSettings.defaultLocale = 'en-us'

@@ -1,4 +1,20 @@
 import {
+  type DeviceFacade,
+  DeviceModel,
+  type DeviceType,
+  type EnergyData,
+  type ListDevice,
+  type SetDeviceData,
+  type UpdateDeviceData,
+} from '@olivierzal/melcloud-api'
+import { Device } from 'homey'
+import { DateTime } from 'luxon'
+
+import type MELCloudApp from '../app'
+
+import addToLogs from '../decorators/addToLogs'
+import withTimers from '../mixins/withTimers'
+import {
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
@@ -18,25 +34,11 @@ import {
   type SetCapabilityTagMapping,
   type Settings,
 } from '../types'
-import {
-  type DeviceFacade,
-  DeviceModel,
-  type DeviceType,
-  type EnergyData,
-  type ListDevice,
-  type SetDeviceData,
-  type UpdateDeviceData,
-} from '@olivierzal/melcloud-api'
-import { DateTime } from 'luxon'
-import { Device } from 'homey'
-import type MELCloudApp from '../app'
-import addToLogs from '../decorators/addToLogs'
-import withTimers from '../mixins/withTimers'
 
 const NUMBER_0 = 0
 const NUMBER_1 = 1
 
-const getErrorMessage = (error: unknown): null | string => {
+const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
     return error instanceof Error ? error.message : String(error)
   }
@@ -90,7 +92,7 @@ export default abstract class<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
   >
 
-  protected abstract readonly reportPlanParameters: null | ReportPlanParameters
+  protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
   private get device(): DeviceFacade[T] | undefined {
     if (!this.#device) {
@@ -125,7 +127,7 @@ export default abstract class<
   }
 
   public override getCapabilityValue<K extends keyof Capabilities[T]>(
-    capability: K & string,
+    capability: string & K,
   ): Capabilities[T][K] {
     return super.getCapabilityValue(capability) as Capabilities[T][K]
   }
@@ -219,7 +221,7 @@ export default abstract class<
 
   public override async setCapabilityOptions<
     K extends Extract<keyof CapabilitiesOptions[T], string>,
-  >(capability: K, options: CapabilitiesOptions[T][K] & object): Promise<void> {
+  >(capability: K, options: object & CapabilitiesOptions[T][K]): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
@@ -339,7 +341,7 @@ export default abstract class<
 
   #calculateCopValue(
     data: EnergyData[T],
-    capability: keyof EnergyCapabilities[T] & string,
+    capability: string & keyof EnergyCapabilities[T],
   ): number {
     const producedTags = this.driver.producedTagMapping[
       capability

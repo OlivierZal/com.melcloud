@@ -1,3 +1,5 @@
+import type Homey from 'homey/lib/Homey'
+
 import {
   type BuildingData,
   type BuildingFacade,
@@ -8,6 +10,9 @@ import {
   type HolidayModeData,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
+import { DateTime } from 'luxon'
+
+import type MELCloudApp from '.'
 import type {
   DeviceSettings,
   DriverSetting,
@@ -21,9 +26,6 @@ import type {
   PairSetting,
   Settings,
 } from './types'
-import { DateTime } from 'luxon'
-import type Homey from 'homey/lib/Homey'
-import type MELCloudApp from '.'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
@@ -31,7 +33,7 @@ const YEAR_1 = 1
 
 const getOrCreateBuildingFacade = (
   homey: Homey,
-  idOrModel: BuildingModel | number,
+  idOrModel: number | BuildingModel,
 ): BuildingFacade => {
   const building =
     typeof idOrModel === 'number' ? BuildingModel.getById(idOrModel) : idOrModel
@@ -47,7 +49,7 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
     .join('\n')
 
 const handleResponse = (
-  errors: null | Record<string, readonly string[]>,
+  errors: Record<string, readonly string[]> | null,
 ): void => {
   if (errors) {
     throw new Error(formatErrors(errors))

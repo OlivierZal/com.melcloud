@@ -1,15 +1,16 @@
+import type { SimpleClass } from 'homey'
+import type Homey from 'homey/lib/Homey'
+
 import {
   DateTime,
   Duration,
   type DurationLike,
   type DurationLikeObject,
 } from 'luxon'
-import type Homey from 'homey/lib/Homey'
-import type { SimpleClass } from 'homey'
 
 type HomeyClass = new (
   ...args: any[]
-) => { readonly homey: Homey } & SimpleClass
+) => SimpleClass & { readonly homey: Homey }
 
 interface BaseTimerOptions {
   readonly actionType: string

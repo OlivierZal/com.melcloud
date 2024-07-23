@@ -5,6 +5,8 @@ import type {
   HolidayModeData,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
+import type Homey from 'homey/lib/HomeySettings'
+
 import type {
   DeviceSetting,
   DeviceSettings,
@@ -19,7 +21,6 @@ import type {
   Settings,
   ValueOf,
 } from '../types'
-import type Homey from 'homey/lib/HomeySettings'
 
 const DAYS_14 = 14
 

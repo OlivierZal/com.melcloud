@@ -1,4 +1,12 @@
 import {
+  FanSpeed,
+  Horizontal,
+  OperationMode,
+  Vertical,
+} from '@olivierzal/melcloud-api'
+
+import BaseMELCloudDevice from '../../bases/device'
+import {
   type CapabilitiesAta,
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -7,13 +15,6 @@ import {
   type SetCapabilitiesAta,
   ThermostatMode,
 } from '../../types'
-import {
-  FanSpeed,
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '@olivierzal/melcloud-api'
-import BaseMELCloudDevice from '../../bases/device'
 
 export = class extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
@@ -52,7 +53,7 @@ export = class extends BaseMELCloudDevice<'Ata'> {
   }
 
   public override getCapabilityValue<K extends keyof CapabilitiesAta>(
-    capability: K & string,
+    capability: string & K,
   ): NonNullable<CapabilitiesAta[K]> {
     if (
       capability === 'fan_power' &&

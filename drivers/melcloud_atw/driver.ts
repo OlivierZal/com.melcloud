@@ -1,3 +1,6 @@
+import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
+
+import BaseMELCloudDriver from '../../bases/driver'
 import {
   type CapabilitiesAtw,
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
@@ -5,8 +8,6 @@ import {
   LIST_CAPABILITY_TAGS_MAPPING_ATW,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
 } from '../../types'
-import BaseMELCloudDriver from '../../bases/driver'
-import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ATW

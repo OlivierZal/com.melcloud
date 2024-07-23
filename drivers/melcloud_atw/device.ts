@@ -1,3 +1,7 @@
+import { OperationModeState, OperationModeZone } from '@olivierzal/melcloud-api'
+import { DateTime } from 'luxon'
+
+import BaseMELCloudDevice from '../../bases/device'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -10,9 +14,6 @@ import {
   type TargetTemperatureFlowCapabilities,
   type Zone,
 } from '../../types'
-import { OperationModeState, OperationModeZone } from '@olivierzal/melcloud-api'
-import BaseMELCloudDevice from '../../bases/device'
-import { DateTime } from 'luxon'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>

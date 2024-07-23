@@ -1,16 +1,17 @@
 import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-} from './bases'
-import type {
   FanSpeed,
   GetDeviceDataErv,
   ListDeviceErv,
   UpdateDeviceDataErv,
   VentilationMode,
 } from '@olivierzal/melcloud-api'
+
 import type ErvDevice from '../drivers/melcloud/device'
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+} from './bases'
 
 export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
