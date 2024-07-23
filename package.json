@@ -30,7 +30,7 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-perfectionist": "^3.0.0",
-    "homey": "^3.5.1",
+    "homey": "^3.5.4",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.0-alpha.51"
