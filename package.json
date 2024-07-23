@@ -32,7 +32,7 @@
     "eslint-plugin-perfectionist": "^2.11.0",
     "homey": "^3.5.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.0-alpha.49"
   },
   "dependencies": {
