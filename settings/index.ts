@@ -405,7 +405,7 @@ const processSettingValue = (
     if (element instanceof HTMLInputElement && element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
-    return ['true', 'false'].includes(element.value) ?
+    return ['false', 'true'].includes(element.value) ?
         element.value === 'true'
       : element.value
   }

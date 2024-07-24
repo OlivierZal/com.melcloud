@@ -5,14 +5,14 @@ import BaseMELCloudDevice from '../../bases/device'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
-  K_MULTIPLIER,
   type OpCapabilitiesAtw,
-  OperationModeStateHotWaterCapability,
-  OperationModeStateZoneCapability,
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
   type Zone,
+  K_MULTIPLIER,
+  OperationModeStateHotWaterCapability,
+  OperationModeStateZoneCapability,
 } from '../../types'
 
 const convertFromDeviceMeasurePower = ((value: number) =>

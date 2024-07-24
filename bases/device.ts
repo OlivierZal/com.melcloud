@@ -1,11 +1,11 @@
 import {
   type DeviceFacade,
-  DeviceModel,
   type DeviceType,
   type EnergyData,
   type ListDevice,
   type SetDeviceData,
   type UpdateDeviceData,
+  DeviceModel,
 } from '@olivierzal/melcloud-api'
 import { Device } from 'homey'
 import { DateTime } from 'luxon'
@@ -24,7 +24,6 @@ import {
   type EnergyCapabilityTagEntry,
   type EnergyCapabilityTagMapping,
   type GetCapabilityTagMapping,
-  K_MULTIPLIER,
   type ListCapabilityTagMapping,
   type MELCloudDriver,
   type OpCapabilities,
@@ -33,6 +32,7 @@ import {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,
+  K_MULTIPLIER,
 } from '../types'
 
 const NUMBER_0 = 0

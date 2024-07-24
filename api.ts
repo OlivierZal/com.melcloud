@@ -3,12 +3,12 @@ import type Homey from 'homey/lib/Homey'
 import {
   type BuildingData,
   type BuildingFacade,
-  BuildingModel,
-  DeviceModel,
   type ErrorData,
   type FrostProtectionData,
   type HolidayModeData,
   type LoginCredentials,
+  BuildingModel,
+  DeviceModel,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 

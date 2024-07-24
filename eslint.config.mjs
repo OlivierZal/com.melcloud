@@ -31,6 +31,11 @@ const naturalSortTypeOptions = {
   ],
 }
 
+const naturalSortNamedExportImportOptions = {
+  ...naturalSortOptions,
+  groupKind: 'types-first',
+}
+
 export default tsEslint.config(
   {
     ignores: ['.homeybuild/'],
@@ -353,13 +358,26 @@ export default tsEslint.config(
         },
       ],
       'one-var': ['error', 'never'],
+      'perfectionist/sort-array-includes': ['error', naturalSortOptions],
+      'perfectionist/sort-enums': ['error', naturalSortOptions],
       'perfectionist/sort-exports': ['error', naturalSortOptions],
       'perfectionist/sort-imports': ['error', naturalSortOptions],
       'perfectionist/sort-intersection-types': [
         'error',
         naturalSortTypeOptions,
       ],
+      'perfectionist/sort-maps': ['error', naturalSortOptions],
+      'perfectionist/sort-named-exports': [
+        'error',
+        naturalSortNamedExportImportOptions,
+      ],
+      'perfectionist/sort-named-imports': [
+        'error',
+        naturalSortNamedExportImportOptions,
+      ],
+      'perfectionist/sort-switch-case': ['error', naturalSortOptions],
       'perfectionist/sort-union-types': ['error', naturalSortTypeOptions],
+      'perfectionist/sort-variable-declarations': ['error', naturalSortOptions],
       'sort-imports': 'off',
       'sort-keys': [
         'error',

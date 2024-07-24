@@ -2,10 +2,10 @@ import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
 
 import {
-  DateTime,
-  Duration,
   type DurationLike,
   type DurationLikeObject,
+  DateTime,
+  Duration,
 } from 'luxon'
 
 type HomeyClass = new (
