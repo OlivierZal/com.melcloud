@@ -24,7 +24,7 @@
     "climate"
   ],
   "version": "36.2.1",
-  "compatibility": ">=5.0.0",
+  "compatibility": ">=12.0.0",
   "tags": {
     "en": [
       "air conditioner",

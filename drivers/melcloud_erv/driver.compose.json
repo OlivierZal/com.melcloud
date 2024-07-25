@@ -1,6 +1,5 @@
 {
   "$extends": ["defaults"],
-  "class": "fan",
   "name": {
     "en": "Energy recovery ventilator (ERV)",
     "fr": "Ventilateur récupérateur d'énergie (VRE)",

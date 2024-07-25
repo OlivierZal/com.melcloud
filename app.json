@@ -25,7 +25,7 @@
     "climate"
   ],
   "version": "36.2.1",
-  "compatibility": ">=5.0.0",
+  "compatibility": ">=12.0.0",
   "tags": {
     "en": [
       "air conditioner",
@@ -3318,7 +3318,7 @@
         "small": "/drivers/melcloud/assets/images/small.png"
       },
       "icon": "/drivers/melcloud/assets/icon.svg",
-      "class": "thermostat",
+      "class": "heatpump",
       "pair": [
         {
           "id": "loading",
@@ -4144,7 +4144,7 @@
         "small": "/drivers/melcloud_atw/assets/images/small.png"
       },
       "icon": "/drivers/melcloud_atw/assets/icon.svg",
-      "class": "thermostat",
+      "class": "heatpump",
       "pair": [
         {
           "id": "loading",
@@ -5972,7 +5972,7 @@
         "small": "/drivers/melcloud_erv/assets/images/small.png"
       },
       "icon": "/drivers/melcloud_erv/assets/icon.svg",
-      "class": "fan",
+      "class": "heatpump",
       "pair": [
         {
           "id": "loading",
