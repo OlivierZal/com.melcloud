@@ -14,7 +14,7 @@
     "format:fix": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run lint:fix && npm run format:fix && npm run build",
+    "prepare": "npm run lint:fix && npm run format:fix",
     "publish": "homey app publish"
   },
   "devDependencies": {
