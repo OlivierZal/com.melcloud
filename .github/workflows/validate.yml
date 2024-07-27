@@ -33,7 +33,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate app
-        uses: athombv/github-action-homey-app-validate@master
+        uses: athombv/github-action-homey-app-validate@v1
         with:
           level: publish
       - name: Commit & push

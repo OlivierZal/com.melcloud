@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Update app version
-        uses: athombv/github-action-homey-app-version@master
+        uses: athombv/github-action-homey-app-version@v1
         id: update_app_version
         with:
           version: ${{ inputs.version }}

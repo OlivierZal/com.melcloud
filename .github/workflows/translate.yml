@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Translate app
-        uses: athombv/github-action-homey-app-translate@master
+        uses: athombv/github-action-homey-app-translate@v1
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
       - name: Commit, push & create PR
