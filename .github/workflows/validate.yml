@@ -1,4 +1,4 @@
-name: Build
+name: Validate app
 on:
   push:
     branches: main
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-      - name: Bump version
+      - name: Update package version
         run: |
           APP_VERSION=$(jq -r .version .homeycompose/app.json)
           jq ".version=\"$APP_VERSION\"" package.json > package.json.tmp
@@ -36,9 +36,11 @@ jobs:
         run: npm run lint:fix
       - name: Format code
         run: npm run format:fix
-      - name: Build Homey app
-        run: npm run build
-      - name: Commit changes
+      - name: Validate app
+        uses: athombv/github-action-homey-app-validate@master
+        with:
+          level: publish
+      - name: Commit & push
         run: |
           git config --local user.name "GitHub Actions"
           git config --local user.email "actions@github.com"
