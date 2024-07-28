@@ -28,10 +28,6 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@olivierzal'
           cache: 'npm'
-      - name: Update package-lock.json, lint & format code
-        run: npm install --force
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate app
         uses: athombv/github-action-homey-app-validate@v1
         with:
