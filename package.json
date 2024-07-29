@@ -30,7 +30,7 @@
     "eslint-plugin-perfectionist": "^3.0.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0-alpha.54"
+    "typescript-eslint": "^8.0.0-alpha.55"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^6.1.4",
