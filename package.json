@@ -24,7 +24,7 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.6",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^20.14.12",
+    "@types/node": "^22.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-perfectionist": "^3.0.0",
