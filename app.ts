@@ -46,8 +46,8 @@ export = class MELCloudApp extends withTimers(App) {
           this.log(...args)
         },
       },
+      onSync: async (): Promise<void> => this.#syncFromDevices(),
       settingManager: this.homey.settings,
-      syncFunction: async (): Promise<void> => this.#syncFromDevices(),
       timezone: this.homey.clock.getTimezone(),
     })
     this.#facadeManager = new FacadeManager(this.#api)
