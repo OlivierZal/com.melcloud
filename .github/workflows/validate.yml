@@ -5,11 +5,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-permissions:
-  contents: write
-  packages: read
-  pull-requests: write
-
 jobs:
   main:
     runs-on: ubuntu-latest

@@ -2,6 +2,9 @@ name: Publish app on Homey
 on:
   workflow_dispatch:
 
+permissions:
+  packages: read
+
 jobs:
   main:
     name: Publish app on Homey
