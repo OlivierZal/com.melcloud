@@ -1,6 +1,5 @@
 # MELCloud for Homey
 
-[![Build](https://github.com/OlivierZal/com.melcloud/actions/workflows/build.yml/badge.svg)](https://github.com/OlivierZal/com.melcloud/actions/workflows/build.yml)
 [![CodeQL](https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=OlivierZal_com.melcloud)
