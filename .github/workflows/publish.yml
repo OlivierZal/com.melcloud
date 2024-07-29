@@ -15,7 +15,7 @@ jobs:
           scope: '@olivierzal'
           cache: 'npm'
       - name: Publish
-        uses: athombv/github-action-homey-app-publish@master
+        uses: OlivierZal/github-action-homey-app-publish@patch-1
         id: publish
         with:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
