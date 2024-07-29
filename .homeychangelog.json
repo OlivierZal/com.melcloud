@@ -178,5 +178,8 @@
   },
   "36.0.0": {
     "en": "Improved API architecture design."
+  },
+  "37.0.0": {
+    "en": "Moved drivers to heatpump class"
   }
 }
