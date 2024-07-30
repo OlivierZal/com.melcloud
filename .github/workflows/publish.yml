@@ -14,11 +14,6 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: echo $NPM_CONFIG_USERCONFIG > .npmrc
-      - run: |
-          npm ci --ignore-scripts
-          echo $NPM_CONFIG_USERCONFIG
-          echo NPM_CONFIG_USERCONFIG
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish
@@ -27,7 +22,6 @@ jobs:
         with:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
-          NPM_CONFIG_USERCONFIG: .npmrc
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: URL
         run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
