@@ -14,9 +14,7 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: |
-          echo $NPM_CONFIG_USERCONFIG
-          cat $NPM_CONFIG_USERCONFIG
+      - run: cp $NPM_CONFIG_USERCONFIG ${{ github.workspace }}/.npmrc
       - name: Publish
         uses: OlivierZal/github-action-homey-app-publish@patch-1
         id: publish
