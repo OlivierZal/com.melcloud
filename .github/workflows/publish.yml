@@ -27,5 +27,6 @@ jobs:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
       - name: URL
         run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
