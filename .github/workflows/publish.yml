@@ -14,6 +14,7 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@olivierzal'
           cache: 'npm'
+      - run: cat $NPM_CONFIG_USERCONFIG
       - name: Publish
         uses: OlivierZal/github-action-homey-app-publish@patch-1
         id: publish
