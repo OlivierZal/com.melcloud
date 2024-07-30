@@ -11,17 +11,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: cat $NPM_CONFIG_USERCONFIG
+      - run: echo $NPM_CONFIG_USERCONFIG > github/workspace/.npmrc
+      - run: |
+          npm ci --ignore-scripts
+          echo $NPM_CONFIG_USERCONFIG
+          echo NPM_CONFIG_USERCONFIG
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish
         uses: OlivierZal/github-action-homey-app-publish@patch-1
         id: publish
         with:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
+          NPM_CONFIG_USERCONFIG: github/workspace/.npmrc
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: URL
-        run: |
-          echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
+        run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
