@@ -19,7 +19,7 @@ jobs:
           mv package.json.tmp package.json
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: 22
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
