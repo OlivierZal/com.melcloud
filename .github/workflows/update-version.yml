@@ -35,6 +35,8 @@ jobs:
         with:
           version: ${{ inputs.version }}
           changelog: ${{ inputs.changelog }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit & push
         run: |
           git config --local user.email "sysadmin+githubactions@athom.com"

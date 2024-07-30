@@ -19,6 +19,8 @@ jobs:
         uses: athombv/github-action-homey-app-translate@master
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit, push & create PR
         env:
           GH_TOKEN: ${{ github.token }}
