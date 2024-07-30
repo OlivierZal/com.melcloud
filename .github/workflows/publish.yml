@@ -14,12 +14,7 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: |
-          echo $NPM_CONFIG_USERCONFIG
-          cat $NPM_CONFIG_USERCONFIG
-          npm ci --ignore-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo $NPM_CONFIG_USERCONFIG > /home/runner/work/_temp/.npmrc
       - name: Publish
         uses: OlivierZal/github-action-homey-app-publish@patch-1
         id: publish
@@ -27,6 +22,5 @@ jobs:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_USERCONFIG: $NPM_CONFIG_USERCONFIG
       - name: URL
         run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
