@@ -8,12 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@olivierzal'
-          cache: 'npm'
       - name: Translate app
         uses: athombv/github-action-homey-app-translate@master
         with:
