@@ -39,4 +39,4 @@ jobs:
 
           git push origin HEAD --tags
       - name: Update package version
-        run: npm version ${{ steps.update_app_version.outputs.version }}
+        run: npm version ${{ steps.update_app_version.outputs.version }} --no-git-tag-version
