@@ -38,3 +38,5 @@ jobs:
           git tag "v${{ steps.update_app_version.outputs.version }}"
 
           git push origin HEAD --tags
+      - name: Update package version
+        run: npm version ${{ steps.update_app_version.outputs.version }}
