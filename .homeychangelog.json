@@ -184,5 +184,8 @@
   },
   "37.0.1": {
     "en": "It is now possible to change the main capability displayed on your device! To take advantage of this feature, you need to recreate your device and the associated flows."
+  },
+  "37.0.9": {
+    "en": "test"
   }
 }
