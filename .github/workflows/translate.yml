@@ -14,13 +14,10 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: cp $NPM_CONFIG_USERCONFIG ${{ github.workspace }}/.npmrc
       - name: Translate app
         uses: athombv/github-action-homey-app-translate@master
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit, push & create PR
         env:
           GH_TOKEN: ${{ github.token }}

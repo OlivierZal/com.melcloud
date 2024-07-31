@@ -28,15 +28,12 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
-      - run: cp $NPM_CONFIG_USERCONFIG ${{ github.workspace }}/.npmrc
       - name: Update app version
         uses: athombv/github-action-homey-app-version@master
         id: update_app_version
         with:
           version: ${{ inputs.version }}
           changelog: ${{ inputs.changelog }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Commit & push
         run: |
           git config --local user.email "sysadmin+githubactions@athom.com"
