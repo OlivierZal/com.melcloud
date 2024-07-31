@@ -50,7 +50,7 @@ const NUMBER_14 = 14
 const pad = (num: number): string => num.toString().padStart(NUMBER_2, '0')
 
 const formatDateTimeLocal = (date: Date): string => {
-  const year = date.getFullYear()
+  const year = String(date.getFullYear())
   const month = pad(date.getMonth() + NUMBER_1)
   const day = pad(date.getDate())
   const hours = pad(date.getHours())

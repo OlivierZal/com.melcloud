@@ -39,7 +39,12 @@ export default tsEslint.config(
     ignores: ['.homeybuild/'],
   },
   {
-    extends: [eslint.configs.all, ...tsEslint.configs.all, prettier],
+    extends: [
+      eslint.configs.all,
+      ...tsEslint.configs.all,
+      ...tsEslint.configs.strictTypeChecked,
+      prettier,
+    ],
     languageOptions: {
       parserOptions: {
         project: 'tsconfig.json',
@@ -324,6 +329,7 @@ export default tsEslint.config(
         },
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
+      '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
       'max-lines': 'off',

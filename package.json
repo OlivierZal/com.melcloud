@@ -24,13 +24,13 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.6",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-perfectionist": "^3.0.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0-alpha.60"
+    "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^6.1.4",
