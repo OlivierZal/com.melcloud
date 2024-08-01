@@ -36,6 +36,7 @@ jobs:
           if ! git diff --cached --exit-code; then
             git commit -m "Dependabot update: lint, format and build code"
             git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
         env:

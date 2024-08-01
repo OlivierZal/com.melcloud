@@ -44,3 +44,5 @@ jobs:
             else
               git pull origin ${{ github.head_ref }} --rebase
               git push origin HEAD:${{ github.head_ref }}
+            fi
+          fi
