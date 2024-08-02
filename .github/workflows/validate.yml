@@ -3,10 +3,10 @@ on:
   push:
     branches: main
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, synchronize]
 
 jobs:
-  main:
+  validate:
     runs-on: ubuntu-latest
     if: github.actor != 'dependabot[bot]'
     steps:
@@ -27,7 +27,7 @@ jobs:
         uses: athombv/github-action-homey-app-validate@master
         with:
           level: publish
-      - name: Commit & push
+      - name: Commit & push changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
