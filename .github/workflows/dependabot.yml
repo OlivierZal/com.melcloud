@@ -27,7 +27,7 @@ jobs:
       - name: Lint & format code
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
