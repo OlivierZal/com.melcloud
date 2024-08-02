@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  main:
+  publish:
     name: Publish app on Homey
     runs-on: ubuntu-latest
     steps:

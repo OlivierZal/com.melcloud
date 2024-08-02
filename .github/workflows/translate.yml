@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  main:
+  translate:
     name: Translate app
     runs-on: ubuntu-latest
     steps:
