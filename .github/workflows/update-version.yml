@@ -28,7 +28,7 @@ jobs:
         with:
           version: ${{ inputs.version }}
           changelog: ${{ inputs.changelog }}
-      - name: Commit & push
+      - name: Commit & push changes
         run: |
           VERSION=${{ steps.update_app_version.outputs.version }}
           npm version $VERSION --no-git-tag-version --allow-same-version

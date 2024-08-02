@@ -32,7 +32,7 @@ jobs:
         uses: athombv/github-action-homey-app-validate@master
         with:
           level: publish
-      - name: Commit & push
+      - name: Commit & push changes
         run: |
           git add -A
           if ! git diff --cached --exit-code; then
