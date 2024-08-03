@@ -1,6 +1,6 @@
 # MELCloud for Homey
 
-[![CodeQL](https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql)
+[![CodeQL]([https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql/badge.svg](https://homey.app/img/heading/homey@2x.webp))](https://github.com/OlivierZal/com.melcloud/actions/workflows/github-code-scanning/codeql)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=OlivierZal_com.melcloud)
 
 ## Introduction
