@@ -27,13 +27,15 @@ jobs:
       - name: Lint & format code
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
           level: publish
       - name: Commit & push changes
         run: |
+          git config --local user.email "actions@github.com" 
+          git config --local user.name "GitHub Actions"
           git add -A
           if ! git diff --cached --exit-code; then
             git commit -m "Dependabot update: lint, format and build code"
