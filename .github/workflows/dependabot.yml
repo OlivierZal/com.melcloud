@@ -1,10 +1,9 @@
 name: Dependabot auto-merge
-on:
-  pull_request:
-    types: [opened, synchronize]
+on: pull_request
 
 permissions:
   contents: write
+  packages: read
   pull-requests: write
 
 jobs:
@@ -27,7 +26,7 @@ jobs:
       - name: Lint & format code
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
