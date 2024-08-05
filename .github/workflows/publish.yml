@@ -1,7 +1,6 @@
 name: Publish app on Homey
 on:
   workflow_dispatch:
-
 jobs:
   publish:
     name: Publish app on Homey
