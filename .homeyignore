@@ -10,7 +10,8 @@
 /README.md
 /coverage/
 /docs/
-/eslint.config.js
+/eslint.config.mjs
 /jest.config.ts
+/prettier.config.mjs
 /sonar-project.properties
 /tests/
