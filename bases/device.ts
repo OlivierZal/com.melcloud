@@ -637,12 +637,9 @@ export default abstract class<
         )
       return
     }
-    this.#energyCapabilityTagEntries = Object.groupBy<
-      `${boolean}`,
-      EnergyCapabilityTagEntry<T>
-    >(
+    this.#energyCapabilityTagEntries = Object.groupBy(
       energyCapabilityTagEntries,
-      ([capability]) => String(isTotalEnergyKey(capability)) as `${boolean}`,
+      ([capability]) => String(isTotalEnergyKey(capability)),
     )
   }
 
