@@ -1,4 +1,4 @@
-name: Validate app
+name: Homey
 on:
   push:
     branches: main
