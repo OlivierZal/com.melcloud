@@ -5,14 +5,7 @@ import packageJson from 'eslint-plugin-package-json/configs/recommended'
 import perfectionist from 'eslint-plugin-perfectionist'
 import tsEslint from 'typescript-eslint'
 
-const naturalSortOptions = {
-  ignoreCase: false,
-  order: 'asc',
-  type: 'natural',
-}
-
-const naturalSortTypeOptions = {
-  ...naturalSortOptions,
+const sortTypeOptions = {
   groups: [
     'conditional',
     'function',
@@ -30,8 +23,7 @@ const naturalSortTypeOptions = {
   ],
 }
 
-const naturalSortNamedExportImportOptions = {
-  ...naturalSortOptions,
+const sortNamedExportImportOptions = {
   groupKind: 'types-first',
 }
 
@@ -45,6 +37,7 @@ export default [
         eslint.configs.all,
         ...tsEslint.configs.all,
         ...tsEslint.configs.strictTypeChecked,
+        perfectionist.configs['recommended-natural'],
         prettier,
       ],
       files: ['**/*.ts', '**/*.mjs'],
@@ -62,7 +55,6 @@ export default [
       },
       plugins: {
         '@stylistic': stylistic,
-        perfectionist,
       },
       rules: {
         '@stylistic/line-comment-position': 'error',
@@ -94,177 +86,7 @@ export default [
           },
         ],
         '@typescript-eslint/consistent-return': 'off',
-        '@typescript-eslint/member-ordering': [
-          'error',
-          {
-            default: {
-              memberTypes: [
-                // Index signature
-                'signature',
-                'readonly-signature',
-                'call-signature',
-
-                // Fields
-                'public-static-field',
-                'public-static-readonly-field',
-                'protected-static-field',
-                'protected-static-readonly-field',
-                'private-static-field',
-                'private-static-readonly-field',
-                '#private-static-field',
-                '#private-static-readonly-field',
-
-                'public-decorated-field',
-                'public-decorated-readonly-field',
-                'protected-decorated-field',
-                'protected-decorated-readonly-field',
-                'private-decorated-field',
-                'private-decorated-readonly-field',
-
-                'public-instance-field',
-                'public-instance-readonly-field',
-                'protected-instance-field',
-                'protected-instance-readonly-field',
-                'private-instance-field',
-                'private-instance-readonly-field',
-                '#private-instance-field',
-                '#private-instance-readonly-field',
-
-                'public-abstract-field',
-                'public-abstract-readonly-field',
-                'protected-abstract-field',
-                'protected-abstract-readonly-field',
-
-                'public-field',
-                'public-readonly-field',
-                'protected-field',
-                'protected-readonly-field',
-                'private-field',
-                'private-readonly-field',
-                '#private-field',
-                '#private-readonly-field',
-
-                'static-field',
-                'static-readonly-field',
-                'instance-field',
-                'instance-readonly-field',
-                'abstract-field',
-                'abstract-readonly-field',
-
-                'decorated-field',
-                'decorated-readonly-field',
-
-                'field',
-                'readonly-field',
-
-                // Static initialization
-                'static-initialization',
-
-                // Constructors
-                'public-constructor',
-                'protected-constructor',
-                'private-constructor',
-
-                'constructor',
-
-                // Accessors
-                'public-static-accessor',
-                'protected-static-accessor',
-                'private-static-accessor',
-                '#private-static-accessor',
-
-                'public-decorated-accessor',
-                'protected-decorated-accessor',
-                'private-decorated-accessor',
-
-                'public-instance-accessor',
-                'protected-instance-accessor',
-                'private-instance-accessor',
-                '#private-instance-accessor',
-
-                'public-abstract-accessor',
-                'protected-abstract-accessor',
-
-                'public-accessor',
-                'protected-accessor',
-                'private-accessor',
-                '#private-accessor',
-
-                'static-accessor',
-                'instance-accessor',
-                'abstract-accessor',
-
-                'decorated-accessor',
-
-                'accessor',
-
-                // Getters and setters
-                ['public-static-get', 'public-static-set'],
-                ['protected-static-get', 'protected-static-set'],
-                ['private-static-get', 'private-static-set'],
-                ['#private-static-get', '#private-static-set'],
-
-                ['public-decorated-get', 'public-decorated-set'],
-                ['protected-decorated-get', 'protected-decorated-set'],
-                ['private-decorated-get', 'private-decorated-set'],
-
-                ['public-instance-get', 'public-instance-set'],
-                ['protected-instance-get', 'protected-instance-set'],
-                ['private-instance-get', 'private-instance-set'],
-                ['#private-instance-get', '#private-instance-set'],
-
-                ['public-abstract-get', 'public-abstract-set'],
-                ['protected-abstract-get', 'protected-abstract-set'],
-
-                ['public-get', 'public-set'],
-                ['protected-get', 'protected-set'],
-                ['private-get', 'private-set'],
-                ['#private-get', '#private-set'],
-
-                ['static-get', 'static-set'],
-                ['instance-get', 'instance-set'],
-                ['abstract-get', 'abstract-set'],
-
-                ['decorated-get', 'decorated-set'],
-
-                ['get', 'set'],
-
-                // Methods
-                'public-static-method',
-                'protected-static-method',
-                'private-static-method',
-                '#private-static-method',
-
-                'public-decorated-method',
-                'protected-decorated-method',
-                'private-decorated-method',
-
-                'public-instance-method',
-                'protected-instance-method',
-                'private-instance-method',
-                '#private-instance-method',
-
-                'public-abstract-method',
-                'protected-abstract-method',
-
-                'public-method',
-                'protected-method',
-                'private-method',
-                '#private-method',
-
-                'static-method',
-                'instance-method',
-                'abstract-method',
-
-                'decorated-method',
-
-                'method',
-              ],
-              optionalityOrder: 'optional-first',
-              order: 'natural',
-            },
-          },
-        ],
+        '@typescript-eslint/member-ordering': 'off',
         '@typescript-eslint/naming-convention': [
           'error',
           {
@@ -354,29 +176,155 @@ export default [
           },
         ],
         'one-var': ['error', 'never'],
-        'perfectionist/sort-array-includes': ['error', naturalSortOptions],
-        'perfectionist/sort-enums': ['error', naturalSortOptions],
-        'perfectionist/sort-exports': ['error', naturalSortOptions],
-        'perfectionist/sort-imports': ['error', naturalSortOptions],
-        'perfectionist/sort-intersection-types': [
+        'perfectionist/sort-classes': [
           'error',
-          naturalSortTypeOptions,
+          {
+            customGroups: {
+              eventHandler: 'on*',
+            },
+            groups: [
+              // Signatures
+              'static-index-signature',
+              'readonly-index-signature',
+              'index-signature',
+              // Properties
+              'decorated-static-public-property',
+              'decorated-static-public-readonly-property',
+              'decorated-static-protected-property',
+              'decorated-static-protected-readonly-property',
+              'decorated-static-private-property',
+              'decorated-static-private-readonly-property',
+              'decorated-static-property',
+              'decorated-static-readonly-property',
+              'static-public-property',
+              'static-public-readonly-property',
+              'static-protected-property',
+              'static-protected-readonly-property',
+              'static-private-property',
+              'static-private-readonly-property',
+              'static-property',
+              'static-readonly-property',
+              'decorated-public-property',
+              'decorated-public-readonly-property',
+              'decorated-protected-property',
+              'decorated-protected-readonly-property',
+              'decorated-private-property',
+              'decorated-private-readonly-property',
+              'decorated-property',
+              'decorated-readonly-property',
+              'public-property',
+              'public-readonly-property',
+              'protected-property',
+              'protected-readonly-property',
+              'private-property',
+              'private-readonly-property',
+              'property',
+              'readonly-property',
+              'abstract-public-property',
+              'abstract-public-readonly-property',
+              'abstract-protected-property',
+              'abstract-protected-readonly-property',
+              'abstract-property',
+              'abstract-readonly-property',
+              // Static blocks
+              'static-block',
+              // Constructors
+              'public-constructor',
+              'protected-constructor',
+              'private-constructor',
+              'constructor',
+              // Event handlers
+              'onInit',
+              // Accessors
+              'decorated-static-public-accessor',
+              'decorated-static-protected-accessor',
+              'decorated-static-private-accessor',
+              'decorated-static-accessor',
+              'static-public-accessor',
+              'static-protected-accessor',
+              'static-private-accessor',
+              'static-accessor',
+              'decorated-public-accessor',
+              'decorated-protected-accessor',
+              'decorated-private-accessor',
+              'decorated-accessor',
+              'public-accessor',
+              'protected-accessor',
+              'private-accessor',
+              'accessor',
+              'abstract-public-accessor',
+              'abstract-protected-accessor',
+              'abstract-accessor',
+              // Getters and setters
+              [
+                'decorated-static-public-get-method',
+                'decorated-static-public-set-method',
+              ],
+              [
+                'decorated-static-protected-get-method',
+                'decorated-static-protected-set-method',
+              ],
+              [
+                'decorated-static-private-get-method',
+                'decorated-static-private-set-method',
+              ],
+              ['decorated-static-get-method', 'decorated-static-set-method'],
+              ['static-public-get-method', 'static-public-set-method'],
+              ['static-protected-get-method', 'static-protected-set-method'],
+              ['static-private-get-method', 'static-private-set-method'],
+              ['static-get-method', 'static-set-method'],
+              ['decorated-public-get-method', 'decorated-public-set-method'],
+              [
+                'decorated-protected-get-method',
+                'decorated-protected-set-method',
+              ],
+              ['decorated-private-get-method', 'decorated-private-set-method'],
+              ['decorated-get-method', 'decorated-set-method'],
+              ['public-get-method', 'public-set-method'],
+              ['protected-get-method', 'protected-set-method'],
+              ['private-get-method', 'private-set-method'],
+              ['get', 'set'],
+              ['abstract-public-get-method', 'abstract-public-set-method'],
+              [
+                'abstract-protected-get-method',
+                'abstract-protected-set-method',
+              ],
+              ['abstract-get-method', 'abstract-set-method'],
+              // Methods
+              'decorated-static-public-method',
+              'decorated-static-protected-method',
+              'decorated-static-private-method',
+              'decorated-static-method',
+              'static-public-method',
+              'static-protected-method',
+              'static-private-method',
+              'static-method',
+              'decorated-public-method',
+              'decorated-protected-method',
+              'decorated-private-method',
+              'decorated-method',
+              'public-method',
+              'protected-method',
+              'private-method',
+              'method',
+              'abstract-public-method',
+              'abstract-protected-method',
+              'abstract-method',
+            ],
+          },
         ],
-        'perfectionist/sort-maps': ['error', naturalSortOptions],
+        'perfectionist/sort-interfaces': 'off',
+        'perfectionist/sort-intersection-types': ['error', sortTypeOptions],
         'perfectionist/sort-named-exports': [
           'error',
-          naturalSortNamedExportImportOptions,
+          sortNamedExportImportOptions,
         ],
         'perfectionist/sort-named-imports': [
           'error',
-          naturalSortNamedExportImportOptions,
+          sortNamedExportImportOptions,
         ],
-        'perfectionist/sort-switch-case': ['error', naturalSortOptions],
-        'perfectionist/sort-union-types': ['error', naturalSortTypeOptions],
-        'perfectionist/sort-variable-declarations': [
-          'error',
-          naturalSortOptions,
-        ],
+        'perfectionist/sort-object-types': 'off',
+        'perfectionist/sort-union-types': ['error', sortTypeOptions],
         'sort-imports': 'off',
         'sort-keys': [
           'error',
@@ -390,6 +338,12 @@ export default [
     {
       files: ['**/*.mjs'],
       ...tsEslint.configs.disableTypeChecked,
+    },
+    {
+      settings: {
+        ignoreCase: false,
+        partitionByComment: true,
+      },
     },
   ),
   packageJson,

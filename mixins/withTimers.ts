@@ -69,7 +69,7 @@ export default <T extends HomeyClass>(base: T): T & TimerClass =>
     #setTimer(
       callback: () => Promise<void>,
       interval: DurationLike,
-      { actionType, timerWords, timerType, units }: TimerOptions,
+      { actionType, timerType, timerWords, units }: TimerOptions,
     ): NodeJS.Timeout {
       const duration = Duration.fromDurationLike(interval)
       this.log(

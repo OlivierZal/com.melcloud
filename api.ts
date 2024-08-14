@@ -75,12 +75,12 @@ const getErrors = async (
 }
 
 const getDriverSettings = (
-  { settings, id: driverId }: ManifestDriver,
+  { id: driverId, settings }: ManifestDriver,
   language: string,
 ): DriverSetting[] =>
   (settings ?? []).flatMap((setting) =>
     (setting.children ?? []).map(
-      ({ id, max, min, label, type, units, values }) => ({
+      ({ id, label, max, min, type, units, values }) => ({
         driverId,
         groupId: setting.id,
         groupLabel: setting.label[language],
@@ -130,9 +130,9 @@ const getDriverLoginSetting = (
 
 const handleErrorLogQuery = ({
   from,
-  to,
   limit,
   offset,
+  to,
 }: ErrorLogQuery): { fromDate: DateTime; period: number; toDate: DateTime } => {
   const fromDate =
     from !== undefined && from ? DateTime.fromISO(from) : undefined
@@ -192,7 +192,7 @@ export = {
           ...getDriverLoginSetting(driver, language),
         ],
       ),
-      ({ groupId, driverId }) => groupId ?? driverId,
+      ({ driverId, groupId }) => groupId ?? driverId,
     )
   },
   async getErrors({
@@ -202,7 +202,7 @@ export = {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    const { fromDate, toDate, period } = handleErrorLogQuery(query)
+    const { fromDate, period, toDate } = handleErrorLogQuery(query)
     const nextToDate = fromDate.minus({ days: 1 })
     return {
       errors: (await getErrors(homey, fromDate, toDate))
@@ -256,8 +256,8 @@ export = {
     return homey.i18n.getLanguage()
   },
   async login({
-    homey,
     body,
+    homey,
   }: {
     body: LoginCredentials
     homey: Homey
@@ -265,8 +265,8 @@ export = {
     return (homey.app as MELCloudApp).api.applyLogin(body)
   },
   async setDeviceSettings({
-    homey,
     body,
+    homey,
     query,
   }: {
     query?: { driverId: string }
@@ -293,9 +293,9 @@ export = {
     )
   },
   async setFrostProtectionSettings({
+    body,
     homey,
     params: { buildingId },
-    body,
   }: {
     body: FrostProtectionSettings
     homey: Homey
@@ -311,9 +311,9 @@ export = {
     )
   },
   async setHolidayModeSettings({
+    body: { enabled, from, to },
     homey,
     params: { buildingId },
-    body: { enabled, from, to },
   }: {
     body: HolidayModeSettings
     homey: Homey

@@ -291,10 +291,10 @@ const createDivElement = (): HTMLDivElement => {
 }
 
 const createInputElement = ({
-  placeholder,
-  value,
   id,
+  placeholder,
   type,
+  value,
 }: {
   placeholder?: string
   value?: string
@@ -536,8 +536,8 @@ const refreshHolidayModeData = (
   if (data) {
     const {
       HMEnabled: isEnabled,
-      HMStartDate: startDate,
       HMEndDate: endDate,
+      HMStartDate: startDate,
     } = data
     holidayModeEnabledElement.value = String(isEnabled)
     holidayModeStartDateElement.value = isEnabled ? (startDate ?? '') : ''
@@ -549,8 +549,8 @@ const refreshFrostProtectionData = (data?: FrostProtectionData): void => {
   if (data) {
     const {
       FPEnabled: isEnabled,
-      FPMinTemperature: min,
       FPMaxTemperature: max,
+      FPMinTemperature: min,
     } = data
     frostProtectionEnabledElement.value = String(isEnabled)
     frostProtectionMinTemperatureElement.value = String(min)
@@ -1114,7 +1114,7 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
     const data = buildingMapping[buildingElement.value]
     if (data) {
       try {
-        const { min, max } = fixAndGetFpMinMax(homey)
+        const { max, min } = fixAndGetFpMinMax(homey)
         updateFrostProtectionData(
           homey,
           {

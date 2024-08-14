@@ -52,14 +52,14 @@ const isTotalEnergyKey = (key: string): boolean =>
 export default abstract class<
   T extends keyof typeof DeviceType,
 > extends withTimers(Device) {
-  #device?: DeviceFacade[T]
-
   public declare readonly driver: MELCloudDriver[T]
 
   protected readonly diff = new Map<
     keyof SetCapabilities[T],
     SetCapabilities[T][keyof SetCapabilities[T]]
   >()
+
+  #device?: DeviceFacade[T]
 
   #energyCapabilityTagEntries: {
     false?: EnergyCapabilityTagEntry<T>[]
