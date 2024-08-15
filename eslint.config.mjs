@@ -37,7 +37,6 @@ export default [
         eslint.configs.all,
         ...tsEslint.configs.all,
         ...tsEslint.configs.strictTypeChecked,
-        perfectionist.configs['recommended-natural'],
         prettier,
       ],
       files: ['**/*.ts', '**/*.mjs'],
@@ -55,6 +54,7 @@ export default [
       },
       plugins: {
         '@stylistic': stylistic,
+        perfectionist,
       },
       rules: {
         '@stylistic/line-comment-position': 'error',
@@ -341,8 +341,11 @@ export default [
     },
     {
       settings: {
-        ignoreCase: false,
-        partitionByComment: true,
+        perfectionist: {
+          ignoreCase: false,
+          partitionByComment: true,
+          type: 'natural',
+        },
       },
     },
   ),

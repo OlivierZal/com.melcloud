@@ -121,16 +121,6 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     await this.setCapabilityValue('operation_mode_state.hot_water', value)
   }
 
-  async #setOperationModeStates(): Promise<void> {
-    const operationModeState = this.getCapabilityValue('operation_mode_state')
-    await this.#setOperationModeStateHotWater(operationModeState)
-    await Promise.all(
-      (['zone1', 'zone2'] as Zone[]).map(async (zone) => {
-        await this.#setOperationModeStateZone(zone, operationModeState)
-      }),
-    )
-  }
-
   async #setOperationModeStateZone(
     zone: Zone,
     operationModeState: keyof typeof OperationModeState,
@@ -155,5 +145,15 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       }
       await this.setCapabilityValue(`operation_mode_state.${zone}`, value)
     }
+  }
+
+  async #setOperationModeStates(): Promise<void> {
+    const operationModeState = this.getCapabilityValue('operation_mode_state')
+    await this.#setOperationModeStateHotWater(operationModeState)
+    await Promise.all(
+      (['zone1', 'zone2'] as Zone[]).map(async (zone) => {
+        await this.#setOperationModeStateZone(zone, operationModeState)
+      }),
+    )
   }
 }
