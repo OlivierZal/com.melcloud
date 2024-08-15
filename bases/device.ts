@@ -94,48 +94,11 @@ export default abstract class<
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
-  private get device(): DeviceFacade[T] | undefined {
-    if (!this.#device) {
-      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
-        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
-          | DeviceModel<T>
-          | undefined,
-      )
-      if (this.#device) {
-        this.#init().catch((error: unknown) => {
-          this.setWarningSync(error)
-        })
-      } else {
-        this.setWarningSync(this.homey.__('warnings.device.not_found'))
-      }
-    }
-    return this.#device
-  }
-
-  public override async addCapability(capability: string): Promise<void> {
-    this.log('Adding capability', capability)
-    if (!this.hasCapability(capability)) {
-      await super.addCapability(capability)
-      this.log('Capability', capability, 'added')
-    }
-  }
-
-  public override getCapabilityOptions<
-    K extends Extract<keyof CapabilitiesOptions[T], string>,
-  >(capability: K): CapabilitiesOptions[T][K] {
-    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
-  }
-
-  public override getCapabilityValue<K extends keyof Capabilities[T]>(
-    capability: string & K,
-  ): Capabilities[T][K] {
-    return super.getCapabilityValue(capability) as Capabilities[T][K]
-  }
-
-  public override getSetting<K extends Extract<keyof Settings, string>>(
-    setting: K,
-  ): NonNullable<Settings[K]> {
-    return super.getSetting(setting) as NonNullable<Settings[K]>
+  protected onCapability<K extends keyof SetCapabilities[T]>(
+    capability: K,
+    value: SetCapabilities[T][K],
+  ): void {
+    this.diff.set(capability, value)
   }
 
   public override onDeleted(): void {
@@ -211,6 +174,50 @@ export default abstract class<
     return Promise.resolve()
   }
 
+  private get device(): DeviceFacade[T] | undefined {
+    if (!this.#device) {
+      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
+        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
+          | DeviceModel<T>
+          | undefined,
+      )
+      if (this.#device) {
+        this.#init().catch((error: unknown) => {
+          this.setWarningSync(error)
+        })
+      } else {
+        this.setWarningSync(this.homey.__('warnings.device.not_found'))
+      }
+    }
+    return this.#device
+  }
+
+  public override async addCapability(capability: string): Promise<void> {
+    this.log('Adding capability', capability)
+    if (!this.hasCapability(capability)) {
+      await super.addCapability(capability)
+      this.log('Capability', capability, 'added')
+    }
+  }
+
+  public override getCapabilityOptions<
+    K extends Extract<keyof CapabilitiesOptions[T], string>,
+  >(capability: K): CapabilitiesOptions[T][K] {
+    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
+  }
+
+  public override getCapabilityValue<K extends keyof Capabilities[T]>(
+    capability: string & K,
+  ): Capabilities[T][K] {
+    return super.getCapabilityValue(capability) as Capabilities[T][K]
+  }
+
+  public override getSetting<K extends Extract<keyof Settings, string>>(
+    setting: K,
+  ): NonNullable<Settings[K]> {
+    return super.getSetting(setting) as NonNullable<Settings[K]>
+  }
+
   public override async removeCapability(capability: string): Promise<void> {
     this.log('Removing capability', capability)
     if (this.hasCapability(capability)) {
@@ -270,13 +277,6 @@ export default abstract class<
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.#syncToDeviceTimeout = null
     this.log('Sync to device has been paused')
-  }
-
-  protected onCapability<K extends keyof SetCapabilities[T]>(
-    capability: K,
-    value: SetCapabilities[T][K],
-  ): void {
-    this.diff.set(capability, value)
   }
 
   protected registerCapabilityListeners(): void {

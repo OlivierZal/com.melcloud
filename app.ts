@@ -15,25 +15,6 @@ export = class MELCloudApp extends withTimers(App) {
 
   #facadeManager!: FacadeManager
 
-  public get api(): MELCloudAPI {
-    return this.#api
-  }
-
-  public get facadeManager(): FacadeManager {
-    return this.#facadeManager
-  }
-
-  public getDevices({
-    driverId,
-  }: { driverId?: string } = {}): MELCloudDevice[] {
-    return (
-      driverId === undefined ?
-        Object.values(this.homey.drivers.getDrivers())
-      : [this.homey.drivers.getDriver(driverId)]).flatMap(
-      (driver) => driver.getDevices() as MELCloudDevice[],
-    )
-  }
-
   public override async onInit(): Promise<void> {
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
     this.#api = await MELCloudAPI.create({
@@ -56,6 +37,25 @@ export = class MELCloudApp extends withTimers(App) {
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
     return Promise.resolve()
+  }
+
+  public get api(): MELCloudAPI {
+    return this.#api
+  }
+
+  public get facadeManager(): FacadeManager {
+    return this.#facadeManager
+  }
+
+  public getDevices({
+    driverId,
+  }: { driverId?: string } = {}): MELCloudDevice[] {
+    return (
+      driverId === undefined ?
+        Object.values(this.homey.drivers.getDrivers())
+      : [this.homey.drivers.getDriver(driverId)]).flatMap(
+      (driver) => driver.getDevices() as MELCloudDevice[],
+    )
   }
 
   async #syncFromDevices(): Promise<void> {
