@@ -128,16 +128,16 @@ export interface Manifest {
 }
 
 export interface DriverSetting {
-  placeholder?: string
   readonly groupId?: string
   readonly groupLabel?: string
   readonly max?: number
   readonly min?: number
+  placeholder?: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
-  title: string
   readonly driverId: string
   readonly id: string
+  title: string
   readonly type: string
 }
 

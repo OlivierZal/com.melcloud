@@ -5,25 +5,29 @@ import packageJson from 'eslint-plugin-package-json/configs/recommended'
 import perfectionist from 'eslint-plugin-perfectionist'
 import tsEslint from 'typescript-eslint'
 
-const sortTypeOptions = {
+const groups = {
   groups: [
-    'conditional',
-    'function',
-    'import',
-    'intersection',
     'keyword',
     'literal',
     'named',
+    'function',
     'object',
-    'operator',
     'tuple',
     'union',
+    'intersection',
+    'operator',
+    'conditional',
+    'import',
     'nullish',
     'unknown',
   ],
 }
 
-const sortNamedExportImportOptions = {
+const optionalFirst = {
+  groupKind: 'optional-first',
+}
+
+const typesFirst = {
   groupKind: 'types-first',
 }
 
@@ -288,26 +292,17 @@ export default [
         'perfectionist/sort-enums': 'error',
         'perfectionist/sort-exports': 'error',
         'perfectionist/sort-imports': 'error',
-        'perfectionist/sort-intersection-types': ['error', sortTypeOptions],
+        'perfectionist/sort-interfaces': ['error', optionalFirst],
+        'perfectionist/sort-intersection-types': ['error', groups],
         'perfectionist/sort-maps': 'error',
-        'perfectionist/sort-named-exports': [
-          'error',
-          sortNamedExportImportOptions,
-        ],
-        'perfectionist/sort-named-imports': [
-          'error',
-          sortNamedExportImportOptions,
-        ],
+        'perfectionist/sort-named-exports': ['error', typesFirst],
+        'perfectionist/sort-named-imports': ['error', typesFirst],
+        'perfectionist/sort-object-types': ['error', optionalFirst],
+        'perfectionist/sort-objects': 'error',
         'perfectionist/sort-switch-case': 'error',
-        'perfectionist/sort-union-types': ['error', sortTypeOptions],
+        'perfectionist/sort-union-types': ['error', groups],
         'sort-imports': 'off',
-        'sort-keys': [
-          'error',
-          'asc',
-          {
-            natural: true,
-          },
-        ],
+        'sort-keys': 'off',
       },
     },
     {
