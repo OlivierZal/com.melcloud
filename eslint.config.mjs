@@ -234,7 +234,7 @@ export default [
               'private-constructor',
               'constructor',
               // Event handlers
-              'onInit',
+              'eventHandler',
               // Accessors
               'decorated-static-public-accessor-property',
               'decorated-static-protected-accessor-property',
