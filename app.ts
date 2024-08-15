@@ -34,11 +34,6 @@ export = class MELCloudApp extends withTimers(App) {
     this.#facadeManager = new FacadeManager(this.#api)
   }
 
-  public override async onUninit(): Promise<void> {
-    this.#api.clearSync()
-    return Promise.resolve()
-  }
-
   public get api(): MELCloudAPI {
     return this.#api
   }
@@ -56,6 +51,11 @@ export = class MELCloudApp extends withTimers(App) {
       : [this.homey.drivers.getDriver(driverId)]).flatMap(
       (driver) => driver.getDevices() as MELCloudDevice[],
     )
+  }
+
+  public override async onUninit(): Promise<void> {
+    this.#api.clearSync()
+    return Promise.resolve()
   }
 
   async #syncFromDevices(): Promise<void> {

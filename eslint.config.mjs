@@ -181,7 +181,7 @@ export default [
           'error',
           {
             customGroups: {
-              eventHandler: 'on*',
+              onInit: 'onInit',
             },
             groups: [
               // Signatures
@@ -234,8 +234,8 @@ export default [
               'protected-constructor',
               'private-constructor',
               'constructor',
-              // Event handlers
-              'eventHandler',
+              // Iniliazers
+              'onInit',
               // Accessors
               'decorated-static-public-accessor-property',
               'decorated-static-protected-accessor-property',
@@ -252,7 +252,7 @@ export default [
               'public-accessor-property',
               'protected-accessor-property',
               'private-accessor-property',
-              'accessor',
+              'accessor-property',
               'abstract-public-accessor-property',
               'abstract-protected-accessor-property',
               'abstract-accessor-property',
@@ -284,7 +284,7 @@ export default [
               ['public-get-method', 'public-set-method'],
               ['protected-get-method', 'protected-set-method'],
               ['private-get-method', 'private-set-method'],
-              ['get', 'set'],
+              ['get-method', 'set-method'],
               ['abstract-public-get-method', 'abstract-public-set-method'],
               [
                 'abstract-protected-get-method',
