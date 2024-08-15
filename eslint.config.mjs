@@ -176,6 +176,7 @@ export default [
           },
         ],
         'one-var': ['error', 'never'],
+        'perfectionist/sort-array-includes': 'error',
         'perfectionist/sort-classes': [
           'error',
           {
@@ -313,8 +314,11 @@ export default [
             ],
           },
         ],
-        'perfectionist/sort-interfaces': 'off',
+        'perfectionist/sort-enums': 'error',
+        'perfectionist/sort-exports': 'error',
+        'perfectionist/sort-imports': 'error',
         'perfectionist/sort-intersection-types': ['error', sortTypeOptions],
+        'perfectionist/sort-maps': 'error',
         'perfectionist/sort-named-exports': [
           'error',
           sortNamedExportImportOptions,
@@ -323,7 +327,7 @@ export default [
           'error',
           sortNamedExportImportOptions,
         ],
-        'perfectionist/sort-object-types': 'off',
+        'perfectionist/sort-switch-case': 'error',
         'perfectionist/sort-union-types': ['error', sortTypeOptions],
         'sort-imports': 'off',
         'sort-keys': [
