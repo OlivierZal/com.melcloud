@@ -64,7 +64,7 @@ export default [
         '@stylistic/line-comment-position': 'error',
         '@stylistic/lines-around-comment': 'error',
         '@stylistic/lines-between-class-members': ['error', 'always'],
-        '@stylistic/padding-line-between-statements': 'error',
+        '@stylistic/multiline-comment-style': 'error',
         '@stylistic/quotes': [
           'error',
           'single',
