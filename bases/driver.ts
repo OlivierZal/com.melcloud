@@ -10,19 +10,21 @@ import {
 import { Driver } from 'homey'
 
 import type MELCloudApp from '..'
-import type {
-  Capabilities,
-  CapabilitiesOptions,
-  DeviceDetails,
-  EnergyCapabilityTagMapping,
-  FlowArgs,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  ManifestDriver,
-  SetCapabilities,
-  SetCapabilityTagMapping,
-} from '../types'
 import type BaseMELCloudDevice from './device'
+
+import {
+  type Capabilities,
+  type CapabilitiesOptions,
+  type DeviceDetails,
+  type EnergyCapabilityTagMapping,
+  type FlowArgs,
+  type GetCapabilityTagMapping,
+  type ListCapabilityTagMapping,
+  type ManifestDriver,
+  type SetCapabilities,
+  type SetCapabilityTagMapping,
+  getCapabilitiesOptions,
+} from '../types'
 
 const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof Capabilities[T], string>,
@@ -30,19 +32,6 @@ const getArg = <T extends keyof typeof DeviceType>(
   const [arg] = capability.split('.')
   return arg.replace(/_with_cool$/u, '') as keyof FlowArgs[T]
 }
-
-const getCapabilitiesOptions = <T extends keyof typeof DeviceType>(
-  device: ListDevice[T]['Device'],
-): CapabilitiesOptions[T] =>
-  ('NumberOfFanSpeeds' in device ?
-    {
-      fan_power: {
-        max: device.NumberOfFanSpeeds,
-        min: Number(!device.HasAutomaticFanSpeed),
-        step: 1,
-      },
-    }
-  : {}) as CapabilitiesOptions[T]
 
 export default abstract class<
   T extends keyof typeof DeviceType,
@@ -65,7 +54,7 @@ export default abstract class<
 
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
 
-  protected abstract readonly type: T
+  public abstract readonly type: T
 
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
@@ -101,7 +90,11 @@ export default abstract class<
     return Promise.resolve(
       DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
         capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: getCapabilitiesOptions(data),
+        capabilitiesOptions: (
+          getCapabilitiesOptions[this.type] as (
+            data: ListDevice[T]['Device'],
+          ) => Partial<CapabilitiesOptions[T]>
+        )(data),
         data: { id },
         name,
       })),

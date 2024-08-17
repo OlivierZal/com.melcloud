@@ -33,6 +33,7 @@ import {
   type SetCapabilityTagMapping,
   type Settings,
   K_MULTIPLIER,
+  getCapabilitiesOptions,
 } from '../types'
 
 const NUMBER_0 = 0
@@ -250,7 +251,7 @@ export default abstract class<
 
   public async syncFromDevice(): Promise<void> {
     if (!this.#syncToDeviceTimeout) {
-      await this.setCapabilities()
+      await this.setCapabilityValues()
     }
   }
 
@@ -258,7 +259,7 @@ export default abstract class<
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
         await this.#set()
-        await this.setCapabilities()
+        await this.setCapabilityValues()
         this.#syncToDeviceTimeout = null
       },
       { seconds: 1 },
@@ -272,27 +273,7 @@ export default abstract class<
     this.log('Sync to device has been paused')
   }
 
-  protected onCapability<K extends keyof SetCapabilities[T]>(
-    capability: K,
-    value: SetCapabilities[T][K],
-  ): void {
-    this.diff.set(capability, value)
-  }
-
-  protected registerCapabilityListeners(): void {
-    Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
-      this.registerCapabilityListener(
-        capability,
-        (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
-          this.clearSyncToDevice()
-          this.onCapability(capability as keyof SetCapabilities[T], value)
-          this.applySyncToDevice()
-        },
-      )
-    })
-  }
-
-  protected async setCapabilities(): Promise<void> {
+  protected async setCapabilityValues(): Promise<void> {
     if (this.device) {
       const { data } = this.device
       await Promise.all(
@@ -311,6 +292,7 @@ export default abstract class<
                 (data as ListDevice[T]['Device'])[
                   tag as keyof ListDevice[T]['Device']
                 ],
+                data as ListDevice[T]['Device'],
               ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
             )
           }
@@ -405,8 +387,9 @@ export default abstract class<
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
+    data?: ListDevice[T]['Device'],
   ): OpCapabilities[T][K] {
-    return (this.fromDevice[capability]?.(value) ??
+    return (this.fromDevice[capability]?.(value, data) ??
       value) as OpCapabilities[T][K]
   }
 
@@ -463,34 +446,11 @@ export default abstract class<
 
   async #init(): Promise<void> {
     if (this.device) {
-      const settings = this.getSettings() as Settings
-      const capabilities = [
-        ...(
-          this.driver.getRequiredCapabilities as (
-            data: ListDevice[T]['Device'],
-          ) => string[]
-        )(this.device.data),
-        ...Object.keys(settings).filter(
-          (setting) =>
-            this.#isCapability(setting) &&
-            typeof settings[setting] === 'boolean' &&
-            settings[setting],
-        ),
-      ]
-      await capabilities.reduce(async (acc, capability) => {
-        await acc
-        return this.addCapability(capability)
-      }, Promise.resolve())
-      await this.getCapabilities()
-        .filter((capability) => !capabilities.includes(capability))
-        .reduce(async (acc, capability) => {
-          await acc
-          await this.removeCapability(capability)
-        }, Promise.resolve())
+      await this.#setCapabilities(this.device.data)
+      await this.#setCapabilityOptions(this.device.data)
       this.#setCapabilityTagMappings()
       this.#setEnergyCapabilityTagEntries()
-
-      this.registerCapabilityListeners()
+      this.#registerCapabilityListeners()
       await this.syncFromDevice()
       await this.#runEnergyReports()
     }
@@ -502,6 +462,13 @@ export default abstract class<
 
   #isEnergyCapability(setting: string): boolean {
     return setting in this.driver.energyCapabilityTagMapping
+  }
+
+  #onCapability<K extends keyof SetCapabilities[T]>(
+    capability: K,
+    value: SetCapabilities[T][K],
+  ): void {
+    this.diff.set(capability, value)
   }
 
   #planEnergyReport(total = false): void {
@@ -533,6 +500,36 @@ export default abstract class<
         )
       }
     }
+  }
+
+  #registerCapabilityListeners(): void {
+    Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
+      if (this.driver.type !== 'Atw' && capability === 'thermostat_mode') {
+        this.registerCapabilityListener(
+          capability,
+          (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
+            this.clearSyncToDevice()
+            this.diff.set(
+              'onoff',
+              (value !== 'off') as SetCapabilities[T][keyof SetCapabilities[T]],
+            )
+            if (value !== 'off') {
+              this.diff.set(capability as keyof SetCapabilities[T], value)
+            }
+            this.applySyncToDevice()
+          },
+        )
+        return
+      }
+      this.registerCapabilityListener(
+        capability,
+        (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
+          this.clearSyncToDevice()
+          this.#onCapability(capability as keyof SetCapabilities[T], value)
+          this.applySyncToDevice()
+        },
+      )
+    })
   }
 
   async #runEnergyReport(total = false): Promise<void> {
@@ -567,6 +564,54 @@ export default abstract class<
         }
       }
     }
+  }
+
+  async #setCapabilities(data: ListDevice[T]['Device']): Promise<void> {
+    const settings = this.getSettings() as Settings
+    const capabilities = [
+      ...(
+        this.driver.getRequiredCapabilities as (
+          data: ListDevice[T]['Device'],
+        ) => string[]
+      )(data),
+      ...Object.keys(settings).filter(
+        (setting) =>
+          this.#isCapability(setting) &&
+          typeof settings[setting] === 'boolean' &&
+          settings[setting],
+      ),
+    ]
+    await capabilities.reduce(async (acc, capability) => {
+      await acc
+      return this.addCapability(capability)
+    }, Promise.resolve())
+    await this.getCapabilities()
+      .filter((capability) => !capabilities.includes(capability))
+      .reduce(async (acc, capability) => {
+        await acc
+        await this.removeCapability(capability)
+      }, Promise.resolve())
+  }
+
+  async #setCapabilityOptions(data: ListDevice[T]['Device']): Promise<void> {
+    await Promise.all(
+      Object.entries(
+        (
+          getCapabilitiesOptions[this.driver.type as T] as (
+            data: ListDevice[T]['Device'],
+          ) => Partial<CapabilitiesOptions[T]>
+        )(data),
+      ).map(async ([capability, options]) => {
+        await this.setCapabilityOptions(
+          capability as Extract<keyof CapabilitiesOptions[T], string>,
+          options as object &
+            CapabilitiesOptions[T][Extract<
+              keyof CapabilitiesOptions[T],
+              string
+            >],
+        )
+      }),
+    )
   }
 
   #setCapabilityTagMappings(): void {

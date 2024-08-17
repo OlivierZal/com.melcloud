@@ -4,30 +4,89 @@ import type {
   GetDeviceDataAta,
   Horizontal,
   ListDeviceAta,
-  OperationMode,
+  ListDeviceDataAta,
   UpdateDeviceDataAta,
   Vertical,
 } from '@olivierzal/melcloud-api'
 
 import type AtaDevice from '../drivers/melcloud/device'
-import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
+
+import {
+  type BaseGetCapabilities,
+  type BaseListCapabilities,
+  type BaseSetCapabilities,
+  type RangeOptions,
+  AUTO,
+  OFF,
 } from './bases'
 
-export enum ThermostatMode {
+export enum ThermostatModeAta {
   auto = 'auto',
   cool = 'cool',
+  dry = 'dry',
+  fan = 'fan',
   heat = 'heat',
   off = 'off',
 }
 
+const THERMOSTAT_MODE_VALUES_ATA = [
+  AUTO,
+  {
+    id: 'cool',
+    title: {
+      da: 'Køl ned',
+      en: 'Cool',
+      es: 'Enfriar',
+      fr: 'Refroidir',
+      nl: 'Koelen',
+      no: 'Avkjøle',
+      sv: 'Kyla',
+    },
+  },
+  {
+    id: 'dry',
+    title: {
+      da: 'Affugte',
+      en: 'Dry',
+      es: 'Deshumidificar',
+      fr: 'Déshumidifier',
+      nl: 'Ontvochtigen',
+      no: 'Avfukte',
+      sv: 'Avfukta',
+    },
+  },
+  {
+    id: 'fan',
+    title: {
+      da: 'Blæse',
+      en: 'Fan',
+      es: 'Ventilar',
+      fr: 'Ventiler',
+      nl: 'Ventileren',
+      no: 'Vifte',
+      sv: 'Fläkta',
+    },
+  },
+  {
+    id: 'heat',
+    title: {
+      da: 'Opvarm',
+      en: 'Heat',
+      es: 'Calentar',
+      fr: 'Chauffer',
+      nl: 'Verhitten',
+      no: 'Varme',
+      sv: 'Värme',
+    },
+  },
+  OFF,
+] as const
+
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
   readonly horizontal: keyof typeof Horizontal
-  readonly operation_mode: keyof typeof OperationMode
   readonly target_temperature: number
+  readonly thermostat_mode: keyof typeof ThermostatModeAta
   readonly vertical: keyof typeof Vertical
 }
 
@@ -45,9 +104,10 @@ export interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly vertical: keyof typeof Vertical
 }
 
-export type OpCapabilitiesAta = GetCapabilitiesAta &
-  ListCapabilitiesAta &
-  SetCapabilitiesAta
+export interface OpCapabilitiesAta
+  extends SetCapabilitiesAta,
+    GetCapabilitiesAta,
+    ListCapabilitiesAta {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number
@@ -74,10 +134,8 @@ export interface EnergyCapabilitiesAta {
 }
 
 export interface CapabilitiesAta
-  extends EnergyCapabilitiesAta,
-    OpCapabilitiesAta {
-  readonly thermostat_mode: ThermostatMode
-}
+  extends OpCapabilitiesAta,
+    EnergyCapabilitiesAta {}
 
 export const SET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof SetCapabilitiesAta,
@@ -86,10 +144,10 @@ export const SET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   fan_power: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
   onoff: 'Power',
-  operation_mode: 'OperationMode',
   target_temperature: 'SetTemperature',
+  thermostat_mode: 'OperationMode',
   vertical: 'VaneVertical',
-} as const
+}
 
 export const GET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof GetCapabilitiesAta,
@@ -97,7 +155,7 @@ export const GET_CAPABILITY_TAGS_MAPPING_ATA: Record<
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
-} as const
+}
 
 export const LIST_CAPABILITY_TAGS_MAPPING_ATA: Record<
   keyof ListCapabilitiesAta,
@@ -110,7 +168,7 @@ export const LIST_CAPABILITY_TAGS_MAPPING_ATA: Record<
   'measure_power.wifi': 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   vertical: 'VaneVerticalDirection',
-} as const
+}
 
 export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
   keyof EnergyCapabilitiesAta,
@@ -151,8 +209,30 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
   'meter_power.fan': ['TotalFanConsumed'],
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
-} as const
+}
 
 export interface FlowArgsAta extends SetCapabilitiesAta {
   readonly device: AtaDevice
 }
+
+export interface CapabilitiesOptionsAta {
+  readonly fan_power: RangeOptions
+  readonly thermostat_mode: {
+    readonly values: readonly {
+      readonly id: keyof typeof ThermostatModeAta
+      readonly title: Record<string, string>
+    }[]
+  }
+}
+
+export const getCapabilitiesOptionsAta = ({
+  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
+  NumberOfFanSpeeds: numberOfFanSpeeds,
+}: ListDeviceDataAta): Partial<CapabilitiesOptionsAta> => ({
+  fan_power: {
+    max: numberOfFanSpeeds,
+    min: Number(!hasAutomaticFanSpeed),
+    step: 1,
+  },
+  thermostat_mode: { values: THERMOSTAT_MODE_VALUES_ATA },
+})

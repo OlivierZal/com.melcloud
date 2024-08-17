@@ -2,6 +2,7 @@ import type {
   EnergyDataAtw,
   GetDeviceDataAtw,
   ListDeviceAtw,
+  ListDeviceDataAtw,
   OperationModeState,
   OperationModeZone,
   UpdateDeviceDataAtw,
@@ -12,7 +13,71 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
+  RangeOptions,
 } from './bases'
+
+const THERMOSTAT_MODE_VALUES_ATW = [
+  {
+    id: 'room',
+    title: {
+      da: 'Indendørs føler',
+      en: 'Indoor temperature',
+      es: 'Temperatura interior',
+      fr: 'Température intérieure',
+      nl: 'Binnentemperatuur',
+      no: 'Innendørs føler',
+      sv: 'Inomhusgivare',
+    },
+  },
+  {
+    id: 'flow',
+    title: {
+      da: 'Fast fremledningstemperatur',
+      en: 'Fixed flow temperature',
+      es: 'Temperatura de flujo fija',
+      fr: 'Température de flux fixe',
+      nl: 'Vaste aanvoertemperatuur',
+      no: 'Fast fremløpstemperatur',
+      sv: 'Fast framledningstemperatur',
+    },
+  },
+  {
+    id: 'curve',
+    title: {
+      da: 'Varmekurve',
+      en: 'Weather compensation curve',
+      es: 'Curva de compensación climática',
+      fr: 'Courbe de compensation météo',
+      nl: 'Weerscompensatiecurve',
+      no: 'Varmekurve',
+      sv: 'Värmekurva',
+    },
+  },
+  {
+    id: 'room_cool',
+    title: {
+      da: 'Indendørs føler - køling',
+      en: 'Indoor temperature - cooling',
+      es: 'Temperatura interior - enfriamiento',
+      fr: 'Température intérieure - refroidissement',
+      nl: 'Binnentemperatuur - koeling',
+      no: 'Innendørs føler - kjøling',
+      sv: 'Inomhusgivare - kylning',
+    },
+  },
+  {
+    id: 'flow_cool',
+    title: {
+      da: 'Fast fremledningstemperatur - køling',
+      en: 'Fixed flow temperature - cooling',
+      es: 'Temperatura de flujo fija - enfriamiento',
+      fr: 'Température du flux fixe - refroidissement',
+      nl: 'Vaste aanvoertemperatuur - koeling',
+      no: 'Fast fremløpstemperatur - kjøling',
+      sv: 'Fast framledningstemperatur - kylning',
+    },
+  },
+] as const
 
 export enum OperationModeStateHotWaterCapability {
   dhw = 'dhw',
@@ -31,13 +96,6 @@ export enum OperationModeStateZoneCapability {
 
 export type Zone = 'zone1' | 'zone2'
 
-export interface OperationModeZoneCapabilities {
-  readonly operation_mode_zone: keyof typeof OperationModeZone
-  readonly 'operation_mode_zone.zone2': keyof typeof OperationModeZone
-  readonly operation_mode_zone_with_cool: keyof typeof OperationModeZone
-  readonly 'operation_mode_zone_with_cool.zone2': keyof typeof OperationModeZone
-}
-
 export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_cool': number
   readonly 'target_temperature.flow_cool_zone2': number
@@ -47,12 +105,13 @@ export interface TargetTemperatureFlowCapabilities {
 
 export interface SetCapabilitiesAtw
   extends BaseSetCapabilities,
-    OperationModeZoneCapabilities,
     TargetTemperatureFlowCapabilities {
   readonly 'onoff.forced_hot_water': boolean
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
+  readonly thermostat_mode: keyof typeof OperationModeZone
+  readonly 'thermostat_mode.zone2': keyof typeof OperationModeZone
 }
 
 export interface GetCapabilitiesAtw extends BaseGetCapabilities {
@@ -96,9 +155,10 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'measure_temperature.target_curve_zone2': number
 }
 
-export type OpCapabilitiesAtw = GetCapabilitiesAtw &
-  ListCapabilitiesAtw &
-  SetCapabilitiesAtw
+export interface OpCapabilitiesAtw
+  extends SetCapabilitiesAtw,
+    GetCapabilitiesAtw,
+    ListCapabilitiesAtw {}
 
 export interface EnergyCapabilitiesAtw {
   readonly meter_power: number
@@ -128,8 +188,8 @@ export interface EnergyCapabilitiesAtw {
 }
 
 export interface CapabilitiesAtw
-  extends EnergyCapabilitiesAtw,
-    OpCapabilitiesAtw {
+  extends OpCapabilitiesAtw,
+    EnergyCapabilitiesAtw {
   readonly 'operation_mode_state.hot_water': OperationModeStateHotWaterCapability
   readonly 'operation_mode_state.zone1': OperationModeStateZoneCapability
   readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
@@ -141,10 +201,6 @@ export const SET_CAPABILITY_TAGS_MAPPING_ATW: Record<
 > = {
   onoff: 'Power',
   'onoff.forced_hot_water': 'ForcedHotWaterMode',
-  operation_mode_zone: 'OperationModeZone1',
-  'operation_mode_zone.zone2': 'OperationModeZone2',
-  operation_mode_zone_with_cool: 'OperationModeZone1',
-  'operation_mode_zone_with_cool.zone2': 'OperationModeZone2',
   target_temperature: 'SetTemperatureZone1',
   'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
   'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
@@ -152,7 +208,9 @@ export const SET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
   'target_temperature.tank_water': 'SetTankWaterTemperature',
   'target_temperature.zone2': 'SetTemperatureZone2',
-} as const
+  thermostat_mode: 'OperationModeZone1',
+  'thermostat_mode.zone2': 'OperationModeZone2',
+}
 
 export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof GetCapabilitiesAtw,
@@ -170,7 +228,7 @@ export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
   operation_mode_state: 'OperationMode',
-} as const
+}
 
 export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof ListCapabilitiesAtw,
@@ -201,7 +259,7 @@ export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
   'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
-} as const
+}
 
 export const ENERGY_CAPABILITY_TAG_MAPPING_ATW: Record<
   keyof EnergyCapabilitiesAtw,
@@ -266,7 +324,7 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATW: Record<
   'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
-} as const
+}
 
 export interface FlowArgsAtw {
   readonly device: AtwDevice
@@ -274,4 +332,53 @@ export interface FlowArgsAtw {
   readonly operation_mode_state: keyof typeof OperationModeState
   readonly operation_mode_zone: keyof typeof OperationModeZone
   readonly target_temperature: number
+}
+
+export interface CapabilitiesOptionsAtw {
+  readonly 'target_temperature.flow_cool': RangeOptions
+  readonly 'target_temperature.flow_cool_zone2': RangeOptions
+  readonly 'target_temperature.flow_heat': RangeOptions
+  readonly 'target_temperature.flow_heat_zone2': RangeOptions
+  readonly thermostat_mode: {
+    readonly values: readonly {
+      readonly id: keyof typeof OperationModeZone
+      readonly title: Record<string, string>
+    }[]
+  }
+  readonly 'thermostat_mode.zone2': {
+    readonly title: Record<string, string>
+    readonly values: readonly {
+      readonly id: keyof typeof OperationModeZone
+      readonly title: Record<string, string>
+    }[]
+  }
+}
+
+export const getCapabilitiesOptionsAtw = ({
+  CanCool: canCool,
+  HasZone2: hasZone2,
+}: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
+  const thermostatModeValues =
+    canCool ?
+      THERMOSTAT_MODE_VALUES_ATW
+    : THERMOSTAT_MODE_VALUES_ATW.filter(({ id }) => !id.endsWith('cool'))
+  return {
+    thermostat_mode: { values: thermostatModeValues },
+    ...(hasZone2 ?
+      {
+        'thermostat_mode.zone2': {
+          title: {
+            da: 'Tilstand for termostat - zone 2',
+            en: 'Mode of the thermostat - zone 2',
+            es: 'Modo del termostato - zona 2',
+            fr: 'Mode du thermostat - zone 2',
+            nl: 'Modus van de thermostaat - zone 2',
+            no: 'Modus for termostaten - sone 2',
+            sv: 'Läge för termostaten - zon 2',
+          },
+          values: thermostatModeValues,
+        },
+      }
+    : {}),
+  }
 }

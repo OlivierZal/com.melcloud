@@ -17,7 +17,7 @@ export = class extends BaseMELCloudDriver<'Erv'> {
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ERV
 
-  protected readonly type = 'Erv'
+  public readonly type = 'Erv'
 
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,

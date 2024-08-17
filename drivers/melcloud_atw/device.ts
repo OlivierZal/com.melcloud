@@ -39,10 +39,6 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     'measure_power.produced': convertFromDeviceMeasurePower,
     operation_mode_state: ((value: OperationModeState) =>
       OperationModeState[value]) as ConvertFromDevice<'Atw'>,
-    operation_mode_zone: convertFromDeviceOperationZone,
-    'operation_mode_zone.zone2': convertFromDeviceOperationZone,
-    operation_mode_zone_with_cool: convertFromDeviceOperationZone,
-    'operation_mode_zone_with_cool.zone2': convertFromDeviceOperationZone,
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool',
@@ -59,6 +55,8 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_heat_zone2',
       ),
+    thermostat_mode: convertFromDeviceOperationZone,
+    'thermostat_mode.zone2': convertFromDeviceOperationZone,
   }
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
@@ -71,30 +69,14 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
   > = {
-    operation_mode_zone: ((value: keyof typeof OperationModeZone) =>
+    thermostat_mode: ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    'operation_mode_zone.zone2': ((value: keyof typeof OperationModeZone) =>
+    'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    operation_mode_zone_with_cool: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-    'operation_mode_zone_with_cool.zone2': ((
-      value: keyof typeof OperationModeZone,
-    ) => OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected override onCapability(
-    capability: keyof SetCapabilitiesAtw,
-    value: SetCapabilitiesAtw[keyof SetCapabilitiesAtw],
-  ): void {
-    if (capability.startsWith('operation_mode_zone')) {
-      this.diff.set(capability, value)
-      return
-    }
-    super.onCapability(capability, value)
-  }
-
-  protected override async setCapabilities(): Promise<void> {
-    await super.setCapabilities()
+  protected override async setCapabilityValues(): Promise<void> {
+    await super.setCapabilityValues()
     await this.#setOperationModeStates()
   }
 
@@ -151,7 +133,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     const operationModeState = this.getCapabilityValue('operation_mode_state')
     await this.#setOperationModeStateHotWater(operationModeState)
     await Promise.all(
-      (['zone1', 'zone2'] as Zone[]).map(async (zone) => {
+      (['zone1', 'zone2'] as const).map(async (zone) => {
         await this.#setOperationModeStateZone(zone, operationModeState)
       }),
     )

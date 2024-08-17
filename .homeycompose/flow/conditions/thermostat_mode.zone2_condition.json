@@ -1,30 +1,30 @@
 {
   "title": {
-    "en": "Set the operation mode in zone 2",
-    "fr": "Définir le mode opérationnel dans la zone 2",
-    "nl": "Stel de bedrijfsmodus in in zone 2",
-    "sv": "Ställ in driftläget i zon 2",
-    "no": "Innstill driftsmodusen i sone 2",
-    "da": "Indstil driftstilstanden i zone 2",
-    "es": "Configurar el modo de operación en zona 2"
+    "en": "Thermostat mode !{{is|is not}} in zone 2",
+    "fr": "Mode thermostat !{{est|n'est pas}} dans la zone 2",
+    "nl": "Thermostaat modus !{{is|is niet}} in zone 2",
+    "sv": "Termostatläge !{{är|är inte}} i zon 2",
+    "no": "Termostatmodus !{{er|er ikke}} i sone 2",
+    "da": "Termostattilstand !{{er|er ikke}} i zone 2",
+    "es": "El modo del termostato !{{está|no está}} en zona 2"
   },
   "titleFormatted": {
-    "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
-    "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
-    "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
-    "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
-    "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
-    "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
-    "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
+    "en": "Thermostat mode !{{is|is not}} [[thermostat_mode]] in zone 2",
+    "fr": "Mode thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
+    "nl": "Thermostaat modus !{{is|is niet}} [[thermostat_mode]] in zone 2",
+    "sv": "Termostatläge !{{är|är inte}} [[thermostat_mode]] i zon 2",
+    "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",
+    "da": "Termostattilstand !{{er|er ikke}} [[thermostat_mode]] i zone 2",
+    "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en zona 2"
   },
   "args": [
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
+      "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
     },
     {
-      "name": "operation_mode_zone",
+      "name": "thermostat_mode",
       "type": "dropdown",
       "values": [
         {
@@ -89,5 +89,14 @@
         }
       ]
     }
-  ]
+  ],
+  "hint": {
+    "en": "Some values may not be available on your device.",
+    "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.",
+    "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.",
+    "sv": "Vissa värden kanske inte är tillgängliga på din enhet.",
+    "no": "Noen verdier kan ikke være tilgjengelige på enheten din.",
+    "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
+    "es": "Algunos valores pueden no estar disponibles en su dispositivo."
+  }
 }

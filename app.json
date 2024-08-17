@@ -25,7 +25,7 @@
     "climate"
   ],
   "version": "37.2.0",
-  "compatibility": ">=12.0.0",
+  "compatibility": ">=12.0.1",
   "tags": {
     "en": [
       "air conditioner",
@@ -599,43 +599,6 @@
       },
       {
         "title": {
-          "en": "The operation mode has changed",
-          "fr": "Le mode opérationnel a été modifié",
-          "nl": "De bedrijfsmodus is veranderd",
-          "sv": "Driftläget ändrades",
-          "no": "Driftsmodusen ble endret",
-          "da": "Driftstilstanden er blevet ændret",
-          "es": "El modo de operación ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode",
-            "type": "string",
-            "title": {
-              "en": "Operation mode",
-              "fr": "Mode opérationnel",
-              "nl": "Bedrijfsmodus",
-              "sv": "Driftläge",
-              "no": "Driftsmodus",
-              "da": "Driftstilstand",
-              "es": "Modo de operación"
-            },
-            "example": {
-              "en": "auto"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          }
-        ],
-        "id": "operation_mode_changed"
-      },
-      {
-        "title": {
           "en": "The actual operation has changed",
           "fr": "L'opération actuelle a été modifiée",
           "nl": "De huidige bedrijf is veranderd",
@@ -784,26 +747,26 @@
       },
       {
         "title": {
-          "en": "The operation mode has changed",
-          "fr": "Le mode opérationnel a été modifié",
-          "nl": "De bedrijfsmodus is veranderd",
-          "sv": "Driftläget ändrades",
-          "no": "Driftsmodusen ble endret",
-          "da": "Driftstilstanden er blevet ændret",
-          "es": "El modo de operación ha cambiado"
+          "en": "Thermostat mode has changed in zone 2",
+          "fr": "Mode thermostat a été modifié dans la zone 2",
+          "nl": "Thermostaat modus is veranderd in zone 2",
+          "sv": "Termostatläge ändrades i zon 2",
+          "no": "Termostatmodus ble endret i sone 2",
+          "da": "Termostattilstand er blevet ændret i zone 2",
+          "es": "El modo del termostato ha cambiado en zona 2"
         },
         "tokens": [
           {
-            "name": "operation_mode_zone",
+            "name": "thermostat_mode.zone2",
             "type": "string",
             "title": {
-              "en": "Operation mode",
-              "fr": "Mode opérationnel",
-              "nl": "Bedrijfsmodus",
-              "sv": "Driftläge",
-              "no": "Driftsmodus",
-              "da": "Driftstilstand",
-              "es": "Modo de operación"
+              "en": "Thermostat mode in zone 2",
+              "fr": "Mode thermostat dans la zone 2",
+              "nl": "Thermostaat modus in zone 2",
+              "sv": "Termostatläge i zon 2",
+              "no": "Termostatmodus i sone 2",
+              "da": "Termostattilstand i zone 2",
+              "es": "Modo del termostato en zona 2"
             },
             "example": {
               "en": "curve"
@@ -814,158 +777,10 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone"
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
           }
         ],
-        "id": "operation_mode_zone_changed"
-      },
-      {
-        "title": {
-          "en": "The operation mode has changed",
-          "fr": "Le mode opérationnel a été modifié",
-          "nl": "De bedrijfsmodus is veranderd",
-          "sv": "Driftläget ändrades",
-          "no": "Driftsmodusen ble endret",
-          "da": "Driftstilstanden er blevet ændret",
-          "es": "El modo de operación ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode_zone_with_cool",
-            "type": "string",
-            "title": {
-              "en": "Operation mode",
-              "fr": "Mode opérationnel",
-              "nl": "Bedrijfsmodus",
-              "sv": "Driftläge",
-              "no": "Driftsmodus",
-              "da": "Driftstilstand",
-              "es": "Modo de operación"
-            },
-            "example": {
-              "en": "curve"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool"
-          }
-        ],
-        "id": "operation_mode_zone_with_cool_changed"
-      },
-      {
-        "title": {
-          "en": "The operation mode has changed in zone 2",
-          "fr": "Le mode opérationnel a été modifié dans la zone 2",
-          "nl": "De bedrijfsmodus is veranderd in zone 2",
-          "sv": "Driftläget ändrades i zon 2",
-          "no": "Driftsmodusen ble endret i sone 2",
-          "da": "Driftstilstanden er blevet ændret i zone 2",
-          "es": "El modo de operación ha cambiado en zona 2"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode_zone_with_cool.zone2",
-            "type": "string",
-            "title": {
-              "en": "Operation mode in zone 2",
-              "fr": "Mode opérationnel dans la zone 2",
-              "nl": "Bedrijfsmodus in zone 2",
-              "sv": "Driftläge i zon 2",
-              "no": "Driftsmodus i sone 2",
-              "da": "Driftstilstand i zone 2",
-              "es": "Modo de operación en zona 2"
-            },
-            "example": {
-              "en": "curve"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          }
-        ],
-        "id": "operation_mode_zone_with_cool.zone2_changed"
-      },
-      {
-        "title": {
-          "en": "The operation mode has changed in zone 2",
-          "fr": "Le mode opérationnel a été modifié dans la zone 2",
-          "nl": "De bedrijfsmodus is veranderd in zone 2",
-          "sv": "Driftläget ändrades i zon 2",
-          "no": "Driftsmodusen ble endret i sone 2",
-          "da": "Driftstilstanden er blevet ændret i zone 2",
-          "es": "El modo de operación ha cambiado en zona 2"
-        },
-        "tokens": [
-          {
-            "name": "operation_mode_zone.zone2",
-            "type": "string",
-            "title": {
-              "en": "Operation mode in zone 2",
-              "fr": "Mode opérationnel dans la zone 2",
-              "nl": "Bedrijfsmodus in zone 2",
-              "sv": "Driftläge i zon 2",
-              "no": "Driftsmodus i sone 2",
-              "da": "Driftstilstand i zone 2",
-              "es": "Modo de operación en zona 2"
-            },
-            "example": {
-              "en": "curve"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          }
-        ],
-        "id": "operation_mode_zone.zone2_changed"
-      },
-      {
-        "title": {
-          "en": "The ventilation mode has changed",
-          "fr": "Le mode de ventilation a été modifié",
-          "nl": "De ventilatiemodus is veranderd",
-          "sv": "Ventilationsläget ändrades",
-          "no": "Ventilasjonsmodusen ble endret",
-          "da": "Ventilationstilstanden er blevet ændret",
-          "es": "El modo de ventilación ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "ventilation_mode",
-            "type": "string",
-            "title": {
-              "en": "Ventilation mode",
-              "fr": "Mode de ventilation",
-              "nl": "Ventilatiemodus",
-              "sv": "Ventilationsläge",
-              "no": "Ventilasjonsmodus",
-              "da": "Ventilationstilstand",
-              "es": "Modo de ventilación"
-            },
-            "example": {
-              "en": "auto"
-            }
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_erv"
-          }
-        ],
-        "id": "ventilation_mode_changed"
+        "id": "thermostat_mode.zone2_changed"
       },
       {
         "title": {
@@ -1287,100 +1102,6 @@
           }
         ],
         "id": "onoff.forced_hot_water_condition"
-      },
-      {
-        "title": {
-          "en": "The operation mode !{{is|is not}}",
-          "fr": "Le mode opérationnel !{{est|n'est pas}}",
-          "nl": "De bedrijfsmodus !{{is|is niet}}",
-          "sv": "Driftläget !{{är|är inte}}",
-          "no": "Driftsmodusen !{{er|er ikke}}",
-          "da": "Driftstilstanden !{{er|er ikke}}",
-          "es": "El modo de operación !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode]]",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode]]",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode]]",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode]]",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode]]",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode]]",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "operation_mode",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heating",
-                  "fr": "Chauffage",
-                  "nl": "Verwarming",
-                  "sv": "Uppvärmning",
-                  "no": "Oppvarming",
-                  "da": "Opvarmning",
-                  "es": "Calefacción"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry",
-                  "fr": "Déshumidification",
-                  "nl": "Ontvochtiging",
-                  "sv": "Avfuktning",
-                  "no": "Avfukting",
-                  "da": "Affugtning",
-                  "es": "Desumidificación"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cooling",
-                  "fr": "Refroidissement",
-                  "nl": "Koeling",
-                  "sv": "Kylning",
-                  "no": "Kjøling",
-                  "da": "Køling",
-                  "es": "Enfriamiento"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan",
-                  "fr": "Ventilateur",
-                  "nl": "Ventilator",
-                  "sv": "Fläkt",
-                  "no": "Vifte",
-                  "da": "Blæser",
-                  "es": "Ventilador"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_condition"
       },
       {
         "title": {
@@ -1760,101 +1481,31 @@
       },
       {
         "title": {
-          "en": "The operation mode !{{is|is not}}",
-          "fr": "Le mode opérationnel !{{est|n'est pas}}",
-          "nl": "De bedrijfsmodus !{{is|is niet}}",
-          "sv": "Driftläget !{{är|är inte}}",
-          "no": "Driftsmodusen !{{er|er ikke}}",
-          "da": "Driftstilstanden !{{er|er ikke}}",
-          "es": "El modo de operación !{{está|no está}}"
+          "en": "Thermostat mode !{{is|is not}} in zone 2",
+          "fr": "Mode thermostat !{{est|n'est pas}} dans la zone 2",
+          "nl": "Thermostaat modus !{{is|is niet}} in zone 2",
+          "sv": "Termostatläge !{{är|är inte}} i zon 2",
+          "no": "Termostatmodus !{{er|er ikke}} i sone 2",
+          "da": "Termostattilstand !{{er|er ikke}} i zone 2",
+          "es": "El modo del termostato !{{está|no está}} en zona 2"
         },
         "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]]",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]]",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]]",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]]",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]]",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]]",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
+          "en": "Thermostat mode !{{is|is not}} [[thermostat_mode]] in zone 2",
+          "fr": "Mode thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
+          "nl": "Thermostaat modus !{{is|is niet}} [[thermostat_mode]] in zone 2",
+          "sv": "Termostatläge !{{är|är inte}} [[thermostat_mode]] i zon 2",
+          "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",
+          "da": "Termostattilstand !{{er|er ikke}} [[thermostat_mode]] i zone 2",
+          "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en zona 2"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone"
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
           },
           {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone_condition"
-      },
-      {
-        "title": {
-          "en": "The operation mode !{{is|is not}}",
-          "fr": "Le mode opérationnel !{{est|n'est pas}}",
-          "nl": "De bedrijfsmodus !{{is|is niet}}",
-          "sv": "Driftläget !{{är|är inte}}",
-          "no": "Driftsmodusen !{{er|er ikke}}",
-          "da": "Driftstilstanden !{{er|er ikke}}",
-          "es": "El modo de operación !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]]",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]]",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]]",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]]",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]]",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]]",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool"
-          },
-          {
-            "name": "operation_mode_zone",
+            "name": "thermostat_mode",
             "type": "dropdown",
             "values": [
               {
@@ -1920,241 +1571,16 @@
             ]
           }
         ],
-        "id": "operation_mode_zone_with_cool_condition"
-      },
-      {
-        "title": {
-          "en": "The operation mode !{{is|is not}} in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
-          "sv": "Driftläget !{{är|är inte}} i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
-          "es": "El modo de operación !{{está|no está}} en zona 2"
+        "hint": {
+          "en": "Some values may not be available on your device.",
+          "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.",
+          "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.",
+          "sv": "Vissa värden kanske inte är tillgängliga på din enhet.",
+          "no": "Noen verdier kan ikke være tilgjengelige på enheten din.",
+          "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
+          "es": "Algunos valores pueden no estar disponibles en su dispositivo."
         },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              },
-              {
-                "id": "room_cool",
-                "title": {
-                  "en": "Indoor temperature - cooling",
-                  "fr": "Température intérieure - refroidissement",
-                  "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare - kylning",
-                  "no": "Innendørs føler - kjøling",
-                  "da": "Indendørs føler - køling",
-                  "es": "Temperatura interior - enfriamiento"
-                }
-              },
-              {
-                "id": "flow_cool",
-                "title": {
-                  "en": "Fixed flow temperature - cooling",
-                  "fr": "Température de flux fixe - refroidissement",
-                  "nl": "Vaste aanvoertemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur - kylning",
-                  "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremledningstemperatur - køling",
-                  "es": "Temperatura de flujo fija - enfriamiento"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone_with_cool.zone2_condition"
-      },
-      {
-        "title": {
-          "en": "The operation mode !{{is|is not}} in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} in zone 2",
-          "sv": "Driftläget !{{är|är inte}} i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} i zone 2",
-          "es": "El modo de operación !{{está|no está}} en zona 2"
-        },
-        "titleFormatted": {
-          "en": "The operation mode !{{is|is not}} [[operation_mode_zone]] in zone 2",
-          "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]] dans la zone 2",
-          "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]] in zone 2",
-          "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]] i zon 2",
-          "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]] i sone 2",
-          "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]] i zone 2",
-          "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone.zone2_condition"
-      },
-      {
-        "title": {
-          "en": "The ventilation mode !{{is|is not}}",
-          "fr": "Le mode de ventilation !{{est|n'est pas}}",
-          "nl": "De ventilatiemodus !{{is|is niet}}",
-          "sv": "Ventilationsläget !{{är|är inte}}",
-          "no": "Ventilasjonsmodusen !{{er|er ikke}}",
-          "da": "Ventilationstilstanden !{{er|er ikke}}",
-          "es": "El modo de ventilación !{{está|no está}}"
-        },
-        "titleFormatted": {
-          "en": "The ventilation mode !{{is|is not}} [[ventilation_mode]]",
-          "fr": "Le mode de ventilation !{{est|n'est pas}} [[ventilation_mode]]",
-          "nl": "De ventilatiemodus !{{is|is niet}} [[ventilation_mode]]",
-          "sv": "Ventilationsläget !{{är|är inte}} [[ventilation_mode]]",
-          "no": "Ventilasjonsmodusen !{{er|er ikke}} [[ventilation_mode]]",
-          "da": "Ventilationstilstanden !{{er|er ikke}} [[ventilation_mode]]",
-          "es": "El modo de ventilación !{{está|no está}} [[ventilation_mode]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_erv"
-          },
-          {
-            "name": "ventilation_mode",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "recovery",
-                "title": {
-                  "en": "Energy Recovery",
-                  "fr": "Récupération d'énergie",
-                  "nl": "Warmteterugwinning",
-                  "sv": "Värmeåtervinning",
-                  "no": "Varmegjenvinning",
-                  "da": "Varmegenvinding",
-                  "es": "Recuperación de energía"
-                }
-              },
-              {
-                "id": "bypass",
-                "title": {
-                  "en": "Bypass",
-                  "fr": "Bypass",
-                  "nl": "Bypass",
-                  "sv": "Bypass",
-                  "no": "Bypass",
-                  "da": "Bypass",
-                  "es": "Bypass"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "ventilation_mode_condition"
+        "id": "thermostat_mode.zone2_condition"
       },
       {
         "title": {
@@ -2493,428 +1919,6 @@
       },
       {
         "title": {
-          "en": "Set the operation mode",
-          "fr": "Définir le mode opérationnel",
-          "nl": "Stel de bedrijfsmodus in",
-          "sv": "Ställ in driftläget",
-          "no": "Innstill driftsmodusen",
-          "da": "Indstil driftstilstanden",
-          "es": "Configurar el modo de operación"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode]]",
-          "fr": "Définir le mode opérationnel à [[operation_mode]]",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode]]",
-          "sv": "Ställ in driftläget till [[operation_mode]]",
-          "no": "Innstill driftsmodusen til [[operation_mode]]",
-          "da": "Indstil driftstilstanden til [[operation_mode]]",
-          "es": "Configurar el modo de operación a [[operation_mode]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud"
-          },
-          {
-            "name": "operation_mode",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "heat",
-                "title": {
-                  "en": "Heating",
-                  "fr": "Chauffage",
-                  "nl": "Verwarming",
-                  "sv": "Uppvärmning",
-                  "no": "Oppvarming",
-                  "da": "Opvarmning",
-                  "es": "Calefacción"
-                }
-              },
-              {
-                "id": "dry",
-                "title": {
-                  "en": "Dry",
-                  "fr": "Déshumidification",
-                  "nl": "Ontvochtiging",
-                  "sv": "Avfuktning",
-                  "no": "Avfukting",
-                  "da": "Affugtning",
-                  "es": "Desumidificación"
-                }
-              },
-              {
-                "id": "cool",
-                "title": {
-                  "en": "Cooling",
-                  "fr": "Refroidissement",
-                  "nl": "Koeling",
-                  "sv": "Kylning",
-                  "no": "Kjøling",
-                  "da": "Køling",
-                  "es": "Enfriamiento"
-                }
-              },
-              {
-                "id": "fan",
-                "title": {
-                  "en": "Fan",
-                  "fr": "Ventilateur",
-                  "nl": "Ventilator",
-                  "sv": "Fläkt",
-                  "no": "Vifte",
-                  "da": "Blæser",
-                  "es": "Ventilador"
-                }
-              },
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_action"
-      },
-      {
-        "title": {
-          "en": "Set the operation mode",
-          "fr": "Définir le mode opérationnel",
-          "nl": "Stel de bedrijfsmodus in",
-          "sv": "Ställ in driftläget",
-          "no": "Innstill driftsmodusen",
-          "da": "Indstil driftstilstanden",
-          "es": "Configurar el modo de operación"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode_zone]]",
-          "fr": "Définir le mode opérationnel à [[operation_mode_zone]]",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]]",
-          "sv": "Ställ in driftläget till [[operation_mode_zone]]",
-          "no": "Innstill driftsmodusen til [[operation_mode_zone]]",
-          "da": "Indstil driftstilstanden til [[operation_mode_zone]]",
-          "es": "Configurar el modo de operación a [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone_action"
-      },
-      {
-        "title": {
-          "en": "Set the operation mode",
-          "fr": "Définir le mode opérationnel",
-          "nl": "Stel de bedrijfsmodus in",
-          "sv": "Ställ in driftläget",
-          "no": "Innstill driftsmodusen",
-          "da": "Indstil driftstilstanden",
-          "es": "Configurar el modo de operación"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode_zone]]",
-          "fr": "Définir le mode opérationnel à [[operation_mode_zone]]",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]]",
-          "sv": "Ställ in driftläget till [[operation_mode_zone]]",
-          "no": "Innstill driftsmodusen til [[operation_mode_zone]]",
-          "da": "Indstil driftstilstanden til [[operation_mode_zone]]",
-          "es": "Configurar el modo de operación a [[operation_mode_zone]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              },
-              {
-                "id": "room_cool",
-                "title": {
-                  "en": "Indoor temperature - cooling",
-                  "fr": "Température intérieure - refroidissement",
-                  "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare - kylning",
-                  "no": "Innendørs føler - kjøling",
-                  "da": "Indendørs føler - køling",
-                  "es": "Temperatura interior - enfriamiento"
-                }
-              },
-              {
-                "id": "flow_cool",
-                "title": {
-                  "en": "Fixed flow temperature - cooling",
-                  "fr": "Température de flux fixe - refroidissement",
-                  "nl": "Vaste aanvoertemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur - kylning",
-                  "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremledningstemperatur - køling",
-                  "es": "Temperatura de flujo fija - enfriamiento"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone_with_cool_action"
-      },
-      {
-        "title": {
-          "en": "Set the operation mode in zone 2",
-          "fr": "Définir le mode opérationnel dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in in zone 2",
-          "sv": "Ställ in driftläget i zon 2",
-          "no": "Innstill driftsmodusen i sone 2",
-          "da": "Indstil driftstilstanden i zone 2",
-          "es": "Configurar el modo de operación en zona 2"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
-          "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
-          "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
-          "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
-          "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
-          "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              },
-              {
-                "id": "room_cool",
-                "title": {
-                  "en": "Indoor temperature - cooling",
-                  "fr": "Température intérieure - refroidissement",
-                  "nl": "Binnentemperatuur - koeling",
-                  "sv": "Inomhusgivare - kylning",
-                  "no": "Innendørs føler - kjøling",
-                  "da": "Indendørs føler - køling",
-                  "es": "Temperatura interior - enfriamiento"
-                }
-              },
-              {
-                "id": "flow_cool",
-                "title": {
-                  "en": "Fixed flow temperature - cooling",
-                  "fr": "Température de flux fixe - refroidissement",
-                  "nl": "Vaste aanvoertemperatuur - koeling",
-                  "sv": "Fast framledningstemperatur - kylning",
-                  "no": "Fast fremløpstemperatur - kjøling",
-                  "da": "Fast fremledningstemperatur - køling",
-                  "es": "Temperatura de flujo fija - enfriamiento"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone_with_cool.zone2_action"
-      },
-      {
-        "title": {
-          "en": "Set the operation mode in zone 2",
-          "fr": "Définir le mode opérationnel dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in in zone 2",
-          "sv": "Ställ in driftläget i zon 2",
-          "no": "Innstill driftsmodusen i sone 2",
-          "da": "Indstil driftstilstanden i zone 2",
-          "es": "Configurar el modo de operación en zona 2"
-        },
-        "titleFormatted": {
-          "en": "Set the operation mode to [[operation_mode_zone]] in zone 2",
-          "fr": "Définir le mode opérationnel à [[operation_mode_zone]] dans la zone 2",
-          "nl": "Stel de bedrijfsmodus in op [[operation_mode_zone]] in zone 2",
-          "sv": "Ställ in driftläget till [[operation_mode_zone]] i zon 2",
-          "no": "Innstill driftsmodusen til [[operation_mode_zone]] i sone 2",
-          "da": "Indstil driftstilstanden til [[operation_mode_zone]] i zone 2",
-          "es": "Configurar el modo de operación a [[operation_mode_zone]] en zona 2"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone.zone2"
-          },
-          {
-            "name": "operation_mode_zone",
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "room",
-                "title": {
-                  "en": "Indoor temperature",
-                  "fr": "Température intérieure",
-                  "nl": "Binnentemperatuur",
-                  "sv": "Inomhusgivare",
-                  "no": "Innendørs føler",
-                  "da": "Indendørs føler",
-                  "es": "Temperatura interior"
-                }
-              },
-              {
-                "id": "flow",
-                "title": {
-                  "en": "Fixed flow temperature",
-                  "fr": "Température de flux fixe",
-                  "nl": "Vaste aanvoertemperatuur",
-                  "sv": "Fast framledningstemperatur",
-                  "no": "Fast fremløpstemperatur",
-                  "da": "Fast fremledningstemperatur",
-                  "es": "Temperatura de flujo fija"
-                }
-              },
-              {
-                "id": "curve",
-                "title": {
-                  "en": "Weather compensation curve",
-                  "fr": "Courbe de compensation météo",
-                  "nl": "Weerscompensatiecurve",
-                  "sv": "Värmekurva",
-                  "no": "Varmekurve",
-                  "da": "Varmekurve",
-                  "es": "Curva de compensación climática"
-                }
-              }
-            ]
-          }
-        ],
-        "id": "operation_mode_zone.zone2_action"
-      },
-      {
-        "title": {
           "en": "Set the cool flow temperature",
           "fr": "Définir la température du flux de refroidissement",
           "nl": "Stel de aanvoertemperatuur voor koeling in",
@@ -3124,73 +2128,106 @@
       },
       {
         "title": {
-          "en": "Set the ventilation mode",
-          "fr": "Définir le mode de ventilation",
-          "nl": "Stel de ventilatiemodus in",
-          "sv": "Ställ in ventilationsläget",
-          "no": "Innstill ventilasjonsmodusen",
-          "da": "Indstil ventilationstilstanden",
-          "es": "Configurar el modo de ventilación"
+          "en": "Set the mode in zone 2",
+          "fr": "Définir le mode dans la zone 2",
+          "nl": "Stel de modus in in zone 2",
+          "sv": "Ställ in läget i zon 2",
+          "no": "Innstill modusen i sone 2",
+          "da": "Indstil tilstanden i zone 2",
+          "es": "Configurar el modo en zona 2"
         },
         "titleFormatted": {
-          "en": "Set the ventilation mode to [[ventilation_mode]]",
-          "fr": "Définir le mode de ventilation à [[ventilation_mode]]",
-          "nl": "Stel de ventilatiemodus in op [[ventilation_mode]]",
-          "sv": "Ställ in ventilationsläget till [[ventilation_mode]]",
-          "no": "Innstill ventilasjonsmodusen til [[ventilation_mode]]",
-          "da": "Indstil ventilationstilstanden til [[ventilation_mode]]",
-          "es": "Configurar el modo de ventilación a [[ventilation_mode]]"
+          "en": "Set the mode to [[thermostat_mode]] in zone 2",
+          "fr": "Définir le mode à [[thermostat_mode]] dans la zone 2",
+          "nl": "Stel de modus in op [[thermostat_mode]] in zone 2",
+          "sv": "Ställ in läget till [[thermostat_mode]] i zon 2",
+          "no": "Innstill modusen til [[thermostat_mode]] i sone 2",
+          "da": "Indstil tilstanden til [[thermostat_mode]] i zone 2",
+          "es": "Configurar el modo a [[thermostat_mode]] en zona 2"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=melcloud_erv"
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
           },
           {
-            "name": "ventilation_mode",
+            "name": "thermostat_mode",
             "type": "dropdown",
             "values": [
               {
-                "id": "recovery",
+                "id": "room",
                 "title": {
-                  "en": "Energy Recovery",
-                  "fr": "Récupération d'énergie",
-                  "nl": "Warmteterugwinning",
-                  "sv": "Värmeåtervinning",
-                  "no": "Varmegjenvinning",
-                  "da": "Varmegenvinding",
-                  "es": "Recuperación de energía"
+                  "en": "Indoor temperature",
+                  "fr": "Température intérieure",
+                  "nl": "Binnentemperatuur",
+                  "sv": "Inomhusgivare",
+                  "no": "Innendørs føler",
+                  "da": "Indendørs føler",
+                  "es": "Temperatura interior"
                 }
               },
               {
-                "id": "bypass",
+                "id": "flow",
                 "title": {
-                  "en": "Bypass",
-                  "fr": "Bypass",
-                  "nl": "Bypass",
-                  "sv": "Bypass",
-                  "no": "Bypass",
-                  "da": "Bypass",
-                  "es": "Bypass"
+                  "en": "Fixed flow temperature",
+                  "fr": "Température de flux fixe",
+                  "nl": "Vaste aanvoertemperatuur",
+                  "sv": "Fast framledningstemperatur",
+                  "no": "Fast fremløpstemperatur",
+                  "da": "Fast fremledningstemperatur",
+                  "es": "Temperatura de flujo fija"
                 }
               },
               {
-                "id": "auto",
+                "id": "curve",
                 "title": {
-                  "en": "Automatic",
-                  "fr": "Automatique",
-                  "nl": "Automatisch",
-                  "sv": "Automatiskt",
-                  "no": "Automatisk",
-                  "da": "Automatisk",
-                  "es": "Automático"
+                  "en": "Weather compensation curve",
+                  "fr": "Courbe de compensation météo",
+                  "nl": "Weerscompensatiecurve",
+                  "sv": "Värmekurva",
+                  "no": "Varmekurve",
+                  "da": "Varmekurve",
+                  "es": "Curva de compensación climática"
+                }
+              },
+              {
+                "id": "room_cool",
+                "title": {
+                  "en": "Indoor temperature - cooling",
+                  "fr": "Température intérieure - refroidissement",
+                  "nl": "Binnentemperatuur - koeling",
+                  "sv": "Inomhusgivare - kylning",
+                  "no": "Innendørs føler - kjøling",
+                  "da": "Indendørs føler - køling",
+                  "es": "Temperatura interior - enfriamiento"
+                }
+              },
+              {
+                "id": "flow_cool",
+                "title": {
+                  "en": "Fixed flow temperature - cooling",
+                  "fr": "Température de flux fixe - refroidissement",
+                  "nl": "Vaste aanvoertemperatuur - koeling",
+                  "sv": "Fast framledningstemperatur - kylning",
+                  "no": "Fast fremløpstemperatur - kjøling",
+                  "da": "Fast fremledningstemperatur - køling",
+                  "es": "Temperatura de flujo fija - enfriamiento"
                 }
               }
             ]
           }
         ],
-        "id": "ventilation_mode_action"
+        "hint": {
+          "en": "Some values may not be available on your device.",
+          "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.",
+          "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.",
+          "sv": "Vissa värden kanske inte är tillgängliga på din enhet.",
+          "no": "Noen verdier kan ikke være tilgjengelige på enheten din.",
+          "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
+          "es": "Algunos valores pueden no estar disponibles en su dispositivo."
+        },
+        "id": "thermostat_mode.zone2_action"
       },
       {
         "title": {
@@ -3438,12 +2475,11 @@
         "measure_temperature",
         "measure_temperature.outdoor",
         "target_temperature",
-        "operation_mode",
+        "thermostat_mode",
         "fan_power",
         "fan_power_state",
         "vertical",
         "horizontal",
-        "thermostat_mode",
         "alarm_generic.silent",
         "measure_power",
         "measure_power.auto",
@@ -4283,6 +3319,8 @@
         "target_temperature.flow_heat",
         "target_temperature.flow_heat_zone2",
         "target_temperature.tank_water",
+        "thermostat_mode",
+        "thermostat_mode.zone2",
         "operation_mode_state",
         "operation_mode_state.hot_water",
         "operation_mode_state.zone1",
@@ -4298,10 +3336,6 @@
         "boolean.prohibit_cooling_zone2",
         "boolean.prohibit_heating_zone1",
         "boolean.prohibit_heating_zone2",
-        "operation_mode_zone",
-        "operation_mode_zone_with_cool",
-        "operation_mode_zone.zone2",
-        "operation_mode_zone_with_cool.zone2",
         "legionella",
         "alarm_generic.booster_heater1",
         "alarm_generic.booster_heater2",
@@ -5094,28 +4128,6 @@
             "no": "Gjeldende drift - sone 2",
             "da": "Aktuel drift - zone 2",
             "es": "Operación actual - zona 2"
-          }
-        },
-        "operation_mode_zone.zone2": {
-          "title": {
-            "en": "Operation mode - zone 2",
-            "fr": "Mode opérationnel - zone 2",
-            "nl": "Bedrijfsmodus - zone 2",
-            "sv": "Driftläge - zon 2",
-            "no": "Driftsmodus - sone 2",
-            "da": "Driftstillstand - zone 2",
-            "es": "Modo de operación - zona 2"
-          }
-        },
-        "operation_mode_zone_with_cool.zone2": {
-          "title": {
-            "en": "Operation mode - zone 2",
-            "fr": "Mode opérationnel - zone 2",
-            "nl": "Bedrijfsmodus - zone 2",
-            "sv": "Driftläge - zon 2",
-            "no": "Driftsmodus - sone 2",
-            "da": "Driftstillstand - zone 2",
-            "es": "Modo de operación - zona 2"
           }
         },
         "target_temperature": {
@@ -6091,7 +5103,7 @@
         "onoff",
         "measure_temperature",
         "measure_temperature.outdoor",
-        "ventilation_mode",
+        "thermostat_mode",
         "fan_power",
         "measure_co2",
         "measure_pm25",

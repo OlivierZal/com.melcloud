@@ -33,6 +33,8 @@
     "target_temperature.flow_heat",
     "target_temperature.flow_heat_zone2",
     "target_temperature.tank_water",
+    "thermostat_mode",
+    "thermostat_mode.zone2",
     "operation_mode_state",
     "operation_mode_state.hot_water",
     "operation_mode_state.zone1",
@@ -48,10 +50,6 @@
     "boolean.prohibit_cooling_zone2",
     "boolean.prohibit_heating_zone1",
     "boolean.prohibit_heating_zone2",
-    "operation_mode_zone",
-    "operation_mode_zone_with_cool",
-    "operation_mode_zone.zone2",
-    "operation_mode_zone_with_cool.zone2",
     "legionella",
     "alarm_generic.booster_heater1",
     "alarm_generic.booster_heater2",
@@ -844,28 +842,6 @@
         "no": "Gjeldende drift - sone 2",
         "da": "Aktuel drift - zone 2",
         "es": "Operación actual - zona 2"
-      }
-    },
-    "operation_mode_zone.zone2": {
-      "title": {
-        "en": "Operation mode - zone 2",
-        "fr": "Mode opérationnel - zone 2",
-        "nl": "Bedrijfsmodus - zone 2",
-        "sv": "Driftläge - zon 2",
-        "no": "Driftsmodus - sone 2",
-        "da": "Driftstillstand - zone 2",
-        "es": "Modo de operación - zona 2"
-      }
-    },
-    "operation_mode_zone_with_cool.zone2": {
-      "title": {
-        "en": "Operation mode - zone 2",
-        "fr": "Mode opérationnel - zone 2",
-        "nl": "Bedrijfsmodus - zone 2",
-        "sv": "Driftläge - zon 2",
-        "no": "Driftsmodus - sone 2",
-        "da": "Driftstillstand - zone 2",
-        "es": "Modo de operación - zona 2"
       }
     },
     "target_temperature": {

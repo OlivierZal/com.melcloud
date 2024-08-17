@@ -371,9 +371,9 @@ const createCredentialElement = (
 }
 
 const createCredentialElements = (): void => {
-  ;[usernameElement, passwordElement] = (
-    ['username', 'password'] satisfies (keyof LoginCredentials)[]
-  ).map(createCredentialElement)
+  ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
+    createCredentialElement,
+  )
 }
 
 const int = (homey: Homey, element: HTMLInputElement): number => {

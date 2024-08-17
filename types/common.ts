@@ -14,38 +14,45 @@ import type AtwDevice from '../drivers/melcloud_atw/device'
 import type AtwDriver from '../drivers/melcloud_atw/driver'
 import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
-import type {
-  CapabilitiesAta,
-  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
-  EnergyCapabilitiesAta,
-  FlowArgsAta,
-  GET_CAPABILITY_TAGS_MAPPING_ATA,
-  LIST_CAPABILITY_TAGS_MAPPING_ATA,
-  OpCapabilitiesAta,
-  SET_CAPABILITY_TAGS_MAPPING_ATA,
-  SetCapabilitiesAta,
+
+import {
+  type CapabilitiesAta,
+  type CapabilitiesOptionsAta,
+  type ENERGY_CAPABILITY_TAG_MAPPING_ATA,
+  type EnergyCapabilitiesAta,
+  type FlowArgsAta,
+  type GET_CAPABILITY_TAGS_MAPPING_ATA,
+  type LIST_CAPABILITY_TAGS_MAPPING_ATA,
+  type OpCapabilitiesAta,
+  type SET_CAPABILITY_TAGS_MAPPING_ATA,
+  type SetCapabilitiesAta,
+  getCapabilitiesOptionsAta,
 } from './ata'
-import type {
-  CapabilitiesAtw,
-  ENERGY_CAPABILITY_TAG_MAPPING_ATW,
-  EnergyCapabilitiesAtw,
-  FlowArgsAtw,
-  GET_CAPABILITY_TAGS_MAPPING_ATW,
-  LIST_CAPABILITY_TAGS_MAPPING_ATW,
-  OpCapabilitiesAtw,
-  SET_CAPABILITY_TAGS_MAPPING_ATW,
-  SetCapabilitiesAtw,
+import {
+  type CapabilitiesAtw,
+  type CapabilitiesOptionsAtw,
+  type ENERGY_CAPABILITY_TAG_MAPPING_ATW,
+  type EnergyCapabilitiesAtw,
+  type FlowArgsAtw,
+  type GET_CAPABILITY_TAGS_MAPPING_ATW,
+  type LIST_CAPABILITY_TAGS_MAPPING_ATW,
+  type OpCapabilitiesAtw,
+  type SET_CAPABILITY_TAGS_MAPPING_ATW,
+  type SetCapabilitiesAtw,
+  getCapabilitiesOptionsAtw,
 } from './atw'
-import type {
-  CapabilitiesErv,
-  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
-  EnergyCapabilitiesErv,
-  FlowArgsErv,
-  GET_CAPABILITY_TAGS_MAPPING_ERV,
-  LIST_CAPABILITY_TAGS_MAPPING_ERV,
-  OpCapabilitiesErv,
-  SET_CAPABILITY_TAGS_MAPPING_ERV,
-  SetCapabilitiesErv,
+import {
+  type CapabilitiesErv,
+  type CapabilitiesOptionsErv,
+  type ENERGY_CAPABILITY_TAG_MAPPING_ERV,
+  type EnergyCapabilitiesErv,
+  type FlowArgsErv,
+  type GET_CAPABILITY_TAGS_MAPPING_ERV,
+  type LIST_CAPABILITY_TAGS_MAPPING_ERV,
+  type OpCapabilitiesErv,
+  type SET_CAPABILITY_TAGS_MAPPING_ERV,
+  type SetCapabilitiesErv,
+  getCapabilitiesOptionsErv,
 } from './erv'
 
 export const K_MULTIPLIER = 1000
@@ -213,6 +220,7 @@ export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
 
 export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
   value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
+  data?: ListDevice[T]['Device'],
 ) => OpCapabilities[T][keyof OpCapabilities[T]]
 
 export type ConvertToDevice<T extends keyof typeof DeviceType> = (
@@ -225,26 +233,21 @@ export interface FlowArgs {
   readonly Erv: FlowArgsErv
 }
 
-interface RangeOptions {
-  readonly max: number
-  readonly min: number
-  readonly step: number
+export interface CapabilitiesOptions {
+  readonly Ata: CapabilitiesOptionsAta
+  readonly Atw: CapabilitiesOptionsAtw
+  readonly Erv: CapabilitiesOptionsErv
 }
 
-export interface CapabilitiesOptions {
-  readonly Ata: { readonly fan_power: RangeOptions }
-  readonly Atw: {
-    readonly 'target_temperature.flow_cool': RangeOptions
-    readonly 'target_temperature.flow_cool_zone2': RangeOptions
-    readonly 'target_temperature.flow_heat': RangeOptions
-    readonly 'target_temperature.flow_heat_zone2': RangeOptions
-  }
-  readonly Erv: { readonly fan_power: RangeOptions }
+export const getCapabilitiesOptions = {
+  Ata: getCapabilitiesOptionsAta,
+  Atw: getCapabilitiesOptionsAtw,
+  Erv: getCapabilitiesOptionsErv,
 }
 
 export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: CapabilitiesOptions[T]
+  readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
   readonly data: { readonly id: number }
   readonly name: string
 }
