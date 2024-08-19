@@ -1,30 +1,30 @@
 {
   "title": {
-    "en": "The operation mode !{{is|is not}}",
-    "fr": "Le mode opérationnel !{{est|n'est pas}}",
-    "nl": "De bedrijfsmodus !{{is|is niet}}",
-    "sv": "Driftläget !{{är|är inte}}",
-    "no": "Driftsmodusen !{{er|er ikke}}",
-    "da": "Driftstilstanden !{{er|er ikke}}",
-    "es": "El modo de operación !{{está|no está}}"
+    "en": "Set the mode in zone 2",
+    "fr": "Définir le mode dans la zone 2",
+    "nl": "Stel de modus in in zone 2",
+    "sv": "Ställ in läget i zon 2",
+    "no": "Innstill modusen i sone 2",
+    "da": "Indstil tilstanden i zone 2",
+    "es": "Configurar el modo en zona 2"
   },
   "titleFormatted": {
-    "en": "The operation mode !{{is|is not}} [[operation_mode_zone]]",
-    "fr": "Le mode opérationnel !{{est|n'est pas}} [[operation_mode_zone]]",
-    "nl": "De bedrijfsmodus !{{is|is niet}} [[operation_mode_zone]]",
-    "sv": "Driftläget !{{är|är inte}} [[operation_mode_zone]]",
-    "no": "Driftsmodusen !{{er|er ikke}} [[operation_mode_zone]]",
-    "da": "Driftstilstanden !{{er|er ikke}} [[operation_mode_zone]]",
-    "es": "El modo de operación !{{está|no está}} [[operation_mode_zone]]"
+    "en": "Set the mode to [[thermostat_mode]] in zone 2",
+    "fr": "Définir le mode à [[thermostat_mode]] dans la zone 2",
+    "nl": "Stel de modus in op [[thermostat_mode]] in zone 2",
+    "sv": "Ställ in läget till [[thermostat_mode]] i zon 2",
+    "no": "Innstill modusen til [[thermostat_mode]] i sone 2",
+    "da": "Indstil tilstanden til [[thermostat_mode]] i zone 2",
+    "es": "Configurar el modo a [[thermostat_mode]] en zona 2"
   },
   "args": [
     {
       "type": "device",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=operation_mode_zone_with_cool"
+      "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
     },
     {
-      "name": "operation_mode_zone",
+      "name": "thermostat_mode",
       "type": "dropdown",
       "values": [
         {
@@ -89,5 +89,14 @@
         }
       ]
     }
-  ]
+  ],
+  "hint": {
+    "en": "Some values may not be available on your device.",
+    "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.",
+    "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.",
+    "sv": "Vissa värden kanske inte är tillgängliga på din enhet.",
+    "no": "Noen verdier kan ikke være tilgjengelige på enheten din.",
+    "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
+    "es": "Algunos valores pueden no estar disponibles en su dispositivo."
+  }
 }

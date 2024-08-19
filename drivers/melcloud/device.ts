@@ -1,4 +1,5 @@
 import {
+  type ListDeviceDataAta,
   FanSpeed,
   Horizontal,
   OperationMode,
@@ -13,7 +14,7 @@ import {
   type OpCapabilitiesAta,
   type ReportPlanParameters,
   type SetCapabilitiesAta,
-  ThermostatMode,
+  ThermostatModeAta,
 } from '../../types'
 
 export = class extends BaseMELCloudDevice<'Ata'> {
@@ -28,8 +29,10 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       : value) as ConvertFromDevice<'Ata'>,
     horizontal: ((value: Horizontal) =>
       Horizontal[value]) as ConvertFromDevice<'Ata'>,
-    operation_mode: ((value: OperationMode) =>
-      OperationMode[value]) as ConvertFromDevice<'Ata'>,
+    thermostat_mode: ((value: OperationMode, data: ListDeviceDataAta) =>
+      data.Power ?
+        OperationMode[value]
+      : ThermostatModeAta.off) as ConvertFromDevice<'Ata'>,
     vertical: ((value: Vertical) =>
       Vertical[value]) as ConvertFromDevice<'Ata'>,
   }
@@ -46,7 +49,7 @@ export = class extends BaseMELCloudDevice<'Ata'> {
   > = {
     horizontal: ((value: keyof typeof Horizontal) =>
       Horizontal[value]) as ConvertToDevice<'Ata'>,
-    operation_mode: ((value: keyof typeof OperationMode) =>
+    thermostat_mode: ((value: keyof typeof OperationMode) =>
       OperationMode[value]) as ConvertToDevice<'Ata'>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
@@ -62,40 +65,5 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       return FanSpeed.silent as NonNullable<CapabilitiesAta[K]>
     }
     return super.getCapabilityValue(capability)
-  }
-
-  protected override registerCapabilityListeners(): void {
-    super.registerCapabilityListeners()
-    this.#registerThermostatModeListener()
-  }
-
-  protected override async setCapabilities(): Promise<void> {
-    await super.setCapabilities()
-    await this.#setThermostatMode()
-  }
-
-  #registerThermostatModeListener(): void {
-    this.registerCapabilityListener(
-      'thermostat_mode',
-      (value: ThermostatMode) => {
-        this.clearSyncToDevice()
-        this.diff.set('onoff', value !== ThermostatMode.off)
-        if (value !== ThermostatMode.off) {
-          this.diff.set('operation_mode', value)
-        }
-        this.applySyncToDevice()
-      },
-    )
-  }
-
-  async #setThermostatMode(): Promise<void> {
-    const isOn = this.getCapabilityValue('onoff')
-    const operationMode = this.getCapabilityValue('operation_mode')
-    await this.setCapabilityValue(
-      'thermostat_mode',
-      isOn && operationMode in ThermostatMode ?
-        (operationMode as ThermostatMode)
-      : ThermostatMode.off,
-    )
   }
 }

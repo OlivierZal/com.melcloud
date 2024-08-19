@@ -8,14 +8,13 @@ export {
   GET_CAPABILITY_TAGS_MAPPING_ATA,
   LIST_CAPABILITY_TAGS_MAPPING_ATA,
   SET_CAPABILITY_TAGS_MAPPING_ATA,
-  ThermostatMode,
+  ThermostatModeAta,
 } from './ata'
 export {
   type CapabilitiesAtw,
   type EnergyCapabilitiesAtw,
   type FlowArgsAtw,
   type OpCapabilitiesAtw,
-  type OperationModeZoneCapabilities,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
   type Zone,
@@ -68,6 +67,7 @@ export {
   type Settings,
   type ValueOf,
   K_MULTIPLIER,
+  getCapabilitiesOptions,
 } from './common'
 export {
   type CapabilitiesErv,
@@ -79,4 +79,5 @@ export {
   GET_CAPABILITY_TAGS_MAPPING_ERV,
   LIST_CAPABILITY_TAGS_MAPPING_ERV,
   SET_CAPABILITY_TAGS_MAPPING_ERV,
+  ThermostatModeErv,
 } from './erv'

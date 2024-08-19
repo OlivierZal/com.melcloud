@@ -15,7 +15,7 @@ export = class extends BaseMELCloudDriver<'Ata'> {
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATA
 
-  protected readonly type = 'Ata'
+  public readonly type = 'Ata'
 
   public getRequiredCapabilities(): string[] {
     return [
@@ -24,7 +24,6 @@ export = class extends BaseMELCloudDriver<'Ata'> {
         ...this.getCapabilityTagMapping,
         ...this.listCapabilityTagMapping,
       }).filter((capability) => capability !== 'measure_power.wifi'),
-      'thermostat_mode',
     ]
   }
 }

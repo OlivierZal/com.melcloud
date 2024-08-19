@@ -18,7 +18,7 @@ export = class extends BaseMELCloudDriver<'Atw'> {
 
   public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATW
 
-  protected readonly type = 'Atw'
+  public readonly type = 'Atw'
 
   readonly #zone1Capabilities: (keyof CapabilitiesAtw)[] = [
     'onoff',
@@ -31,6 +31,7 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'target_temperature',
     'target_temperature.tank_water',
     'target_temperature.flow_heat',
+    'thermostat_mode',
     'operation_mode_state',
     'operation_mode_state.hot_water',
     'operation_mode_state.zone1',
@@ -45,7 +46,6 @@ export = class extends BaseMELCloudDriver<'Atw'> {
 
   readonly #zone1CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool',
-    'operation_mode_zone_with_cool',
     'boolean.cooling_zone1',
     'boolean.prohibit_cooling_zone1',
   ]
@@ -54,6 +54,7 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
+    'thermostat_mode.zone2',
     'operation_mode_state.zone2',
     'boolean.idle_zone2',
     'boolean.heating_zone2',
@@ -62,7 +63,6 @@ export = class extends BaseMELCloudDriver<'Atw'> {
 
   readonly #zone2CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool_zone2',
-    'operation_mode_zone_with_cool.zone2',
     'boolean.cooling_zone2',
     'boolean.prohibit_cooling_zone2',
   ]
@@ -73,13 +73,11 @@ export = class extends BaseMELCloudDriver<'Atw'> {
   }: ListDeviceDataAtw): string[] {
     return [
       ...this.#zone1Capabilities,
-      ...(canCool ? this.#zone1CoolCapabilities : ['operation_mode_zone']),
+      ...(canCool ? this.#zone1CoolCapabilities : []),
       ...(hasZone2 ?
         [
           ...this.#zone2Capabilities,
-          ...(canCool ?
-            this.#zone2CoolCapabilities
-          : ['operation_mode_zone.zone2']),
+          ...(canCool ? this.#zone2CoolCapabilities : []),
         ]
       : []),
     ]
