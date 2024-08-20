@@ -104,7 +104,7 @@ export default abstract class<
     await this.#init()
   }
 
-  private get device(): DeviceFacade[T] | undefined {
+  protected get device(): DeviceFacade[T] | undefined {
     if (!this.#device) {
       this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
         DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as

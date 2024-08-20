@@ -91,34 +91,37 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   async #setOperationModeStateHotWater(
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    let value = OperationModeStateHotWaterCapability.idle
-    if (this.getCapabilityValue('boolean.prohibit_hot_water')) {
-      value = OperationModeStateHotWaterCapability.prohibited
-    } else if (operationModeState in OperationModeStateHotWaterCapability) {
-      value =
-        OperationModeStateHotWaterCapability[
-          operationModeState as OperationModeStateHotWaterCapability
-        ]
+    if (this.device) {
+      let value = OperationModeStateHotWaterCapability.idle
+      if (this.device.data.ProhibitHotWater) {
+        value = OperationModeStateHotWaterCapability.prohibited
+      } else if (operationModeState in OperationModeStateHotWaterCapability) {
+        value =
+          OperationModeStateHotWaterCapability[
+            operationModeState as OperationModeStateHotWaterCapability
+          ]
+      }
+      await this.setCapabilityValue('operation_mode_state.hot_water', value)
     }
-    await this.setCapabilityValue('operation_mode_state.hot_water', value)
   }
 
   async #setOperationModeStateZone(
     zone: Zone,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    if (this.hasCapability(`operation_mode_state.${zone}`)) {
+    if (this.device && this.hasCapability(`operation_mode_state.${zone}`)) {
+      const zoneName = zone === 'zone1' ? 'Zone1' : 'Zone2'
       let value = OperationModeStateZoneCapability.idle
       if (
-        (this.getCapabilityValue(`boolean.cooling_${zone}`) &&
-          this.getCapabilityValue(`boolean.prohibit_cooling_${zone}`)) ||
-        (this.getCapabilityValue(`boolean.heating_${zone}`) &&
-          this.getCapabilityValue(`boolean.prohibit_heating_${zone}`))
+        (this.device.data[`${zoneName}InCoolMode`] &&
+          this.device.data[`ProhibitCooling${zoneName}`]) ||
+        (this.device.data[`${zoneName}InHeatMode`] &&
+          this.device.data[`ProhibitHeating${zoneName}`])
       ) {
         value = OperationModeStateZoneCapability.prohibited
       } else if (
         operationModeState in OperationModeStateZoneCapability &&
-        !this.getCapabilityValue(`boolean.idle_${zone}`)
+        !this.device.data[`Idle${zoneName}`]
       ) {
         value =
           OperationModeStateZoneCapability[

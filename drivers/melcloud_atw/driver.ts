@@ -38,16 +38,10 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
-    'boolean.idle_zone1',
-    'boolean.heating_zone1',
-    'boolean.prohibit_heating_zone1',
-    'boolean.prohibit_hot_water',
   ]
 
   readonly #zone1CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool',
-    'boolean.cooling_zone1',
-    'boolean.prohibit_cooling_zone1',
   ]
 
   readonly #zone2Capabilities: (keyof CapabilitiesAtw)[] = [
@@ -56,15 +50,10 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.flow_heat_zone2',
     'thermostat_mode.zone2',
     'operation_mode_state.zone2',
-    'boolean.idle_zone2',
-    'boolean.heating_zone2',
-    'boolean.prohibit_heating_zone2',
   ]
 
   readonly #zone2CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool_zone2',
-    'boolean.cooling_zone2',
-    'boolean.prohibit_cooling_zone2',
   ]
 
   public getRequiredCapabilities({

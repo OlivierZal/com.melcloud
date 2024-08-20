@@ -115,13 +115,6 @@ export interface SetCapabilitiesAtw
 }
 
 export interface GetCapabilitiesAtw extends BaseGetCapabilities {
-  readonly 'boolean.idle_zone1': boolean
-  readonly 'boolean.idle_zone2': boolean
-  readonly 'boolean.prohibit_cooling_zone1': boolean
-  readonly 'boolean.prohibit_cooling_zone2': boolean
-  readonly 'boolean.prohibit_heating_zone1': boolean
-  readonly 'boolean.prohibit_heating_zone2': boolean
-  readonly 'boolean.prohibit_hot_water': boolean
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
@@ -135,10 +128,6 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.defrost': boolean
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
-  readonly 'boolean.cooling_zone1': boolean
-  readonly 'boolean.cooling_zone2': boolean
-  readonly 'boolean.heating_zone1': boolean
-  readonly 'boolean.heating_zone2': boolean
   readonly legionella: string
   readonly measure_power: number
   readonly 'measure_power.heat_pump_frequency': number
@@ -216,13 +205,6 @@ export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   keyof GetCapabilitiesAtw,
   keyof GetDeviceDataAtw
 > = {
-  'boolean.idle_zone1': 'IdleZone1',
-  'boolean.idle_zone2': 'IdleZone2',
-  'boolean.prohibit_cooling_zone1': 'ProhibitCoolingZone1',
-  'boolean.prohibit_cooling_zone2': 'ProhibitCoolingZone2',
-  'boolean.prohibit_heating_zone1': 'ProhibitHeatingZone1',
-  'boolean.prohibit_heating_zone2': 'ProhibitHeatingZone2',
-  'boolean.prohibit_hot_water': 'ProhibitHotWater',
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   'measure_temperature.tank_water': 'TankWaterTemperature',
@@ -240,10 +222,6 @@ export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'alarm_generic.defrost': 'DefrostMode',
   'alarm_generic.eco_hot_water': 'EcoHotWater',
   'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
-  'boolean.cooling_zone1': 'Zone1InCoolMode',
-  'boolean.cooling_zone2': 'Zone2InCoolMode',
-  'boolean.heating_zone1': 'Zone1InHeatMode',
-  'boolean.heating_zone2': 'Zone2InHeatMode',
   legionella: 'LastLegionellaActivationTime',
   measure_power: 'CurrentEnergyConsumed',
   'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
