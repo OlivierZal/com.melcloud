@@ -158,12 +158,12 @@ export default abstract class<
       ]) => {
         ;(this.producedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as Extract<keyof EnergyData[T], string>[]) = tags.filter(
+        ] as (keyof EnergyData[T])[]) = tags.filter(
           (tag) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as Extract<keyof EnergyData[T], string>[]) = tags.filter((tag) =>
+        ] as (keyof EnergyData[T])[]) = tags.filter((tag) =>
           tag.endsWith('Consumed'),
         )
       },

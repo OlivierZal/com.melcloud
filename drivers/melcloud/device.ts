@@ -8,7 +8,6 @@ import {
 
 import BaseMELCloudDevice from '../../bases/device'
 import {
-  type CapabilitiesAta,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAta,
@@ -53,17 +52,5 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       OperationMode[value]) as ConvertToDevice<'Ata'>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
-  }
-
-  public override getCapabilityValue<K extends keyof CapabilitiesAta>(
-    capability: string & K,
-  ): NonNullable<CapabilitiesAta[K]> {
-    if (
-      capability === 'fan_power' &&
-      this.getCapabilityValue('alarm_generic.silent')
-    ) {
-      return FanSpeed.silent as NonNullable<CapabilitiesAta[K]>
-    }
-    return super.getCapabilityValue(capability)
   }
 }

@@ -131,13 +131,13 @@ export default abstract class<
   }
 
   public override getCapabilityOptions<
-    K extends Extract<keyof CapabilitiesOptions[T], string>,
+    K extends string & keyof CapabilitiesOptions[T],
   >(capability: K): CapabilitiesOptions[T][K] {
     return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
-  public override getCapabilityValue<K extends keyof Capabilities[T]>(
-    capability: string & K,
+  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
+    capability: K,
   ): Capabilities[T][K] {
     return super.getCapabilityValue(capability) as Capabilities[T][K]
   }
@@ -221,18 +221,16 @@ export default abstract class<
   }
 
   public override async setCapabilityOptions<
-    K extends Extract<keyof CapabilitiesOptions[T], string>,
+    K extends string & keyof CapabilitiesOptions[T],
   >(capability: K, options: object & CapabilitiesOptions[T][K]): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
   public override async setCapabilityValue<
-    K extends Extract<keyof Capabilities[T], string>,
+    K extends string & keyof Capabilities[T],
   >(capability: K, value: Capabilities[T][K]): Promise<void> {
+    await super.setCapabilityValue(capability, value)
     this.log('Capability', capability, 'is', value)
-    if (value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value)
-    }
   }
 
   public override async setWarning(error: unknown): Promise<void> {
