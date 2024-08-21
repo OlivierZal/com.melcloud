@@ -17,7 +17,6 @@ export {
   type OpCapabilitiesAtw,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-  type Zone,
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
   GET_CAPABILITY_TAGS_MAPPING_ATW,
   LIST_CAPABILITY_TAGS_MAPPING_ATW,

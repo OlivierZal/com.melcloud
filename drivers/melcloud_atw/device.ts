@@ -1,4 +1,8 @@
-import { OperationModeState, OperationModeZone } from '@olivierzal/melcloud-api'
+import {
+  type ListDeviceDataAtw,
+  OperationModeState,
+  OperationModeZone,
+} from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 import BaseMELCloudDevice from '../../bases/device'
@@ -9,7 +13,6 @@ import {
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-  type Zone,
   K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
@@ -89,56 +92,60 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   }
 
   async #setOperationModeStateHotWater(
+    data: ListDeviceDataAtw,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    if (this.device) {
-      let value = OperationModeStateHotWaterCapability.idle
-      if (this.device.data.ProhibitHotWater) {
-        value = OperationModeStateHotWaterCapability.prohibited
-      } else if (operationModeState in OperationModeStateHotWaterCapability) {
-        value =
-          OperationModeStateHotWaterCapability[
-            operationModeState as OperationModeStateHotWaterCapability
-          ]
-      }
-      await this.setCapabilityValue('operation_mode_state.hot_water', value)
+    let value = OperationModeStateHotWaterCapability.idle
+    if (data.ProhibitHotWater) {
+      value = OperationModeStateHotWaterCapability.prohibited
+    } else if (operationModeState in OperationModeStateHotWaterCapability) {
+      value =
+        OperationModeStateHotWaterCapability[
+          operationModeState as OperationModeStateHotWaterCapability
+        ]
     }
+    await this.setCapabilityValue('operation_mode_state.hot_water', value)
   }
 
-  async #setOperationModeStateZone(
-    zone: Zone,
+  async #setOperationModeStateZones(
+    data: ListDeviceDataAtw,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    if (this.device && this.hasCapability(`operation_mode_state.${zone}`)) {
-      const zoneName = zone === 'zone1' ? 'Zone1' : 'Zone2'
-      let value = OperationModeStateZoneCapability.idle
-      if (
-        (this.device.data[`${zoneName}InCoolMode`] &&
-          this.device.data[`ProhibitCooling${zoneName}`]) ||
-        (this.device.data[`${zoneName}InHeatMode`] &&
-          this.device.data[`ProhibitHeating${zoneName}`])
-      ) {
-        value = OperationModeStateZoneCapability.prohibited
-      } else if (
-        operationModeState in OperationModeStateZoneCapability &&
-        !this.device.data[`Idle${zoneName}`]
-      ) {
-        value =
-          OperationModeStateZoneCapability[
-            operationModeState as OperationModeStateZoneCapability
-          ]
-      }
-      await this.setCapabilityValue(`operation_mode_state.${zone}`, value)
-    }
+    await Promise.all(
+      (['zone1', 'zone2'] as const).map(async (zone) => {
+        if (this.hasCapability(`operation_mode_state.${zone}`)) {
+          const zoneName = zone === 'zone1' ? 'Zone1' : 'Zone2'
+          let value = OperationModeStateZoneCapability.idle
+          if (
+            (data[`${zoneName}InCoolMode`] &&
+              data[`ProhibitCooling${zoneName}`]) ||
+            (data[`${zoneName}InHeatMode`] &&
+              data[`ProhibitHeating${zoneName}`])
+          ) {
+            value = OperationModeStateZoneCapability.prohibited
+          } else if (
+            operationModeState in OperationModeStateZoneCapability &&
+            !data[`Idle${zoneName}`]
+          ) {
+            value =
+              OperationModeStateZoneCapability[
+                operationModeState as OperationModeStateZoneCapability
+              ]
+          }
+          await this.setCapabilityValue(`operation_mode_state.${zone}`, value)
+        }
+      }),
+    )
   }
 
   async #setOperationModeStates(): Promise<void> {
-    const operationModeState = this.getCapabilityValue('operation_mode_state')
-    await this.#setOperationModeStateHotWater(operationModeState)
-    await Promise.all(
-      (['zone1', 'zone2'] as const).map(async (zone) => {
-        await this.#setOperationModeStateZone(zone, operationModeState)
-      }),
-    )
+    if (this.device) {
+      const { data } = this.device
+      const operationModeState = OperationModeState[
+        data.OperationMode
+      ] as keyof typeof OperationModeState
+      await this.#setOperationModeStateHotWater(data, operationModeState)
+      await this.#setOperationModeStateZones(data, operationModeState)
+    }
   }
 }

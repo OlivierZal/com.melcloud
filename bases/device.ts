@@ -175,7 +175,7 @@ export default abstract class<
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      this.getCapabilityValue('onoff')
+      this.device?.data.Power !== true
     ) {
       await this.triggerCapabilityListener('onoff', true)
     } else if (
