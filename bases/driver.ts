@@ -30,7 +30,7 @@ const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof Capabilities[T], string>,
 ): keyof FlowArgs[T] => {
   const [arg] = capability.split('.')
-  return arg.replace(/_with_cool$/u, '') as keyof FlowArgs[T]
+  return arg as keyof FlowArgs[T]
 }
 
 export default abstract class<
