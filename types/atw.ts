@@ -9,75 +9,19 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type AtwDevice from '../drivers/melcloud/device'
-import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-  RangeOptions,
-} from './bases'
 
-const THERMOSTAT_MODE_VALUES_ATW = [
-  {
-    id: 'room',
-    title: {
-      da: 'Indendørs føler',
-      en: 'Indoor temperature',
-      es: 'Temperatura interior',
-      fr: 'Température intérieure',
-      nl: 'Binnentemperatuur',
-      no: 'Innendørs føler',
-      sv: 'Inomhusgivare',
-    },
-  },
-  {
-    id: 'flow',
-    title: {
-      da: 'Fast fremledningstemperatur',
-      en: 'Fixed flow temperature',
-      es: 'Temperatura de flujo fija',
-      fr: 'Température de flux fixe',
-      nl: 'Vaste aanvoertemperatuur',
-      no: 'Fast fremløpstemperatur',
-      sv: 'Fast framledningstemperatur',
-    },
-  },
-  {
-    id: 'curve',
-    title: {
-      da: 'Varmekurve',
-      en: 'Weather compensation curve',
-      es: 'Curva de compensación climática',
-      fr: 'Courbe de compensation météo',
-      nl: 'Weerscompensatiecurve',
-      no: 'Varmekurve',
-      sv: 'Värmekurva',
-    },
-  },
-  {
-    id: 'room_cool',
-    title: {
-      da: 'Indendørs føler - køling',
-      en: 'Indoor temperature - cooling',
-      es: 'Temperatura interior - enfriamiento',
-      fr: 'Température intérieure - refroidissement',
-      nl: 'Binnentemperatuur - koeling',
-      no: 'Innendørs føler - kjøling',
-      sv: 'Inomhusgivare - kylning',
-    },
-  },
-  {
-    id: 'flow_cool',
-    title: {
-      da: 'Fast fremledningstemperatur - køling',
-      en: 'Fixed flow temperature - cooling',
-      es: 'Temperatura de flujo fija - enfriamiento',
-      fr: 'Température du flux fixe - refroidissement',
-      nl: 'Vaste aanvoertemperatuur - koeling',
-      no: 'Fast fremløpstemperatur - kjøling',
-      sv: 'Fast framledningstemperatur - kylning',
-    },
-  },
-] as const
+import {
+  type BaseGetCapabilities,
+  type BaseListCapabilities,
+  type BaseSetCapabilities,
+  type RangeOptions,
+  COOL_SUFFIX,
+  CURVE,
+  FLOW,
+  FLOW_COOL,
+  ROOM,
+  ROOM_COOL,
+} from './bases'
 
 export enum OperationModeStateHotWaterCapability {
   dhw = 'dhw',
@@ -330,6 +274,7 @@ export interface CapabilitiesOptionsAtw {
   }
 }
 
+const THERMOSTAT_MODE_VALUES_ATW = [ROOM, FLOW, CURVE, ROOM_COOL, FLOW_COOL]
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
   HasZone2: hasZone2,
@@ -337,7 +282,9 @@ export const getCapabilitiesOptionsAtw = ({
   const thermostatModeValues =
     canCool ?
       THERMOSTAT_MODE_VALUES_ATW
-    : THERMOSTAT_MODE_VALUES_ATW.filter(({ id }) => !id.endsWith('cool'))
+    : THERMOSTAT_MODE_VALUES_ATW.filter(
+        ({ id }) => !id.endsWith(COOL_SUFFIX.id),
+      )
   return {
     thermostat_mode: { values: thermostatModeValues },
     ...(hasZone2 ?

@@ -17,6 +17,10 @@ import {
   type BaseSetCapabilities,
   type RangeOptions,
   AUTO,
+  COOL,
+  DRY,
+  FAN,
+  HEAT,
   OFF,
 } from './bases'
 
@@ -28,59 +32,6 @@ export enum ThermostatModeAta {
   heat = 'heat',
   off = 'off',
 }
-
-const THERMOSTAT_MODE_VALUES_ATA = [
-  AUTO,
-  {
-    id: 'cool',
-    title: {
-      da: 'Køl ned',
-      en: 'Cool',
-      es: 'Enfriar',
-      fr: 'Refroidir',
-      nl: 'Koelen',
-      no: 'Avkjøle',
-      sv: 'Kyla',
-    },
-  },
-  {
-    id: 'dry',
-    title: {
-      da: 'Affugte',
-      en: 'Dry',
-      es: 'Deshumidificar',
-      fr: 'Déshumidifier',
-      nl: 'Ontvochtigen',
-      no: 'Avfukte',
-      sv: 'Avfukta',
-    },
-  },
-  {
-    id: 'fan',
-    title: {
-      da: 'Blæse',
-      en: 'Fan',
-      es: 'Ventilar',
-      fr: 'Ventiler',
-      nl: 'Ventileren',
-      no: 'Vifte',
-      sv: 'Fläkta',
-    },
-  },
-  {
-    id: 'heat',
-    title: {
-      da: 'Opvarm',
-      en: 'Heat',
-      es: 'Calentar',
-      fr: 'Chauffer',
-      nl: 'Verhitten',
-      no: 'Varme',
-      sv: 'Värme',
-    },
-  },
-  OFF,
-] as const
 
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
@@ -234,5 +185,5 @@ export const getCapabilitiesOptionsAta = ({
     min: Number(!hasAutomaticFanSpeed),
     step: 1,
   },
-  thermostat_mode: { values: THERMOSTAT_MODE_VALUES_ATA },
+  thermostat_mode: { values: [AUTO, COOL, DRY, FAN, HEAT, OFF] },
 })

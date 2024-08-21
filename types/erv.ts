@@ -14,7 +14,9 @@ import {
   type BaseSetCapabilities,
   type RangeOptions,
   AUTO,
+  BY_PASS,
   OFF,
+  RECOVERY,
 } from './bases'
 
 export enum ThermostatModeErv {
@@ -23,35 +25,6 @@ export enum ThermostatModeErv {
   off = 'off',
   recovery = 'recovery',
 }
-
-const THERMOSTAT_MODE_VALUES_ERV = [
-  AUTO,
-  {
-    id: 'bypass',
-    title: {
-      da: 'Bypass',
-      en: 'Bypass',
-      es: 'Bypass',
-      fr: 'Bypass',
-      nl: 'Bypass',
-      no: 'Bypass',
-      sv: 'Bypass',
-    },
-  },
-  {
-    id: 'recovery',
-    title: {
-      da: 'Varmegenvinding',
-      en: 'Energy Recovery',
-      es: 'Recuperación de energía',
-      fr: "Récupération d'énergie",
-      nl: 'Warmteterugwinning',
-      no: 'Varmegjenvinning',
-      sv: 'Värmeåtervinning',
-    },
-  },
-  OFF,
-] as const
 
 export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_power: FanSpeed
@@ -128,5 +101,5 @@ export const getCapabilitiesOptionsErv = ({
     min: Number(!hasAutomaticFanSpeed),
     step: 1,
   },
-  thermostat_mode: { values: THERMOSTAT_MODE_VALUES_ERV },
+  thermostat_mode: { values: [AUTO, BY_PASS, RECOVERY, OFF] },
 })
