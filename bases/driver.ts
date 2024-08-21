@@ -10,7 +10,6 @@ import {
 import { Driver } from 'homey'
 
 import type MELCloudApp from '..'
-import type BaseMELCloudDevice from './device'
 
 import {
   type Capabilities,
@@ -21,13 +20,14 @@ import {
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type ManifestDriver,
+  type OpCapabilities,
   type SetCapabilities,
   type SetCapabilityTagMapping,
   getCapabilitiesOptions,
 } from '../types'
 
 const getArg = <T extends keyof typeof DeviceType>(
-  capability: Extract<keyof Capabilities[T], string>,
+  capability: Extract<keyof OpCapabilities[T], string>,
 ): keyof FlowArgs[T] => {
   const [arg] = capability.split('.')
   return arg as keyof FlowArgs[T]
@@ -117,15 +117,17 @@ export default abstract class<
   }
 
   #registerConditionRunListener(
-    capability: Extract<keyof Capabilities[T], string>,
+    capability: Extract<keyof OpCapabilities[T], string>,
   ): void {
     try {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs[T]) => {
           const value = (
-            args.device as unknown as BaseMELCloudDevice<T>
-          ).getCapabilityValue(capability)
+            args.device.getCapabilityValue as (
+              capability: string & keyof Capabilities[T],
+            ) => Capabilities[T][string & keyof Capabilities[T]]
+          )(capability)
           return typeof value === 'boolean' ? value : (
               (value as number | string) === args[getArg(capability)]
             )
@@ -140,7 +142,7 @@ export default abstract class<
       ...this.listCapabilityTagMapping,
     }).forEach((capability) => {
       this.#registerConditionRunListener(
-        capability as Extract<keyof Capabilities[T], string>,
+        capability as Extract<keyof OpCapabilities[T], string>,
       )
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(

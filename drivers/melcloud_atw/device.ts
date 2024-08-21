@@ -78,9 +78,11 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   }
 
-  protected override async setCapabilityValues(): Promise<void> {
-    await super.setCapabilityValues()
-    await this.#setOperationModeStates()
+  protected override async setCapabilityValues(
+    data: ListDeviceDataAtw,
+  ): Promise<void> {
+    await super.setCapabilityValues(data)
+    await this.#setOperationModeStates(data)
   }
 
   #convertFromDeviceTargetTemperatureFlow(
@@ -138,14 +140,11 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     )
   }
 
-  async #setOperationModeStates(): Promise<void> {
-    if (this.device) {
-      const { data } = this.device
-      const operationModeState = OperationModeState[
-        data.OperationMode
-      ] as keyof typeof OperationModeState
-      await this.#setOperationModeStateHotWater(data, operationModeState)
-      await this.#setOperationModeStateZones(data, operationModeState)
-    }
+  async #setOperationModeStates(data: ListDeviceDataAtw): Promise<void> {
+    const operationModeState = OperationModeState[
+      data.OperationMode
+    ] as keyof typeof OperationModeState
+    await this.#setOperationModeStateHotWater(data, operationModeState)
+    await this.#setOperationModeStateZones(data, operationModeState)
   }
 }

@@ -101,7 +101,9 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    await this.#init()
+    if (this.#device) {
+      await this.#init(this.#device.data)
+    }
   }
 
   protected get device(): DeviceFacade[T] | undefined {
@@ -112,7 +114,7 @@ export default abstract class<
           | undefined,
       )
       if (this.#device) {
-        this.#init().catch((error: unknown) => {
+        this.#init(this.#device.data).catch((error: unknown) => {
           this.setWarningSync(error)
         })
       } else {
@@ -250,17 +252,19 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    if (!this.#syncToDeviceTimeout) {
-      await this.setCapabilityValues()
+    if (!this.#syncToDeviceTimeout && this.device) {
+      await this.setCapabilityValues(this.device.data)
     }
   }
 
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        await this.#set()
-        await this.setCapabilityValues()
-        this.#syncToDeviceTimeout = null
+        if (this.device) {
+          await this.#set(this.device)
+          await this.setCapabilityValues(this.device.data)
+          this.#syncToDeviceTimeout = null
+        }
       },
       { seconds: 1 },
       { actionType: 'sync to device', units: ['seconds'] },
@@ -273,32 +277,29 @@ export default abstract class<
     this.log('Sync to device has been paused')
   }
 
-  protected async setCapabilityValues(): Promise<void> {
-    if (this.device) {
-      const { data } = this.device
-      await Promise.all(
-        (
-          Object.entries({
-            ...this.#setCapabilityTagMapping,
-            ...this.#getCapabilityTagMapping,
-            ...this.#listCapabilityTagMapping,
-          }) as OpCapabilityTagEntry<T>[]
-        ).map(async ([capability, tag]) => {
-          if (tag in data) {
-            await this.setCapabilityValue(
+  protected async setCapabilityValues(
+    data: ListDevice[T]['Device'],
+  ): Promise<void> {
+    await Promise.all(
+      (
+        Object.entries({
+          ...this.#setCapabilityTagMapping,
+          ...this.#getCapabilityTagMapping,
+          ...this.#listCapabilityTagMapping,
+        }) as OpCapabilityTagEntry<T>[]
+      ).map(async ([capability, tag]) => {
+        if (tag in data) {
+          await this.setCapabilityValue(
+            capability,
+            this.#convertFromDevice(
               capability,
-              this.#convertFromDevice(
-                capability,
-                (data as ListDevice[T]['Device'])[
-                  tag as keyof ListDevice[T]['Device']
-                ],
-                data as ListDevice[T]['Device'],
-              ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
-            )
-          }
-        }),
-      )
-    }
+              data[tag as keyof ListDevice[T]['Device']],
+              data,
+            ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
+          )
+        }
+      }),
+    )
   }
 
   async #buildUpdateData(): Promise<UpdateDeviceData[T]> {
@@ -444,16 +445,14 @@ export default abstract class<
     }
   }
 
-  async #init(): Promise<void> {
-    if (this.device) {
-      await this.#setCapabilities(this.device.data)
-      await this.#setCapabilityOptions(this.device.data)
-      this.#setCapabilityTagMappings()
-      this.#setEnergyCapabilityTagEntries()
-      this.#registerCapabilityListeners()
-      await this.syncFromDevice()
-      await this.#runEnergyReports()
-    }
+  async #init(data: ListDevice[T]['Device']): Promise<void> {
+    await this.#setCapabilities(data)
+    await this.#setCapabilityOptions(data)
+    this.#setCapabilityTagMappings()
+    this.#setEnergyCapabilityTagEntries()
+    this.#registerCapabilityListeners()
+    await this.syncFromDevice()
+    await this.#runEnergyReports()
   }
 
   #isCapability(setting: string): boolean {
@@ -551,16 +550,14 @@ export default abstract class<
     await this.#runEnergyReport(true)
   }
 
-  async #set(): Promise<void> {
-    if (this.device) {
-      const updateData = await this.#buildUpdateData()
-      if (Object.keys(updateData).length) {
-        try {
-          ;(await this.device.set(updateData)) as SetDeviceData[T]
-        } catch (error) {
-          if (!(error instanceof Error) || error.message !== 'No data to set') {
-            await this.setWarning(error)
-          }
+  async #set(device: DeviceFacade[T]): Promise<void> {
+    const updateData = await this.#buildUpdateData()
+    if (Object.keys(updateData).length) {
+      try {
+        ;(await device.set(updateData)) as SetDeviceData[T]
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== 'No data to set') {
+          await this.setWarning(error)
         }
       }
     }
