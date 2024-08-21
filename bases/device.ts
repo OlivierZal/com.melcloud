@@ -229,7 +229,9 @@ export default abstract class<
   public override async setCapabilityValue<
     K extends string & keyof Capabilities[T],
   >(capability: K, value: Capabilities[T][K]): Promise<void> {
-    await super.setCapabilityValue(capability, value)
+    if (value !== this.getCapabilityValue(capability)) {
+      await super.setCapabilityValue(capability, value)
+    }
     this.log('Capability', capability, 'is', value)
   }
 
