@@ -286,7 +286,7 @@ export default [
               'private-method',
               'abstract-method',
               'abstract-protected-method',
-              'unknown'
+              'unknown',
             ],
           },
         ],
