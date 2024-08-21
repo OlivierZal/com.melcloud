@@ -18,8 +18,8 @@ const groups = {
     'operator',
     'conditional',
     'import',
-    'nullish',
     'unknown',
+    'nullish',
   ],
 }
 
