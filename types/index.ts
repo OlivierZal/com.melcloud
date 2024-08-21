@@ -10,13 +10,16 @@ export {
   SET_CAPABILITY_TAGS_MAPPING_ATA,
   ThermostatModeAta,
 } from './ata'
+export type {
+  CapabilitiesAtw,
+  EnergyCapabilitiesAtw,
+  FlowArgsAtw,
+  OpCapabilitiesAtw,
+  SetCapabilitiesAtw,
+  TargetTemperatureFlowCapabilities,
+  Zone,
+} from './atw'
 export {
-  type CapabilitiesAtw,
-  type EnergyCapabilitiesAtw,
-  type FlowArgsAtw,
-  type OpCapabilitiesAtw,
-  type SetCapabilitiesAtw,
-  type TargetTemperatureFlowCapabilities,
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
   GET_CAPABILITY_TAGS_MAPPING_ATW,
   LIST_CAPABILITY_TAGS_MAPPING_ATW,
