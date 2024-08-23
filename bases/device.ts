@@ -467,6 +467,16 @@ export default abstract class<
     capability: K,
     value: SetCapabilities[T][K],
   ): void {
+    if (this.driver.type !== 'Atw' && capability === 'thermostat_mode') {
+      this.diff.set(
+        'onoff',
+        (value !== 'off') as SetCapabilities[T][keyof SetCapabilities[T]],
+      )
+      if (value !== 'off') {
+        this.diff.set(capability as keyof SetCapabilities[T], value)
+      }
+      return
+    }
     this.diff.set(capability, value)
   }
 
@@ -503,31 +513,14 @@ export default abstract class<
 
   #registerCapabilityListeners(): void {
     Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
-      if (this.driver.type !== 'Atw' && capability === 'thermostat_mode') {
-        this.registerCapabilityListener(
-          capability,
-          (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
-            this.clearSyncToDevice()
-            this.diff.set(
-              'onoff',
-              (value !== 'off') as SetCapabilities[T][keyof SetCapabilities[T]],
-            )
-            if (value !== 'off') {
-              this.diff.set(capability as keyof SetCapabilities[T], value)
-            }
-            this.applySyncToDevice()
-          },
-        )
-        return
-      }
+      this.clearSyncToDevice()
       this.registerCapabilityListener(
         capability,
         (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
-          this.clearSyncToDevice()
           this.#onCapability(capability as keyof SetCapabilities[T], value)
-          this.applySyncToDevice()
         },
       )
+      this.applySyncToDevice()
     })
   }
 
