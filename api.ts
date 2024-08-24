@@ -186,12 +186,10 @@ export = {
   }): Partial<Record<string, DriverSetting[]>> {
     const language = homey.i18n.getLanguage()
     return Object.groupBy(
-      ((homey.app as MELCloudApp).manifest as Manifest).drivers.flatMap(
-        (driver) => [
-          ...getDriverSettings(driver, language),
-          ...getDriverLoginSetting(driver, language),
-        ],
-      ),
+      (homey.manifest as Manifest).drivers.flatMap((driver) => [
+        ...getDriverSettings(driver, language),
+        ...getDriverLoginSetting(driver, language),
+      ]),
       ({ driverId, groupId }) => groupId ?? driverId,
     )
   },
