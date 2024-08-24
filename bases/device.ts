@@ -101,9 +101,7 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    if (this.#device) {
-      await this.#init(this.#device.data)
-    }
+    this.#initDevice()
   }
 
   protected get device(): DeviceFacade[T] | undefined {
@@ -453,6 +451,10 @@ export default abstract class<
     this.#registerCapabilityListeners()
     await this.syncFromDevice()
     await this.#runEnergyReports()
+  }
+
+  #initDevice(): DeviceFacade[T] | undefined {
+    return this.device
   }
 
   #isCapability(setting: string): boolean {
