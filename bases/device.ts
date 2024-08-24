@@ -101,25 +101,7 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    this.#initDevice()
-  }
-
-  protected get device(): DeviceFacade[T] | undefined {
-    if (!this.#device) {
-      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
-        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
-          | DeviceModel<T>
-          | undefined,
-      )
-      if (this.#device) {
-        this.#init(this.#device.data).catch((error: unknown) => {
-          this.setWarningSync(error)
-        })
-      } else {
-        this.setWarningSync(this.homey.__('warnings.device.not_found'))
-      }
-    }
-    return this.#device
+    await this.getDevice()
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -175,7 +157,7 @@ export default abstract class<
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      this.device?.data.Power !== true
+      (await this.getDevice())?.data.Power !== true
     ) {
       await this.triggerCapabilityListener('onoff', true)
     } else if (
@@ -243,24 +225,20 @@ export default abstract class<
     await super.setWarning(null)
   }
 
-  public setWarningSync(error: unknown): void {
-    this.setWarning(error).catch((err: unknown) => {
-      this.error(getErrorMessage(err))
-    })
-  }
-
   public async syncFromDevice(): Promise<void> {
-    if (!this.#syncToDeviceTimeout && this.device) {
-      await this.setCapabilityValues(this.device.data)
+    const device = await this.getDevice()
+    if (!this.#syncToDeviceTimeout && device) {
+      await this.setCapabilityValues(device.data)
     }
   }
 
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        if (this.device) {
-          await this.#set(this.device)
-          await this.setCapabilityValues(this.device.data)
+        const device = await this.getDevice()
+        if (device) {
+          await this.#set(device)
+          await this.setCapabilityValues(device.data)
           this.#syncToDeviceTimeout = null
         }
       },
@@ -273,6 +251,22 @@ export default abstract class<
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.#syncToDeviceTimeout = null
     this.log('Sync to device has been paused')
+  }
+
+  protected async getDevice(): Promise<DeviceFacade[T] | undefined> {
+    if (!this.#device) {
+      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
+        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
+          | DeviceModel<T>
+          | undefined,
+      )
+      if (this.#device) {
+        await this.#init(this.#device.data)
+      } else {
+        await this.setWarning(this.homey.__('warnings.device.not_found'))
+      }
+    }
+    return this.#device
   }
 
   protected async setCapabilityValues(
@@ -404,12 +398,13 @@ export default abstract class<
   }
 
   async #getEnergyReport(total = false): Promise<void> {
-    if (this.reportPlanParameters && this.device) {
+    const device = await this.getDevice()
+    if (this.reportPlanParameters && device) {
       try {
         const toDateTime = DateTime.now().minus(this.reportPlanParameters.minus)
         const to = toDateTime.toISODate()
         await this.#setEnergyCapabilities(
-          (await this.device.getEnergyReport({
+          (await device.getEnergyReport({
             from: total ? undefined : to,
             to,
           })) as EnergyData[T],
@@ -451,10 +446,6 @@ export default abstract class<
     this.#registerCapabilityListeners()
     await this.syncFromDevice()
     await this.#runEnergyReports()
-  }
-
-  #initDevice(): DeviceFacade[T] | undefined {
-    return this.device
   }
 
   #isCapability(setting: string): boolean {
