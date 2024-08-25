@@ -73,6 +73,8 @@ export default abstract class<
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
+  #opCapabilityTagEntries: OpCapabilityTagEntry<T>[] = []
+
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
   #syncToDeviceTimeout: NodeJS.Timeout | null = null
@@ -273,13 +275,7 @@ export default abstract class<
     data: ListDevice[T]['Device'],
   ): Promise<void> {
     await Promise.all(
-      (
-        Object.entries({
-          ...this.#setCapabilityTagMapping,
-          ...this.#getCapabilityTagMapping,
-          ...this.#listCapabilityTagMapping,
-        }) as OpCapabilityTagEntry<T>[]
-      ).map(async ([capability, tag]) => {
+      this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
         if (tag in data) {
           await this.setCapabilityValue(
             capability,
@@ -302,7 +298,7 @@ export default abstract class<
     const updateData = Object.fromEntries(
       [...this.diff].map(([capability, value]) => [
         this.#setCapabilityTagMapping[
-          capability as keyof Partial<SetCapabilityTagMapping[T]>
+          capability as keyof SetCapabilityTagMapping[T]
         ],
         this.#convertToDevice(
           capability,
@@ -675,5 +671,14 @@ export default abstract class<
     this.#listCapabilityTagMapping = this.#cleanMapping(
       this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
     )
+    this.#setOpCapabilityTagEntries()
+  }
+
+  #setOpCapabilityTagEntries(): void {
+    this.#opCapabilityTagEntries = Object.entries({
+      ...this.#setCapabilityTagMapping,
+      ...this.#getCapabilityTagMapping,
+      ...this.#listCapabilityTagMapping,
+    }) as OpCapabilityTagEntry<T>[]
   }
 }
