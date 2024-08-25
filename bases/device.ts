@@ -103,7 +103,7 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    await this.getDevice()
+    await this.fetchDevice()
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -159,7 +159,7 @@ export default abstract class<
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      (await this.getDevice())?.data.Power !== true
+      (await this.fetchDevice())?.data.Power !== true
     ) {
       await this.triggerCapabilityListener('onoff', true)
     } else if (
@@ -228,7 +228,7 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const device = await this.getDevice()
+    const device = await this.fetchDevice()
     if (!this.#syncToDeviceTimeout && device) {
       await this.setCapabilityValues(device.data)
     }
@@ -237,7 +237,7 @@ export default abstract class<
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        const device = await this.getDevice()
+        const device = await this.fetchDevice()
         if (device) {
           await this.#set(device)
           await this.setCapabilityValues(device.data)
@@ -255,7 +255,7 @@ export default abstract class<
     this.log('Sync to device has been paused')
   }
 
-  protected async getDevice(): Promise<DeviceFacade[T] | undefined> {
+  protected async fetchDevice(): Promise<DeviceFacade[T] | undefined> {
     if (!this.#device) {
       this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
         DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
@@ -394,7 +394,7 @@ export default abstract class<
   }
 
   async #getEnergyReport(total = false): Promise<void> {
-    const device = await this.getDevice()
+    const device = await this.fetchDevice()
     if (this.reportPlanParameters && device) {
       try {
         const toDateTime = DateTime.now().minus(this.reportPlanParameters.minus)
