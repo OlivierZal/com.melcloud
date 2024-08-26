@@ -34,7 +34,7 @@ export = class MELCloudApp extends withTimers(App) {
       timezone: this.homey.clock.getTimezone(),
     })
     this.#facadeManager = new FacadeManager(this.#api)
-    this.#createNotification(language)
+    await this.#createNotification(language)
   }
 
   public get api(): MELCloudAPI {

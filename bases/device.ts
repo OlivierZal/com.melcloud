@@ -134,10 +134,10 @@ export default abstract class<
 
   public override onDeleted(): void {
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
-    this.homey.clearTimeout(this.#reportTimeout.false)
-    this.homey.clearTimeout(this.#reportTimeout.true)
-    this.homey.clearInterval(this.#reportInterval.false)
-    this.homey.clearInterval(this.#reportInterval.true)
+    ;(['false', 'true'] as const).forEach((total) => {
+      this.homey.clearTimeout(this.#reportTimeout[total])
+      this.homey.clearTimeout(this.#reportInterval[total])
+    })
   }
 
   public override async onSettings({
@@ -528,8 +528,11 @@ export default abstract class<
   }
 
   async #runEnergyReports(): Promise<void> {
-    await this.#runEnergyReport()
-    await this.#runEnergyReport(true)
+    await Promise.all(
+      [false, true].map(async (total) => {
+        await this.#runEnergyReport(total)
+      }),
+    )
   }
 
   async #set(device: DeviceFacade[T]): Promise<void> {
