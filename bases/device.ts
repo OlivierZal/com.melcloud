@@ -38,6 +38,11 @@ import {
 
 const NUMBER_0 = 0
 const NUMBER_1 = 1
+const REPORT_PLAN_PARAMETERS_TOTAL = {
+  duration: { days: 1 },
+  interval: { days: 1 },
+  values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+}
 
 const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
@@ -517,13 +522,7 @@ export default abstract class<
       }
       const { minus } = this.reportPlanParameters
       const { duration, interval, values } =
-        total ?
-          {
-            duration: { days: 1 },
-            interval: { days: 1 },
-            values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-          }
-        : this.reportPlanParameters
+        total ? REPORT_PLAN_PARAMETERS_TOTAL : this.reportPlanParameters
       await this.#getEnergyReport(total, minus)
       this.#planEnergyReport(total, { duration, interval, values })
     }
