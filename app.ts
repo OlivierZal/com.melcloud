@@ -4,8 +4,9 @@ import { App } from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 import 'source-map-support/register'
 
-import type { MELCloudDevice } from './types'
+import type { MELCloudDevice, Manifest } from './types'
 
+import changelog from './.homeychangelog.json'
 import withTimers from './mixins/withTimers'
 
 LuxonSettings.defaultLocale = 'en-us'
@@ -17,8 +18,9 @@ export = class MELCloudApp extends withTimers(App) {
 
   public override async onInit(): Promise<void> {
     LuxonSettings.defaultZone = this.homey.clock.getTimezone()
+    const language = this.homey.i18n.getLanguage()
     this.#api = await MELCloudAPI.create({
-      language: this.homey.i18n.getLanguage(),
+      language,
       logger: {
         error: (...args): void => {
           this.error(...args)
@@ -32,6 +34,7 @@ export = class MELCloudApp extends withTimers(App) {
       timezone: this.homey.clock.getTimezone(),
     })
     this.#facadeManager = new FacadeManager(this.#api)
+    this.#createNotification(language)
   }
 
   public get api(): MELCloudAPI {
@@ -56,6 +59,21 @@ export = class MELCloudApp extends withTimers(App) {
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
     return Promise.resolve()
+  }
+
+  async #createNotification(language: string): Promise<void> {
+    const { version } = this.homey.manifest as Manifest
+    if (version in changelog) {
+      const versionChangelog = changelog[version as keyof typeof changelog]
+      await this.homey.notifications.createNotification({
+        excerpt:
+          changelog[version as keyof typeof changelog][
+            language in versionChangelog ?
+              (language as keyof typeof versionChangelog)
+            : 'en'
+          ],
+      })
+    }
   }
 
   async #syncFromDevices(): Promise<void> {

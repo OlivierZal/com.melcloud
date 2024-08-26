@@ -4,6 +4,7 @@
     "module": "NodeNext",
     "noImplicitOverride": true,
     "outDir": ".homeybuild",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,

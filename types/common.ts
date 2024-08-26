@@ -132,6 +132,7 @@ export interface ManifestDriver {
 
 export interface Manifest {
   readonly drivers: readonly ManifestDriver[]
+  readonly version: string
 }
 
 export interface DriverSetting {
