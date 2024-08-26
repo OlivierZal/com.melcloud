@@ -103,7 +103,7 @@ export default abstract class<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    await this.fetchDevice()
+    await this.#fetchDevice()
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -159,7 +159,7 @@ export default abstract class<
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&
-      (await this.fetchDevice())?.data.Power !== true
+      (await this.#fetchDevice())?.data.Power !== true
     ) {
       await this.triggerCapabilityListener('onoff', true)
     } else if (
@@ -228,7 +228,7 @@ export default abstract class<
   }
 
   public async syncFromDevice(): Promise<void> {
-    const device = await this.fetchDevice()
+    const device = await this.#fetchDevice()
     if (!this.#syncToDeviceTimeout && device) {
       await this.setCapabilityValues(device.data)
     }
@@ -237,7 +237,7 @@ export default abstract class<
   protected applySyncToDevice(): void {
     this.#syncToDeviceTimeout = this.setTimeout(
       async (): Promise<void> => {
-        const device = await this.fetchDevice()
+        const device = await this.#fetchDevice()
         if (device) {
           await this.#set(device)
           await this.setCapabilityValues(device.data)
@@ -253,22 +253,6 @@ export default abstract class<
     this.homey.clearTimeout(this.#syncToDeviceTimeout)
     this.#syncToDeviceTimeout = null
     this.log('Sync to device has been paused')
-  }
-
-  protected async fetchDevice(): Promise<DeviceFacade[T] | undefined> {
-    if (!this.#device) {
-      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
-        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
-          | DeviceModel<T>
-          | undefined,
-      )
-      if (this.#device) {
-        await this.#init(this.#device.data)
-      } else {
-        await this.setWarning(this.homey.__('warnings.device.not_found'))
-      }
-    }
-    return this.#device
   }
 
   protected async setCapabilityValues(
@@ -365,7 +349,7 @@ export default abstract class<
     ) as Partial<M>
   }
 
-  #clearEnergyReportPlan(total = false): void {
+  #clearEnergyReportPlan(total: boolean): void {
     const totalString = String(total) as `${boolean}`
     this.homey.clearTimeout(this.#reportTimeout[totalString])
     this.homey.clearInterval(this.#reportInterval[totalString])
@@ -393,8 +377,24 @@ export default abstract class<
     )
   }
 
-  async #getEnergyReport(total = false): Promise<void> {
-    const device = await this.fetchDevice()
+  async #fetchDevice(): Promise<DeviceFacade[T] | undefined> {
+    if (!this.#device) {
+      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
+        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
+          | DeviceModel<T>
+          | undefined,
+      )
+      if (this.#device) {
+        await this.#init(this.#device.data)
+      } else {
+        await this.setWarning(this.homey.__('warnings.device.not_found'))
+      }
+    }
+    return this.#device
+  }
+
+  async #getEnergyReport(total: boolean): Promise<void> {
+    const device = await this.#fetchDevice()
     if (this.reportPlanParameters && device) {
       try {
         const toDateTime = DateTime.now().minus(this.reportPlanParameters.minus)
@@ -469,7 +469,7 @@ export default abstract class<
     this.diff.set(capability, value)
   }
 
-  #planEnergyReport(total = false): void {
+  #planEnergyReport(total: boolean): void {
     if (this.reportPlanParameters) {
       const totalString = String(total) as `${boolean}`
       if (!this.#reportTimeout[totalString]) {
@@ -513,7 +513,7 @@ export default abstract class<
     })
   }
 
-  async #runEnergyReport(total = false): Promise<void> {
+  async #runEnergyReport(total: boolean): Promise<void> {
     if (this.reportPlanParameters) {
       if (
         !(this.#energyCapabilityTagEntries[String(total) as `${boolean}`] ?? [])
@@ -609,7 +609,7 @@ export default abstract class<
   async #setEnergyCapabilities(
     data: EnergyData[T],
     hour: number,
-    total = false,
+    total: boolean,
   ): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       this.#linkedDeviceCount =
