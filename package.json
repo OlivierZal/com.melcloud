@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "37.2.0",
+  "version": "38.0.0",
   "main": "app.ts",
   "scripts": {
     "build": "homey app validate --level publish",
@@ -32,6 +32,6 @@
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.2",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.2.0"
+    "typescript-eslint": "^8.3.0"
   }
 }
