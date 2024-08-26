@@ -8,7 +8,7 @@ import {
   DeviceModel,
 } from '@olivierzal/melcloud-api'
 import { Device } from 'homey'
-import { DateTime } from 'luxon'
+import { type DurationLike, DateTime } from 'luxon'
 
 import type MELCloudApp from '../app'
 
@@ -393,11 +393,11 @@ export default abstract class<
     return this.#device
   }
 
-  async #getEnergyReport(total: boolean): Promise<void> {
+  async #getEnergyReport(total: boolean, minus: DurationLike): Promise<void> {
     const device = await this.#fetchDevice()
-    if (this.reportPlanParameters && device) {
+    if (device) {
       try {
-        const toDateTime = DateTime.now().minus(this.reportPlanParameters.minus)
+        const toDateTime = DateTime.now().minus(minus)
         const to = toDateTime.toISODate()
         await this.#setEnergyCapabilities(
           (await device.getEnergyReport({
@@ -469,34 +469,27 @@ export default abstract class<
     this.diff.set(capability, value)
   }
 
-  #planEnergyReport(total: boolean): void {
-    if (this.reportPlanParameters) {
-      const totalString = String(total) as `${boolean}`
-      if (!this.#reportTimeout[totalString]) {
-        const actionType = `${total ? 'total' : 'regular'} energy report`
-        const { duration, interval, values } =
-          total ?
-            {
-              duration: { days: 1 },
-              interval: { days: 1 },
-              values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-            }
-          : this.reportPlanParameters
-        this.#reportTimeout[totalString] = this.setTimeout(
-          async () => {
-            await this.#runEnergyReport(total)
-            this.#reportInterval[totalString] = this.setInterval(
-              async () => {
-                await this.#runEnergyReport(total)
-              },
-              interval,
-              { actionType, units: ['days', 'hours'] },
-            )
-          },
-          DateTime.now().plus(duration).set(values).diffNow(),
-          { actionType, units: ['hours', 'minutes'] },
-        )
-      }
+  #planEnergyReport(
+    total: boolean,
+    { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
+  ): void {
+    const totalString = String(total) as `${boolean}`
+    if (!this.#reportTimeout[totalString]) {
+      const actionType = `${total ? 'total' : 'regular'} energy report`
+      this.#reportTimeout[totalString] = this.setTimeout(
+        async () => {
+          await this.#runEnergyReport(total)
+          this.#reportInterval[totalString] = this.setInterval(
+            async () => {
+              await this.#runEnergyReport(total)
+            },
+            interval,
+            { actionType, units: ['days', 'hours'] },
+          )
+        },
+        DateTime.now().plus(duration).set(values).diffNow(),
+        { actionType, units: ['hours', 'minutes'] },
+      )
     }
   }
 
@@ -522,8 +515,17 @@ export default abstract class<
         this.#clearEnergyReportPlan(total)
         return
       }
-      await this.#getEnergyReport(total)
-      this.#planEnergyReport(total)
+      const { minus } = this.reportPlanParameters
+      const { duration, interval, values } =
+        total ?
+          {
+            duration: { days: 1 },
+            interval: { days: 1 },
+            values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+          }
+        : this.reportPlanParameters
+      await this.#getEnergyReport(total, minus)
+      this.#planEnergyReport(total, { duration, interval, values })
     }
   }
 
