@@ -30,7 +30,7 @@
     "eslint-plugin-perfectionist": "^3.2.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
-    "prettier-plugin-packagejson": "^2.5.1",
+    "prettier-plugin-packagejson": "^2.5.2",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.2.0"
   }
