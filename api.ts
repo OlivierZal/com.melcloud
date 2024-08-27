@@ -158,13 +158,13 @@ const handleErrorLogQuery = ({
 }
 
 export = {
-  getAtaDevices({
+  async getAtaDevices({
     homey,
     params: { buildingId },
   }: {
     homey: Homey
     params: { buildingId: string }
-  }): GroupAtaState {
+  }): Promise<GroupAtaState> {
     return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
   },
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
