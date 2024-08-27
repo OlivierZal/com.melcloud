@@ -22,13 +22,13 @@ import type {
   ValueOf,
 } from '../types'
 
-const DAYS_14 = 14
-
 class NoDeviceError extends Error {
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
   }
 }
+
+const DAYS_14 = 14
 
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
