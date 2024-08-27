@@ -4,9 +4,13 @@ import {
   type BuildingData,
   type BuildingFacade,
   type ErrorData,
+  type FailureData,
   type FrostProtectionData,
   type HolidayModeData,
   type LoginCredentials,
+  type SetAtaGroupPostData,
+  type SuccessData,
+  type ValuesAta,
   BuildingModel,
   DeviceModel,
 } from '@olivierzal/melcloud-api'
@@ -155,6 +159,15 @@ const handleErrorLogQuery = ({
 }
 
 export = {
+  getAtaDevices({
+    homey,
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): SetAtaGroupPostData['State'] {
+    return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
+  },
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
     return Promise.all(
       BuildingModel.getAll().map(async (building) =>
@@ -261,6 +274,17 @@ export = {
     homey: Homey
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).api.applyLogin(body)
+  },
+  async setAtaDevices({
+    body,
+    homey,
+    params: { buildingId },
+  }: {
+    body: ValuesAta
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<FailureData | SuccessData> {
+    return getOrCreateBuildingFacade(homey, Number(buildingId)).setAta(body)
   },
   async setDeviceSettings({
     body,

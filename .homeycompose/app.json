@@ -139,6 +139,14 @@
       "method": "GET",
       "path": "/buildings"
     },
+    "getAtaDevices": {
+      "method": "GET",
+      "path": "/devices/melcloud/buildings/:buildingId"
+    },
+    "setAtaDevices": {
+      "method": "PUT",
+      "path": "/devices/melcloud/buildings/:buildingId"
+    },
     "getErrors": {
       "method": "GET",
       "path": "/errors"
