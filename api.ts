@@ -6,11 +6,10 @@ import {
   type ErrorData,
   type FailureData,
   type FrostProtectionData,
+  type GroupAtaState,
   type HolidayModeData,
   type LoginCredentials,
-  type SetAtaGroupPostData,
   type SuccessData,
-  type ValuesAta,
   BuildingModel,
   DeviceModel,
 } from '@olivierzal/melcloud-api'
@@ -165,7 +164,7 @@ export = {
   }: {
     homey: Homey
     params: { buildingId: string }
-  }): SetAtaGroupPostData['State'] {
+  }): GroupAtaState {
     return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
   },
   async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
@@ -280,7 +279,7 @@ export = {
     homey,
     params: { buildingId },
   }: {
-    body: ValuesAta
+    body: GroupAtaState
     homey: Homey
     params: { buildingId: string }
   }): Promise<FailureData | SuccessData> {

@@ -13,7 +13,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^6.1.7",
+    "@olivierzal/melcloud-api": "^7.0.0",
     "core-js": "^3.38.1",
     "luxon": "^3.5.0",
     "source-map-support": "^0.5.21"
@@ -27,7 +27,7 @@
     "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-package-json": "^0.15.2",
-    "eslint-plugin-perfectionist": "^3.2.0",
+    "eslint-plugin-perfectionist": "^3.3.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.2",
