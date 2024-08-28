@@ -1,11 +1,12 @@
-name: Homey
+name: Validate app
 on:
+  pull_request:
   push:
     branches: main
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
 jobs:
   validate:
+    name: Validate app
     runs-on: ubuntu-latest
     if: github.actor != 'dependabot[bot]'
     steps:
@@ -28,8 +29,8 @@ jobs:
           level: publish
       - name: Commit & push changes
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if ! git diff --cached --exit-code; then
             git commit -m "Code maintenance: lint, format and build code"

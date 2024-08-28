@@ -27,10 +27,11 @@ export {
   OperationModeStateZoneCapability,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
 } from './atw'
-export type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
+export {
+  type BaseGetCapabilities,
+  type BaseListCapabilities,
+  type BaseSetCapabilities,
+  THERMOSTAT_MODE_TITLE,
 } from './bases'
 export {
   type Capabilities,
@@ -40,6 +41,7 @@ export {
   type DeviceDetails,
   type DeviceSetting,
   type DeviceSettings,
+  type DriverCapabilitiesOptions,
   type DriverSetting,
   type EnergyCapabilities,
   type EnergyCapabilityTagEntry,
@@ -59,6 +61,7 @@ export {
   type MELCloudDriver,
   type Manifest,
   type ManifestDriver,
+  type ManifestDriverCapabilitiesOptions,
   type OpCapabilities,
   type OpCapabilityTagEntry,
   type OpDeviceData,

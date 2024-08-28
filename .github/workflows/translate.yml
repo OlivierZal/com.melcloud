@@ -15,8 +15,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git config --local user.email "sysadmin+githubactions@athom.com"
-          git config --local user.name "Homey Github Actions Bot"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b feature/openai-translations
           git add -A
           git commit -m "Automatic translations with OpenAI"

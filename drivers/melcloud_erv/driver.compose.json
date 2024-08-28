@@ -50,6 +50,58 @@
         "da": "Udendørstemperatur",
         "es": "Temperatura exterior"
       }
+    },
+    "thermostat_mode": {
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        },
+        {
+          "id": "bypass",
+          "title": {
+            "en": "Bypass",
+            "fr": "Bypass",
+            "nl": "Bypass",
+            "sv": "Bypass",
+            "no": "Bypass",
+            "da": "Bypass",
+            "es": "Bypass"
+          }
+        },
+        {
+          "id": "recovery",
+          "title": {
+            "en": "Energy Recovery",
+            "fr": "Récupération d'énergie",
+            "nl": "Warmteterugwinning",
+            "sv": "Värmeåtervinning",
+            "no": "Varmegjenvinning",
+            "da": "Varmegenvinding",
+            "es": "Recuperación de energía"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "fr": "Désactivé",
+            "nl": "Uit",
+            "sv": "Av",
+            "no": "Av",
+            "da": "Deaktiveret",
+            "es": "Desactivado"
+          }
+        }
+      ]
     }
   }
 }

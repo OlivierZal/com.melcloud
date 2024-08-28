@@ -15,12 +15,7 @@ import {
   type BaseListCapabilities,
   type BaseSetCapabilities,
   type RangeOptions,
-  COOL_SUFFIX,
-  CURVE,
-  FLOW,
-  FLOW_COOL,
-  ROOM,
-  ROOM_COOL,
+  THERMOSTAT_MODE_TITLE,
 } from './bases'
 
 export enum OperationModeStateHotWaterCapability {
@@ -276,7 +271,96 @@ export interface CapabilitiesOptionsAtw {
   }
 }
 
+const ZONE2_SUFFIX = {
+  da: 'zone 2',
+  en: 'zone 2',
+  es: 'zona 2',
+  fr: 'zone 2',
+  nl: 'zone 2',
+  no: 'sone 2',
+  sv: 'zon 2',
+}
+const createZone2Title = (
+  title: Record<string, string>,
+): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(ZONE2_SUFFIX).map(([language, suffix]) => [
+      language,
+      `${title[language]} - ${suffix}`,
+    ]),
+  )
+const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(THERMOSTAT_MODE_TITLE)
+
+const CURVE = {
+  id: 'curve',
+  title: {
+    da: 'Varmekurve',
+    en: 'Weather compensation curve',
+    es: 'Curva de compensación climática',
+    fr: 'Courbe de compensation météo',
+    nl: 'Weerscompensatiecurve',
+    no: 'Varmekurve',
+    sv: 'Värmekurva',
+  },
+} as const
+const FLOW = {
+  id: 'flow',
+  title: {
+    da: 'Fast fremledningstemperatur',
+    en: 'Fixed flow temperature',
+    es: 'Temperatura de flujo fija',
+    fr: 'Température de flux fixe',
+    nl: 'Vaste aanvoertemperatuur',
+    no: 'Fast fremløpstemperatur',
+    sv: 'Fast framledningstemperatur',
+  },
+} as const
+const ROOM = {
+  id: 'room',
+  title: {
+    da: 'Indendørs føler',
+    en: 'Indoor temperature',
+    es: 'Temperatura interior',
+    fr: 'Température intérieure',
+    nl: 'Binnentemperatuur',
+    no: 'Innendørs føler',
+    sv: 'Inomhusgivare',
+  },
+} as const
+
+const COOL_SUFFIX = {
+  id: 'cool',
+  title: {
+    da: 'køling',
+    en: 'cooling',
+    es: 'enfriamiento',
+    fr: 'refroidissement',
+    nl: 'koeling',
+    no: 'kjøling',
+    sv: 'kylning',
+  },
+} as const
+const createCoolObject = ({
+  id,
+  title,
+}: {
+  id: 'flow' | 'room'
+  title: Record<string, string>
+}) =>
+  ({
+    id: `${id}_${COOL_SUFFIX.id}`,
+    title: Object.fromEntries(
+      Object.entries(COOL_SUFFIX.title).map(([language, suffix]) => [
+        language,
+        `${title[language]} - ${suffix}`,
+      ]),
+    ),
+  }) as const
+const FLOW_COOL = createCoolObject(FLOW)
+const ROOM_COOL = createCoolObject(ROOM)
+
 const THERMOSTAT_MODE_VALUES_ATW = [ROOM, FLOW, CURVE, ROOM_COOL, FLOW_COOL]
+
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
   HasZone2: hasZone2,
@@ -292,15 +376,7 @@ export const getCapabilitiesOptionsAtw = ({
     ...(hasZone2 ?
       {
         'thermostat_mode.zone2': {
-          title: {
-            da: 'Tilstand for termostat - zone 2',
-            en: 'Mode of the thermostat - zone 2',
-            es: 'Modo del termostato - zona 2',
-            fr: 'Mode du thermostat - zone 2',
-            nl: 'Modus van de thermostaat - zone 2',
-            no: 'Modus for termostaten - sone 2',
-            sv: 'Läge för termostaten - zon 2',
-          },
+          title: THERMOSTAT_MODE_TITLE_ATW,
           values: thermostatModeValues,
         },
       }

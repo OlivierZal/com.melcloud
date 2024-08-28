@@ -450,7 +450,7 @@ export default abstract class<
   }
 
   #isCapability(setting: string): boolean {
-    return this.driver.capabilities.includes(setting)
+    return (this.driver.capabilities ?? []).includes(setting)
   }
 
   #isEnergyCapability(setting: string): boolean {

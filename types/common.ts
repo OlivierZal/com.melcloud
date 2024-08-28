@@ -2,6 +2,8 @@ import type {
   DeviceType,
   EnergyData,
   ListDevice,
+  ListDeviceDataAta,
+  ListDeviceDataErv,
   LoginCredentials,
   SetDeviceData,
   UpdateDeviceData,
@@ -14,20 +16,30 @@ import type AtwDevice from '../drivers/melcloud_atw/device'
 import type AtwDriver from '../drivers/melcloud_atw/driver'
 import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
-
-import {
-  type CapabilitiesAta,
-  type CapabilitiesOptionsAta,
-  type ENERGY_CAPABILITY_TAG_MAPPING_ATA,
-  type EnergyCapabilitiesAta,
-  type FlowArgsAta,
-  type GET_CAPABILITY_TAGS_MAPPING_ATA,
-  type LIST_CAPABILITY_TAGS_MAPPING_ATA,
-  type OpCapabilitiesAta,
-  type SET_CAPABILITY_TAGS_MAPPING_ATA,
-  type SetCapabilitiesAta,
-  getCapabilitiesOptionsAta,
+import type {
+  CapabilitiesAta,
+  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
+  EnergyCapabilitiesAta,
+  FlowArgsAta,
+  GET_CAPABILITY_TAGS_MAPPING_ATA,
+  LIST_CAPABILITY_TAGS_MAPPING_ATA,
+  OpCapabilitiesAta,
+  SET_CAPABILITY_TAGS_MAPPING_ATA,
+  SetCapabilitiesAta,
 } from './ata'
+import type { RangeOptions } from './bases'
+import type {
+  CapabilitiesErv,
+  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
+  EnergyCapabilitiesErv,
+  FlowArgsErv,
+  GET_CAPABILITY_TAGS_MAPPING_ERV,
+  LIST_CAPABILITY_TAGS_MAPPING_ERV,
+  OpCapabilitiesErv,
+  SET_CAPABILITY_TAGS_MAPPING_ERV,
+  SetCapabilitiesErv,
+} from './erv'
+
 import {
   type CapabilitiesAtw,
   type CapabilitiesOptionsAtw,
@@ -41,19 +53,6 @@ import {
   type SetCapabilitiesAtw,
   getCapabilitiesOptionsAtw,
 } from './atw'
-import {
-  type CapabilitiesErv,
-  type CapabilitiesOptionsErv,
-  type ENERGY_CAPABILITY_TAG_MAPPING_ERV,
-  type EnergyCapabilitiesErv,
-  type FlowArgsErv,
-  type GET_CAPABILITY_TAGS_MAPPING_ERV,
-  type LIST_CAPABILITY_TAGS_MAPPING_ERV,
-  type OpCapabilitiesErv,
-  type SET_CAPABILITY_TAGS_MAPPING_ERV,
-  type SetCapabilitiesErv,
-  getCapabilitiesOptionsErv,
-} from './erv'
 
 export const K_MULTIPLIER = 1000
 
@@ -119,14 +118,23 @@ export interface LoginSetting extends PairSetting {
   }
 }
 
+export interface ManifestDriverCapabilitiesOptions {
+  readonly title?: Record<string, string>
+  readonly type?: string
+  readonly values?: readonly {
+    readonly id: string
+    readonly title: Record<string, string>
+  }[]
+}
+
 export interface ManifestDriver {
+  readonly capabilities?: readonly string[]
   readonly capabilitiesOptions?: Record<
     string,
-    { readonly title?: Record<string, string> }
+    ManifestDriverCapabilitiesOptions
   >
   readonly pair?: LoginSetting & readonly PairSetting[]
   readonly settings?: readonly ManifestDriverSetting[]
-  readonly capabilities: readonly string[]
   readonly id: string
 }
 
@@ -146,6 +154,12 @@ export interface DriverSetting {
   readonly driverId: string
   readonly id: string
   title: string
+  readonly type: string
+}
+
+export interface DriverCapabilitiesOptions {
+  readonly values?: readonly { readonly id: string; readonly label: string }[]
+  readonly title: string
   readonly type: string
 }
 
@@ -234,16 +248,33 @@ export interface FlowArgs {
   readonly Erv: FlowArgsErv
 }
 
-export interface CapabilitiesOptions {
-  readonly Ata: CapabilitiesOptionsAta
-  readonly Atw: CapabilitiesOptionsAtw
-  readonly Erv: CapabilitiesOptionsErv
+export interface CapabilitiesOptionsAtaErv {
+  readonly fan_power: RangeOptions
 }
 
+export const getCapabilitiesOptionsAtaErv = ({
+  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
+  NumberOfFanSpeeds: numberOfFanSpeeds,
+}:
+  | ListDeviceDataAta
+  | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
+  fan_power: {
+    max: numberOfFanSpeeds,
+    min: Number(!hasAutomaticFanSpeed),
+    step: 1,
+  },
+})
+
 export const getCapabilitiesOptions = {
-  Ata: getCapabilitiesOptionsAta,
+  Ata: getCapabilitiesOptionsAtaErv,
   Atw: getCapabilitiesOptionsAtw,
-  Erv: getCapabilitiesOptionsErv,
+  Erv: getCapabilitiesOptionsAtaErv,
+}
+
+export interface CapabilitiesOptions {
+  readonly Ata: CapabilitiesOptionsAtaErv
+  readonly Atw: CapabilitiesOptionsAtw
+  readonly Erv: CapabilitiesOptionsAtaErv
 }
 
 export interface DeviceDetails<T extends keyof typeof DeviceType> {

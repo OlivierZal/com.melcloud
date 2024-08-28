@@ -4,24 +4,15 @@ import type {
   GetDeviceDataAta,
   Horizontal,
   ListDeviceAta,
-  ListDeviceDataAta,
   UpdateDeviceDataAta,
   Vertical,
 } from '@olivierzal/melcloud-api'
 
 import type AtaDevice from '../drivers/melcloud/device'
-
-import {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  type RangeOptions,
-  AUTO,
-  COOL,
-  DRY,
-  FAN,
-  HEAT,
-  OFF,
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
 } from './bases'
 
 export enum ThermostatModeAta {
@@ -165,25 +156,3 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
 export interface FlowArgsAta extends SetCapabilitiesAta {
   readonly device: AtaDevice
 }
-
-export interface CapabilitiesOptionsAta {
-  readonly fan_power: RangeOptions
-  readonly thermostat_mode: {
-    readonly values: readonly {
-      readonly id: keyof typeof ThermostatModeAta
-      readonly title: Record<string, string>
-    }[]
-  }
-}
-
-export const getCapabilitiesOptionsAta = ({
-  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
-  NumberOfFanSpeeds: numberOfFanSpeeds,
-}: ListDeviceDataAta): Partial<CapabilitiesOptionsAta> => ({
-  fan_power: {
-    max: numberOfFanSpeeds,
-    min: Number(!hasAutomaticFanSpeed),
-    step: 1,
-  },
-  thermostat_mode: { values: [AUTO, COOL, DRY, FAN, HEAT, OFF] },
-})
