@@ -193,5 +193,8 @@
     "no": "⚠️ **Betydelig endring**\n\nDenne utgivelsen introduserer betydelige endringer som kan kreve at du oppdaterer eller gjenskaper noen flyter.\n\nHomey 12.0.1 fastvareoppdateringen tillater nå tilpasning av verdiene for termostatmodus.\n\nFor luft-til-luft-enheter kan driftsmodus slås sammen med termostatmodus.\n\nFor luft-til-vann-enheter er det gjort forbedringer for å forenkle administrasjon og vedlikehold.\n\nI tillegg er et designproblem løst, noe som også kan løse noen synkroniseringsproblemer.",
     "da": "⚠️ **Brudændring**\n\nDenne udgivelse introducerer betydelige ændringer, der muligvis kræver, at du opdaterer eller genskaber nogle flows.\n\nHomey 12.0.1 firmwareopdateringen tillader nu tilpasning af termostattilstandsværdier.\n\nFor luft-til-luft-enheder kan driftstilstanden kombineres med termostattilstanden.\n\nFor luft-til-vand-enheder er der blevet foretaget forbedringer for at forenkle administration og vedligeholdelse.\n\nDesuden er et designproblem blevet løst, hvilket også kan løse nogle synkroniseringsproblemer.",
     "es": "⚠️ **Cambio importante**\n\nEsta versión introduce cambios significativos que pueden requerir que actualices o recrees algunos flujos.\n\nLa actualización del firmware Homey 12.0.1 ahora permite la personalización de los valores del modo del termostato.\n\nPara los dispositivos de aire-aire, el modo operativo se puede fusionar con el modo del termostato.\n\nEn cuanto a los dispositivos de aire-agua, se han realizado mejoras para simplificar la gestión y el mantenimiento.\n\nAdemás, se ha corregido un problema de diseño, lo que también podría resolver algunos problemas de sincronización."
+  },
+  "38.0.1": {
+    "en": "Fix a sync issue in some cases of failure."
   }
 }
