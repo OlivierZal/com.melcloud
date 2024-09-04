@@ -211,6 +211,18 @@ const enableButtons = (setting: string, value = true): void => {
   disableButtons(setting, !value)
 }
 
+const withDisablingButton = async (
+  button: string,
+  action: () => Promise<void>,
+): Promise<void> => {
+  try {
+    disableButtons(button)
+    await action()
+  } finally {
+    enableButtons(button)
+  }
+}
+
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
 }
@@ -623,41 +635,45 @@ const fetchHolidayModeData = async (
   homey: Homey,
   buildingId = buildingElement.value,
 ): Promise<void> =>
-  new Promise((resolve) => {
-    disableButtons('holiday-mode')
-    homey.api(
-      'GET',
-      `/settings/holiday_mode/buildings/${buildingId}`,
-      (error: Error | null, data: HolidayModeData) => {
-        if (!error) {
-          updateBuildingMapping(data, buildingId)
-          refreshHolidayModeData()
-        }
-        enableButtons('holiday-mode')
-        resolve()
-      },
-    )
-  })
+  withDisablingButton(
+    'holiday-mode',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'GET',
+          `/settings/holiday_mode/buildings/${buildingId}`,
+          (error: Error | null, data: HolidayModeData) => {
+            if (!error) {
+              updateBuildingMapping(data, buildingId)
+              refreshHolidayModeData()
+            }
+            resolve()
+          },
+        )
+      }),
+  )
 
 const fetchFrostProtectionData = async (
   homey: Homey,
   buildingId = buildingElement.value,
 ): Promise<void> =>
-  new Promise((resolve) => {
-    disableButtons('frost-protection')
-    homey.api(
-      'GET',
-      `/settings/frost_protection/buildings/${buildingId}`,
-      (error: Error | null, data: FrostProtectionData) => {
-        if (!error) {
-          updateBuildingMapping(data, buildingId)
-          refreshFrostProtectionData()
-        }
-        enableButtons('frost-protection')
-        resolve()
-      },
-    )
-  })
+  withDisablingButton(
+    'frost-protection',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'GET',
+          `/settings/frost_protection/buildings/${buildingId}`,
+          (error: Error | null, data: FrostProtectionData) => {
+            if (!error) {
+              updateBuildingMapping(data, buildingId)
+              refreshFrostProtectionData()
+            }
+            resolve()
+          },
+        )
+      }),
+  )
 
 const createAtaValueSelectElement = (
   homey: Homey,
@@ -736,30 +752,32 @@ const fetchAtaValues = async (
   homey: Homey,
   buildingId: string,
 ): Promise<void> =>
-  new Promise((resolve) => {
-    disableButtons('values-melcloud')
-    homey.api(
-      'GET',
-      `/drivers/melcloud/buildings/${String(buildingId)}`,
-      async (error: Error | null, data: GroupAtaState) => {
-        hasBuildingAtaDevices[buildingId] = error === null
-        if (error) {
-          if (error.message !== 'No air-to-air device found') {
-            await homey.alert(error.message)
-          }
-        } else {
-          updateBuildingMapping(data, buildingId)
-          generateAtaValuesElement(homey)
-          unhide(
-            hasBuildingAtaDevicesElement,
-            buildingId === buildingElement.value,
-          )
-        }
-        enableButtons('values-melcloud')
-        resolve()
-      },
-    )
-  })
+  withDisablingButton(
+    'values-melcloud',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'GET',
+          `/drivers/melcloud/buildings/${buildingId}`,
+          async (error: Error | null, data: GroupAtaState) => {
+            hasBuildingAtaDevices[buildingId] = error === null
+            if (error) {
+              if (error.message !== 'No air-to-air device found') {
+                await homey.alert(error.message)
+              }
+            } else {
+              updateBuildingMapping(data, buildingId)
+              generateAtaValuesElement(homey)
+              unhide(
+                hasBuildingAtaDevicesElement,
+                buildingId === buildingElement.value,
+              )
+            }
+            resolve()
+          },
+        )
+      }),
+  )
 
 const fetchBuildings = async (homey: Homey): Promise<void> =>
   new Promise((resolve, reject) => {
@@ -813,59 +831,6 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   })
 }
 
-const setDeviceSettings = async (
-  homey: Homey,
-  elements: HTMLValueElement[],
-  driverId?: string,
-): Promise<void> => {
-  const body = buildSettingsBody(homey, elements, driverId)
-  if (!Object.keys(body).length) {
-    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
-      //
-    })
-    return
-  }
-  const settings = `settings-${driverId ?? 'common'}`
-  let endPoint = '/settings/devices'
-  if (driverId !== undefined) {
-    endPoint += `?${new URLSearchParams({
-      driverId,
-    } satisfies { driverId: string }).toString()}`
-  }
-  return new Promise((resolve) => {
-    disableButtons(settings)
-    homey.api(
-      'PUT',
-      endPoint,
-      body satisfies Settings,
-      async (error: Error | null) => {
-        if (!error) {
-          updateDeviceSettings(body, driverId)
-        }
-        await homey.alert(error ? error.message : homey.__('settings.success'))
-        enableButtons(settings)
-        resolve()
-      },
-    )
-  })
-}
-
-const addApplySettingsEventListener = (
-  homey: Homey,
-  elements: HTMLValueElement[],
-  driverId?: string,
-): void => {
-  const settings = `settings-${driverId ?? 'common'}`
-  const buttonElement = document.getElementById(
-    `apply-${settings}`,
-  ) as HTMLButtonElement
-  buttonElement.addEventListener('click', () => {
-    setDeviceSettings(homey, elements, driverId).catch(() => {
-      //
-    })
-  })
-}
-
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('--')
   const values = flatDeviceSettings[id]
@@ -877,9 +842,7 @@ const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   element.value = ''
 }
 
-const addRefreshSettingsCommonEventListener = (
-  elements: HTMLSelectElement[],
-): void => {
+const refreshSettingsCommon = (elements: HTMLSelectElement[]): void => {
   elements.forEach(updateCommonChildrenElement)
 }
 
@@ -901,12 +864,69 @@ const updateCheckboxChildrenElement = (
   })
 }
 
-const addRefreshSettingsDriverEventListener = (
+const refreshSettingsDriver = (
   elements: HTMLInputElement[],
   driverId: string,
 ): void => {
   elements.forEach((element) => {
     updateCheckboxChildrenElement(element, driverId)
+  })
+}
+
+const setDeviceSettings = async (
+  homey: Homey,
+  elements: HTMLValueElement[],
+  driverId?: string,
+): Promise<void> => {
+  const body = buildSettingsBody(homey, elements, driverId)
+  if (!Object.keys(body).length) {
+    refreshSettingsCommon(elements as HTMLSelectElement[])
+    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
+      //
+    })
+    return
+  }
+  let endPoint = '/settings/devices'
+  if (driverId !== undefined) {
+    endPoint += `?${new URLSearchParams({
+      driverId,
+    } satisfies { driverId: string }).toString()}`
+  }
+  return withDisablingButton(
+    `settings-${driverId ?? 'common'}`,
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'PUT',
+          endPoint,
+          body satisfies Settings,
+          async (error: Error | null) => {
+            if (!error) {
+              updateDeviceSettings(body, driverId)
+            }
+            await homey.alert(
+              error ? error.message : homey.__('settings.success'),
+            )
+            resolve()
+          },
+        )
+      }),
+  )
+}
+
+const addApplySettingsEventListener = (
+  homey: Homey,
+  elements: HTMLValueElement[],
+  driverId?: string,
+): void => {
+  const settings = `settings-${driverId ?? 'common'}`
+  const buttonElement = document.getElementById(
+    `apply-${settings}`,
+  ) as HTMLButtonElement
+  buttonElement.addEventListener('click', () => {
+    setDeviceSettings(homey, elements, driverId).catch(() => {
+      //
+    })
   })
 }
 
@@ -920,12 +940,9 @@ const addRefreshSettingsEventListener = (
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
     if (driverId === undefined) {
-      addRefreshSettingsCommonEventListener(elements as HTMLSelectElement[])
+      refreshSettingsCommon(elements as HTMLSelectElement[])
     } else {
-      addRefreshSettingsDriverEventListener(
-        elements as HTMLInputElement[],
-        driverId,
-      )
+      refreshSettingsDriver(elements as HTMLInputElement[], driverId)
     }
   })
 }
@@ -963,28 +980,33 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
 const setAtaValues = async (homey: Homey): Promise<void> => {
   const body = buildAtaValuesBody(homey)
   if (!Object.keys(body).length) {
+    refreshAtaValuesElement()
     homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
       //
     })
     return
   }
-  return new Promise((resolve) => {
-    disableButtons('values-melcloud')
-    homey.api(
-      'PUT',
-      `/drivers/melcloud/buildings/${buildingElement.value}`,
-      body satisfies GroupAtaState,
-      async (error: Error | null) => {
-        if (!error) {
-          updateBuildingMapping(body)
-          refreshAtaValuesElement()
-        }
-        await homey.alert(error ? error.message : homey.__('settings.success'))
-        enableButtons('values-melcloud')
-        resolve()
-      },
-    )
-  })
+  return withDisablingButton(
+    'values-melcloud',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'PUT',
+          `/drivers/melcloud/buildings/${buildingElement.value}`,
+          body satisfies GroupAtaState,
+          async (error: Error | null) => {
+            if (!error) {
+              updateBuildingMapping(body)
+              refreshAtaValuesElement()
+            }
+            await homey.alert(
+              error ? error.message : homey.__('settings.success'),
+            )
+            resolve()
+          },
+        )
+      }),
+  )
 }
 
 const createSettingSelectElement = (
@@ -1205,22 +1227,26 @@ const updateHolidayModeData = async (
   homey: Homey,
   body: HolidayModeSettings,
 ): Promise<void> =>
-  new Promise((resolve) => {
-    disableButtons('holiday-mode')
-    homey.api(
-      'PUT',
-      `/settings/holiday_mode/buildings/${buildingElement.value}`,
-      body satisfies HolidayModeSettings,
-      async (error: Error | null) => {
-        if (!error) {
-          await fetchHolidayModeData(homey)
-        }
-        await homey.alert(error ? error.message : homey.__('settings.success'))
-        enableButtons('holiday-mode')
-        resolve()
-      },
-    )
-  })
+  withDisablingButton(
+    'holiday-mode',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'PUT',
+          `/settings/holiday_mode/buildings/${buildingElement.value}`,
+          body satisfies HolidayModeSettings,
+          async (error: Error | null) => {
+            if (!error) {
+              await fetchHolidayModeData(homey)
+            }
+            await homey.alert(
+              error ? error.message : homey.__('settings.success'),
+            )
+            resolve()
+          },
+        )
+      }),
+  )
 
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
@@ -1255,22 +1281,26 @@ const updateFrostProtectionData = async (
   homey: Homey,
   body: FrostProtectionSettings,
 ): Promise<void> =>
-  new Promise((resolve) => {
-    disableButtons('frost-protection')
-    homey.api(
-      'PUT',
-      `/settings/frost_protection/buildings/${buildingElement.value}`,
-      body satisfies FrostProtectionSettings,
-      async (error: Error | null) => {
-        if (!error) {
-          await fetchFrostProtectionData(homey)
-        }
-        await homey.alert(error ? error.message : homey.__('settings.success'))
-        enableButtons('frost-protection')
-        resolve()
-      },
-    )
-  })
+  withDisablingButton(
+    'frost-protection',
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'PUT',
+          `/settings/frost_protection/buildings/${buildingElement.value}`,
+          body satisfies FrostProtectionSettings,
+          async (error: Error | null) => {
+            if (!error) {
+              await fetchFrostProtectionData(homey)
+            }
+            await homey.alert(
+              error ? error.message : homey.__('settings.success'),
+            )
+            resolve()
+          },
+        )
+      }),
+  )
 
 const fixAndGetFpMinMax = (homey: Homey): { max: number; min: number } => {
   const errors: string[] = []
