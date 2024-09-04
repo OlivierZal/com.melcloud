@@ -1381,7 +1381,7 @@ const updateFrostProtectionData = async (
                 FPMaxTemperature: body.max,
                 FPMinTemperature: body.min,
               })
-              refreshHolidayModeData()
+              refreshFrostProtectionData()
             }
             await homey.alert(
               error ? error.message : homey.__('settings.success'),
