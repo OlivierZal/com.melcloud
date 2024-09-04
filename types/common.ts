@@ -305,7 +305,7 @@ export interface ErrorLog {
 }
 
 export interface FrostProtectionSettings {
-  readonly enabled?: boolean
+  readonly enabled: boolean
   readonly max: number
   readonly min: number
 }

@@ -62,6 +62,7 @@ const MIN_FP_TEMPERATURE_MIN = 4
 const MIN_FP_TEMPERATURE_MAX = 14
 const MAX_FP_TEMPERATURE_MIN = 6
 const MAX_FP_TEMPERATURE_MAX = 16
+const GAP_FP_TEMPERATURE = 2
 
 const NUMBER_1 = 1
 const NUMBER_2 = 2
@@ -638,6 +639,15 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
     )
   })
 
+const updateBuildingMapping = (
+  data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
+  buildingId = buildingElement.value,
+): void => {
+  if (buildingMapping[buildingId]) {
+    buildingMapping[buildingId] = { ...buildingMapping[buildingId], ...data }
+  }
+}
+
 const refreshHolidayModeData = (): void => {
   const data = buildingMapping[buildingElement.value]
   if (data) {
@@ -687,15 +697,6 @@ const refreshBuildingSettings = (): void => {
   refreshHolidayModeData()
   refreshFrostProtectionData()
   refreshAtaValuesElement()
-}
-
-const updateBuildingMapping = (
-  data: FrostProtectionData | GroupAtaState | HolidayModeData,
-  buildingId = buildingElement.value,
-): void => {
-  if (buildingMapping[buildingId]) {
-    buildingMapping[buildingId] = { ...buildingMapping[buildingId], ...data }
-  }
 }
 
 const fetchHolidayModeData = async (
@@ -1316,7 +1317,12 @@ const updateHolidayModeData = async (
           body satisfies HolidayModeSettings,
           async (error: Error | null) => {
             if (!error) {
-              await fetchHolidayModeData(homey)
+              updateBuildingMapping({
+                HMEnabled: body.enabled,
+                HMEndDate: body.to,
+                HMStartDate: body.from,
+              })
+              refreshHolidayModeData()
             }
             await homey.alert(
               error ? error.message : homey.__('settings.success'),
@@ -1370,7 +1376,12 @@ const updateFrostProtectionData = async (
           body satisfies FrostProtectionSettings,
           async (error: Error | null) => {
             if (!error) {
-              await fetchFrostProtectionData(homey)
+              updateBuildingMapping({
+                FPEnabled: body.enabled,
+                FPMaxTemperature: body.max,
+                FPMinTemperature: body.min,
+              })
+              refreshHolidayModeData()
             }
             await homey.alert(
               error ? error.message : homey.__('settings.success'),
@@ -1381,7 +1392,7 @@ const updateFrostProtectionData = async (
       }),
   )
 
-const fixAndGetFpMinMax = (homey: Homey): { max: number; min: number } => {
+const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
   const errors: string[] = []
   const [min, max] = [
     frostProtectionMinTemperatureElement,
@@ -1403,10 +1414,10 @@ const fixAndGetFpMinMax = (homey: Homey): { max: number; min: number } => {
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
     try {
-      const { max, min } = fixAndGetFpMinMax(homey)
+      const { max, min } = getFPMinAndMax(homey)
       updateFrostProtectionData(homey, {
         enabled: frostProtectionEnabledElement.value === 'true',
-        max,
+        max: Math.max(max, min + GAP_FP_TEMPERATURE),
         min,
       }).catch(() => {
         //
