@@ -37,10 +37,31 @@ const DAYS_14 = 14
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 
-const MIN_TEMPERATURE_MIN = 4
-const MIN_TEMPERATURE_MAX = 14
-const MAX_TEMPERATURE_MIN = 6
-const MAX_TEMPERATURE_MAX = 16
+const MIN_FAN_SPEED = 0
+const MAX_FAN_SPEED = 5
+
+const MIN_SET_TEMPERATURE = 10
+const MIN_SET_TEMPERATURE_COOLING = 16
+const MAX_SET_TEMPERATURE = 31
+
+const MIN_MAPPING = {
+  FanSpeed: MIN_FAN_SPEED,
+  SetTemperature: MIN_SET_TEMPERATURE,
+}
+const MAX_MAPPING = {
+  FanSpeed: MAX_FAN_SPEED,
+  SetTemperature: MAX_SET_TEMPERATURE,
+}
+
+const MODE_AUTO = 8
+const MODE_COOL = 3
+const MODE_DRY = 2
+const COOLING_MODES = [MODE_AUTO, MODE_COOL, MODE_DRY]
+
+const MIN_FP_TEMPERATURE_MIN = 4
+const MIN_FP_TEMPERATURE_MAX = 14
+const MAX_FP_TEMPERATURE_MIN = 6
+const MAX_FP_TEMPERATURE_MAX = 16
 
 const NUMBER_1 = 1
 const NUMBER_2 = 2
@@ -149,13 +170,13 @@ const sinceElement = document.getElementById('since') as HTMLInputElement
 const frostProtectionMinTemperatureElement = document.getElementById(
   'min',
 ) as HTMLInputElement
-frostProtectionMinTemperatureElement.min = String(MIN_TEMPERATURE_MIN)
-frostProtectionMinTemperatureElement.max = String(MIN_TEMPERATURE_MAX)
+frostProtectionMinTemperatureElement.min = String(MIN_FP_TEMPERATURE_MIN)
+frostProtectionMinTemperatureElement.max = String(MIN_FP_TEMPERATURE_MAX)
 const frostProtectionMaxTemperatureElement = document.getElementById(
   'max',
 ) as HTMLInputElement
-frostProtectionMaxTemperatureElement.min = String(MAX_TEMPERATURE_MIN)
-frostProtectionMaxTemperatureElement.max = String(MAX_TEMPERATURE_MAX)
+frostProtectionMaxTemperatureElement.min = String(MAX_FP_TEMPERATURE_MIN)
+frostProtectionMaxTemperatureElement.max = String(MAX_FP_TEMPERATURE_MAX)
 const holidayModeStartDateElement = document.getElementById(
   'start-date',
 ) as HTMLInputElement
@@ -309,12 +330,37 @@ const createDivElement = (): HTMLDivElement => {
   return divElement
 }
 
+const handleNumericInputElement = (
+  element: HTMLInputElement,
+  {
+    max,
+    min,
+  }: {
+    max?: number
+    min?: number
+  },
+): void => {
+  if (element.type === 'number') {
+    element.setAttribute('inputmode', 'numeric')
+    if (min !== undefined) {
+      element.min = String(min)
+    }
+    if (max !== undefined) {
+      element.max = String(max)
+    }
+  }
+}
+
 const createInputElement = ({
   id,
+  max,
+  min,
   placeholder,
   type,
   value,
 }: {
+  max?: number
+  min?: number
   placeholder?: string
   value?: string
   id: string
@@ -325,9 +371,7 @@ const createInputElement = ({
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
-  if (type === 'number') {
-    inputElement.setAttribute('inputmode', 'numeric')
-  }
+  handleNumericInputElement(inputElement, { max, min })
   if (placeholder !== undefined) {
     inputElement.placeholder = placeholder
   }
@@ -395,25 +439,33 @@ const createCredentialElements = (): void => {
   )
 }
 
-const int = (homey: Homey, element: HTMLInputElement): number => {
-  const value = Number.parseInt(element.value, 10)
-  if (
-    Number.isNaN(value) ||
-    value < Number(element.min) ||
-    value > Number(element.max)
-  ) {
+const int = (
+  homey: Homey,
+  { id, max, min, value }: HTMLInputElement,
+): number => {
+  const val = Number.parseInt(value, 10)
+  let newMin = min
+  if (id === 'SetTemperature') {
+    const modeElement = document.getElementById(
+      'OperationMode',
+    ) as HTMLSelectElement
+    if (COOLING_MODES.includes(Number(modeElement.value))) {
+      newMin = String(MIN_SET_TEMPERATURE_COOLING)
+    }
+  }
+  if (Number.isNaN(val) || val < Number(newMin) || val > Number(max)) {
     const labelElement: HTMLLabelElement | null = document.querySelector(
-      `label[for="${element.id}"]`,
+      `label[for="${id}"]`,
     )
     throw new Error(
       homey.__('settings.int_error', {
-        max: element.max,
-        min: element.min,
+        max,
+        min: newMin,
         name: homey.__(labelElement?.innerText ?? ''),
       }),
     )
   }
-  return value
+  return val
 }
 
 const shouldUpdate = (
@@ -445,8 +497,8 @@ const processValue = (
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
-    if (element.type === 'number') {
-      return Number(element.value)
+    if (element.type === 'number' && element.min && element.max) {
+      return int(homey, element)
     }
     return ['false', 'true'].includes(element.value) ?
         element.value === 'true'
@@ -460,33 +512,51 @@ const buildSettingsBody = (
   elements: HTMLValueElement[],
   driverId?: string,
 ): Settings => {
+  const errors: string[] = []
   const settings: Settings = {}
   elements.forEach((element) => {
-    const [id] = element.id.split('--')
-    const value = processValue(homey, element)
-    if (shouldUpdate(id, value, driverId)) {
-      settings[id] = value
+    try {
+      const [id] = element.id.split('--')
+      const value = processValue(homey, element)
+      if (shouldUpdate(id, value, driverId)) {
+        settings[id] = value
+      }
+    } catch (error) {
+      errors.push(getErrorMessage(error))
     }
   })
+  if (errors.length) {
+    throw new Error(errors.join('\n'))
+  }
   return settings
 }
 
-const buildAtaValuesBody = (homey: Homey): GroupAtaState =>
-  Object.fromEntries(
+const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
+  const errors: string[] = []
+  const body = Object.fromEntries(
     Array.from(valuesAtaElement.querySelectorAll('input, select'))
       .filter(
-        (element) =>
+        (element): element is HTMLValueElement =>
           (element as HTMLValueElement).value !== '' &&
           (element as HTMLValueElement).value !==
             buildingMapping[buildingElement.value]?.[
               element.id as keyof GroupAtaState
             ]?.toString(),
       )
-      .map((element) => [
-        element.id,
-        processValue(homey, element as HTMLValueElement),
-      ]),
+      .map((element) => {
+        try {
+          return [element.id, processValue(homey, element)]
+        } catch (error) {
+          errors.push(getErrorMessage(error))
+          return [element.id, Number(element.value)]
+        }
+      }),
   )
+  if (errors.length) {
+    throw new Error(errors.join('\n'))
+  }
+  return body
+}
 
 const generateErrorLogTable = (
   homey: Homey,
@@ -717,6 +787,14 @@ const generateAtaValueElement = (
   } else if (capability.type === 'number') {
     valueElement = createInputElement({
       id,
+      max:
+        id in MAX_MAPPING ?
+          MAX_MAPPING[id as keyof typeof MAX_MAPPING]
+        : undefined,
+      min:
+        id in MIN_MAPPING ?
+          MIN_MAPPING[id as keyof typeof MIN_MAPPING]
+        : undefined,
       type: 'number',
     })
     labelElement = createLabelElement(valueElement, {
@@ -889,7 +967,7 @@ const setDeviceSettings = async (
       driverId: string
     }).toString()}`
   }
-  return withDisablingButton(
+  await withDisablingButton(
     `settings-${driverId ?? 'common'}`,
     async () =>
       new Promise((resolve) => {
@@ -975,35 +1053,39 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
   })
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
-  const body = buildAtaValuesBody(homey)
-  if (!Object.keys(body).length) {
-    refreshAtaValuesElement()
-    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
-      //
-    })
-    return
+  try {
+    const body = buildAtaValuesBody(homey)
+    if (!Object.keys(body).length) {
+      refreshAtaValuesElement()
+      homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
+        //
+      })
+      return
+    }
+    await withDisablingButton(
+      'values-melcloud',
+      async () =>
+        new Promise((resolve) => {
+          homey.api(
+            'PUT',
+            `/drivers/melcloud/buildings/${buildingElement.value}`,
+            body satisfies GroupAtaState,
+            async (error: Error | null) => {
+              if (!error) {
+                updateBuildingMapping(body)
+                refreshAtaValuesElement()
+              }
+              await homey.alert(
+                error ? error.message : homey.__('settings.success'),
+              )
+              resolve()
+            },
+          )
+        }),
+    )
+  } catch (error) {
+    await homey.alert(getErrorMessage(error))
   }
-  return withDisablingButton(
-    'values-melcloud',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'PUT',
-          `/drivers/melcloud/buildings/${buildingElement.value}`,
-          body satisfies GroupAtaState,
-          async (error: Error | null) => {
-            if (!error) {
-              updateBuildingMapping(body)
-              refreshAtaValuesElement()
-            }
-            await homey.alert(
-              error ? error.message : homey.__('settings.success'),
-            )
-            resolve()
-          },
-        )
-      }),
-  )
 }
 
 const createSettingSelectElement = (
