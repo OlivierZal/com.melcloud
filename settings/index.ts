@@ -888,9 +888,9 @@ const setDeviceSettings = async (
   }
   let endPoint = '/settings/devices'
   if (driverId !== undefined) {
-    endPoint += `?${new URLSearchParams({
-      driverId,
-    } satisfies { driverId: string }).toString()}`
+    endPoint += `?${new URLSearchParams({ driverId } satisfies {
+      driverId: string
+    }).toString()}`
   }
   return withDisablingButton(
     `settings-${driverId ?? 'common'}`,
