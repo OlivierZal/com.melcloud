@@ -624,6 +624,7 @@ const fetchHolidayModeData = async (
   buildingId = buildingElement.value,
 ): Promise<void> =>
   new Promise((resolve) => {
+    disableButtons('holiday-mode')
     homey.api(
       'GET',
       `/settings/holiday_mode/buildings/${buildingId}`,
@@ -643,6 +644,7 @@ const fetchFrostProtectionData = async (
   buildingId = buildingElement.value,
 ): Promise<void> =>
   new Promise((resolve) => {
+    disableButtons('frost-protection')
     homey.api(
       'GET',
       `/settings/frost_protection/buildings/${buildingId}`,
@@ -735,6 +737,7 @@ const fetchAtaValues = async (
   buildingId: string,
 ): Promise<void> =>
   new Promise((resolve) => {
+    disableButtons('values-melcloud')
     homey.api(
       'GET',
       `/drivers/melcloud/buildings/${String(buildingId)}`,
@@ -823,7 +826,6 @@ const setDeviceSettings = async (
     return
   }
   const settings = `settings-${driverId ?? 'common'}`
-  disableButtons(settings)
   let endPoint = '/settings/devices'
   if (driverId !== undefined) {
     endPoint += `?${new URLSearchParams({
@@ -831,6 +833,7 @@ const setDeviceSettings = async (
     } satisfies { driverId: string }).toString()}`
   }
   return new Promise((resolve) => {
+    disableButtons(settings)
     homey.api(
       'PUT',
       endPoint,
@@ -957,15 +960,15 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
     )
   })
 
-const setAtaValues = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    const body = buildAtaValuesBody(homey)
-    if (!Object.keys(body).length) {
-      homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
-        //
-      })
-      return
-    }
+const setAtaValues = async (homey: Homey): Promise<void> => {
+  const body = buildAtaValuesBody(homey)
+  if (!Object.keys(body).length) {
+    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
+      //
+    })
+    return
+  }
+  return new Promise((resolve) => {
     disableButtons('values-melcloud')
     homey.api(
       'PUT',
@@ -982,6 +985,7 @@ const setAtaValues = async (homey: Homey): Promise<void> =>
       },
     )
   })
+}
 
 const createSettingSelectElement = (
   homey: Homey,
@@ -1202,6 +1206,7 @@ const updateHolidayModeData = async (
   body: HolidayModeSettings,
 ): Promise<void> =>
   new Promise((resolve) => {
+    disableButtons('holiday-mode')
     homey.api(
       'PUT',
       `/settings/holiday_mode/buildings/${buildingElement.value}`,
@@ -1219,7 +1224,6 @@ const updateHolidayModeData = async (
 
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
-    disableButtons('holiday-mode')
     updateHolidayModeData(homey, {
       enabled: holidayModeEnabledElement.value === 'true',
       from: holidayModeStartDateElement.value || undefined,
@@ -1252,6 +1256,7 @@ const updateFrostProtectionData = async (
   body: FrostProtectionSettings,
 ): Promise<void> =>
   new Promise((resolve) => {
+    disableButtons('frost-protection')
     homey.api(
       'PUT',
       `/settings/frost_protection/buildings/${buildingElement.value}`,
@@ -1290,7 +1295,6 @@ const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
     try {
       const { max, min } = fixAndGetFpMinMax(homey)
-      disableButtons('frost-protection')
       updateFrostProtectionData(homey, {
         enabled: frostProtectionEnabledElement.value === 'true',
         max,
