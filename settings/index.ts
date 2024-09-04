@@ -215,12 +215,9 @@ const withDisablingButton = async (
   button: string,
   action: () => Promise<void>,
 ): Promise<void> => {
-  try {
-    disableButtons(button)
-    await action()
-  } finally {
-    enableButtons(button)
-  }
+  disableButtons(button)
+  await action()
+  enableButtons(button)
 }
 
 const hide = (element: HTMLDivElement, value = true): void => {
