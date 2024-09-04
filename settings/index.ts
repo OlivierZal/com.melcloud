@@ -1414,7 +1414,10 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
     try {
-      const { max, min } = getFPMinAndMax(homey)
+      let { max, min } = getFPMinAndMax(homey)
+      if (max < min) {
+        ;[min, max] = [max, min]
+      }
       updateFrostProtectionData(homey, {
         enabled: frostProtectionEnabledElement.value === 'true',
         max: Math.max(max, min + GAP_FP_TEMPERATURE),
