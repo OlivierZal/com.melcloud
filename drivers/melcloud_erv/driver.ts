@@ -24,7 +24,7 @@ export = class extends BaseMELCloudDriver<'Erv'> {
     HasPM25Sensor: hasPM25Sensor,
   }: ListDeviceDataErv): string[] {
     return [
-      ...this.capabilities.filter(
+      ...(this.capabilities ?? []).filter(
         (capability) =>
           !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
             capability,

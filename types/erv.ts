@@ -1,22 +1,15 @@
 import type {
   FanSpeed,
   GetDeviceDataErv,
-  ListDeviceDataErv,
   ListDeviceErv,
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
 import type ErvDevice from '../drivers/melcloud/device'
-
-import {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  type RangeOptions,
-  AUTO,
-  BY_PASS,
-  OFF,
-  RECOVERY,
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
 } from './bases'
 
 export enum ThermostatModeErv {
@@ -81,25 +74,3 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ERV: Record<string, never> = {}
 export interface FlowArgsErv extends SetCapabilitiesErv {
   readonly device: ErvDevice
 }
-
-export interface CapabilitiesOptionsErv {
-  readonly fan_power: RangeOptions
-  readonly thermostat_mode: {
-    readonly values: readonly {
-      readonly id: keyof typeof ThermostatModeErv
-      readonly title: Record<string, string>
-    }[]
-  }
-}
-
-export const getCapabilitiesOptionsErv = ({
-  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
-  NumberOfFanSpeeds: numberOfFanSpeeds,
-}: ListDeviceDataErv): Partial<CapabilitiesOptionsErv> => ({
-  fan_power: {
-    max: numberOfFanSpeeds,
-    min: Number(!hasAutomaticFanSpeed),
-    step: 1,
-  },
-  thermostat_mode: { values: [AUTO, BY_PASS, RECOVERY, OFF] },
-})

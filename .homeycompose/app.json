@@ -139,6 +139,18 @@
       "method": "GET",
       "path": "/buildings"
     },
+    "getAtaCapabilities": {
+      "method": "GET",
+      "path": "/capabilities/drivers/melcloud"
+    },
+    "getAtaValues": {
+      "method": "GET",
+      "path": "/drivers/melcloud/buildings/:buildingId"
+    },
+    "setAtaValues": {
+      "method": "PUT",
+      "path": "/drivers/melcloud/buildings/:buildingId"
+    },
     "getErrors": {
       "method": "GET",
       "path": "/errors"

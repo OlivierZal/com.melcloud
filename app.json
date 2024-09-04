@@ -140,6 +140,18 @@
       "method": "GET",
       "path": "/buildings"
     },
+    "getAtaCapabilities": {
+      "method": "GET",
+      "path": "/capabilities/drivers/melcloud"
+    },
+    "getAtaValues": {
+      "method": "GET",
+      "path": "/drivers/melcloud/buildings/:buildingId"
+    },
+    "setAtaValues": {
+      "method": "PUT",
+      "path": "/drivers/melcloud/buildings/:buildingId"
+    },
     "getErrors": {
       "method": "GET",
       "path": "/errors"
@@ -2780,6 +2792,82 @@
         "target_temperature": {
           "min": 10,
           "max": 31
+        },
+        "thermostat_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatiskt",
+                "no": "Automatisk",
+                "da": "Automatisk",
+                "es": "Automático"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "en": "Cool",
+                "fr": "Refroidir",
+                "nl": "Koelen",
+                "sv": "Kyla",
+                "no": "Avkjøle",
+                "da": "Køl ned",
+                "es": "Enfriar"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "en": "Dry",
+                "fr": "Déshumidifier",
+                "nl": "Ontvochtigen",
+                "sv": "Avfukta",
+                "no": "Avfukte",
+                "da": "Affugte",
+                "es": "Deshumidificar"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "en": "Fan",
+                "fr": "Ventiler",
+                "nl": "Ventileren",
+                "sv": "Fläkta",
+                "no": "Vifte",
+                "da": "Blæse",
+                "es": "Ventilar"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "en": "Heat",
+                "fr": "Chauffer",
+                "nl": "Verhitten",
+                "sv": "Värme",
+                "no": "Varme",
+                "da": "Opvarm",
+                "es": "Calentar"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "fr": "Désactivé",
+                "nl": "Uit",
+                "sv": "Av",
+                "no": "Av",
+                "da": "Deaktiveret",
+                "es": "Desactivado"
+              }
+            }
+          ]
         }
       },
       "id": "melcloud",
@@ -5129,6 +5217,58 @@
             "da": "Udendørstemperatur",
             "es": "Temperatura exterior"
           }
+        },
+        "thermostat_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "en": "Automatic",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "sv": "Automatiskt",
+                "no": "Automatisk",
+                "da": "Automatisk",
+                "es": "Automático"
+              }
+            },
+            {
+              "id": "bypass",
+              "title": {
+                "en": "Bypass",
+                "fr": "Bypass",
+                "nl": "Bypass",
+                "sv": "Bypass",
+                "no": "Bypass",
+                "da": "Bypass",
+                "es": "Bypass"
+              }
+            },
+            {
+              "id": "recovery",
+              "title": {
+                "en": "Energy Recovery",
+                "fr": "Récupération d'énergie",
+                "nl": "Warmteterugwinning",
+                "sv": "Värmeåtervinning",
+                "no": "Varmegjenvinning",
+                "da": "Varmegenvinding",
+                "es": "Recuperación de energía"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "en": "Off",
+                "fr": "Désactivé",
+                "nl": "Uit",
+                "sv": "Av",
+                "no": "Av",
+                "da": "Deaktiveret",
+                "es": "Desactivado"
+              }
+            }
+          ]
         }
       },
       "id": "melcloud_erv",

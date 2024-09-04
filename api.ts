@@ -1,38 +1,64 @@
 import type Homey from 'homey/lib/Homey'
 
 import {
-  type BuildingData,
   type BuildingFacade,
   type ErrorData,
-  type FailureData,
   type FrostProtectionData,
   type GroupAtaState,
   type HolidayModeData,
   type LoginCredentials,
-  type SuccessData,
   BuildingModel,
   DeviceModel,
+  Horizontal,
+  OperationMode,
+  Vertical,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
-import type {
-  DeviceSettings,
-  DriverSetting,
-  ErrorLog,
-  ErrorLogQuery,
-  FrostProtectionSettings,
-  HolidayModeSettings,
-  LoginSetting,
-  Manifest,
-  ManifestDriver,
-  PairSetting,
-  Settings,
+
+import fan from './.homeycompose/capabilities/fan_power.json'
+import horizontal from './.homeycompose/capabilities/horizontal.json'
+import vertical from './.homeycompose/capabilities/vertical.json'
+import {
+  type DeviceSettings,
+  type DriverCapabilitiesOptions,
+  type DriverSetting,
+  type ErrorLog,
+  type ErrorLogQuery,
+  type FrostProtectionSettings,
+  type HolidayModeSettings,
+  type LoginSetting,
+  type Manifest,
+  type ManifestDriver,
+  type ManifestDriverCapabilitiesOptions,
+  type PairSetting,
+  type Settings,
+  THERMOSTAT_MODE_TITLE,
 } from './types'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
+
+const POWER_TITLE = {
+  da: 'Tændt',
+  en: 'Turned on',
+  es: 'Encendido',
+  fr: 'Activé',
+  nl: 'Aangezet',
+  no: 'Slått på',
+  sv: 'Aktiverad',
+}
+const TARGET_TEMPERATURE_TITLE = {
+  da: 'Måltemperatur',
+  en: 'Target temperature',
+  es: 'Temperatura configurada',
+  fr: 'Température cible',
+  nl: 'Ingestelde temperatuur',
+  no: 'Ønsket temperatur',
+  sv: 'Måltemperatur',
+}
 
 const getOrCreateBuildingFacade = (
   homey: Homey,
@@ -86,16 +112,16 @@ const getDriverSettings = (
       ({ id, label, max, min, type, units, values }) => ({
         driverId,
         groupId: setting.id,
-        groupLabel: setting.label[language],
+        groupLabel: setting.label[language] ?? setting.label.en,
         id,
         max,
         min,
-        title: label[language],
+        title: label[language] ?? label.en,
         type,
         units,
         values: values?.map(({ id: valueId, label: valueLabel }) => ({
           id: valueId,
-          label: valueLabel[language],
+          label: valueLabel[language] ?? valueLabel.en,
         })),
       }),
     ),
@@ -124,7 +150,7 @@ const getDriverLoginSetting = (
             type: isPassword ? 'password' : 'text',
           }
           acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-            label[language]
+            label[language] ?? label.en
           return acc
         }, {}),
       )
@@ -157,8 +183,72 @@ const handleErrorLogQuery = ({
   }
 }
 
+const getLocalizedCapabilitiesOptions = (
+  capabilitiesOptions: ManifestDriverCapabilitiesOptions,
+  language: string,
+  enumType?: typeof Horizontal | typeof OperationMode | typeof Vertical,
+): DriverCapabilitiesOptions => ({
+  title:
+    capabilitiesOptions.title?.[
+      language in (capabilitiesOptions.title ?? {}) ? language : 'en'
+    ] ?? '',
+  type:
+    capabilitiesOptions.type ??
+    (capabilitiesOptions.values ? 'enum' : 'boolean'),
+  values:
+    capabilitiesOptions.values && enumType ?
+      capabilitiesOptions.values.map(({ id, title }) => ({
+        id: String(enumType[id as keyof typeof enumType]),
+        label: title[language] ?? title.en,
+      }))
+    : undefined,
+})
+
 export = {
-  async getAtaDevices({
+  getAtaCapabilities({
+    homey,
+  }: {
+    homey: Homey
+  }): Partial<Record<keyof GroupAtaState, DriverCapabilitiesOptions>> {
+    const language = homey.i18n.getLanguage()
+    return {
+      FanSpeed: getLocalizedCapabilitiesOptions(fan, language),
+      OperationMode: getLocalizedCapabilitiesOptions(
+        {
+          title: THERMOSTAT_MODE_TITLE,
+          values: (homey.manifest as Manifest).drivers.find(
+            ({ id }) => id === 'melcloud',
+          )?.capabilitiesOptions?.thermostat_mode.values,
+        },
+        language,
+        OperationMode,
+      ),
+      Power: getLocalizedCapabilitiesOptions(
+        {
+          title: POWER_TITLE,
+        },
+        language,
+      ),
+      SetTemperature: getLocalizedCapabilitiesOptions(
+        {
+          title: TARGET_TEMPERATURE_TITLE,
+          type: 'number',
+        },
+        language,
+      ),
+      VaneHorizontalDirection: getLocalizedCapabilitiesOptions(
+        horizontal,
+        language,
+        Horizontal,
+      ),
+      VaneVerticalDirection: getLocalizedCapabilitiesOptions(
+        vertical,
+        language,
+        Vertical,
+      ),
+    }
+  },
+  async getAtaValues({
     homey,
     params: { buildingId },
   }: {
@@ -167,12 +257,8 @@ export = {
   }): Promise<GroupAtaState> {
     return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
   },
-  async getBuildings({ homey }: { homey: Homey }): Promise<BuildingData[]> {
-    return Promise.all(
-      BuildingModel.getAll().map(async (building) =>
-        getOrCreateBuildingFacade(homey, building).actualData(),
-      ),
-    )
+  getBuildings(): BuildingModel[] {
+    return BuildingModel.getAll()
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)
@@ -274,7 +360,7 @@ export = {
   }): Promise<boolean> {
     return (homey.app as MELCloudApp).api.applyLogin(body)
   },
-  async setAtaDevices({
+  async setAtaValues({
     body,
     homey,
     params: { buildingId },
@@ -282,8 +368,11 @@ export = {
     body: GroupAtaState
     homey: Homey
     params: { buildingId: string }
-  }): Promise<FailureData | SuccessData> {
-    return getOrCreateBuildingFacade(homey, Number(buildingId)).setAta(body)
+  }): Promise<void> {
+    handleResponse(
+      (await getOrCreateBuildingFacade(homey, Number(buildingId)).setAta(body))
+        .AttributeErrors,
+    )
   },
   async setDeviceSettings({
     body,

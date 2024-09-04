@@ -319,6 +319,82 @@
     "target_temperature": {
       "min": 10,
       "max": 31
+    },
+    "thermostat_mode": {
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "en": "Automatic",
+            "fr": "Automatique",
+            "nl": "Automatisch",
+            "sv": "Automatiskt",
+            "no": "Automatisk",
+            "da": "Automatisk",
+            "es": "Automático"
+          }
+        },
+        {
+          "id": "cool",
+          "title": {
+            "en": "Cool",
+            "fr": "Refroidir",
+            "nl": "Koelen",
+            "sv": "Kyla",
+            "no": "Avkjøle",
+            "da": "Køl ned",
+            "es": "Enfriar"
+          }
+        },
+        {
+          "id": "dry",
+          "title": {
+            "en": "Dry",
+            "fr": "Déshumidifier",
+            "nl": "Ontvochtigen",
+            "sv": "Avfukta",
+            "no": "Avfukte",
+            "da": "Affugte",
+            "es": "Deshumidificar"
+          }
+        },
+        {
+          "id": "fan",
+          "title": {
+            "en": "Fan",
+            "fr": "Ventiler",
+            "nl": "Ventileren",
+            "sv": "Fläkta",
+            "no": "Vifte",
+            "da": "Blæse",
+            "es": "Ventilar"
+          }
+        },
+        {
+          "id": "heat",
+          "title": {
+            "en": "Heat",
+            "fr": "Chauffer",
+            "nl": "Verhitten",
+            "sv": "Värme",
+            "no": "Varme",
+            "da": "Opvarm",
+            "es": "Calentar"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "en": "Off",
+            "fr": "Désactivé",
+            "nl": "Uit",
+            "sv": "Av",
+            "no": "Av",
+            "da": "Deaktiveret",
+            "es": "Desactivado"
+          }
+        }
+      ]
     }
   }
 }
