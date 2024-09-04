@@ -50,7 +50,7 @@ const NUMBER_12 = 12
 const NUMBER_13 = 13
 const NUMBER_14 = 14
 
-const pad = (num: number): string => num.toString().padStart(NUMBER_2, '0')
+const pad = (num: number): string => String(num).padStart(NUMBER_2, '0')
 
 const formatDateTimeLocal = (date: Date): string => {
   const year = String(date.getFullYear())
@@ -466,10 +466,17 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState =>
   Object.fromEntries(
     Array.from(valuesAtaElement.querySelectorAll('input, select'))
       .filter(
-        (element): element is HTMLValueElement =>
-          (element as HTMLValueElement).value !== '',
+        (element) =>
+          (element as HTMLValueElement).value !== '' &&
+          (element as HTMLValueElement).value !==
+            buildingMapping[buildingElement.value]?.[
+              element.id as keyof GroupAtaState
+            ]?.toString(),
       )
-      .map((element) => [element.id, processValue(homey, element)]),
+      .map((element) => [
+        element.id,
+        processValue(homey, element as HTMLValueElement),
+      ]),
   )
 
 const generateErrorLogTable = (
