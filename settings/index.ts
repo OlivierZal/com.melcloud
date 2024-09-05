@@ -102,7 +102,7 @@ let homeySettings: HomeySettingsUI = {
 }
 
 const buildingMapping: Partial<
-  Record<string, BuildingSettings & GroupAtaState>
+  Record<string, Partial<BuildingSettings & GroupAtaState>>
 > = {}
 const hasBuildingAtaDevices: Partial<Record<string, boolean>> = {}
 
@@ -643,16 +643,14 @@ const updateBuildingMapping = (
   data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
   buildingId = buildingElement.value,
 ): void => {
-  if (buildingMapping[buildingId]) {
-    buildingMapping[buildingId] = { ...buildingMapping[buildingId], ...data }
-  }
+  buildingMapping[buildingId] = { ...buildingMapping[buildingId], ...data }
 }
 
 const refreshHolidayModeData = (): void => {
   const data = buildingMapping[buildingElement.value]
   if (data) {
     const {
-      HMEnabled: isEnabled,
+      HMEnabled: isEnabled = false,
       HMEndDate: endDate,
       HMStartDate: startDate,
     } = data
@@ -869,14 +867,13 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           return
         }
         await Promise.all(
-          buildings.map(async ({ data, id, name }) => {
+          buildings.map(async ({ id, name }) => {
             const buildingId = String(id)
             if (!document.getElementById(buildingId)) {
               const optionElement = document.createElement('option')
               optionElement.value = buildingId
               optionElement.innerText = name
               buildingElement.append(optionElement)
-              buildingMapping[buildingId] = data
             }
             await fetchAtaValues(homey, buildingId)
             await fetchFrostProtectionData(homey, buildingId)

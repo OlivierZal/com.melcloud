@@ -373,13 +373,11 @@ export const getCapabilitiesOptionsAtw = ({
       )
   return {
     thermostat_mode: { values: thermostatModeValues },
-    ...(hasZone2 ?
-      {
-        'thermostat_mode.zone2': {
-          title: THERMOSTAT_MODE_TITLE_ATW,
-          values: thermostatModeValues,
-        },
-      }
-    : {}),
+    ...(hasZone2 && {
+      'thermostat_mode.zone2': {
+        title: THERMOSTAT_MODE_TITLE_ATW,
+        values: thermostatModeValues,
+      },
+    }),
   }
 }
