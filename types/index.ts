@@ -17,7 +17,7 @@ export type {
   OpCapabilitiesAtw,
   SetCapabilitiesAtw,
   TargetTemperatureFlowCapabilities,
-  Zone,
+  ZoneAtw,
 } from './atw'
 export {
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
@@ -34,6 +34,7 @@ export {
   THERMOSTAT_MODE_TITLE,
 } from './bases'
 export {
+  type Buildings,
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
@@ -71,6 +72,7 @@ export {
   type SetCapabilityTagMapping,
   type Settings,
   type ValueOf,
+  type Zone,
   K_MULTIPLIER,
   getCapabilitiesOptions,
 } from './common'

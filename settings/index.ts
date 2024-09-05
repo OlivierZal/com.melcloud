@@ -1,5 +1,4 @@
 import type {
-  BuildingModel,
   BuildingSettings,
   FrostProtectionData,
   GroupAtaState,
@@ -9,6 +8,7 @@ import type {
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
+  Buildings,
   DeviceSetting,
   DeviceSettings,
   DriverCapabilitiesOptions,
@@ -875,7 +875,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
     homey.api(
       'GET',
       '/buildings',
-      async (error: Error | null, buildings: BuildingModel[]) => {
+      async (error: Error | null, buildings: Buildings) => {
         if (error || !buildings.length) {
           if (error) {
             await homey.alert(error.message)

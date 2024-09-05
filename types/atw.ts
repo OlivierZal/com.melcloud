@@ -33,7 +33,7 @@ export enum OperationModeStateZoneCapability {
   prohibited = 'prohibited',
 }
 
-export type Zone = 'zone1' | 'zone2'
+export type ZoneAtw = 'zone1' | 'zone2'
 
 export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_cool': number

@@ -315,3 +315,13 @@ export interface HolidayModeSettings {
   readonly to?: string
   readonly enabled: boolean
 }
+
+export interface Zone {
+  readonly id: number
+  readonly name: string
+}
+
+export type Buildings = (Zone & {
+  areas: Zone[]
+  floors: (Zone & { areas: Zone[] })[]
+})[]

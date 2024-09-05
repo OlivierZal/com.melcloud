@@ -21,6 +21,7 @@ import fan from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
+  type Buildings,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -259,8 +260,20 @@ export = {
   }): Promise<GroupAtaState> {
     return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
   },
-  getBuildings(): BuildingModel[] {
-    return BuildingModel.getAll()
+  getBuildings(): Buildings {
+    return BuildingModel.getAll().map((building) => ({
+      areas: building.areas.map((area) => ({
+        id: area.id,
+        name: area.name,
+      })),
+      floors: building.floors.map((floor) => ({
+        areas: floor.areas,
+        id: floor.id,
+        name: floor.name,
+      })),
+      id: building.id,
+      name: building.name,
+    }))
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)

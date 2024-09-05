@@ -13,7 +13,7 @@ import {
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-  type Zone,
+  type ZoneAtw,
   K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
@@ -115,9 +115,9 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     await Promise.all(
-      (['zone1', 'zone2'] as const).map(async (zone: Zone) => {
+      (['zone1', 'zone2'] as const).map(async (zone: ZoneAtw) => {
         if (this.hasCapability(`operation_mode_state.${zone}`)) {
-          const zoneName: Capitalize<Zone> =
+          const zoneName: Capitalize<ZoneAtw> =
             zone === 'zone1' ? 'Zone1' : 'Zone2'
           let value = OperationModeStateZoneCapability.idle
           if (
