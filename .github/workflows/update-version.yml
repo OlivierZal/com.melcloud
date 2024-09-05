@@ -14,7 +14,7 @@ on:
       changelog:
         type: string
         description: Changelog
-        required: true
+        required: false
 permissions:
   contents: write
 jobs:
