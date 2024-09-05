@@ -20,6 +20,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
+    "@html-eslint/eslint-plugin": "^0.26.0",
+    "@html-eslint/parser": "^0.26.0",
     "@stylistic/eslint-plugin": "^2.7.2",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.7",
     "@types/luxon": "^3.4.2",

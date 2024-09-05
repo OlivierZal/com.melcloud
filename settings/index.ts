@@ -101,10 +101,10 @@ let homeySettings: HomeySettingsUI = {
   username: '',
 }
 
-const buildingMapping: Partial<
+const zoneMapping: Partial<
   Record<string, Partial<BuildingSettings & GroupAtaState>>
 > = {}
-const hasBuildingAtaDevices: Partial<Record<string, boolean>> = {}
+const hasZoneAtaDevices: Partial<Record<string, boolean>> = {}
 
 let ataCapabilities: Partial<
   Record<keyof GroupAtaState, DriverCapabilitiesOptions>
@@ -155,8 +155,8 @@ const authenticatedElement = document.getElementById(
 const authenticatingElement = document.getElementById(
   'authenticating',
 ) as HTMLDivElement
-const hasBuildingAtaDevicesElement = document.getElementById(
-  'has-building-ata-devices',
+const hasZoneAtaDevicesElement = document.getElementById(
+  'has-zone-ata-devices',
 ) as HTMLDivElement
 const errorLogElement = document.getElementById('error-log') as HTMLDivElement
 const loginElement = document.getElementById('login') as HTMLDivElement
@@ -190,9 +190,7 @@ const errorCountLabelElement = document.getElementById(
 ) as HTMLLabelElement
 const periodLabelElement = document.getElementById('period') as HTMLLabelElement
 
-const buildingElement = document.getElementById(
-  'buildings',
-) as HTMLSelectElement
+const zoneElement = document.getElementById('zones') as HTMLSelectElement
 const frostProtectionEnabledElement = document.getElementById(
   'enabled-frost-protection',
 ) as HTMLSelectElement
@@ -554,7 +552,7 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
         (element): element is HTMLValueElement =>
           (element as HTMLValueElement).value !== '' &&
           (element as HTMLValueElement).value !==
-            buildingMapping[buildingElement.value]?.[
+            zoneMapping[zoneElement.value]?.[
               element.id as keyof GroupAtaState
             ]?.toString(),
       )
@@ -656,15 +654,15 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
       }),
   )
 
-const updateBuildingMapping = (
+const updateZoneMapping = (
   data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
-  buildingId = buildingElement.value,
+  zone = zoneElement.value,
 ): void => {
-  buildingMapping[buildingId] = { ...buildingMapping[buildingId], ...data }
+  zoneMapping[zone] = { ...zoneMapping[zone], ...data }
 }
 
 const refreshHolidayModeData = (): void => {
-  const data = buildingMapping[buildingElement.value]
+  const data = zoneMapping[zoneElement.value]
   if (data) {
     const {
       HMEnabled: isEnabled = false,
@@ -678,7 +676,7 @@ const refreshHolidayModeData = (): void => {
 }
 
 const refreshFrostProtectionData = (): void => {
-  const data = buildingMapping[buildingElement.value]
+  const data = zoneMapping[zoneElement.value]
   if (data) {
     const {
       FPEnabled: isEnabled,
@@ -695,20 +693,20 @@ const updateAtaValueElement = (id: keyof GroupAtaState): void => {
   const ataValueElement = document.getElementById(id) as HTMLValueElement | null
   if (ataValueElement) {
     ataValueElement.value =
-      buildingMapping[buildingElement.value]?.[id]?.toString() ?? ''
+      zoneMapping[zoneElement.value]?.[id]?.toString() ?? ''
   }
 }
 
 const refreshAtaValuesElement = (): void => {
-  const hasAtaDevices = hasBuildingAtaDevices[buildingElement.value] === true
+  const hasAtaDevices = hasZoneAtaDevices[zoneElement.value] === true
   const ataKeys = Object.keys(ataCapabilities) as (keyof GroupAtaState)[]
   if (hasAtaDevices) {
     ataKeys.forEach(updateAtaValueElement)
   }
-  unhide(hasBuildingAtaDevicesElement, hasAtaDevices)
+  unhide(hasZoneAtaDevicesElement, hasAtaDevices)
 }
 
-const refreshBuildingSettings = (): void => {
+const refreshZoneSettings = (): void => {
   refreshHolidayModeData()
   refreshFrostProtectionData()
   refreshAtaValuesElement()
@@ -716,7 +714,7 @@ const refreshBuildingSettings = (): void => {
 
 const fetchHolidayModeData = async (
   homey: Homey,
-  buildingId = buildingElement.value,
+  zone = zoneElement.value,
 ): Promise<void> =>
   withDisablingButtons(
     'holiday-mode',
@@ -724,10 +722,10 @@ const fetchHolidayModeData = async (
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/settings/holiday_mode/buildings/${buildingId}`,
+          `/settings/holiday_mode/${zone.replace('_', '/')}`,
           (error: Error | null, data: HolidayModeData) => {
             if (!error) {
-              updateBuildingMapping(data, buildingId)
+              updateZoneMapping(data, zone)
               refreshHolidayModeData()
             }
             resolve()
@@ -738,7 +736,7 @@ const fetchHolidayModeData = async (
 
 const fetchFrostProtectionData = async (
   homey: Homey,
-  buildingId = buildingElement.value,
+  zone = zoneElement.value,
 ): Promise<void> =>
   withDisablingButtons(
     'frost-protection',
@@ -746,10 +744,10 @@ const fetchFrostProtectionData = async (
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/settings/frost_protection/buildings/${buildingId}`,
+          `/settings/frost_protection/${zone.replace('_', '/')}`,
           (error: Error | null, data: FrostProtectionData) => {
             if (!error) {
-              updateBuildingMapping(data, buildingId)
+              updateZoneMapping(data, zone)
               refreshFrostProtectionData()
             }
             resolve()
@@ -839,30 +837,24 @@ const generateAtaValuesElement = (homey: Homey): void => {
   })
 }
 
-const fetchAtaValues = async (
-  homey: Homey,
-  buildingId: string,
-): Promise<void> =>
+const fetchAtaValues = async (homey: Homey, zone: string): Promise<void> =>
   withDisablingButtons(
     'values-melcloud',
     async () =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/drivers/melcloud/buildings/${buildingId}`,
+          `/drivers/melcloud/${zone.replace('_', '/')}`,
           async (error: Error | null, data: GroupAtaState) => {
-            hasBuildingAtaDevices[buildingId] = error === null
+            hasZoneAtaDevices[zone] = error === null
             if (error) {
               if (error.message !== 'No air-to-air device found') {
                 await homey.alert(error.message)
               }
             } else {
-              updateBuildingMapping(data, buildingId)
+              updateZoneMapping(data, zone)
               generateAtaValuesElement(homey)
-              unhide(
-                hasBuildingAtaDevicesElement,
-                buildingId === buildingElement.value,
-              )
+              unhide(hasZoneAtaDevicesElement, zone === zoneElement.value)
             }
             resolve()
           },
@@ -885,16 +877,16 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
         }
         await Promise.all(
           buildings.map(async ({ id, name }) => {
-            const buildingId = String(id)
-            if (!document.getElementById(buildingId)) {
+            const zone = `buildings_${String(id)}`
+            if (!document.getElementById(zone)) {
               const optionElement = document.createElement('option')
-              optionElement.value = buildingId
+              optionElement.value = zone
               optionElement.innerText = name
-              buildingElement.append(optionElement)
+              zoneElement.append(optionElement)
             }
-            await fetchAtaValues(homey, buildingId)
-            await fetchFrostProtectionData(homey, buildingId)
-            await fetchHolidayModeData(homey, buildingId)
+            await fetchAtaValues(homey, zone)
+            await fetchFrostProtectionData(homey, zone)
+            await fetchHolidayModeData(homey, zone)
           }),
         )
         await generateErrorLog(homey)
@@ -1083,11 +1075,11 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         new Promise((resolve) => {
           homey.api(
             'PUT',
-            `/drivers/melcloud/buildings/${buildingElement.value}`,
+            `/drivers/melcloud/${zoneElement.value.replace('_', '/')}`,
             body satisfies GroupAtaState,
             async (error: Error | null) => {
               if (!error) {
-                updateBuildingMapping(body)
+                updateZoneMapping(body)
                 refreshAtaValuesElement()
               }
               await homey.alert(
@@ -1332,11 +1324,11 @@ const updateHolidayModeData = async (
       new Promise((resolve) => {
         homey.api(
           'PUT',
-          `/settings/holiday_mode/buildings/${buildingElement.value}`,
+          `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
           body satisfies HolidayModeSettings,
           async (error: Error | null) => {
             if (!error) {
-              updateBuildingMapping({
+              updateZoneMapping({
                 HMEnabled: body.enabled,
                 HMEndDate: body.to,
                 HMStartDate: body.from,
@@ -1391,11 +1383,11 @@ const updateFrostProtectionData = async (
       new Promise((resolve) => {
         homey.api(
           'PUT',
-          `/settings/frost_protection/buildings/${buildingElement.value}`,
+          `/settings/frost_protection/${zoneElement.value.replace('_', '/')}`,
           body satisfies FrostProtectionSettings,
           async (error: Error | null) => {
             if (!error) {
-              updateBuildingMapping({
+              updateZoneMapping({
                 FPEnabled: body.enabled,
                 FPMaxTemperature: body.max,
                 FPMinTemperature: body.min,
@@ -1491,7 +1483,7 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
-  buildingElement.addEventListener('change', refreshBuildingSettings)
+  zoneElement.addEventListener('change', refreshZoneSettings)
   addHolidayModeEventListeners()
   addUpdateHolidayModeEventListener(homey)
   addFrostProtectionEventListeners()

@@ -1,4 +1,5 @@
 import eslint from '@eslint/js'
+import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier'
 import packageJson from 'eslint-plugin-package-json/configs/recommended'
@@ -365,5 +366,9 @@ export default [
       },
     },
   ),
+  {
+    ...html.configs['flat/recommended'],
+    files: ['**/*.html'],
+  },
   packageJson,
 ]
