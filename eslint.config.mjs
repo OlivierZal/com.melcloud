@@ -343,6 +343,7 @@ export default [
         'perfectionist/sort-named-imports': ['error', typesFirst],
         'perfectionist/sort-object-types': ['error', optionalFirst],
         'perfectionist/sort-objects': 'error',
+        'perfectionist/sort-sets': 'error',
         'perfectionist/sort-switch-case': 'error',
         'perfectionist/sort-union-types': ['error', groups],
         'sort-imports': 'off',
