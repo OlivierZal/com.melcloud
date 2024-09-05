@@ -211,35 +211,49 @@ const disableButton = (id: string, value = true): void => {
   }
 }
 
-const disableButtons = (setting: string, value = true): void => {
-  const [baseSetting, suffix] = setting.split('-')
+const enableButton = (id: string, value = true): void => {
+  disableButton(id, !value)
+}
+
+const disableButtons = (id: string, value = true): void => {
+  const isCommon = id.endsWith('common')
   ;['apply', 'refresh'].forEach((action) => {
-    disableButton(`${action}-${setting}`, value)
-    if (suffix === 'common') {
+    disableButton(`${action}-${id}`, value)
+    if (isCommon) {
       Object.keys(deviceSettings).forEach((driverId) => {
-        disableButton(`${action}-${baseSetting}-${driverId}`, value)
+        disableButton(`${action}-${id.replace(/common$/u, driverId)}`, value)
       })
     }
   })
 }
 
-const disableSettingsButtons = (): void => {
+const enableButtons = (id: string, value = true): void => {
+  disableButtons(id, !value)
+}
+
+const disableSettingButtons = (): void => {
+  disableButton(seeElement.id)
   disableButtons('frost-protection')
   disableButtons('holiday-mode')
   disableButtons('settings-common')
 }
 
-const enableButtons = (setting: string, value = true): void => {
-  disableButtons(setting, !value)
-}
-
 const withDisablingButton = async (
-  button: string,
+  id: string,
   action: () => Promise<void>,
 ): Promise<void> => {
-  disableButtons(button)
+  disableButton(id)
   await action()
-  enableButtons(button)
+  enableButton(id)
+}
+
+const withDisablingButtons = async (
+  id: string,
+  action: () => Promise<void>,
+): Promise<void> => {
+  disableButtons(id)
+  await action()
+  enableButtons(id)
 }
 
 const hide = (element: HTMLDivElement, value = true): void => {
@@ -617,27 +631,30 @@ const updateErrorLogElements = (
 }
 
 const generateErrorLog = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      `/errors?${new URLSearchParams({
-        from: sinceElement.value,
-        limit: '29',
-        offset: '0',
-        to,
-      } satisfies ErrorLogQuery).toString()}`,
-      async (error: Error | null, data: ErrorLog) => {
-        seeElement.classList.remove('is-disabled')
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          updateErrorLogElements(homey, data)
-          generateErrorLogTableData(homey, data.errors)
-          resolve()
-        }
-      },
-    )
-  })
+  withDisablingButton(
+    seeElement.id,
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'GET',
+          `/errors?${new URLSearchParams({
+            from: sinceElement.value,
+            limit: '29',
+            offset: '0',
+            to,
+          } satisfies ErrorLogQuery).toString()}`,
+          async (error: Error | null, data: ErrorLog) => {
+            if (error) {
+              await homey.alert(error.message)
+            } else {
+              updateErrorLogElements(homey, data)
+              generateErrorLogTableData(homey, data.errors)
+              resolve()
+            }
+          },
+        )
+      }),
+  )
 
 const updateBuildingMapping = (
   data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
@@ -701,7 +718,7 @@ const fetchHolidayModeData = async (
   homey: Homey,
   buildingId = buildingElement.value,
 ): Promise<void> =>
-  withDisablingButton(
+  withDisablingButtons(
     'holiday-mode',
     async () =>
       new Promise((resolve) => {
@@ -723,7 +740,7 @@ const fetchFrostProtectionData = async (
   homey: Homey,
   buildingId = buildingElement.value,
 ): Promise<void> =>
-  withDisablingButton(
+  withDisablingButtons(
     'frost-protection',
     async () =>
       new Promise((resolve) => {
@@ -826,7 +843,7 @@ const fetchAtaValues = async (
   homey: Homey,
   buildingId: string,
 ): Promise<void> =>
-  withDisablingButton(
+  withDisablingButtons(
     'values-melcloud',
     async () =>
       new Promise((resolve) => {
@@ -965,7 +982,7 @@ const setDeviceSettings = async (
       driverId: string
     }).toString()}`
   }
-  await withDisablingButton(
+  await withDisablingButtons(
     `settings-${driverId ?? 'common'}`,
     async () =>
       new Promise((resolve) => {
@@ -1060,7 +1077,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
       })
       return
     }
-    await withDisablingButton(
+    await withDisablingButtons(
       'values-melcloud',
       async () =>
         new Promise((resolve) => {
@@ -1216,8 +1233,7 @@ const generatePostLogin = async (homey: Homey): Promise<void> => {
     await fetchBuildings(homey)
   } catch (error) {
     if (error instanceof NoDeviceError) {
-      seeElement.classList.add('is-disabled')
-      disableSettingsButtons()
+      disableSettingButtons()
       await homey.alert(error.message)
     }
   } finally {
@@ -1225,33 +1241,39 @@ const generatePostLogin = async (homey: Homey): Promise<void> => {
   }
 }
 
-const login = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    const username = usernameElement?.value ?? ''
-    const password = passwordElement?.value ?? ''
-    if (!username || !password) {
-      homey.alert(homey.__('settings.authenticate.failure')).catch(() => {
-        //
-      })
-      return
-    }
-    homey.api(
-      'POST',
-      '/sessions',
-      { password, username } satisfies LoginCredentials,
-      async (error: Error | null, loggedIn: boolean) => {
-        authenticateElement.classList.remove('is-disabled')
-        if (error || !loggedIn) {
-          await homey.alert(
-            error ? error.message : homey.__('settings.authenticate.failure'),
-          )
-        } else {
-          await generatePostLogin(homey)
-        }
-        resolve()
-      },
-    )
-  })
+const login = async (homey: Homey): Promise<void> => {
+  const username = usernameElement?.value ?? ''
+  const password = passwordElement?.value ?? ''
+  if (!username || !password) {
+    homey.alert(homey.__('settings.authenticate.failure')).catch(() => {
+      //
+    })
+    return
+  }
+  await withDisablingButton(
+    authenticateElement.id,
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'POST',
+          '/sessions',
+          { password, username } satisfies LoginCredentials,
+          async (error: Error | null, loggedIn: boolean) => {
+            if (error || !loggedIn) {
+              await homey.alert(
+                error ?
+                  error.message
+                : homey.__('settings.authenticate.failure'),
+              )
+            } else {
+              await generatePostLogin(homey)
+            }
+            resolve()
+          },
+        )
+      }),
+  )
+}
 
 const addHolidayModeEventListeners = (): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
@@ -1304,7 +1326,7 @@ const updateHolidayModeData = async (
   homey: Homey,
   body: HolidayModeSettings,
 ): Promise<void> =>
-  withDisablingButton(
+  withDisablingButtons(
     'holiday-mode',
     async () =>
       new Promise((resolve) => {
@@ -1363,7 +1385,7 @@ const updateFrostProtectionData = async (
   homey: Homey,
   body: FrostProtectionSettings,
 ): Promise<void> =>
-  withDisablingButton(
+  withDisablingButtons(
     'frost-protection',
     async () =>
       new Promise((resolve) => {
@@ -1443,7 +1465,6 @@ const addAtaValuesEventListeners = (homey: Homey): void => {
 
 const addEventListeners = (homey: Homey): void => {
   authenticateElement.addEventListener('click', () => {
-    authenticateElement.classList.add('is-disabled')
     login(homey).catch(() => {
       //
     })
@@ -1461,7 +1482,6 @@ const addEventListeners = (homey: Homey): void => {
     }
   })
   seeElement.addEventListener('click', () => {
-    seeElement.classList.add('is-disabled')
     generateErrorLog(homey).catch(() => {
       //
     })
