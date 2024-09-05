@@ -216,9 +216,11 @@ export = {
       OperationMode: getLocalizedCapabilitiesOptions(
         {
           title: THERMOSTAT_MODE_TITLE,
-          values: (homey.manifest as Manifest).drivers.find(
-            ({ id }) => id === 'melcloud',
-          )?.capabilitiesOptions?.thermostat_mode.values,
+          values: (homey.manifest as Manifest).drivers
+            .find(({ id }) => id === 'melcloud')
+            ?.capabilitiesOptions?.thermostat_mode.values?.filter(
+              ({ id }) => id !== 'off',
+            ),
         },
         language,
         OperationMode,
