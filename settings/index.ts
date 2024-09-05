@@ -8,7 +8,7 @@ import type {
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
-  Buildings,
+  Building,
   DeviceSetting,
   DeviceSettings,
   DriverCapabilitiesOptions,
@@ -875,7 +875,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
     homey.api(
       'GET',
       '/buildings',
-      async (error: Error | null, buildings: Buildings) => {
+      async (error: Error | null, buildings: Building[]) => {
         if (error || !buildings.length) {
           if (error) {
             await homey.alert(error.message)

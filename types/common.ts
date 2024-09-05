@@ -321,7 +321,7 @@ export interface Zone {
   readonly name: string
 }
 
-export type Buildings = (Zone & {
+export type Building = Zone & {
   areas: Zone[]
   floors: (Zone & { areas: Zone[] })[]
-})[]
+}

@@ -21,7 +21,7 @@ import fan from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
-  type Buildings,
+  type Building,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -260,7 +260,7 @@ export = {
   }): Promise<GroupAtaState> {
     return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
   },
-  getBuildings(): Buildings {
+  getBuildings(): Building[] {
     return BuildingModel.getAll().map((building) => ({
       areas: building.areas.map((area) => ({
         id: area.id,

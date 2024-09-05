@@ -34,7 +34,7 @@ export {
   THERMOSTAT_MODE_TITLE,
 } from './bases'
 export {
-  type Buildings,
+  type Building,
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
