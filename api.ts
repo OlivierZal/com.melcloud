@@ -203,7 +203,7 @@ const getLocalizedCapabilitiesOptions = (
     capabilitiesOptions.title?.[
       language in (capabilitiesOptions.title ?? {}) ? language : 'en'
     ] ?? '',
-  type: String(capabilitiesOptions.type),
+  type: capabilitiesOptions.type ?? (capabilitiesOptions.values ? 'enum' : ''),
   values:
     capabilitiesOptions.values && enumType ?
       capabilitiesOptions.values.map(({ id, title }) => ({
@@ -237,6 +237,7 @@ export = {
       Power: getLocalizedCapabilitiesOptions(
         {
           title: POWER_TITLE,
+          type: 'boolean',
         },
         language,
       ),
