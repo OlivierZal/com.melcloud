@@ -318,6 +318,6 @@ export interface HolidayModeSettings {
 }
 
 export type Building = BaseModel & {
-  areas: BaseModel[]
-  floors: (BaseModel & { areas: BaseModel[] })[]
+  areas?: BaseModel[]
+  floors?: (BaseModel & { areas: BaseModel[] })[]
 }
