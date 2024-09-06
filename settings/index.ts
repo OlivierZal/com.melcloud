@@ -920,7 +920,7 @@ const generateAtaValuesElement = (homey: Homey): void => {
   })
 }
 
-const handleZone = async (
+const createZoneElement = async (
   homey: Homey,
   { areas, floors, id, name: label }: Building,
   zoneType: string,
@@ -934,14 +934,14 @@ const handleZone = async (
   if (areas) {
     await Promise.all(
       areas.map(async (area) => {
-        await handleZone(homey, area, 'areas')
+        await createZoneElement(homey, area, 'areas')
       }),
     )
   }
   if (floors) {
     await Promise.all(
       floors.map(async (floor) => {
-        await handleZone(homey, floor, 'floors')
+        await createZoneElement(homey, floor, 'floors')
       }),
     )
   }
@@ -969,7 +969,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
         generateAtaValuesElement(homey)
         await Promise.all(
           buildings.map(async (building) =>
-            handleZone(homey, building, 'buildings'),
+            createZoneElement(homey, building, 'buildings'),
           ),
         )
         await generateErrorLog(homey)
