@@ -130,23 +130,23 @@ const autoAdjustElement = document.getElementById(
   'auto_adjust',
 ) as HTMLButtonElement
 const refreshAtaValues = document.getElementById(
-  'refresh-values-melcloud',
+  'refresh_values_melcloud',
 ) as HTMLButtonElement
 const refreshFrostProtectionElement = document.getElementById(
-  'refresh-frost-protection',
+  'refresh_frost_protection',
 ) as HTMLButtonElement
 const refreshHolidayModeElement = document.getElementById(
-  'refresh-holiday-mode',
+  'refresh_holiday_mode',
 ) as HTMLButtonElement
 const seeElement = document.getElementById('see') as HTMLButtonElement
 const updateAtaValues = document.getElementById(
-  'apply-values-melcloud',
+  'apply_values_melcloud',
 ) as HTMLButtonElement
 const updateFrostProtectionElement = document.getElementById(
-  'apply-frost-protection',
+  'apply_frost_protection',
 ) as HTMLButtonElement
 const updateHolidayModeElement = document.getElementById(
-  'apply-holiday-mode',
+  'apply_holiday_mode',
 ) as HTMLButtonElement
 
 const authenticatedElement = document.getElementById(
@@ -156,15 +156,15 @@ const authenticatingElement = document.getElementById(
   'authenticating',
 ) as HTMLDivElement
 const hasZoneAtaDevicesElement = document.getElementById(
-  'has-zone-ata-devices',
+  'has_zone_ata_devices',
 ) as HTMLDivElement
-const errorLogElement = document.getElementById('error-log') as HTMLDivElement
+const errorLogElement = document.getElementById('error_log') as HTMLDivElement
 const loginElement = document.getElementById('login') as HTMLDivElement
 const settingsCommonElement = document.getElementById(
-  'settings-common',
+  'settings_common',
 ) as HTMLDivElement
 const valuesAtaElement = document.getElementById(
-  'values-melcloud',
+  'values_melcloud',
 ) as HTMLDivElement
 
 const sinceElement = document.getElementById('since') as HTMLInputElement
@@ -179,10 +179,10 @@ const frostProtectionMaxTemperatureElement = document.getElementById(
 frostProtectionMaxTemperatureElement.min = String(MAX_FP_TEMPERATURE_MIN)
 frostProtectionMaxTemperatureElement.max = String(MAX_FP_TEMPERATURE_MAX)
 const holidayModeStartDateElement = document.getElementById(
-  'start-date',
+  'start_date',
 ) as HTMLInputElement
 const holidayModeEndDateElement = document.getElementById(
-  'end-date',
+  'end_date',
 ) as HTMLInputElement
 
 const errorCountLabelElement = document.getElementById(
@@ -192,10 +192,10 @@ const periodLabelElement = document.getElementById('period') as HTMLLabelElement
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 const frostProtectionEnabledElement = document.getElementById(
-  'enabled-frost-protection',
+  'enabled_frost_protection',
 ) as HTMLSelectElement
 const holidayModeEnabledElement = document.getElementById(
-  'enabled-holiday-mode',
+  'enabled_holiday_mode',
 ) as HTMLSelectElement
 
 const disableButton = (id: string, value = true): void => {
@@ -216,10 +216,10 @@ const enableButton = (id: string, value = true): void => {
 const disableButtons = (id: string, value = true): void => {
   const isCommon = id.endsWith('common')
   ;['apply', 'refresh'].forEach((action) => {
-    disableButton(`${action}-${id}`, value)
+    disableButton(`${action}_${id}`, value)
     if (isCommon) {
       Object.keys(deviceSettings).forEach((driverId) => {
-        disableButton(`${action}-${id.replace(/common$/u, driverId)}`, value)
+        disableButton(`${action}_${id.replace(/common$/u, driverId)}`, value)
       })
     }
   })
@@ -231,9 +231,9 @@ const enableButtons = (id: string, value = true): void => {
 
 const disableSettingButtons = (): void => {
   disableButton(seeElement.id)
-  disableButtons('frost-protection')
-  disableButtons('holiday-mode')
-  disableButtons('settings-common')
+  disableButtons('frost_protection')
+  disableButtons('holiday_mode')
+  disableButtons('settings_common')
 }
 
 const withDisablingButton = async (
@@ -408,7 +408,7 @@ const updateCheckboxChildrenElement = (
   element: HTMLInputElement,
   driverId: string,
 ): void => {
-  const [id] = element.id.split('--')
+  const [id] = element.id.split('__')
   const values = deviceSettings[driverId]?.[id] as boolean[]
   if (new Set(values).size === NUMBER_1) {
     ;[element.checked] = values
@@ -429,13 +429,13 @@ const createCheckboxElement = (
   const checkboxElement = document.createElement('input')
   checkboxElement.classList.add('homey-form-checkbox-input')
   checkboxElement.type = 'checkbox'
-  checkboxElement.id = `${id}--settings-${driverId}`
+  checkboxElement.id = `${id}__settings_${driverId}`
   updateCheckboxChildrenElement(checkboxElement, driverId)
   return checkboxElement
 }
 
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('--')
+  const [id] = element.id.split('__')
   const values = flatDeviceSettings[id]
   if (values && new Set(values).size === NUMBER_1) {
     const [value] = values
@@ -623,7 +623,7 @@ const buildSettingsBody = (
   const settings: Settings = {}
   elements.forEach((element) => {
     try {
-      const [id] = element.id.split('--')
+      const [id] = element.id.split('__')
       const value = processValue(homey, element)
       if (shouldUpdate(id, value, driverId)) {
         settings[id] = value
@@ -811,7 +811,7 @@ const fetchHolidayModeData = async (
   zone = zoneElement.value,
 ): Promise<void> =>
   withDisablingButtons(
-    'holiday-mode',
+    'holiday_mode',
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -833,7 +833,7 @@ const fetchFrostProtectionData = async (
   zone = zoneElement.value,
 ): Promise<void> =>
   withDisablingButtons(
-    'frost-protection',
+    'frost_protection',
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -899,7 +899,7 @@ const generateAtaValuesElement = (homey: Homey): void => {
 
 const fetchAtaValues = async (homey: Homey, zone: string): Promise<void> =>
   withDisablingButtons(
-    'values-melcloud',
+    'values_melcloud',
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -1008,7 +1008,7 @@ const setDeviceSettings = async (
     }).toString()}`
   }
   await withDisablingButtons(
-    `settings-${driverId ?? 'common'}`,
+    `settings_${driverId ?? 'common'}`,
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -1034,9 +1034,9 @@ const addApplySettingsEventListener = (
   elements: HTMLValueElement[],
   driverId?: string,
 ): void => {
-  const settings = `settings-${driverId ?? 'common'}`
+  const settings = `settings_${driverId ?? 'common'}`
   const buttonElement = document.getElementById(
-    `apply-${settings}`,
+    `apply_${settings}`,
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
     setDeviceSettings(homey, elements, driverId).catch(() => {
@@ -1049,9 +1049,9 @@ const addRefreshSettingsEventListener = (
   elements: HTMLValueElement[],
   driverId?: string,
 ): void => {
-  const settings = `settings-${driverId ?? 'common'}`
+  const settings = `settings_${driverId ?? 'common'}`
   const buttonElement = document.getElementById(
-    `refresh-${settings}`,
+    `refresh_${settings}`,
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
     if (driverId === undefined) {
@@ -1103,7 +1103,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
       return
     }
     await withDisablingButtons(
-      'values-melcloud',
+      'values_melcloud',
       async () =>
         new Promise((resolve) => {
           homey.api(
@@ -1131,7 +1131,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
 const generateCommonChildrenElements = (homey: Homey): void => {
   ;(driverSettings.options ?? []).forEach(
     ({ id, title: text, type, values }) => {
-      const settingId = `${id}--setting`
+      const settingId = `${id}__setting`
       if (
         !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
         ['checkbox', 'dropdown'].includes(type)
@@ -1156,7 +1156,7 @@ const generateCheckboxChildrenElements = (
   driverId: string,
 ): void => {
   if (driverSettings[driverId]) {
-    const settingsElement = document.getElementById(`settings-${driverId}`)
+    const settingsElement = document.getElementById(`settings_${driverId}`)
     if (settingsElement) {
       const fieldSetElement = document.createElement('fieldset')
       fieldSetElement.classList.add('homey-form-checkbox-set')
@@ -1184,7 +1184,7 @@ const generateCheckboxChildrenElements = (
         driverId,
       )
       unhide(
-        document.getElementById(`has-devices-${driverId}`) as HTMLDivElement,
+        document.getElementById(`has_devices_${driverId}`) as HTMLDivElement,
       )
     }
   }
@@ -1297,7 +1297,7 @@ const updateHolidayModeData = async (
   body: HolidayModeSettings,
 ): Promise<void> =>
   withDisablingButtons(
-    'holiday-mode',
+    'holiday_mode',
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -1356,7 +1356,7 @@ const updateFrostProtectionData = async (
   body: FrostProtectionSettings,
 ): Promise<void> =>
   withDisablingButtons(
-    'frost-protection',
+    'frost_protection',
     async () =>
       new Promise((resolve) => {
         homey.api(
@@ -1405,14 +1405,20 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
 
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
-    updateFrostProtectionData(homey, {
-      enabled: frostProtectionEnabledElement.value === 'true',
-      ...getFPMinAndMax(homey),
-    }).catch((error: unknown) => {
+    try {
+      const { max, min } = getFPMinAndMax(homey)
+      updateFrostProtectionData(homey, {
+        enabled: frostProtectionEnabledElement.value === 'true',
+        max,
+        min,
+      }).catch(() => {
+        //
+      })
+    } catch (error) {
       homey.alert(getErrorMessage(error)).catch(() => {
         //
       })
-    })
+    }
   })
 }
 
