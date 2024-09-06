@@ -497,7 +497,7 @@ const addTextToCheckbox = (
 
 const createLabelElement = (
   element: HTMLValueElement,
-  { text }: { text: string },
+  text: string,
 ): HTMLLabelElement => {
   const isCheckbox = element.type === 'checkbox'
   const labelElement = document.createElement('label')
@@ -520,16 +520,15 @@ const createCredentialElement = (
     (setting) => setting.id === credentialKey,
   )
   if (loginSetting) {
+    const { id, placeholder, title: text, type } = loginSetting
     const divElement = createDivElement()
     const inputElement = createInputElement({
-      id: loginSetting.id,
-      placeholder: loginSetting.placeholder,
-      type: loginSetting.type,
-      value: homeySettings[loginSetting.id],
+      id,
+      placeholder,
+      type,
+      value: homeySettings[id],
     })
-    const labelElement = createLabelElement(inputElement, {
-      text: loginSetting.title,
-    })
+    const labelElement = createLabelElement(inputElement, text)
     divElement.append(labelElement, inputElement)
     loginElement.append(divElement)
     return inputElement
@@ -859,7 +858,7 @@ const generateAtaValueElement = (
   let valueElement: HTMLValueElement | null = null
   if (['boolean', 'enum'].includes(type)) {
     valueElement = createSelectElement(homey, id, values)
-    labelElement = createLabelElement(valueElement, { text })
+    labelElement = createLabelElement(valueElement, text)
   } else if (type === 'number') {
     valueElement = createInputElement({
       id,
@@ -873,7 +872,7 @@ const generateAtaValueElement = (
         : undefined,
       type,
     })
-    labelElement = createLabelElement(valueElement, { text })
+    labelElement = createLabelElement(valueElement, text)
   }
   updateAtaValueElement(id as keyof GroupAtaState)
   return { labelElement, valueElement }
@@ -1135,7 +1134,7 @@ const generateCommonChildrenElements = (homey: Homey): void => {
       ) {
         const divElement = createDivElement()
         const selectElement = createSelectElement(homey, settingId, values)
-        const labelElement = createLabelElement(selectElement, { text })
+        const labelElement = createLabelElement(selectElement, text)
         updateCommonChildrenElement(selectElement)
         divElement.append(labelElement, selectElement)
         settingsCommonElement.append(divElement)
@@ -1169,7 +1168,7 @@ const generateCheckboxChildrenElements = (
               fieldSetElement.append(legendElement)
             }
             const checkboxElement = createCheckboxElement({ id }, driverId)
-            const labelElement = createLabelElement(checkboxElement, { text })
+            const labelElement = createLabelElement(checkboxElement, text)
             fieldSetElement.append(labelElement)
           }
         },
