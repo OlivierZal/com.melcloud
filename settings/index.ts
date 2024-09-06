@@ -391,6 +391,97 @@ const createInputElement = ({
   return inputElement
 }
 
+const createLegendElement = ({
+  text,
+}: {
+  text?: string
+}): HTMLLegendElement => {
+  const legendElement = document.createElement('legend')
+  legendElement.classList.add('homey-form-checkbox-set-title')
+  if (text !== undefined) {
+    legendElement.innerText = text
+  }
+  return legendElement
+}
+
+const updateCheckboxChildrenElement = (
+  element: HTMLInputElement,
+  driverId: string,
+): void => {
+  const [id] = element.id.split('--')
+  const values = deviceSettings[driverId]?.[id] as boolean[]
+  if (new Set(values).size === NUMBER_1) {
+    ;[element.checked] = values
+    return
+  }
+  element.indeterminate = true
+  element.addEventListener('change', () => {
+    if (element.indeterminate) {
+      element.indeterminate = false
+    }
+  })
+}
+
+const createCheckboxElement = (
+  { id }: { id: string },
+  driverId: string,
+): HTMLInputElement => {
+  const checkboxElement = document.createElement('input')
+  checkboxElement.classList.add('homey-form-checkbox-input')
+  checkboxElement.type = 'checkbox'
+  checkboxElement.id = `${id}--settings-${driverId}`
+  updateCheckboxChildrenElement(checkboxElement, driverId)
+  return checkboxElement
+}
+
+const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
+  const [id] = element.id.split('--')
+  const values = flatDeviceSettings[id]
+  if (values && new Set(values).size === NUMBER_1) {
+    const [value] = values
+    element.value = String(value)
+    return
+  }
+  element.value = ''
+}
+
+const createOptionElement = ({
+  id,
+  label,
+}: {
+  label?: string
+  id: string
+}): HTMLOptionElement => {
+  const optionElement = document.createElement('option')
+  optionElement.value = id
+  if (label !== undefined) {
+    optionElement.innerText = label
+  }
+  return optionElement
+}
+
+const createSelectElement = (
+  homey: Homey,
+  tag: string,
+  values?: readonly { id: string; label: string }[],
+): HTMLSelectElement => {
+  const selectElement = document.createElement('select')
+  selectElement.classList.add('homey-form-select')
+  selectElement.id = tag
+  ;[
+    { id: '' },
+    ...(values ??
+      ['false', 'true'].map((id) => ({
+        id,
+        label: homey.__(`settings.boolean.${id}`),
+      }))),
+  ].forEach(({ id, label }: { label?: string; id: string }) => {
+    const optionElement = createOptionElement({ id, label })
+    selectElement.append(optionElement)
+  })
+  return selectElement
+}
+
 const addTextToCheckbox = (
   labelElement: HTMLLabelElement,
   checkboxElement: HTMLInputElement,
@@ -756,33 +847,6 @@ const fetchFrostProtectionData = async (
       }),
   )
 
-const createAtaValueSelectElement = (
-  homey: Homey,
-  tag: string,
-  capability: DriverCapabilitiesOptions,
-): HTMLSelectElement => {
-  const selectElement = document.createElement('select')
-  selectElement.classList.add('homey-form-select')
-  selectElement.id = tag
-  ;[
-    { id: '' },
-    ...(capability.type === 'boolean' ?
-      ['false', 'true'].map((id) => ({
-        id,
-        label: homey.__(`settings.boolean.${id}`),
-      }))
-    : (capability.values ?? [])),
-  ].forEach(({ id, label }: { label?: string; id: string }) => {
-    const optionElement = document.createElement('option')
-    optionElement.value = id
-    if (label !== undefined) {
-      optionElement.innerText = label
-    }
-    selectElement.append(optionElement)
-  })
-  return selectElement
-}
-
 const generateAtaValueElement = (
   homey: Homey,
   id: string,
@@ -793,8 +857,8 @@ const generateAtaValueElement = (
 } => {
   let labelElement: HTMLLabelElement | null = null
   let valueElement: HTMLValueElement | null = null
-  if (['boolean', 'enum'].includes(capability.type)) {
-    valueElement = createAtaValueSelectElement(homey, id, capability)
+  if (capability.values || capability.type === 'boolean') {
+    valueElement = createSelectElement(homey, id, capability.values)
     labelElement = createLabelElement(valueElement, {
       text: capability.title,
     })
@@ -815,25 +879,22 @@ const generateAtaValueElement = (
       text: capability.title,
     })
   }
+  updateAtaValueElement(id as keyof GroupAtaState)
   return { labelElement, valueElement }
 }
 
 const generateAtaValuesElement = (homey: Homey): void => {
   Object.entries(ataCapabilities).forEach(([id, capability]) => {
-    const ataValueElement = document.getElementById(id)
-    if (!ataValueElement) {
-      const divElement = createDivElement()
-      const { labelElement, valueElement } = generateAtaValueElement(
-        homey,
-        id,
-        capability,
-      )
-      if (labelElement && valueElement) {
-        divElement.append(labelElement, valueElement)
-        valuesAtaElement.append(divElement)
-      }
+    const divElement = createDivElement()
+    const { labelElement, valueElement } = generateAtaValueElement(
+      homey,
+      id,
+      capability,
+    )
+    if (labelElement && valueElement) {
+      divElement.append(labelElement, valueElement)
+      valuesAtaElement.append(divElement)
     }
-    updateAtaValueElement(id as keyof GroupAtaState)
   })
 }
 
@@ -879,8 +940,10 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           buildings.map(async ({ id, name }) => {
             const zone = `buildings_${String(id)}`
             if (!document.getElementById(zone)) {
-              const optionElement = document.createElement('option')
-              optionElement.value = zone
+              const optionElement = createOptionElement({
+                id: zone,
+                label: name,
+              })
               optionElement.innerText = name
               zoneElement.append(optionElement)
             }
@@ -913,37 +976,8 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   })
 }
 
-const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('--')
-  const values = flatDeviceSettings[id]
-  if (values && new Set(values).size === NUMBER_1) {
-    const [value] = values
-    element.value = String(value)
-    return
-  }
-  element.value = ''
-}
-
 const refreshSettingsCommon = (elements: HTMLSelectElement[]): void => {
   elements.forEach(updateCommonChildrenElement)
-}
-
-const updateCheckboxChildrenElement = (
-  element: HTMLInputElement,
-  driverId: string,
-): void => {
-  const [id] = element.id.split('--')
-  const values = deviceSettings[driverId]?.[id] as boolean[]
-  if (new Set(values).size === NUMBER_1) {
-    ;[element.checked] = values
-    return
-  }
-  element.indeterminate = true
-  element.addEventListener('change', () => {
-    if (element.indeterminate) {
-      element.indeterminate = false
-    }
-  })
 }
 
 const refreshSettingsDriver = (
@@ -1095,33 +1129,6 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
   }
 }
 
-const createSettingSelectElement = (
-  homey: Homey,
-  setting: DriverSetting,
-): HTMLSelectElement => {
-  const selectElement = document.createElement('select')
-  selectElement.classList.add('homey-form-select')
-  selectElement.id = `${setting.id}--setting`
-  ;[
-    { id: '' },
-    ...(setting.type === 'checkbox' ?
-      ['false', 'true'].map((id) => ({
-        id,
-        label: homey.__(`settings.boolean.${id}`),
-      }))
-    : (setting.values ?? [])),
-  ].forEach(({ id, label }: { label?: string; id: string }) => {
-    const optionElement = document.createElement('option')
-    optionElement.value = id
-    if (label !== undefined) {
-      optionElement.innerText = label
-    }
-    selectElement.append(optionElement)
-  })
-  updateCommonChildrenElement(selectElement)
-  return selectElement
-}
-
 const generateCommonChildrenElements = (homey: Homey): void => {
   ;(driverSettings.options ?? []).forEach((setting) => {
     if (
@@ -1131,10 +1138,15 @@ const generateCommonChildrenElements = (homey: Homey): void => {
       ['checkbox', 'dropdown'].includes(setting.type)
     ) {
       const divElement = createDivElement()
-      const selectElement = createSettingSelectElement(homey, setting)
+      const selectElement = createSelectElement(
+        homey,
+        `${setting.id}--setting`,
+        setting.values,
+      )
       const labelElement = createLabelElement(selectElement, {
         text: setting.title,
       })
+      updateCommonChildrenElement(selectElement)
       divElement.append(labelElement, selectElement)
       settingsCommonElement.append(divElement)
     }
@@ -1143,31 +1155,6 @@ const generateCommonChildrenElements = (homey: Homey): void => {
     homey,
     Array.from(settingsCommonElement.querySelectorAll('select')),
   )
-}
-
-const createLegendElement = ({
-  text,
-}: {
-  text?: string
-}): HTMLLegendElement => {
-  const legendElement = document.createElement('legend')
-  legendElement.classList.add('homey-form-checkbox-set-title')
-  if (text !== undefined) {
-    legendElement.innerText = text
-  }
-  return legendElement
-}
-
-const createCheckboxElement = (
-  { id }: { id: string },
-  driverId: string,
-): HTMLInputElement => {
-  const checkboxElement = document.createElement('input')
-  checkboxElement.classList.add('homey-form-checkbox-input')
-  checkboxElement.type = 'checkbox'
-  checkboxElement.id = `${id}--settings-${driverId}`
-  updateCheckboxChildrenElement(checkboxElement, driverId)
-  return checkboxElement
 }
 
 const generateCheckboxChildrenElements = (
@@ -1488,10 +1475,10 @@ const addEventListeners = (homey: Homey): void => {
 const load = async (homey: Homey): Promise<void> => {
   addEventListeners(homey)
   generateCommonChildrenElements(homey)
+  Object.keys(deviceSettings).forEach((driverId) => {
+    generateCheckboxChildrenElements(homey, driverId)
+  })
   if (homeySettings.contextKey !== undefined) {
-    Object.keys(deviceSettings).forEach((driverId) => {
-      generateCheckboxChildrenElements(homey, driverId)
-    })
     try {
       await fetchBuildings(homey)
       return

@@ -203,9 +203,7 @@ const getLocalizedCapabilitiesOptions = (
     capabilitiesOptions.title?.[
       language in (capabilitiesOptions.title ?? {}) ? language : 'en'
     ] ?? '',
-  type:
-    capabilitiesOptions.type ??
-    (capabilitiesOptions.values ? 'enum' : 'boolean'),
+  type: String(capabilitiesOptions.type),
   values:
     capabilitiesOptions.values && enumType ?
       capabilitiesOptions.values.map(({ id, title }) => ({
