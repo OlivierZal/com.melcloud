@@ -1,4 +1,5 @@
 import type {
+  BaseModel,
   DeviceType,
   EnergyData,
   ListDevice,
@@ -316,12 +317,7 @@ export interface HolidayModeSettings {
   readonly enabled: boolean
 }
 
-export interface Zone {
-  readonly id: number
-  readonly name: string
-}
-
-export type Building = Zone & {
-  areas: Zone[]
-  floors: (Zone & { areas: Zone[] })[]
+export type Building = BaseModel & {
+  areas: BaseModel[]
+  floors: (BaseModel & { areas: BaseModel[] })[]
 }

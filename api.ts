@@ -1,14 +1,18 @@
 import type Homey from 'homey/lib/Homey'
 
 import {
+  type AreaFacade,
   type BuildingFacade,
   type ErrorData,
+  type FloorFacade,
   type FrostProtectionData,
   type GroupAtaState,
   type HolidayModeData,
   type LoginCredentials,
+  AreaModel,
   BuildingModel,
   DeviceModel,
+  FloorModel,
   Horizontal,
   OperationMode,
   Vertical,
@@ -61,16 +65,22 @@ const TARGET_TEMPERATURE_TITLE = {
   sv: 'Måltemperatur',
 }
 
-const getOrCreateBuildingFacade = (
+const modelClass = {
+  areas: AreaModel,
+  buildings: BuildingModel,
+  floors: FloorModel,
+}
+
+const getFacade = (
   homey: Homey,
-  idOrModel: number | BuildingModel,
-): BuildingFacade => {
-  const building =
-    typeof idOrModel === 'number' ? BuildingModel.getById(idOrModel) : idOrModel
-  if (!building) {
-    throw new Error(homey.__('settings.buildings.building.not_found'))
+  zoneType: keyof typeof modelClass,
+  id: number,
+): AreaFacade | BuildingFacade | FloorFacade => {
+  const model = modelClass[zoneType].getById(id)
+  if (!model) {
+    throw new Error(homey.__('settings.buildings.zone.not_found'))
   }
-  return (homey.app as MELCloudApp).facadeManager.get(building)
+  return (homey.app as MELCloudApp).facadeManager.get(model)
 }
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
@@ -253,12 +263,12 @@ export = {
   },
   async getAtaValues({
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<GroupAtaState> {
-    return getOrCreateBuildingFacade(homey, Number(buildingId)).getAta()
+    return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
   getBuildings(): Building[] {
     return BuildingModel.getAll().map((building) => ({
@@ -344,24 +354,21 @@ export = {
   },
   async getFrostProtectionSettings({
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<FrostProtectionData> {
-    return getOrCreateBuildingFacade(
-      homey,
-      Number(buildingId),
-    ).getFrostProtection()
+    return getFacade(homey, zoneType, Number(zoneId)).getFrostProtection()
   },
   async getHolidayModeSettings({
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<HolidayModeData> {
-    return getOrCreateBuildingFacade(homey, Number(buildingId)).getHolidayMode()
+    return getFacade(homey, zoneType, Number(zoneId)).getHolidayMode()
   },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()
@@ -378,14 +385,14 @@ export = {
   async setAtaValues({
     body,
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     body: GroupAtaState
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<void> {
     handleResponse(
-      (await getOrCreateBuildingFacade(homey, Number(buildingId)).setAta(body))
+      (await getFacade(homey, zoneType, Number(zoneId)).setAta(body))
         .AttributeErrors,
     )
   },
@@ -420,37 +427,33 @@ export = {
   async setFrostProtectionSettings({
     body,
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     body: FrostProtectionSettings
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<void> {
     handleResponse(
       (
-        await getOrCreateBuildingFacade(
-          homey,
-          Number(buildingId),
-        ).setFrostProtection(body)
+        await getFacade(homey, zoneType, Number(zoneId)).setFrostProtection(
+          body,
+        )
       ).AttributeErrors,
     )
   },
   async setHolidayModeSettings({
     body: { enabled, from, to },
     homey,
-    params: { buildingId },
+    params: { zoneId, zoneType },
   }: {
     body: HolidayModeSettings
     homey: Homey
-    params: { buildingId: string }
+    params: { zoneId: string; zoneType: keyof typeof modelClass }
   }): Promise<void> {
     try {
       handleResponse(
         (
-          await getOrCreateBuildingFacade(
-            homey,
-            Number(buildingId),
-          ).setHolidayMode({
+          await getFacade(homey, zoneType, Number(zoneId)).setHolidayMode({
             enabled,
             from,
             to,

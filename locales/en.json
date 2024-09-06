@@ -10,8 +10,8 @@
       "true": "Yes"
     },
     "buildings": {
-      "building": {
-        "not_found": "Building not found"
+      "zone": {
+        "not_found": "Zone not found"
       },
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",

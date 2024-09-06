@@ -10,8 +10,8 @@
       "true": "Oui"
     },
     "buildings": {
-      "building": {
-        "not_found": "Bâtiment introuvable"
+      "zone": {
+        "not_found": "Zone introuvable"
       },
       "frost_protection": {
         "enabled": "Activer la <strong>protection contre le gel</strong>",

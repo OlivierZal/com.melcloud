@@ -10,8 +10,8 @@
       "true": "Ja"
     },
     "buildings": {
-      "building": {
-        "not_found": "Bygning ikke funnet"
+      "zone": {
+        "not_found": "Sone ikke funnet"
       },
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",

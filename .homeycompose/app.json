@@ -145,11 +145,11 @@
     },
     "getAtaValues": {
       "method": "GET",
-      "path": "/drivers/melcloud/buildings/:buildingId"
+      "path": "/drivers/melcloud/:zoneType/:zoneId"
     },
     "setAtaValues": {
       "method": "PUT",
-      "path": "/drivers/melcloud/buildings/:buildingId"
+      "path": "/drivers/melcloud/:zoneType/:zoneId"
     },
     "getErrors": {
       "method": "GET",
@@ -177,19 +177,19 @@
     },
     "getFrostProtectionSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/settings/frost_protection/:zoneType/:zoneId"
     },
     "setFrostProtectionSettings": {
       "method": "PUT",
-      "path": "/settings/frost_protection/buildings/:buildingId"
+      "path": "/settings/frost_protection/:zoneType/:zoneId"
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/holiday_mode/buildings/:buildingId"
+      "path": "/settings/holiday_mode/:zoneType/:zoneId"
     },
     "setHolidayModeSettings": {
       "method": "PUT",
-      "path": "/settings/holiday_mode/buildings/:buildingId"
+      "path": "/settings/holiday_mode/:zoneType/:zoneId"
     }
   },
   "platforms": [

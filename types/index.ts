@@ -17,7 +17,6 @@ export type {
   OpCapabilitiesAtw,
   SetCapabilitiesAtw,
   TargetTemperatureFlowCapabilities,
-  ZoneAtw,
 } from './atw'
 export {
   ENERGY_CAPABILITY_TAG_MAPPING_ATW,
@@ -72,7 +71,6 @@ export {
   type SetCapabilityTagMapping,
   type Settings,
   type ValueOf,
-  type Zone,
   K_MULTIPLIER,
   getCapabilitiesOptions,
 } from './common'

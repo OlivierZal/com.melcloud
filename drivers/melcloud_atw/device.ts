@@ -1,5 +1,6 @@
 import {
   type ListDeviceDataAtw,
+  type ZoneAtw,
   OperationModeState,
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
@@ -13,7 +14,6 @@ import {
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-  type ZoneAtw,
   K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
@@ -115,28 +115,28 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     await Promise.all(
-      (['zone1', 'zone2'] as const).map(async (zone: ZoneAtw) => {
-        if (this.hasCapability(`operation_mode_state.${zone}`)) {
-          const zoneName: Capitalize<ZoneAtw> =
-            zone === 'zone1' ? 'Zone1' : 'Zone2'
+      (['Zone1', 'Zone2'] as const).map(async (zone) => {
+        const zoneSuffix = zone.toLowerCase() as Lowercase<ZoneAtw>
+        if (this.hasCapability(`operation_mode_state.${zoneSuffix}`)) {
           let value = OperationModeStateZoneCapability.idle
           if (
-            (data[`${zoneName}InCoolMode`] &&
-              data[`ProhibitCooling${zoneName}`]) ||
-            (data[`${zoneName}InHeatMode`] &&
-              data[`ProhibitHeating${zoneName}`])
+            (data[`${zone}InCoolMode`] && data[`ProhibitCooling${zone}`]) ||
+            (data[`${zone}InHeatMode`] && data[`ProhibitHeating${zone}`])
           ) {
             value = OperationModeStateZoneCapability.prohibited
           } else if (
             operationModeState in OperationModeStateZoneCapability &&
-            !data[`Idle${zoneName}`]
+            !data[`Idle${zone}`]
           ) {
             value =
               OperationModeStateZoneCapability[
                 operationModeState as OperationModeStateZoneCapability
               ]
           }
-          await this.setCapabilityValue(`operation_mode_state.${zone}`, value)
+          await this.setCapabilityValue(
+            `operation_mode_state.${zoneSuffix}`,
+            value,
+          )
         }
       }),
     )

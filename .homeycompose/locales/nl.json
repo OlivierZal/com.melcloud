@@ -10,8 +10,8 @@
       "true": "Ja"
     },
     "buildings": {
-      "building": {
-        "not_found": "Gebouw niet gevonden"
+      "zone": {
+        "not_found": "Zone niet gevonden"
       },
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",

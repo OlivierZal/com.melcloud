@@ -1,9 +1,9 @@
 import type {
-  BuildingSettings,
   FrostProtectionData,
   GroupAtaState,
   HolidayModeData,
   LoginCredentials,
+  ZoneSettings,
 } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeySettings'
 
@@ -102,7 +102,7 @@ let homeySettings: HomeySettingsUI = {
 }
 
 const zoneMapping: Partial<
-  Record<string, Partial<BuildingSettings & GroupAtaState>>
+  Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
 const hasZoneAtaDevices: Partial<Record<string, boolean>> = {}
 
@@ -1405,7 +1405,7 @@ const updateFrostProtectionData = async (
 
 const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
   const errors: string[] = []
-  const [min, max] = [
+  let [min, max] = [
     frostProtectionMinTemperatureElement,
     frostProtectionMaxTemperatureElement,
   ].map((element) => {
@@ -1419,28 +1419,22 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
   if (errors.length) {
     throw new Error(errors.join('\n'))
   }
-  return { max, min }
+  if (max < min) {
+    ;[min, max] = [max, min]
+  }
+  return { max: Math.max(max, min + GAP_FP_TEMPERATURE), min }
 }
 
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
   updateFrostProtectionElement.addEventListener('click', () => {
-    try {
-      let { max, min } = getFPMinAndMax(homey)
-      if (max < min) {
-        ;[min, max] = [max, min]
-      }
-      updateFrostProtectionData(homey, {
-        enabled: frostProtectionEnabledElement.value === 'true',
-        max: Math.max(max, min + GAP_FP_TEMPERATURE),
-        min,
-      }).catch(() => {
-        //
-      })
-    } catch (error: unknown) {
+    updateFrostProtectionData(homey, {
+      enabled: frostProtectionEnabledElement.value === 'true',
+      ...getFPMinAndMax(homey),
+    }).catch((error: unknown) => {
       homey.alert(getErrorMessage(error)).catch(() => {
         //
       })
-    }
+    })
   })
 }
 

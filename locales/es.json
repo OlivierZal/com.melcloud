@@ -10,8 +10,8 @@
       "true": "Sí"
     },
     "buildings": {
-      "building": {
-        "not_found": "Edificio no encontrado"
+      "zone": {
+        "not_found": "Zona no encontrada"
       },
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
