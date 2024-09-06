@@ -850,19 +850,17 @@ const fetchFrostProtectionData = async (
 const generateAtaValueElement = (
   homey: Homey,
   id: string,
-  capability: DriverCapabilitiesOptions,
+  { title: text, type, values }: DriverCapabilitiesOptions,
 ): {
   labelElement: HTMLLabelElement | null
   valueElement: HTMLValueElement | null
 } => {
   let labelElement: HTMLLabelElement | null = null
   let valueElement: HTMLValueElement | null = null
-  if (capability.values || capability.type === 'boolean') {
-    valueElement = createSelectElement(homey, id, capability.values)
-    labelElement = createLabelElement(valueElement, {
-      text: capability.title,
-    })
-  } else if (capability.type === 'number') {
+  if (['boolean', 'enum'].includes(type)) {
+    valueElement = createSelectElement(homey, id, values)
+    labelElement = createLabelElement(valueElement, { text })
+  } else if (type === 'number') {
     valueElement = createInputElement({
       id,
       max:
@@ -873,11 +871,9 @@ const generateAtaValueElement = (
         id in MIN_MAPPING ?
           MIN_MAPPING[id as keyof typeof MIN_MAPPING]
         : undefined,
-      type: 'number',
+      type,
     })
-    labelElement = createLabelElement(valueElement, {
-      text: capability.title,
-    })
+    labelElement = createLabelElement(valueElement, { text })
   }
   updateAtaValueElement(id as keyof GroupAtaState)
   return { labelElement, valueElement }
@@ -1130,27 +1126,22 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
 }
 
 const generateCommonChildrenElements = (homey: Homey): void => {
-  ;(driverSettings.options ?? []).forEach((setting) => {
-    if (
-      !settingsCommonElement.querySelector(
-        `select[id="${setting.id}--setting"]`,
-      ) &&
-      ['checkbox', 'dropdown'].includes(setting.type)
-    ) {
-      const divElement = createDivElement()
-      const selectElement = createSelectElement(
-        homey,
-        `${setting.id}--setting`,
-        setting.values,
-      )
-      const labelElement = createLabelElement(selectElement, {
-        text: setting.title,
-      })
-      updateCommonChildrenElement(selectElement)
-      divElement.append(labelElement, selectElement)
-      settingsCommonElement.append(divElement)
-    }
-  })
+  ;(driverSettings.options ?? []).forEach(
+    ({ id, title: text, type, values }) => {
+      const settingId = `${id}--setting`
+      if (
+        !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
+        ['checkbox', 'dropdown'].includes(type)
+      ) {
+        const divElement = createDivElement()
+        const selectElement = createSelectElement(homey, settingId, values)
+        const labelElement = createLabelElement(selectElement, { text })
+        updateCommonChildrenElement(selectElement)
+        divElement.append(labelElement, selectElement)
+        settingsCommonElement.append(divElement)
+      }
+    },
+  )
   addSettingsEventListeners(
     homey,
     Array.from(settingsCommonElement.querySelectorAll('select')),
@@ -1167,25 +1158,22 @@ const generateCheckboxChildrenElements = (
       const fieldSetElement = document.createElement('fieldset')
       fieldSetElement.classList.add('homey-form-checkbox-set')
       let previousGroupLabel = ''
-      driverSettings[driverId].forEach((setting) => {
-        if (setting.type === 'checkbox') {
-          if (setting.groupLabel !== previousGroupLabel) {
-            previousGroupLabel = setting.groupLabel ?? ''
-            const legendElement = createLegendElement({
-              text: setting.groupLabel,
-            })
-            fieldSetElement.append(legendElement)
+      driverSettings[driverId].forEach(
+        ({ groupLabel, id, title: text, type }) => {
+          if (type === 'checkbox') {
+            if (groupLabel !== previousGroupLabel) {
+              previousGroupLabel = groupLabel ?? ''
+              const legendElement = createLegendElement({
+                text: groupLabel,
+              })
+              fieldSetElement.append(legendElement)
+            }
+            const checkboxElement = createCheckboxElement({ id }, driverId)
+            const labelElement = createLabelElement(checkboxElement, { text })
+            fieldSetElement.append(labelElement)
           }
-          const checkboxElement = createCheckboxElement(
-            { id: setting.id },
-            driverId,
-          )
-          const labelElement = createLabelElement(checkboxElement, {
-            text: setting.title,
-          })
-          fieldSetElement.append(labelElement)
-        }
-      })
+        },
+      )
       settingsElement.append(fieldSetElement)
       addSettingsEventListeners(
         homey,
