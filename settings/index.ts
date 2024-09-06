@@ -542,20 +542,24 @@ const createCredentialElements = (): void => {
   )
 }
 
-const int = (
-  homey: Homey,
-  { id, max, min, value }: HTMLInputElement,
-): number => {
-  const val = Number.parseInt(value, 10)
-  let newMin = min
+const handleIntMin = (id: string, min: string): string => {
   if (id === 'SetTemperature') {
     const modeElement = document.getElementById(
       'OperationMode',
     ) as HTMLSelectElement
     if (COOLING_MODES.includes(Number(modeElement.value))) {
-      newMin = String(MIN_SET_TEMPERATURE_COOLING)
+      return String(MIN_SET_TEMPERATURE_COOLING)
     }
   }
+  return min
+}
+
+const int = (
+  homey: Homey,
+  { id, max, min, value }: HTMLInputElement,
+): number => {
+  const val = Number.parseInt(value, 10)
+  const newMin = handleIntMin(id, min)
   if (Number.isNaN(val) || val < Number(newMin) || val > Number(max)) {
     const labelElement: HTMLLabelElement | null = document.querySelector(
       `label[for="${id}"]`,
