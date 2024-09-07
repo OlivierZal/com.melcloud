@@ -108,7 +108,7 @@ const zoneMapping: Partial<
 let ataCapabilities: Partial<
   Record<keyof GroupAtaState, DriverCapabilitiesOptions>
 > = {}
-let nullAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
+let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let driverSettings: Partial<Record<string, DriverSetting[]>> = {}
 
@@ -855,7 +855,7 @@ const fetchAtaValues = async (
           async (error: Error | null, data: GroupAtaState) => {
             unhide(hasZoneAtaDevicesElement, error === null)
             if (!error) {
-              updateZoneMapping({ ...nullAtaValues, ...data }, zone)
+              updateZoneMapping({ ...defaultAtaValues, ...data }, zone)
               refreshAtaValuesElement()
             } else if (error.message !== 'No air-to-air device found') {
               await homey.alert(error.message)
@@ -1106,7 +1106,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
           await homey.alert(error.message)
         } else {
           ataCapabilities = capabilities
-          nullAtaValues = Object.fromEntries(
+          defaultAtaValues = Object.fromEntries(
             Object.keys(ataCapabilities).map((ataKey) => [ataKey, null]),
           )
         }
