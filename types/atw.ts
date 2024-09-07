@@ -8,7 +8,7 @@ import type {
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
-import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
+import { title as thermostatModeTitle } from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 
 import type AtwDevice from '../drivers/melcloud/device'
 import type {
@@ -287,7 +287,7 @@ const createZone2Title = (
       `${title[language]} - ${suffix}`,
     ]),
   )
-const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(thermostatMode.title)
+const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(thermostatModeTitle)
 
 const CURVE = {
   id: 'curve',

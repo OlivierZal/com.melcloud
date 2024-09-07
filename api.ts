@@ -17,9 +17,15 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
-import power from 'homey-lib/assets/capability/capabilities/onoff.json'
-import targetTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json'
-import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
+import {
+  title as powerTitle,
+  type as powerType,
+} from 'homey-lib/assets/capability/capabilities/onoff.json'
+import {
+  title as targetTemperatureTitle,
+  type as targetTemperatureType,
+} from 'homey-lib/assets/capability/capabilities/target_temperature.json'
+import { title as thermostatModeTitle } from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
@@ -207,7 +213,7 @@ export = {
       FanSpeed: getLocalizedCapabilitiesOptions(fan, language),
       OperationMode: getLocalizedCapabilitiesOptions(
         {
-          title: thermostatMode.title,
+          title: thermostatModeTitle,
           values: (homey.manifest as Manifest).drivers
             .find(({ id }) => id === 'melcloud')
             ?.capabilitiesOptions?.thermostat_mode.values?.filter(
@@ -218,11 +224,11 @@ export = {
         OperationMode,
       ),
       Power: getLocalizedCapabilitiesOptions(
-        { title: power.title, type: power.type },
+        { title: powerTitle, type: powerType },
         language,
       ),
       SetTemperature: getLocalizedCapabilitiesOptions(
-        { title: targetTemperature.title, type: targetTemperature.type },
+        { title: targetTemperatureTitle, type: targetTemperatureType },
         language,
       ),
       VaneHorizontalDirection: getLocalizedCapabilitiesOptions(
