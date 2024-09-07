@@ -922,26 +922,34 @@ const generateAtaValuesElement = (homey: Homey): void => {
 
 const createZoneElement = async (
   homey: Homey,
-  { areas, floors, id, name: label }: Building,
-  zoneType: string,
+  { areas, floors, id, name }: Building,
+  { level, zoneType } = { level: 0, zoneType: 'buildings' },
 ): Promise<void> => {
   const zone = `${zoneType}_${String(id)}`
   if (!document.getElementById(zone)) {
-    const optionElement = createOptionElement({ id: zone, label })
-    optionElement.innerText = label
+    const optionElement = createOptionElement({
+      id: zone,
+      label: `${'-'.repeat(level * NUMBER_2)} ${name}`,
+    })
     zoneElement.append(optionElement)
   }
   if (areas) {
     await Promise.all(
       areas.map(async (area) => {
-        await createZoneElement(homey, area, 'areas')
+        await createZoneElement(homey, area, {
+          level: level + NUMBER_1,
+          zoneType: 'areas',
+        })
       }),
     )
   }
   if (floors) {
     await Promise.all(
       floors.map(async (floor) => {
-        await createZoneElement(homey, floor, 'floors')
+        await createZoneElement(homey, floor, {
+          level: level + NUMBER_1,
+          zoneType: 'floors',
+        })
       }),
     )
   }
@@ -968,9 +976,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
         }
         generateAtaValuesElement(homey)
         await Promise.all(
-          buildings.map(async (building) =>
-            createZoneElement(homey, building, 'buildings'),
-          ),
+          buildings.map(async (building) => createZoneElement(homey, building)),
         )
         await generateErrorLog(homey)
         await fetchZoneSettings(homey)

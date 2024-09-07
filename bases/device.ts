@@ -311,9 +311,10 @@ export default abstract class<
     ] as (keyof EnergyData[T])[]
     return (
       producedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
-      (consumedTags.length ?
-        consumedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0)
-      : NUMBER_1)
+      (consumedTags.reduce(
+        (acc, tag) => acc + (data[tag] as number),
+        NUMBER_0,
+      ) || NUMBER_1)
     )
   }
 
