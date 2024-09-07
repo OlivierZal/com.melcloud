@@ -8,14 +8,14 @@ import type {
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
-import type AtwDevice from '../drivers/melcloud/device'
+import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 
-import {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  type RangeOptions,
-  THERMOSTAT_MODE_TITLE,
+import type AtwDevice from '../drivers/melcloud/device'
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+  RangeOptions,
 } from './bases'
 
 export enum OperationModeStateHotWaterCapability {
@@ -287,7 +287,7 @@ const createZone2Title = (
       `${title[language]} - ${suffix}`,
     ]),
   )
-const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(THERMOSTAT_MODE_TITLE)
+const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(thermostatMode.title)
 
 const CURVE = {
   id: 'curve',

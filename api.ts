@@ -17,53 +17,36 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
+import power from 'homey-lib/assets/capability/capabilities/onoff.json'
+import targetTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json'
+import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
+import type {
+  Building,
+  DeviceSettings,
+  DriverCapabilitiesOptions,
+  DriverSetting,
+  ErrorLog,
+  ErrorLogQuery,
+  FrostProtectionSettings,
+  HolidayModeSettings,
+  LoginSetting,
+  Manifest,
+  ManifestDriver,
+  ManifestDriverCapabilitiesOptions,
+  PairSetting,
+  Settings,
+} from './types'
 
 import fan from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
-import {
-  type Building,
-  type DeviceSettings,
-  type DriverCapabilitiesOptions,
-  type DriverSetting,
-  type ErrorLog,
-  type ErrorLogQuery,
-  type FrostProtectionSettings,
-  type HolidayModeSettings,
-  type LoginSetting,
-  type Manifest,
-  type ManifestDriver,
-  type ManifestDriverCapabilitiesOptions,
-  type PairSetting,
-  type Settings,
-  THERMOSTAT_MODE_TITLE,
-} from './types'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
-
-const POWER_TITLE = {
-  da: 'Tændt',
-  en: 'Turned on',
-  es: 'Encendido',
-  fr: 'Activé',
-  nl: 'Aangezet',
-  no: 'Slått på',
-  sv: 'Aktiverad',
-}
-const TARGET_TEMPERATURE_TITLE = {
-  da: 'Måltemperatur',
-  en: 'Target temperature',
-  es: 'Temperatura configurada',
-  fr: 'Température cible',
-  nl: 'Ingestelde temperatuur',
-  no: 'Ønsket temperatur',
-  sv: 'Måltemperatur',
-}
 
 const modelClass = {
   areas: AreaModel,
@@ -224,7 +207,7 @@ export = {
       FanSpeed: getLocalizedCapabilitiesOptions(fan, language),
       OperationMode: getLocalizedCapabilitiesOptions(
         {
-          title: THERMOSTAT_MODE_TITLE,
+          title: thermostatMode.title,
           values: (homey.manifest as Manifest).drivers
             .find(({ id }) => id === 'melcloud')
             ?.capabilitiesOptions?.thermostat_mode.values?.filter(
@@ -235,17 +218,11 @@ export = {
         OperationMode,
       ),
       Power: getLocalizedCapabilitiesOptions(
-        {
-          title: POWER_TITLE,
-          type: 'boolean',
-        },
+        { title: power.title, type: power.type },
         language,
       ),
       SetTemperature: getLocalizedCapabilitiesOptions(
-        {
-          title: TARGET_TEMPERATURE_TITLE,
-          type: 'number',
-        },
+        { title: targetTemperature.title, type: targetTemperature.type },
         language,
       ),
       VaneHorizontalDirection: getLocalizedCapabilitiesOptions(
