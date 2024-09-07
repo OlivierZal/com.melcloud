@@ -253,19 +253,32 @@ export = {
     return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
   getBuildings(): Building[] {
-    return BuildingModel.getAll().map((building) => ({
-      areas: building.areas.map((area) => ({
-        id: area.id,
-        name: area.name,
-      })),
-      floors: building.floors.map((floor) => ({
-        areas: floor.areas,
-        id: floor.id,
-        name: floor.name,
-      })),
-      id: building.id,
-      name: building.name,
-    }))
+    return BuildingModel.getAll()
+      .sort((building1, building2) =>
+        building1.name.localeCompare(building2.name),
+      )
+      .map((building) => ({
+        areas: building.areas
+          .sort((area1, area2) => area1.name.localeCompare(area2.name))
+          .map((area) => ({
+            id: area.id,
+            name: area.name,
+          })),
+        floors: building.floors
+          .sort((floor1, floor2) => floor1.name.localeCompare(floor2.name))
+          .map((floor) => ({
+            areas: floor.areas
+              .sort((area1, area2) => area1.name.localeCompare(area2.name))
+              .map((area) => ({
+                id: area.id,
+                name: area.name,
+              })),
+            id: floor.id,
+            name: floor.name,
+          })),
+        id: building.id,
+        name: building.name,
+      }))
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)
