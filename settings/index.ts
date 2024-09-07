@@ -921,7 +921,7 @@ const createZoneElement = async (
   if (!document.getElementById(zone)) {
     const optionElement = createOptionElement({
       id: zone,
-      label: `${'-'.repeat(level * NUMBER_2)} ${name}`,
+      label: `${'···'.repeat(level * NUMBER_1)} ${name}`,
     })
     zoneElement.append(optionElement)
   }
