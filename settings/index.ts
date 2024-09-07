@@ -104,7 +104,6 @@ let homeySettings: HomeySettingsUI = {
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
-const hasZoneAtaDevices: Partial<Record<string, boolean>> = {}
 
 let ataCapabilities: Partial<
   Record<keyof GroupAtaState, DriverCapabilitiesOptions>
@@ -742,8 +741,8 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
             } else {
               updateErrorLogElements(homey, data)
               generateErrorLogTableData(homey, data.errors)
-              resolve()
             }
+            resolve()
           },
         )
       }),
@@ -793,13 +792,9 @@ const updateAtaValueElement = (id: keyof GroupAtaState): void => {
 }
 
 const refreshAtaValuesElement = (): void => {
-  const hasAtaDevices = hasZoneAtaDevices[zoneElement.value] === true
-  if (hasAtaDevices) {
-    ;(Object.keys(ataCapabilities) as (keyof GroupAtaState)[]).forEach(
-      updateAtaValueElement,
-    )
-  }
-  unhide(hasZoneAtaDevicesElement, hasAtaDevices)
+  ;(Object.keys(ataCapabilities) as (keyof GroupAtaState)[]).forEach(
+    updateAtaValueElement,
+  )
 }
 
 const fetchHolidayModeData = async (
@@ -858,15 +853,12 @@ const fetchAtaValues = async (
           'GET',
           `/drivers/melcloud/${zone.replace('_', '/')}`,
           async (error: Error | null, data: GroupAtaState) => {
-            hasZoneAtaDevices[zone] = error === null
-            if (error) {
-              if (error.message !== 'No air-to-air device found') {
-                await homey.alert(error.message)
-              }
-            } else {
+            unhide(hasZoneAtaDevicesElement, error === null)
+            if (!error) {
               updateZoneMapping({ ...nullAtaValues, ...data }, zone)
               refreshAtaValuesElement()
-              unhide(hasZoneAtaDevicesElement, zone === zoneElement.value)
+            } else if (error.message !== 'No air-to-air device found') {
+              await homey.alert(error.message)
             }
             resolve()
           },
