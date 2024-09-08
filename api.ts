@@ -259,6 +259,7 @@ export = {
       )
       .map((building) => ({
         areas: building.areas
+          .filter(({ floorId }) => floorId === null)
           .sort((area1, area2) => area1.name.localeCompare(area2.name))
           .map((area) => ({
             id: area.id,

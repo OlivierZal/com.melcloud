@@ -909,20 +909,19 @@ const createZoneElements = async (
   zoneType: string,
   level = NUMBER_0,
 ): Promise<void> => {
-  await Promise.all(
-    zones.map(async ({ areas, floors, id, name }) => {
-      createOptionElement(zoneElement, {
-        id: `${zoneType}_${String(id)}`,
-        label: `${'···'.repeat(level)} ${name}`,
-      })
-      if (floors) {
-        await createZoneElements(floors, 'floors', NUMBER_1)
-      }
-      if (areas) {
-        await createZoneElements(areas, 'areas', level + NUMBER_1)
-      }
-    }),
-  )
+  await zones.reduce(async (acc, { areas, floors, id, name }) => {
+    await acc
+    createOptionElement(zoneElement, {
+      id: `${zoneType}_${String(id)}`,
+      label: `${'···'.repeat(level)} ${name}`,
+    })
+    if (areas) {
+      await createZoneElements(areas, 'areas', level + NUMBER_1)
+    }
+    if (floors) {
+      await createZoneElements(floors, 'floors', NUMBER_1)
+    }
+  }, Promise.resolve())
 }
 
 const fetchZoneSettings = async (homey: Homey): Promise<void> => {
