@@ -925,9 +925,9 @@ const createZoneElements = async (
       })
       if (floors) {
         await createZoneElements(homey, floors, 'floors')
-        level += NUMBER_1
       }
       if (areas) {
+        level += NUMBER_1
         await createZoneElements(homey, areas, 'areas')
       }
     }),
