@@ -33,7 +33,6 @@ export {
   THERMOSTAT_MODE_TITLE,
 } from './bases'
 export {
-  type Building,
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
@@ -71,6 +70,7 @@ export {
   type SetCapabilityTagMapping,
   type Settings,
   type ValueOf,
+  type Zone,
   K_MULTIPLIER,
   getCapabilitiesOptions,
 } from './common'

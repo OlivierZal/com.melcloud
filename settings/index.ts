@@ -8,7 +8,6 @@ import type {
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
-  Building,
   DeviceSetting,
   DeviceSettings,
   DriverCapabilitiesOptions,
@@ -22,6 +21,7 @@ import type {
   LoginDriverSetting,
   Settings,
   ValueOf,
+  Zone,
 } from '../types'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
@@ -64,6 +64,7 @@ const MAX_FP_TEMPERATURE_MIN = 6
 const MAX_FP_TEMPERATURE_MAX = 16
 const GAP_FP_TEMPERATURE = 2
 
+const NUMBER_0 = 0
 const NUMBER_1 = 1
 const NUMBER_2 = 2
 const NUMBER_3 = 3
@@ -915,38 +916,33 @@ const generateAtaValuesElement = (homey: Homey): void => {
   })
 }
 
+let level = NUMBER_0
 const createZoneElements = async (
   homey: Homey,
-  { areas, floors, id, name }: Building,
-  { level, zoneType } = { level: 0, zoneType: 'buildings' },
+  zones: Zone[],
+  zoneType: string,
 ): Promise<void> => {
-  const zone = `${zoneType}_${String(id)}`
-  if (!document.getElementById(zone)) {
-    createOptionElement(zoneElement, {
-      id: zone,
-      label: `${'···'.repeat(level)} ${name}`,
-    })
+  if (zoneType === 'buildings') {
+    level = NUMBER_0
   }
-  if (areas) {
-    await Promise.all(
-      areas.map(async (area) => {
-        await createZoneElements(homey, area, {
-          level: level + NUMBER_1,
-          zoneType: 'areas',
+  await Promise.all(
+    zones.map(async ({ areas, floors, id, name }) => {
+      const zoneId = `${zoneType}_${String(id)}`
+      if (!document.getElementById(zoneId)) {
+        createOptionElement(zoneElement, {
+          id: zoneId,
+          label: `${'···'.repeat(level)} ${name}`,
         })
-      }),
-    )
-  }
-  if (floors) {
-    await Promise.all(
-      floors.map(async (floor) => {
-        await createZoneElements(homey, floor, {
-          level: level + NUMBER_1,
-          zoneType: 'floors',
-        })
-      }),
-    )
-  }
+      }
+      level += NUMBER_1
+      if (areas) {
+        await createZoneElements(homey, areas, 'areas')
+      }
+      if (floors) {
+        await createZoneElements(homey, floors, 'floors')
+      }
+    }),
+  )
 }
 
 const fetchZoneSettings = async (homey: Homey): Promise<void> => {
@@ -960,7 +956,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
     homey.api(
       'GET',
       '/buildings',
-      async (error: Error | null, buildings: Building[]) => {
+      async (error: Error | null, buildings: Zone[]) => {
         if (error || !buildings.length) {
           if (error) {
             await homey.alert(error.message)
@@ -969,11 +965,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           return
         }
         generateAtaValuesElement(homey)
-        await Promise.all(
-          buildings.map(async (building) =>
-            createZoneElements(homey, building),
-          ),
-        )
+        await createZoneElements(homey, buildings, 'buildings')
         await generateErrorLog(homey)
         await fetchZoneSettings(homey)
         resolve()

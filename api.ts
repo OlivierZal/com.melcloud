@@ -30,7 +30,6 @@ import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
 import type {
-  Building,
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
@@ -44,6 +43,7 @@ import type {
   ManifestDriverCapabilitiesOptions,
   PairSetting,
   Settings,
+  Zone,
 } from './types'
 
 import fan from './.homeycompose/capabilities/fan_power.json'
@@ -252,7 +252,7 @@ export = {
   }): Promise<GroupAtaState> {
     return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
-  getBuildings(): Building[] {
+  getBuildings(): Zone[] {
     return BuildingModel.getAll()
       .sort((building1, building2) =>
         building1.name.localeCompare(building2.name),

@@ -317,7 +317,7 @@ export interface HolidayModeSettings {
   readonly enabled: boolean
 }
 
-export type Building = BaseModel & {
+export type Zone = BaseModel & {
   areas?: BaseModel[]
   floors?: (BaseModel & { areas: BaseModel[] })[]
 }
