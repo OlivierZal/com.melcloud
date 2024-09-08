@@ -306,10 +306,7 @@ const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
 const flattenDeviceSettings = (): void => {
   const groupedSettings = Object.groupBy(
     Object.values(deviceSettings).flatMap((settings) =>
-      Object.entries(settings ?? {}).map(([id, values]) => ({
-        id,
-        values,
-      })),
+      Object.entries(settings ?? {}).map(([id, values]) => ({ id, values })),
     ),
     ({ id }) => id,
   )
@@ -348,13 +345,7 @@ const createDivElement = (): HTMLDivElement => {
 
 const handleNumericInputElement = (
   element: HTMLInputElement,
-  {
-    max,
-    min,
-  }: {
-    max?: number
-    min?: number
-  },
+  { max, min }: { max?: number; min?: number },
 ): void => {
   if (element.type === 'number') {
     element.setAttribute('inputmode', 'numeric')
@@ -450,20 +441,17 @@ const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
 
 const createOptionElement = (
   selectElement: HTMLSelectElement,
-  {
-    id,
-    label,
-  }: {
-    label?: string
-    id: string
-  },
+  { id, label }: { label?: string; id: string },
 ): HTMLOptionElement => {
-  const optionElement = document.createElement('option')
-  optionElement.value = id
-  if (label !== undefined) {
-    optionElement.innerText = label
+  let optionElement = document.getElementById(id) as HTMLOptionElement | null
+  if (!optionElement) {
+    optionElement = document.createElement('option')
+    optionElement.value = id
+    if (label !== undefined) {
+      optionElement.innerText = label
+    }
+    selectElement.append(optionElement)
   }
-  selectElement.append(optionElement)
   return optionElement
 }
 
@@ -482,7 +470,7 @@ const createSelectElement = (
         id,
         label: homey.__(`settings.boolean.${id}`),
       }))),
-  ].forEach((option: { label?: string; id: string }) => {
+  ].forEach((option) => {
     createOptionElement(selectElement, option)
   })
   return selectElement
@@ -923,20 +911,18 @@ const createZoneElements = async (
   zones: Zone[],
   zoneType: string,
 ): Promise<void> => {
-  if (zoneType === 'buildings') {
-    level = NUMBER_0
-  } else if (zoneType === 'floors') {
-    level = NUMBER_1
-  }
   await Promise.all(
-    zones.map(async ({ areas, floors, id, name }) => {
-      const zoneId = `${zoneType}_${String(id)}`
-      if (!document.getElementById(zoneId)) {
-        createOptionElement(zoneElement, {
-          id: zoneId,
-          label: `${'···'.repeat(level)} ${name}`,
-        })
+    zones.map(async ({ areas, floors, id: zoneId, name }) => {
+      if (zoneType === 'buildings') {
+        level = NUMBER_0
+      } else if (zoneType === 'floors') {
+        level = NUMBER_1
       }
+      const id = `${zoneType}_${String(zoneId)}`
+      createOptionElement(zoneElement, {
+        id,
+        label: `${'···'.repeat(level)} ${name}`,
+      })
       if (floors) {
         await createZoneElements(homey, floors, 'floors')
         level += NUMBER_1
