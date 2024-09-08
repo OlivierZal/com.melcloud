@@ -912,15 +912,14 @@ const createZoneElements = async (
   zoneType: string,
 ): Promise<void> => {
   await Promise.all(
-    zones.map(async ({ areas, floors, id: zoneId, name }) => {
+    zones.map(async ({ areas, floors, id, name }) => {
       if (zoneType === 'buildings') {
         level = NUMBER_0
       } else if (zoneType === 'floors') {
         level = NUMBER_1
       }
-      const id = `${zoneType}_${String(zoneId)}`
       createOptionElement(zoneElement, {
-        id,
+        id: `${zoneType}_${String(id)}`,
         label: `${'···'.repeat(level)} ${name}`,
       })
       if (floors) {
