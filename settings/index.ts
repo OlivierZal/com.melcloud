@@ -106,6 +106,8 @@ const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
 
+let level = NUMBER_0
+
 let ataCapabilities: Partial<
   Record<keyof GroupAtaState, DriverCapabilitiesOptions>
 > = {}
@@ -916,7 +918,6 @@ const generateAtaValuesElement = (homey: Homey): void => {
   })
 }
 
-let level = NUMBER_0
 const createZoneElements = async (
   homey: Homey,
   zones: Zone[],
@@ -924,6 +925,8 @@ const createZoneElements = async (
 ): Promise<void> => {
   if (zoneType === 'buildings') {
     level = NUMBER_0
+  } else if (zoneType === 'floors') {
+    level = NUMBER_1
   }
   await Promise.all(
     zones.map(async ({ areas, floors, id, name }) => {
@@ -934,12 +937,12 @@ const createZoneElements = async (
           label: `${'···'.repeat(level)} ${name}`,
         })
       }
-      level += NUMBER_1
-      if (areas) {
-        await createZoneElements(homey, areas, 'areas')
-      }
       if (floors) {
         await createZoneElements(homey, floors, 'floors')
+        level += NUMBER_1
+      }
+      if (areas) {
+        await createZoneElements(homey, areas, 'areas')
       }
     }),
   )
