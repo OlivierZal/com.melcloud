@@ -916,7 +916,7 @@ const createZoneElements = async (
         label: `${'···'.repeat(level)} ${name}`,
       })
       if (floors) {
-        await createZoneElements(floors, 'floors', level + NUMBER_1)
+        await createZoneElements(floors, 'floors', NUMBER_1)
       }
       if (areas) {
         await createZoneElements(areas, 'areas', level + NUMBER_1)
