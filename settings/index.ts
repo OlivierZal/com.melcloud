@@ -1073,14 +1073,12 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
       '/capabilities/drivers/melcloud',
       async (
         error: Error | null,
-        capabilities: Partial<
-          Record<keyof GroupAtaState, DriverCapabilitiesOptions>
-        >,
+        capabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][],
       ) => {
         if (error) {
           await homey.alert(error.message)
         } else {
-          ataCapabilities = capabilities
+          ataCapabilities = Object.fromEntries(capabilities)
           defaultAtaValues = Object.fromEntries(
             Object.keys(ataCapabilities).map((ataKey) => [ataKey, null]),
           )

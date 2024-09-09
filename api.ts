@@ -207,41 +207,48 @@ export = {
     homey,
   }: {
     homey: Homey
-  }): Partial<Record<keyof GroupAtaState, DriverCapabilitiesOptions>> {
+  }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
     const language = homey.i18n.getLanguage()
-    return {
-      FanSpeed: getLocalizedCapabilitiesOptions(fan, language),
-      OperationMode: getLocalizedCapabilitiesOptions(
-        {
-          title: thermostatModeTitle,
-          values: (homey.manifest as Manifest).drivers
-            .find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.thermostat_mode.values?.filter(
-              ({ id }) => id !== 'off',
-            ),
-        },
-        language,
-        OperationMode,
-      ),
-      Power: getLocalizedCapabilitiesOptions(
-        { title: powerTitle, type: powerType },
-        language,
-      ),
-      SetTemperature: getLocalizedCapabilitiesOptions(
-        { title: targetTemperatureTitle, type: targetTemperatureType },
-        language,
-      ),
-      VaneHorizontalDirection: getLocalizedCapabilitiesOptions(
-        horizontal,
-        language,
-        Horizontal,
-      ),
-      VaneVerticalDirection: getLocalizedCapabilitiesOptions(
-        vertical,
-        language,
-        Vertical,
-      ),
-    }
+    return [
+      [
+        'Power',
+        getLocalizedCapabilitiesOptions(
+          { title: powerTitle, type: powerType },
+          language,
+        ),
+      ],
+      [
+        'SetTemperature',
+        getLocalizedCapabilitiesOptions(
+          { title: targetTemperatureTitle, type: targetTemperatureType },
+          language,
+        ),
+      ],
+      ['FanSpeed', getLocalizedCapabilitiesOptions(fan, language)],
+      [
+        'VaneVerticalDirection',
+        getLocalizedCapabilitiesOptions(vertical, language, Vertical),
+      ],
+      [
+        'VaneHorizontalDirection',
+        getLocalizedCapabilitiesOptions(horizontal, language, Horizontal),
+      ],
+      [
+        'OperationMode',
+        getLocalizedCapabilitiesOptions(
+          {
+            title: thermostatModeTitle,
+            values: (homey.manifest as Manifest).drivers
+              .find(({ id }) => id === 'melcloud')
+              ?.capabilitiesOptions?.thermostat_mode.values?.filter(
+                ({ id }) => id !== 'off',
+              ),
+          },
+          language,
+          OperationMode,
+        ),
+      ],
+    ]
   },
   async getAtaValues({
     homey,
