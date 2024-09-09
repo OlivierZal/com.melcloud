@@ -1282,7 +1282,7 @@ const addHolidayModeEventListeners = (): void => {
 
 const setHolidayModeData = async (
   homey: Homey,
-  body: HolidayModeSettings,
+  { enabled, from: startDate, to: endDate }: HolidayModeSettings,
 ): Promise<void> =>
   withDisablingButtons(
     'holiday_mode',
@@ -1291,13 +1291,13 @@ const setHolidayModeData = async (
         homey.api(
           'PUT',
           `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
-          body satisfies HolidayModeSettings,
+          { enabled, from, to } satisfies HolidayModeSettings,
           async (error: Error | null) => {
             if (!error) {
               updateZoneMapping({
-                HMEnabled: body.enabled,
-                HMEndDate: body.to,
-                HMStartDate: body.from,
+                HMEnabled: enabled,
+                HMEndDate: endDate,
+                HMStartDate: startDate,
               })
               refreshHolidayModeData()
             }
@@ -1341,7 +1341,7 @@ const addFrostProtectionEventListeners = (): void => {
 
 const setFrostProtectionData = async (
   homey: Homey,
-  body: FrostProtectionSettings,
+  { enabled, max, min }: FrostProtectionSettings,
 ): Promise<void> =>
   withDisablingButtons(
     'frost_protection',
@@ -1350,13 +1350,13 @@ const setFrostProtectionData = async (
         homey.api(
           'PUT',
           `/settings/frost_protection/${zoneElement.value.replace('_', '/')}`,
-          body satisfies FrostProtectionSettings,
+          { enabled, max, min } satisfies FrostProtectionSettings,
           async (error: Error | null) => {
             if (!error) {
               updateZoneMapping({
-                FPEnabled: body.enabled,
-                FPMaxTemperature: body.max,
-                FPMinTemperature: body.min,
+                FPEnabled: enabled,
+                FPMaxTemperature: max,
+                FPMinTemperature: min,
               })
               refreshFrostProtectionData()
             }
