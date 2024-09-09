@@ -283,22 +283,6 @@ const fetchHomeySettings = async (homey: Homey): Promise<void> =>
     })
   })
 
-const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      '/settings/devices',
-      async (error: Error | null, settings: DeviceSettings) => {
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          deviceSettings = settings
-        }
-        resolve()
-      },
-    )
-  })
-
 const fetchFlattenDeviceSettings = (): void => {
   const groupedSettings = Object.groupBy(
     Object.values(deviceSettings).flatMap((settings) =>
@@ -313,6 +297,23 @@ const fetchFlattenDeviceSettings = (): void => {
     ]),
   )
 }
+
+const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
+  new Promise((resolve) => {
+    homey.api(
+      'GET',
+      '/settings/devices',
+      async (error: Error | null, settings: DeviceSettings) => {
+        if (error) {
+          await homey.alert(error.message)
+        } else {
+          deviceSettings = settings
+          fetchFlattenDeviceSettings()
+        }
+        resolve()
+      },
+    )
+  })
 
 const fetchDriverSettings = async (homey: Homey): Promise<void> =>
   new Promise((resolve) => {
@@ -1481,7 +1482,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchHomeySettings(homey)
   await fetchAtaCapabilities(homey)
   await fetchDeviceSettings(homey)
-  fetchFlattenDeviceSettings()
   await fetchDriverSettings(homey)
   await load(homey)
   await homey.ready()
