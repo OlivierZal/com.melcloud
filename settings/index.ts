@@ -37,21 +37,9 @@ const DAYS_14 = 14
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 
-const MIN_FAN_SPEED = 0
-const MAX_FAN_SPEED = 5
-
-const MIN_SET_TEMPERATURE = 10
+const MIN_MAPPING = { FanSpeed: 0, SetTemperature: 10 }
+const MAX_MAPPING = { FanSpeed: 5, SetTemperature: 31 }
 const MIN_SET_TEMPERATURE_COOLING = 16
-const MAX_SET_TEMPERATURE = 31
-
-const MIN_MAPPING = {
-  FanSpeed: MIN_FAN_SPEED,
-  SetTemperature: MIN_SET_TEMPERATURE,
-}
-const MAX_MAPPING = {
-  FanSpeed: MAX_FAN_SPEED,
-  SetTemperature: MAX_SET_TEMPERATURE,
-}
 
 const MODE_AUTO = 8
 const MODE_COOL = 3
