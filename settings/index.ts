@@ -299,7 +299,7 @@ const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
     )
   })
 
-const flattenDeviceSettings = (): void => {
+const fetchFlattenDeviceSettings = (): void => {
   const groupedSettings = Object.groupBy(
     Object.values(deviceSettings).flatMap((settings) =>
       Object.entries(settings ?? {}).map(([id, values]) => ({ id, values })),
@@ -956,7 +956,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
       deviceSettings[driverId] ??= {}
       deviceSettings[driverId][id] = [value]
     })
-    flattenDeviceSettings()
+    fetchFlattenDeviceSettings()
     return
   }
   Object.entries(body).forEach(([id, value]) => {
@@ -1481,7 +1481,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchHomeySettings(homey)
   await fetchAtaCapabilities(homey)
   await fetchDeviceSettings(homey)
-  flattenDeviceSettings()
+  fetchFlattenDeviceSettings()
   await fetchDriverSettings(homey)
   await load(homey)
   await homey.ready()
