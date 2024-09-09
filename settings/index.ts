@@ -106,9 +106,7 @@ const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
 
-let ataCapabilities: Partial<
-  Record<keyof GroupAtaState, DriverCapabilitiesOptions>
-> = {}
+let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let driverSettings: Partial<Record<string, DriverSetting[]>> = {}
@@ -784,9 +782,9 @@ const updateAtaValueElement = (id: keyof GroupAtaState): void => {
 }
 
 const refreshAtaValuesElement = (): void => {
-  ;(Object.keys(ataCapabilities) as (keyof GroupAtaState)[]).forEach(
-    updateAtaValueElement,
-  )
+  ataCapabilities.forEach(([ataKey]) => {
+    updateAtaValueElement(ataKey)
+  })
 }
 
 const fetchHolidayModeData = async (
@@ -890,7 +888,7 @@ const generateAtaValueElement = (
 }
 
 const generateAtaValuesElement = (homey: Homey): void => {
-  Object.entries(ataCapabilities).forEach(([id, capability]) => {
+  ataCapabilities.forEach(([id, capability]) => {
     const divElement = createDivElement()
     const { labelElement, valueElement } = generateAtaValueElement(
       homey,
@@ -1078,9 +1076,9 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
         if (error) {
           await homey.alert(error.message)
         } else {
-          ataCapabilities = Object.fromEntries(capabilities)
+          ataCapabilities = capabilities
           defaultAtaValues = Object.fromEntries(
-            Object.keys(ataCapabilities).map((ataKey) => [ataKey, null]),
+            ataCapabilities.map(([ataKey]) => [ataKey, null]),
           )
         }
         resolve()
