@@ -72,17 +72,13 @@ export default abstract class<
         await session.showView('login')
       }
     })
-    session.setHandler('login', async (data: LoginCredentials) =>
-      this.#api.applyLogin(data),
-    )
+    this.#handleLogin(session)
     session.setHandler('list_devices', async () => this.#discoverDevices())
     return Promise.resolve()
   }
 
   public override async onRepair(session: PairSession): Promise<void> {
-    session.setHandler('login', async (data: LoginCredentials) =>
-      this.#api.applyLogin(data),
-    )
+    this.#handleLogin(session)
     return Promise.resolve()
   }
 
@@ -98,6 +94,12 @@ export default abstract class<
         data: { id },
         name,
       })),
+    )
+  }
+
+  #handleLogin(session: PairSession): void {
+    session.setHandler('login', async (data: LoginCredentials) =>
+      this.#api.applyLogin(data),
     )
   }
 
