@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
     "getAtaCapabilities": {
@@ -5698,4 +5699,7 @@
       ]
     }
   }
+=======
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead."
+>>>>>>> 6457819 (Adopt new capabilities)
 }

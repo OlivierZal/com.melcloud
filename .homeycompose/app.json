@@ -62,14 +62,18 @@
     "name": "Olivier Zalmanski"
   },
   "brandColor": "#ed0c13",
-  "name": {
-    "en": "MELCloud",
-    "fr": "MELCloud",
-    "nl": "MELCloud",
-    "sv": "MELCloud",
-    "no": "MELCloud",
-    "da": "MELCloud",
-    "es": "MELCloud"
+  "bugs": {
+    "url": "https://github.com/OlivierZal/com.melcloud/issues"
+  },
+  "category": [
+    "climate"
+  ],
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "OlivierZalmanski"
+      }
+    }
   },
   "description": {
     "da": "Tag kontrol over din varmepumpe",
@@ -99,10 +103,6 @@
   "platforms": [
     "local"
   ],
-  "sdk": 3,
-  "source": "https://github.com/OlivierZal/com.melcloud",
-  "support": "https://github.com/OlivierZal/com.melcloud/issues",
-  "version": "39.1.0",
   "compatibility": ">=12.2.0",
   "tags": {
     "da": [
