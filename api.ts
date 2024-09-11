@@ -185,7 +185,10 @@ const getLocalizedCapabilitiesOptions = (
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
-    id: enumType?.[id as keyof typeof enumType]?.toString() ?? id,
+    id:
+      enumType && id in enumType ?
+        String(enumType[id as keyof typeof enumType])
+      : id,
     label: title[language] ?? title.en,
   })),
 })
