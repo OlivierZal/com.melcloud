@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "38.0.1",
+  "version": "39.0.0",
   "main": "app.ts",
   "scripts": {
     "build": "homey app validate --level publish",
@@ -13,7 +13,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^8.1.3",
+    "@olivierzal/melcloud-api": "^9.0.0",
     "core-js": "^3.38.1",
     "homey-lib": "^2.32.0",
     "luxon": "^3.5.0",
