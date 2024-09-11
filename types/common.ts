@@ -70,7 +70,7 @@ export const getCapabilitiesOptionsAtaErv = ({
 }:
   | ListDeviceDataAta
   | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
-  fan_power: {
+  fan_speed: {
     max: numberOfFanSpeeds,
     min: Number(!hasAutomaticFanSpeed),
     step: 1,
@@ -268,7 +268,7 @@ export interface FlowArgs {
 }
 
 export interface CapabilitiesOptionsAtaErv {
-  readonly fan_power: RangeOptions
+  readonly fan_speed: RangeOptions
 }
 
 export interface CapabilitiesOptions {

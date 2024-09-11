@@ -7,7 +7,7 @@ export interface BaseGetCapabilities {
 }
 
 export interface BaseListCapabilities {
-  readonly 'measure_power.wifi': number
+  readonly measure_signal_strength: number
 }
 
 export interface LocalizedStrings extends Partial<Record<string, string>> {

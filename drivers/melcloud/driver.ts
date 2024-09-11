@@ -26,7 +26,7 @@ export = class extends BaseMELCloudDriver<'Ata'> {
         ...this.setCapabilityTagMapping,
         ...this.getCapabilityTagMapping,
         ...this.listCapabilityTagMapping,
-      }).filter((capability) => capability !== 'measure_power.wifi'),
+      }).filter((capability) => capability !== 'measure_signal_strength'),
     ]
   }
 }
