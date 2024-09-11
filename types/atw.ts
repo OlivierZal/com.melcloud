@@ -68,8 +68,8 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
   readonly legionella: string
+  readonly measure_frequency: number
   readonly measure_power: number
-  readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_power.produced': number
   readonly 'measure_temperature.condensing': number
   readonly 'measure_temperature.flow': number
@@ -162,10 +162,10 @@ export const listCapabilityTagMappingAtw: Record<
   'alarm_generic.eco_hot_water': 'EcoHotWater',
   'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
   legionella: 'LastLegionellaActivationTime',
+  measure_frequency: 'HeatPumpFrequency',
   measure_power: 'CurrentEnergyConsumed',
-  'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
   'measure_power.produced': 'CurrentEnergyProduced',
-  'measure_power.wifi': 'WifiSignalStrength',
+  measure_signal_strength: 'WifiSignalStrength',
   'measure_temperature.condensing': 'CondensingTemperature',
   'measure_temperature.flow': 'FlowTemperature',
   'measure_temperature.flow_zone1': 'FlowTemperatureZone1',

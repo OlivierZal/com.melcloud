@@ -466,41 +466,6 @@
       },
       {
         "title": {
-          "en": "The fan speed has changed",
-          "fr": "La vitesse du ventilateur a été modifiée",
-          "nl": "De ventilatiesnelheid is veranderd",
-          "sv": "Fläkthastigheten ändrades",
-          "no": "Viftehastigheten ble endret",
-          "da": "Blæserhastigheden er blevet ændret",
-          "es": "La velocidad del ventilador ha cambiado"
-        },
-        "tokens": [
-          {
-            "name": "fan_power",
-            "type": "number",
-            "title": {
-              "en": "Fan speed",
-              "fr": "Vitesse du ventilateur",
-              "nl": "Ventilatiesnelheid",
-              "sv": "Fläkthastighet",
-              "no": "Viftehastighet",
-              "da": "Blæserhastighed",
-              "es": "Velocidad del ventilador"
-            },
-            "example": 1
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud|melcloud_erv"
-          }
-        ],
-        "id": "fan_power_changed"
-      },
-      {
-        "title": {
           "en": "The actual fan speed has changed",
           "fr": "La vitesse actuelle du ventilateur a été modifiée",
           "nl": "De huidige ventilatiesnelheid is veranderd",
@@ -511,7 +476,7 @@
         },
         "tokens": [
           {
-            "name": "fan_power_state",
+            "name": "fan_speed_state",
             "type": "number",
             "title": {
               "en": "Actual fan speed",
@@ -532,7 +497,7 @@
             "filter": "driver_id=melcloud"
           }
         ],
-        "id": "fan_power_state_changed"
+        "id": "fan_speed_state_changed"
       },
       {
         "title": {
@@ -1716,50 +1681,6 @@
     "actions": [
       {
         "title": {
-          "en": "Set the fan speed",
-          "fr": "Définir la vitesse du ventilateur",
-          "nl": "Stel de ventilatiesnelheid in",
-          "sv": "Ställ in fläkthastigheten",
-          "no": "Innstill viftehastigheten",
-          "da": "Indstil blæserhastigheden",
-          "es": "Configurar la velocidad del ventilador"
-        },
-        "titleFormatted": {
-          "en": "Set the fan speed to [[fan_power]]",
-          "fr": "Définir la vitesse du ventilateur à [[fan_power]]",
-          "nl": "Stel de ventilatiesnelheid in op [[fan_power]]",
-          "sv": "Ställ in fläkthastigheten till [[fan_power]]",
-          "no": "Innstill viftehastigheten til [[fan_power]]",
-          "da": "Indstil blæserhastigheden til [[fan_power]]",
-          "es": "Configurar la velocidad del ventilador a [[fan_power]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=melcloud|melcloud_erv"
-          },
-          {
-            "name": "fan_power",
-            "type": "range",
-            "min": 0,
-            "max": 5,
-            "step": 1
-          }
-        ],
-        "hint": {
-          "en": "Some values may not be available on your device.\n\nValue 0 is the automatic mode.",
-          "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.\n\nLa valeur 0 correspond au mode automatique.",
-          "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.\n\nWaarde 0 is de automatische modus.",
-          "sv": "Vissa värden kanske inte är tillgängliga på din enhet.\n\nVärde 0 är det automatiska läget.",
-          "no": "Noen verdier kan ikke være tilgjengelige på enheten din.\n\nVerdi 0 er den automatiske modusen.",
-          "da": "Nogle værdier er måske ikke tilgængelige på din enhed.\n\nVærdi 0 er den automatiske tilstand.",
-          "es": "Algunos valores pueden no estar disponibles en su dispositivo.\n\nEl valor 0 es el modo automático."
-        },
-        "id": "fan_power_action"
-      },
-      {
-        "title": {
           "en": "Set the horizontal vane",
           "fr": "Définir le soufflage d'air horizontal",
           "nl": "Stel de uitblaasrichting horizontaal in",
@@ -2488,8 +2409,8 @@
         "measure_temperature.outdoor",
         "target_temperature",
         "thermostat_mode",
-        "fan_power",
-        "fan_power_state",
+        "fan_speed",
+        "fan_speed_state",
         "vertical",
         "horizontal",
         "alarm_generic.silent",
@@ -2514,7 +2435,7 @@
         "meter_power.daily_fan",
         "meter_power.daily_heating",
         "meter_power.daily_other",
-        "measure_power.wifi"
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
         "alarm_generic.silent": {
@@ -2613,26 +2534,6 @@
             "no": "Effekt - annet",
             "da": "Effekt - andet",
             "es": "Potencia - otro"
-          }
-        },
-        "measure_power.wifi": {
-          "title": {
-            "en": "Wi-Fi signal strength",
-            "fr": "Puissance du signal Wi-Fi",
-            "nl": "Wi-Fi signaalsterkte",
-            "sv": "Wi-Fi signalstyrka",
-            "no": "Wi-Fi signalstyrke",
-            "da": "Wi-Fi signalstyrke",
-            "es": "Potencia de la señal Wi-Fi"
-          },
-          "units": {
-            "en": "dBm",
-            "fr": "dBm",
-            "nl": "dBm",
-            "sv": "dBm",
-            "no": "dBm",
-            "da": "dBm",
-            "es": "dBm"
           }
         },
         "measure_temperature.outdoor": {
@@ -2909,7 +2810,7 @@
               }
             },
             {
-              "id": "measure_power.wifi",
+              "id": "measure_signal_strength",
               "type": "checkbox",
               "label": {
                 "en": "Display Wi-Fi signal strength",
@@ -3420,7 +3321,7 @@
         "alarm_generic.defrost",
         "alarm_generic.eco_hot_water",
         "alarm_generic.immersion_heater",
-        "measure_power.heat_pump_frequency",
+        "measure_frequency",
         "measure_power",
         "measure_power.produced",
         "meter_power",
@@ -3447,7 +3348,7 @@
         "meter_power.cop_daily_cooling",
         "meter_power.cop_daily_heating",
         "meter_power.cop_daily_hotwater",
-        "measure_power.wifi"
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
         "alarm_generic.booster_heater1": {
@@ -3636,45 +3537,6 @@
             "no": "Produsert effekt",
             "da": "Produceret effekt",
             "es": "Potencia producida"
-          }
-        },
-        "measure_power.heat_pump_frequency": {
-          "title": {
-            "en": "Frequency",
-            "fr": "Fréquence",
-            "nl": "Frequentie",
-            "sv": "Frekvens",
-            "no": "Frekvens",
-            "da": "Frekvens",
-            "es": "Frecuencia"
-          },
-          "units": {
-            "en": "Hz",
-            "fr": "Hz",
-            "nl": "Hz",
-            "sv": "Hz",
-            "no": "Hz",
-            "es": "Hz"
-          }
-        },
-        "measure_power.wifi": {
-          "title": {
-            "en": "Wi-Fi signal strength",
-            "fr": "Puissance du signal Wi-Fi",
-            "nl": "Wi-Fi signaalsterkte",
-            "sv": "Wi-Fi signalstyrka",
-            "no": "Wi-Fi signalstyrke",
-            "da": "Wi-Fi signalstyrke",
-            "es": "Potencia de la señal Wi-Fi"
-          },
-          "units": {
-            "en": "dBm",
-            "fr": "dBm",
-            "nl": "dBm",
-            "sv": "dBm",
-            "no": "dBm",
-            "da": "dBm",
-            "es": "dBm"
           }
         },
         "measure_temperature.zone2": {
@@ -4334,7 +4196,7 @@
               }
             },
             {
-              "id": "measure_power.wifi",
+              "id": "measure_signal_strength",
               "type": "checkbox",
               "label": {
                 "en": "Display Wi-Fi signal strength",
@@ -5181,32 +5043,12 @@
         "measure_temperature",
         "measure_temperature.outdoor",
         "thermostat_mode",
-        "fan_power",
+        "fan_speed",
         "measure_co2",
         "measure_pm25",
-        "measure_power.wifi"
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
-        "measure_power.wifi": {
-          "title": {
-            "en": "Wi-Fi signal strength",
-            "fr": "Puissance du signal Wi-Fi",
-            "nl": "Wi-Fi signaalsterkte",
-            "sv": "Wi-Fi signalstyrka",
-            "no": "Wi-Fi signalstyrke",
-            "da": "Wi-Fi signalstyrke",
-            "es": "Potencia de la señal Wi-Fi"
-          },
-          "units": {
-            "en": "dBm",
-            "fr": "dBm",
-            "nl": "dBm",
-            "sv": "dBm",
-            "no": "dBm",
-            "da": "dBm",
-            "es": "dBm"
-          }
-        },
         "measure_temperature.outdoor": {
           "title": {
             "en": "Outdoor temperature",
@@ -5310,7 +5152,7 @@
               }
             },
             {
-              "id": "measure_power.wifi",
+              "id": "measure_signal_strength",
               "type": "checkbox",
               "label": {
                 "en": "Display Wi-Fi signal strength",
@@ -5364,6 +5206,23 @@
       "insights": true,
       "uiComponent": "sensor",
       "icon": "/assets/fan_power_state.svg"
+    },
+    "fan_speed_state": {
+      "type": "number",
+      "title": {
+        "en": "Actual fan speed",
+        "fr": "Vitesse actuelle du ventilateur",
+        "nl": "Huidige ventilatiesnelheid",
+        "sv": "Aktuell fläkthastighet",
+        "no": "Aktuell viftehastighet",
+        "da": "Aktuel blæserhastighed",
+        "es": "Velocidad actual del ventilador"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/fan_speed_state.svg"
     },
     "horizontal": {
       "type": "enum",

@@ -15,8 +15,8 @@
     "measure_temperature.outdoor",
     "target_temperature",
     "thermostat_mode",
-    "fan_power",
-    "fan_power_state",
+    "fan_speed",
+    "fan_speed_state",
     "vertical",
     "horizontal",
     "alarm_generic.silent",
@@ -41,7 +41,7 @@
     "meter_power.daily_fan",
     "meter_power.daily_heating",
     "meter_power.daily_other",
-    "measure_power.wifi"
+    "measure_signal_strength"
   ],
   "capabilitiesOptions": {
     "alarm_generic.silent": {
@@ -140,26 +140,6 @@
         "no": "Effekt - annet",
         "da": "Effekt - andet",
         "es": "Potencia - otro"
-      }
-    },
-    "measure_power.wifi": {
-      "title": {
-        "en": "Wi-Fi signal strength",
-        "fr": "Puissance du signal Wi-Fi",
-        "nl": "Wi-Fi signaalsterkte",
-        "sv": "Wi-Fi signalstyrka",
-        "no": "Wi-Fi signalstyrke",
-        "da": "Wi-Fi signalstyrke",
-        "es": "Potencia de la señal Wi-Fi"
-      },
-      "units": {
-        "en": "dBm",
-        "fr": "dBm",
-        "nl": "dBm",
-        "sv": "dBm",
-        "no": "dBm",
-        "da": "dBm",
-        "es": "dBm"
       }
     },
     "measure_temperature.outdoor": {

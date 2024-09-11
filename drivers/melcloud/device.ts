@@ -22,7 +22,7 @@ export = class extends BaseMELCloudDevice<'Ata'> {
   > = {
     'alarm_generic.silent': ((value: FanSpeed) =>
       value === FanSpeed.silent) as ConvertFromDevice<'Ata'>,
-    fan_power: ((value: FanSpeed) =>
+    fan_speed: ((value: FanSpeed) =>
       value === FanSpeed.silent ?
         FanSpeed.auto
       : value) as ConvertFromDevice<'Ata'>,

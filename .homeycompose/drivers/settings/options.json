@@ -34,7 +34,7 @@
       }
     },
     {
-      "id": "measure_power.wifi",
+      "id": "measure_signal_strength",
       "type": "checkbox",
       "label": {
         "en": "Display Wi-Fi signal strength",

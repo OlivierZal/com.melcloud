@@ -25,7 +25,7 @@ export enum ThermostatModeAta {
 }
 
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
-  readonly fan_power: FanSpeed
+  readonly fan_speed: FanSpeed
   readonly horizontal: keyof typeof Horizontal
   readonly target_temperature: number
   readonly thermostat_mode: keyof typeof ThermostatModeAta
@@ -38,8 +38,8 @@ export interface GetCapabilitiesAta extends BaseGetCapabilities {
 
 export interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
-  readonly fan_power: FanSpeed
-  readonly fan_power_state: number
+  readonly fan_speed: FanSpeed
+  readonly fan_speed_state: number
   readonly horizontal: keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
 
@@ -83,7 +83,7 @@ export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
   keyof UpdateDeviceDataAta
 > = {
-  fan_power: 'SetFanSpeed',
+  fan_speed: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
   onoff: 'Power',
   target_temperature: 'SetTemperature',
@@ -104,10 +104,10 @@ export const listCapabilityTagMappingAta: Record<
   keyof ListDeviceAta['Device']
 > = {
   'alarm_generic.silent': 'FanSpeed',
-  fan_power: 'FanSpeed',
-  fan_power_state: 'ActualFanSpeed',
+  fan_speed: 'FanSpeed',
+  fan_speed_state: 'ActualFanSpeed',
   horizontal: 'VaneHorizontalDirection',
-  'measure_power.wifi': 'WifiSignalStrength',
+  measure_signal_strength: 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   vertical: 'VaneVerticalDirection',
 } as const
