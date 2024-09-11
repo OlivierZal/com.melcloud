@@ -119,13 +119,17 @@ export interface LoginSetting extends PairSetting {
   }
 }
 
+interface LocalizedStrings extends Partial<Record<string, string>> {
+  readonly en: string
+}
+
 export interface ManifestDriverCapabilitiesOptions {
-  readonly title?: Record<string, string>
-  readonly type?: string
   readonly values?: readonly {
     readonly id: string
-    readonly title: Record<string, string>
+    readonly title: LocalizedStrings
   }[]
+  readonly title: LocalizedStrings
+  readonly type: string
 }
 
 export interface ManifestDriver {

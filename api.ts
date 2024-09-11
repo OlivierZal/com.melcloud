@@ -17,15 +17,9 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
-import {
-  title as powerTitle,
-  type as powerType,
-} from 'homey-lib/assets/capability/capabilities/onoff.json'
-import {
-  title as targetTemperatureTitle,
-  type as targetTemperatureType,
-} from 'homey-lib/assets/capability/capabilities/target_temperature.json'
-import { title as thermostatModeTitle } from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
+import power from 'homey-lib/assets/capability/capabilities/onoff.json'
+import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json'
+import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
@@ -46,7 +40,7 @@ import type {
   Zone,
 } from './types'
 
-import fan from './.homeycompose/capabilities/fan_power.json'
+import fanSpeed from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 
@@ -184,22 +178,16 @@ const handleErrorLogQuery = ({
 }
 
 const getLocalizedCapabilitiesOptions = (
-  capabilitiesOptions: ManifestDriverCapabilitiesOptions,
+  options: ManifestDriverCapabilitiesOptions,
   language: string,
   enumType?: typeof Horizontal | typeof OperationMode | typeof Vertical,
 ): DriverCapabilitiesOptions => ({
-  title:
-    capabilitiesOptions.title?.[
-      language in (capabilitiesOptions.title ?? {}) ? language : 'en'
-    ] ?? '',
-  type: capabilitiesOptions.type ?? (capabilitiesOptions.values ? 'enum' : ''),
-  values:
-    capabilitiesOptions.values && enumType ?
-      capabilitiesOptions.values.map(({ id, title }) => ({
-        id: String(enumType[id as keyof typeof enumType]),
-        label: title[language] ?? title.en,
-      }))
-    : undefined,
+  title: options.title[language] ?? options.title.en,
+  type: options.type,
+  values: options.values?.map(({ id, title }) => ({
+    id: enumType?.[id as keyof typeof enumType]?.toString() ?? id,
+    label: title[language] ?? title.en,
+  })),
 })
 
 export = {
@@ -210,45 +198,31 @@ export = {
   }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
     const language = homey.i18n.getLanguage()
     return [
-      [
-        'Power',
-        getLocalizedCapabilitiesOptions(
-          { title: powerTitle, type: powerType },
-          language,
-        ),
-      ],
-      [
-        'SetTemperature',
-        getLocalizedCapabilitiesOptions(
-          { title: targetTemperatureTitle, type: targetTemperatureType },
-          language,
-        ),
-      ],
-      ['FanSpeed', getLocalizedCapabilitiesOptions(fan, language)],
-      [
-        'VaneVerticalDirection',
-        getLocalizedCapabilitiesOptions(vertical, language, Vertical),
-      ],
-      [
-        'VaneHorizontalDirection',
-        getLocalizedCapabilitiesOptions(horizontal, language, Horizontal),
-      ],
-      [
-        'OperationMode',
-        getLocalizedCapabilitiesOptions(
-          {
-            title: thermostatModeTitle,
-            values: (homey.manifest as Manifest).drivers
-              .find(({ id }) => id === 'melcloud')
-              ?.capabilitiesOptions?.thermostat_mode.values?.filter(
-                ({ id }) => id !== 'off',
-              ),
-          },
-          language,
-          OperationMode,
-        ),
-      ],
-    ]
+      { key: 'Power', options: power },
+      { key: 'SetTemperature', options: setTemperature },
+      { key: 'FanSpeed', options: fanSpeed },
+      { enumType: Vertical, key: 'VaneVerticalDirection', options: vertical },
+      {
+        enumType: Horizontal,
+        key: 'VaneHorizontalDirection',
+        options: horizontal,
+      },
+      {
+        enumType: OperationMode,
+        key: 'OperationMode',
+        options: {
+          ...thermostatMode,
+          values: (homey.manifest as Manifest).drivers
+            .find(({ id }) => id === 'melcloud')
+            ?.capabilitiesOptions?.thermostat_mode.values?.filter(
+              ({ id }) => id !== 'off',
+            ),
+        },
+      },
+    ].map(({ enumType, key, options }) => [
+      key as keyof GroupAtaState,
+      getLocalizedCapabilitiesOptions(options, language, enumType),
+    ])
   },
   async getAtaValues({
     homey,
