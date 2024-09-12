@@ -3,7 +3,6 @@ import {
   type DeviceType,
   type EnergyData,
   type ListDevice,
-  type SetDeviceData,
   type UpdateDeviceData,
   DeviceModel,
 } from '@olivierzal/melcloud-api'
@@ -43,6 +42,7 @@ const REPORT_PLAN_PARAMETERS_TOTAL = {
   interval: { days: 1 },
   values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
 }
+const SECONDS_1_IN_MS = 1000
 
 const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
@@ -60,11 +60,6 @@ export default abstract class<
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]
 
-  protected readonly diff = new Map<
-    keyof SetCapabilities[T],
-    SetCapabilities[T][keyof SetCapabilities[T]]
-  >()
-
   #device?: DeviceFacade[T]
 
   #energyCapabilityTagEntries: {
@@ -81,8 +76,6 @@ export default abstract class<
   #opCapabilityTagEntries: OpCapabilityTagEntry<T>[] = []
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
-
-  #syncToDeviceTimeout: NodeJS.Timeout | null = null
 
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
@@ -138,7 +131,6 @@ export default abstract class<
   }
 
   public override onDeleted(): void {
-    this.homey.clearTimeout(this.#syncToDeviceTimeout)
     ;(['false', 'true'] as const).forEach((total) => {
       this.homey.clearTimeout(this.#reportTimeout[total])
       this.homey.clearTimeout(this.#reportInterval[total])
@@ -234,30 +226,9 @@ export default abstract class<
 
   public async syncFromDevice(): Promise<void> {
     const device = await this.#fetchDevice()
-    if (!this.#syncToDeviceTimeout && device) {
+    if (device) {
       await this.setCapabilityValues(device.data)
     }
-  }
-
-  protected applySyncToDevice(): void {
-    this.#syncToDeviceTimeout = this.setTimeout(
-      async (): Promise<void> => {
-        const device = await this.#fetchDevice()
-        if (device) {
-          await this.#set(device)
-          await this.setCapabilityValues(device.data)
-          this.#syncToDeviceTimeout = null
-        }
-      },
-      { seconds: 1 },
-      { actionType: 'sync to device', units: ['seconds'] },
-    )
-  }
-
-  protected clearSyncToDevice(): void {
-    this.homey.clearTimeout(this.#syncToDeviceTimeout)
-    this.#syncToDeviceTimeout = null
-    this.log('Sync to device has been paused')
   }
 
   protected async setCapabilityValues(
@@ -279,24 +250,19 @@ export default abstract class<
     )
   }
 
-  async #buildUpdateData(): Promise<UpdateDeviceData[T]> {
-    if (this.getSetting('always_on') && !this.diff.get('onoff')) {
-      await this.setWarning(this.homey.__('warnings.always_on'))
-    }
-    this.log('Requested data:', Object.fromEntries(this.diff))
-    const updateData = Object.fromEntries(
-      [...this.diff].map(([capability, value]) => [
+  #buildUpdateData(values: Partial<SetCapabilities[T]>): UpdateDeviceData[T] {
+    this.log('Requested data:', values)
+    return Object.fromEntries(
+      Object.entries(values).map(([capability, value]) => [
         this.#setCapabilityTagMapping[
           capability as keyof SetCapabilityTagMapping[T]
         ],
         this.#convertToDevice(
-          capability,
+          capability as keyof SetCapabilities[T],
           value as UpdateDeviceData[T][keyof UpdateDeviceData[T]],
         ),
       ]),
     ) as UpdateDeviceData[T]
-    this.diff.clear()
-    return updateData
   }
 
   #calculateCopValue(
@@ -458,23 +424,6 @@ export default abstract class<
     return setting in this.driver.energyCapabilityTagMapping
   }
 
-  #onCapability<K extends keyof SetCapabilities[T]>(
-    capability: K,
-    value: SetCapabilities[T][K],
-  ): void {
-    if (this.driver.type !== 'Atw' && capability === 'thermostat_mode') {
-      this.diff.set(
-        'onoff',
-        (value !== 'off') as SetCapabilities[T][keyof SetCapabilities[T]],
-      )
-      if (value !== 'off') {
-        this.diff.set(capability as keyof SetCapabilities[T], value)
-      }
-      return
-    }
-    this.diff.set(capability, value)
-  }
-
   #planEnergyReport(
     total: boolean,
     { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
@@ -486,9 +435,7 @@ export default abstract class<
         async () => {
           await this.#runEnergyReport(total)
           this.#reportInterval[totalString] = this.setInterval(
-            async () => {
-              await this.#runEnergyReport(total)
-            },
+            async () => this.#runEnergyReport(total),
             interval,
             { actionType, units: ['days', 'hours'] },
           )
@@ -500,16 +447,23 @@ export default abstract class<
   }
 
   #registerCapabilityListeners(): void {
-    Object.keys(this.#setCapabilityTagMapping).forEach((capability) => {
-      this.registerCapabilityListener(
-        capability,
-        (value: SetCapabilities[T][keyof SetCapabilities[T]]) => {
-          this.clearSyncToDevice()
-          this.#onCapability(capability as keyof SetCapabilities[T], value)
-          this.applySyncToDevice()
-        },
-      )
-    })
+    this.registerMultipleCapabilityListener(
+      Object.keys(this.#setCapabilityTagMapping),
+      async (values) => {
+        if (this.driver.type !== 'Atw' && 'thermostat_mode' in values) {
+          const isOn = values.thermostat_mode !== 'off'
+          values.onoff = isOn
+          if (!isOn) {
+            delete values.thermostat_mode
+          }
+        }
+        const device = await this.#fetchDevice()
+        if (device) {
+          await this.#set(device, values as Partial<SetCapabilities[T]>)
+        }
+      },
+      SECONDS_1_IN_MS,
+    )
   }
 
   async #runEnergyReport(total: boolean): Promise<void> {
@@ -531,21 +485,27 @@ export default abstract class<
 
   async #runEnergyReports(): Promise<void> {
     await Promise.all(
-      [false, true].map(async (total) => {
-        await this.#runEnergyReport(total)
-      }),
+      [false, true].map(async (total) => this.#runEnergyReport(total)),
     )
   }
 
-  async #set(device: DeviceFacade[T]): Promise<void> {
-    const updateData = await this.#buildUpdateData()
+  async #set(
+    device: DeviceFacade[T],
+    values: Partial<SetCapabilities[T]>,
+  ): Promise<void> {
+    const updateData = this.#buildUpdateData(values)
     if (Object.keys(updateData).length) {
       try {
-        ;(await device.set(updateData)) as SetDeviceData[T]
+        await device.set(updateData)
       } catch (error) {
         if (!(error instanceof Error) || error.message !== 'No data to set') {
           await this.setWarning(error)
         }
+      } finally {
+        this.homey.setTimeout(
+          async () => this.setCapabilityValues(device.data),
+          SECONDS_1_IN_MS,
+        )
       }
     }
   }
@@ -585,16 +545,16 @@ export default abstract class<
             data: ListDevice[T]['Device'],
           ) => Partial<CapabilitiesOptions[T]>
         )(data),
-      ).map(async ([capability, options]) => {
-        await this.setCapabilityOptions(
+      ).map(async ([capability, options]) =>
+        this.setCapabilityOptions(
           capability as Extract<keyof CapabilitiesOptions[T], string>,
           options as object &
             CapabilitiesOptions[T][Extract<
               keyof CapabilitiesOptions[T],
               string
             >],
-        )
-      }),
+        ),
+      ),
     )
   }
 

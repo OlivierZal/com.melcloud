@@ -68,7 +68,6 @@
     "title": "MELCloud settings"
   },
   "warnings": {
-    "always_on": "Shutdown from Homey has been disabled.",
     "dashboard": "Exit the device and return to update your dashboard.",
     "device": {
       "not_found": "Device not found."

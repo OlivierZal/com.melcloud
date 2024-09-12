@@ -68,7 +68,6 @@
     "title": "MELCloud-innstillinger"
   },
   "warnings": {
-    "always_on": "Avstenging fra Homey er deaktivert.",
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
     "device": {
       "not_found": "Enhet ikke funnet."

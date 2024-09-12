@@ -895,8 +895,8 @@ const createZoneElements = async (
   zones: Zone[],
   zoneType: string,
   level = NUMBER_0,
-): Promise<void> => {
-  await zones.reduce(async (acc, { areas, floors, id, name }) => {
+): Promise<void> =>
+  zones.reduce(async (acc, { areas, floors, id, name }) => {
     await acc
     createOptionElement(zoneElement, {
       id: `${zoneType}_${String(id)}`,
@@ -909,7 +909,6 @@ const createZoneElements = async (
       await createZoneElements(floors, 'floors', NUMBER_1)
     }
   }, Promise.resolve())
-}
 
 const fetchZoneSettings = async (homey: Homey): Promise<void> => {
   await fetchAtaValues(homey)
