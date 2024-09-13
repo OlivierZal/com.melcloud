@@ -536,9 +536,9 @@ const int = (
   homey: Homey,
   { id, max, min, value }: HTMLInputElement,
 ): number => {
-  const val = Number.parseInt(value, 10)
+  const val = Number(value)
   const newMin = handleIntMin(id, min)
-  if (Number.isNaN(val) || val < Number(newMin) || val > Number(max)) {
+  if (Number.isFinite(val) || val < Number(newMin) || val > Number(max)) {
     throw new Error(
       homey.__('settings.int_error', {
         max,
@@ -579,7 +579,6 @@ const processValue = (
   element: HTMLValueElement,
 ): ValueOf<Settings> => {
   if (element.value) {
-    const parsedValue = Number(parseInt(element.value, 10))
     switch (true) {
       case element.type === 'checkbox':
         return element.indeterminate ? null : element.checked
@@ -590,7 +589,9 @@ const processValue = (
       case ['false', 'true'].includes(element.value):
         return element.value === 'true'
       default:
-        return Number.isNaN(parsedValue) ? element.value : parsedValue
+        return Number.isFinite(Number(element.value)) ?
+            Number(element.value)
+          : element.value
     }
   }
   return null
