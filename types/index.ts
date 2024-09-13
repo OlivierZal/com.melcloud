@@ -26,11 +26,10 @@ export {
   OperationModeStateZoneCapability,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
 } from './atw'
-export {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  THERMOSTAT_MODE_TITLE,
+export type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
 } from './bases'
 export {
   type Capabilities,

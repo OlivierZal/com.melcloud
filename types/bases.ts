@@ -15,13 +15,3 @@ export interface RangeOptions {
   readonly min: number
   readonly step: number
 }
-
-export const THERMOSTAT_MODE_TITLE = {
-  da: 'Tilstand for termostat',
-  en: 'Mode of the thermostat',
-  es: 'Modo del termostato',
-  fr: 'Mode du thermostat',
-  nl: 'Modus van de thermostaat',
-  no: 'Modus for termostaten',
-  sv: 'Läge för termostaten',
-}
