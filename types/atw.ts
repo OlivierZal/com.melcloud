@@ -15,6 +15,7 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
+  LocalizedStrings,
   RangeOptions,
 } from './bases'
 
@@ -269,25 +270,16 @@ export interface CapabilitiesOptionsAtw {
   }
 }
 
-const ZONE2_SUFFIX = {
-  da: 'zone 2',
-  en: 'zone 2',
-  es: 'zona 2',
-  fr: 'zone 2',
-  nl: 'zone 2',
-  no: 'sone 2',
-  sv: 'zon 2',
-}
-const createZone2Title = (
+const addSuffixToTitle = (
   title: Record<string, string>,
+  suffix: LocalizedStrings,
 ): Record<string, string> =>
   Object.fromEntries(
-    Object.entries(ZONE2_SUFFIX).map(([language, suffix]) => [
+    Object.entries(suffix).map(([language, localizedSuffix]) => [
       language,
-      `${title[language]} - ${suffix}`,
+      `${title[language]} - ${localizedSuffix ?? suffix.en}`,
     ]),
   )
-const THERMOSTAT_MODE_TITLE_ATW = createZone2Title(thermostatModeTitle)
 
 const CURVE = {
   id: 'curve',
@@ -326,18 +318,7 @@ const ROOM = {
   },
 } as const
 
-const COOL_SUFFIX = {
-  id: 'cool',
-  title: {
-    da: 'køling',
-    en: 'cooling',
-    es: 'enfriamiento',
-    fr: 'refroidissement',
-    nl: 'koeling',
-    no: 'kjøling',
-    sv: 'kylning',
-  },
-} as const
+const COOL_SUFFIX = 'cool'
 const createCoolObject = ({
   id,
   title,
@@ -346,18 +327,30 @@ const createCoolObject = ({
   title: Record<string, string>
 }) =>
   ({
-    id: `${id}_${COOL_SUFFIX.id}`,
-    title: Object.fromEntries(
-      Object.entries(COOL_SUFFIX.title).map(([language, suffix]) => [
-        language,
-        `${title[language]} - ${suffix}`,
-      ]),
-    ),
+    id: `${id}_${COOL_SUFFIX}`,
+    title: addSuffixToTitle(title, {
+      da: 'køling',
+      en: 'cooling',
+      es: 'enfriamiento',
+      fr: 'refroidissement',
+      nl: 'koeling',
+      no: 'kjøling',
+      sv: 'kylning',
+    }),
   }) as const
 const FLOW_COOL = createCoolObject(FLOW)
 const ROOM_COOL = createCoolObject(ROOM)
 
 const THERMOSTAT_MODE_VALUES_ATW = [ROOM, FLOW, CURVE, ROOM_COOL, FLOW_COOL]
+const THERMOSTAT_MODE_TITLE_ATW = addSuffixToTitle(thermostatModeTitle, {
+  da: 'zone 2',
+  en: 'zone 2',
+  es: 'zona 2',
+  fr: 'zone 2',
+  nl: 'zone 2',
+  no: 'sone 2',
+  sv: 'zon 2',
+})
 
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
@@ -366,9 +359,7 @@ export const getCapabilitiesOptionsAtw = ({
   const thermostatModeValues =
     canCool ?
       THERMOSTAT_MODE_VALUES_ATW
-    : THERMOSTAT_MODE_VALUES_ATW.filter(
-        ({ id }) => !id.endsWith(COOL_SUFFIX.id),
-      )
+    : THERMOSTAT_MODE_VALUES_ATW.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
   return {
     thermostat_mode: { values: thermostatModeValues },
     ...(hasZone2 && {

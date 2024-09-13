@@ -267,6 +267,7 @@ export const getCapabilitiesOptionsAtaErv = ({
     max: numberOfFanSpeeds,
     min: Number(!hasAutomaticFanSpeed),
     step: 1,
+    units: { en: '' },
   },
 })
 
