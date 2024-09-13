@@ -237,11 +237,11 @@ const handleErrorLogQuery = ({
     from !== undefined && from ? DateTime.fromISO(from) : undefined
   const toDate = to !== undefined && to ? DateTime.fromISO(to) : DateTime.now()
 
+  const period = Number.isFinite(Number(limit)) ? Number(limit) : DEFAULT_LIMIT
   const daysOffset =
     !fromDate && Number.isFinite(Number(offset)) ?
       Number(offset)
     : DEFAULT_OFFSET
-  const period = Number.isFinite(Number(limit)) ? Number(limit) : DEFAULT_LIMIT
   const daysLimit = fromDate ? DEFAULT_LIMIT : period
   const days = daysLimit * daysOffset + daysOffset
   return {
