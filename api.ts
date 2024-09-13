@@ -12,6 +12,7 @@ import {
   AreaModel,
   BuildingModel,
   DeviceModel,
+  FanSpeed,
   FloorModel,
   Horizontal,
   OperationMode,
@@ -47,6 +48,81 @@ import vertical from './.homeycompose/capabilities/vertical.json'
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
+
+const fanSpeedValues = [
+  {
+    id: 'auto',
+    title: {
+      da: 'Automatisk',
+      en: 'Automatic',
+      es: 'Automático',
+      fr: 'Automatique',
+      nl: 'Automatisch',
+      no: 'Automatisk',
+      sv: 'Automatiskt',
+    },
+  },
+  {
+    id: 'very_fast',
+    title: {
+      da: 'Meget hurtig',
+      en: 'Very fast',
+      es: 'Muy rápido',
+      fr: 'Très rapide',
+      nl: 'Zeer snel',
+      no: 'Veldig rask',
+      sv: 'Mycket snabb',
+    },
+  },
+  {
+    id: 'fast',
+    title: {
+      da: 'Hurtig',
+      en: 'Fast',
+      es: 'Rápido',
+      fr: 'Rapide',
+      nl: 'Snel',
+      no: 'Rask',
+      sv: 'Snabb',
+    },
+  },
+  {
+    id: 'moderate',
+    title: {
+      da: 'Moderat',
+      en: 'Moderate',
+      es: 'Moderado',
+      fr: 'Modéré',
+      nl: 'Matig',
+      no: 'Moderat',
+      sv: 'Måttlig',
+    },
+  },
+  {
+    id: 'slow',
+    title: {
+      da: 'Langsom',
+      en: 'Slow',
+      es: 'Lento',
+      fr: 'Lent',
+      nl: 'Langzaam',
+      no: 'Sakte',
+      sv: 'Långsam',
+    },
+  },
+  {
+    id: 'very_slow',
+    title: {
+      da: 'Meget langsom',
+      en: 'Very slow',
+      es: 'Muy lento',
+      fr: 'Très lent',
+      nl: 'Zeer langzaam',
+      no: 'Veldig sakte',
+      sv: 'Mycket långsam',
+    },
+  },
+]
 
 const modelClass = {
   areas: AreaModel,
@@ -180,7 +256,11 @@ const handleErrorLogQuery = ({
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
   language: string,
-  enumType?: typeof Horizontal | typeof OperationMode | typeof Vertical,
+  enumType?:
+    | typeof FanSpeed
+    | typeof Horizontal
+    | typeof OperationMode
+    | typeof Vertical,
 ): DriverCapabilitiesOptions => ({
   title: options.title[language] ?? options.title.en,
   type: options.type,
@@ -203,7 +283,11 @@ export = {
     return [
       { key: 'Power', options: power },
       { key: 'SetTemperature', options: setTemperature },
-      { key: 'FanSpeed', options: fanSpeed },
+      {
+        enumType: FanSpeed,
+        key: 'FanSpeed',
+        options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
+      },
       { enumType: Vertical, key: 'VaneVerticalDirection', options: vertical },
       {
         enumType: Horizontal,

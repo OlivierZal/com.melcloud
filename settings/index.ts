@@ -37,14 +37,13 @@ const DAYS_14 = 14
 const DIVISOR_10 = 10
 const DIVISOR_100 = 100
 
-const MIN_MAPPING = { FanSpeed: 0, SetTemperature: 10 }
-const MAX_MAPPING = { FanSpeed: 5, SetTemperature: 31 }
+const MIN_MAPPING = { SetTemperature: 10 }
+const MAX_MAPPING = { SetTemperature: 31 }
 const MIN_SET_TEMPERATURE_COOLING = 16
 
 const MODE_AUTO = 8
 const MODE_COOL = 3
 const MODE_DRY = 2
-const COOLING_MODES = [MODE_AUTO, MODE_COOL, MODE_DRY]
 
 const MIN_FP_TEMPERATURE_MIN = 4
 const MIN_FP_TEMPERATURE_MAX = 14
@@ -526,7 +525,7 @@ const handleIntMin = (id: string, min: string): string => {
     const modeElement = document.getElementById(
       'OperationMode',
     ) as HTMLSelectElement
-    if (COOLING_MODES.includes(Number(modeElement.value))) {
+    if ([MODE_AUTO, MODE_COOL, MODE_DRY].includes(Number(modeElement.value))) {
       return String(MIN_SET_TEMPERATURE_COOLING)
     }
   }
@@ -540,14 +539,14 @@ const int = (
   const val = Number.parseInt(value, 10)
   const newMin = handleIntMin(id, min)
   if (Number.isNaN(val) || val < Number(newMin) || val > Number(max)) {
-    const labelElement: HTMLLabelElement | null = document.querySelector(
-      `label[for="${id}"]`,
-    )
     throw new Error(
       homey.__('settings.int_error', {
         max,
         min: newMin,
-        name: homey.__(labelElement?.innerText ?? ''),
+        name: homey.__(
+          document.querySelector<HTMLLabelElement>(`label[for="${id}"]`)
+            ?.innerText ?? '',
+        ),
       }),
     )
   }
@@ -580,15 +579,19 @@ const processValue = (
   element: HTMLValueElement,
 ): ValueOf<Settings> => {
   if (element.value) {
-    if (element.type === 'checkbox') {
-      return element.indeterminate ? null : element.checked
+    const parsedValue = Number(parseInt(element.value, 10))
+    switch (true) {
+      case element.type === 'checkbox':
+        return element.indeterminate ? null : element.checked
+      case element.type === 'number' &&
+        element.min !== '' &&
+        element.max !== '':
+        return int(homey, element)
+      case ['false', 'true'].includes(element.value):
+        return element.value === 'true'
+      default:
+        return Number.isNaN(parsedValue) ? element.value : parsedValue
     }
-    if (element.type === 'number' && element.min && element.max) {
-      return int(homey, element)
-    }
-    return ['false', 'true'].includes(element.value) ?
-        element.value === 'true'
-      : element.value
   }
   return null
 }
@@ -620,11 +623,13 @@ const buildSettingsBody = (
 const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
   const errors: string[] = []
   const body = Object.fromEntries(
-    Array.from(valuesAtaElement.querySelectorAll('input, select'))
+    Array.from(
+      valuesAtaElement.querySelectorAll<HTMLValueElement>('input, select'),
+    )
       .filter(
-        (element): element is HTMLValueElement =>
-          (element as HTMLValueElement).value !== '' &&
-          (element as HTMLValueElement).value !==
+        (element) =>
+          element.value !== '' &&
+          element.value !==
             zoneMapping[zoneElement.value]?.[
               element.id as keyof GroupAtaState
             ]?.toString(),
