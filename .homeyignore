@@ -2,7 +2,6 @@
 /.gitignore
 /.homeybuild/
 /.homeycompose/
-/.homeychangelog.json
 /.npmignore
 /.prettierignore
 /.vscode/
