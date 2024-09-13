@@ -538,7 +538,7 @@ const int = (
 ): number => {
   const val = Number(value)
   const newMin = handleIntMin(id, min)
-  if (Number.isFinite(val) || val < Number(newMin) || val > Number(max)) {
+  if (!Number.isFinite(val) || val < Number(newMin) || val > Number(max)) {
     throw new Error(
       homey.__('settings.int_error', {
         max,
