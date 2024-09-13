@@ -67,7 +67,7 @@ export = class MELCloudApp extends withTimers(App) {
       const versionChangelog = changelog[version as keyof typeof changelog]
       await this.homey.notifications.createNotification({
         excerpt:
-          changelog[version as keyof typeof changelog][
+          versionChangelog[
             language in versionChangelog ?
               (language as keyof typeof versionChangelog)
             : 'en'
