@@ -198,12 +198,12 @@
     "en": "Fix a sync issue in some cases of failure."
   },
   "39.0.1": {
-    "en": "In the app settings: You can now view detailed settings for each zone (building, area, and floor) and apply bulk changes to air-to-air device settings across zones.",
-    "fr": "Dans les paramètres de l'application : Vous pouvez désormais afficher les détails des paramètres pour chaque zone (bâtiment, zone et étage) et appliquer des modifications groupées aux réglages des dispositifs air-air pour chaque zone.",
-    "nl": "In de app-instellingen: U kunt nu de gedetailleerde instellingen per zone (gebouw, gebied en verdieping) bekijken en bulk wijzigingen aanbrengen in de instellingen van uw lucht-lucht toestellen per zone.",
-    "sv": "I appinställningarna: Du kan nu se detaljerade inställningar per zon (byggnad, område och våning) och massändra dina luft-till-luft-enheters inställningar för varje zon.",
-    "no": "I appinnstillingene: Du kan nå se detaljerte innstillinger for hver sone (bygning, område og etasje) og gjøre masseendringer for luft-til-luft-enheter i hver sone.",
-    "da": "I appindstillingerne: Du kan nu se detaljerede indstillinger for hver zone (bygning, område og etage) og anvende masseændringer til dine luft-til-luft-enheders indstillinger for hver zone.",
-    "es": "En la configuración de la aplicación: Ahora puedes ver los detalles de la configuración por zona (edificio, área y planta) y realizar cambios masivos en los valores de tus dispositivos aire-aire para cada zona."
+    "en": "In the app settings: you can now view detailed settings for each zone (building, area and floor) and apply bulk changes to air-to-air device settings across zones.",
+    "fr": "Dans les paramètres de l'application : vous pouvez désormais afficher les détails des paramètres pour chaque zone (bâtiment, zone et étage) et appliquer des modifications groupées aux réglages des dispositifs air-air pour chaque zone.",
+    "nl": "In de app-instellingen: u kunt nu de gedetailleerde instellingen per zone (gebouw, gebied en verdieping) bekijken en bulk wijzigingen aanbrengen in de instellingen van uw lucht-lucht toestellen per zone.",
+    "sv": "I appinställningarna: du kan nu se detaljerade inställningar per zon (byggnad, område och våning) och massändra dina luft-till-luft-enheters inställningar för varje zon.",
+    "no": "I appinnstillingene: du kan nå se detaljerte innstillinger for hver sone (bygning, område og etasje) og gjøre masseendringer for luft-til-luft-enheter i hver sone.",
+    "da": "I appindstillingerne: du kan nu se detaljerede indstillinger for hver zone (bygning, område og etage) og anvende masseændringer til dine luft-til-luft-enheders indstillinger for hver zone.",
+    "es": "En la configuración de la aplicación: ahora puedes ver los detalles de la configuración por zona (edificio, área y planta) y realizar cambios masivos en los valores de tus dispositivos aire-aire para cada zona."
   }
 }
