@@ -186,13 +186,11 @@ const holidayModeEnabledElement = document.getElementById(
 
 const disableButton = (id: string, value = true): void => {
   const element = document.getElementById(id)
-  if (element) {
     if (value) {
-      element.classList.add('is-disabled')
+      element?.classList.add('is-disabled')
       return
     }
-    element.classList.remove('is-disabled')
-  }
+    element?.classList.remove('is-disabled')
 }
 
 const enableButton = (id: string, value = true): void => {
