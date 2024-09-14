@@ -124,24 +124,22 @@ const getDriverSettings = (
   { id: driverId, settings }: ManifestDriver,
   language: string,
 ): DriverSetting[] =>
-  (settings ?? []).flatMap((setting) =>
-    (setting.children ?? []).map(
-      ({ id, label, max, min, type, units, values }) => ({
-        driverId,
-        groupId: setting.id,
-        groupLabel: setting.label[language] ?? setting.label.en,
-        id,
-        max,
-        min,
-        title: label[language] ?? label.en,
-        type,
-        units,
-        values: values?.map(({ id: valueId, label: valueLabel }) => ({
-          id: valueId,
-          label: valueLabel[language] ?? valueLabel.en,
-        })),
-      }),
-    ),
+  (settings ?? []).flatMap(({ children, id: groupId, label: groupLabel }) =>
+    (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
+      driverId,
+      groupId,
+      groupLabel: groupLabel[language] ?? groupLabel.en,
+      id,
+      max,
+      min,
+      title: label[language] ?? label.en,
+      type,
+      units,
+      values: values?.map(({ id: valueId, label: valueLabel }) => ({
+        id: valueId,
+        label: valueLabel[language] ?? valueLabel.en,
+      })),
+    })),
   )
 
 const getDriverLoginSetting = (
