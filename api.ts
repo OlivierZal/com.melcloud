@@ -49,6 +49,11 @@ const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
 
+const compareNames = (
+  { name: name1 }: { name: string },
+  { name: name2 }: { name: string },
+): number => name1.localeCompare(name2)
+
 const getFacade = (
   homey: Homey,
   zoneType: keyof typeof modelClass,
@@ -238,26 +243,20 @@ export = {
   },
   getBuildings(): Zone[] {
     return BuildingModel.getAll()
-      .sort(({ name: name1 }, { name: name2 }) => name1.localeCompare(name2))
+      .sort(compareNames)
       .map(({ areas, floors, id, name }) => ({
         areas: areas
           .filter(({ floorId }) => floorId === null)
-          .sort(({ name: name1 }, { name: name2 }) =>
-            name1.localeCompare(name2),
-          )
+          .sort(compareNames)
           .map(({ id: areaId, name: areaName }) => ({
             id: areaId,
             name: areaName,
           })),
         floors: floors
-          .sort(({ name: name1 }, { name: name2 }) =>
-            name1.localeCompare(name2),
-          )
+          .sort(compareNames)
           .map(({ areas: floorAreas, id: floorId, name: floorName }) => ({
             areas: floorAreas
-              .sort(({ name: name1 }, { name: name2 }) =>
-                name1.localeCompare(name2),
-              )
+              .sort(compareNames)
               .map(({ id: floorAreaId, name: floorAreaName }) => ({
                 id: floorAreaId,
                 name: floorAreaName,
