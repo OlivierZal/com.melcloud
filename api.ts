@@ -2,9 +2,11 @@ import type Homey from 'homey/lib/Homey'
 
 import {
   type AreaFacade,
+  type AreaModelAny,
   type BuildingFacade,
   type ErrorData,
   type FloorFacade,
+  type FloorModel,
   type FrostProtectionData,
   type GroupAtaState,
   type HolidayModeData,
@@ -53,6 +55,27 @@ const compareNames = (
   { name: name1 }: { name: string },
   { name: name2 }: { name: string },
 ): number => name1.localeCompare(name2)
+
+const mapArea = ({ id, name }: AreaModelAny): Zone => ({
+  id,
+  name,
+})
+
+const mapFloor = ({ areas, id, name }: FloorModel): Zone => ({
+  areas: areas.sort(compareNames).map(mapArea),
+  id,
+  name,
+})
+
+const mapBuilding = ({ areas, floors, id, name }: BuildingModel): Zone => ({
+  areas: areas
+    .filter(({ floorId }: { floorId: number | null }) => floorId === null)
+    .sort(compareNames)
+    .map(mapArea),
+  floors: floors.sort(compareNames).map(mapFloor),
+  id,
+  name,
+})
 
 const getFacade = (
   homey: Homey,
@@ -242,31 +265,7 @@ export = {
     return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
   getBuildings(): Zone[] {
-    return BuildingModel.getAll()
-      .sort(compareNames)
-      .map(({ areas, floors, id, name }) => ({
-        areas: areas
-          .filter(({ floorId }) => floorId === null)
-          .sort(compareNames)
-          .map(({ id: areaId, name: areaName }) => ({
-            id: areaId,
-            name: areaName,
-          })),
-        floors: floors
-          .sort(compareNames)
-          .map(({ areas: floorAreas, id: floorId, name: floorName }) => ({
-            areas: floorAreas
-              .sort(compareNames)
-              .map(({ id: floorAreaId, name: floorAreaName }) => ({
-                id: floorAreaId,
-                name: floorAreaName,
-              })),
-            id: floorId,
-            name: floorName,
-          })),
-        id,
-        name,
-      }))
+    return BuildingModel.getAll().sort(compareNames).map(mapBuilding)
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
     return (homey.app as MELCloudApp)

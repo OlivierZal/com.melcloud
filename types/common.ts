@@ -324,7 +324,7 @@ export interface HolidayModeSettings {
 
 export type Zone = BaseModel & {
   areas?: BaseModel[]
-  floors?: (BaseModel & { areas: BaseModel[] })[]
+  floors?: (BaseModel & { areas?: BaseModel[] })[]
 }
 
 export const modelClass = {
