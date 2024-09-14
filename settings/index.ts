@@ -33,11 +33,6 @@ class NoDeviceError extends Error {
   }
 }
 
-const DAYS_14 = 14
-
-const DIVISOR_10 = 10
-const DIVISOR_100 = 100
-
 const MIN_MAPPING = { SetTemperature: 10 }
 const MAX_MAPPING = { SetTemperature: 31 }
 const MIN_SET_TEMPERATURE_COOLING = 16
@@ -57,9 +52,11 @@ const NUMBER_1 = 1
 const NUMBER_2 = 2
 const NUMBER_3 = 3
 const NUMBER_4 = 4
+const NUMBER_10 = 10
 const NUMBER_12 = 12
 const NUMBER_13 = 13
 const NUMBER_14 = 14
+const NUMBER_100 = 100
 
 const pad = (num: number): string => String(num).padStart(NUMBER_2, '0')
 
@@ -76,7 +73,7 @@ const now = (): string => formatDateTimeLocal(new Date())
 
 const nowPlus2Weeks = (): string => {
   const date = new Date()
-  date.setDate(date.getDate() + DAYS_14)
+  date.setDate(date.getDate() + NUMBER_14)
   return formatDateTimeLocal(date)
 }
 
@@ -686,8 +683,8 @@ const getErrorCountText = (homey: Homey, count: number): string => {
   switch (true) {
     case count < NUMBER_2:
       return homey.__(`settings.error_log.error_count.${String(count)}`)
-    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % DIVISOR_10) &&
-      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % DIVISOR_100):
+    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % NUMBER_10) &&
+      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % NUMBER_100):
       return homey.__('settings.error_log.error_count.234')
     default:
       return homey.__('settings.error_log.error_count.plural')
