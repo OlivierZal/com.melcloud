@@ -258,28 +258,28 @@ export interface CapabilitiesOptionsAtw {
   readonly thermostat_mode: {
     readonly values: readonly {
       readonly id: keyof typeof OperationModeZone
-      readonly title: Record<string, string>
+      readonly title: LocalizedStrings
     }[]
   }
   readonly 'thermostat_mode.zone2': {
-    readonly title: Record<string, string>
+    readonly title: LocalizedStrings
     readonly values: readonly {
       readonly id: keyof typeof OperationModeZone
-      readonly title: Record<string, string>
+      readonly title: LocalizedStrings
     }[]
   }
 }
 
 const addSuffixToTitle = (
-  title: Record<string, string>,
+  title: LocalizedStrings,
   suffix: LocalizedStrings,
-): Record<string, string> =>
+): LocalizedStrings =>
   Object.fromEntries(
     Object.entries(suffix).map(([language, localizedSuffix]) => [
       language,
-      `${title[language]} - ${localizedSuffix ?? suffix.en}`,
+      `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
     ]),
-  )
+  ) as LocalizedStrings
 
 const CURVE = {
   id: 'curve',
@@ -324,32 +324,36 @@ const createCoolObject = ({
   title,
 }: {
   id: 'flow' | 'room'
-  title: Record<string, string>
+  title: LocalizedStrings
 }) =>
   ({
     id: `${id}_${COOL_SUFFIX}`,
     title: addSuffixToTitle(title, {
-      da: 'køling',
-      en: 'cooling',
-      es: 'enfriamiento',
-      fr: 'refroidissement',
-      nl: 'koeling',
-      no: 'kjøling',
-      sv: 'kylning',
+      da: '- køling',
+      en: '- cooling',
+      es: '- enfriamiento',
+      fr: '- refroidissement',
+      nl: '- koeling',
+      no: '- kjøling',
+      sv: '- kylning',
     }),
   }) as const
-const FLOW_COOL = createCoolObject(FLOW)
-const ROOM_COOL = createCoolObject(ROOM)
 
-const THERMOSTAT_MODE_VALUES_ATW = [ROOM, FLOW, CURVE, ROOM_COOL, FLOW_COOL]
+const THERMOSTAT_MODE_VALUES_ATW = [
+  ROOM,
+  FLOW,
+  CURVE,
+  createCoolObject(ROOM),
+  createCoolObject(FLOW),
+]
 const THERMOSTAT_MODE_TITLE_ATW = addSuffixToTitle(thermostatModeTitle, {
-  da: 'zone 2',
-  en: 'zone 2',
-  es: 'zona 2',
-  fr: 'zone 2',
-  nl: 'zone 2',
-  no: 'sone 2',
-  sv: 'zon 2',
+  da: '- zone 2',
+  en: '- zone 2',
+  es: '- zona 2',
+  fr: '- zone 2',
+  nl: '- zone 2',
+  no: '- sone 2',
+  sv: '- zon 2',
 })
 
 export const getCapabilitiesOptionsAtw = ({

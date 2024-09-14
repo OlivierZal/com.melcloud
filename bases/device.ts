@@ -545,14 +545,16 @@ export default abstract class<
             data: ListDevice[T]['Device'],
           ) => Partial<CapabilitiesOptions[T]>
         )(data),
-      ).map(async ([capability, options]) =>
+      ).map(async (capabilityOptions) =>
         this.setCapabilityOptions(
-          capability as Extract<keyof CapabilitiesOptions[T], string>,
-          options as object &
-            CapabilitiesOptions[T][Extract<
-              keyof CapabilitiesOptions[T],
-              string
-            >],
+          ...(capabilityOptions as [
+            string & keyof CapabilitiesOptions[T],
+            object &
+              CapabilitiesOptions[T][Extract<
+                keyof CapabilitiesOptions[T],
+                string
+              >],
+          ]),
         ),
       ),
     )

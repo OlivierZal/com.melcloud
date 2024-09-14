@@ -495,7 +495,7 @@ const createCredentialElement = (
   credentialKey: keyof LoginCredentials,
 ): HTMLInputElement | null => {
   const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
-    (setting) => setting.id === credentialKey,
+    ({ id }) => id === credentialKey,
   )
   if (loginSetting) {
     const { id, placeholder, title: text, type } = loginSetting
@@ -628,11 +628,11 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
       valuesAtaElement.querySelectorAll<HTMLValueElement>('input, select'),
     )
       .filter(
-        (element) =>
-          element.value !== '' &&
-          element.value !==
+        ({ id, value }) =>
+          value !== '' &&
+          value !==
             zoneMapping[zoneElement.value]?.[
-              element.id as keyof GroupAtaState
+              id as keyof GroupAtaState
             ]?.toString(),
       )
       .map((element) => {
@@ -883,12 +883,11 @@ const generateAtaValueElement = (
 }
 
 const generateAtaValuesElement = (homey: Homey): void => {
-  ataCapabilities.forEach(([id, capability]) => {
+  ataCapabilities.forEach((ataCapability) => {
     const divElement = createDivElement()
     const { labelElement, valueElement } = generateAtaValueElement(
       homey,
-      id,
-      capability,
+      ...ataCapability,
     )
     if (labelElement && valueElement) {
       divElement.append(labelElement, valueElement)

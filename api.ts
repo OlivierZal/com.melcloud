@@ -9,11 +9,9 @@ import {
   type GroupAtaState,
   type HolidayModeData,
   type LoginCredentials,
-  AreaModel,
   BuildingModel,
   DeviceModel,
   FanSpeed,
-  FloorModel,
   Horizontal,
   OperationMode,
   Vertical,
@@ -24,111 +22,32 @@ import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_
 import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
-import type {
-  DeviceSettings,
-  DriverCapabilitiesOptions,
-  DriverSetting,
-  ErrorLog,
-  ErrorLogQuery,
-  FrostProtectionSettings,
-  HolidayModeSettings,
-  LoginSetting,
-  Manifest,
-  ManifestDriver,
-  ManifestDriverCapabilitiesOptions,
-  PairSetting,
-  Settings,
-  Zone,
-} from './types'
 
 import fanSpeed from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
+import {
+  type DeviceSettings,
+  type DriverCapabilitiesOptions,
+  type DriverSetting,
+  type ErrorLog,
+  type ErrorLogQuery,
+  type FrostProtectionSettings,
+  type HolidayModeSettings,
+  type LoginSetting,
+  type Manifest,
+  type ManifestDriver,
+  type ManifestDriverCapabilitiesOptions,
+  type Settings,
+  type Zone,
+  type ZoneData,
+  FAN_SPEED_VALUES,
+  modelClass,
+} from './types'
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
 const YEAR_1 = 1
-
-const fanSpeedValues = [
-  {
-    id: 'auto',
-    title: {
-      da: 'Automatisk',
-      en: 'Automatic',
-      es: 'Automático',
-      fr: 'Automatique',
-      nl: 'Automatisch',
-      no: 'Automatisk',
-      sv: 'Automatiskt',
-    },
-  },
-  {
-    id: 'very_fast',
-    title: {
-      da: 'Meget hurtig',
-      en: 'Very fast',
-      es: 'Muy rápido',
-      fr: 'Très rapide',
-      nl: 'Zeer snel',
-      no: 'Veldig rask',
-      sv: 'Mycket snabb',
-    },
-  },
-  {
-    id: 'fast',
-    title: {
-      da: 'Hurtig',
-      en: 'Fast',
-      es: 'Rápido',
-      fr: 'Rapide',
-      nl: 'Snel',
-      no: 'Rask',
-      sv: 'Snabb',
-    },
-  },
-  {
-    id: 'moderate',
-    title: {
-      da: 'Moderat',
-      en: 'Moderate',
-      es: 'Moderado',
-      fr: 'Modéré',
-      nl: 'Matig',
-      no: 'Moderat',
-      sv: 'Måttlig',
-    },
-  },
-  {
-    id: 'slow',
-    title: {
-      da: 'Langsom',
-      en: 'Slow',
-      es: 'Lento',
-      fr: 'Lent',
-      nl: 'Langzaam',
-      no: 'Sakte',
-      sv: 'Långsam',
-    },
-  },
-  {
-    id: 'very_slow',
-    title: {
-      da: 'Meget langsom',
-      en: 'Very slow',
-      es: 'Muy lento',
-      fr: 'Très lent',
-      nl: 'Zeer langzaam',
-      no: 'Veldig sakte',
-      sv: 'Mycket långsam',
-    },
-  },
-]
-
-const modelClass = {
-  areas: AreaModel,
-  buildings: BuildingModel,
-  floors: FloorModel,
-}
 
 const getFacade = (
   homey: Homey,
@@ -202,8 +121,7 @@ const getDriverLoginSetting = (
   language: string,
 ): DriverSetting[] => {
   const driverLoginSetting = pair?.find(
-    (pairSetting: PairSetting): pairSetting is LoginSetting =>
-      pairSetting.id === 'login',
+    (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
   )
   return driverLoginSetting ?
       Object.values(
@@ -284,7 +202,7 @@ export = {
       {
         enumType: FanSpeed,
         key: 'FanSpeed',
-        options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
+        options: { ...fanSpeed, type: 'enum', values: FAN_SPEED_VALUES },
       },
       { enumType: Vertical, key: 'VaneVerticalDirection', options: vertical },
       {
@@ -314,37 +232,41 @@ export = {
     params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<GroupAtaState> {
     return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
   getBuildings(): Zone[] {
     return BuildingModel.getAll()
-      .sort((building1, building2) =>
-        building1.name.localeCompare(building2.name),
-      )
-      .map((building) => ({
-        areas: building.areas
+      .sort(({ name: name1 }, { name: name2 }) => name1.localeCompare(name2))
+      .map(({ areas, floors, id, name }) => ({
+        areas: areas
           .filter(({ floorId }) => floorId === null)
-          .sort((area1, area2) => area1.name.localeCompare(area2.name))
-          .map((area) => ({
-            id: area.id,
-            name: area.name,
+          .sort(({ name: name1 }, { name: name2 }) =>
+            name1.localeCompare(name2),
+          )
+          .map(({ id: areaId, name: areaName }) => ({
+            id: areaId,
+            name: areaName,
           })),
-        floors: building.floors
-          .sort((floor1, floor2) => floor1.name.localeCompare(floor2.name))
-          .map((floor) => ({
-            areas: floor.areas
-              .sort((area1, area2) => area1.name.localeCompare(area2.name))
-              .map((area) => ({
-                id: area.id,
-                name: area.name,
+        floors: floors
+          .sort(({ name: name1 }, { name: name2 }) =>
+            name1.localeCompare(name2),
+          )
+          .map(({ areas: floorAreas, id: floorId, name: floorName }) => ({
+            areas: floorAreas
+              .sort(({ name: name1 }, { name: name2 }) =>
+                name1.localeCompare(name2),
+              )
+              .map(({ id: floorAreaId, name: floorAreaName }) => ({
+                id: floorAreaId,
+                name: floorAreaName,
               })),
-            id: floor.id,
-            name: floor.name,
+            id: floorId,
+            name: floorName,
           })),
-        id: building.id,
-        name: building.name,
+        id,
+        name,
       }))
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
@@ -405,7 +327,7 @@ export = {
             error: errorMessage?.trim() ?? '',
           }),
         )
-        .filter((error) => error.date && error.error)
+        .filter(({ date, error }) => date && error)
         .reverse(),
       fromDateHuman: fromDate
         .setLocale(homey.i18n.getLanguage())
@@ -419,7 +341,7 @@ export = {
     params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<FrostProtectionData> {
     return getFacade(homey, zoneType, Number(zoneId)).getFrostProtection()
   },
@@ -428,7 +350,7 @@ export = {
     params: { zoneId, zoneType },
   }: {
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<HolidayModeData> {
     return getFacade(homey, zoneType, Number(zoneId)).getHolidayMode()
   },
@@ -451,7 +373,7 @@ export = {
   }: {
     body: GroupAtaState
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<void> {
     handleResponse(
       (await getFacade(homey, zoneType, Number(zoneId)).setAta(body))
@@ -493,7 +415,7 @@ export = {
   }: {
     body: FrostProtectionSettings
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<void> {
     handleResponse(
       (
@@ -510,7 +432,7 @@ export = {
   }: {
     body: HolidayModeSettings
     homey: Homey
-    params: { zoneId: string; zoneType: keyof typeof modelClass }
+    params: ZoneData
   }): Promise<void> {
     try {
       handleResponse(

@@ -1,15 +1,19 @@
-import type {
-  BaseModel,
-  DeviceType,
-  EnergyData,
-  ListDevice,
-  ListDeviceDataAta,
-  ListDeviceDataErv,
-  LoginCredentials,
-  SetDeviceData,
-  UpdateDeviceData,
-} from '@olivierzal/melcloud-api'
 import type { DateObjectUnits, DurationLike } from 'luxon'
+
+import {
+  type BaseModel,
+  type DeviceType,
+  type EnergyData,
+  type ListDevice,
+  type ListDeviceDataAta,
+  type ListDeviceDataErv,
+  type LoginCredentials,
+  type SetDeviceData,
+  type UpdateDeviceData,
+  AreaModel,
+  BuildingModel,
+  FloorModel,
+} from '@olivierzal/melcloud-api'
 
 import type AtaDevice from '../drivers/melcloud/device'
 import type AtaDriver from '../drivers/melcloud/driver'
@@ -28,7 +32,7 @@ import type {
   SET_CAPABILITY_TAGS_MAPPING_ATA,
   SetCapabilitiesAta,
 } from './ata'
-import type { RangeOptions } from './bases'
+import type { LocalizedStrings, RangeOptions } from './bases'
 import type {
   CapabilitiesErv,
   ENERGY_CAPABILITY_TAG_MAPPING_ERV,
@@ -92,17 +96,17 @@ export interface ManifestDriverSettingData {
   readonly units?: string
   readonly values?: readonly {
     readonly id: string
-    readonly label: Record<string, string>
+    readonly label: LocalizedStrings
   }[]
   readonly id: string
-  readonly label: Record<string, string>
+  readonly label: LocalizedStrings
   readonly type: string
 }
 
 export interface ManifestDriverSetting {
   readonly children?: readonly ManifestDriverSettingData[]
   readonly id?: string
-  readonly label: Record<string, string>
+  readonly label: LocalizedStrings
 }
 
 export interface PairSetting {
@@ -112,15 +116,11 @@ export interface PairSetting {
 export interface LoginSetting extends PairSetting {
   readonly id: 'login'
   readonly options: {
-    readonly passwordLabel: Record<string, string>
-    readonly passwordPlaceholder: Record<string, string>
-    readonly usernameLabel: Record<string, string>
-    readonly usernamePlaceholder: Record<string, string>
+    readonly passwordLabel: LocalizedStrings
+    readonly passwordPlaceholder: LocalizedStrings
+    readonly usernameLabel: LocalizedStrings
+    readonly usernamePlaceholder: LocalizedStrings
   }
-}
-
-interface LocalizedStrings extends Partial<Record<string, string>> {
-  readonly en: string
 }
 
 export interface ManifestDriverCapabilitiesOptions {
@@ -325,4 +325,15 @@ export interface HolidayModeSettings {
 export type Zone = BaseModel & {
   areas?: BaseModel[]
   floors?: (BaseModel & { areas: BaseModel[] })[]
+}
+
+export const modelClass = {
+  areas: AreaModel,
+  buildings: BuildingModel,
+  floors: FloorModel,
+}
+
+export interface ZoneData {
+  zoneId: string
+  zoneType: keyof typeof modelClass
 }

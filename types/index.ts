@@ -5,6 +5,7 @@ export {
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
   ENERGY_CAPABILITY_TAG_MAPPING_ATA,
+  FAN_SPEED_VALUES,
   GET_CAPABILITY_TAGS_MAPPING_ATA,
   LIST_CAPABILITY_TAGS_MAPPING_ATA,
   SET_CAPABILITY_TAGS_MAPPING_ATA,
@@ -26,6 +27,7 @@ export {
   OperationModeStateZoneCapability,
   SET_CAPABILITY_TAGS_MAPPING_ATW,
 } from './atw'
+export type { LocalizedStrings } from './bases'
 export {
   type Capabilities,
   type CapabilitiesOptions,
@@ -65,8 +67,10 @@ export {
   type Settings,
   type ValueOf,
   type Zone,
+  type ZoneData,
   K_MULTIPLIER,
   getCapabilitiesOptions,
+  modelClass,
 } from './common'
 export {
   type CapabilitiesErv,
