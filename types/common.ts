@@ -322,17 +322,21 @@ export interface HolidayModeSettings {
   readonly enabled: boolean
 }
 
-export type Zone = BaseModel & {
-  areas?: BaseModel[]
-  floors?: (BaseModel & { areas?: BaseModel[] })[]
+export type AreaZone = BaseModel
+export interface FloorZone extends BaseModel {
+  areas?: AreaZone[]
 }
+export interface BuildingZone extends BaseModel {
+  areas?: AreaZone[]
+  floors?: FloorZone[]
+}
+export type Zone = AreaZone | BuildingZone | FloorZone
 
 export const modelClass = {
   areas: AreaModel,
   buildings: BuildingModel,
   floors: FloorModel,
 }
-
 export interface ZoneData {
   zoneId: string
   zoneType: keyof typeof modelClass

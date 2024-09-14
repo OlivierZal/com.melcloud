@@ -29,11 +29,14 @@ import fanSpeed from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
+  type AreaZone,
+  type BuildingZone,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
   type ErrorLog,
   type ErrorLogQuery,
+  type FloorZone,
   type FrostProtectionSettings,
   type HolidayModeSettings,
   type LoginSetting,
@@ -41,7 +44,6 @@ import {
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
   type Settings,
-  type Zone,
   type ZoneData,
   FAN_SPEED_VALUES,
   modelClass,
@@ -56,18 +58,23 @@ const compareNames = (
   { name: name2 }: { name: string },
 ): number => name1.localeCompare(name2)
 
-const mapArea = ({ id, name }: AreaModelAny): Zone => ({
+const mapArea = ({ id, name }: AreaModelAny): AreaZone => ({
   id,
   name,
 })
 
-const mapFloor = ({ areas, id, name }: FloorModel): Zone => ({
+const mapFloor = ({ areas, id, name }: FloorModel): FloorZone => ({
   areas: areas.sort(compareNames).map(mapArea),
   id,
   name,
 })
 
-const mapBuilding = ({ areas, floors, id, name }: BuildingModel): Zone => ({
+const mapBuilding = ({
+  areas,
+  floors,
+  id,
+  name,
+}: BuildingModel): BuildingZone => ({
   areas: areas
     .filter(({ floorId }: { floorId: number | null }) => floorId === null)
     .sort(compareNames)
@@ -262,7 +269,7 @@ export = {
   }): Promise<GroupAtaState> {
     return getFacade(homey, zoneType, Number(zoneId)).getAta()
   },
-  getBuildings(): Zone[] {
+  getBuildings(): BuildingZone[] {
     return BuildingModel.getAll().sort(compareNames).map(mapBuilding)
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {

@@ -8,6 +8,7 @@ import type {
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
+  BuildingZone,
   DeviceSetting,
   DeviceSettings,
   DriverCapabilitiesOptions,
@@ -899,17 +900,17 @@ const createZoneElements = async (
   zoneType: string,
   level = NUMBER_0,
 ): Promise<void> =>
-  zones.reduce(async (acc, { areas, floors, id, name }) => {
+  zones.reduce(async (acc, zone) => {
     await acc
     createOptionElement(zoneElement, {
-      id: `${zoneType}_${String(id)}`,
-      label: `${'···'.repeat(level)} ${name}`,
+      id: `${zoneType}_${String(zone.id)}`,
+      label: `${'···'.repeat(level)} ${zone.name}`,
     })
-    if (areas) {
-      await createZoneElements(areas, 'areas', level + NUMBER_1)
+    if ('areas' in zone && zone.areas) {
+      await createZoneElements(zone.areas, 'areas', level + NUMBER_1)
     }
-    if (floors) {
-      await createZoneElements(floors, 'floors', NUMBER_1)
+    if ('floors' in zone && zone.floors) {
+      await createZoneElements(zone.floors, 'floors', NUMBER_1)
     }
   }, Promise.resolve())
 
@@ -924,7 +925,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
     homey.api(
       'GET',
       '/buildings',
-      async (error: Error | null, buildings: Zone[]) => {
+      async (error: Error | null, buildings: BuildingZone[]) => {
         if (error || !buildings.length) {
           if (error) {
             await homey.alert(error.message)

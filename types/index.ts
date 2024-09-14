@@ -29,6 +29,8 @@ export {
 } from './atw'
 export type { LocalizedStrings } from './bases'
 export {
+  type AreaZone,
+  type BuildingZone,
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
@@ -44,6 +46,7 @@ export {
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogQuery,
+  type FloorZone,
   type FlowArgs,
   type FrostProtectionSettings,
   type GetCapabilityTagMapping,
