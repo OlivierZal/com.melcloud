@@ -80,32 +80,9 @@ const nowPlus2Weeks = (): string => {
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
-let homeySettings: HomeySettingsUI = {
-  contextKey: '',
-  expiry: '',
-  password: '',
-  username: '',
-}
-
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
-
-let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
-let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
-
-let driverSettings: Partial<Record<string, DriverSetting[]>> = {}
-
-let deviceSettings: Partial<DeviceSettings> = {}
-let flatDeviceSettings: Partial<DeviceSetting> = {}
-
-let usernameElement: HTMLInputElement | null = null
-let passwordElement: HTMLInputElement | null = null
-
-let errorLogTBodyElement: HTMLTableSectionElement | null = null
-let errorCount = 0
-let from = ''
-let to = ''
 
 const authenticateElement = document.getElementById(
   'authenticate',
@@ -181,6 +158,29 @@ const frostProtectionEnabledElement = document.getElementById(
 const holidayModeEnabledElement = document.getElementById(
   'enabled_holiday_mode',
 ) as HTMLSelectElement
+
+let homeySettings: HomeySettingsUI = {
+  contextKey: '',
+  expiry: '',
+  password: '',
+  username: '',
+}
+
+let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
+let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
+
+let driverSettings: Partial<Record<string, DriverSetting[]>> = {}
+
+let deviceSettings: Partial<DeviceSettings> = {}
+let flatDeviceSettings: Partial<DeviceSetting> = {}
+
+let usernameElement: HTMLInputElement | null = null
+let passwordElement: HTMLInputElement | null = null
+
+let errorLogTBodyElement: HTMLTableSectionElement | null = null
+let errorCount = 0
+let from = ''
+let to = ''
 
 const disableButton = (id: string, value = true): void => {
   const element = document.getElementById(id)
