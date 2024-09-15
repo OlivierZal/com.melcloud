@@ -974,11 +974,11 @@ const refreshSettings = (
   elements: HTMLValueElement[],
   driverId?: string,
 ): void => {
-  if (driverId === undefined) {
-    refreshSettingsCommon(elements as HTMLSelectElement[])
+  if (driverId !== undefined) {
+    refreshSettingsDriver(elements as HTMLInputElement[], driverId)
     return
   }
-  refreshSettingsDriver(elements as HTMLInputElement[], driverId)
+  refreshSettingsCommon(elements as HTMLSelectElement[])
 }
 
 const setDeviceSettings = async (
