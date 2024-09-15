@@ -988,7 +988,9 @@ const setDeviceSettings = async (
 ): Promise<void> => {
   const body = buildSettingsBody(homey, elements, driverId)
   if (!Object.keys(body).length) {
-    refreshSettings(elements, driverId)
+    if (driverId === undefined) {
+      refreshSettingsCommon(elements as HTMLSelectElement[], driverId)
+    }
     homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
       //
     })
