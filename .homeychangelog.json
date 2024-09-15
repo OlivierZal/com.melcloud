@@ -197,7 +197,7 @@
   "38.0.1": {
     "en": "Fix a sync issue in some cases of failure."
   },
-  "39.0.1": {
+  "39.1.0": {
     "en": "In the app settings: you can now view detailed settings for each zone (building, area and floor) and apply bulk changes to air-to-air device settings across zones.",
     "fr": "Dans les paramètres de l'application : vous pouvez désormais afficher les détails des paramètres pour chaque zone (bâtiment, zone et étage) et appliquer des modifications groupées aux réglages des dispositifs air-air pour chaque zone.",
     "nl": "In de app-instellingen: u kunt nu de gedetailleerde instellingen per zone (gebouw, gebied en verdieping) bekijken en bulk wijzigingen aanbrengen in de instellingen van uw lucht-lucht toestellen per zone.",
