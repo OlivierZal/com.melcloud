@@ -317,10 +317,47 @@ const fetchDriverSettings = async (homey: Homey): Promise<void> =>
     )
   })
 
-const createDivElement = (): HTMLDivElement => {
+const addTextToCheckbox = (
+  labelElement: HTMLLabelElement,
+  checkboxElement: HTMLInputElement,
+  text: string,
+): void => {
+  const checkmarkSpanElement = document.createElement('span')
+  checkmarkSpanElement.classList.add('homey-form-checkbox-checkmark')
+  const textSpanElement = document.createElement('span')
+  textSpanElement.classList.add('homey-form-checkbox-text')
+  textSpanElement.innerText = text
+  labelElement.append(checkboxElement, checkmarkSpanElement, textSpanElement)
+}
+
+const createLabelElement = (
+  element: HTMLValueElement,
+  text: string,
+): HTMLLabelElement => {
+  const isCheckbox = element.type === 'checkbox'
+  const labelElement = document.createElement('label')
+  labelElement.classList.add(
+    isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
+  )
+  labelElement.htmlFor = element.id
+  if (isCheckbox) {
+    addTextToCheckbox(labelElement, element, text)
+  } else {
+    labelElement.innerText = text
+    labelElement.append(element)
+  }
+  return labelElement
+}
+
+const createValueElement = (
+  element: HTMLElement,
+  valueElement: HTMLValueElement,
+  text: string,
+): void => {
   const divElement = document.createElement('div')
   divElement.classList.add('homey-form-group')
-  return divElement
+  divElement.append(createLabelElement(valueElement, text))
+  element.append(divElement)
 }
 
 const handleNumericInputElement = (
@@ -365,11 +402,7 @@ const createInputElement = ({
   return inputElement
 }
 
-const createLegendElement = ({
-  text,
-}: {
-  text?: string
-}): HTMLLegendElement => {
+const createLegendElement = (text?: string): HTMLLegendElement => {
   const legendElement = document.createElement('legend')
   legendElement.classList.add('homey-form-checkbox-set-title')
   if (text !== undefined) {
@@ -397,7 +430,7 @@ const updateCheckboxChildrenElement = (
 }
 
 const createCheckboxElement = (
-  { id }: { id: string },
+  id: string,
   driverId: string,
 ): HTMLInputElement => {
   const checkboxElement = document.createElement('input')
@@ -437,54 +470,23 @@ const createOptionElement = (
 
 const createSelectElement = (
   homey: Homey,
-  tag: string,
+  id: string,
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
   selectElement.classList.add('homey-form-select')
-  selectElement.id = tag
+  selectElement.id = id
   ;[
     { id: '' },
     ...(values ??
-      ['false', 'true'].map((id) => ({
-        id,
-        label: homey.__(`settings.boolean.${id}`),
+      ['false', 'true'].map((value) => ({
+        id: value,
+        label: homey.__(`settings.boolean.${value}`),
       }))),
   ].forEach((option) => {
     createOptionElement(selectElement, option)
   })
   return selectElement
-}
-
-const addTextToCheckbox = (
-  labelElement: HTMLLabelElement,
-  checkboxElement: HTMLInputElement,
-  text: string,
-): void => {
-  const checkmarkSpanElement = document.createElement('span')
-  checkmarkSpanElement.classList.add('homey-form-checkbox-checkmark')
-  const textSpanElement = document.createElement('span')
-  textSpanElement.classList.add('homey-form-checkbox-text')
-  textSpanElement.innerText = text
-  labelElement.append(checkboxElement, checkmarkSpanElement, textSpanElement)
-}
-
-const createLabelElement = (
-  element: HTMLValueElement,
-  text: string,
-): HTMLLabelElement => {
-  const isCheckbox = element.type === 'checkbox'
-  const labelElement = document.createElement('label')
-  labelElement.classList.add(
-    isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
-  )
-  labelElement.htmlFor = element.id
-  if (isCheckbox) {
-    addTextToCheckbox(labelElement, element, text)
-  } else {
-    labelElement.innerText = text
-  }
-  return labelElement
 }
 
 const createCredentialElement = (
@@ -495,16 +497,13 @@ const createCredentialElement = (
   )
   if (loginSetting) {
     const { id, placeholder, title: text, type } = loginSetting
-    const divElement = createDivElement()
     const inputElement = createInputElement({
       id,
       placeholder,
       type,
       value: homeySettings[id],
     })
-    const labelElement = createLabelElement(inputElement, text)
-    divElement.append(labelElement, inputElement)
-    loginElement.append(divElement)
+    createValueElement(loginElement, inputElement, text)
     return inputElement
   }
   return null
@@ -849,17 +848,19 @@ const fetchAtaValues = async (
 
 const generateAtaValueElement = (
   homey: Homey,
-  id: string,
-  { title: text, type, values }: DriverCapabilitiesOptions,
-): {
-  labelElement: HTMLLabelElement | null
-  valueElement: HTMLValueElement | null
-} => {
-  let labelElement: HTMLLabelElement | null = null
+  {
+    id,
+    type,
+    values,
+  }: {
+    values?: readonly { id: string; label: string }[]
+    id: string
+    type: string
+  },
+): HTMLValueElement | null => {
   let valueElement: HTMLValueElement | null = null
   if (['boolean', 'enum'].includes(type)) {
     valueElement = createSelectElement(homey, id, values)
-    labelElement = createLabelElement(valueElement, text)
   } else if (type === 'number') {
     valueElement = createInputElement({
       id,
@@ -873,21 +874,15 @@ const generateAtaValueElement = (
         : undefined,
       type,
     })
-    labelElement = createLabelElement(valueElement, text)
   }
-  return { labelElement, valueElement }
+  return valueElement
 }
 
 const generateAtaValuesElement = (homey: Homey): void => {
-  ataCapabilities.forEach((ataCapability) => {
-    const divElement = createDivElement()
-    const { labelElement, valueElement } = generateAtaValueElement(
-      homey,
-      ...ataCapability,
-    )
-    if (labelElement && valueElement) {
-      divElement.append(labelElement, valueElement)
-      valuesAtaElement.append(divElement)
+  ataCapabilities.forEach(([id, { title, type, values }]) => {
+    const valueElement = generateAtaValueElement(homey, { id, type, values })
+    if (valueElement) {
+      createValueElement(valuesAtaElement, valueElement, title)
     }
   })
 }
@@ -1121,12 +1116,9 @@ const generateCommonChildrenElements = (homey: Homey): void => {
         !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
         ['checkbox', 'dropdown'].includes(type)
       ) {
-        const divElement = createDivElement()
         const selectElement = createSelectElement(homey, settingId, values)
-        const labelElement = createLabelElement(selectElement, text)
+        createValueElement(settingsCommonElement, selectElement, text)
         updateCommonChildrenElement(selectElement)
-        divElement.append(labelElement, selectElement)
-        settingsCommonElement.append(divElement)
       }
     },
   )
@@ -1146,22 +1138,17 @@ const generateCheckboxChildrenElements = (
       const fieldSetElement = document.createElement('fieldset')
       fieldSetElement.classList.add('homey-form-checkbox-set')
       let previousGroupLabel = ''
-      driverSettings[driverId].forEach(
-        ({ groupLabel, id, title: text, type }) => {
-          if (type === 'checkbox') {
-            if (groupLabel !== previousGroupLabel) {
-              previousGroupLabel = groupLabel ?? ''
-              const legendElement = createLegendElement({
-                text: groupLabel,
-              })
-              fieldSetElement.append(legendElement)
-            }
-            const checkboxElement = createCheckboxElement({ id }, driverId)
-            const labelElement = createLabelElement(checkboxElement, text)
-            fieldSetElement.append(labelElement)
+      driverSettings[driverId].forEach(({ groupLabel, id, title, type }) => {
+        if (type === 'checkbox') {
+          if (groupLabel !== previousGroupLabel) {
+            previousGroupLabel = groupLabel ?? ''
+            fieldSetElement.append(createLegendElement(groupLabel))
           }
-        },
-      )
+          fieldSetElement.append(
+            createLabelElement(createCheckboxElement(id, driverId), title),
+          )
+        }
+      })
       settingsElement.append(fieldSetElement)
       addSettingsEventListeners(
         homey,
