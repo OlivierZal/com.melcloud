@@ -970,6 +970,17 @@ const refreshSettingsDriver = (
   })
 }
 
+const refreshSettings = (
+  elements: HTMLValueElement[],
+  driverId?: string,
+): void => {
+  if (driverId === undefined) {
+    refreshSettingsCommon(elements as HTMLSelectElement[])
+    return
+  }
+  refreshSettingsDriver(elements as HTMLInputElement[], driverId)
+}
+
 const setDeviceSettings = async (
   homey: Homey,
   elements: HTMLValueElement[],
@@ -977,7 +988,7 @@ const setDeviceSettings = async (
 ): Promise<void> => {
   const body = buildSettingsBody(homey, elements, driverId)
   if (!Object.keys(body).length) {
-    refreshSettingsCommon(elements as HTMLSelectElement[])
+    refreshSettings(elements, driverId)
     homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
       //
     })
@@ -1036,11 +1047,7 @@ const addRefreshSettingsEventListener = (
     `refresh_${settings}`,
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
-    if (driverId === undefined) {
-      refreshSettingsCommon(elements as HTMLSelectElement[])
-    } else {
-      refreshSettingsDriver(elements as HTMLInputElement[], driverId)
-    }
+    refreshSettings(elements, driverId)
   })
 }
 
@@ -1231,7 +1238,6 @@ const addHolidayModeEventListeners = (): void => {
       holidayModeEndDateElement.value = ''
     }
   })
-
   holidayModeStartDateElement.addEventListener('change', () => {
     if (holidayModeStartDateElement.value) {
       if (holidayModeEnabledElement.value === 'false') {
@@ -1246,7 +1252,6 @@ const addHolidayModeEventListeners = (): void => {
       }
     }
   })
-
   holidayModeEndDateElement.addEventListener('change', () => {
     if (holidayModeEndDateElement.value) {
       if (!holidayModeStartDateElement.value) {
@@ -1262,7 +1267,6 @@ const addHolidayModeEventListeners = (): void => {
       holidayModeEnabledElement.value = 'false'
     }
   })
-
   refreshHolidayModeElement.addEventListener('click', () => {
     refreshHolidayModeData()
   })
@@ -1321,7 +1325,6 @@ const addFrostProtectionEventListeners = (): void => {
       }
     })
   })
-
   refreshFrostProtectionElement.addEventListener('click', () => {
     refreshFrostProtectionData()
   })
