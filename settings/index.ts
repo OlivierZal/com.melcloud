@@ -351,13 +351,15 @@ const createLabelElement = (
 
 const createValueElement = (
   element: HTMLElement,
-  valueElement: HTMLValueElement,
+  valueElement: HTMLValueElement | null,
   text: string,
 ): void => {
-  const divElement = document.createElement('div')
-  divElement.classList.add('homey-form-group')
-  divElement.append(createLabelElement(valueElement, text))
-  element.append(divElement)
+  if (valueElement) {
+    const divElement = document.createElement('div')
+    divElement.classList.add('homey-form-group')
+    divElement.append(createLabelElement(valueElement, text))
+    element.append(divElement)
+  }
 }
 
 const handleNumericInputElement = (
@@ -880,10 +882,11 @@ const generateAtaValueElement = (
 
 const generateAtaValuesElement = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
-    const valueElement = generateAtaValueElement(homey, { id, type, values })
-    if (valueElement) {
-      createValueElement(valuesAtaElement, valueElement, title)
-    }
+    createValueElement(
+      valuesAtaElement,
+      generateAtaValueElement(homey, { id, type, values }),
+      title,
+    )
   })
 }
 
