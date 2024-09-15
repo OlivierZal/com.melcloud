@@ -13,7 +13,6 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
-  LocalizedStrings,
 } from './bases'
 
 export enum ThermostatModeAta {
@@ -157,92 +156,3 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
 export interface FlowArgsAta extends SetCapabilitiesAta {
   readonly device: AtaDevice
 }
-
-const addPrefixToTitle = (
-  title: LocalizedStrings,
-  prefix: LocalizedStrings,
-): LocalizedStrings =>
-  Object.fromEntries(
-    Object.entries(prefix).map(([language, localizedPrefix]) => [
-      language,
-      `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`,
-    ]),
-  ) as LocalizedStrings
-
-const AUTO = {
-  id: 'auto',
-  title: {
-    da: 'Automatisk',
-    en: 'Automatic',
-    es: 'Automático',
-    fr: 'Automatique',
-    nl: 'Automatisch',
-    no: 'Automatisk',
-    sv: 'Automatiskt',
-  },
-}
-const FAST = {
-  id: 'fast',
-  title: {
-    da: 'Hurtig',
-    en: 'Fast',
-    es: 'Rápido',
-    fr: 'Rapide',
-    nl: 'Snel',
-    no: 'Rask',
-    sv: 'Snabb',
-  },
-} as const
-const MODERATE = {
-  id: 'moderate',
-  title: {
-    da: 'Moderat',
-    en: 'Moderate',
-    es: 'Moderado',
-    fr: 'Modéré',
-    nl: 'Matig',
-    no: 'Moderat',
-    sv: 'Måttlig',
-  },
-}
-const SLOW = {
-  id: 'slow',
-  title: {
-    da: 'Langsom',
-    en: 'Slow',
-    es: 'Lento',
-    fr: 'Lent',
-    nl: 'Langzaam',
-    no: 'Sakte',
-    sv: 'Långsam',
-  },
-} as const
-
-const createVeryObject = ({
-  id,
-  title,
-}: {
-  id: 'fast' | 'slow'
-  title: LocalizedStrings
-}) =>
-  ({
-    id: `very_${id}`,
-    title: addPrefixToTitle(title, {
-      da: 'Meget',
-      en: 'Very',
-      es: 'Muy',
-      fr: 'Très',
-      nl: 'Zeer',
-      no: 'Veldig',
-      sv: 'Mycket',
-    }),
-  }) as const
-
-export const FAN_SPEED_VALUES = [
-  AUTO,
-  createVeryObject(FAST),
-  FAST,
-  MODERATE,
-  SLOW,
-  createVeryObject(SLOW),
-]
