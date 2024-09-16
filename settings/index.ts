@@ -423,35 +423,6 @@ const createLegendElement = (text?: string): HTMLLegendElement => {
   return legendElement
 }
 
-const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('__')
-  const values = flatDeviceSettings[id]
-  if (values && new Set(values).size === NUMBER_1) {
-    const [value] = values
-    element.value = String(value)
-    return
-  }
-  element.value = ''
-}
-
-const updateCheckboxChildrenElement = (
-  element: HTMLInputElement,
-  driverId: string,
-): void => {
-  const [id] = element.id.split('__')
-  const values = deviceSettings[driverId]?.[id] as boolean[]
-  if (new Set(values).size === NUMBER_1) {
-    ;[element.checked] = values
-    return
-  }
-  element.indeterminate = true
-  element.addEventListener('change', () => {
-    if (element.indeterminate) {
-      element.indeterminate = false
-    }
-  })
-}
-
 const createCheckboxElement = (
   id: string,
   driverId: string,
@@ -963,8 +934,37 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   })
 }
 
+const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
+  const [id] = element.id.split('__')
+  const values = flatDeviceSettings[id]
+  if (values && new Set(values).size === NUMBER_1) {
+    const [value] = values
+    element.value = String(value)
+    return
+  }
+  element.value = ''
+}
+
 const refreshSettingsCommon = (elements: HTMLSelectElement[]): void => {
   elements.forEach(updateCommonChildrenElement)
+}
+
+const updateCheckboxChildrenElement = (
+  element: HTMLInputElement,
+  driverId: string,
+): void => {
+  const [id] = element.id.split('__')
+  const values = deviceSettings[driverId]?.[id] as boolean[]
+  if (new Set(values).size === NUMBER_1) {
+    ;[element.checked] = values
+    return
+  }
+  element.indeterminate = true
+  element.addEventListener('change', () => {
+    if (element.indeterminate) {
+      element.indeterminate = false
+    }
+  })
 }
 
 const refreshSettingsDriver = (
