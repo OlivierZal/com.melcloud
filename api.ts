@@ -51,7 +51,7 @@ import {
 
 const DEFAULT_LIMIT = 1
 const DEFAULT_OFFSET = 0
-const YEAR_1 = 1
+const DEFAULT_YEAR = 1
 
 const compareNames = (
   { name: name1 }: { name: string },
@@ -323,7 +323,7 @@ export = {
             StartDate: startDate,
           }) => ({
             date:
-              DateTime.fromISO(startDate).year > YEAR_1 ?
+              DateTime.fromISO(startDate).year > DEFAULT_YEAR ?
                 DateTime.fromISO(startDate, {
                   locale: homey.i18n.getLanguage(),
                 }).toLocaleString(DateTime.DATETIME_MED)

@@ -35,10 +35,10 @@ class NoDeviceError extends Error {
 
 const DIGIT_FORMAT = 2
 const MONTH_OFFSET = 1
-const SIZE_1 = 1
+const SIZE_ONE = 1
 
-const LEVEL_1 = 0
-const LEVEL_2 = 1
+const FIRST_LEVEL = 0
+const SECOND_LEVEL = 1
 const LEVEL_INCREMENT = 1
 
 const MODULUS_DECIMAL = 10
@@ -554,7 +554,7 @@ const shouldUpdate = (
         flatDeviceSettings[id]
       : deviceSettings[driverId]?.[id]
     if (setting) {
-      if (new Set(setting).size === SIZE_1) {
+      if (new Set(setting).size === SIZE_ONE) {
         const [settingValue] = setting
         return value !== settingValue
       }
@@ -887,7 +887,7 @@ const generateAtaValuesElement = (homey: Homey): void => {
 const createZoneElements = async (
   zones: Zone[],
   zoneType: string,
-  level = LEVEL_1,
+  level = FIRST_LEVEL,
 ): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
@@ -899,7 +899,7 @@ const createZoneElements = async (
       await createZoneElements(zone.areas, 'areas', level + LEVEL_INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
-      await createZoneElements(zone.floors, 'floors', LEVEL_2)
+      await createZoneElements(zone.floors, 'floors', SECOND_LEVEL)
     }
   }, Promise.resolve())
 
@@ -952,7 +952,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('__')
   const values = flatDeviceSettings[id]
-  if (values && new Set(values).size === SIZE_1) {
+  if (values && new Set(values).size === SIZE_ONE) {
     const [value] = values
     element.value = String(value)
     return
@@ -970,7 +970,7 @@ const updateCheckboxChildrenElement = (
 ): void => {
   const [id] = element.id.split('__')
   const values = deviceSettings[driverId]?.[id] as boolean[]
-  if (new Set(values).size === SIZE_1) {
+  if (new Set(values).size === SIZE_ONE) {
     ;[element.checked] = values
     return
   }
