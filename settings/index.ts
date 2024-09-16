@@ -349,16 +349,26 @@ const createLabelElement = (
   return labelElement
 }
 
+const createDivElement = (labelElement: HTMLLabelElement): HTMLDivElement => {
+  const divElement = document.createElement('div')
+  divElement.classList.add('homey-form-group')
+  divElement.append(labelElement)
+  return divElement
+}
+
 const createValueElement = (
-  element: HTMLElement,
-  valueElement: HTMLValueElement | null,
-  text: string,
+  parentElement: HTMLElement,
+  {
+    title,
+    valueElement,
+  }: { title: string; valueElement: HTMLValueElement | null },
+  createDiv = true,
 ): void => {
   if (valueElement) {
-    const divElement = document.createElement('div')
-    divElement.classList.add('homey-form-group')
-    divElement.append(createLabelElement(valueElement, text))
-    element.append(divElement)
+    const labelElement = createLabelElement(valueElement, title)
+    parentElement.append(
+      createDiv ? createDivElement(labelElement) : labelElement,
+    )
   }
 }
 
@@ -413,6 +423,17 @@ const createLegendElement = (text?: string): HTMLLegendElement => {
   return legendElement
 }
 
+const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
+  const [id] = element.id.split('__')
+  const values = flatDeviceSettings[id]
+  if (values && new Set(values).size === NUMBER_1) {
+    const [value] = values
+    element.value = String(value)
+    return
+  }
+  element.value = ''
+}
+
 const updateCheckboxChildrenElement = (
   element: HTMLInputElement,
   driverId: string,
@@ -439,19 +460,7 @@ const createCheckboxElement = (
   checkboxElement.classList.add('homey-form-checkbox-input')
   checkboxElement.type = 'checkbox'
   checkboxElement.id = `${id}__settings_${driverId}`
-  updateCheckboxChildrenElement(checkboxElement, driverId)
   return checkboxElement
-}
-
-const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('__')
-  const values = flatDeviceSettings[id]
-  if (values && new Set(values).size === NUMBER_1) {
-    const [value] = values
-    element.value = String(value)
-    return
-  }
-  element.value = ''
 }
 
 const createOptionElement = (
@@ -498,15 +507,15 @@ const createCredentialElement = (
     ({ id }) => id === credentialKey,
   )
   if (loginSetting) {
-    const { id, placeholder, title: text, type } = loginSetting
-    const inputElement = createInputElement({
+    const { id, placeholder, title, type } = loginSetting
+    const valueElement = createInputElement({
       id,
       placeholder,
       type,
       value: homeySettings[id],
     })
-    createValueElement(loginElement, inputElement, text)
-    return inputElement
+    createValueElement(loginElement, { title, valueElement })
+    return valueElement
   }
   return null
 }
@@ -882,11 +891,10 @@ const generateAtaValueElement = (
 
 const generateAtaValuesElement = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
-    createValueElement(
-      valuesAtaElement,
-      generateAtaValueElement(homey, { id, type, values }),
+    createValueElement(valuesAtaElement, {
       title,
-    )
+      valueElement: generateAtaValueElement(homey, { id, type, values }),
+    })
   })
 }
 
@@ -1112,19 +1120,17 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
 }
 
 const generateCommonChildrenElements = (homey: Homey): void => {
-  ;(driverSettings.options ?? []).forEach(
-    ({ id, title: text, type, values }) => {
-      const settingId = `${id}__setting`
-      if (
-        !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
-        ['checkbox', 'dropdown'].includes(type)
-      ) {
-        const selectElement = createSelectElement(homey, settingId, values)
-        createValueElement(settingsCommonElement, selectElement, text)
-        updateCommonChildrenElement(selectElement)
-      }
-    },
-  )
+  ;(driverSettings.options ?? []).forEach(({ id, title, type, values }) => {
+    const settingId = `${id}__setting`
+    if (
+      !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
+      ['checkbox', 'dropdown'].includes(type)
+    ) {
+      const valueElement = createSelectElement(homey, settingId, values)
+      createValueElement(settingsCommonElement, { title, valueElement })
+      updateCommonChildrenElement(valueElement)
+    }
+  })
   addSettingsEventListeners(
     homey,
     Array.from(settingsCommonElement.querySelectorAll('select')),
@@ -1147,9 +1153,9 @@ const generateCheckboxChildrenElements = (
             previousGroupLabel = groupLabel ?? ''
             fieldSetElement.append(createLegendElement(groupLabel))
           }
-          fieldSetElement.append(
-            createLabelElement(createCheckboxElement(id, driverId), title),
-          )
+          const valueElement = createCheckboxElement(id, driverId)
+          createValueElement(fieldSetElement, { title, valueElement }, false)
+          updateCheckboxChildrenElement(valueElement, driverId)
         }
       })
       settingsElement.append(fieldSetElement)
