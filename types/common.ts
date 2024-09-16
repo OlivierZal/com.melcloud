@@ -32,6 +32,18 @@ import type {
   listCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from './ata'
+import type {
+  CapabilitiesAtw,
+  CapabilitiesOptionsAtw,
+  EnergyCapabilitiesAtw,
+  FlowArgsAtw,
+  OpCapabilitiesAtw,
+  SetCapabilitiesAtw,
+  energyCapabilityTagMappingAtw,
+  getCapabilityTagMappingAtw,
+  listCapabilityTagMappingAtw,
+  setCapabilityTagMappingAtw,
+} from './atw'
 import type { LocalizedStrings, RangeOptions } from './bases'
 import type {
   CapabilitiesErv,
@@ -45,21 +57,21 @@ import type {
   setCapabilityTagMappingErv,
 } from './erv'
 
-import {
-  type CapabilitiesAtw,
-  type CapabilitiesOptionsAtw,
-  type EnergyCapabilitiesAtw,
-  type FlowArgsAtw,
-  type OpCapabilitiesAtw,
-  type SetCapabilitiesAtw,
-  type energyCapabilityTagMappingAtw,
-  type getCapabilityTagMappingAtw,
-  type listCapabilityTagMappingAtw,
-  type setCapabilityTagMappingAtw,
-  getCapabilitiesOptionsAtw,
-} from './atw'
-
 export const K_MULTIPLIER = 1000
+
+export const getCapabilitiesOptionsAtaErv = ({
+  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
+  NumberOfFanSpeeds: numberOfFanSpeeds,
+}:
+  | ListDeviceDataAta
+  | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
+  fan_power: {
+    max: numberOfFanSpeeds,
+    min: Number(!hasAutomaticFanSpeed),
+    step: 1,
+    units: { en: '' },
+  },
+})
 
 export interface MELCloudDriver {
   readonly Ata: AtaDriver
@@ -255,26 +267,6 @@ export interface FlowArgs {
 
 export interface CapabilitiesOptionsAtaErv {
   readonly fan_power: RangeOptions
-}
-
-export const getCapabilitiesOptionsAtaErv = ({
-  HasAutomaticFanSpeed: hasAutomaticFanSpeed,
-  NumberOfFanSpeeds: numberOfFanSpeeds,
-}:
-  | ListDeviceDataAta
-  | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
-  fan_power: {
-    max: numberOfFanSpeeds,
-    min: Number(!hasAutomaticFanSpeed),
-    step: 1,
-    units: { en: '' },
-  },
-})
-
-export const getCapabilitiesOptions = {
-  Ata: getCapabilitiesOptionsAtaErv,
-  Atw: getCapabilitiesOptionsAtw,
-  Erv: getCapabilitiesOptionsAtaErv,
 }
 
 export interface CapabilitiesOptions {

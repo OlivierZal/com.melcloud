@@ -10,20 +10,18 @@ import {
 import { Driver } from 'homey'
 
 import type MELCloudApp from '..'
-
-import {
-  type Capabilities,
-  type CapabilitiesOptions,
-  type DeviceDetails,
-  type EnergyCapabilityTagMapping,
-  type FlowArgs,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type ManifestDriver,
-  type OpCapabilities,
-  type SetCapabilities,
-  type SetCapabilityTagMapping,
-  getCapabilitiesOptions,
+import type {
+  Capabilities,
+  CapabilitiesOptions,
+  DeviceDetails,
+  EnergyCapabilityTagMapping,
+  FlowArgs,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  ManifestDriver,
+  OpCapabilities,
+  SetCapabilities,
+  SetCapabilityTagMapping,
 } from '../types'
 
 const getArg = <T extends keyof typeof DeviceType>(
@@ -47,6 +45,10 @@ export default abstract class<
   readonly #api = (this.homey.app as MELCloudApp).api
 
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
+
+  public abstract readonly getCapabilitiesOptions: (
+    data: ListDevice[T]['Device'],
+  ) => Partial<CapabilitiesOptions[T]>
 
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
 
@@ -86,11 +88,7 @@ export default abstract class<
     return Promise.resolve(
       DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
         capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: (
-          getCapabilitiesOptions[this.type] as (
-            data: ListDevice[T]['Device'],
-          ) => Partial<CapabilitiesOptions[T]>
-        )(data),
+        capabilitiesOptions: this.getCapabilitiesOptions(data),
         data: { id },
         name,
       })),

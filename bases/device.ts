@@ -32,7 +32,6 @@ import {
   type SetCapabilityTagMapping,
   type Settings,
   K_MULTIPLIER,
-  getCapabilitiesOptions,
 } from '../types'
 
 const DEBOUNCE = 1000
@@ -545,7 +544,7 @@ export default abstract class<
     await Promise.all(
       Object.entries(
         (
-          getCapabilitiesOptions[this.driver.type as T] as (
+          this.driver.getCapabilitiesOptions as (
             data: ListDevice[T]['Device'],
           ) => Partial<CapabilitiesOptions[T]>
         )(data),

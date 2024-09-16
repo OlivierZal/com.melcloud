@@ -10,13 +10,14 @@ export {
   listCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from './ata'
-export type {
-  CapabilitiesAtw,
-  EnergyCapabilitiesAtw,
-  FlowArgsAtw,
-  OpCapabilitiesAtw,
-  SetCapabilitiesAtw,
-  TargetTemperatureFlowCapabilities,
+export {
+  type CapabilitiesAtw,
+  type EnergyCapabilitiesAtw,
+  type FlowArgsAtw,
+  type OpCapabilitiesAtw,
+  type SetCapabilitiesAtw,
+  type TargetTemperatureFlowCapabilities,
+  getCapabilitiesOptionsAtw,
 } from './atw'
 export {
   OperationModeStateHotWaterCapability,
@@ -72,7 +73,7 @@ export {
   type ZoneData,
   K_MULTIPLIER,
   fanSpeedValues,
-  getCapabilitiesOptions,
+  getCapabilitiesOptionsAtaErv,
   modelClass,
 } from './common'
 export {

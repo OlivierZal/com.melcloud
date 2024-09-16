@@ -4,6 +4,7 @@ import BaseMELCloudDriver from '../../bases/driver'
 import {
   type CapabilitiesAtw,
   energyCapabilityTagMappingAtw,
+  getCapabilitiesOptionsAtw,
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
@@ -11,6 +12,8 @@ import {
 
 export = class extends BaseMELCloudDriver<'Atw'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
+
+  public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
 
   public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw
 
