@@ -371,6 +371,7 @@ export default [
       '@html-eslint/no-abstract-roles': 'error',
       '@html-eslint/no-accesskey-attrs': 'error',
       '@html-eslint/no-aria-hidden-body': 'error',
+      '@html-eslint/no-extra-spacing-text': 'error',
       '@html-eslint/no-inline-styles': 'error',
       '@html-eslint/no-multiple-empty-lines': 'error',
       '@html-eslint/no-non-scalable-viewport': 'error',
