@@ -25,6 +25,43 @@ const convertFromDeviceMeasurePower = ((value: number) =>
 const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
   OperationModeZone[value]) as ConvertFromDevice<'Atw'>
 
+const getOperationModeStateHotWaterValue = (
+  data: ListDeviceDataAtw,
+  operationModeState: keyof typeof OperationModeState,
+): OperationModeStateHotWaterCapability => {
+  if (data.ProhibitHotWater) {
+    return OperationModeStateHotWaterCapability.prohibited
+  }
+  if (operationModeState in OperationModeStateHotWaterCapability) {
+    return OperationModeStateHotWaterCapability[
+      operationModeState as OperationModeStateHotWaterCapability
+    ]
+  }
+  return OperationModeStateHotWaterCapability.idle
+}
+
+const getOperationModeStateZoneValue = (
+  data: ListDeviceDataAtw,
+  operationModeState: keyof typeof OperationModeState,
+  zone: ZoneAtw,
+): OperationModeStateZoneCapability => {
+  if (
+    (data[`${zone}InCoolMode`] && data[`ProhibitCooling${zone}`]) ||
+    (data[`${zone}InHeatMode`] && data[`ProhibitHeating${zone}`])
+  ) {
+    return OperationModeStateZoneCapability.prohibited
+  }
+  if (
+    operationModeState in OperationModeStateZoneCapability &&
+    !data[`Idle${zone}`]
+  ) {
+    return OperationModeStateZoneCapability[
+      operationModeState as OperationModeStateZoneCapability
+    ]
+  }
+  return OperationModeStateZoneCapability.idle
+}
+
 export = class extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilitiesAtw, ConvertFromDevice<'Atw'>>
@@ -98,16 +135,10 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     data: ListDeviceDataAtw,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
-    let value = OperationModeStateHotWaterCapability.idle
-    if (data.ProhibitHotWater) {
-      value = OperationModeStateHotWaterCapability.prohibited
-    } else if (operationModeState in OperationModeStateHotWaterCapability) {
-      value =
-        OperationModeStateHotWaterCapability[
-          operationModeState as OperationModeStateHotWaterCapability
-        ]
-    }
-    await this.setCapabilityValue('operation_mode_state.hot_water', value)
+    await this.setCapabilityValue(
+      'operation_mode_state.hot_water',
+      getOperationModeStateHotWaterValue(data, operationModeState),
+    )
   }
 
   async #setOperationModeStateZones(
@@ -118,24 +149,9 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       (['Zone1', 'Zone2'] as const).map(async (zone) => {
         const zoneSuffix = zone.toLowerCase() as Lowercase<ZoneAtw>
         if (this.hasCapability(`operation_mode_state.${zoneSuffix}`)) {
-          let value = OperationModeStateZoneCapability.idle
-          if (
-            (data[`${zone}InCoolMode`] && data[`ProhibitCooling${zone}`]) ||
-            (data[`${zone}InHeatMode`] && data[`ProhibitHeating${zone}`])
-          ) {
-            value = OperationModeStateZoneCapability.prohibited
-          } else if (
-            operationModeState in OperationModeStateZoneCapability &&
-            !data[`Idle${zone}`]
-          ) {
-            value =
-              OperationModeStateZoneCapability[
-                operationModeState as OperationModeStateZoneCapability
-              ]
-          }
           await this.setCapabilityValue(
             `operation_mode_state.${zoneSuffix}`,
-            value,
+            getOperationModeStateZoneValue(data, operationModeState, zone),
           )
         }
       }),

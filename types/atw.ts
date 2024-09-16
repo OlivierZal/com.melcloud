@@ -122,7 +122,7 @@ export interface CapabilitiesAtw
   readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
 }
 
-export const SET_CAPABILITY_TAGS_MAPPING_ATW: Record<
+export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
   keyof UpdateDeviceDataAtw
 > = {
@@ -137,9 +137,9 @@ export const SET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'target_temperature.zone2': 'SetTemperatureZone2',
   thermostat_mode: 'OperationModeZone1',
   'thermostat_mode.zone2': 'OperationModeZone2',
-}
+} as const
 
-export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
+export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
   keyof GetDeviceDataAtw
 > = {
@@ -148,9 +148,9 @@ export const GET_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
   operation_mode_state: 'OperationMode',
-}
+} as const
 
-export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
+export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
   keyof ListDeviceAtw['Device']
 > = {
@@ -175,9 +175,9 @@ export const LIST_CAPABILITY_TAGS_MAPPING_ATW: Record<
   'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
   'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
-}
+} as const
 
-export const ENERGY_CAPABILITY_TAG_MAPPING_ATW: Record<
+export const energyCapabilityTagMappingAtw: Record<
   keyof EnergyCapabilitiesAtw,
   readonly (keyof EnergyDataAtw)[]
 > = {
@@ -240,7 +240,7 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATW: Record<
   'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
-}
+} as const
 
 export interface FlowArgsAtw {
   readonly device: AtwDevice
@@ -281,7 +281,7 @@ const addSuffixToTitle = (
     ]),
   ) as LocalizedStrings
 
-const CURVE = {
+const curve = {
   id: 'curve',
   title: {
     da: 'Varmekurve',
@@ -293,7 +293,7 @@ const CURVE = {
     sv: 'Värmekurva',
   },
 } as const
-const FLOW = {
+const flow = {
   id: 'flow',
   title: {
     da: 'Fast fremledningstemperatur',
@@ -305,7 +305,7 @@ const FLOW = {
     sv: 'Fast framledningstemperatur',
   },
 } as const
-const ROOM = {
+const room = {
   id: 'room',
   title: {
     da: 'Indendørs føler',
@@ -339,14 +339,7 @@ const createCoolObject = ({
     }),
   }) as const
 
-const THERMOSTAT_MODE_VALUES_ATW = [
-  ROOM,
-  FLOW,
-  CURVE,
-  createCoolObject(ROOM),
-  createCoolObject(FLOW),
-]
-const THERMOSTAT_MODE_TITLE_ATW = addSuffixToTitle(thermostatModeTitle, {
+const thermostatModeTitleAtw = addSuffixToTitle(thermostatModeTitle, {
   da: '- zone 2',
   en: '- zone 2',
   es: '- zona 2',
@@ -355,6 +348,13 @@ const THERMOSTAT_MODE_TITLE_ATW = addSuffixToTitle(thermostatModeTitle, {
   no: '- sone 2',
   sv: '- zon 2',
 })
+const thermostatModeValuesAtw = [
+  room,
+  flow,
+  curve,
+  createCoolObject(room),
+  createCoolObject(flow),
+]
 
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
@@ -362,15 +362,15 @@ export const getCapabilitiesOptionsAtw = ({
 }: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
   const thermostatModeValues =
     canCool ?
-      THERMOSTAT_MODE_VALUES_ATW
-    : THERMOSTAT_MODE_VALUES_ATW.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
+      thermostatModeValuesAtw
+    : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
   return {
     thermostat_mode: { values: thermostatModeValues },
     ...(hasZone2 && {
       'thermostat_mode.zone2': {
-        title: THERMOSTAT_MODE_TITLE_ATW,
+        title: thermostatModeTitleAtw,
         values: thermostatModeValues,
       },
     }),
-  }
+  } as const
 }

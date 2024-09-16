@@ -79,7 +79,7 @@ export interface CapabilitiesAta
   extends OpCapabilitiesAta,
     EnergyCapabilitiesAta {}
 
-export const SET_CAPABILITY_TAGS_MAPPING_ATA: Record<
+export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,
   keyof UpdateDeviceDataAta
 > = {
@@ -89,17 +89,17 @@ export const SET_CAPABILITY_TAGS_MAPPING_ATA: Record<
   target_temperature: 'SetTemperature',
   thermostat_mode: 'OperationMode',
   vertical: 'VaneVertical',
-}
+} as const
 
-export const GET_CAPABILITY_TAGS_MAPPING_ATA: Record<
+export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
   keyof GetDeviceDataAta
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
-}
+} as const
 
-export const LIST_CAPABILITY_TAGS_MAPPING_ATA: Record<
+export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
   keyof ListDeviceAta['Device']
 > = {
@@ -110,9 +110,9 @@ export const LIST_CAPABILITY_TAGS_MAPPING_ATA: Record<
   'measure_power.wifi': 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   vertical: 'VaneVerticalDirection',
-}
+} as const
 
-export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
+export const energyCapabilityTagMappingAta: Record<
   keyof EnergyCapabilitiesAta,
   readonly (keyof EnergyDataAta)[]
 > = {
@@ -151,7 +151,7 @@ export const ENERGY_CAPABILITY_TAG_MAPPING_ATA: Record<
   'meter_power.fan': ['TotalFanConsumed'],
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
-}
+} as const
 
 export interface FlowArgsAta extends SetCapabilitiesAta {
   readonly device: AtaDevice

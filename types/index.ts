@@ -4,11 +4,11 @@ export {
   type FlowArgsAta,
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
-  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
-  GET_CAPABILITY_TAGS_MAPPING_ATA,
-  LIST_CAPABILITY_TAGS_MAPPING_ATA,
-  SET_CAPABILITY_TAGS_MAPPING_ATA,
   ThermostatModeAta,
+  energyCapabilityTagMappingAta,
+  getCapabilityTagMappingAta,
+  listCapabilityTagMappingAta,
+  setCapabilityTagMappingAta,
 } from './ata'
 export type {
   CapabilitiesAtw,
@@ -19,12 +19,12 @@ export type {
   TargetTemperatureFlowCapabilities,
 } from './atw'
 export {
-  ENERGY_CAPABILITY_TAG_MAPPING_ATW,
-  GET_CAPABILITY_TAGS_MAPPING_ATW,
-  LIST_CAPABILITY_TAGS_MAPPING_ATW,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
-  SET_CAPABILITY_TAGS_MAPPING_ATW,
+  energyCapabilityTagMappingAtw,
+  getCapabilityTagMappingAtw,
+  listCapabilityTagMappingAtw,
+  setCapabilityTagMappingAtw,
 } from './atw'
 export type { LocalizedStrings } from './bases'
 export {
@@ -70,8 +70,8 @@ export {
   type ValueOf,
   type Zone,
   type ZoneData,
-  FAN_SPEED_VALUES,
   K_MULTIPLIER,
+  fanSpeedValues,
   getCapabilitiesOptions,
   modelClass,
 } from './common'
@@ -81,9 +81,9 @@ export {
   type FlowArgsErv,
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
-  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
-  GET_CAPABILITY_TAGS_MAPPING_ERV,
-  LIST_CAPABILITY_TAGS_MAPPING_ERV,
-  SET_CAPABILITY_TAGS_MAPPING_ERV,
   ThermostatModeErv,
+  energyCapabilityTagMappingErv,
+  getCapabilityTagMappingErv,
+  listCapabilityTagMappingErv,
+  setCapabilityTagMappingErv,
 } from './erv'

@@ -35,14 +35,15 @@ import {
   getCapabilitiesOptions,
 } from '../types'
 
-const NUMBER_0 = 0
-const NUMBER_1 = 1
-const REPORT_PLAN_PARAMETERS_TOTAL = {
+const DEBOUNCE = 1000
+const INITIAL_SUM = 0
+const MINIMUM_DIVISOR = 1
+
+const reportPlanParametersTotal = {
   duration: { days: 1 },
   interval: { days: 1 },
   values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-}
-const SECONDS_1_IN_MS = 1000
+} as const
 
 const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
@@ -69,7 +70,7 @@ export default abstract class<
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
-  #linkedDeviceCount = NUMBER_1
+  #linkedDeviceCount = MINIMUM_DIVISOR
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
@@ -276,11 +277,14 @@ export default abstract class<
       capability
     ] as (keyof EnergyData[T])[]
     return (
-      producedTags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
+      producedTags.reduce(
+        (acc, tag) => acc + (data[tag] as number),
+        INITIAL_SUM,
+      ) /
       (consumedTags.reduce(
         (acc, tag) => acc + (data[tag] as number),
-        NUMBER_0,
-      ) || NUMBER_1)
+        INITIAL_SUM,
+      ) || MINIMUM_DIVISOR)
     )
   }
 
@@ -289,7 +293,7 @@ export default abstract class<
     tags: (keyof EnergyData[T])[],
   ): number {
     return (
-      tags.reduce((acc, tag) => acc + (data[tag] as number), NUMBER_0) /
+      tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
       this.#linkedDeviceCount
     )
   }
@@ -302,7 +306,7 @@ export default abstract class<
     return (
       tags.reduce(
         (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
-        NUMBER_0,
+        INITIAL_SUM,
       ) / this.#linkedDeviceCount
     )
   }
@@ -462,7 +466,7 @@ export default abstract class<
           await this.#set(device, values as Partial<SetCapabilities[T]>)
         }
       },
-      SECONDS_1_IN_MS,
+      DEBOUNCE,
     )
   }
 
@@ -477,7 +481,7 @@ export default abstract class<
       }
       const { minus } = this.reportPlanParameters
       const { duration, interval, values } =
-        total ? REPORT_PLAN_PARAMETERS_TOTAL : this.reportPlanParameters
+        total ? reportPlanParametersTotal : this.reportPlanParameters
       await this.#getEnergyReport(total, minus)
       this.#planEnergyReport(total, { duration, interval, values })
     }
@@ -504,7 +508,7 @@ export default abstract class<
       } finally {
         this.homey.setTimeout(
           async () => this.setCapabilityValues(device.data),
-          SECONDS_1_IN_MS,
+          DEBOUNCE,
         )
       }
     }
@@ -587,29 +591,24 @@ export default abstract class<
           K extends Extract<keyof EnergyCapabilities[T], string>,
           L extends keyof EnergyData[T],
         >([capability, tags]: [K, L[]]) => {
-          switch (true) {
-            case capability.includes('cop'):
-              await this.setCapabilityValue(
-                capability,
-                this.#calculateCopValue(data, capability) as Capabilities[T][K],
-              )
-              break
-            case capability.startsWith('measure_power'):
-              await this.setCapabilityValue(
-                capability,
-                this.#calculatePowerValue(
-                  data,
-                  tags,
-                  hour,
-                ) as Capabilities[T][K],
-              )
-              break
-            default:
-              await this.setCapabilityValue(
-                capability,
-                this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
-              )
+          if (capability.includes('cop')) {
+            await this.setCapabilityValue(
+              capability,
+              this.#calculateCopValue(data, capability) as Capabilities[T][K],
+            )
+            return
           }
+          if (capability.startsWith('measure_power')) {
+            await this.setCapabilityValue(
+              capability,
+              this.#calculatePowerValue(data, tags, hour) as Capabilities[T][K],
+            )
+            return
+          }
+          await this.setCapabilityValue(
+            capability,
+            this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
+          )
         },
       ),
     )

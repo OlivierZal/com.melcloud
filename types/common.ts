@@ -23,39 +23,39 @@ import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
 import type {
   CapabilitiesAta,
-  ENERGY_CAPABILITY_TAG_MAPPING_ATA,
   EnergyCapabilitiesAta,
   FlowArgsAta,
-  GET_CAPABILITY_TAGS_MAPPING_ATA,
-  LIST_CAPABILITY_TAGS_MAPPING_ATA,
   OpCapabilitiesAta,
-  SET_CAPABILITY_TAGS_MAPPING_ATA,
   SetCapabilitiesAta,
+  energyCapabilityTagMappingAta,
+  getCapabilityTagMappingAta,
+  listCapabilityTagMappingAta,
+  setCapabilityTagMappingAta,
 } from './ata'
 import type { LocalizedStrings, RangeOptions } from './bases'
 import type {
   CapabilitiesErv,
-  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
   EnergyCapabilitiesErv,
   FlowArgsErv,
-  GET_CAPABILITY_TAGS_MAPPING_ERV,
-  LIST_CAPABILITY_TAGS_MAPPING_ERV,
   OpCapabilitiesErv,
-  SET_CAPABILITY_TAGS_MAPPING_ERV,
   SetCapabilitiesErv,
+  energyCapabilityTagMappingErv,
+  getCapabilityTagMappingErv,
+  listCapabilityTagMappingErv,
+  setCapabilityTagMappingErv,
 } from './erv'
 
 import {
   type CapabilitiesAtw,
   type CapabilitiesOptionsAtw,
-  type ENERGY_CAPABILITY_TAG_MAPPING_ATW,
   type EnergyCapabilitiesAtw,
   type FlowArgsAtw,
-  type GET_CAPABILITY_TAGS_MAPPING_ATW,
-  type LIST_CAPABILITY_TAGS_MAPPING_ATW,
   type OpCapabilitiesAtw,
-  type SET_CAPABILITY_TAGS_MAPPING_ATW,
   type SetCapabilitiesAtw,
+  type energyCapabilityTagMappingAtw,
+  type getCapabilityTagMappingAtw,
+  type listCapabilityTagMappingAtw,
+  type setCapabilityTagMappingAtw,
   getCapabilitiesOptionsAtw,
 } from './atw'
 
@@ -205,27 +205,27 @@ export interface Capabilities {
 }
 
 export interface SetCapabilityTagMapping {
-  readonly Ata: typeof SET_CAPABILITY_TAGS_MAPPING_ATA
-  readonly Atw: typeof SET_CAPABILITY_TAGS_MAPPING_ATW
-  readonly Erv: typeof SET_CAPABILITY_TAGS_MAPPING_ERV
+  readonly Ata: typeof setCapabilityTagMappingAta
+  readonly Atw: typeof setCapabilityTagMappingAtw
+  readonly Erv: typeof setCapabilityTagMappingErv
 }
 
 export interface GetCapabilityTagMapping {
-  readonly Ata: typeof GET_CAPABILITY_TAGS_MAPPING_ATA
-  readonly Atw: typeof GET_CAPABILITY_TAGS_MAPPING_ATW
-  readonly Erv: typeof GET_CAPABILITY_TAGS_MAPPING_ERV
+  readonly Ata: typeof getCapabilityTagMappingAta
+  readonly Atw: typeof getCapabilityTagMappingAtw
+  readonly Erv: typeof getCapabilityTagMappingErv
 }
 
 export interface ListCapabilityTagMapping {
-  readonly Ata: typeof LIST_CAPABILITY_TAGS_MAPPING_ATA
-  readonly Atw: typeof LIST_CAPABILITY_TAGS_MAPPING_ATW
-  readonly Erv: typeof LIST_CAPABILITY_TAGS_MAPPING_ERV
+  readonly Ata: typeof listCapabilityTagMappingAta
+  readonly Atw: typeof listCapabilityTagMappingAtw
+  readonly Erv: typeof listCapabilityTagMappingErv
 }
 
 export interface EnergyCapabilityTagMapping {
-  readonly Ata: typeof ENERGY_CAPABILITY_TAG_MAPPING_ATA
-  readonly Atw: typeof ENERGY_CAPABILITY_TAG_MAPPING_ATW
-  readonly Erv: typeof ENERGY_CAPABILITY_TAG_MAPPING_ERV
+  readonly Ata: typeof energyCapabilityTagMappingAta
+  readonly Atw: typeof energyCapabilityTagMappingAtw
+  readonly Erv: typeof energyCapabilityTagMappingErv
 }
 
 export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
@@ -353,7 +353,7 @@ const addPrefixToTitle = (
     ]),
   ) as LocalizedStrings
 
-const AUTO = {
+const auto = {
   id: 'auto',
   title: {
     da: 'Automatisk',
@@ -364,8 +364,8 @@ const AUTO = {
     no: 'Automatisk',
     sv: 'Automatiskt',
   },
-}
-const FAST = {
+} as const
+const fast = {
   id: 'fast',
   title: {
     da: 'Hurtig',
@@ -377,7 +377,7 @@ const FAST = {
     sv: 'Snabb',
   },
 } as const
-const MODERATE = {
+const moderate = {
   id: 'moderate',
   title: {
     da: 'Moderat',
@@ -388,8 +388,8 @@ const MODERATE = {
     no: 'Moderat',
     sv: 'Måttlig',
   },
-}
-const SLOW = {
+} as const
+const slow = {
   id: 'slow',
   title: {
     da: 'Langsom',
@@ -422,11 +422,11 @@ const createVeryObject = ({
     }),
   }) as const
 
-export const FAN_SPEED_VALUES = [
-  AUTO,
-  createVeryObject(FAST),
-  FAST,
-  MODERATE,
-  SLOW,
-  createVeryObject(SLOW),
-]
+export const fanSpeedValues = [
+  auto,
+  createVeryObject(fast),
+  fast,
+  moderate,
+  slow,
+  createVeryObject(slow),
+] as const

@@ -33,52 +33,39 @@ class NoDeviceError extends Error {
   }
 }
 
-const MIN_MAPPING = { SetTemperature: 10 }
-const MAX_MAPPING = { SetTemperature: 31 }
+const DIGIT_FORMAT = 2
+const MONTH_OFFSET = 1
+const SIZE_1 = 1
+
+const LEVEL_1 = 0
+const LEVEL_2 = 1
+const LEVEL_INCREMENT = 1
+
+const MODULUS_DECIMAL = 10
+const MODULUS_HUNDRED = 100
+const NUMBER_END_2 = 2
+const NUMBER_END_3 = 3
+const NUMBER_END_4 = 4
+const PLURAL_EXCEPTION_12 = 12
+const PLURAL_EXCEPTION_13 = 13
+const PLURAL_EXCEPTION_14 = 14
+const PLURAL_THRESHOLD = 2
+
+const minMapping = { SetTemperature: 10 } as const
+const maxMapping = { SetTemperature: 31 } as const
 const MIN_SET_TEMPERATURE_COOLING = 16
 
 const MODE_AUTO = 8
 const MODE_COOL = 3
 const MODE_DRY = 2
 
+const DEFAULT_HOLIDAY_MODE_DURATION = 14
+
 const MIN_FP_TEMPERATURE_MIN = 4
 const MIN_FP_TEMPERATURE_MAX = 14
 const MAX_FP_TEMPERATURE_MIN = 6
 const MAX_FP_TEMPERATURE_MAX = 16
 const GAP_FP_TEMPERATURE = 2
-
-const NUMBER_0 = 0
-const NUMBER_1 = 1
-const NUMBER_2 = 2
-const NUMBER_3 = 3
-const NUMBER_4 = 4
-const NUMBER_10 = 10
-const NUMBER_12 = 12
-const NUMBER_13 = 13
-const NUMBER_14 = 14
-const NUMBER_100 = 100
-
-const pad = (num: number): string => String(num).padStart(NUMBER_2, '0')
-
-const formatDateTimeLocal = (date: Date): string => {
-  const year = String(date.getFullYear())
-  const month = pad(date.getMonth() + NUMBER_1)
-  const day = pad(date.getDate())
-  const hours = pad(date.getHours())
-  const minutes = pad(date.getMinutes())
-  return `${year}-${month}-${day}T${hours}:${minutes}`
-}
-
-const now = (): string => formatDateTimeLocal(new Date())
-
-const nowPlus2Weeks = (): string => {
-  const date = new Date()
-  date.setDate(date.getDate() + NUMBER_14)
-  return formatDateTimeLocal(date)
-}
-
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -181,6 +168,28 @@ let errorLogTBodyElement: HTMLTableSectionElement | null = null
 let errorCount = 0
 let from = ''
 let to = ''
+
+const pad = (num: number): string => String(num).padStart(DIGIT_FORMAT, '0')
+
+const formatDateTimeLocal = (date: Date): string => {
+  const year = String(date.getFullYear())
+  const month = pad(date.getMonth() + MONTH_OFFSET)
+  const day = pad(date.getDate())
+  const hours = pad(date.getHours())
+  const minutes = pad(date.getMinutes())
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+const now = (): string => formatDateTimeLocal(new Date())
+
+const defaultHolidayModeEndDate = (): string => {
+  const date = new Date()
+  date.setDate(date.getDate() + DEFAULT_HOLIDAY_MODE_DURATION)
+  return formatDateTimeLocal(date)
+}
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error)
 
 const disableButton = (id: string, value = true): void => {
   const element = document.getElementById(id)
@@ -513,9 +522,13 @@ const int = (
   homey: Homey,
   { id, max, min, value }: HTMLInputElement,
 ): number => {
-  const val = Number(value)
+  const numberValue = Number(value)
   const newMin = handleIntMin(id, min)
-  if (!Number.isFinite(val) || val < Number(newMin) || val > Number(max)) {
+  if (
+    !Number.isFinite(numberValue) ||
+    numberValue < Number(newMin) ||
+    numberValue > Number(max)
+  ) {
     throw new Error(
       homey.__('settings.int_error', {
         max,
@@ -527,7 +540,7 @@ const int = (
       }),
     )
   }
-  return val
+  return numberValue
 }
 
 const shouldUpdate = (
@@ -541,7 +554,7 @@ const shouldUpdate = (
         flatDeviceSettings[id]
       : deviceSettings[driverId]?.[id]
     if (setting) {
-      if (new Set(setting).size === NUMBER_1) {
+      if (new Set(setting).size === SIZE_1) {
         const [settingValue] = setting
         return value !== settingValue
       }
@@ -556,20 +569,17 @@ const processValue = (
   element: HTMLValueElement,
 ): ValueOf<Settings> => {
   if (element.value) {
-    switch (true) {
-      case element.type === 'checkbox':
-        return element.indeterminate ? null : element.checked
-      case element.type === 'number' &&
-        element.min !== '' &&
-        element.max !== '':
-        return int(homey, element)
-      case ['false', 'true'].includes(element.value):
-        return element.value === 'true'
-      default:
-        return Number.isFinite(Number(element.value)) ?
-            Number(element.value)
-          : element.value
+    if (element.type === 'checkbox') {
+      return element.indeterminate ? null : element.checked
     }
+    if (element.type === 'number' && element.min !== '' && element.max !== '') {
+      return int(homey, element)
+    }
+    if (['false', 'true'].includes(element.value)) {
+      return element.value === 'true'
+    }
+    const numberValue = Number(element.value)
+    return Number.isFinite(numberValue) ? numberValue : element.value
   }
   return null
 }
@@ -661,15 +671,20 @@ const generateErrorLogTableData = (
 }
 
 const getErrorCountText = (homey: Homey, count: number): string => {
-  switch (true) {
-    case count < NUMBER_2:
-      return homey.__(`settings.error_log.error_count.${String(count)}`)
-    case [NUMBER_2, NUMBER_3, NUMBER_4].includes(count % NUMBER_10) &&
-      ![NUMBER_12, NUMBER_13, NUMBER_14].includes(count % NUMBER_100):
-      return homey.__('settings.error_log.error_count.234')
-    default:
-      return homey.__('settings.error_log.error_count.plural')
+  if (count < PLURAL_THRESHOLD) {
+    return homey.__(`settings.error_log.error_count.${String(count)}`)
   }
+  if (
+    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(
+      count % MODULUS_DECIMAL,
+    ) &&
+    ![PLURAL_EXCEPTION_12, PLURAL_EXCEPTION_13, PLURAL_EXCEPTION_14].includes(
+      count % MODULUS_HUNDRED,
+    )
+  ) {
+    return homey.__('settings.error_log.error_count.234')
+  }
+  return homey.__('settings.error_log.error_count.plural')
 }
 
 const updateErrorLogElements = (
@@ -847,12 +862,12 @@ const generateAtaValueElement = (
     valueElement = createInputElement({
       id,
       max:
-        id in MAX_MAPPING ?
-          MAX_MAPPING[id as keyof typeof MAX_MAPPING]
+        id in maxMapping ?
+          maxMapping[id as keyof typeof maxMapping]
         : undefined,
       min:
-        id in MIN_MAPPING ?
-          MIN_MAPPING[id as keyof typeof MIN_MAPPING]
+        id in minMapping ?
+          minMapping[id as keyof typeof minMapping]
         : undefined,
       type,
     })
@@ -872,7 +887,7 @@ const generateAtaValuesElement = (homey: Homey): void => {
 const createZoneElements = async (
   zones: Zone[],
   zoneType: string,
-  level = NUMBER_0,
+  level = LEVEL_1,
 ): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
@@ -881,10 +896,10 @@ const createZoneElements = async (
       label: `${'···'.repeat(level)} ${zone.name}`,
     })
     if ('areas' in zone && zone.areas) {
-      await createZoneElements(zone.areas, 'areas', level + NUMBER_1)
+      await createZoneElements(zone.areas, 'areas', level + LEVEL_INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
-      await createZoneElements(zone.floors, 'floors', NUMBER_1)
+      await createZoneElements(zone.floors, 'floors', LEVEL_2)
     }
   }, Promise.resolve())
 
@@ -937,7 +952,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('__')
   const values = flatDeviceSettings[id]
-  if (values && new Set(values).size === NUMBER_1) {
+  if (values && new Set(values).size === SIZE_1) {
     const [value] = values
     element.value = String(value)
     return
@@ -955,7 +970,7 @@ const updateCheckboxChildrenElement = (
 ): void => {
   const [id] = element.id.split('__')
   const values = deviceSettings[driverId]?.[id] as boolean[]
-  if (new Set(values).size === NUMBER_1) {
+  if (new Set(values).size === SIZE_1) {
     ;[element.checked] = values
     return
   }
@@ -1230,7 +1245,7 @@ const addHolidayModeEventListeners = (): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
     if (holidayModeEnabledElement.value === 'true') {
       holidayModeStartDateElement.value = now()
-      holidayModeEndDateElement.value = nowPlus2Weeks()
+      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
     } else {
       holidayModeStartDateElement.value = ''
       holidayModeEndDateElement.value = ''
@@ -1241,7 +1256,7 @@ const addHolidayModeEventListeners = (): void => {
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
-      holidayModeEndDateElement.value = nowPlus2Weeks()
+      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
     } else if (holidayModeEnabledElement.value === 'true') {
       if (holidayModeEndDateElement.value) {
         holidayModeStartDateElement.value = now()

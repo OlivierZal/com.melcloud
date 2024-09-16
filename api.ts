@@ -45,7 +45,7 @@ import {
   type ManifestDriverCapabilitiesOptions,
   type Settings,
   type ZoneData,
-  FAN_SPEED_VALUES,
+  fanSpeedValues,
   modelClass,
 } from './types'
 
@@ -188,11 +188,13 @@ const handleErrorLogQuery = ({
     from !== undefined && from ? DateTime.fromISO(from) : undefined
   const toDate = to !== undefined && to ? DateTime.fromISO(to) : DateTime.now()
 
-  const period = Number.isFinite(Number(limit)) ? Number(limit) : DEFAULT_LIMIT
+  const numberLimit = Number(limit)
+  const period = Number.isFinite(numberLimit) ? numberLimit : DEFAULT_LIMIT
+
+  const offsetLimit = Number(offset)
   const daysOffset =
-    !fromDate && Number.isFinite(Number(offset)) ?
-      Number(offset)
-    : DEFAULT_OFFSET
+    !fromDate && Number.isFinite(offsetLimit) ? offsetLimit : DEFAULT_OFFSET
+
   const daysLimit = fromDate ? DEFAULT_LIMIT : period
   const days = daysLimit * daysOffset + daysOffset
   return {
@@ -235,7 +237,7 @@ export = {
       {
         enumType: FanSpeed,
         key: 'FanSpeed',
-        options: { ...fanSpeed, type: 'enum', values: FAN_SPEED_VALUES },
+        options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
       },
       { enumType: Vertical, key: 'VaneVerticalDirection', options: vertical },
       {

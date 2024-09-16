@@ -3,20 +3,20 @@ import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
 import BaseMELCloudDriver from '../../bases/driver'
 import {
   type CapabilitiesAtw,
-  ENERGY_CAPABILITY_TAG_MAPPING_ATW,
-  GET_CAPABILITY_TAGS_MAPPING_ATW,
-  LIST_CAPABILITY_TAGS_MAPPING_ATW,
-  SET_CAPABILITY_TAGS_MAPPING_ATW,
+  energyCapabilityTagMappingAtw,
+  getCapabilityTagMappingAtw,
+  listCapabilityTagMappingAtw,
+  setCapabilityTagMappingAtw,
 } from '../../types'
 
 export = class extends BaseMELCloudDriver<'Atw'> {
-  public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ATW
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
 
-  public readonly getCapabilityTagMapping = GET_CAPABILITY_TAGS_MAPPING_ATW
+  public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw
 
-  public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ATW
+  public readonly listCapabilityTagMapping = listCapabilityTagMappingAtw
 
-  public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ATW
+  public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
 
   public readonly type = 'Atw'
 

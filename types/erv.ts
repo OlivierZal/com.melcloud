@@ -43,33 +43,33 @@ export type EnergyCapabilitiesErv = Record<string, never>
 
 export type CapabilitiesErv = EnergyCapabilitiesErv & OpCapabilitiesErv
 
-export const SET_CAPABILITY_TAGS_MAPPING_ERV: Record<
+export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
   keyof UpdateDeviceDataErv
 > = {
   fan_power: 'SetFanSpeed',
   onoff: 'Power',
   thermostat_mode: 'VentilationMode',
-}
+} as const
 
-export const GET_CAPABILITY_TAGS_MAPPING_ERV: Record<
+export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
   keyof GetDeviceDataErv
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
   'measure_temperature.outdoor': 'OutdoorTemperature',
-}
+} as const
 
-export const LIST_CAPABILITY_TAGS_MAPPING_ERV: Record<
+export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
   keyof ListDeviceErv['Device']
 > = {
   measure_pm25: 'PM25Level',
   'measure_power.wifi': 'WifiSignalStrength',
-}
+} as const
 
-export const ENERGY_CAPABILITY_TAG_MAPPING_ERV: Record<string, never> = {}
+export const energyCapabilityTagMappingErv: Record<string, never> = {} as const
 
 export interface FlowArgsErv extends SetCapabilitiesErv {
   readonly device: ErvDevice

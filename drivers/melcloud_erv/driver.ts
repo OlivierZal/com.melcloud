@@ -2,20 +2,20 @@ import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
 
 import BaseMELCloudDriver from '../../bases/driver'
 import {
-  ENERGY_CAPABILITY_TAG_MAPPING_ERV,
-  GET_CAPABILITY_TAGS_MAPPING_ERV,
-  LIST_CAPABILITY_TAGS_MAPPING_ERV,
-  SET_CAPABILITY_TAGS_MAPPING_ERV,
+  energyCapabilityTagMappingErv,
+  getCapabilityTagMappingErv,
+  listCapabilityTagMappingErv,
+  setCapabilityTagMappingErv,
 } from '../../types'
 
 export = class extends BaseMELCloudDriver<'Erv'> {
-  public readonly energyCapabilityTagMapping = ENERGY_CAPABILITY_TAG_MAPPING_ERV
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
 
-  public readonly getCapabilityTagMapping = GET_CAPABILITY_TAGS_MAPPING_ERV
+  public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
 
-  public readonly listCapabilityTagMapping = LIST_CAPABILITY_TAGS_MAPPING_ERV
+  public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
 
-  public readonly setCapabilityTagMapping = SET_CAPABILITY_TAGS_MAPPING_ERV
+  public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
 
   public readonly type = 'Erv'
 
