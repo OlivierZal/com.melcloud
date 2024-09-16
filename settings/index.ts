@@ -362,12 +362,12 @@ const createValueElement = (
     title,
     valueElement,
   }: { title: string; valueElement: HTMLValueElement | null },
-  createDiv = true,
+  wrapWithDiv = true,
 ): void => {
   if (valueElement) {
     const labelElement = createLabelElement(valueElement, title)
     parentElement.append(
-      createDiv ? createDivElement(labelElement) : labelElement,
+      wrapWithDiv ? createDivElement(labelElement) : labelElement,
     )
   }
 }
