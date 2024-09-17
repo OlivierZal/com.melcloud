@@ -152,31 +152,28 @@ const getDriverSettings = (
 const getDriverLoginSetting = (
   { id: driverId, pair }: ManifestDriver,
   language: string,
-): DriverSetting[] => {
-  const driverLoginSetting = pair?.find(
-    (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
+): DriverSetting[] =>
+  Object.values(
+    Object.entries(
+      pair?.find(
+        (pairSetting): pairSetting is LoginSetting =>
+          pairSetting.id === 'login',
+      )?.options ?? [],
+    ).reduce<Record<string, DriverSetting>>((acc, [option, label]) => {
+      const isPassword = option.startsWith('password')
+      const key = isPassword ? 'password' : 'username'
+      acc[key] ??= {
+        driverId,
+        groupId: 'login',
+        id: key,
+        title: '',
+        type: isPassword ? 'password' : 'text',
+      }
+      acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
+        label[language] ?? label.en
+      return acc
+    }, {}),
   )
-  return driverLoginSetting ?
-      Object.values(
-        Object.entries(driverLoginSetting.options).reduce<
-          Record<string, DriverSetting>
-        >((acc, [option, label]) => {
-          const isPassword = option.startsWith('password')
-          const key = isPassword ? 'password' : 'username'
-          acc[key] ??= {
-            driverId,
-            groupId: 'login',
-            id: key,
-            title: '',
-            type: isPassword ? 'password' : 'text',
-          }
-          acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-            label[language] ?? label.en
-          return acc
-        }, {}),
-      )
-    : []
-}
 
 const handleErrorLogQuery = ({
   from,
