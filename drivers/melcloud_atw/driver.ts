@@ -41,11 +41,11 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'measure_power.heat_pump_frequency',
     'measure_power',
     'measure_power.produced',
-  ]
+  ] as const
 
   readonly #zone1CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool',
-  ]
+  ] as const
 
   readonly #zone2Capabilities: (keyof CapabilitiesAtw)[] = [
     'measure_temperature.zone2',
@@ -53,11 +53,11 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.flow_heat_zone2',
     'thermostat_mode.zone2',
     'operation_mode_state.zone2',
-  ]
+  ] as const
 
   readonly #zone2CoolCapabilities: (keyof CapabilitiesAtw)[] = [
     'target_temperature.flow_cool_zone2',
-  ]
+  ] as const
 
   public getRequiredCapabilities({
     CanCool: canCool,
