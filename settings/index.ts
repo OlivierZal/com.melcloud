@@ -345,20 +345,20 @@ const addTextToCheckbox = (
 }
 
 const createLabelElement = (
-  element: HTMLValueElement,
+  valueElement: HTMLValueElement,
   text: string,
 ): HTMLLabelElement => {
-  const isCheckbox = element.type === 'checkbox'
+  const isCheckbox = valueElement.type === 'checkbox'
   const labelElement = document.createElement('label')
   labelElement.classList.add(
     isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
   )
-  labelElement.htmlFor = element.id
+  labelElement.htmlFor = valueElement.id
   if (isCheckbox) {
-    addTextToCheckbox(labelElement, element, text)
+    addTextToCheckbox(labelElement, valueElement, text)
   } else {
     labelElement.innerText = text
-    labelElement.append(element)
+    labelElement.append(valueElement)
   }
   return labelElement
 }
@@ -387,16 +387,16 @@ const createValueElement = (
 }
 
 const handleNumericInputElement = (
-  element: HTMLInputElement,
+  inputElement: HTMLInputElement,
   { max, min }: { max?: number; min?: number },
 ): void => {
-  if (element.type === 'number') {
-    element.setAttribute('inputmode', 'numeric')
+  if (inputElement.type === 'number') {
+    inputElement.setAttribute('inputmode', 'numeric')
     if (min !== undefined) {
-      element.min = String(min)
+      inputElement.min = String(min)
     }
     if (max !== undefined) {
-      element.max = String(max)
+      inputElement.max = String(max)
     }
   }
 }
@@ -483,7 +483,7 @@ const createSelectElement = (
   return selectElement
 }
 
-const createCredentialElement = (
+const generateCredential = (
   credentialKey: keyof LoginCredentials,
 ): HTMLInputElement | null => {
   const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
@@ -503,9 +503,9 @@ const createCredentialElement = (
   return null
 }
 
-const createCredentialElements = (): void => {
+const generateCredentials = (): void => {
   ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
-    createCredentialElement,
+    generateCredential,
   )
 }
 
@@ -846,7 +846,7 @@ const fetchAtaValues = async (
       }),
   )
 
-const generateAtaValuesElement = (
+const generateAtaValue = (
   homey: Homey,
   {
     id,
@@ -878,18 +878,18 @@ const generateAtaValuesElement = (
   return null
 }
 
-const generateAtaValuesElements = (homey: Homey): void => {
+const generateAtaValues = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
     createValueElement(ataValuesElement, {
       title,
-      valueElement: generateAtaValuesElement(homey, { id, type, values }),
+      valueElement: generateAtaValue(homey, { id, type, values }),
     })
   })
 }
 
-const createZoneElements = async (
+const generateZones = async (
   zones: Zone[],
-  zoneType: string,
+  zoneType = 'buildings',
   level = FIRST_LEVEL,
 ): Promise<void> =>
   zones.reduce(async (acc, zone) => {
@@ -899,10 +899,10 @@ const createZoneElements = async (
       label: `${'···'.repeat(level)} ${zone.name}`,
     })
     if ('areas' in zone && zone.areas) {
-      await createZoneElements(zone.areas, 'areas', level + LEVEL_INCREMENT)
+      await generateZones(zone.areas, 'areas', level + LEVEL_INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
-      await createZoneElements(zone.floors, 'floors', SECOND_LEVEL)
+      await generateZones(zone.floors, 'floors', SECOND_LEVEL)
     }
   }, Promise.resolve())
 
@@ -925,8 +925,8 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           reject(error ?? new NoDeviceError(homey))
           return
         }
-        generateAtaValuesElements(homey)
-        await createZoneElements(buildings, 'buildings')
+        generateAtaValues(homey)
+        await generateZones(buildings)
         await generateErrorLog(homey)
         await fetchZoneSettings(homey)
         resolve()
@@ -1130,7 +1130,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
   }
 }
 
-const generateCommonChildrenElements = (homey: Homey): void => {
+const generateCommonSettings = (homey: Homey): void => {
   ;(driverSettings.options ?? []).forEach(({ id, title, type, values }) => {
     const settingId = `${id}__setting`
     if (
@@ -1148,10 +1148,7 @@ const generateCommonChildrenElements = (homey: Homey): void => {
   )
 }
 
-const generateCheckboxChildrenElements = (
-  homey: Homey,
-  driverId: string,
-): void => {
+const generateDriverSettings = (homey: Homey, driverId: string): void => {
   if (driverSettings[driverId]) {
     const settingsElement = document.getElementById(`settings_${driverId}`)
     if (settingsElement) {
@@ -1184,13 +1181,13 @@ const generateCheckboxChildrenElements = (
 
 const needsAuthentication = (value = true): void => {
   if (!loginElement.childElementCount) {
-    createCredentialElements()
+    generateCredentials()
   }
   hide(authenticatedElement, value)
   unhide(authenticatingElement, value)
 }
 
-const generatePostLogin = async (homey: Homey): Promise<void> => {
+const loadPostLogin = async (homey: Homey): Promise<void> => {
   try {
     await fetchBuildings(homey)
   } catch (error) {
@@ -1228,7 +1225,7 @@ const login = async (homey: Homey): Promise<void> => {
                 : homey.__('settings.authenticate.failure'),
               )
             } else {
-              await generatePostLogin(homey)
+              await loadPostLogin(homey)
             }
             resolve()
           },
@@ -1463,9 +1460,9 @@ const addEventListeners = (homey: Homey): void => {
 
 const load = async (homey: Homey): Promise<void> => {
   addEventListeners(homey)
-  generateCommonChildrenElements(homey)
+  generateCommonSettings(homey)
   Object.keys(deviceSettings).forEach((driverId) => {
-    generateCheckboxChildrenElements(homey, driverId)
+    generateDriverSettings(homey, driverId)
   })
   if (homeySettings.contextKey !== undefined) {
     try {
