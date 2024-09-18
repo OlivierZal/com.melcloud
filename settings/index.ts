@@ -108,7 +108,7 @@ const loginElement = document.getElementById('login') as HTMLDivElement
 const settingsCommonElement = document.getElementById(
   'settings_common',
 ) as HTMLDivElement
-const valuesAtaElement = document.getElementById(
+const ataValuesElement = document.getElementById(
   'values_melcloud',
 ) as HTMLDivElement
 
@@ -617,7 +617,7 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
   const errors: string[] = []
   const body = Object.fromEntries(
     Array.from(
-      valuesAtaElement.querySelectorAll<HTMLValueElement>('input, select'),
+      ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
     )
       .filter(
         ({ id, value }) =>
@@ -848,7 +848,7 @@ const fetchAtaValues = async (
       }),
   )
 
-const generateAtaValueElement = (
+const generateAtaValuesElement = (
   homey: Homey,
   {
     id,
@@ -860,11 +860,11 @@ const generateAtaValueElement = (
     type: string
   },
 ): HTMLValueElement | null => {
-  let valueElement: HTMLValueElement | null = null
   if (['boolean', 'enum'].includes(type)) {
-    valueElement = createSelectElement(homey, id, values)
-  } else if (type === 'number') {
-    valueElement = createInputElement({
+    return createSelectElement(homey, id, values)
+  }
+  if (type === 'number') {
+    return createInputElement({
       id,
       max:
         id in maxMapping ?
@@ -877,14 +877,14 @@ const generateAtaValueElement = (
       type,
     })
   }
-  return valueElement
+  return null
 }
 
-const generateAtaValuesElement = (homey: Homey): void => {
+const generateAtaValuesElements = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
-    createValueElement(valuesAtaElement, {
+    createValueElement(ataValuesElement, {
       title,
-      valueElement: generateAtaValueElement(homey, { id, type, values }),
+      valueElement: generateAtaValuesElement(homey, { id, type, values }),
     })
   })
 }
@@ -927,7 +927,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           reject(error ?? new NoDeviceError(homey))
           return
         }
-        generateAtaValuesElement(homey)
+        generateAtaValuesElements(homey)
         await createZoneElements(buildings, 'buildings')
         await generateErrorLog(homey)
         await fetchZoneSettings(homey)
