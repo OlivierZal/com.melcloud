@@ -159,6 +159,7 @@ export default [
         '@typescript-eslint/return-await': ['error', 'in-try-catch'],
         '@typescript-eslint/typedef': 'off',
         camelcase: 'off',
+        curly: 'error',
         'max-lines': 'off',
         'no-bitwise': 'off',
         'no-empty': [
