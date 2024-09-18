@@ -996,17 +996,6 @@ const refreshSettingsDriver = (
   })
 }
 
-const refreshSettings = (
-  elements: HTMLValueElement[],
-  driverId?: string,
-): void => {
-  if (driverId !== undefined) {
-    refreshSettingsDriver(elements as HTMLInputElement[], driverId)
-    return
-  }
-  refreshSettingsCommon(elements as HTMLSelectElement[])
-}
-
 const setDeviceSettings = async (
   homey: Homey,
   elements: HTMLValueElement[],
@@ -1015,7 +1004,7 @@ const setDeviceSettings = async (
   const body = buildSettingsBody(homey, elements, driverId)
   if (!Object.keys(body).length) {
     if (driverId === undefined) {
-      refreshSettings(elements as HTMLSelectElement[])
+      refreshSettingsCommon(elements as HTMLSelectElement[])
     }
     homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
       //
@@ -1075,7 +1064,11 @@ const addRefreshSettingsEventListener = (
     `refresh_${settings}`,
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
-    refreshSettings(elements, driverId)
+    if (driverId !== undefined) {
+      refreshSettingsDriver(elements as HTMLInputElement[], driverId)
+      return
+    }
+    refreshSettingsCommon(elements as HTMLSelectElement[])
   })
 }
 
