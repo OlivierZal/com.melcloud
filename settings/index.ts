@@ -450,15 +450,13 @@ const createCheckboxElement = (
 
 const createOptionElement = (
   selectElement: HTMLSelectElement,
-  { id, label }: { label?: string; id: string },
+  { id, label }: { id: string; label: string },
 ): HTMLOptionElement => {
-  let optionElement = document.getElementById(id) as HTMLOptionElement | null
+  let optionElement = selectElement.querySelector<HTMLOptionElement>(
+    `option[value="${id}"]`,
+  )
   if (!optionElement) {
-    optionElement = document.createElement('option')
-    optionElement.value = id
-    if (label !== undefined) {
-      optionElement.innerText = label
-    }
+    optionElement = new Option(label, id)
     selectElement.append(optionElement)
   }
   return optionElement
@@ -473,7 +471,7 @@ const createSelectElement = (
   selectElement.classList.add('homey-form-select')
   selectElement.id = id
   ;[
-    { id: '' },
+    { id: '', label: '' },
     ...(values ??
       ['false', 'true'].map((value) => ({
         id: value,
