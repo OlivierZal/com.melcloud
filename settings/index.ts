@@ -428,13 +428,16 @@ const createInputElement = ({
   return inputElement
 }
 
-const createLegendElement = (text?: string): HTMLLegendElement => {
+const createLegendElement = (
+  fieldSetElement: HTMLFieldSetElement,
+  text?: string,
+): void => {
   const legendElement = document.createElement('legend')
   legendElement.classList.add('homey-form-checkbox-set-title')
   if (text !== undefined) {
     legendElement.innerText = text
   }
-  return legendElement
+  fieldSetElement.append(legendElement)
 }
 
 const createCheckboxElement = (
@@ -451,15 +454,12 @@ const createCheckboxElement = (
 const createOptionElement = (
   selectElement: HTMLSelectElement,
   { id, label }: { id: string; label: string },
-): HTMLOptionElement => {
-  let optionElement = selectElement.querySelector<HTMLOptionElement>(
-    `option[value="${id}"]`,
-  )
-  if (!optionElement) {
-    optionElement = new Option(label, id)
-    selectElement.append(optionElement)
+): void => {
+  if (
+    !selectElement.querySelector<HTMLOptionElement>(`option[value="${id}"]`)
+  ) {
+    selectElement.append(new Option(label, id))
   }
-  return optionElement
 }
 
 const createSelectElement = (
@@ -1162,7 +1162,7 @@ const generateCheckboxChildrenElements = (
         if (type === 'checkbox') {
           if (groupLabel !== previousGroupLabel) {
             previousGroupLabel = groupLabel ?? ''
-            fieldSetElement.append(createLegendElement(groupLabel))
+            createLegendElement(fieldSetElement, groupLabel)
           }
           const valueElement = createCheckboxElement(id, driverId)
           createValueElement(fieldSetElement, { title, valueElement }, false)
