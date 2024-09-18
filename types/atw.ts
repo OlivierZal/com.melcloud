@@ -15,6 +15,7 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
+  CapabilitiesOptionsValues,
   LocalizedStrings,
   RangeOptions,
 } from './bases'
@@ -256,10 +257,9 @@ export interface CapabilitiesOptionsAtw {
   readonly 'target_temperature.flow_heat': RangeOptions
   readonly 'target_temperature.flow_heat_zone2': RangeOptions
   readonly thermostat_mode: {
-    readonly values: readonly {
-      readonly id: keyof typeof OperationModeZone
-      readonly title: LocalizedStrings
-    }[]
+    readonly values: readonly CapabilitiesOptionsValues<
+      keyof typeof OperationModeZone
+    >[]
   }
   readonly 'thermostat_mode.zone2': {
     readonly title: LocalizedStrings
@@ -281,7 +281,7 @@ const addSuffixToTitle = (
     ]),
   ) as LocalizedStrings
 
-const curve = {
+const curve: CapabilitiesOptionsValues<'curve'> = {
   id: 'curve',
   title: {
     da: 'Varmekurve',
@@ -293,7 +293,7 @@ const curve = {
     sv: 'Värmekurva',
   },
 } as const
-const flow = {
+const flow: CapabilitiesOptionsValues<'flow'> = {
   id: 'flow',
   title: {
     da: 'Fast fremledningstemperatur',
@@ -305,7 +305,7 @@ const flow = {
     sv: 'Fast framledningstemperatur',
   },
 } as const
-const room = {
+const room: CapabilitiesOptionsValues<'room'> = {
   id: 'room',
   title: {
     da: 'Indendørs føler',
@@ -325,19 +325,18 @@ const createCoolObject = ({
 }: {
   id: 'flow' | 'room'
   title: LocalizedStrings
-}) =>
-  ({
-    id: `${id}_${COOL_SUFFIX}`,
-    title: addSuffixToTitle(title, {
-      da: '- køling',
-      en: '- cooling',
-      es: '- enfriamiento',
-      fr: '- refroidissement',
-      nl: '- koeling',
-      no: '- kjøling',
-      sv: '- kylning',
-    }),
-  }) as const
+}): CapabilitiesOptionsValues<keyof typeof OperationModeZone> => ({
+  id: `${id}_${COOL_SUFFIX}`,
+  title: addSuffixToTitle(title, {
+    da: '- køling',
+    en: '- cooling',
+    es: '- enfriamiento',
+    fr: '- refroidissement',
+    nl: '- koeling',
+    no: '- kjøling',
+    sv: '- kylning',
+  }),
+})
 
 const thermostatModeTitleAtw = addSuffixToTitle(thermostatModeTitle, {
   da: '- zone 2',
@@ -354,7 +353,7 @@ const thermostatModeValuesAtw = [
   curve,
   createCoolObject(room),
   createCoolObject(flow),
-]
+] as const
 
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
@@ -372,5 +371,5 @@ export const getCapabilitiesOptionsAtw = ({
         values: thermostatModeValues,
       },
     }),
-  } as const
+  }
 }

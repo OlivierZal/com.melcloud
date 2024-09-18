@@ -4,6 +4,7 @@ import {
   type BaseModel,
   type DeviceType,
   type EnergyData,
+  type FanSpeed,
   type ListDevice,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
@@ -44,7 +45,11 @@ import type {
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
 } from './atw'
-import type { LocalizedStrings, RangeOptions } from './bases'
+import type {
+  CapabilitiesOptionsValues,
+  LocalizedStrings,
+  RangeOptions,
+} from './bases'
 import type {
   CapabilitiesErv,
   EnergyCapabilitiesErv,
@@ -136,10 +141,7 @@ export interface LoginSetting extends PairSetting {
 }
 
 export interface ManifestDriverCapabilitiesOptions {
-  readonly values?: readonly {
-    readonly id: string
-    readonly title: LocalizedStrings
-  }[]
+  readonly values?: readonly CapabilitiesOptionsValues<string>[]
   readonly title: LocalizedStrings
   readonly type: string
 }
@@ -328,7 +330,7 @@ export const modelClass = {
   areas: AreaModel,
   buildings: BuildingModel,
   floors: FloorModel,
-}
+} as const
 export interface ZoneData {
   zoneId: string
   zoneType: keyof typeof modelClass
@@ -345,7 +347,7 @@ const addPrefixToTitle = (
     ]),
   ) as LocalizedStrings
 
-const auto = {
+const auto: CapabilitiesOptionsValues<'auto'> = {
   id: 'auto',
   title: {
     da: 'Automatisk',
@@ -357,7 +359,7 @@ const auto = {
     sv: 'Automatiskt',
   },
 } as const
-const fast = {
+const fast: CapabilitiesOptionsValues<'fast'> = {
   id: 'fast',
   title: {
     da: 'Hurtig',
@@ -369,7 +371,7 @@ const fast = {
     sv: 'Snabb',
   },
 } as const
-const moderate = {
+const moderate: CapabilitiesOptionsValues<'moderate'> = {
   id: 'moderate',
   title: {
     da: 'Moderat',
@@ -381,7 +383,7 @@ const moderate = {
     sv: 'Måttlig',
   },
 } as const
-const slow = {
+const slow: CapabilitiesOptionsValues<'slow'> = {
   id: 'slow',
   title: {
     da: 'Langsom',
@@ -400,19 +402,18 @@ const createVeryObject = ({
 }: {
   id: 'fast' | 'slow'
   title: LocalizedStrings
-}) =>
-  ({
-    id: `very_${id}`,
-    title: addPrefixToTitle(title, {
-      da: 'Meget',
-      en: 'Very',
-      es: 'Muy',
-      fr: 'Très',
-      nl: 'Zeer',
-      no: 'Veldig',
-      sv: 'Mycket',
-    }),
-  }) as const
+}): CapabilitiesOptionsValues<keyof typeof FanSpeed> => ({
+  id: `very_${id}`,
+  title: addPrefixToTitle(title, {
+    da: 'Meget',
+    en: 'Very',
+    es: 'Muy',
+    fr: 'Très',
+    nl: 'Zeer',
+    no: 'Veldig',
+    sv: 'Mycket',
+  }),
+})
 
 export const fanSpeedValues = [
   auto,
