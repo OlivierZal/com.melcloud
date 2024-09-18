@@ -98,14 +98,14 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       ),
     thermostat_mode: convertFromDeviceOperationZone,
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
-  }
+  } as const
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
-  }
+  } as const
 
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
@@ -114,7 +114,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
-  }
+  } as const
 
   protected override async setCapabilityValues(
     data: ListDeviceDataAtw,

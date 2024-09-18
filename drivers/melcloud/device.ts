@@ -34,14 +34,14 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       : ThermostatModeAta.off) as ConvertFromDevice<'Ata'>,
     vertical: ((value: Vertical) =>
       Vertical[value]) as ConvertFromDevice<'Ata'>,
-  }
+  } as const
 
   protected readonly reportPlanParameters: ReportPlanParameters = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
     values: { millisecond: 0, minute: 5, second: 0 },
-  }
+  } as const
 
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAta, ConvertToDevice<'Ata'>>
@@ -52,5 +52,5 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       OperationMode[value]) as ConvertToDevice<'Ata'>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
-  }
+  } as const
 }
