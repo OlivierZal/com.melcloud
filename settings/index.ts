@@ -61,11 +61,8 @@ const MODE_DRY = 2
 
 const DEFAULT_HOLIDAY_MODE_DURATION = 14
 
-const MIN_FP_TEMPERATURE_MIN = 4
-const MIN_FP_TEMPERATURE_MAX = 14
-const MAX_FP_TEMPERATURE_MIN = 6
-const MAX_FP_TEMPERATURE_MAX = 16
-const GAP_FP_TEMPERATURE = 2
+const frostProtectionTemperatureRange = { max: 4, min: 16 } as const
+const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -119,13 +116,21 @@ const sinceElement = document.getElementById('since') as HTMLInputElement
 const frostProtectionMinTemperatureElement = document.getElementById(
   'min',
 ) as HTMLInputElement
-frostProtectionMinTemperatureElement.min = String(MIN_FP_TEMPERATURE_MIN)
-frostProtectionMinTemperatureElement.max = String(MIN_FP_TEMPERATURE_MAX)
+frostProtectionMinTemperatureElement.min = String(
+  frostProtectionTemperatureRange.min,
+)
+frostProtectionMinTemperatureElement.max = String(
+  frostProtectionTemperatureRange.max - FROST_PROTECTION_TEMPERATURE_GAP,
+)
 const frostProtectionMaxTemperatureElement = document.getElementById(
   'max',
 ) as HTMLInputElement
-frostProtectionMaxTemperatureElement.min = String(MAX_FP_TEMPERATURE_MIN)
-frostProtectionMaxTemperatureElement.max = String(MAX_FP_TEMPERATURE_MAX)
+frostProtectionMaxTemperatureElement.min = String(
+  frostProtectionTemperatureRange.min + FROST_PROTECTION_TEMPERATURE_GAP,
+)
+frostProtectionMaxTemperatureElement.max = String(
+  frostProtectionTemperatureRange.max,
+)
 const holidayModeStartDateElement = document.getElementById(
   'start_date',
 ) as HTMLInputElement
@@ -1392,7 +1397,7 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
   if (max < min) {
     ;[min, max] = [max, min]
   }
-  return { max: Math.max(max, min + GAP_FP_TEMPERATURE), min }
+  return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
 }
 
 const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
