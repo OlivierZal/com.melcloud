@@ -1,6 +1,6 @@
 {
   "errors": {
-    "endDateMissing": "Sluttdato mangler.",
+    "deviceNotFound": "Enhet ikke funnet.",
     "zoneNotFound": "Sone ikke funnet."
   },
   "settings": {
@@ -60,8 +60,8 @@
     "holidayMode": {
       "enabled": "Aktiver <strong>feriemodus</strong>",
       "endDate": "Sluttdato",
-      "startDate": "Startdato",
-      "endDateMissing": "Sluttdato mangler."
+      "endDateMissing": "Sluttdato mangler.",
+      "startDate": "Startdato"
     },
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",
@@ -69,7 +69,6 @@
     "title": "MELCloud-innstillinger"
   },
   "warnings": {
-    "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
-    "deviceNotFound": "Enhet ikke funnet."
+    "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt."
   }
 }

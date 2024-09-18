@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta content="MELCloud settings" name="description">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>Air-to-air device values</title>
+        <link href="styles.css" rel="stylesheet">
+    </head>
+    <body class="homey-widget">
+        <div>
+            <select id="zones" aria-label="Buildings"></select>
+        </div>
+        <div id="has_zone_ata_devices" class="hidden">
+            <div id="values_melcloud"></div>
+            <div class="container">
+                <button
+                    id="refresh_values_melcloud"
+                    type="button"
+                    aria-label="Refresh"
+                    data-i18n="settings.refresh"
+                ></button>
+                <button
+                    id="apply_values_melcloud"
+                    type="button"
+                    aria-label="Update"
+                    data-i18n="settings.buildings.update"
+                ></button>
+            </div>
+        </div>
+        <script>const exports = {}</script>
+        <script defer src="index.js"></script>
+    </body>
+</html>

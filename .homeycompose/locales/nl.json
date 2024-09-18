@@ -1,5 +1,6 @@
 {
   "errors": {
+    "deviceNotFound": "Apparaat niet gevonden.",
     "zoneNotFound": "Zone niet gevonden."
   },
   "settings": {
@@ -68,7 +69,6 @@
     "title": "MELCloud-instellingen"
   },
   "warnings": {
-    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
-    "deviceNotFound": "Apparaat niet gevonden."
+    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten."
   }
 }

@@ -810,13 +810,13 @@ const fetchAtaValues = async (
           'GET',
           `/drivers/melcloud/${zone.replace('_', '/')}`,
           async (error: Error | null, data: GroupAtaState) => {
-            unhide(hasZoneAtaDevicesElement, error === null)
             if (!error) {
               updateZoneMapping({ ...defaultAtaValues, ...data }, zone)
               refreshAtaValuesElement()
             } else if (error.message !== 'No air-to-air device found') {
               await homey.alert(error.message)
             }
+            unhide(hasZoneAtaDevicesElement, error === null)
             resolve()
           },
         )
@@ -1432,11 +1432,6 @@ const addEventListeners = (homey: Homey): void => {
 }
 
 const load = async (homey: Homey): Promise<void> => {
-  addEventListeners(homey)
-  generateCommonSettings(homey)
-  Object.keys(deviceSettings).forEach((driverId) => {
-    generateDriverSettings(homey, driverId)
-  })
   if (homeySettings.contextKey !== undefined) {
     try {
       await fetchBuildings(homey)
@@ -1453,6 +1448,11 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchAtaCapabilities(homey)
   await fetchDeviceSettings(homey)
   await fetchDriverSettings(homey)
+  generateCommonSettings(homey)
+  Object.keys(deviceSettings).forEach((driverId) => {
+    generateDriverSettings(homey, driverId)
+  })
+  addEventListeners(homey)
   await load(homey)
   await homey.ready()
 }

@@ -1,15 +1,15 @@
 import {
-  type ListDeviceDataErv,
   VentilationMode,
+  type ListDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
 import BaseMELCloudDevice from '../../bases/device'
 import {
+  ThermostatModeErv,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
-  ThermostatModeErv,
 } from '../../types'
 
 export = class extends BaseMELCloudDevice<'Erv'> {

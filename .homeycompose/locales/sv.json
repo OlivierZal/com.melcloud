@@ -1,5 +1,6 @@
 {
   "errors": {
+    "deviceNotFound": "Enhet ej hittad.",
     "zoneNotFound": "Zon ej hittad."
   },
   "settings": {
@@ -68,7 +69,6 @@
     "title": "MELCloud-inställningar"
   },
   "warnings": {
-    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
-    "deviceNotFound": "Enhet ej hittad."
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel."
   }
 }

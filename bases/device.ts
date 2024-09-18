@@ -1,19 +1,10 @@
-import {
-  type DeviceFacade,
-  type DeviceType,
-  type EnergyData,
-  type ListDevice,
-  type UpdateDeviceData,
-  DeviceModel,
-} from '@olivierzal/melcloud-api'
 import { Device } from 'homey'
-import { type DurationLike, DateTime } from 'luxon'
-
-import type MELCloudApp from '../app'
+import { DateTime, type DurationLike } from 'luxon'
 
 import addToLogs from '../decorators/addToLogs'
 import withTimers from '../mixins/withTimers'
 import {
+  K_MULTIPLIER,
   type Capabilities,
   type CapabilitiesOptions,
   type ConvertFromDevice,
@@ -31,8 +22,17 @@ import {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,
-  K_MULTIPLIER,
 } from '../types'
+
+import type {
+  DeviceFacade,
+  DeviceType,
+  EnergyData,
+  ListDevice,
+  UpdateDeviceData,
+} from '@olivierzal/melcloud-api'
+
+import type MELCloudApp from '../app'
 
 const INITIAL_SUM = 0
 const MINIMUM_DIVISOR = 1
@@ -350,15 +350,14 @@ export default abstract class<
 
   async #fetchDevice(): Promise<DeviceFacade[T] | undefined> {
     if (!this.#device) {
-      this.#device = (this.homey.app as MELCloudApp).facadeManager.get(
-        DeviceModel.getById((this.getData() as DeviceDetails<T>['data']).id) as
-          | DeviceModel<T>
-          | undefined,
-      )
-      if (this.#device) {
+      try {
+        this.#device = (this.homey.app as MELCloudApp).getFacade(
+          'devices',
+          (this.getData() as DeviceDetails<T>['data']).id,
+        ) as DeviceFacade[T]
         await this.#init(this.#device.data)
-      } else {
-        await this.setWarning(this.homey.__('warnings.deviceNotFound'))
+      } catch (error) {
+        await this.setWarning(getErrorMessage(error))
       }
     }
     return this.#device

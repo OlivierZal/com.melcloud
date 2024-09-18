@@ -6,6 +6,7 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type ErvDevice from '../drivers/melcloud/device'
+
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,

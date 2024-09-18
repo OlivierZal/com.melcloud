@@ -1,13 +1,13 @@
-import type PairSession from 'homey/lib/PairSession'
-
 import {
+  DeviceModel,
   type DeviceType,
   type EnergyData,
   type ListDevice,
   type LoginCredentials,
-  DeviceModel,
 } from '@olivierzal/melcloud-api'
 import { Driver } from 'homey'
+
+import type PairSession from 'homey/lib/PairSession'
 
 import type MELCloudApp from '..'
 import type {

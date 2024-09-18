@@ -1,3 +1,5 @@
+import { title as thermostatModeTitle } from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
+
 import type {
   EnergyDataAtw,
   GetDeviceDataAtw,
@@ -8,9 +10,8 @@ import type {
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
-import { title as thermostatModeTitle } from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
-
 import type AtwDevice from '../drivers/melcloud/device'
+
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,

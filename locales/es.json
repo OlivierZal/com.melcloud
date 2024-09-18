@@ -1,6 +1,6 @@
 {
   "errors": {
-    "endDateMissing": "Falta la fecha de finalización.",
+    "deviceNotFound": "Dispositivo no encontrada.",
     "zoneNotFound": "Zona no encontrada."
   },
   "settings": {
@@ -60,8 +60,8 @@
     "holidayMode": {
       "enabled": "Activar <strong>modo vacaciones</strong>",
       "endDate": "Fecha de finalización",
-      "startDate": "Fecha de inicio",
-      "endDateMissing": "Falta la fecha de finalización."
+      "endDateMissing": "Falta la fecha de finalización.",
+      "startDate": "Fecha de inicio"
     },
     "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
@@ -69,7 +69,6 @@
     "title": "Configuración de MELCloud"
   },
   "warnings": {
-    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
-    "deviceNotFound": "Dispositivo no encontrada."
+    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."
   }
 }

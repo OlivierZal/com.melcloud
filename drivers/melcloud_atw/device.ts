@@ -1,23 +1,23 @@
 import {
-  type ListDeviceDataAtw,
-  type ZoneAtw,
   OperationModeState,
   OperationModeZone,
+  type ListDeviceDataAtw,
+  type ZoneAtw,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 import BaseMELCloudDevice from '../../bases/device'
 import {
+  HotWaterMode,
+  K_MULTIPLIER,
+  OperationModeStateHotWaterCapability,
+  OperationModeStateZoneCapability,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAtw,
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-  HotWaterMode,
-  K_MULTIPLIER,
-  OperationModeStateHotWaterCapability,
-  OperationModeStateZoneCapability,
 } from '../../types'
 
 const convertFromDeviceMeasurePower = ((value: number) =>

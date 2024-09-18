@@ -5191,6 +5191,40 @@
       ]
     }
   ],
+  "widgets": {
+    "ata-group-setting": {
+      "api": {
+        "getAtaCapabilities": {
+          "method": "GET",
+          "path": "/capabilities/drivers/melcloud"
+        },
+        "getAtaValues": {
+          "method": "GET",
+          "path": "/drivers/melcloud/:zoneType/:zoneId"
+        },
+        "getBuildings": {
+          "method": "GET",
+          "path": "/buildings"
+        },
+        "setAtaValues": {
+          "method": "PUT",
+          "path": "/drivers/melcloud/:zoneType/:zoneId"
+        }
+      },
+      "height": 270,
+      "name": {
+        "da": "Luft-luft-enhedsindstilling",
+        "en": "Air-to-air device setting",
+        "es": "Ajuste de dispositivos aire-aire",
+        "fr": "Réglage des appareils air-air",
+        "nl": "Lucht-lucht apparaatinstelling",
+        "no": "Luft-luft-enhetsinnstilling",
+        "sv": "Luft-luft-enhetsinställning"
+      },
+      "settings": [],
+      "id": "ata-group-setting"
+    }
+  },
   "capabilities": {
     "fan_power": {
       "getable": true,

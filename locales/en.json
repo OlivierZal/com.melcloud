@@ -1,6 +1,6 @@
 {
   "errors": {
-    "endDateMissing": "End date is missing.",
+    "deviceNotFound": "Device not found.",
     "zoneNotFound": "Zone not found."
   },
   "settings": {
@@ -60,8 +60,8 @@
     "holidayMode": {
       "enabled": "Enable <strong>holiday mode</strong>",
       "endDate": "End date",
-      "startDate": "Start date",
-      "endDateMissing": "End date is missing."
+      "endDateMissing": "End date is missing.",
+      "startDate": "Start date"
     },
     "intError": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
@@ -69,7 +69,6 @@
     "title": "MELCloud settings"
   },
   "warnings": {
-    "dashboard": "Exit the device and return to update your dashboard.",
-    "deviceNotFound": "Device not found."
+    "dashboard": "Exit the device and return to update your dashboard."
   }
 }

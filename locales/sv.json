@@ -1,6 +1,6 @@
 {
   "errors": {
-    "endDateMissing": "Slutdatum saknas.",
+    "deviceNotFound": "Enhet ej hittad.",
     "zoneNotFound": "Zon ej hittad."
   },
   "settings": {
@@ -60,8 +60,8 @@
     "holidayMode": {
       "enabled": "Aktivera <strong>semesterläge</strong>",
       "endDate": "Slutdatum",
-      "startDate": "Startdatum",
-      "endDateMissing": "Slutdatum saknas."
+      "endDateMissing": "Slutdatum saknas.",
+      "startDate": "Startdatum"
     },
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "refresh": "Ladda om",
@@ -69,7 +69,6 @@
     "title": "MELCloud-inställningar"
   },
   "warnings": {
-    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
-    "deviceNotFound": "Enhet ej hittad."
+    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel."
   }
 }
