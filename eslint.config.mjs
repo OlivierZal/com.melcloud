@@ -47,7 +47,6 @@ export default [
       files: ['**/*.ts', '**/*.mjs'],
       languageOptions: {
         parserOptions: {
-          allowDefaultProject: ['*.mjs'],
           projectService: true,
           warnOnUnsupportedTypeScriptVersion: false,
         },
