@@ -11,7 +11,7 @@ import withTimers from './mixins/withTimers'
 
 LuxonSettings.defaultLocale = 'en-us'
 
-export = class MELCloudApp extends withTimers(App) {
+export = class extends withTimers(App) {
   #api!: MELCloudAPI
 
   #facadeManager!: FacadeManager
