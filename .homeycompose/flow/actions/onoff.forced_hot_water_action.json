@@ -1,40 +1,40 @@
 {
-  "title": {
-    "en": "Set the forced domestic hot water",
-    "fr": "Définir l'eau chaude sanitaire forcée",
-    "nl": "Stel de gedwongen sanitair warm water",
-    "sv": "Ställ in tvingad varmvattenladdning",
-    "no": "Innstill tvungen varmvannslastning",
-    "da": "Indstil tvungen varmtvandsindlæsning",
-    "es": "Configurar el agua caliente sanitaria forzada"
-  },
-  "titleFormatted": {
-    "en": "Set the forced domestic hot water to [[onoff]]",
-    "fr": "Définir l'eau chaude sanitaire forcée à [[onoff]]",
-    "nl": "Stel de gedwongen sanitair warm water in op [[onoff]]",
-    "sv": "Ställ in tvingad varmvattenladdning till [[onoff]]",
-    "no": "Innstill tvungen varmvannslastning til [[onoff]]",
-    "da": "Indstil tvungen varmtvandsindlæsning til [[onoff]]",
-    "es": "Configurar el agua caliente sanitaria forzada a [[onoff]]"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw",
       "name": "device",
-      "filter": "driver_id=melcloud_atw"
+      "type": "device"
     },
     {
       "name": "onoff",
-      "type": "checkbox",
       "title": {
+        "da": "Tvungen varmtvandsindlæsning",
         "en": "Forced domestic hot water",
+        "es": "Agua caliente sanitaria forzada",
         "fr": "Eau chaude sanitaire forcée",
         "nl": "Gedwongen sanitair warm water",
-        "sv": "Tvingad varmvattenladdning",
         "no": "Tvungen varmvannslastning",
-        "da": "Tvungen varmtvandsindlæsning",
-        "es": "Agua caliente sanitaria forzada"
-      }
+        "sv": "Tvingad varmvattenladdning"
+      },
+      "type": "checkbox"
     }
-  ]
+  ],
+  "title": {
+    "da": "Indstil tvungen varmtvandsindlæsning",
+    "en": "Set the forced domestic hot water",
+    "es": "Configurar el agua caliente sanitaria forzada",
+    "fr": "Définir l'eau chaude sanitaire forcée",
+    "nl": "Stel de gedwongen sanitair warm water",
+    "no": "Innstill tvungen varmvannslastning",
+    "sv": "Ställ in tvingad varmvattenladdning"
+  },
+  "titleFormatted": {
+    "da": "Indstil tvungen varmtvandsindlæsning til [[onoff]]",
+    "en": "Set the forced domestic hot water to [[onoff]]",
+    "es": "Configurar el agua caliente sanitaria forzada a [[onoff]]",
+    "fr": "Définir l'eau chaude sanitaire forcée à [[onoff]]",
+    "nl": "Stel de gedwongen sanitair warm water in op [[onoff]]",
+    "no": "Innstill tvungen varmvannslastning til [[onoff]]",
+    "sv": "Ställ in tvingad varmvattenladdning till [[onoff]]"
+  }
 }

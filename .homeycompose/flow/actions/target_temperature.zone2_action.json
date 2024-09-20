@@ -1,33 +1,33 @@
 {
-  "title": {
-    "en": "Set the temperature in zone 2",
-    "fr": "Définir la température dans la zone 2",
-    "nl": "Stel de temperatuur in in zone 2",
-    "sv": "Ställ in temperaturen i zon 2",
-    "no": "Innstill temperaturen i sone 2",
-    "da": "Indstil temperaturen i zone 2",
-    "es": "Configurar la temperatura en zona 2"
-  },
-  "titleFormatted": {
-    "en": "Set the temperature to [[target_temperature]] in zone 2",
-    "fr": "Définir la température à [[target_temperature]] dans la zone 2",
-    "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
-    "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2",
-    "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
-    "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
-    "es": "Configurar la temperatura a [[target_temperature]] en zona 2"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2"
+      "type": "device"
     },
     {
-      "name": "target_temperature",
-      "type": "range",
+      "max": 30,
       "min": 10,
-      "max": 30
+      "name": "target_temperature",
+      "type": "range"
     }
-  ]
+  ],
+  "title": {
+    "da": "Indstil temperaturen i zone 2",
+    "en": "Set the temperature in zone 2",
+    "es": "Configurar la temperatura en zona 2",
+    "fr": "Définir la température dans la zone 2",
+    "nl": "Stel de temperatuur in in zone 2",
+    "no": "Innstill temperaturen i sone 2",
+    "sv": "Ställ in temperaturen i zon 2"
+  },
+  "titleFormatted": {
+    "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
+    "en": "Set the temperature to [[target_temperature]] in zone 2",
+    "es": "Configurar la temperatura a [[target_temperature]] en zona 2",
+    "fr": "Définir la température à [[target_temperature]] dans la zone 2",
+    "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
+    "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
+    "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2"
+  }
 }

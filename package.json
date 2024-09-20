@@ -29,6 +29,7 @@
     "@types/node": "^22.5.5",
     "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsonc": "^2.16.0",
     "eslint-plugin-package-json": "^0.15.3",
     "eslint-plugin-perfectionist": "^3.6.0",
     "jsonc-eslint-parser": "^2.4.0",

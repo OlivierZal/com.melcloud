@@ -1,18 +1,18 @@
 {
-  "title": {
-    "en": "The booster heater 2 turned off",
-    "fr": "Le chauffage d'appoint 2 s'est désactivé",
-    "nl": "De boosterverwarmingselement 2 ging uit",
-    "sv": "Tillskottsvärmaren 2 är inaktiverad",
-    "no": "Tilleggsvarmen 2 er deaktivert",
-    "da": "Tilførselsvarme 2 blev deaktiveret",
-    "es": "El calentador de refuerzo 2 se ha desactivado"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.booster_heater2"
+      "type": "device"
     }
-  ]
+  ],
+  "title": {
+    "da": "Tilførselsvarme 2 blev deaktiveret",
+    "en": "The booster heater 2 turned off",
+    "es": "El calentador de refuerzo 2 se ha desactivado",
+    "fr": "Le chauffage d'appoint 2 s'est désactivé",
+    "nl": "De boosterverwarmingselement 2 ging uit",
+    "no": "Tilleggsvarmen 2 er deaktivert",
+    "sv": "Tillskottsvärmaren 2 är inaktiverad"
+  }
 }

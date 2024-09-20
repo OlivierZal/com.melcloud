@@ -1,27 +1,9 @@
 {
-  "title": {
-    "en": "The vertical vane !{{is|is not}}",
-    "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
-    "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
-    "sv": "Vertikal luftflödesriktningen !{{är|är inte}}",
-    "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
-    "da": "Den vertikale luftflødesretningen !{{er|er ikke}}",
-    "es": "La descarga de aire vertical !{{está|no está}}"
-  },
-  "titleFormatted": {
-    "en": "The vertical vane !{{is|is not}} [[vertical]]",
-    "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
-    "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
-    "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]",
-    "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
-    "da": "Den vertikale luftflødesretningen !{{er|er ikke}} [[vertical]]",
-    "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud",
       "name": "device",
-      "filter": "driver_id=melcloud"
+      "type": "device"
     },
     {
       "name": "vertical",
@@ -30,88 +12,106 @@
         {
           "id": "auto",
           "title": {
+            "da": "Automatisk",
             "en": "Automatic",
+            "es": "Automático",
             "fr": "Automatique",
             "nl": "Automatisch",
-            "sv": "Automatiskt",
             "no": "Automatisk",
-            "da": "Automatisk",
-            "es": "Automático"
+            "sv": "Automatiskt"
           }
         },
         {
           "id": "upwards",
           "title": {
+            "da": "Opad",
             "en": "Upwards",
+            "es": "Arriba",
             "fr": "Haut",
             "nl": "Omhoog",
-            "sv": "Uppåt",
             "no": "Oppover",
-            "da": "Opad",
-            "es": "Arriba"
+            "sv": "Uppåt"
           }
         },
         {
           "id": "mid_high",
           "title": {
+            "da": "Mellemhøj",
             "en": "Mid-high",
+            "es": "Medio alto",
             "fr": "Milieu haut",
             "nl": "Midden-hoog",
-            "sv": "Mellanhög",
             "no": "Mellomhøy",
-            "da": "Mellemhøj",
-            "es": "Medio alto"
+            "sv": "Mellanhög"
           }
         },
         {
           "id": "middle",
           "title": {
+            "da": "Midten",
             "en": "Middle",
+            "es": "Medio",
             "fr": "Milieu",
             "nl": "Midden",
-            "sv": "Mitten",
             "no": "Midten",
-            "da": "Midten",
-            "es": "Medio"
+            "sv": "Mitten"
           }
         },
         {
           "id": "mid_low",
           "title": {
+            "da": "Mellemlav",
             "en": "Mid-low",
+            "es": "Medio bajo",
             "fr": "Milieu bas",
             "nl": "Midden-laag",
-            "sv": "Mellanlåg",
             "no": "Mellomlav",
-            "da": "Mellemlav",
-            "es": "Medio bajo"
+            "sv": "Mellanlåg"
           }
         },
         {
           "id": "downwards",
           "title": {
+            "da": "Nedad",
             "en": "Downwards",
+            "es": "Abajo",
             "fr": "Bas",
             "nl": "Omlaag",
-            "sv": "Nedåt",
             "no": "Nedover",
-            "da": "Nedad",
-            "es": "Abajo"
+            "sv": "Nedåt"
           }
         },
         {
           "id": "swing",
           "title": {
+            "da": "Sving",
             "en": "Swing",
+            "es": "Oscilación",
             "fr": "Balayage",
             "nl": "Swing",
-            "sv": "Svängning",
             "no": "Sving",
-            "da": "Sving",
-            "es": "Oscilación"
+            "sv": "Svängning"
           }
         }
       ]
     }
-  ]
+  ],
+  "title": {
+    "da": "Den vertikale luftflødesretningen !{{er|er ikke}}",
+    "en": "The vertical vane !{{is|is not}}",
+    "es": "La descarga de aire vertical !{{está|no está}}",
+    "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
+    "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
+    "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
+    "sv": "Vertikal luftflödesriktningen !{{är|är inte}}"
+  },
+  "titleFormatted": {
+    "da": "Den vertikale luftflødesretningen !{{er|er ikke}} [[vertical]]",
+    "en": "The vertical vane !{{is|is not}} [[vertical]]",
+    "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]",
+    "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
+    "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
+    "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
+    "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]"
+  }
 }

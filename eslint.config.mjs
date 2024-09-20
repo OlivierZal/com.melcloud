@@ -1,10 +1,12 @@
-import eslint from '@eslint/js'
+import js from '@eslint/js'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier'
+import jsonc from 'eslint-plugin-jsonc'
 import packageJson from 'eslint-plugin-package-json/configs/recommended'
 import perfectionist from 'eslint-plugin-perfectionist'
-import tsEslint from 'typescript-eslint'
+import jsoncParser from 'jsonc-eslint-parser'
+import ts from 'typescript-eslint'
 
 const groups = {
   groups: [
@@ -33,15 +35,39 @@ const typesFirst = {
 }
 
 export default [
-  ...tsEslint.config(
+  {
+    files: ['**/*.json', '**/*.jsonc'],
+    ignores: [
+      '**/package-lock.json',
+      '**/package.json',
+      'app.json',
+      'locales/*.json',
+    ],
+    languageOptions: {
+      parser: jsoncParser,
+    },
+    plugins: {
+      jsonc,
+    },
+    rules: {
+      'jsonc/sort-keys': [
+        'error',
+        'asc',
+        {
+          natural: true,
+        },
+      ],
+    },
+  },
+  ...ts.config(
     {
       ignores: ['.homeybuild/'],
     },
     {
       extends: [
-        eslint.configs.all,
-        ...tsEslint.configs.all,
-        ...tsEslint.configs.strictTypeChecked,
+        js.configs.all,
+        ...ts.configs.all,
+        ...ts.configs.strictTypeChecked,
         prettier,
       ],
       files: ['**/*.ts', '**/*.mjs'],
@@ -346,7 +372,7 @@ export default [
     },
     {
       files: ['**/*.mjs'],
-      ...tsEslint.configs.disableTypeChecked,
+      ...ts.configs.disableTypeChecked,
     },
     {
       settings: {

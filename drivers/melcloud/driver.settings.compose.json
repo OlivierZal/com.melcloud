@@ -3,339 +3,339 @@
     "$extends": ["options"]
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Power display",
-      "fr": "Affichage de la puissance",
-      "nl": "Vermogensweergave",
-      "sv": "Effektvisning",
-      "no": "Effektvisning",
-      "da": "Effektvisning",
-      "es": "Visualización de la potencia"
-    },
     "children": [
       {
         "id": "measure_power",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "measure_power.auto",
-        "type": "checkbox",
         "label": {
+          "da": "Automatisk",
           "en": "Automatic",
+          "es": "Automático",
           "fr": "Automatique",
           "nl": "Automatisch",
-          "sv": "Automatiskt",
           "no": "Automatisk",
-          "da": "Automatisk",
-          "es": "Automático"
+          "sv": "Automatiskt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_power.cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_power.dry",
-        "type": "checkbox",
         "label": {
+          "da": "Affugtning",
           "en": "Dry",
+          "es": "Desumidificación",
           "fr": "Déshumidification",
           "nl": "Ontvochtiging",
-          "sv": "Avfuktning",
           "no": "Avfukting",
-          "da": "Affugtning",
-          "es": "Desumidificación"
+          "sv": "Avfuktning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_power.fan",
-        "type": "checkbox",
         "label": {
+          "da": "Blæser",
           "en": "Fan",
+          "es": "Ventilador",
           "fr": "Ventilateur",
           "nl": "Ventilator",
-          "sv": "Fläkt",
           "no": "Vifte",
-          "da": "Blæser",
-          "es": "Ventilador"
+          "sv": "Fläkt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_power.heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_power.other",
-        "type": "checkbox",
         "label": {
+          "da": "Andet",
           "en": "Other",
+          "es": "Otro",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Övrigt",
           "no": "Annet",
-          "da": "Andet",
-          "es": "Otro"
+          "sv": "Övrigt"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Effektvisning",
+      "en": "Power display",
+      "es": "Visualización de la potencia",
+      "fr": "Affichage de la puissance",
+      "nl": "Vermogensweergave",
+      "no": "Effektvisning",
+      "sv": "Effektvisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Energy display",
-      "fr": "Affichage de l'énergie",
-      "nl": "Energieweergeven",
-      "sv": "Energivisning",
-      "no": "Energivisning",
-      "da": "Energivisning",
-      "es": "Visualización de la energía"
-    },
     "children": [
       {
         "id": "meter_power",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "meter_power.auto",
-        "type": "checkbox",
         "label": {
+          "da": "Automatisk",
           "en": "Automatic",
+          "es": "Automático",
           "fr": "Automatique",
           "nl": "Automatisch",
-          "sv": "Automatiskt",
           "no": "Automatisk",
-          "da": "Automatisk",
-          "es": "Automático"
+          "sv": "Automatiskt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.dry",
-        "type": "checkbox",
         "label": {
+          "da": "Affugtning",
           "en": "Dry",
+          "es": "Desumidificación",
           "fr": "Déshumidification",
           "nl": "Ontvochtiging",
-          "sv": "Avfuktning",
           "no": "Avfukting",
-          "da": "Affugtning",
-          "es": "Desumidificación"
+          "sv": "Avfuktning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.fan",
-        "type": "checkbox",
         "label": {
+          "da": "Blæser",
           "en": "Fan",
+          "es": "Ventilador",
           "fr": "Ventilateur",
           "nl": "Ventilator",
-          "sv": "Fläkt",
           "no": "Vifte",
-          "da": "Blæser",
-          "es": "Ventilador"
+          "sv": "Fläkt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.other",
-        "type": "checkbox",
         "label": {
+          "da": "Andet",
           "en": "Other",
+          "es": "Otro",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Övrigt",
           "no": "Annet",
-          "da": "Andet",
-          "es": "Otro"
+          "sv": "Övrigt"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Energivisning",
+      "en": "Energy display",
+      "es": "Visualización de la energía",
+      "fr": "Affichage de l'énergie",
+      "nl": "Energieweergeven",
+      "no": "Energivisning",
+      "sv": "Energivisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Daily energy display",
-      "fr": "Affichage de l'énergie quotidienne",
-      "nl": "Dagelijkse energieweergeven",
-      "sv": "Daglig energivisning",
-      "no": "Daglig energivisning",
-      "da": "Daglig energivisning",
-      "es": "Visualización de la energía daría"
-    },
     "children": [
       {
         "id": "meter_power.daily",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_auto",
-        "type": "checkbox",
         "label": {
+          "da": "Automatisk",
           "en": "Automatic",
+          "es": "Automático",
           "fr": "Automatique",
           "nl": "Automatisch",
-          "sv": "Automatiskt",
           "no": "Automatisk",
-          "da": "Automatisk",
-          "es": "Automático"
+          "sv": "Automatiskt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_dry",
-        "type": "checkbox",
         "label": {
+          "da": "Affugtning",
           "en": "Dry",
+          "es": "Desumidificación",
           "fr": "Déshumidification",
           "nl": "Ontvochtiging",
-          "sv": "Avfuktning",
           "no": "Avfukting",
-          "da": "Affugtning",
-          "es": "Desumidificación"
+          "sv": "Avfuktning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_fan",
-        "type": "checkbox",
         "label": {
+          "da": "Blæser",
           "en": "Fan",
+          "es": "Ventilador",
           "fr": "Ventilateur",
           "nl": "Ventilator",
-          "sv": "Fläkt",
           "no": "Vifte",
-          "da": "Blæser",
-          "es": "Ventilador"
+          "sv": "Fläkt"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_other",
-        "type": "checkbox",
         "label": {
+          "da": "Andet",
           "en": "Other",
+          "es": "Otro",
           "fr": "Autre",
           "nl": "Andere",
-          "sv": "Övrigt",
           "no": "Annet",
-          "da": "Andet",
-          "es": "Otro"
+          "sv": "Övrigt"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Daglig energivisning",
+      "en": "Daily energy display",
+      "es": "Visualización de la energía daría",
+      "fr": "Affichage de l'énergie quotidienne",
+      "nl": "Dagelijkse energieweergeven",
+      "no": "Daglig energivisning",
+      "sv": "Daglig energivisning"
+    },
+    "type": "group"
   }
 ]

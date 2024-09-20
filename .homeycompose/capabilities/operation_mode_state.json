@@ -1,102 +1,102 @@
 {
-  "type": "enum",
+  "getable": true,
+  "icon": "/assets/operation_mode_state.svg",
+  "setable": false,
   "title": {
+    "da": "Aktuel drift",
     "en": "Actual operation",
+    "es": "Operación actual",
     "fr": "Opération actuelle",
     "nl": "Huidige bedrijf",
-    "sv": "Aktuell drift",
     "no": "Gjeldende drift",
-    "da": "Aktuel drift",
-    "es": "Operación actual"
+    "sv": "Aktuell drift"
   },
-  "getable": true,
-  "setable": false,
+  "type": "enum",
   "uiComponent": "sensor",
   "values": [
     {
       "id": "idle",
       "title": {
+        "da": "Inaktiv",
         "en": "Idle",
+        "es": "Inactivo",
         "fr": "Inactif",
         "nl": "Inactief",
-        "sv": "Inaktiv",
         "no": "Inaktiv",
-        "da": "Inaktiv",
-        "es": "Inactivo"
+        "sv": "Inaktiv"
       }
     },
     {
       "id": "dhw",
       "title": {
+        "da": "Varmtvandsindlæsning",
         "en": "Domestic hot water",
+        "es": "Agua caliente sanitaria",
         "fr": "Eau chaude sanitaire",
         "nl": "Sanitair warm water",
-        "sv": "Varmvattenladdning",
         "no": "Varmvannslastning",
-        "da": "Varmtvandsindlæsning",
-        "es": "Agua caliente sanitaria"
+        "sv": "Varmvattenladdning"
       }
     },
     {
       "id": "heating",
       "title": {
+        "da": "Opvarmning",
         "en": "Heating",
+        "es": "Calefacción",
         "fr": "Chauffage",
         "nl": "Verwarming",
-        "sv": "Uppvärmning",
         "no": "Oppvarming",
-        "da": "Opvarmning",
-        "es": "Calefacción"
+        "sv": "Uppvärmning"
       }
     },
     {
       "id": "cooling",
       "title": {
+        "da": "Køling",
         "en": "Cooling",
+        "es": "Enfriamiento",
         "fr": "Refroidissement",
         "nl": "Koeling",
-        "sv": "Kylning",
         "no": "Kjøling",
-        "da": "Køling",
-        "es": "Enfriamiento"
+        "sv": "Kylning"
       }
     },
     {
       "id": "defrost",
       "title": {
+        "da": "Afrimning",
         "en": "Defrost",
+        "es": "Descongelación",
         "fr": "Dégivrage",
         "nl": "Ontdooien",
-        "sv": "Avfrostning",
         "no": "Avfrosting",
-        "da": "Afrimning",
-        "es": "Descongelación"
+        "sv": "Avfrostning"
       }
     },
     {
       "id": "legionella",
       "title": {
+        "da": "Anti-legionella",
         "en": "Anti-legionella",
+        "es": "Anti-legionela",
         "fr": "Antilégionelle",
         "nl": "Anti-legionella",
-        "sv": "Anti-legionella",
         "no": "Anti-legionella",
-        "da": "Anti-legionella",
-        "es": "Anti-legionela"
+        "sv": "Anti-legionella"
       }
     },
     {
       "id": "prohibited",
       "title": {
+        "da": "Forbudt",
         "en": "Prohibited",
+        "es": "Prohibido",
         "fr": "Interdit",
         "nl": "Verboden",
-        "sv": "Förbjuden",
         "no": "Forbudt",
-        "da": "Forbudt",
-        "es": "Prohibido"
+        "sv": "Förbjuden"
       }
     }
-  ],
-  "icon": "/assets/operation_mode_state.svg"
+  ]
 }

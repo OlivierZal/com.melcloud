@@ -1,18 +1,18 @@
 {
-  "title": {
-    "en": "The defrost mode turned off",
-    "fr": "Le mode dégivrage s'est désactivé",
-    "nl": "De ontdooimodus ging uit",
-    "sv": "Avfrostningsläget är inaktiverat",
-    "no": "Avfrostingsmodusen er deaktivert",
-    "da": "Afrimningsfunktionen blev deaktiveret",
-    "es": "El modo de descongelación se ha desactivado"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.defrost"
+      "type": "device"
     }
-  ]
+  ],
+  "title": {
+    "da": "Afrimningsfunktionen blev deaktiveret",
+    "en": "The defrost mode turned off",
+    "es": "El modo de descongelación se ha desactivado",
+    "fr": "Le mode dégivrage s'est désactivé",
+    "nl": "De ontdooimodus ging uit",
+    "no": "Avfrostingsmodusen er deaktivert",
+    "sv": "Avfrostningsläget är inaktiverat"
+  }
 }

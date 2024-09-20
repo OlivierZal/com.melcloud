@@ -1,6 +1,66 @@
 {
-  "id": "com.mecloud",
-  "sdk": 3,
+  "api": {
+    "getAtaCapabilities": {
+      "method": "GET",
+      "path": "/capabilities/drivers/melcloud"
+    },
+    "getAtaValues": {
+      "method": "GET",
+      "path": "/drivers/melcloud/:zoneType/:zoneId"
+    },
+    "getBuildings": {
+      "method": "GET",
+      "path": "/buildings"
+    },
+    "getDeviceSettings": {
+      "method": "GET",
+      "path": "/settings/devices"
+    },
+    "getDriverSettings": {
+      "method": "GET",
+      "path": "/settings/drivers"
+    },
+    "getErrors": {
+      "method": "GET",
+      "path": "/errors"
+    },
+    "getFrostProtectionSettings": {
+      "method": "GET",
+      "path": "/settings/frost_protection/:zoneType/:zoneId"
+    },
+    "getHolidayModeSettings": {
+      "method": "GET",
+      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+    },
+    "getLanguage": {
+      "method": "GET",
+      "path": "/language"
+    },
+    "login": {
+      "method": "POST",
+      "path": "/sessions"
+    },
+    "setAtaValues": {
+      "method": "PUT",
+      "path": "/drivers/melcloud/:zoneType/:zoneId"
+    },
+    "setDeviceSettings": {
+      "method": "PUT",
+      "path": "/settings/devices"
+    },
+    "setFrostProtectionSettings": {
+      "method": "PUT",
+      "path": "/settings/frost_protection/:zoneType/:zoneId"
+    },
+    "setHolidayModeSettings": {
+      "method": "PUT",
+      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+    }
+  },
+  "author": {
+    "email": "olivier.zalmanski@me.com",
+    "name": "Olivier Zalmanski"
+  },
   "brandColor": "#ed0c13",
   "name": {
     "en": "MELCloud",
@@ -12,20 +72,51 @@
     "es": "MELCloud"
   },
   "description": {
+    "da": "Tag kontrol over din varmepumpe",
     "en": "Take control of your heat pump",
+    "es": "Tome el control de su bomba de calor",
     "fr": "Prenez le contrôle de votre pompe à chaleur",
     "nl": "Neem de controle over uw warmtepomp",
-    "sv": "Ta kontroll över din värmepump",
     "no": "Ta kontroll over varmepumpen din",
-    "da": "Tag kontrol over din varmepumpe",
-    "es": "Tome el control de su bomba de calor"
+    "sv": "Ta kontroll över din värmepump"
   },
-  "category": [
-    "climate"
+  "homeyCommunityTopicId": 73094,
+  "id": "com.mecloud",
+  "images": {
+    "large": "/assets/images/large.jpg",
+    "small": "/assets/images/small.jpg",
+    "xlarge": "/assets/images/xlarge.jpg"
+  },
+  "name": {
+    "da": "MELCloud",
+    "en": "MELCloud",
+    "es": "MELCloud",
+    "fr": "MELCloud",
+    "nl": "MELCloud",
+    "no": "MELCloud",
+    "sv": "MELCloud"
+  },
+  "platforms": [
+    "local"
   ],
+  "sdk": 3,
+  "source": "https://github.com/OlivierZal/com.melcloud",
+  "support": "https://github.com/OlivierZal/com.melcloud/issues",
   "version": "39.1.0",
   "compatibility": ">=12.2.0",
   "tags": {
+    "da": [
+      "aircondition",
+      "ecodan",
+      "erv",
+      "klimaanlæg",
+      "luft luft",
+      "luft vand",
+      "melcloud",
+      "mitsubishi",
+      "varmegenvinding",
+      "varmepumpe"
+    ],
     "en": [
       "air conditioner",
       "air conditioning",
@@ -38,6 +129,17 @@
       "heat pump",
       "melcloud",
       "mitsubishi"
+    ],
+    "es": [
+      "aire acondicionado",
+      "aire agua",
+      "aire aire",
+      "bomba de calor",
+      "ecodan",
+      "erv",
+      "melcloud",
+      "mitsubishi",
+      "ventilador recuperador de energía"
     ],
     "fr": [
       "air air",
@@ -66,17 +168,6 @@
       "warmteterugwinning",
       "wtw"
     ],
-    "sv": [
-      "ecodan",
-      "erv",
-      "luft luft",
-      "luft vatten",
-      "luftkonditionering",
-      "melcloud",
-      "mitsubishi",
-      "värmeåtervinning",
-      "värmepump"
-    ],
     "no": [
       "ecodan",
       "erv",
@@ -88,28 +179,16 @@
       "varmegjenvinning",
       "varmepumpe"
     ],
-    "da": [
-      "aircondition",
+    "sv": [
       "ecodan",
       "erv",
-      "klimaanlæg",
       "luft luft",
-      "luft vand",
+      "luft vatten",
+      "luftkonditionering",
       "melcloud",
       "mitsubishi",
-      "varmegenvinding",
-      "varmepumpe"
-    ],
-    "es": [
-      "aire acondicionado",
-      "aire agua",
-      "aire aire",
-      "bomba de calor",
-      "ecodan",
-      "erv",
-      "melcloud",
-      "mitsubishi",
-      "ventilador recuperador de energía"
+      "värmeåtervinning",
+      "värmepump"
     ]
   },
   "images": {

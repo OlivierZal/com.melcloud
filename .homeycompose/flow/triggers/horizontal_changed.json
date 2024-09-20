@@ -1,36 +1,36 @@
 {
+  "args": [
+    {
+      "filter": "driver_id=melcloud",
+      "name": "device",
+      "type": "device"
+    }
+  ],
   "title": {
+    "da": "Den horisontale luftflødesretningen er blevet ændret",
     "en": "The horizontal vane has changed",
+    "es": "La descarga de aire horizontal ha cambiado",
     "fr": "Le soufflage d'air horizontal a été modifié",
     "nl": "De uitblaasrichting horizontaal is veranderd",
-    "sv": "Horisontell luftflödesriktningen ändrades",
     "no": "Horisontal luftflødesretningen ble endret",
-    "da": "Den horisontale luftflødesretningen er blevet ændret",
-    "es": "La descarga de aire horizontal ha cambiado"
+    "sv": "Horisontell luftflödesriktningen ändrades"
   },
   "tokens": [
     {
-      "name": "horizontal",
-      "type": "string",
-      "title": {
-        "en": "Horizontal vane",
-        "fr": "Soufflage d'air horizontal",
-        "nl": "Uitblaasrichting horizontaal",
-        "sv": "Horisontell luftflödesriktning",
-        "no": "Horisontal luftflødesretning",
-        "da": "Horisontal luftflødesretning",
-        "es": "Descarga de aire horizontal"
-      },
       "example": {
         "en": "auto"
-      }
-    }
-  ],
-  "args": [
-    {
-      "type": "device",
-      "name": "device",
-      "filter": "driver_id=melcloud"
+      },
+      "name": "horizontal",
+      "title": {
+        "da": "Horisontal luftflødesretning",
+        "en": "Horizontal vane",
+        "es": "Descarga de aire horizontal",
+        "fr": "Soufflage d'air horizontal",
+        "nl": "Uitblaasrichting horizontaal",
+        "no": "Horisontal luftflødesretning",
+        "sv": "Horisontell luftflödesriktning"
+      },
+      "type": "string"
     }
   ]
 }

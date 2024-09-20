@@ -10,9 +10,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "zone": {
-        "not_found": "Sone ikke funnet"
-      },
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
         "max": "Maksimal temperatur",
@@ -25,7 +22,10 @@
         "start_date": "Startdato"
       },
       "legend": "Bygningsinnstillinger",
-      "update": "Oppdater"
+      "update": "Oppdater",
+      "zone": {
+        "not_found": "Sone ikke funnet"
+      }
     },
     "devices": {
       "apply": {

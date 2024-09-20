@@ -1,27 +1,9 @@
 {
-  "title": {
-    "en": "Set the horizontal vane",
-    "fr": "Définir le soufflage d'air horizontal",
-    "nl": "Stel de uitblaasrichting horizontaal in",
-    "sv": "Ställ in horisontell luftflödesriktningen",
-    "no": "Innstill horisontal luftflødesretningen",
-    "da": "Indstil den horisontale luftflødesretningen",
-    "es": "Configurar la descarga de aire horizontal"
-  },
-  "titleFormatted": {
-    "en": "Set the horizontal vane to [[horizontal]]",
-    "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
-    "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
-    "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]",
-    "no": "Innstill horisontal luftflødesretningen til [[horizontal]]",
-    "da": "Indstil den horisontale luftflødesretningen til [[horizontal]]",
-    "es": "Configurar la descarga de aire horizontal a [[horizontal]]"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud",
       "name": "device",
-      "filter": "driver_id=melcloud"
+      "type": "device"
     },
     {
       "name": "horizontal",
@@ -30,100 +12,118 @@
         {
           "id": "auto",
           "title": {
+            "da": "Automatisk",
             "en": "Automatic",
+            "es": "Automático",
             "fr": "Automatique",
             "nl": "Automatisch",
-            "sv": "Automatiskt",
             "no": "Automatisk",
-            "da": "Automatisk",
-            "es": "Automático"
+            "sv": "Automatiskt"
           }
         },
         {
           "id": "leftwards",
           "title": {
+            "da": "Venstre",
             "en": "Leftwards",
+            "es": "Izquierda",
             "fr": "Gauche",
             "nl": "Links",
-            "sv": "Vänster",
             "no": "Venstre",
-            "da": "Venstre",
-            "es": "Izquierda"
+            "sv": "Vänster"
           }
         },
         {
           "id": "center_left",
           "title": {
+            "da": "Midt-venstre",
             "en": "Center-left",
+            "es": "Centro-izquierda",
             "fr": "Centre-gauche",
             "nl": "Midden-links",
-            "sv": "Mitten-vänster",
             "no": "Middelvenstre",
-            "da": "Midt-venstre",
-            "es": "Centro-izquierda"
+            "sv": "Mitten-vänster"
           }
         },
         {
           "id": "center",
           "title": {
+            "da": "Midten",
             "en": "Center",
+            "es": "Centro",
             "fr": "Centre",
             "nl": "Midden",
-            "sv": "Mitten",
             "no": "Midten",
-            "da": "Midten",
-            "es": "Centro"
+            "sv": "Mitten"
           }
         },
         {
           "id": "center_right",
           "title": {
+            "da": "Midt-højre",
             "en": "Center-right",
+            "es": "Centro-derecha",
             "fr": "Centre-droite",
             "nl": "Midden-rechts",
-            "sv": "Mitten-höger",
             "no": "Middelhøyre",
-            "da": "Midt-højre",
-            "es": "Centro-derecha"
+            "sv": "Mitten-höger"
           }
         },
         {
           "id": "rightwards",
           "title": {
+            "da": "Højre",
             "en": "Rightwards",
+            "es": "Derecha",
             "fr": "Droite",
             "nl": "Rechts",
-            "sv": "Höger",
             "no": "Høyre",
-            "da": "Højre",
-            "es": "Derecha"
+            "sv": "Höger"
           }
         },
         {
           "id": "wide",
           "title": {
+            "da": "Bred",
             "en": "Wide",
+            "es": "Ancho",
             "fr": "Large",
             "nl": "Breed",
-            "sv": "Bred",
             "no": "Bred",
-            "da": "Bred",
-            "es": "Ancho"
+            "sv": "Bred"
           }
         },
         {
           "id": "swing",
           "title": {
+            "da": "Sving",
             "en": "Swing",
+            "es": "Oscilación",
             "fr": "Balayage",
             "nl": "Swing",
-            "sv": "Svängning",
             "no": "Sving",
-            "da": "Sving",
-            "es": "Oscilación"
+            "sv": "Svängning"
           }
         }
       ]
     }
-  ]
+  ],
+  "title": {
+    "da": "Indstil den horisontale luftflødesretningen",
+    "en": "Set the horizontal vane",
+    "es": "Configurar la descarga de aire horizontal",
+    "fr": "Définir le soufflage d'air horizontal",
+    "nl": "Stel de uitblaasrichting horizontaal in",
+    "no": "Innstill horisontal luftflødesretningen",
+    "sv": "Ställ in horisontell luftflödesriktningen"
+  },
+  "titleFormatted": {
+    "da": "Indstil den horisontale luftflødesretningen til [[horizontal]]",
+    "en": "Set the horizontal vane to [[horizontal]]",
+    "es": "Configurar la descarga de aire horizontal a [[horizontal]]",
+    "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
+    "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
+    "no": "Innstill horisontal luftflødesretningen til [[horizontal]]",
+    "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]"
+  }
 }

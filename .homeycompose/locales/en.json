@@ -10,9 +10,6 @@
       "true": "Yes"
     },
     "buildings": {
-      "zone": {
-        "not_found": "Zone not found"
-      },
       "frost_protection": {
         "enabled": "Enable <strong>frost protection</strong>",
         "max": "Maximum temperature",
@@ -25,7 +22,10 @@
         "start_date": "Start date"
       },
       "legend": "Building settings",
-      "update": "Update"
+      "update": "Update",
+      "zone": {
+        "not_found": "Zone not found"
+      }
     },
     "devices": {
       "apply": {

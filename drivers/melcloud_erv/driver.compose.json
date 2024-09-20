@@ -1,14 +1,5 @@
 {
   "$extends": ["defaults"],
-  "name": {
-    "en": "Energy recovery ventilator (ERV)",
-    "fr": "Ventilateur récupérateur d'énergie (VRE)",
-    "nl": "Ventilator med warmteterugwinning (WTW)",
-    "sv": "Ventilator med värmeåtervinning (ERV)",
-    "no": "Ventilator med varmegjenvinning (ERV)",
-    "da": "Ventilator med varmegenvinding (ERV)",
-    "es": "Ventilador recuperador de energía (ERV)"
-  },
   "capabilities": [
     "onoff",
     "measure_temperature",
@@ -22,13 +13,13 @@
   "capabilitiesOptions": {
     "measure_temperature.outdoor": {
       "title": {
+        "da": "Udendørstemperatur",
         "en": "Outdoor temperature",
+        "es": "Temperatura exterior",
         "fr": "Température extérieure",
         "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
         "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
+        "sv": "Utomhustemperatur"
       }
     },
     "thermostat_mode": {
@@ -36,52 +27,61 @@
         {
           "id": "auto",
           "title": {
+            "da": "Automatisk",
             "en": "Automatic",
+            "es": "Automático",
             "fr": "Automatique",
             "nl": "Automatisch",
-            "sv": "Automatiskt",
             "no": "Automatisk",
-            "da": "Automatisk",
-            "es": "Automático"
+            "sv": "Automatiskt"
           }
         },
         {
           "id": "bypass",
           "title": {
+            "da": "Bypass",
             "en": "Bypass",
+            "es": "Bypass",
             "fr": "Bypass",
             "nl": "Bypass",
-            "sv": "Bypass",
             "no": "Bypass",
-            "da": "Bypass",
-            "es": "Bypass"
+            "sv": "Bypass"
           }
         },
         {
           "id": "recovery",
           "title": {
+            "da": "Varmegenvinding",
             "en": "Energy Recovery",
+            "es": "Recuperación de energía",
             "fr": "Récupération d'énergie",
             "nl": "Warmteterugwinning",
-            "sv": "Värmeåtervinning",
             "no": "Varmegjenvinning",
-            "da": "Varmegenvinding",
-            "es": "Recuperación de energía"
+            "sv": "Värmeåtervinning"
           }
         },
         {
           "id": "off",
           "title": {
+            "da": "Deaktiveret",
             "en": "Off",
+            "es": "Desactivado",
             "fr": "Désactivé",
             "nl": "Uit",
-            "sv": "Av",
             "no": "Av",
-            "da": "Deaktiveret",
-            "es": "Desactivado"
+            "sv": "Av"
           }
         }
       ]
     }
+  },
+  "name": {
+    "da": "Ventilator med varmegenvinding (ERV)",
+    "en": "Energy recovery ventilator (ERV)",
+    "es": "Ventilador recuperador de energía (ERV)",
+    "fr": "Ventilateur récupérateur d'énergie (VRE)",
+    "nl": "Ventilator med warmteterugwinning (WTW)",
+    "no": "Ventilator med varmegjenvinning (ERV)",
+    "sv": "Ventilator med värmeåtervinning (ERV)"
   }
 }

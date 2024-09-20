@@ -3,707 +3,707 @@
     "$extends": ["options"]
   },
   {
-    "id": "dashboard",
-    "type": "group",
-    "label": {
-      "en": "Dashboard display",
-      "fr": "Affichage sur le tableau de bord",
-      "nl": "Dashboardweergave",
-      "sv": "Instrumentpanelvisning",
-      "no": "Dashboardvisning",
-      "da": "Dashboardvisning",
-      "es": "Visualización del panel de control"
-    },
     "children": [
       {
         "id": "legionella",
-        "type": "checkbox",
         "label": {
+          "da": "Seneste anti-legionella drift",
           "en": "Last anti-legionella operation",
+          "es": "Última operación anti-legionela",
           "fr": "Dernière opération antilégionelle",
           "nl": "Laatste anti-legionella operatie",
-          "sv": "Senaste anti-legionella drift",
           "no": "Siste anti-legionella drift",
-          "da": "Seneste anti-legionella drift",
-          "es": "Última operación anti-legionela"
+          "sv": "Senaste anti-legionella drift"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "measure_temperature.condensing",
-        "type": "checkbox",
         "label": {
+          "da": "Kondenseringstemperatur",
           "en": "Condensing temperature",
+          "es": "Temperatura de condensación",
           "fr": "Température de condensation",
           "nl": "Condensatietemperatuur",
-          "sv": "Kondenseringstemperatur",
           "no": "Kondenseringstemperatur",
-          "da": "Kondenseringstemperatur",
-          "es": "Temperatura de condensación"
+          "sv": "Kondenseringstemperatur"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_temperature.target_curve",
-        "type": "checkbox",
         "label": {
+          "da": "Måltemperatur for varmekurve",
           "en": "Weather compensation curve target temperature",
+          "es": "Temperatura configurada de la curva de compensación",
           "fr": "Température cible de la courbe de compensation météo",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
-          "sv": "Måltemperatur för värmekurva",
           "no": "Ønsket temperatur for varmekurve",
-          "da": "Måltemperatur for varmekurve",
-          "es": "Temperatura configurada de la curva de compensación"
+          "sv": "Måltemperatur för värmekurva"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "measure_temperature.target_curve_zone2",
-        "type": "checkbox",
         "label": {
+          "da": "Måltemperatur for varmekurve - zone 2",
           "en": "Weather compensation curve target temperature - zone 2",
+          "es": "Temperatura configurada de la curva de compensación - zona 2",
           "fr": "Température cible de la courbe de compensation météo - zone 2",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
-          "sv": "Måltemperatur för värmekurva - zon 2",
           "no": "Ønsket temperatur for varmekurve - sone 2",
-          "da": "Måltemperatur for varmekurve - zone 2",
-          "es": "Temperatura configurada de la curva de compensación - zona 2"
+          "sv": "Måltemperatur för värmekurva - zon 2"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "alarm_generic.booster_heater1",
-        "type": "checkbox",
         "label": {
+          "da": "Tilførselsvarme 1",
           "en": "Booster heater 1",
+          "es": "Calentador de refuerzo 1",
           "fr": "Chauffage d'appoint 1",
           "nl": "Boosterverwarmingselement 1",
-          "sv": "Tillskottsvärmare 1",
           "no": "Tilleggsvarme 1",
-          "da": "Tilførselsvarme 1",
-          "es": "Calentador de refuerzo 1"
+          "sv": "Tillskottsvärmare 1"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "alarm_generic.booster_heater2",
-        "type": "checkbox",
         "label": {
+          "da": "Tilførselsvarme 2",
           "en": "Booster heater 2",
+          "es": "Calentador de refuerzo 2",
           "fr": "Chauffage d'appoint 2",
           "nl": "Boosterverwarmingselement 2",
-          "sv": "Tillskottsvärmare 2",
           "no": "Tilleggsvarme 2",
-          "da": "Tilførselsvarme 2",
-          "es": "Calentador de refuerzo 2"
+          "sv": "Tillskottsvärmare 2"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "alarm_generic.booster_heater2_plus",
-        "type": "checkbox",
         "label": {
+          "da": "Tilførselsvarme 2+",
           "en": "Booster heater 2+",
+          "es": "Calentador de refuerzo 2+",
           "fr": "Chauffage d'appoint 2+",
           "nl": "Boosterverwarmingselement 2+",
-          "sv": "Tillskottsvärmare 2+",
           "no": "Tilleggsvarme 2+",
-          "da": "Tilførselsvarme 2+",
-          "es": "Calentador de refuerzo 2+"
+          "sv": "Tillskottsvärmare 2+"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "alarm_generic.defrost",
-        "type": "checkbox",
         "label": {
+          "da": "Afrimningsfunktion",
           "en": "Defrost mode",
+          "es": "Modo de descongelación",
           "fr": "Mode dégivrage",
           "nl": "Ontdooimodus",
-          "sv": "Avfrostningsläge",
           "no": "Avfrostingsmodus",
-          "da": "Afrimningsfunktion",
-          "es": "Modo de descongelación"
+          "sv": "Avfrostningsläge"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "alarm_generic.eco_hot_water",
-        "type": "checkbox",
         "label": {
+          "da": "Eco-tilstand for varmtvandsindlæsning",
           "en": "Eco domestic hot water",
+          "es": "Agua caliente sanitaria eco",
           "fr": "Eau chaude sanitaire éco",
           "nl": "Sanitair eco warm water",
-          "sv": "Eco-läge för varmvattenladdning",
           "no": "Eco-modus for varmvannslastning",
-          "da": "Eco-tilstand for varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria eco"
+          "sv": "Eco-läge för varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "alarm_generic.immersion_heater",
-        "type": "checkbox",
         "label": {
+          "da": "Dyppvarmer",
           "en": "Immersion heater",
+          "es": "Calentador eléctrico sumergible",
           "fr": "Chauffe-eau électrique",
           "nl": "Dompelelement",
-          "sv": "Doppvärmare",
           "no": "Nedsenkbar varmekolbe",
-          "da": "Dyppvarmer",
-          "es": "Calentador eléctrico sumergible"
+          "sv": "Doppvärmare"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "id": "dashboard",
+    "label": {
+      "da": "Dashboardvisning",
+      "en": "Dashboard display",
+      "es": "Visualización del panel de control",
+      "fr": "Affichage sur le tableau de bord",
+      "nl": "Dashboardweergave",
+      "no": "Dashboardvisning",
+      "sv": "Instrumentpanelvisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Using external sensors",
-      "fr": "Utilisation de capteurs externes",
-      "nl": "Gebruik van externe sensoren",
-      "sv": "Användning av externa sensorer",
-      "no": "Bruk av eksterne sensorer",
-      "da": "Brug af eksterne sensorer",
-      "es": "Uso de sensores externos"
-    },
     "children": [
       {
-        "id": "measure_temperature.flow_zone1",
-        "type": "checkbox",
-        "label": {
-          "en": "Flow temperature",
-          "fr": "Température de flux",
-          "nl": "Aanvoertemperatuur",
-          "sv": "Framledningstemperatur",
-          "no": "Fremløpstemperatur ",
-          "da": "Fremledningstemperatur",
-          "es": "Temperatura de flujo"
-        },
-        "value": false,
         "hint": {
+          "da": "THW6",
           "en": "THW6",
+          "es": "THW6",
           "fr": "THW6",
           "nl": "THW6",
-          "sv": "THW6",
           "no": "THW6",
-          "da": "THW6",
-          "es": "THW6"
-        }
+          "sv": "THW6"
+        },
+        "id": "measure_temperature.flow_zone1",
+        "label": {
+          "da": "Fremledningstemperatur",
+          "en": "Flow temperature",
+          "es": "Temperatura de flujo",
+          "fr": "Température de flux",
+          "nl": "Aanvoertemperatuur",
+          "no": "Fremløpstemperatur ",
+          "sv": "Framledningstemperatur"
+        },
+        "type": "checkbox",
+        "value": false
       },
       {
-        "id": "measure_temperature.return_zone1",
-        "type": "checkbox",
-        "label": {
-          "en": "Return temperature",
-          "fr": "Température de retour",
-          "nl": "Retourtemperatuur",
-          "sv": "Returtemperatur",
-          "no": "Returtemperatur",
-          "da": "Returtemperatur",
-          "es": "Temperatura de retorno"
-        },
-        "value": false,
         "hint": {
+          "da": "THW7",
           "en": "THW7",
+          "es": "THW7",
           "fr": "THW7",
           "nl": "THW7",
-          "sv": "THW7",
           "no": "THW7",
-          "da": "THW7",
-          "es": "THW7"
-        }
+          "sv": "THW7"
+        },
+        "id": "measure_temperature.return_zone1",
+        "label": {
+          "da": "Returtemperatur",
+          "en": "Return temperature",
+          "es": "Temperatura de retorno",
+          "fr": "Température de retour",
+          "nl": "Retourtemperatuur",
+          "no": "Returtemperatur",
+          "sv": "Returtemperatur"
+        },
+        "type": "checkbox",
+        "value": false
       },
       {
-        "id": "measure_temperature.flow_zone2",
-        "type": "checkbox",
-        "label": {
-          "en": "Flow temperature - zone 2",
-          "fr": "Température de flux - zone 2",
-          "nl": "Aanvoertemperatuur - zone 2",
-          "sv": "Framledningstemperatur - zon 2",
-          "no": "Fremløpstemperatur  - sone 2",
-          "da": "Fremledningstemperatur - zone 2",
-          "es": "Temperatura de flujo - zona 2"
-        },
-        "value": false,
         "hint": {
+          "da": "THW8",
           "en": "THW8",
+          "es": "THW8",
           "fr": "THW8",
           "nl": "THW8",
-          "sv": "THW8",
           "no": "THW8",
-          "da": "THW8",
-          "es": "THW8"
-        }
+          "sv": "THW8"
+        },
+        "id": "measure_temperature.flow_zone2",
+        "label": {
+          "da": "Fremledningstemperatur - zone 2",
+          "en": "Flow temperature - zone 2",
+          "es": "Temperatura de flujo - zona 2",
+          "fr": "Température de flux - zone 2",
+          "nl": "Aanvoertemperatuur - zone 2",
+          "no": "Fremløpstemperatur  - sone 2",
+          "sv": "Framledningstemperatur - zon 2"
+        },
+        "type": "checkbox",
+        "value": false
       },
       {
-        "id": "measure_temperature.return_zone2",
-        "type": "checkbox",
-        "label": {
-          "en": "Return temperature - zone 2",
-          "fr": "Température de retour - zone 2",
-          "nl": "Retourtemperatuur - zone 2",
-          "sv": "Returtemperatur - zon 2",
-          "no": "Returtemperatur - sone 2",
-          "da": "Returtemperatur - zone 2",
-          "es": "Temperatura de retorno - zona 2"
-        },
-        "value": false,
         "hint": {
+          "da": "THW9",
           "en": "THW9",
+          "es": "THW9",
           "fr": "THW9",
           "nl": "THW9",
-          "sv": "THW9",
           "no": "THW9",
-          "da": "THW9",
-          "es": "THW9"
-        }
+          "sv": "THW9"
+        },
+        "id": "measure_temperature.return_zone2",
+        "label": {
+          "da": "Returtemperatur - zone 2",
+          "en": "Return temperature - zone 2",
+          "es": "Temperatura de retorno - zona 2",
+          "fr": "Température de retour - zone 2",
+          "nl": "Retourtemperatuur - zone 2",
+          "no": "Returtemperatur - sone 2",
+          "sv": "Returtemperatur - zon 2"
+        },
+        "type": "checkbox",
+        "value": false
       },
       {
-        "id": "measure_temperature.tank_water_mixing",
-        "type": "checkbox",
-        "label": {
-          "en": "Mixing tank water temperature",
-          "fr": "Température de l'eau du réservoir de mélange",
-          "nl": "Watertemperatuur voor mengtank",
-          "sv": "Vattentemperatur för blandningstank",
-          "no": "Vanntemperatur for blandingstank",
-          "da": "Vandtemperatur for blandingstank",
-          "es": "Temperatura del agua del tanque de mezcla"
-        },
-        "value": false,
         "hint": {
+          "da": "THW10",
           "en": "THW10",
+          "es": "THW10",
           "fr": "THW10",
           "nl": "THW10",
-          "sv": "THW10",
           "no": "THW10",
-          "da": "THW10",
-          "es": "THW10"
-        }
+          "sv": "THW10"
+        },
+        "id": "measure_temperature.tank_water_mixing",
+        "label": {
+          "da": "Vandtemperatur for blandingstank",
+          "en": "Mixing tank water temperature",
+          "es": "Temperatura del agua del tanque de mezcla",
+          "fr": "Température de l'eau du réservoir de mélange",
+          "nl": "Watertemperatuur voor mengtank",
+          "no": "Vanntemperatur for blandingstank",
+          "sv": "Vattentemperatur för blandningstank"
+        },
+        "type": "checkbox",
+        "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Brug af eksterne sensorer",
+      "en": "Using external sensors",
+      "es": "Uso de sensores externos",
+      "fr": "Utilisation de capteurs externes",
+      "nl": "Gebruik van externe sensoren",
+      "no": "Bruk av eksterne sensorer",
+      "sv": "Användning av externa sensorer"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Energy display",
-      "fr": "Affichage de l'énergie",
-      "nl": "Energieweergeven",
-      "sv": "Energivisning",
-      "no": "Energivisning",
-      "da": "Energivisning",
-      "es": "Visualización de la energía"
-    },
     "children": [
       {
         "id": "meter_power",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "meter_power.cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Energivisning",
+      "en": "Energy display",
+      "es": "Visualización de la energía",
+      "fr": "Affichage de l'énergie",
+      "nl": "Energieweergeven",
+      "no": "Energivisning",
+      "sv": "Energivisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Produced energy display",
-      "fr": "Affichage de l'énergie produite",
-      "nl": "Weergave van geproduceerde energie",
-      "sv": "Visning av producerad energi",
-      "no": "Visning av produsert energi",
-      "da": "Visning af produceret energi",
-      "es": "Visualización de la energía producida"
-    },
     "children": [
       {
         "id": "meter_power.produced",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "meter_power.produced_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.produced_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.produced_hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Visning af produceret energi",
+      "en": "Produced energy display",
+      "es": "Visualización de la energía producida",
+      "fr": "Affichage de l'énergie produite",
+      "nl": "Weergave van geproduceerde energie",
+      "no": "Visning av produsert energi",
+      "sv": "Visning av producerad energi"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "CoP display",
-      "fr": "Affichage du CoP",
-      "nl": "CoP-weergeven",
-      "sv": "CoP-visning",
-      "no": "CoP-visning",
-      "da": "CoP-visning",
-      "es": "Visualización del CoP"
-    },
     "children": [
       {
         "id": "meter_power.cop",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "meter_power.cop_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.cop_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.cop_hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "CoP-visning",
+      "en": "CoP display",
+      "es": "Visualización del CoP",
+      "fr": "Affichage du CoP",
+      "nl": "CoP-weergeven",
+      "no": "CoP-visning",
+      "sv": "CoP-visning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Daily energy display",
-      "fr": "Affichage de l'énergie quotidienne",
-      "nl": "Dagelijkse energieweergeven",
-      "sv": "Daglig energivisning",
-      "no": "Daglig energivisning",
-      "da": "Daglig energivisning",
-      "es": "Visualización de la energía diaria"
-    },
     "children": [
       {
         "id": "meter_power.daily",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.daily_hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Daglig energivisning",
+      "en": "Daily energy display",
+      "es": "Visualización de la energía diaria",
+      "fr": "Affichage de l'énergie quotidienne",
+      "nl": "Dagelijkse energieweergeven",
+      "no": "Daglig energivisning",
+      "sv": "Daglig energivisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Daily produced energy display",
-      "fr": "Affichage de l'énergie produite quotidienne",
-      "nl": "Weergave van dagelijks geproduceerde energie",
-      "sv": "Daglig producerad energivisning",
-      "no": "Daglig produsert energivisning",
-      "da": "Daglig produceret energivisning",
-      "es": "Visualización de la energía producida diaria"
-    },
     "children": [
       {
         "id": "meter_power.produced_daily",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.produced_daily_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.produced_daily_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.produced_daily_hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Daglig produceret energivisning",
+      "en": "Daily produced energy display",
+      "es": "Visualización de la energía producida diaria",
+      "fr": "Affichage de l'énergie produite quotidienne",
+      "nl": "Weergave van dagelijks geproduceerde energie",
+      "no": "Daglig produsert energivisning",
+      "sv": "Daglig producerad energivisning"
+    },
+    "type": "group"
   },
   {
-    "type": "group",
-    "label": {
-      "en": "Daily CoP display",
-      "fr": "Affichage du CoP quotidien",
-      "nl": "Dagelijkse CoP-weergeven",
-      "sv": "Daglig CoP-visning",
-      "no": "Daglig CoP-visning",
-      "da": "Daglig CoP-visning",
-      "es": "Visualización del CoP diario"
-    },
     "children": [
       {
         "id": "meter_power.cop_daily",
-        "type": "checkbox",
         "label": {
+          "da": "Alle tilstande",
           "en": "All modes",
+          "es": "Todos los modos",
           "fr": "Tous modes",
           "nl": "Alle modi",
-          "sv": "Alla lägen",
           "no": "Alle moduser",
-          "da": "Alle tilstande",
-          "es": "Todos los modos"
+          "sv": "Alla lägen"
         },
+        "type": "checkbox",
         "value": true
       },
       {
         "id": "meter_power.cop_daily_cooling",
-        "type": "checkbox",
         "label": {
+          "da": "Køling",
           "en": "Cooling",
+          "es": "Enfriamiento",
           "fr": "Refroidissement",
           "nl": "Koeling",
-          "sv": "Kylning",
           "no": "Kjøling",
-          "da": "Køling",
-          "es": "Enfriamiento"
+          "sv": "Kylning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.cop_daily_heating",
-        "type": "checkbox",
         "label": {
+          "da": "Opvarmning",
           "en": "Heating",
+          "es": "Calefacción",
           "fr": "Chauffage",
           "nl": "Verwarming",
-          "sv": "Uppvärmning",
           "no": "Oppvarming",
-          "da": "Opvarmning",
-          "es": "Calefacción"
+          "sv": "Uppvärmning"
         },
+        "type": "checkbox",
         "value": false
       },
       {
         "id": "meter_power.cop_daily_hotwater",
-        "type": "checkbox",
         "label": {
+          "da": "Varmtvandsindlæsning",
           "en": "Domestic hot water",
+          "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
           "nl": "Sanitair warm water",
-          "sv": "Varmvattenladdning",
           "no": "Varmvannslastning",
-          "da": "Varmtvandsindlæsning",
-          "es": "Agua caliente sanitaria"
+          "sv": "Varmvattenladdning"
         },
+        "type": "checkbox",
         "value": false
       }
-    ]
+    ],
+    "label": {
+      "da": "Daglig CoP-visning",
+      "en": "Daily CoP display",
+      "es": "Visualización del CoP diario",
+      "fr": "Affichage du CoP quotidien",
+      "nl": "Dagelijkse CoP-weergeven",
+      "no": "Daglig CoP-visning",
+      "sv": "Daglig CoP-visning"
+    },
+    "type": "group"
   }
 ]
