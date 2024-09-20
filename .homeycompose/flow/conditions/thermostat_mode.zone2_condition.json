@@ -1,27 +1,9 @@
 {
-  "title": {
-    "en": "Thermostat mode !{{is|is not}} in zone 2",
-    "fr": "Mode thermostat !{{est|n'est pas}} dans la zone 2",
-    "nl": "Thermostaat modus !{{is|is niet}} in zone 2",
-    "sv": "Termostatläge !{{är|är inte}} i zon 2",
-    "no": "Termostatmodus !{{er|er ikke}} i sone 2",
-    "da": "Termostattilstand !{{er|er ikke}} i zone 2",
-    "es": "El modo del termostato !{{está|no está}} en zona 2"
-  },
-  "titleFormatted": {
-    "en": "Thermostat mode !{{is|is not}} [[thermostat_mode]] in zone 2",
-    "fr": "Mode thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
-    "nl": "Thermostaat modus !{{is|is niet}} [[thermostat_mode]] in zone 2",
-    "sv": "Termostatläge !{{är|är inte}} [[thermostat_mode]] i zon 2",
-    "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",
-    "da": "Termostattilstand !{{er|er ikke}} [[thermostat_mode]] i zone 2",
-    "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en zona 2"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2"
+      "type": "device"
     },
     {
       "name": "thermostat_mode",
@@ -30,73 +12,91 @@
         {
           "id": "room",
           "title": {
+            "da": "Indendørs føler",
             "en": "Indoor temperature",
+            "es": "Temperatura interior",
             "fr": "Température intérieure",
             "nl": "Binnentemperatuur",
-            "sv": "Inomhusgivare",
             "no": "Innendørs føler",
-            "da": "Indendørs føler",
-            "es": "Temperatura interior"
+            "sv": "Inomhusgivare"
           }
         },
         {
           "id": "flow",
           "title": {
+            "da": "Fast fremledningstemperatur",
             "en": "Fixed flow temperature",
+            "es": "Temperatura de flujo fija",
             "fr": "Température de flux fixe",
             "nl": "Vaste aanvoertemperatuur",
-            "sv": "Fast framledningstemperatur",
             "no": "Fast fremløpstemperatur",
-            "da": "Fast fremledningstemperatur",
-            "es": "Temperatura de flujo fija"
+            "sv": "Fast framledningstemperatur"
           }
         },
         {
           "id": "curve",
           "title": {
+            "da": "Varmekurve",
             "en": "Weather compensation curve",
+            "es": "Curva de compensación climática",
             "fr": "Courbe de compensation météo",
             "nl": "Weerscompensatiecurve",
-            "sv": "Värmekurva",
             "no": "Varmekurve",
-            "da": "Varmekurve",
-            "es": "Curva de compensación climática"
+            "sv": "Värmekurva"
           }
         },
         {
           "id": "room_cool",
           "title": {
+            "da": "Indendørs føler - køling",
             "en": "Indoor temperature - cooling",
+            "es": "Temperatura interior - enfriamiento",
             "fr": "Température intérieure - refroidissement",
             "nl": "Binnentemperatuur - koeling",
-            "sv": "Inomhusgivare - kylning",
             "no": "Innendørs føler - kjøling",
-            "da": "Indendørs føler - køling",
-            "es": "Temperatura interior - enfriamiento"
+            "sv": "Inomhusgivare - kylning"
           }
         },
         {
           "id": "flow_cool",
           "title": {
+            "da": "Fast fremledningstemperatur - køling",
             "en": "Fixed flow temperature - cooling",
+            "es": "Temperatura de flujo fija - enfriamiento",
             "fr": "Température de flux fixe - refroidissement",
             "nl": "Vaste aanvoertemperatuur - koeling",
-            "sv": "Fast framledningstemperatur - kylning",
             "no": "Fast fremløpstemperatur - kjøling",
-            "da": "Fast fremledningstemperatur - køling",
-            "es": "Temperatura de flujo fija - enfriamiento"
+            "sv": "Fast framledningstemperatur - kylning"
           }
         }
       ]
     }
   ],
   "hint": {
+    "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
     "en": "Some values may not be available on your device.",
+    "es": "Algunos valores pueden no estar disponibles en su dispositivo.",
     "fr": "Certaines valeurs peuvent ne pas être disponibles sur votre appareil.",
     "nl": "Sommige waarden zijn mogelijk niet beschikbaar op uw apparaat.",
-    "sv": "Vissa värden kanske inte är tillgängliga på din enhet.",
     "no": "Noen verdier kan ikke være tilgjengelige på enheten din.",
-    "da": "Nogle værdier er måske ikke tilgængelige på din enhed.",
-    "es": "Algunos valores pueden no estar disponibles en su dispositivo."
+    "sv": "Vissa värden kanske inte är tillgängliga på din enhet."
+  },
+  "title": {
+    "da": "Termostattilstand !{{er|er ikke}} i zone 2",
+    "en": "Thermostat mode !{{is|is not}} in zone 2",
+    "es": "El modo del termostato !{{está|no está}} en zona 2",
+    "fr": "Mode thermostat !{{est|n'est pas}} dans la zone 2",
+    "nl": "Thermostaat modus !{{is|is niet}} in zone 2",
+    "no": "Termostatmodus !{{er|er ikke}} i sone 2",
+    "sv": "Termostatläge !{{är|är inte}} i zon 2"
+  },
+  "titleFormatted": {
+    "da": "Termostattilstand !{{er|er ikke}} [[thermostat_mode]] i zone 2",
+    "en": "Thermostat mode !{{is|is not}} [[thermostat_mode]] in zone 2",
+    "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en zona 2",
+    "fr": "Mode thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
+    "nl": "Thermostaat modus !{{is|is niet}} [[thermostat_mode]] in zone 2",
+    "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",
+    "sv": "Termostatläge !{{är|är inte}} [[thermostat_mode]] i zon 2"
   }
 }

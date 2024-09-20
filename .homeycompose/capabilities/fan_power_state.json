@@ -1,17 +1,17 @@
 {
-  "type": "number",
+  "getable": true,
+  "icon": "/assets/fan_power_state.svg",
+  "insights": true,
+  "setable": false,
   "title": {
+    "da": "Aktuel blæserhastighed",
     "en": "Actual fan speed",
+    "es": "Velocidad actual del ventilador",
     "fr": "Vitesse actuelle du ventilateur",
     "nl": "Huidige ventilatiesnelheid",
-    "sv": "Aktuell fläkthastighet",
     "no": "Aktuell viftehastighet",
-    "da": "Aktuel blæserhastighed",
-    "es": "Velocidad actual del ventilador"
+    "sv": "Aktuell fläkthastighet"
   },
-  "getable": true,
-  "setable": false,
-  "insights": true,
-  "uiComponent": "sensor",
-  "icon": "/assets/fan_power_state.svg"
+  "type": "number",
+  "uiComponent": "sensor"
 }

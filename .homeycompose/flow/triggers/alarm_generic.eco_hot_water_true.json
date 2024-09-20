@@ -1,18 +1,18 @@
 {
-  "title": {
-    "en": "The eco domestic hot water turned on",
-    "fr": "L'eau chaude sanitaire éco s'est activée",
-    "nl": "De eco sanitair warm water gaat aan",
-    "sv": "Eco-läge för varmvattenladdning är aktiverat",
-    "no": "Eco-modus for varmvannslastning er aktivert",
-    "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
-    "es": "El agua caliente sanitaria eco se ha activado"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.eco_hot_water"
+      "type": "device"
     }
-  ]
+  ],
+  "title": {
+    "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
+    "en": "The eco domestic hot water turned on",
+    "es": "El agua caliente sanitaria eco se ha activado",
+    "fr": "L'eau chaude sanitaire éco s'est activée",
+    "nl": "De eco sanitair warm water gaat aan",
+    "no": "Eco-modus for varmvannslastning er aktivert",
+    "sv": "Eco-läge för varmvattenladdning är aktiverat"
+  }
 }

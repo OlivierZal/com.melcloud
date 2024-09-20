@@ -1,16 +1,16 @@
 {
-  "type": "string",
+  "getable": true,
+  "icon": "/assets/legionella.svg",
+  "setable": false,
   "title": {
+    "da": "Seneste anti-legionella drift",
     "en": "Last anti-legionella operation",
+    "es": "Última operación anti-legionela",
     "fr": "Dernière opération antilégionelle",
     "nl": "Laatste anti-legionella operatie",
-    "sv": "Senaste anti-legionella drift",
     "no": "Siste anti-legionella drift",
-    "da": "Seneste anti-legionella drift",
-    "es": "Última operación anti-legionela"
+    "sv": "Senaste anti-legionella drift"
   },
-  "getable": true,
-  "setable": false,
-  "uiComponent": "sensor",
-  "icon": "/assets/legionella.svg"
+  "type": "string",
+  "uiComponent": "sensor"
 }

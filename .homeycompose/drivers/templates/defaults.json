@@ -1,10 +1,10 @@
 {
+  "class": "heatpump",
+  "icon": "{{driverAssetsPath}}/icon.svg",
   "images": {
     "large": "{{driverAssetsPath}}/images/large.png",
     "small": "{{driverAssetsPath}}/images/small.png"
   },
-  "icon": "{{driverAssetsPath}}/icon.svg",
-  "class": "heatpump",
   "pair": [
     {
       "id": "loading",
@@ -12,53 +12,53 @@
     },
     {
       "id": "login",
-      "template": "login_credentials",
       "options": {
         "logo": "logo.png",
-        "usernameLabel": {
-          "en": "Username",
-          "fr": "Nom d'utilisateur",
-          "nl": "Gebruikersnaam",
-          "sv": "Användarnamn",
-          "no": "Brukernavn",
-          "da": "Brugernavn",
-          "es": "Nombre de usuario"
-        },
-        "usernamePlaceholder": {
-          "en": "user@domain.com",
-          "fr": "utilisateur@domain.fr",
-          "nl": "gebruiker@domain.nl",
-          "sv": "anvandare@domain.se",
-          "no": "bruker@domain.no",
-          "da": "bruger@domain.dk",
-          "es": "usuario@domain.es"
-        },
         "passwordLabel": {
+          "da": "Adgangskode",
           "en": "Password",
+          "es": "Contraseña",
           "fr": "Mot de passe",
           "nl": "Wachtwoord",
-          "sv": "Lösenord",
           "no": "Passord",
-          "da": "Adgangskode",
-          "es": "Contraseña"
+          "sv": "Lösenord"
         },
         "passwordPlaceholder": {
+          "da": "P4ssw0rd",
           "en": "P4ssw0rd",
+          "es": "P4ssw0rd",
           "fr": "P4ssw0rd",
           "nl": "P4ssw0rd",
-          "sv": "P4ssw0rd",
           "no": "P4ssw0rd",
-          "da": "P4ssw0rd",
-          "es": "P4ssw0rd"
+          "sv": "P4ssw0rd"
+        },
+        "usernameLabel": {
+          "da": "Brugernavn",
+          "en": "Username",
+          "es": "Nombre de usuario",
+          "fr": "Nom d'utilisateur",
+          "nl": "Gebruikersnaam",
+          "no": "Brukernavn",
+          "sv": "Användarnamn"
+        },
+        "usernamePlaceholder": {
+          "da": "bruger@domain.dk",
+          "en": "user@domain.com",
+          "es": "usuario@domain.es",
+          "fr": "utilisateur@domain.fr",
+          "nl": "gebruiker@domain.nl",
+          "no": "bruker@domain.no",
+          "sv": "anvandare@domain.se"
         }
-      }
+      },
+      "template": "login_credentials"
     },
     {
       "id": "list_devices",
-      "template": "list_devices",
       "navigation": {
         "next": "add_devices"
-      }
+      },
+      "template": "list_devices"
     },
     {
       "id": "add_devices",
@@ -68,46 +68,46 @@
   "repair": [
     {
       "id": "login",
-      "template": "login_credentials",
       "options": {
         "logo": "logo.png",
-        "usernameLabel": {
-          "en": "Username",
-          "fr": "Nom d'utilisateur",
-          "nl": "Gebruikersnaam",
-          "sv": "Användarnamn",
-          "no": "Brukernavn",
-          "da": "Brugernavn",
-          "es": "Nombre de usuario"
-        },
-        "usernamePlaceholder": {
-          "en": "user@domain.com",
-          "fr": "utilisateur@domain.fr",
-          "nl": "gebruiker@domain.nl",
-          "sv": "anvandare@domain.se",
-          "no": "bruker@domain.no",
-          "da": "bruger@domain.dk",
-          "es": "usuario@domain.es"
-        },
         "passwordLabel": {
+          "da": "Adgangskode",
           "en": "Password",
+          "es": "Contraseña",
           "fr": "Mot de passe",
           "nl": "Wachtwoord",
-          "sv": "Lösenord",
           "no": "Passord",
-          "da": "Adgangskode",
-          "es": "Contraseña"
+          "sv": "Lösenord"
         },
         "passwordPlaceholder": {
+          "da": "P4ssw0rd",
           "en": "P4ssw0rd",
+          "es": "P4ssw0rd",
           "fr": "P4ssw0rd",
           "nl": "P4ssw0rd",
-          "sv": "P4ssw0rd",
           "no": "P4ssw0rd",
-          "da": "P4ssw0rd",
-          "es": "P4ssw0rd"
+          "sv": "P4ssw0rd"
+        },
+        "usernameLabel": {
+          "da": "Brugernavn",
+          "en": "Username",
+          "es": "Nombre de usuario",
+          "fr": "Nom d'utilisateur",
+          "nl": "Gebruikersnaam",
+          "no": "Brukernavn",
+          "sv": "Användarnamn"
+        },
+        "usernamePlaceholder": {
+          "da": "bruger@domain.dk",
+          "en": "user@domain.com",
+          "es": "usuario@domain.es",
+          "fr": "utilisateur@domain.fr",
+          "nl": "gebruiker@domain.nl",
+          "no": "bruker@domain.no",
+          "sv": "anvandare@domain.se"
         }
-      }
+      },
+      "template": "login_credentials"
     }
   ]
 }

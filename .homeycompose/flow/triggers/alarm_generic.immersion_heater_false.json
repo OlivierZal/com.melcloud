@@ -1,18 +1,18 @@
 {
-  "title": {
-    "en": "The immersion heater turned off",
-    "fr": "Le chauffe-eau électrique s'est désactivé",
-    "nl": "De dompelelement ging uit",
-    "sv": "Doppvärmaren är inaktiverad",
-    "no": "Nedsenkbar varmekolbe er deaktivert",
-    "da": "Dyppvarmeren blev deaktiveret",
-    "es": "El calentador eléctrico sumergible se ha desactivado"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater",
       "name": "device",
-      "filter": "driver_id=melcloud_atw&capabilities=alarm_generic.immersion_heater"
+      "type": "device"
     }
-  ]
+  ],
+  "title": {
+    "da": "Dyppvarmeren blev deaktiveret",
+    "en": "The immersion heater turned off",
+    "es": "El calentador eléctrico sumergible se ha desactivado",
+    "fr": "Le chauffe-eau électrique s'est désactivé",
+    "nl": "De dompelelement ging uit",
+    "no": "Nedsenkbar varmekolbe er deaktivert",
+    "sv": "Doppvärmaren är inaktiverad"
+  }
 }

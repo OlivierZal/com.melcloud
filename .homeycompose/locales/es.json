@@ -10,9 +10,6 @@
       "true": "Sí"
     },
     "buildings": {
-      "zone": {
-        "not_found": "Zona no encontrada"
-      },
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
         "max": "Temperatura máxima",
@@ -25,7 +22,10 @@
         "start_date": "Fecha de inicio"
       },
       "legend": "Configuración de los edificios",
-      "update": "Actualizar"
+      "update": "Actualizar",
+      "zone": {
+        "not_found": "Zona no encontrada"
+      }
     },
     "devices": {
       "apply": {

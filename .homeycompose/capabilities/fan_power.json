@@ -1,19 +1,19 @@
 {
-  "type": "number",
+  "getable": true,
+  "insights": true,
+  "max": 5,
+  "min": 0,
+  "setable": true,
+  "step": 1,
   "title": {
+    "da": "Blæserhastighed",
     "en": "Fan speed",
+    "es": "Velocidad del ventilador",
     "fr": "Vitesse du ventilateur",
     "nl": "Ventilatiesnelheid",
-    "sv": "Fläkthastighet",
     "no": "Viftehastighet",
-    "da": "Blæserhastighed",
-    "es": "Velocidad del ventilador"
+    "sv": "Fläkthastighet"
   },
-  "getable": true,
-  "setable": true,
-  "insights": true,
-  "uiComponent": "slider",
-  "min": 0,
-  "max": 5,
-  "step": 1
+  "type": "number",
+  "uiComponent": "slider"
 }

@@ -1,14 +1,5 @@
 {
   "$extends": ["defaults"],
-  "name": {
-    "en": "Air-to-air heat pump",
-    "fr": "Pompe à chaleur air-air",
-    "nl": "Lucht-lucht warmtepomp",
-    "sv": "Luft-luft värmepump",
-    "no": "Luft-luft varmepumpe",
-    "da": "Luft-luft varmepumpe",
-    "es": "Bomba de calor aire-aire"
-  },
   "capabilities": [
     "onoff",
     "measure_temperature",
@@ -45,32 +36,32 @@
   ],
   "capabilitiesOptions": {
     "alarm_generic.silent": {
-      "title": {
-        "en": "Silent mode",
-        "fr": "Mode silencieux",
-        "nl": "Stille modus",
-        "sv": "Tyst läge",
-        "no": "Stille modus",
-        "da": "Stille tilstand",
-        "es": "Modo silencioso"
-      },
-      "insightsTitleTrue": {
-        "en": "Silent mode turned on",
-        "fr": "Mode silencieux s'est activé",
-        "nl": "Stille modus ging af",
-        "sv": "Tyst läge aktiverat",
-        "no": "Stille modus aktivert",
-        "da": "Stille tilstand blev aktiveret",
-        "es": "Modo silencioso activado"
-      },
       "insightsTitleFalse": {
+        "da": "Stille tilstand blev deaktiveret",
         "en": "Silent mode turned off",
+        "es": "Modo silencioso desactivado",
         "fr": "Mode silencieux s'est désactivé",
         "nl": "Stille modus ging uit",
-        "sv": "Tyst läge inaktiverat",
         "no": "Stille modus deaktivert",
-        "da": "Stille tilstand blev deaktiveret",
-        "es": "Modo silencioso desactivado"
+        "sv": "Tyst läge inaktiverat"
+      },
+      "insightsTitleTrue": {
+        "da": "Stille tilstand blev aktiveret",
+        "en": "Silent mode turned on",
+        "es": "Modo silencioso activado",
+        "fr": "Mode silencieux s'est activé",
+        "nl": "Stille modus ging af",
+        "no": "Stille modus aktivert",
+        "sv": "Tyst läge aktiverat"
+      },
+      "title": {
+        "da": "Stille tilstand",
+        "en": "Silent mode",
+        "es": "Modo silencioso",
+        "fr": "Mode silencieux",
+        "nl": "Stille modus",
+        "no": "Stille modus",
+        "sv": "Tyst läge"
       }
     },
     "measure_power": {
@@ -78,323 +69,332 @@
     },
     "measure_power.auto": {
       "title": {
+        "da": "Effekt - automatisk",
         "en": "Power - automatic",
+        "es": "Potencia - automático",
         "fr": "Puissance - automatique",
         "nl": "Vermogen - automatische",
-        "sv": "Effekt - automatiskt",
         "no": "Effekt - automatisk",
-        "da": "Effekt - automatisk",
-        "es": "Potencia - automático"
+        "sv": "Effekt - automatiskt"
       }
     },
     "measure_power.cooling": {
       "title": {
+        "da": "Effekt - køling",
         "en": "Power - cooling",
+        "es": "Potencia - enfriamiento",
         "fr": "Puissance - refroidissement",
         "nl": "Vermogen - koeling",
-        "sv": "Effekt - kylning",
         "no": "Effekt - kjøling",
-        "da": "Effekt - køling",
-        "es": "Potencia - enfriamiento"
+        "sv": "Effekt - kylning"
       }
     },
     "measure_power.dry": {
       "title": {
+        "da": "Effekt - affugtning",
         "en": "Power - dry",
+        "es": "Potencia - desumidificación",
         "fr": "Puissance - déshumidification",
         "nl": "Vermogen - ontvochtiging",
-        "sv": "Effekt - avfuktning",
         "no": "Effekt - avfukting",
-        "da": "Effekt - affugtning",
-        "es": "Potencia - desumidificación"
+        "sv": "Effekt - avfuktning"
       }
     },
     "measure_power.fan": {
       "title": {
+        "da": "Effekt - blæser",
         "en": "Power - fan",
+        "es": "Potencia - ventilador",
         "fr": "Puissance - ventilateur",
         "nl": "Vermogen - ventilator",
-        "sv": "Effekt - fläkt",
         "no": "Effekt - vifte",
-        "da": "Effekt - blæser",
-        "es": "Potencia - ventilador"
+        "sv": "Effekt - fläkt"
       }
     },
     "measure_power.heating": {
       "title": {
+        "da": "Effekt - opvarmning",
         "en": "Power - heating",
+        "es": "Potencia - calefacción",
         "fr": "Puissance - chauffage",
         "nl": "Vermogen - verwarming",
-        "sv": "Effekt - uppvärmning",
         "no": "Effekt - oppvarming",
-        "da": "Effekt - opvarmning",
-        "es": "Potencia - calefacción"
+        "sv": "Effekt - uppvärmning"
       }
     },
     "measure_power.other": {
       "title": {
+        "da": "Effekt - andet",
         "en": "Power - other",
+        "es": "Potencia - otro",
         "fr": "Puissance - autre",
         "nl": "Vermogen - andere",
-        "sv": "Effekt - övrigt",
         "no": "Effekt - annet",
-        "da": "Effekt - andet",
-        "es": "Potencia - otro"
+        "sv": "Effekt - övrigt"
       }
     },
     "measure_power.wifi": {
       "title": {
+        "da": "Wi-Fi signalstyrke",
         "en": "Wi-Fi signal strength",
+        "es": "Potencia de la señal Wi-Fi",
         "fr": "Puissance du signal Wi-Fi",
         "nl": "Wi-Fi signaalsterkte",
-        "sv": "Wi-Fi signalstyrka",
         "no": "Wi-Fi signalstyrke",
-        "da": "Wi-Fi signalstyrke",
-        "es": "Potencia de la señal Wi-Fi"
+        "sv": "Wi-Fi signalstyrka"
       },
       "units": {
+        "da": "dBm",
         "en": "dBm",
+        "es": "dBm",
         "fr": "dBm",
         "nl": "dBm",
-        "sv": "dBm",
         "no": "dBm",
-        "da": "dBm",
-        "es": "dBm"
+        "sv": "dBm"
       }
     },
     "measure_temperature.outdoor": {
       "title": {
+        "da": "Udendørstemperatur",
         "en": "Outdoor temperature",
+        "es": "Temperatura exterior",
         "fr": "Température extérieure",
         "nl": "Buitentemperatuur",
-        "sv": "Utomhustemperatur",
         "no": "Utetemperatur",
-        "da": "Udendørstemperatur",
-        "es": "Temperatura exterior"
+        "sv": "Utomhustemperatur"
       }
     },
     "meter_power.auto": {
       "title": {
+        "da": "Energi - automatisk",
         "en": "Energy - automatic",
+        "es": "Energía - automático",
         "fr": "Énergie - automatique",
         "nl": "Energie - automatische",
-        "sv": "Energi - automatiskt",
         "no": "Energi - automatisk",
-        "da": "Energi - automatisk",
-        "es": "Energía - automático"
+        "sv": "Energi - automatiskt"
       }
     },
     "meter_power.cooling": {
       "title": {
+        "da": "Energi - køling",
         "en": "Energy - cooling",
+        "es": "Energía - enfriamiento",
         "fr": "Énergie - refroidissement",
         "nl": "Energie - koeling",
-        "sv": "Energi - kylning",
         "no": "Energi - kjøling",
-        "da": "Energi - køling",
-        "es": "Energía - enfriamiento"
-      }
-    },
-    "meter_power.dry": {
-      "title": {
-        "en": "Energy - dry",
-        "fr": "Énergie - déshumidification",
-        "nl": "Energie - ontvochtiging",
-        "sv": "Energi - avfuktning",
-        "no": "Energi - avfukting",
-        "da": "Energi - affugtning",
-        "es": "Energía - desumidificación"
-      }
-    },
-    "meter_power.fan": {
-      "title": {
-        "en": "Energy - fan",
-        "fr": "Énergie - ventilateur",
-        "nl": "Energie - ventilator",
-        "sv": "Energi - fläkt",
-        "no": "Energi - vifte",
-        "da": "Energi - blæser",
-        "es": "Energía - ventilador"
-      }
-    },
-    "meter_power.heating": {
-      "title": {
-        "en": "Energy - heating",
-        "fr": "Énergie - chauffage",
-        "nl": "Energie - verwarming",
-        "sv": "Energi - uppvärmning",
-        "no": "Energi - oppvarming",
-        "da": "Energi - opvarmning",
-        "es": "Energía - calefacción"
-      }
-    },
-    "meter_power.other": {
-      "title": {
-        "en": "Energy - other",
-        "fr": "Énergie - autre",
-        "nl": "Energie - andere",
-        "sv": "Energi - övrigt",
-        "no": "Energi - annet",
-        "da": "Energi - andet",
-        "es": "Energía - otro"
+        "sv": "Energi - kylning"
       }
     },
     "meter_power.daily": {
       "title": {
+        "da": "Daglig energi",
         "en": "Daily energy",
+        "es": "Energía diaria",
         "fr": "Énergie quotidienne",
         "nl": "Dagelijkse energie",
-        "sv": "Daglig energi",
         "no": "Daglig energi",
-        "da": "Daglig energi",
-        "es": "Energía diaria"
+        "sv": "Daglig energi"
       }
     },
     "meter_power.daily_auto": {
       "title": {
+        "da": "Daglig energi - automatisk",
         "en": "Daily energy - automatic",
+        "es": "Energía diaria - automático",
         "fr": "Énergie quotidienne - automatique",
         "nl": "Dagelijkse energie - automatische",
-        "sv": "Daglig energi - automatiskt",
         "no": "Daglig energi - automatisk",
-        "da": "Daglig energi - automatisk",
-        "es": "Energía diaria - automático"
+        "sv": "Daglig energi - automatiskt"
       }
     },
     "meter_power.daily_cooling": {
       "title": {
+        "da": "Daglig energi - køling",
         "en": "Daily energy - cooling",
+        "es": "Energía diaria - enfriamiento",
         "fr": "Énergie quotidienne - refroidissement",
         "nl": "Dagelijkse energie - koeling",
-        "sv": "Daglig energi - kylning",
         "no": "Daglig energi - kjøling",
-        "da": "Daglig energi - køling",
-        "es": "Energía diaria - enfriamiento"
+        "sv": "Daglig energi - kylning"
       }
     },
     "meter_power.daily_dry": {
       "title": {
+        "da": "Daglig energi - affugtning",
         "en": "Daily energy - dry",
+        "es": "Energía diaria - desumidificación",
         "fr": "Énergie quotidienne - déshumidification",
         "nl": "Dagelijkse energie - ontvochtiging",
-        "sv": "Daglig energi - avfuktning",
         "no": "Daglig energi - avfukting",
-        "da": "Daglig energi - affugtning",
-        "es": "Energía diaria - desumidificación"
+        "sv": "Daglig energi - avfuktning"
       }
     },
     "meter_power.daily_fan": {
       "title": {
+        "da": "Daglig energi - blæser",
         "en": "Daily energy - fan",
+        "es": "Energía diaria - ventilación",
         "fr": "Énergie quotidienne - ventilateur",
         "nl": "Dagelijkse energie - ventilator",
-        "sv": "Daglig energi - fläkt",
         "no": "Daglig energi - vifte",
-        "da": "Daglig energi - blæser",
-        "es": "Energía diaria - ventilación"
+        "sv": "Daglig energi - fläkt"
       }
     },
     "meter_power.daily_heating": {
       "title": {
+        "da": "Daglig energi - opvarmning",
         "en": "Daily energy - heating",
+        "es": "Energía diaria - calefacción",
         "fr": "Énergie quotidienne - chauffage",
         "nl": "Dagelijkse energie - verwarming",
-        "sv": "Daglig energi - uppvärmning",
         "no": "Daglig energi - oppvarming",
-        "da": "Daglig energi - opvarmning",
-        "es": "Energía diaria - calefacción"
+        "sv": "Daglig energi - uppvärmning"
       }
     },
     "meter_power.daily_other": {
       "title": {
+        "da": "Daglig energi - andet",
         "en": "Daily energy - other",
+        "es": "Energía diaria - otro",
         "fr": "Énergie quotidienne - autre",
         "nl": "Dagelijkse energie - andere",
-        "sv": "Daglig energi - övrigt",
         "no": "Daglig energi - annet",
-        "da": "Daglig energi - andet",
-        "es": "Energía diaria - otro"
+        "sv": "Daglig energi - övrigt"
+      }
+    },
+    "meter_power.dry": {
+      "title": {
+        "da": "Energi - affugtning",
+        "en": "Energy - dry",
+        "es": "Energía - desumidificación",
+        "fr": "Énergie - déshumidification",
+        "nl": "Energie - ontvochtiging",
+        "no": "Energi - avfukting",
+        "sv": "Energi - avfuktning"
+      }
+    },
+    "meter_power.fan": {
+      "title": {
+        "da": "Energi - blæser",
+        "en": "Energy - fan",
+        "es": "Energía - ventilador",
+        "fr": "Énergie - ventilateur",
+        "nl": "Energie - ventilator",
+        "no": "Energi - vifte",
+        "sv": "Energi - fläkt"
+      }
+    },
+    "meter_power.heating": {
+      "title": {
+        "da": "Energi - opvarmning",
+        "en": "Energy - heating",
+        "es": "Energía - calefacción",
+        "fr": "Énergie - chauffage",
+        "nl": "Energie - verwarming",
+        "no": "Energi - oppvarming",
+        "sv": "Energi - uppvärmning"
+      }
+    },
+    "meter_power.other": {
+      "title": {
+        "da": "Energi - andet",
+        "en": "Energy - other",
+        "es": "Energía - otro",
+        "fr": "Énergie - autre",
+        "nl": "Energie - andere",
+        "no": "Energi - annet",
+        "sv": "Energi - övrigt"
       }
     },
     "target_temperature": {
-      "min": 10,
-      "max": 31
+      "max": 31,
+      "min": 10
     },
     "thermostat_mode": {
       "values": [
         {
           "id": "auto",
           "title": {
+            "da": "Automatisk",
             "en": "Automatic",
+            "es": "Automático",
             "fr": "Automatique",
             "nl": "Automatisch",
-            "sv": "Automatiskt",
             "no": "Automatisk",
-            "da": "Automatisk",
-            "es": "Automático"
+            "sv": "Automatiskt"
           }
         },
         {
           "id": "cool",
           "title": {
+            "da": "Køl ned",
             "en": "Cool",
+            "es": "Enfriar",
             "fr": "Refroidir",
             "nl": "Koelen",
-            "sv": "Kyla",
             "no": "Avkjøle",
-            "da": "Køl ned",
-            "es": "Enfriar"
+            "sv": "Kyla"
           }
         },
         {
           "id": "dry",
           "title": {
+            "da": "Affugte",
             "en": "Dry",
+            "es": "Deshumidificar",
             "fr": "Déshumidifier",
             "nl": "Ontvochtigen",
-            "sv": "Avfukta",
             "no": "Avfukte",
-            "da": "Affugte",
-            "es": "Deshumidificar"
+            "sv": "Avfukta"
           }
         },
         {
           "id": "fan",
           "title": {
+            "da": "Blæse",
             "en": "Fan",
+            "es": "Ventilar",
             "fr": "Ventiler",
             "nl": "Ventileren",
-            "sv": "Fläkta",
             "no": "Vifte",
-            "da": "Blæse",
-            "es": "Ventilar"
+            "sv": "Fläkta"
           }
         },
         {
           "id": "heat",
           "title": {
+            "da": "Opvarm",
             "en": "Heat",
+            "es": "Calentar",
             "fr": "Chauffer",
             "nl": "Verhitten",
-            "sv": "Värme",
             "no": "Varme",
-            "da": "Opvarm",
-            "es": "Calentar"
+            "sv": "Värme"
           }
         },
         {
           "id": "off",
           "title": {
+            "da": "Deaktiveret",
             "en": "Off",
+            "es": "Desactivado",
             "fr": "Désactivé",
             "nl": "Uit",
-            "sv": "Av",
             "no": "Av",
-            "da": "Deaktiveret",
-            "es": "Desactivado"
+            "sv": "Av"
           }
         }
       ]
     }
+  },
+  "name": {
+    "da": "Luft-luft varmepumpe",
+    "en": "Air-to-air heat pump",
+    "es": "Bomba de calor aire-aire",
+    "fr": "Pompe à chaleur air-air",
+    "nl": "Lucht-lucht warmtepomp",
+    "no": "Luft-luft varmepumpe",
+    "sv": "Luft-luft värmepump"
   }
 }

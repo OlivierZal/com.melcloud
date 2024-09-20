@@ -1,18 +1,18 @@
 {
-  "title": {
-    "en": "The silent mode is !{{on|off}}",
-    "fr": "Le mode silencieux est !{{en marche|arrêté}}",
-    "nl": "De stille modus is !{{aan|uit}}",
-    "sv": "Tyst läget är !{{på|av}}",
-    "no": "Stille modusen er !{{på|av}}",
-    "da": "Stille tilstanden er !{{tændt|slukket}}",
-    "es": "El modo silencioso está !{{activada|desactivada}}"
-  },
   "args": [
     {
-      "type": "device",
+      "filter": "driver_id=melcloud",
       "name": "device",
-      "filter": "driver_id=melcloud"
+      "type": "device"
     }
-  ]
+  ],
+  "title": {
+    "da": "Stille tilstanden er !{{tændt|slukket}}",
+    "en": "The silent mode is !{{on|off}}",
+    "es": "El modo silencioso está !{{activada|desactivada}}",
+    "fr": "Le mode silencieux est !{{en marche|arrêté}}",
+    "nl": "De stille modus is !{{aan|uit}}",
+    "no": "Stille modusen er !{{på|av}}",
+    "sv": "Tyst läget är !{{på|av}}"
+  }
 }

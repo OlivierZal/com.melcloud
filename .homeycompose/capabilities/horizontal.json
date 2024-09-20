@@ -1,112 +1,112 @@
 {
-  "type": "enum",
-  "title": {
-    "en": "Horizontal vane",
-    "fr": "Soufflage d'air horizontal",
-    "nl": "Uitblaasrichting horizontaal",
-    "sv": "Horisontell luftflödesriktning",
-    "no": "Horisontal luftflødesretning",
-    "da": "Horisontal luftflødesretning",
-    "es": "Descarga de aire horizontal"
-  },
   "getable": true,
   "setable": true,
+  "title": {
+    "da": "Horisontal luftflødesretning",
+    "en": "Horizontal vane",
+    "es": "Descarga de aire horizontal",
+    "fr": "Soufflage d'air horizontal",
+    "nl": "Uitblaasrichting horizontaal",
+    "no": "Horisontal luftflødesretning",
+    "sv": "Horisontell luftflödesriktning"
+  },
+  "type": "enum",
   "uiComponent": "picker",
   "values": [
     {
       "id": "auto",
       "title": {
+        "da": "Automatisk",
         "en": "Automatic",
+        "es": "Automático",
         "fr": "Automatique",
         "nl": "Automatisch",
-        "sv": "Automatiskt",
         "no": "Automatisk",
-        "da": "Automatisk",
-        "es": "Automático"
+        "sv": "Automatiskt"
       }
     },
     {
       "id": "leftwards",
       "title": {
+        "da": "Venstre",
         "en": "Leftwards",
+        "es": "Izquierda",
         "fr": "Gauche",
         "nl": "Links",
-        "sv": "Vänster",
         "no": "Venstre",
-        "da": "Venstre",
-        "es": "Izquierda"
+        "sv": "Vänster"
       }
     },
     {
       "id": "center_left",
       "title": {
+        "da": "Midt-venstre",
         "en": "Center-left",
+        "es": "Centro-izquierda",
         "fr": "Centre-gauche",
         "nl": "Midden-links",
-        "sv": "Mitten-vänster",
         "no": "Middelvenstre",
-        "da": "Midt-venstre",
-        "es": "Centro-izquierda"
+        "sv": "Mitten-vänster"
       }
     },
     {
       "id": "center",
       "title": {
+        "da": "Midten",
         "en": "Center",
+        "es": "Centro",
         "fr": "Centre",
         "nl": "Midden",
-        "sv": "Mitten",
         "no": "Midten",
-        "da": "Midten",
-        "es": "Centro"
+        "sv": "Mitten"
       }
     },
     {
       "id": "center_right",
       "title": {
+        "da": "Midt-højre",
         "en": "Center-right",
+        "es": "Centro-derecha",
         "fr": "Centre-droite",
         "nl": "Midden-rechts",
-        "sv": "Mitten-höger",
         "no": "Middelhøyre",
-        "da": "Midt-højre",
-        "es": "Centro-derecha"
+        "sv": "Mitten-höger"
       }
     },
     {
       "id": "rightwards",
       "title": {
+        "da": "Højre",
         "en": "Rightwards",
+        "es": "Derecha",
         "fr": "Droite",
         "nl": "Rechts",
-        "sv": "Höger",
         "no": "Høyre",
-        "da": "Højre",
-        "es": "Derecha"
+        "sv": "Höger"
       }
     },
     {
       "id": "wide",
       "title": {
+        "da": "Bred",
         "en": "Wide",
+        "es": "Ancho",
         "fr": "Large",
         "nl": "Breed",
-        "sv": "Bred",
         "no": "Bred",
-        "da": "Bred",
-        "es": "Ancho"
+        "sv": "Bred"
       }
     },
     {
       "id": "swing",
       "title": {
+        "da": "Sving",
         "en": "Swing",
+        "es": "Oscilación",
         "fr": "Balayage",
         "nl": "Swing",
-        "sv": "Svängning",
         "no": "Sving",
-        "da": "Sving",
-        "es": "Oscilación"
+        "sv": "Svängning"
       }
     }
   ]

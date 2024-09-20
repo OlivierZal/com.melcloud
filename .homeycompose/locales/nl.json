@@ -10,9 +10,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "zone": {
-        "not_found": "Zone niet gevonden"
-      },
       "frost_protection": {
         "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
         "max": "Maximale temperatuur",
@@ -25,7 +22,10 @@
         "start_date": "Begindatum"
       },
       "legend": "Gebouwinstellingen",
-      "update": "Updaten"
+      "update": "Updaten",
+      "zone": {
+        "not_found": "Zone niet gevonden"
+      }
     },
     "devices": {
       "apply": {
