@@ -1,6 +1,5 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "Slutdato mangler.",
     "zoneNotFound": "Zone ikke fundet."
   },
   "settings": {
@@ -60,6 +59,7 @@
     "holidayMode": {
       "enabled": "Aktiver <strong>ferietilstand</strong>",
       "endDate": "Slutdato",
+      "endDateMissing": "Slutdato mangler.",
       "startDate": "Startdato"
     },
     "intError": "__name__: skal være et heltal mellem __min__ og __max__.",

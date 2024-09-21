@@ -1,6 +1,5 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "Einddatum ontbreekt.",
     "zoneNotFound": "Zone niet gevonden."
   },
   "settings": {
@@ -60,6 +59,7 @@
     "holidayMode": {
       "enabled": "<strong>Vakantiemodus</strong> inschakelen",
       "endDate": "Einddatum",
+      "endDateMissing": "Einddatum ontbreekt.",
       "startDate": "Begindatum"
     },
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",

@@ -1,6 +1,5 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "La date de fin est manquante.",
     "zoneNotFound": "La zone est introuvable."
   },
   "settings": {
@@ -60,6 +59,7 @@
     "holidayMode": {
       "enabled": "Activer le <strong>mode vacances</strong>",
       "endDate": "Date de fin",
+      "endDateMissing": "La date de fin est manquante.",
       "startDate": "Date de début"
     },
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
