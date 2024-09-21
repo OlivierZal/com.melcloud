@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "La date de fin est manquante.",
+    "zoneNotFound": "La zone est introuvable."
+  },
   "settings": {
     "authenticate": {
       "button": "Se connecter",
@@ -10,20 +14,6 @@
       "true": "Oui"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Zone introuvable"
-      },
-      "frost_protection": {
-        "enabled": "Activer la <strong>protection contre le gel</strong>",
-        "max": "Température maximale",
-        "min": "Température minimale"
-      },
-      "holiday_mode": {
-        "date_missing": "La date de fin est manquante.",
-        "enabled": "Activer le <strong>mode vacances</strong>",
-        "end_date": "Date de fin",
-        "start_date": "Date de début"
-      },
       "legend": "Paramètres des bâtiments",
       "update": "Mettre à jour"
     },
@@ -62,10 +52,6 @@
       "see": "Voir les erreurs",
       "since": "depuis le"
     },
-    "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
-    "refresh": "Rafraîchir",
-    "success": "La mise à jour a réussi.",
-    "title": "Paramètres MELCloud",
     "frostProtection": {
       "enabled": "Activer la <strong>protection contre le gel</strong>",
       "max": "Température maximale",
@@ -75,17 +61,14 @@
       "enabled": "Activer le <strong>mode vacances</strong>",
       "endDate": "Date de fin",
       "startDate": "Date de début"
-    }
+    },
+    "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "refresh": "Rafraîchir",
+    "success": "La mise à jour a réussi.",
+    "title": "Paramètres MELCloud"
   },
   "warnings": {
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord.",
-    "device": {
-      "notFound": "Appareil introuvable."
-    },
     "deviceNotFound": "L'appareil est introuvable."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "La date de fin est manquante.",
-    "zoneNotFound": "La zone est introuvable."
   }
 }

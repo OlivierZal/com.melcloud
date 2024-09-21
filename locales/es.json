@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Falta la fecha de finalización.",
+    "zoneNotFound": "Zona no encontrada."
+  },
   "settings": {
     "authenticate": {
       "button": "Iniciar sesión",
@@ -10,20 +14,6 @@
       "true": "Sí"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Zona no encontrada"
-      },
-      "frost_protection": {
-        "enabled": "Activar <strong>protección contra el hielo</strong>",
-        "max": "Temperatura máxima",
-        "min": "Temperatura mínima"
-      },
-      "holiday_mode": {
-        "date_missing": "Falta la fecha de finalización.",
-        "enabled": "Activar <strong>modo vacaciones</strong>",
-        "end_date": "Fecha de finalización",
-        "start_date": "Fecha de inicio"
-      },
       "legend": "Configuración de los edificios",
       "update": "Actualizar"
     },
@@ -62,10 +52,6 @@
       "see": "Ver los errores",
       "since": "desde el"
     },
-    "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
-    "refresh": "Recargar",
-    "success": "Actualización exitosa.",
-    "title": "Configuración de MELCloud",
     "frostProtection": {
       "enabled": "Activar <strong>protección contra el hielo</strong>",
       "max": "Temperatura máxima",
@@ -75,17 +61,14 @@
       "enabled": "Activar <strong>modo vacaciones</strong>",
       "endDate": "Fecha de finalización",
       "startDate": "Fecha de inicio"
-    }
+    },
+    "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "refresh": "Recargar",
+    "success": "Actualización exitosa.",
+    "title": "Configuración de MELCloud"
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
-    "device": {
-      "notFound": "Dispositivo no encontrado."
-    },
     "deviceNotFound": "Dispositivo no encontrada."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "Falta la fecha de finalización.",
-    "zoneNotFound": "Zona no encontrada."
   }
 }
