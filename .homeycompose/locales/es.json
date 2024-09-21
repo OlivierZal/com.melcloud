@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Falta la fecha de finalización.",
+    "zoneNotFound": "Zona no encontrada."
+  },
   "settings": {
     "authenticate": {
       "button": "Iniciar sesión",
@@ -10,22 +14,8 @@
       "true": "Sí"
     },
     "buildings": {
-      "frost_protection": {
-        "enabled": "Activar <strong>protección contra el hielo</strong>",
-        "max": "Temperatura máxima",
-        "min": "Temperatura mínima"
-      },
-      "holiday_mode": {
-        "date_missing": "Falta la fecha de finalización.",
-        "enabled": "Activar <strong>modo vacaciones</strong>",
-        "end_date": "Fecha de finalización",
-        "start_date": "Fecha de inicio"
-      },
       "legend": "Configuración de los edificios",
-      "update": "Actualizar",
-      "zone": {
-        "not_found": "Zona no encontrada"
-      }
+      "update": "Actualizar"
     },
     "devices": {
       "apply": {
@@ -36,22 +26,22 @@
       "legend": "Configuración de los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autoajustar la temperatura del enfriamiento",
+    "devicesAta": {
+      "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
       "legend": "Configuración de los dispositivos aire-aire"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Configuración de los dispositivos aire-agua"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Fecha",
         "device": "Dispositivo",
         "error": "Error"
       },
       "error": "Elija una fecha anterior a\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "error",
         "1": "error",
         "234": "errores",
@@ -62,15 +52,23 @@
       "see": "Ver los errores",
       "since": "desde el"
     },
-    "int_error": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "frostProtection": {
+      "enabled": "Activar <strong>protección contra el hielo</strong>",
+      "max": "Temperatura máxima",
+      "min": "Temperatura mínima"
+    },
+    "holidayMode": {
+      "enabled": "Activar <strong>modo vacaciones</strong>",
+      "endDate": "Fecha de finalización",
+      "startDate": "Fecha de inicio"
+    },
+    "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
     "success": "Actualización exitosa.",
     "title": "Configuración de MELCloud"
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
-    "device": {
-      "not_found": "Dispositivo no encontrado."
-    }
+    "deviceNotFound": "Dispositivo no encontrada."
   }
 }

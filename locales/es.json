@@ -11,7 +11,7 @@
     },
     "buildings": {
       "zone": {
-        "not_found": "Zona no encontrada"
+        "notFound": "Zona no encontrada"
       },
       "frost_protection": {
         "enabled": "Activar <strong>protección contra el hielo</strong>",
@@ -36,22 +36,22 @@
       "legend": "Configuración de los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autoajustar la temperatura del enfriamiento",
+    "devicesAta": {
+      "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
       "legend": "Configuración de los dispositivos aire-aire"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Configuración de los dispositivos aire-agua"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Fecha",
         "device": "Dispositivo",
         "error": "Error"
       },
       "error": "Elija una fecha anterior a\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "error",
         "1": "error",
         "234": "errores",
@@ -62,15 +62,30 @@
       "see": "Ver los errores",
       "since": "desde el"
     },
-    "int_error": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
     "success": "Actualización exitosa.",
-    "title": "Configuración de MELCloud"
+    "title": "Configuración de MELCloud",
+    "frostProtection": {
+      "enabled": "Activar <strong>protección contra el hielo</strong>",
+      "max": "Temperatura máxima",
+      "min": "Temperatura mínima"
+    },
+    "holidayMode": {
+      "enabled": "Activar <strong>modo vacaciones</strong>",
+      "endDate": "Fecha de finalización",
+      "startDate": "Fecha de inicio"
+    }
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
     "device": {
-      "not_found": "Dispositivo no encontrado."
-    }
+      "notFound": "Dispositivo no encontrado."
+    },
+    "deviceNotFound": "Dispositivo no encontrada."
+  },
+  "errors": {
+    "holidayModeEndDateMissing": "Falta la fecha de finalización.",
+    "zoneNotFound": "Zona no encontrada."
   }
 }

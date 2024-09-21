@@ -11,7 +11,7 @@
     },
     "buildings": {
       "zone": {
-        "not_found": "Zone introuvable"
+        "notFound": "Zone introuvable"
       },
       "frost_protection": {
         "enabled": "Activer la <strong>protection contre le gel</strong>",
@@ -36,22 +36,22 @@
       "legend": "Paramètres des appareils",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
     },
-    "devices_ata": {
-      "auto_adjust": "Auto-ajuster la température de la climatisation",
+    "devicesAta": {
+      "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
       "legend": "Paramètres des appareils air-air"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Paramètres des appareils air-eau"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Date",
         "device": "Appareil",
         "error": "Erreur"
       },
       "error": "Choisissez une date antérieure au\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "erreur",
         "1": "erreur",
         "234": "erreurs",
@@ -62,15 +62,30 @@
       "see": "Voir les erreurs",
       "since": "depuis le"
     },
-    "int_error": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
-    "title": "Paramètres MELCloud"
+    "title": "Paramètres MELCloud",
+    "frostProtection": {
+      "enabled": "Activer la <strong>protection contre le gel</strong>",
+      "max": "Température maximale",
+      "min": "Température minimale"
+    },
+    "holidayMode": {
+      "enabled": "Activer le <strong>mode vacances</strong>",
+      "endDate": "Date de fin",
+      "startDate": "Date de début"
+    }
   },
   "warnings": {
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord.",
     "device": {
-      "not_found": "Appareil introuvable."
-    }
+      "notFound": "Appareil introuvable."
+    },
+    "deviceNotFound": "L'appareil est introuvable."
+  },
+  "errors": {
+    "holidayModeEndDateMissing": "La date de fin est manquante.",
+    "zoneNotFound": "La zone est introuvable."
   }
 }

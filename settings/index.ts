@@ -533,7 +533,7 @@ const int = (
     numberValue > Number(max)
   ) {
     throw new Error(
-      homey.__('settings.int_error', {
+      homey.__('settings.intError', {
         max,
         min: newMin,
         name: homey.__(
@@ -650,7 +650,7 @@ const generateErrorLogTable = (
   const rowElement = theadElement.insertRow()
   keys.forEach((key) => {
     const thElement = document.createElement('th')
-    thElement.innerText = homey.__(`settings.error_log.columns.${key}`)
+    thElement.innerText = homey.__(`settings.errorLog.columns.${key}`)
     rowElement.append(thElement)
   })
   errorLogElement.append(tableElement)
@@ -675,7 +675,7 @@ const generateErrorLogTableData = (
 
 const getErrorCountText = (homey: Homey, count: number): string => {
   if (count < PLURAL_THRESHOLD) {
-    return homey.__(`settings.error_log.error_count.${String(count)}`)
+    return homey.__(`settings.errorLog.errorCount.${String(count)}`)
   }
   if (
     [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(
@@ -685,9 +685,9 @@ const getErrorCountText = (homey: Homey, count: number): string => {
       count % MODULUS_HUNDRED,
     )
   ) {
-    return homey.__('settings.error_log.error_count.234')
+    return homey.__('settings.errorLog.errorCount.234')
   }
-  return homey.__('settings.error_log.error_count.plural')
+  return homey.__('settings.errorLog.errorCount.plural')
 }
 
 const updateErrorLogElements = (
@@ -698,7 +698,7 @@ const updateErrorLogElements = (
   from = fromDateHuman
   to = nextToDate
   errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
-  periodLabelElement.innerText = homey.__('settings.error_log.period', { from })
+  periodLabelElement.innerText = homey.__('settings.errorLog.period', { from })
   sinceElement.value = nextFromDate
 }
 
@@ -1431,7 +1431,7 @@ const addEventListeners = (homey: Homey): void => {
       Date.parse(sinceElement.value) > Date.parse(to)
     ) {
       sinceElement.value = to
-      homey.alert(homey.__('settings.error_log.error', { from })).catch(() => {
+      homey.alert(homey.__('settings.errorLog.error', { from })).catch(() => {
         //
       })
     }

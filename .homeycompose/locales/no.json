@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Sluttdato mangler.",
+    "zoneNotFound": "Sone ikke funnet."
+  },
   "settings": {
     "authenticate": {
       "button": "Logg inn",
@@ -10,22 +14,8 @@
       "true": "Ja"
     },
     "buildings": {
-      "frost_protection": {
-        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
-        "max": "Maksimal temperatur",
-        "min": "Minimal temperatur"
-      },
-      "holiday_mode": {
-        "date_missing": "Sluttdato mangler.",
-        "enabled": "Aktiver <strong>feriemodus</strong>",
-        "end_date": "Sluttdato",
-        "start_date": "Startdato"
-      },
       "legend": "Bygningsinnstillinger",
-      "update": "Oppdater",
-      "zone": {
-        "not_found": "Sone ikke funnet"
-      }
+      "update": "Oppdater"
     },
     "devices": {
       "apply": {
@@ -36,22 +26,22 @@
       "legend": "Enhetsinnstillinger",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autojuster aircondition-temperaturen",
+    "devicesAta": {
+      "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-luft enhetsinnstillinger"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Luft-vann enhetsinnstillinger"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Dato",
         "device": "Enhet",
         "error": "Feil"
       },
       "error": "Velg en dato før\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "feil",
         "1": "feil",
         "234": "feil",
@@ -62,15 +52,23 @@
       "see": "Se alle feil",
       "since": "siden"
     },
-    "int_error": "__name__: må være et heltall mellom __min__ og __max__.",
+    "frostProtection": {
+      "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+      "max": "Maksimal temperatur",
+      "min": "Minimal temperatur"
+    },
+    "holidayMode": {
+      "enabled": "Aktiver <strong>feriemodus</strong>",
+      "endDate": "Sluttdato",
+      "startDate": "Startdato"
+    },
+    "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",
     "success": "Oppdatering vellykket.",
     "title": "MELCloud-innstillinger"
   },
   "warnings": {
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
-    "device": {
-      "not_found": "Enhet ikke funnet."
-    }
+    "deviceNotFound": "Enhet ikke funnet."
   }
 }

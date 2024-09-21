@@ -11,7 +11,7 @@
     },
     "buildings": {
       "zone": {
-        "not_found": "Sone ikke funnet"
+        "notFound": "Sone ikke funnet"
       },
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
@@ -36,22 +36,22 @@
       "legend": "Enhetsinnstillinger",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autojuster aircondition-temperaturen",
+    "devicesAta": {
+      "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-luft enhetsinnstillinger"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Luft-vann enhetsinnstillinger"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Dato",
         "device": "Enhet",
         "error": "Feil"
       },
       "error": "Velg en dato før\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "feil",
         "1": "feil",
         "234": "feil",
@@ -62,15 +62,30 @@
       "see": "Se alle feil",
       "since": "siden"
     },
-    "int_error": "__name__: må være et heltall mellom __min__ og __max__.",
+    "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",
     "success": "Oppdatering vellykket.",
-    "title": "MELCloud-innstillinger"
+    "title": "MELCloud-innstillinger",
+    "frostProtection": {
+      "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+      "max": "Maksimal temperatur",
+      "min": "Minimal temperatur"
+    },
+    "holidayMode": {
+      "enabled": "Aktiver <strong>feriemodus</strong>",
+      "endDate": "Sluttdato",
+      "startDate": "Startdato"
+    }
   },
   "warnings": {
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
     "device": {
-      "not_found": "Enhet ikke funnet."
-    }
+      "notFound": "Enhet ikke funnet."
+    },
+    "deviceNotFound": "Enhet ikke funnet."
+  },
+  "errors": {
+    "holidayModeEndDateMissing": "Sluttdato mangler.",
+    "zoneNotFound": "Sone ikke funnet."
   }
 }
