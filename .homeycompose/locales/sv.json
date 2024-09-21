@@ -1,6 +1,5 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "Slutdatum saknas.",
     "zoneNotFound": "Zon ej hittad."
   },
   "settings": {
@@ -60,6 +59,7 @@
     "holidayMode": {
       "enabled": "Aktivera <strong>semesterläge</strong>",
       "endDate": "Slutdatum",
+      "endDateMissing": "Slutdatum saknas.",
       "startDate": "Startdatum"
     },
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",

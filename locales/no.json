@@ -1,6 +1,6 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "Sluttdato mangler.",
+    "endDateMissing": "Sluttdato mangler.",
     "zoneNotFound": "Sone ikke funnet."
   },
   "settings": {
@@ -60,7 +60,8 @@
     "holidayMode": {
       "enabled": "Aktiver <strong>feriemodus</strong>",
       "endDate": "Sluttdato",
-      "startDate": "Startdato"
+      "startDate": "Startdato",
+      "endDateMissing": "Sluttdato mangler."
     },
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",

@@ -33,8 +33,6 @@ class NoDeviceError extends Error {
   }
 }
 
-const DIGIT_FORMAT = 2
-const MONTH_OFFSET = 1
 const SIZE_ONE = 1
 
 const FIRST_LEVEL = 0
@@ -58,8 +56,6 @@ const MIN_SET_TEMPERATURE_COOLING = 16
 const MODE_AUTO = 8
 const MODE_COOL = 3
 const MODE_DRY = 2
-
-const DEFAULT_HOLIDAY_MODE_DURATION = 14
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 } as const
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -173,25 +169,6 @@ let errorLogTBodyElement: HTMLTableSectionElement | null = null
 let errorCount = 0
 let from = ''
 let to = ''
-
-const pad = (num: number): string => String(num).padStart(DIGIT_FORMAT, '0')
-
-const formatDateTimeLocal = (date: Date): string => {
-  const year = String(date.getFullYear())
-  const month = pad(date.getMonth() + MONTH_OFFSET)
-  const day = pad(date.getDate())
-  const hours = pad(date.getHours())
-  const minutes = pad(date.getMinutes())
-  return `${year}-${month}-${day}T${hours}:${minutes}`
-}
-
-const now = (): string => formatDateTimeLocal(new Date())
-
-const defaultHolidayModeEndDate = (): string => {
-  const date = new Date()
-  date.setDate(date.getDate() + DEFAULT_HOLIDAY_MODE_DURATION)
-  return formatDateTimeLocal(date)
-}
 
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
@@ -1265,11 +1242,19 @@ const setHolidayModeData = async (
   )
 
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
+  const isEnabled = holidayModeEnabledElement.value === 'true'
+  const endDate = holidayModeEndDateElement.value
+  if (isEnabled && to === '') {
+    homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
+      //
+    })
+    return
+  }
   updateHolidayModeElement.addEventListener('click', () => {
     setHolidayModeData(homey, {
-      enabled: holidayModeEnabledElement.value === 'true',
+      enabled: isEnabled,
       from: holidayModeStartDateElement.value || undefined,
-      to: holidayModeEndDateElement.value || undefined,
+      to: endDate,
     }).catch(() => {
       //
     })
@@ -1278,10 +1263,7 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
 
 const addHolidayModeEventListeners = (homey: Homey): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
-    if (holidayModeEnabledElement.value === 'true') {
-      holidayModeStartDateElement.value = now()
-      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
-    } else {
+    if (holidayModeEnabledElement.value === 'false') {
       holidayModeStartDateElement.value = ''
       holidayModeEndDateElement.value = ''
     }
@@ -1291,20 +1273,15 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }
-      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
-    } else if (holidayModeEnabledElement.value === 'true') {
-      if (holidayModeEndDateElement.value) {
-        holidayModeStartDateElement.value = now()
-      } else {
-        holidayModeEnabledElement.value = 'false'
-      }
+    } else if (
+      !holidayModeEndDateElement.value &&
+      holidayModeEnabledElement.value === 'true'
+    ) {
+      holidayModeEnabledElement.value = 'false'
     }
   })
   holidayModeEndDateElement.addEventListener('change', () => {
     if (holidayModeEndDateElement.value) {
-      if (!holidayModeStartDateElement.value) {
-        holidayModeStartDateElement.value = now()
-      }
       if (holidayModeEnabledElement.value === 'false') {
         holidayModeEnabledElement.value = 'true'
       }

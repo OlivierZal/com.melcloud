@@ -1,6 +1,5 @@
 {
   "errors": {
-    "holidayModeEndDateMissing": "End date is missing.",
     "zoneNotFound": "Zone not found."
   },
   "settings": {
@@ -60,6 +59,7 @@
     "holidayMode": {
       "enabled": "Enable <strong>holiday mode</strong>",
       "endDate": "End date",
+      "endDateMissing": "End date is missing.",
       "startDate": "Start date"
     },
     "intError": "__name__: must be an integer between __min__ and __max__.",
