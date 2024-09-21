@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Einddatum ontbreekt.",
+    "zoneNotFound": "Zone niet gevonden."
+  },
   "settings": {
     "authenticate": {
       "button": "Inloggen",
@@ -10,20 +14,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Zone niet gevonden"
-      },
-      "frost_protection": {
-        "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
-        "max": "Maximale temperatuur",
-        "min": "Minimale temperatuur"
-      },
-      "holiday_mode": {
-        "date_missing": "Einddatum ontbreekt.",
-        "enabled": "<strong>Vakantiemodus</strong> inschakelen",
-        "end_date": "Einddatum",
-        "start_date": "Begindatum"
-      },
       "legend": "Gebouwinstellingen",
       "update": "Updaten"
     },
@@ -62,10 +52,6 @@
       "see": "Bekijk alle fouten",
       "since": "sinds"
     },
-    "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
-    "refresh": "Herladen",
-    "success": "Update geslaagd.",
-    "title": "MELCloud-instellingen",
     "frostProtection": {
       "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
       "max": "Maximale temperatuur",
@@ -75,17 +61,14 @@
       "enabled": "<strong>Vakantiemodus</strong> inschakelen",
       "endDate": "Einddatum",
       "startDate": "Begindatum"
-    }
+    },
+    "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "refresh": "Herladen",
+    "success": "Update geslaagd.",
+    "title": "MELCloud-instellingen"
   },
   "warnings": {
     "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
-    "device": {
-      "notFound": "Apparaat niet gevonden."
-    },
     "deviceNotFound": "Apparaat niet gevonden."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "Einddatum ontbreekt.",
-    "zoneNotFound": "Zone niet gevonden."
   }
 }

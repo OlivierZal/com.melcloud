@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Sluttdato mangler.",
+    "zoneNotFound": "Sone ikke funnet."
+  },
   "settings": {
     "authenticate": {
       "button": "Logg inn",
@@ -10,20 +14,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Sone ikke funnet"
-      },
-      "frost_protection": {
-        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
-        "max": "Maksimal temperatur",
-        "min": "Minimal temperatur"
-      },
-      "holiday_mode": {
-        "date_missing": "Sluttdato mangler.",
-        "enabled": "Aktiver <strong>feriemodus</strong>",
-        "end_date": "Sluttdato",
-        "start_date": "Startdato"
-      },
       "legend": "Bygningsinnstillinger",
       "update": "Oppdater"
     },
@@ -62,10 +52,6 @@
       "see": "Se alle feil",
       "since": "siden"
     },
-    "intError": "__name__: må være et heltall mellom __min__ og __max__.",
-    "refresh": "Gjenta",
-    "success": "Oppdatering vellykket.",
-    "title": "MELCloud-innstillinger",
     "frostProtection": {
       "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
       "max": "Maksimal temperatur",
@@ -75,17 +61,14 @@
       "enabled": "Aktiver <strong>feriemodus</strong>",
       "endDate": "Sluttdato",
       "startDate": "Startdato"
-    }
+    },
+    "intError": "__name__: må være et heltall mellom __min__ og __max__.",
+    "refresh": "Gjenta",
+    "success": "Oppdatering vellykket.",
+    "title": "MELCloud-innstillinger"
   },
   "warnings": {
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt.",
-    "device": {
-      "notFound": "Enhet ikke funnet."
-    },
     "deviceNotFound": "Enhet ikke funnet."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "Sluttdato mangler.",
-    "zoneNotFound": "Sone ikke funnet."
   }
 }

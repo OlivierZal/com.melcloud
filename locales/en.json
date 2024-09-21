@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "End date is missing.",
+    "zoneNotFound": "Zone not found."
+  },
   "settings": {
     "authenticate": {
       "button": "Log in",
@@ -10,20 +14,6 @@
       "true": "Yes"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Zone not found"
-      },
-      "frost_protection": {
-        "enabled": "Enable <strong>frost protection</strong>",
-        "max": "Maximum temperature",
-        "min": "Minimum temperature"
-      },
-      "holiday_mode": {
-        "date_missing": "End date is missing.",
-        "enabled": "Enable <strong>holiday mode</strong>",
-        "end_date": "End date",
-        "start_date": "Start date"
-      },
       "legend": "Building settings",
       "update": "Update"
     },
@@ -62,10 +52,6 @@
       "see": "See all errors",
       "since": "since"
     },
-    "intError": "__name__: must be an integer between __min__ and __max__.",
-    "refresh": "Refresh",
-    "success": "Update successful.",
-    "title": "MELCloud settings",
     "frostProtection": {
       "enabled": "Enable <strong>frost protection</strong>",
       "max": "Maximum temperature",
@@ -75,17 +61,14 @@
       "enabled": "Enable <strong>holiday mode</strong>",
       "endDate": "End date",
       "startDate": "Start date"
-    }
+    },
+    "intError": "__name__: must be an integer between __min__ and __max__.",
+    "refresh": "Refresh",
+    "success": "Update successful.",
+    "title": "MELCloud settings"
   },
   "warnings": {
     "dashboard": "Exit the device and return to update your dashboard.",
-    "device": {
-      "notFound": "Device not found."
-    },
     "deviceNotFound": "Device not found."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "End date is missing.",
-    "zoneNotFound": "Zone not found."
   }
 }

@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Slutdato mangler.",
+    "zoneNotFound": "Zone ikke fundet."
+  },
   "settings": {
     "authenticate": {
       "button": "Log ind",
@@ -10,20 +14,6 @@
       "true": "Ja"
     },
     "buildings": {
-      "zone": {
-        "notFound": "Zone ikke fundet"
-      },
-      "frost_protection": {
-        "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
-        "max": "Maksimal temperatur",
-        "min": "Minimal temperatur"
-      },
-      "holiday_mode": {
-        "date_missing": "Slutdato mangler.",
-        "enabled": "Aktiver <strong>ferietilstand</strong>",
-        "end_date": "Slutdato",
-        "start_date": "Startdato"
-      },
       "legend": "Bygningsindstillinger",
       "update": "Opdater"
     },
@@ -62,10 +52,6 @@
       "see": "Se alle fejl",
       "since": "siden den"
     },
-    "intError": "__name__: skal være et heltal mellem __min__ og __max__.",
-    "refresh": "Genindlæs",
-    "success": "Opdatering lykkedes.",
-    "title": "MELCloud-indstillinger",
     "frostProtection": {
       "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
       "max": "Maksimal temperatur",
@@ -75,17 +61,14 @@
       "enabled": "Aktiver <strong>ferietilstand</strong>",
       "endDate": "Slutdato",
       "startDate": "Startdato"
-    }
+    },
+    "intError": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "refresh": "Genindlæs",
+    "success": "Opdatering lykkedes.",
+    "title": "MELCloud-indstillinger"
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit instrumentbræt.",
-    "device": {
-      "not found": "Enhed ikke fundet."
-    },
     "deviceNotFound": "Enhed ikke fundet."
-  },
-  "errors": {
-    "holidayModeEndDateMissing": "Slutdato mangler.",
-    "zoneNotFound": "Zone ikke fundet."
   }
 }
