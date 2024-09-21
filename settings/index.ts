@@ -61,7 +61,7 @@ const MODE_DRY = 2
 
 const DEFAULT_HOLIDAY_MODE_DURATION = 14
 
-const frostProtectionTemperatureRange = { max: 4, min: 16 } as const
+const frostProtectionTemperatureRange = { max: 16, min: 4 } as const
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const zoneMapping: Partial<
