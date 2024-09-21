@@ -73,8 +73,6 @@
     },
     "holidayMode": {
       "enabled": "Aktivera <strong>semesterläge</strong>",
-      "end_date": "Slutdatum",
-      "start_date": "Startdatum",
       "endDate": "Slutdatum",
       "startDate": "Startdatum"
     }
