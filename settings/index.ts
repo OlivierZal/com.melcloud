@@ -1234,50 +1234,6 @@ const login = async (homey: Homey): Promise<void> => {
   )
 }
 
-const addHolidayModeEventListeners = (): void => {
-  holidayModeEnabledElement.addEventListener('change', () => {
-    if (holidayModeEnabledElement.value === 'true') {
-      holidayModeStartDateElement.value = now()
-      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
-    } else {
-      holidayModeStartDateElement.value = ''
-      holidayModeEndDateElement.value = ''
-    }
-  })
-  holidayModeStartDateElement.addEventListener('change', () => {
-    if (holidayModeStartDateElement.value) {
-      if (holidayModeEnabledElement.value === 'false') {
-        holidayModeEnabledElement.value = 'true'
-      }
-      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
-    } else if (holidayModeEnabledElement.value === 'true') {
-      if (holidayModeEndDateElement.value) {
-        holidayModeStartDateElement.value = now()
-      } else {
-        holidayModeEnabledElement.value = 'false'
-      }
-    }
-  })
-  holidayModeEndDateElement.addEventListener('change', () => {
-    if (holidayModeEndDateElement.value) {
-      if (!holidayModeStartDateElement.value) {
-        holidayModeStartDateElement.value = now()
-      }
-      if (holidayModeEnabledElement.value === 'false') {
-        holidayModeEnabledElement.value = 'true'
-      }
-    } else if (
-      !holidayModeStartDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
-    ) {
-      holidayModeEnabledElement.value = 'false'
-    }
-  })
-  refreshHolidayModeElement.addEventListener('click', () => {
-    refreshHolidayModeData()
-  })
-}
-
 const setHolidayModeData = async (
   homey: Homey,
   { enabled, from: startDate, to: endDate }: HolidayModeSettings,
@@ -1320,20 +1276,71 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   })
 }
 
-const addFrostProtectionEventListeners = (): void => {
-  ;[
+const addHolidayModeEventListeners = (homey: Homey): void => {
+  holidayModeEnabledElement.addEventListener('change', () => {
+    if (holidayModeEnabledElement.value === 'true') {
+      holidayModeStartDateElement.value = now()
+      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
+    } else {
+      holidayModeStartDateElement.value = ''
+      holidayModeEndDateElement.value = ''
+    }
+  })
+  holidayModeStartDateElement.addEventListener('change', () => {
+    if (holidayModeStartDateElement.value) {
+      if (holidayModeEnabledElement.value === 'false') {
+        holidayModeEnabledElement.value = 'true'
+      }
+      holidayModeEndDateElement.value = defaultHolidayModeEndDate()
+    } else if (holidayModeEnabledElement.value === 'true') {
+      if (holidayModeEndDateElement.value) {
+        holidayModeStartDateElement.value = now()
+      } else {
+        holidayModeEnabledElement.value = 'false'
+      }
+    }
+  })
+  holidayModeEndDateElement.addEventListener('change', () => {
+    if (holidayModeEndDateElement.value) {
+      if (!holidayModeStartDateElement.value) {
+        holidayModeStartDateElement.value = now()
+      }
+      if (holidayModeEnabledElement.value === 'false') {
+        holidayModeEnabledElement.value = 'true'
+      }
+    } else if (
+      !holidayModeStartDateElement.value &&
+      holidayModeEnabledElement.value === 'true'
+    ) {
+      holidayModeEnabledElement.value = 'false'
+    }
+  })
+  refreshHolidayModeElement.addEventListener('click', () => {
+    refreshHolidayModeData()
+  })
+  addUpdateHolidayModeEventListener(homey)
+}
+
+const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
+  const errors: string[] = []
+  let [min, max] = [
     frostProtectionMinTemperatureElement,
     frostProtectionMaxTemperatureElement,
-  ].forEach((element) => {
-    element.addEventListener('change', () => {
-      if (element.value === 'false') {
-        element.value = 'true'
-      }
-    })
+  ].map((element) => {
+    try {
+      return int(homey, element)
+    } catch (error) {
+      errors.push(getErrorMessage(error))
+      return Number(element.value)
+    }
   })
-  refreshFrostProtectionElement.addEventListener('click', () => {
-    refreshFrostProtectionData()
-  })
+  if (errors.length) {
+    throw new Error(errors.join('\n'))
+  }
+  if (max < min) {
+    ;[min, max] = [max, min]
+  }
+  return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
 }
 
 const setFrostProtectionData = async (
@@ -1366,29 +1373,20 @@ const setFrostProtectionData = async (
       }),
   )
 
-const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
-  const errors: string[] = []
-  let [min, max] = [
+const addFrostProtectionEventListeners = (homey: Homey): void => {
+  ;[
     frostProtectionMinTemperatureElement,
     frostProtectionMaxTemperatureElement,
-  ].map((element) => {
-    try {
-      return int(homey, element)
-    } catch (error) {
-      errors.push(getErrorMessage(error))
-      return Number(element.value)
-    }
+  ].forEach((element) => {
+    element.addEventListener('change', () => {
+      if (element.value === 'false') {
+        element.value = 'true'
+      }
+    })
   })
-  if (errors.length) {
-    throw new Error(errors.join('\n'))
-  }
-  if (max < min) {
-    ;[min, max] = [max, min]
-  }
-  return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
-}
-
-const addUpdateFrostProtectionEventListener = (homey: Homey): void => {
+  refreshFrostProtectionElement.addEventListener('click', () => {
+    refreshFrostProtectionData()
+  })
   updateFrostProtectionElement.addEventListener('click', () => {
     try {
       const { max, min } = getFPMinAndMax(homey)
@@ -1451,10 +1449,8 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
-  addHolidayModeEventListeners()
-  addUpdateHolidayModeEventListener(homey)
-  addFrostProtectionEventListeners()
-  addUpdateFrostProtectionEventListener(homey)
+  addHolidayModeEventListeners(homey)
+  addFrostProtectionEventListeners(homey)
   addAtaValuesEventListeners(homey)
 }
 

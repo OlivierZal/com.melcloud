@@ -436,23 +436,14 @@ export = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    try {
-      handleResponse(
-        (
-          await getFacade(homey, zoneType, Number(zoneId)).setHolidayMode({
-            enabled,
-            from,
-            to,
-          })
-        ).AttributeErrors,
-      )
-    } catch (error) {
-      throw (
-          error instanceof Error &&
-            error.message === 'Select either end date or days'
-        ) ?
-          new Error(homey.__('errors.holidayModeEndDateMissing'))
-        : error
-    }
+    handleResponse(
+      (
+        await getFacade(homey, zoneType, Number(zoneId)).setHolidayMode({
+          enabled,
+          from,
+          to,
+        })
+      ).AttributeErrors,
+    )
   },
 }
