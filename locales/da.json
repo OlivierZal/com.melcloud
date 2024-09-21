@@ -11,7 +11,7 @@
     },
     "buildings": {
       "zone": {
-        "not_found": "Zone ikke fundet"
+        "notFound": "Zone ikke fundet"
       },
       "frost_protection": {
         "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
@@ -36,22 +36,22 @@
       "legend": "Enhedsindstillinger",
       "none": "Tilføj en enhed for at låse alle appens indstillinger op!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autojuster aircondition-temperaturen",
+    "devicesAta": {
+      "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-luft enhedsindstillinger"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Luft-vand enhedsindstillinger"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Dato",
         "device": "Enhed",
         "error": "Fejl"
       },
       "error": "Vælg en dato før\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "fejl",
         "1": "fejl",
         "234": "fejl",
@@ -62,15 +62,30 @@
       "see": "Se alle fejl",
       "since": "siden den"
     },
-    "int_error": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "intError": "__name__: skal være et heltal mellem __min__ og __max__.",
     "refresh": "Genindlæs",
     "success": "Opdatering lykkedes.",
-    "title": "MELCloud-indstillinger"
+    "title": "MELCloud-indstillinger",
+    "frostProtection": {
+      "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
+      "max": "Maksimal temperatur",
+      "min": "Minimal temperatur"
+    },
+    "holidayMode": {
+      "enabled": "Aktiver <strong>ferietilstand</strong>",
+      "endDate": "Slutdato",
+      "startDate": "Startdato"
+    }
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit instrumentbræt.",
     "device": {
       "not found": "Enhed ikke fundet."
-    }
+    },
+    "deviceNotFound": "Enhed ikke fundet."
+  },
+  "errors": {
+    "holidayModeEndDateMissing": "Slutdato mangler.",
+    "zoneNotFound": "Zone ikke fundet."
   }
 }

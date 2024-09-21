@@ -362,7 +362,7 @@ export default abstract class<
       if (this.#device) {
         await this.#init(this.#device.data)
       } else {
-        await this.setWarning(this.homey.__('warnings.device.not_found'))
+        await this.setWarning(this.homey.__('warnings.deviceNotFound'))
       }
     }
     return this.#device

@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Slutdatum saknas.",
+    "zoneNotFound": "Zon ej hittad."
+  },
   "settings": {
     "authenticate": {
       "button": "Logga in",
@@ -10,22 +14,8 @@
       "true": "Ja"
     },
     "buildings": {
-      "frost_protection": {
-        "enabled": "Aktivera <strong>frostskydd</strong>",
-        "max": "Maximal temperatur",
-        "min": "Minimal temperatur"
-      },
-      "holiday_mode": {
-        "date_missing": "Slutdatum saknas.",
-        "enabled": "Aktivera <strong>semesterläge</strong>",
-        "end_date": "Slutdatum",
-        "start_date": "Startdatum"
-      },
       "legend": "Byggnadsinställningar",
-      "update": "Uppdatera",
-      "zone": {
-        "not_found": "Zon ej hittad"
-      }
+      "update": "Uppdatera"
     },
     "devices": {
       "apply": {
@@ -36,22 +26,22 @@
       "legend": "Enhetsinställningar",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
     },
-    "devices_ata": {
-      "auto_adjust": "Autojustera luftkonditioneringstemperaturen",
+    "devicesAta": {
+      "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
       "legend": "Luft-luft enhetsinställningar"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Luft-vatten enhetsinställningar"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Datum",
         "device": "Enhet",
         "error": "Fel"
       },
       "error": "Välj ett datum före\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "fel",
         "1": "fel",
         "234": "fel",
@@ -62,15 +52,23 @@
       "see": "Se alla fel",
       "since": "sedan"
     },
-    "int_error": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "frostProtection": {
+      "enabled": "Aktivera <strong>frostskydd</strong>",
+      "max": "Maximal temperatur",
+      "min": "Minimal temperatur"
+    },
+    "holidayMode": {
+      "enabled": "Aktivera <strong>semesterläge</strong>",
+      "end_date": "Slutdatum",
+      "start_date": "Startdatum"
+    },
+    "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar"
   },
   "warnings": {
     "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel.",
-    "device": {
-      "not_found": "Enhet ej hittad."
-    }
+    "deviceNotFound": "Enhet ej hittad."
   }
 }

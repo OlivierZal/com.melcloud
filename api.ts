@@ -91,7 +91,7 @@ const getFacade = (
 ): AreaFacade | BuildingFacade | FloorFacade => {
   const model = modelClass[zoneType].getById(id)
   if (!model) {
-    throw new Error(homey.__('settings.buildings.zone.not_found'))
+    throw new Error(homey.__('errors.zoneNotFound'))
   }
   return (homey.app as MELCloudApp).facadeManager.get(model)
 }
@@ -451,7 +451,7 @@ export = {
           error instanceof Error &&
             error.message === 'Select either end date or days'
         ) ?
-          new Error(homey.__('settings.buildings.holiday_mode.date_missing'))
+          new Error(homey.__('errors.holidayModeEndDateMissing'))
         : error
     }
   },

@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "End date is missing.",
+    "zoneNotFound": "Zone not found."
+  },
   "settings": {
     "authenticate": {
       "button": "Log in",
@@ -10,22 +14,8 @@
       "true": "Yes"
     },
     "buildings": {
-      "frost_protection": {
-        "enabled": "Enable <strong>frost protection</strong>",
-        "max": "Maximum temperature",
-        "min": "Minimum temperature"
-      },
-      "holiday_mode": {
-        "date_missing": "End date is missing.",
-        "enabled": "Enable <strong>holiday mode</strong>",
-        "end_date": "End date",
-        "start_date": "Start date"
-      },
       "legend": "Building settings",
-      "update": "Update",
-      "zone": {
-        "not_found": "Zone not found"
-      }
+      "update": "Update"
     },
     "devices": {
       "apply": {
@@ -36,22 +26,22 @@
       "legend": "Device settings",
       "none": "Add a device to unlock all the app's settings!"
     },
-    "devices_ata": {
-      "auto_adjust": "Auto-adjust air conditioning temperature",
+    "devicesAta": {
+      "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
       "legend": "Air-to-air device settings"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Air-to-water device settings"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Date",
         "device": "Device",
         "error": "Error"
       },
       "error": "Choose a date before\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "error",
         "1": "error",
         "234": "errors",
@@ -62,15 +52,23 @@
       "see": "See all errors",
       "since": "since"
     },
-    "int_error": "__name__: must be an integer between __min__ and __max__.",
+    "frostProtection": {
+      "enabled": "Enable <strong>frost protection</strong>",
+      "max": "Maximum temperature",
+      "min": "Minimum temperature"
+    },
+    "holidayMode": {
+      "enabled": "Enable <strong>holiday mode</strong>",
+      "endDate": "End date",
+      "startDate": "Start date"
+    },
+    "intError": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
     "success": "Update successful.",
     "title": "MELCloud settings"
   },
   "warnings": {
     "dashboard": "Exit the device and return to update your dashboard.",
-    "device": {
-      "not_found": "Device not found."
-    }
+    "deviceNotFound": "Device not found."
   }
 }

@@ -1,4 +1,8 @@
 {
+  "errors": {
+    "holidayModeEndDateMissing": "Einddatum ontbreekt.",
+    "zoneNotFound": "Zone niet gevonden."
+  },
   "settings": {
     "authenticate": {
       "button": "Inloggen",
@@ -10,22 +14,8 @@
       "true": "Ja"
     },
     "buildings": {
-      "frost_protection": {
-        "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
-        "max": "Maximale temperatuur",
-        "min": "Minimale temperatuur"
-      },
-      "holiday_mode": {
-        "date_missing": "Einddatum ontbreekt.",
-        "enabled": "<strong>Vakantiemodus</strong> inschakelen",
-        "end_date": "Einddatum",
-        "start_date": "Begindatum"
-      },
       "legend": "Gebouwinstellingen",
-      "update": "Updaten",
-      "zone": {
-        "not_found": "Zone niet gevonden"
-      }
+      "update": "Updaten"
     },
     "devices": {
       "apply": {
@@ -36,22 +26,22 @@
       "legend": "Apparaatinstellingen",
       "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
-    "devices_ata": {
-      "auto_adjust": "Auto-afstellen airco-temperatuur",
+    "devicesAta": {
+      "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
       "legend": "Lucht-lucht apparaatinstellingen"
     },
-    "devices_atw": {
+    "devicesAtw": {
       "legend": "Lucht-water apparaatinstellingen"
     },
-    "error_log": {
+    "errorLog": {
       "columns": {
         "date": "Datum",
         "device": "Apparaat",
         "error": "Fout"
       },
       "error": "Kies een datum voor\n__from__.",
-      "error_count": {
+      "errorCount": {
         "0": "fout",
         "1": "fout",
         "234": "fouten",
@@ -62,15 +52,23 @@
       "see": "Bekijk alle fouten",
       "since": "sinds"
     },
-    "int_error": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "frostProtection": {
+      "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",
+      "max": "Maximale temperatuur",
+      "min": "Minimale temperatuur"
+    },
+    "holidayMode": {
+      "enabled": "<strong>Vakantiemodus</strong> inschakelen",
+      "endDate": "Einddatum",
+      "startDate": "Begindatum"
+    },
+    "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "refresh": "Herladen",
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen"
   },
   "warnings": {
     "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
-    "device": {
-      "not_found": "Apparaat niet gevonden."
-    }
+    "deviceNotFound": "Apparaat niet gevonden."
   }
 }
