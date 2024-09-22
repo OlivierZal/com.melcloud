@@ -1242,15 +1242,15 @@ const setHolidayModeData = async (
   )
 
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
-  const isEnabled = holidayModeEnabledElement.value === 'true'
-  const endDate = holidayModeEndDateElement.value
-  if (isEnabled && endDate === '') {
-    homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
-      //
-    })
-    return
-  }
   updateHolidayModeElement.addEventListener('click', () => {
+    const isEnabled = holidayModeEnabledElement.value === 'true'
+    const endDate = holidayModeEndDateElement.value
+    if (isEnabled && endDate === '') {
+      homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
+        //
+      })
+      return
+    }
     setHolidayModeData(homey, {
       enabled: isEnabled,
       from: holidayModeStartDateElement.value || undefined,
