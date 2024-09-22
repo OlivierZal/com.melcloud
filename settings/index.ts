@@ -1244,7 +1244,7 @@ const setHolidayModeData = async (
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   const isEnabled = holidayModeEnabledElement.value === 'true'
   const endDate = holidayModeEndDateElement.value
-  if (isEnabled && to === '') {
+  if (isEnabled && endDate === '') {
     homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
       //
     })
