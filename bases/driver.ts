@@ -67,7 +67,7 @@ export default abstract class<
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
-        if (await this.#api.applyLogin()) {
+        if (await this.#api.login()) {
           await session.showView('list_devices')
           return
         }
@@ -97,7 +97,7 @@ export default abstract class<
 
   #handleLogin(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#api.applyLogin(data),
+      this.#api.login(data),
     )
   }
 
