@@ -2901,13 +2901,13 @@
             {
               "id": "measure_power.wifi",
               "label": {
-                "da": "Vise Wi-Fi-signalstyrke",
-                "en": "Display Wi-Fi signal strength",
-                "es": "Visualizar la potencia de la señal Wi-Fi",
-                "fr": "Afficher la puissance du signal Wi-Fi",
-                "nl": "Wi-Fi signaalsterkte weergeven",
-                "no": "Vise Wi-Fi-signalstyrke",
-                "sv": "Visa Wi-Fi-signalstyrka"
+                "da": "Vise signalstyrke",
+                "en": "Display signal strength",
+                "es": "Visualizar la intensidad de la señal",
+                "fr": "Afficher l'intensité du signal",
+                "nl": "Signaalsterkte weergeven",
+                "no": "Vise signalstyrke",
+                "sv": "Visa signalstyrka"
               },
               "type": "checkbox",
               "value": false
@@ -4326,13 +4326,13 @@
             {
               "id": "measure_power.wifi",
               "label": {
-                "da": "Vise Wi-Fi-signalstyrke",
-                "en": "Display Wi-Fi signal strength",
-                "es": "Visualizar la potencia de la señal Wi-Fi",
-                "fr": "Afficher la puissance du signal Wi-Fi",
-                "nl": "Wi-Fi signaalsterkte weergeven",
-                "no": "Vise Wi-Fi-signalstyrke",
-                "sv": "Visa Wi-Fi-signalstyrka"
+                "da": "Vise signalstyrke",
+                "en": "Display signal strength",
+                "es": "Visualizar la intensidad de la señal",
+                "fr": "Afficher l'intensité du signal",
+                "nl": "Signaalsterkte weergeven",
+                "no": "Vise signalstyrke",
+                "sv": "Visa signalstyrka"
               },
               "type": "checkbox",
               "value": false
@@ -5302,13 +5302,13 @@
             {
               "id": "measure_power.wifi",
               "label": {
-                "da": "Vise Wi-Fi-signalstyrke",
-                "en": "Display Wi-Fi signal strength",
-                "es": "Visualizar la potencia de la señal Wi-Fi",
-                "fr": "Afficher la puissance du signal Wi-Fi",
-                "nl": "Wi-Fi signaalsterkte weergeven",
-                "no": "Vise Wi-Fi-signalstyrke",
-                "sv": "Visa Wi-Fi-signalstyrka"
+                "da": "Vise signalstyrke",
+                "en": "Display signal strength",
+                "es": "Visualizar la intensidad de la señal",
+                "fr": "Afficher l'intensité du signal",
+                "nl": "Signaalsterkte weergeven",
+                "no": "Vise signalstyrke",
+                "sv": "Visa signalstyrka"
               },
               "type": "checkbox",
               "value": false
