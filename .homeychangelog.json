@@ -205,5 +205,14 @@
     "nl": "In de app-instellingen: u kunt nu de gedetailleerde instellingen per zone (gebouw, gebied en verdieping) bekijken en bulk wijzigingen aanbrengen in de instellingen van uw lucht-lucht toestellen per zone.",
     "no": "I appinnstillingene: du kan nå se detaljerte innstillinger for hver sone (bygning, område og etasje) og gjøre masseendringer for luft-til-luft-enheter i hver sone.",
     "sv": "I appinställningarna: du kan nu se detaljerade inställningar per zon (byggnad, område och våning) och massändra dina luft-till-luft-enheters inställningar för varje zon."
+  },
+  "39.1.1": {
+    "da": "Retter en fejl, hvor appen kan gå ned ved opstart.",
+    "en": "Fixes a case of crash issue at app start.",
+    "es": "Corrige un problema de bloqueo al iniciar la aplicación.",
+    "fr": "Corrige un problème de plantage au démarrage de l'application.",
+    "nl": "Verhelpt een crashprobleem bij het opstarten van de app.",
+    "no": "Løser et problem med krasj ved oppstart av appen.",
+    "sv": "Åtgärdar ett kraschproblem vid appstart."
   }
 }
