@@ -330,7 +330,7 @@ export default [
           },
         ],
         'perfectionist/sort-enums': 'error',
-        'perfectionist/sort-exports': 'error',
+        'perfectionist/sort-exports': ['error', typesFirst],
         'perfectionist/sort-imports': 'error',
         'perfectionist/sort-interfaces': ['error', optionalFirst],
         'perfectionist/sort-intersection-types': ['error', groups],

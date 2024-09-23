@@ -105,10 +105,8 @@ export default abstract class<
   }
 
   public override async addCapability(capability: string): Promise<void> {
-    this.log('Adding capability', capability)
     if (!this.hasCapability(capability)) {
       await super.addCapability(capability)
-      this.log('Capability', capability, 'added')
     }
   }
 
@@ -194,10 +192,8 @@ export default abstract class<
   }
 
   public override async removeCapability(capability: string): Promise<void> {
-    this.log('Removing capability', capability)
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
-      this.log('Capability', capability, 'removed')
     }
   }
 
@@ -440,11 +436,11 @@ export default abstract class<
           this.#reportInterval[totalString] = this.setInterval(
             async () => this.#runEnergyReport(total),
             interval,
-            { actionType, units: ['days', 'hours'] },
+            actionType,
           )
         },
         DateTime.now().plus(duration).set(values).diffNow(),
-        { actionType, units: ['hours', 'minutes'] },
+        actionType,
       )
     }
   }

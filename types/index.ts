@@ -1,3 +1,4 @@
+export type { LocalizedStrings } from './bases'
 export {
   type CapabilitiesAta,
   type EnergyCapabilitiesAta,
@@ -27,7 +28,6 @@ export {
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
 } from './atw'
-export type { LocalizedStrings } from './bases'
 export {
   type AreaZone,
   type BuildingZone,
