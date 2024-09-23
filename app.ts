@@ -7,13 +7,10 @@ import 'source-map-support/register'
 import type { MELCloudDevice, Manifest } from './types'
 
 import changelog from './.homeychangelog.json'
-import withTimers from './mixins/withTimers'
-
-LuxonSettings.defaultLocale = 'en-us'
 
 const NOTIFICATION_DELAY = 10000
 
-export = class extends withTimers(App) {
+export = class extends App {
   #api!: MELCloudAPI
 
   #facadeManager!: FacadeManager
@@ -67,7 +64,10 @@ export = class extends withTimers(App) {
 
   #createNotification(language: string): void {
     const { version } = this.homey.manifest as Manifest
-    if (version in changelog) {
+    if (
+      this.homey.settings.get('notifiedVersion') !== version &&
+      version in changelog
+    ) {
       const versionChangelog = changelog[version as keyof typeof changelog]
       this.homey.setTimeout(() => {
         this.homey.notifications
@@ -78,6 +78,9 @@ export = class extends withTimers(App) {
                   (language as keyof typeof versionChangelog)
                 : 'en'
               ],
+          })
+          .then(() => {
+            this.homey.settings.set('notifiedVersion', version)
           })
           .catch(() => {
             //
