@@ -69,9 +69,9 @@ export = class extends App {
       version in changelog
     ) {
       const versionChangelog = changelog[version as keyof typeof changelog]
-      this.homey.setTimeout(() => {
-        this.homey.notifications
-          .createNotification({
+      this.homey.setTimeout(async () => {
+        try {
+          await this.homey.notifications.createNotification({
             excerpt:
               versionChangelog[
                 language in versionChangelog ?
@@ -79,12 +79,8 @@ export = class extends App {
                 : 'en'
               ],
           })
-          .then(() => {
-            this.homey.settings.set('notifiedVersion', version)
-          })
-          .catch(() => {
-            //
-          })
+          this.homey.settings.set('notifiedVersion', version)
+        } catch (_error) {}
       }, NOTIFICATION_DELAY)
     }
   }
