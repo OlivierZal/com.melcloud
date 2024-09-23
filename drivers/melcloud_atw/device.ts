@@ -69,9 +69,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     'alarm_generic.defrost': ((value: number) =>
       Boolean(value)) as ConvertFromDevice<'Atw'>,
     legionella: ((value: string) =>
-      DateTime.fromISO(value, {
-        locale: this.homey.i18n.getLanguage(),
-      }).toLocaleString({
+      DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
         month: 'short',
         weekday: 'short',

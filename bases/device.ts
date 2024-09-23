@@ -34,9 +34,9 @@ import {
   K_MULTIPLIER,
 } from '../types'
 
-const DEBOUNCE = 1000
 const INITIAL_SUM = 0
 const MINIMUM_DIVISOR = 1
+const SYNC_DELAY = 1000
 
 const reportPlanParametersTotal = {
   duration: { days: 1 },
@@ -465,7 +465,7 @@ export default abstract class<
           await this.#set(device, values as Partial<SetCapabilities[T]>)
         }
       },
-      DEBOUNCE,
+      SYNC_DELAY,
     )
   }
 
@@ -507,7 +507,7 @@ export default abstract class<
       } finally {
         this.homey.setTimeout(
           async () => this.setCapabilityValues(device.data),
-          DEBOUNCE,
+          SYNC_DELAY,
         )
       }
     }

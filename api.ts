@@ -4,7 +4,6 @@ import {
   type AreaFacade,
   type AreaModelAny,
   type BuildingFacade,
-  type ErrorData,
   type FloorFacade,
   type FloorModel,
   type FrostProtectionData,
@@ -12,7 +11,6 @@ import {
   type HolidayModeData,
   type LoginCredentials,
   BuildingModel,
-  DeviceModel,
   FanSpeed,
   Horizontal,
   OperationMode,
@@ -22,7 +20,6 @@ import fanSpeed from 'homey-lib/assets/capability/capabilities/fan_speed.json'
 import power from 'homey-lib/assets/capability/capabilities/onoff.json'
 import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json'
 import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
-import { DateTime } from 'luxon'
 
 import type MELCloudApp from '.'
 
@@ -48,10 +45,6 @@ import {
   fanSpeedValues,
   modelClass,
 } from './types'
-
-const DEFAULT_LIMIT = 1
-const DEFAULT_OFFSET = 0
-const INVALID_YEAR = 1
 
 const compareNames = (
   { name: name1 }: { name: string },
@@ -109,24 +102,6 @@ const handleResponse = (
   }
 }
 
-const getErrors = async (
-  homey: Homey,
-  fromDate: DateTime,
-  toDate: DateTime,
-): Promise<ErrorData[]> => {
-  const { data } = await (homey.app as MELCloudApp).api.getErrors({
-    postData: {
-      DeviceIDs: DeviceModel.getAll().map(({ id }) => id),
-      FromDate: fromDate.toISODate() ?? '',
-      ToDate: toDate.toISODate() ?? '',
-    },
-  })
-  if ('AttributeErrors' in data) {
-    throw new Error(formatErrors(data.AttributeErrors))
-  }
-  return data
-}
-
 const getDriverSettings = (
   { id: driverId, settings }: ManifestDriver,
   language: string,
@@ -174,32 +149,6 @@ const getDriverLoginSetting = (
       return acc
     }, {}),
   )
-
-const handleErrorLogQuery = ({
-  from,
-  limit,
-  offset,
-  to,
-}: ErrorLogQuery): { fromDate: DateTime; period: number; toDate: DateTime } => {
-  const fromDate =
-    from !== undefined && from ? DateTime.fromISO(from) : undefined
-  const toDate = to !== undefined && to ? DateTime.fromISO(to) : DateTime.now()
-
-  const numberLimit = Number(limit)
-  const period = Number.isFinite(numberLimit) ? numberLimit : DEFAULT_LIMIT
-
-  const offsetLimit = Number(offset)
-  const daysOffset =
-    !fromDate && Number.isFinite(offsetLimit) ? offsetLimit : DEFAULT_OFFSET
-
-  const daysLimit = fromDate ? DEFAULT_LIMIT : period
-  const days = daysLimit * daysOffset + daysOffset
-  return {
-    fromDate: fromDate ?? toDate.minus({ days: days + daysLimit }),
-    period,
-    toDate: toDate.minus({ days }),
-  }
-}
 
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
@@ -309,34 +258,7 @@ export = {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    const { fromDate, period, toDate } = handleErrorLogQuery(query)
-    const nextToDate = fromDate.minus({ days: 1 })
-    return {
-      errors: (await getErrors(homey, fromDate, toDate))
-        .map(
-          ({
-            DeviceId: deviceId,
-            ErrorMessage: errorMessage,
-            StartDate: startDate,
-          }) => ({
-            date:
-              DateTime.fromISO(startDate).year === INVALID_YEAR ?
-                ''
-              : DateTime.fromISO(startDate, {
-                  locale: homey.i18n.getLanguage(),
-                }).toLocaleString(DateTime.DATETIME_MED),
-            device: DeviceModel.getById(deviceId)?.name ?? '',
-            error: errorMessage?.trim() ?? '',
-          }),
-        )
-        .filter(({ date, error }) => date && error)
-        .reverse(),
-      fromDateHuman: fromDate
-        .setLocale(homey.i18n.getLanguage())
-        .toLocaleString(DateTime.DATE_FULL),
-      nextFromDate: nextToDate.minus({ days: period }).toISODate() ?? '',
-      nextToDate: nextToDate.toISODate() ?? '',
-    }
+    return (homey.app as MELCloudApp).facadeManager.getErrors(query)
   },
   async getFrostProtectionSettings({
     homey,
@@ -366,7 +288,7 @@ export = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return (homey.app as MELCloudApp).api.applyLogin(body)
+    return (homey.app as MELCloudApp).api.login(body)
   },
   async setAtaValues({
     body,

@@ -80,6 +80,7 @@ export default <T extends HomeyClass>(base: T): T & TimerClass =>
         timerWords.dateSpecifier,
         DateTime.now()
           .plus(duration)
+          .setLocale('en-us')
           .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
       )
       return this.homey[timerType](callback, duration.as('milliseconds'))
