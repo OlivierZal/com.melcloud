@@ -15,6 +15,14 @@ export = class extends App {
 
   #facadeManager!: FacadeManager
 
+  public get api(): MELCloudAPI {
+    return this.#api
+  }
+
+  public get facadeManager(): FacadeManager {
+    return this.#facadeManager
+  }
+
   public override async onInit(): Promise<void> {
     const language = this.homey.i18n.getLanguage()
     const timezone = this.homey.clock.getTimezone()
@@ -38,12 +46,9 @@ export = class extends App {
     this.#createNotification(language)
   }
 
-  public get api(): MELCloudAPI {
-    return this.#api
-  }
-
-  public get facadeManager(): FacadeManager {
-    return this.#facadeManager
+  public override async onUninit(): Promise<void> {
+    this.#api.clearSync()
+    return Promise.resolve()
   }
 
   public getDevices({
@@ -55,11 +60,6 @@ export = class extends App {
       : [this.homey.drivers.getDriver(driverId)]).flatMap(
       (driver) => driver.getDevices() as MELCloudDevice[],
     )
-  }
-
-  public override async onUninit(): Promise<void> {
-    this.#api.clearSync()
-    return Promise.resolve()
   }
 
   #createNotification(language: string): void {

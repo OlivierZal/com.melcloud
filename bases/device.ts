@@ -60,7 +60,13 @@ export default abstract class<
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]
 
-  #device?: DeviceFacade[T]
+  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
+    {}
+
+  readonly #reportTimeout: {
+    false: NodeJS.Timeout | null
+    true: NodeJS.Timeout | null
+  } = { false: null, true: null }
 
   #energyCapabilityTagEntries: {
     false?: EnergyCapabilityTagEntry<T>[]
@@ -77,17 +83,7 @@ export default abstract class<
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
-  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
-    {}
-
-  readonly #reportTimeout: {
-    false: NodeJS.Timeout | null
-    true: NodeJS.Timeout | null
-  } = { false: null, true: null }
-
-  protected abstract toDevice: Partial<
-    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
-  >
+  #device?: DeviceFacade[T]
 
   protected abstract readonly fromDevice: Partial<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
@@ -95,14 +91,9 @@ export default abstract class<
 
   protected abstract readonly reportPlanParameters: ReportPlanParameters | null
 
-  public override async onInit(): Promise<void> {
-    this.toDevice = {
-      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
-      ...this.toDevice,
-    }
-    await this.setWarning(null)
-    await this.#fetchDevice()
-  }
+  protected abstract toDevice: Partial<
+    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
+  >
 
   public override async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
@@ -133,6 +124,15 @@ export default abstract class<
       this.homey.clearTimeout(this.#reportTimeout[total])
       this.homey.clearTimeout(this.#reportInterval[total])
     })
+  }
+
+  public override async onInit(): Promise<void> {
+    this.toDevice = {
+      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
+      ...this.toDevice,
+    }
+    await this.setWarning(null)
+    await this.#fetchDevice()
   }
 
   public override async onSettings({

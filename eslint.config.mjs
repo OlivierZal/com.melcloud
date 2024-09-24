@@ -8,6 +8,118 @@ import perfectionist from 'eslint-plugin-perfectionist'
 import jsoncParser from 'jsonc-eslint-parser'
 import ts from 'typescript-eslint'
 
+const modifiersOrder = [
+  ['declare', 'override', ''],
+  ['static', '', 'abstract'],
+  ['', 'protected', 'private'],
+  ['', 'optional'],
+  ['readonly', ''],
+  ['decorated', ''],
+]
+const modifierIncompatibilityMapping = {
+  abstract: ['decorated', 'private', 'static'],
+  declare: ['decorated', 'override'],
+}
+
+const selectorOrder = [
+  'index-signature',
+  'property',
+  'function-property',
+  'static-block',
+  'constructor',
+  'accessor-property',
+  ['get-method', 'set-method'],
+  'method',
+]
+const selectorIncompatibilityMapping = {
+  'accessor-property': ['declare', 'optional', 'readonly'],
+  constructor: [
+    'abstract',
+    'declare',
+    'decorated',
+    'optional',
+    'override',
+    'readonly',
+    'static',
+  ],
+  'function-property': ['abstract', 'declare'],
+  'get-method': ['declare', 'optional', 'readonly'],
+  'index-signature': [
+    'abstract',
+    'declare',
+    'decorated',
+    'optional',
+    'override',
+    'private',
+    'protected',
+  ],
+  method: ['declare', 'readonly'],
+  property: [],
+  'set-method': ['declare', 'optional', 'readonly'],
+  'static-block': [
+    'abstract',
+    'declare',
+    'decorated',
+    'optional',
+    'override',
+    'private',
+    'protected',
+    'readonly',
+    'static',
+  ],
+}
+
+const cartesianProduct = (arrays) =>
+  arrays.reduce(
+    (acc, array) =>
+      acc.flatMap((accItem) =>
+        array.map((item) => [
+          ...(Array.isArray(accItem) ? accItem : [accItem]),
+          item,
+        ]),
+      ),
+    [[]],
+  )
+
+const allModifierCombos = cartesianProduct(modifiersOrder).map((combo) =>
+  combo.filter((modifier) => modifier !== ''),
+)
+
+const compatibleModifierCombos = allModifierCombos.filter((combo) =>
+  combo.every((modifier) =>
+    (modifierIncompatibilityMapping[modifier] || []).every(
+      (incMod) => !combo.includes(incMod),
+    ),
+  ),
+)
+
+const generateGroupsForSelector = (selector) =>
+  compatibleModifierCombos
+    .filter(
+      (modifiers) =>
+        !modifiers.some((modifier) =>
+          (selectorIncompatibilityMapping[selector] || []).includes(modifier),
+        ),
+    )
+    .map((modifiers) => [...modifiers, selector].join('-'))
+
+const groups = selectorOrder.flatMap((selector) => {
+  if (Array.isArray(selector)) {
+    const groupPairs = selector.map((pairedSelector) =>
+      generateGroupsForSelector(pairedSelector),
+    )
+    const [groupPair] = groupPairs
+    return [...Array(groupPair.length).keys()].map((index) =>
+      groupPairs.map((group) => group[index]),
+    )
+  }
+  return generateGroupsForSelector(selector)
+})
+
+const classGroups = {
+  groups,
+}
+
 const typeGroups = {
   groups: [
     'keyword',
@@ -177,158 +289,7 @@ export default [
         ],
         'one-var': ['error', 'never'],
         'perfectionist/sort-array-includes': 'error',
-        'perfectionist/sort-classes': [
-          'error',
-          {
-            customGroups: {
-              onInit: 'onInit',
-            },
-            groups: [
-              // Signatures
-              'static-index-signature',
-              'index-signature',
-              'readonly-index-signature',
-              // Properties
-              'decorated-static-optional-property',
-              'decorated-static-property',
-              'decorated-static-readonly-optional-property',
-              'decorated-static-readonly-property',
-              'decorated-static-protected-optional-property',
-              'decorated-static-protected-property',
-              'decorated-static-protected-readonly-optional-property',
-              'decorated-static-protected-readonly-property',
-              'decorated-static-private-optional-property',
-              'decorated-static-private-property',
-              'decorated-static-private-readonly-optional-property',
-              'decorated-static-private-readonly-property',
-              'static-optional-property',
-              'static-property',
-              'static-readonly-optional-property',
-              'static-readonly-property',
-              'static-protected-optional-property',
-              'static-protected-property',
-              'static-protected-readonly-optional-property',
-              'static-protected-readonly-property',
-              'static-private-optional-property',
-              'static-private-property',
-              'static-private-readonly-optional-property',
-              'static-private-readonly-property',
-              'decorated-optional-property',
-              'decorated-property',
-              'decorated-readonly-optional-property',
-              'decorated-readonly-property',
-              'decorated-protected-optional-property',
-              'decorated-protected-property',
-              'decorated-protected-readonly-optional-property',
-              'decorated-protected-readonly-property',
-              'decorated-private-optional-property',
-              'decorated-private-property',
-              'decorated-private-readonly-optional-property',
-              'decorated-private-readonly-property',
-              'optional-property',
-              'property',
-              'readonly-optional-property',
-              'readonly-property',
-              'protected-optional-property',
-              'protected-property',
-              'protected-readonly-optional-property',
-              'protected-readonly-property',
-              'private-optional-property',
-              'private-property',
-              'private-readonly-optional-property',
-              'private-readonly-property',
-              'abstract-optional-property',
-              'abstract-property',
-              'abstract-readonly-optional-property',
-              'abstract-readonly-property',
-              'abstract-protected-optional-property',
-              'abstract-protected-property',
-              'abstract-protected-readonly-optional-property',
-              'abstract-protected-readonly-property',
-              // Static blocks
-              'static-block',
-              // Constructors
-              'constructor',
-              'protected-constructor',
-              'private-constructor',
-              // Iniliazers
-              'onInit',
-              // Accessors
-              'decorated-static-accessor-property',
-              'decorated-static-protected-accessor-property',
-              'decorated-static-private-accessor-property',
-              'static-accessor-property',
-              'static-protected-accessor-property',
-              'static-private-accessor-property',
-              'decorated-accessor-property',
-              'decorated-protected-accessor-property',
-              'decorated-private-accessor-property',
-              'accessor-property',
-              'protected-accessor-property',
-              'private-accessor-property',
-              'abstract-accessor-property',
-              'abstract-protected-accessor-property',
-              // Getters and setters
-              ['decorated-static-get-method', 'decorated-static-set-method'],
-              [
-                'decorated-static-protected-get-method',
-                'decorated-static-protected-set-method',
-              ],
-              [
-                'decorated-static-private-get-method',
-                'decorated-static-private-set-method',
-              ],
-              ['static-get-method', 'static-set-method'],
-              ['static-protected-get-method', 'static-protected-set-method'],
-              ['static-private-get-method', 'static-private-set-method'],
-              ['decorated-get-method', 'decorated-set-method'],
-              [
-                'decorated-protected-get-method',
-                'decorated-protected-set-method',
-              ],
-              ['decorated-private-get-method', 'decorated-private-set-method'],
-              ['get-method', 'set-method'],
-              ['protected-get-method', 'protected-set-method'],
-              ['private-get-method', 'private-set-method'],
-              ['abstract-get-method', 'abstract-set-method'],
-              [
-                'abstract-protected-get-method',
-                'abstract-protected-set-method',
-              ],
-              // Methods
-              'decorated-static-optional-method',
-              'decorated-static-method',
-              'decorated-static-protected-optional-method',
-              'decorated-static-protected-method',
-              'decorated-static-private-optional-method',
-              'decorated-static-private-method',
-              'static-optional-method',
-              'static-method',
-              'static-protected-optional-method',
-              'static-protected-method',
-              'static-private-optional-method',
-              'static-private-method',
-              'decorated-optional-method',
-              'decorated-method',
-              'decorated-protected-optional-method',
-              'decorated-protected-method',
-              'decorated-private-optional-method',
-              'decorated-private-method',
-              'optional-method',
-              'method',
-              'protected-optional-method',
-              'protected-method',
-              'private-optional-method',
-              'private-method',
-              'abstract-optional-method',
-              'abstract-method',
-              'abstract-protected-optional-method',
-              'abstract-protected-method',
-              // Unknown
-              'unknown',
-            ],
-          },
-        ],
+        'perfectionist/sort-classes': ['error', classGroups],
         'perfectionist/sort-enums': 'error',
         'perfectionist/sort-exports': ['error', typesFirst],
         'perfectionist/sort-imports': 'error',
@@ -349,6 +310,10 @@ export default [
     {
       files: ['**/*.mjs'],
       ...ts.configs.disableTypeChecked,
+      rules: {
+        ...ts.configs.disableTypeChecked.rules,
+        '@typescript-eslint/explicit-function-return-type': 'off',
+      },
     },
     {
       settings: {
