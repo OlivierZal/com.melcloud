@@ -386,12 +386,12 @@ const createInputElement = ({
   type,
   value,
 }: {
+  id: string
+  type: string
   max?: number
   min?: number
   placeholder?: string
   value?: string
-  id: string
-  type: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
   inputElement.classList.add('homey-form-input')
@@ -830,9 +830,9 @@ const generateAtaValue = (
     type,
     values,
   }: {
-    values?: readonly { id: string; label: string }[]
     id: string
     type: string
+    values?: readonly { id: string; label: string }[]
   },
 ): HTMLValueElement | null => {
   if (['boolean', 'enum'].includes(type)) {

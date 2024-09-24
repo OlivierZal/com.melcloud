@@ -20,8 +20,8 @@ export interface CapabilitiesOptionsValues<T extends string> {
 }
 
 export interface RangeOptions {
-  readonly step?: number
-  readonly units?: LocalizedStrings
   readonly max: number
   readonly min: number
+  readonly step?: number
+  readonly units?: LocalizedStrings
 }

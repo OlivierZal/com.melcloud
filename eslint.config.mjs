@@ -8,7 +8,7 @@ import perfectionist from 'eslint-plugin-perfectionist'
 import jsoncParser from 'jsonc-eslint-parser'
 import ts from 'typescript-eslint'
 
-const groups = {
+const typeGroups = {
   groups: [
     'keyword',
     'literal',
@@ -26,8 +26,8 @@ const groups = {
   ],
 }
 
-const optionalFirst = {
-  groupKind: 'optional-first',
+const requiredFirst = {
+  groupKind: 'required-first',
 }
 
 const typesFirst = {
@@ -35,10 +35,10 @@ const typesFirst = {
 }
 
 export default [
+  {
+    ignores: ['.homeybuild/'],
+  },
   ...ts.config(
-    {
-      ignores: ['.homeybuild/'],
-    },
     {
       extends: [
         js.configs.all,
@@ -332,16 +332,16 @@ export default [
         'perfectionist/sort-enums': 'error',
         'perfectionist/sort-exports': ['error', typesFirst],
         'perfectionist/sort-imports': 'error',
-        'perfectionist/sort-interfaces': ['error', optionalFirst],
-        'perfectionist/sort-intersection-types': ['error', groups],
+        'perfectionist/sort-interfaces': ['error', requiredFirst],
+        'perfectionist/sort-intersection-types': ['error', typeGroups],
         'perfectionist/sort-maps': 'error',
         'perfectionist/sort-named-exports': ['error', typesFirst],
         'perfectionist/sort-named-imports': ['error', typesFirst],
-        'perfectionist/sort-object-types': ['error', optionalFirst],
+        'perfectionist/sort-object-types': ['error', requiredFirst],
         'perfectionist/sort-objects': 'error',
         'perfectionist/sort-sets': 'error',
         'perfectionist/sort-switch-case': 'error',
-        'perfectionist/sort-union-types': ['error', groups],
+        'perfectionist/sort-union-types': ['error', typeGroups],
         'sort-imports': 'off',
         'sort-keys': 'off',
       },

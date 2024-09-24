@@ -108,6 +108,9 @@ export interface ReportPlanParameters {
 }
 
 export interface ManifestDriverSettingData {
+  readonly id: string
+  readonly label: LocalizedStrings
+  readonly type: string
   readonly max?: number
   readonly min?: number
   readonly units?: string
@@ -115,15 +118,12 @@ export interface ManifestDriverSettingData {
     readonly id: string
     readonly label: LocalizedStrings
   }[]
-  readonly id: string
-  readonly label: LocalizedStrings
-  readonly type: string
 }
 
 export interface ManifestDriverSetting {
+  readonly label: LocalizedStrings
   readonly children?: readonly ManifestDriverSettingData[]
   readonly id?: string
-  readonly label: LocalizedStrings
 }
 
 export interface PairSetting {
@@ -141,12 +141,13 @@ export interface LoginSetting extends PairSetting {
 }
 
 export interface ManifestDriverCapabilitiesOptions {
-  readonly values?: readonly CapabilitiesOptionsValues<string>[]
   readonly title: LocalizedStrings
   readonly type: string
+  readonly values?: readonly CapabilitiesOptionsValues<string>[]
 }
 
 export interface ManifestDriver {
+  readonly id: string
   readonly capabilities?: readonly string[]
   readonly capabilitiesOptions?: Record<
     string,
@@ -154,7 +155,6 @@ export interface ManifestDriver {
   >
   readonly pair?: LoginSetting & readonly PairSetting[]
   readonly settings?: readonly ManifestDriverSetting[]
-  readonly id: string
 }
 
 export interface Manifest {
@@ -163,6 +163,10 @@ export interface Manifest {
 }
 
 export interface DriverSetting {
+  readonly driverId: string
+  readonly id: string
+  title: string
+  readonly type: string
   readonly groupId?: string
   readonly groupLabel?: string
   readonly max?: number
@@ -170,16 +174,12 @@ export interface DriverSetting {
   placeholder?: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
-  readonly driverId: string
-  readonly id: string
-  title: string
-  readonly type: string
 }
 
 export interface DriverCapabilitiesOptions {
-  readonly values?: readonly { readonly id: string; readonly label: string }[]
   readonly title: string
   readonly type: string
+  readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
 export interface LoginDriverSetting extends DriverSetting {
@@ -311,9 +311,9 @@ export interface FrostProtectionSettings {
 }
 
 export interface HolidayModeSettings {
+  readonly enabled: boolean
   readonly from?: string
   readonly to?: string
-  readonly enabled: boolean
 }
 
 export type AreaZone = BaseModel
