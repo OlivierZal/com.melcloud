@@ -87,19 +87,19 @@ const allModifierCombos = cartesianProduct(modifiersOrder).map((combo) =>
 
 const compatibleModifierCombos = allModifierCombos.filter((combo) =>
   combo.every((modifier) =>
-    (modifierIncompatibilityMapping[modifier] || []).every(
-      (incMod) => !combo.includes(incMod),
+    (modifierIncompatibilityMapping[modifier] ?? []).every(
+      (incompatibleModifier) => !combo.includes(incompatibleModifier),
     ),
   ),
 )
 
 const generateGroupsForSelector = (selector) =>
   compatibleModifierCombos
-    .filter(
-      (modifiers) =>
-        !modifiers.some((modifier) =>
-          (selectorIncompatibilityMapping[selector] || []).includes(modifier),
-        ),
+    .filter((modifiers) =>
+      modifiers.every(
+        (modifier) =>
+          !(selectorIncompatibilityMapping[selector] ?? []).includes(modifier),
+      ),
     )
     .map((modifiers) => [...modifiers, selector].join('-'))
 
