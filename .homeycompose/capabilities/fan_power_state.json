@@ -1,6 +1,5 @@
 {
   "getable": true,
-  "icon": "/assets/fan_power_state.svg",
   "insights": true,
   "setable": false,
   "title": {

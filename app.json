@@ -5213,7 +5213,6 @@
     },
     "fan_power_state": {
       "getable": true,
-      "icon": "/assets/fan_power_state.svg",
       "insights": true,
       "setable": false,
       "title": {
@@ -5376,7 +5375,6 @@
     },
     "operation_mode_state": {
       "getable": true,
-      "icon": "/assets/operation_mode_state.svg",
       "setable": false,
       "title": {
         "da": "Aktuel drift",

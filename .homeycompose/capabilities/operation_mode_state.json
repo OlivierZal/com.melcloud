@@ -1,6 +1,5 @@
 {
   "getable": true,
-  "icon": "/assets/operation_mode_state.svg",
   "setable": false,
   "title": {
     "da": "Aktuel drift",
