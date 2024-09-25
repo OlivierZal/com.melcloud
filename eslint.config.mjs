@@ -11,15 +11,11 @@ import ts from 'typescript-eslint'
 const modifiersOrder = [
   ['declare', 'override', ''],
   ['static', '', 'abstract'],
+  ['decorated', ''],
   ['', 'protected', 'private'],
   ['', 'optional'],
   ['readonly', ''],
-  ['decorated', ''],
 ]
-const modifierIncompatibilityMapping = {
-  abstract: ['decorated', 'private', 'static'],
-  declare: ['decorated', 'override'],
-}
 
 const selectorOrder = [
   'index-signature',
@@ -31,7 +27,37 @@ const selectorOrder = [
   ['get-method', 'set-method'],
   'method',
 ]
-const selectorIncompatibilityMapping = {
+
+const cartesianProduct = (arrays) =>
+  arrays.reduce(
+    (acc, array) =>
+      acc.flatMap((accItem) =>
+        array.map((item) => [
+          ...(Array.isArray(accItem) ? accItem : [accItem]),
+          item,
+        ]),
+      ),
+    [[]],
+  )
+
+const allModifierCombos = cartesianProduct(modifiersOrder).map((combo) =>
+  combo.filter((modifier) => modifier !== ''),
+)
+
+const modifierIncompatibilities = {
+  abstract: ['decorated', 'private', 'static'],
+  declare: ['decorated', 'override'],
+}
+
+const compatibleModifierCombos = allModifierCombos.filter((combo) =>
+  combo.every((modifier) =>
+    (modifierIncompatibilities[modifier] ?? []).every(
+      (incompatibleModifier) => !combo.includes(incompatibleModifier),
+    ),
+  ),
+)
+
+const selectorIncompatibilities = {
   'accessor-property': ['declare', 'optional', 'readonly'],
   constructor: [
     'abstract',
@@ -69,36 +95,12 @@ const selectorIncompatibilityMapping = {
   ],
 }
 
-const cartesianProduct = (arrays) =>
-  arrays.reduce(
-    (acc, array) =>
-      acc.flatMap((accItem) =>
-        array.map((item) => [
-          ...(Array.isArray(accItem) ? accItem : [accItem]),
-          item,
-        ]),
-      ),
-    [[]],
-  )
-
-const allModifierCombos = cartesianProduct(modifiersOrder).map((combo) =>
-  combo.filter((modifier) => modifier !== ''),
-)
-
-const compatibleModifierCombos = allModifierCombos.filter((combo) =>
-  combo.every((modifier) =>
-    (modifierIncompatibilityMapping[modifier] ?? []).every(
-      (incompatibleModifier) => !combo.includes(incompatibleModifier),
-    ),
-  ),
-)
-
 const generateGroupsForSelector = (selector) =>
   compatibleModifierCombos
     .filter((modifiers) =>
       modifiers.every(
         (modifier) =>
-          !(selectorIncompatibilityMapping[selector] ?? []).includes(modifier),
+          !(selectorIncompatibilities[selector] ?? []).includes(modifier),
       ),
     )
     .map((modifiers) => [...modifiers, selector].join('-'))
