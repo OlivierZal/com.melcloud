@@ -1,0 +1,36 @@
+{
+  "args": [
+    {
+      "filter": "driver_id=melcloud_atw&capabilities=operational_state.zone2",
+      "name": "device",
+      "type": "device"
+    }
+  ],
+  "title": {
+    "da": "Driftstilstanden i zone 2 blev ændret til",
+    "en": "The operational state in zone 2 changed to",
+    "es": "El estado operativo en la zona 2 ha cambiado a",
+    "fr": "L'état opérationnel dans la zone 2 est passé à",
+    "nl": "De operationele staat in zone 2 is veranderd naar",
+    "no": "Driftstilstanden i sone 2 ble endret til",
+    "sv": "Drifttillståndet i zon 2 ändrades till"
+  },
+  "tokens": [
+    {
+      "example": {
+        "en": "idle"
+      },
+      "name": "operational_state.zone2",
+      "title": {
+        "da": "Driftstilstand - zone 2",
+        "en": "Operational state - zone 2",
+        "es": "Estado operativo - zona 2",
+        "fr": "État opérationnel - zone 2",
+        "nl": "Operationele staat - zone 2",
+        "no": "Driftstilstand - sone 2",
+        "sv": "Drifttillstånd - zon 2"
+      },
+      "type": "string"
+    }
+  ]
+}

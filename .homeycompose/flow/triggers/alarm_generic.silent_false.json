@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Stille tilstanden blev deaktiveret",
+    "da": "Den stille tilstanden blev deaktiveret",
     "en": "The silent mode turned off",
     "es": "El modo silencioso se ha desactivado",
     "fr": "Le mode silencieux s'est désactivé",
     "nl": "De stille modus ging uit",
-    "no": "Stille modusen er deaktivert",
-    "sv": "Tyst läget är inaktiverat"
+    "no": "Den stille modusen er deaktivert",
+    "sv": "Det tysta läget är inaktiverat"
   }
 }

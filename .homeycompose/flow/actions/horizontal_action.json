@@ -109,21 +109,21 @@
     }
   ],
   "title": {
-    "da": "Indstil den horisontale luftflødesretningen",
+    "da": "Indstil den horisontale luftstrømsretningen",
     "en": "Set the horizontal vane",
     "es": "Configurar la descarga de aire horizontal",
     "fr": "Définir le soufflage d'air horizontal",
     "nl": "Stel de uitblaasrichting horizontaal in",
-    "no": "Innstill horisontal luftflødesretningen",
-    "sv": "Ställ in horisontell luftflödesriktningen"
+    "no": "Innstill den horisontale luftstrømretningen",
+    "sv": "Ställ in den horisontella luftflödesriktningen"
   },
   "titleFormatted": {
-    "da": "Indstil den horisontale luftflødesretningen til [[horizontal]]",
+    "da": "Indstil den horisontale luftstrømsretningen til [[horizontal]]",
     "en": "Set the horizontal vane to [[horizontal]]",
     "es": "Configurar la descarga de aire horizontal a [[horizontal]]",
     "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
     "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
-    "no": "Innstill horisontal luftflødesretningen til [[horizontal]]",
-    "sv": "Ställ in horisontell luftflödesriktningen till [[horizontal]]"
+    "no": "Innstill den horisontale luftstrømretningen til [[horizontal]]",
+    "sv": "Ställ in den horisontella luftflödesriktningen till [[horizontal]]"
   }
 }

@@ -5,32 +5,12 @@
     "measure_temperature",
     "measure_temperature.outdoor",
     "thermostat_mode",
-    "fan_power",
+    "fan_speed",
     "measure_co2",
     "measure_pm25",
-    "measure_power.wifi"
+    "measure_signal_strength"
   ],
   "capabilitiesOptions": {
-    "measure_power.wifi": {
-      "title": {
-        "da": "Wi-Fi signalstyrke",
-        "en": "Wi-Fi signal strength",
-        "es": "Potencia de la señal Wi-Fi",
-        "fr": "Puissance du signal Wi-Fi",
-        "nl": "Wi-Fi signaalsterkte",
-        "no": "Wi-Fi signalstyrke",
-        "sv": "Wi-Fi signalstyrka"
-      },
-      "units": {
-        "da": "dBm",
-        "en": "dBm",
-        "es": "dBm",
-        "fr": "dBm",
-        "nl": "dBm",
-        "no": "dBm",
-        "sv": "dBm"
-      }
-    },
     "measure_temperature.outdoor": {
       "title": {
         "da": "Udendørstemperatur",

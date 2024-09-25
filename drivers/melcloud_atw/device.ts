@@ -14,6 +14,7 @@ import {
   type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
+  HotWaterMode,
   K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
@@ -68,6 +69,10 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   > = {
     'alarm_generic.defrost': ((value: number) =>
       Boolean(value)) as ConvertFromDevice<'Atw'>,
+    hot_water_mode: ((value: boolean) =>
+      value ?
+        HotWaterMode.forced
+      : HotWaterMode.auto) as ConvertFromDevice<'Atw'>,
     legionella: ((value: string) =>
       DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
@@ -76,7 +81,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
       })) as ConvertFromDevice<'Atw'>,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
-    operation_mode_state: ((value: OperationModeState) =>
+    operational_state: ((value: OperationModeState) =>
       OperationModeState[value]) as ConvertFromDevice<'Atw'>,
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
@@ -108,6 +113,8 @@ export = class extends BaseMELCloudDevice<'Atw'> {
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
   > = {
+    hot_water_mode: ((value: keyof typeof HotWaterMode) =>
+      value === HotWaterMode.forced) as ConvertToDevice<'Atw'>,
     thermostat_mode: ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
@@ -134,7 +141,7 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     await this.setCapabilityValue(
-      'operation_mode_state.hot_water',
+      'operational_state.hot_water',
       getOperationModeStateHotWaterValue(data, operationModeState),
     )
   }
@@ -146,9 +153,9 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     await Promise.all(
       (['Zone1', 'Zone2'] as const).map(async (zone) => {
         const zoneSuffix = zone.toLowerCase() as Lowercase<ZoneAtw>
-        if (this.hasCapability(`operation_mode_state.${zoneSuffix}`)) {
+        if (this.hasCapability(`operational_state.${zoneSuffix}`)) {
           await this.setCapabilityValue(
-            `operation_mode_state.${zoneSuffix}`,
+            `operational_state.${zoneSuffix}`,
             getOperationModeStateZoneValue(data, operationModeState, zone),
           )
         }

@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Dyppvarmeren er !{{tændt|slukket}}",
+    "da": "Dyppevarmeren er !{{tændt|slukket}}",
     "en": "The immersion heater is !{{on|off}}",
     "es": "El calentador eléctrico sumergible está !{{activado|desactivado}}",
-    "fr": "Le chauffe-eau électrique est !{{en marche|arrêté}}",
+    "fr": "Le thermoplongeur est !{{en marche|arrêté}}",
     "nl": "De dompelelement is !{{aan|uit}}",
-    "no": "Nedsenkbar varmekolbe er !{{på|av}}",
+    "no": "Dyppevarmeren er !{{på|av}}",
     "sv": "Doppvärmaren är !{{på|av}}"
   }
 }

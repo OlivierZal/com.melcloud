@@ -26,8 +26,8 @@
           "title": {
             "da": "Fast fremledningstemperatur",
             "en": "Fixed flow temperature",
-            "es": "Temperatura de flujo fija",
-            "fr": "Température de flux fixe",
+            "es": "Temperatura de partida fija",
+            "fr": "Température de départ fixe",
             "nl": "Vaste aanvoertemperatuur",
             "no": "Fast fremløpstemperatur",
             "sv": "Fast framledningstemperatur"
@@ -38,8 +38,8 @@
           "title": {
             "da": "Varmekurve",
             "en": "Weather compensation curve",
-            "es": "Curva de compensación climática",
-            "fr": "Courbe de compensation météo",
+            "es": "Curva de calefacción",
+            "fr": "Courbe de chauffe",
             "nl": "Weerscompensatiecurve",
             "no": "Varmekurve",
             "sv": "Värmekurva"
@@ -62,8 +62,8 @@
           "title": {
             "da": "Fast fremledningstemperatur - køling",
             "en": "Fixed flow temperature - cooling",
-            "es": "Temperatura de flujo fija - enfriamiento",
-            "fr": "Température de flux fixe - refroidissement",
+            "es": "Temperatura de partida fija - enfriamiento",
+            "fr": "Température de départ fixe - refroidissement",
             "nl": "Vaste aanvoertemperatuur - koeling",
             "no": "Fast fremløpstemperatur - kjøling",
             "sv": "Fast framledningstemperatur - kylning"
@@ -84,7 +84,7 @@
   "title": {
     "da": "Termostattilstand !{{er|er ikke}} i zone 2",
     "en": "Thermostat mode !{{is|is not}} in zone 2",
-    "es": "El modo del termostato !{{está|no está}} en zona 2",
+    "es": "El modo del termostato !{{está|no está}} en la zona 2",
     "fr": "Mode thermostat !{{est|n'est pas}} dans la zone 2",
     "nl": "Thermostaat modus !{{is|is niet}} in zone 2",
     "no": "Termostatmodus !{{er|er ikke}} i sone 2",
@@ -93,7 +93,7 @@
   "titleFormatted": {
     "da": "Termostattilstand !{{er|er ikke}} [[thermostat_mode]] i zone 2",
     "en": "Thermostat mode !{{is|is not}} [[thermostat_mode]] in zone 2",
-    "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en zona 2",
+    "es": "El modo del termostato !{{está|no está}} [[thermostat_mode]] en la zona 2",
     "fr": "Mode thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
     "nl": "Thermostaat modus !{{is|is niet}} [[thermostat_mode]] in zone 2",
     "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",

@@ -2,12 +2,12 @@
   "getable": true,
   "setable": true,
   "title": {
-    "da": "Horisontal luftflødesretning",
+    "da": "Horisontal luftstrømsretning",
     "en": "Horizontal vane",
     "es": "Descarga de aire horizontal",
     "fr": "Soufflage d'air horizontal",
     "nl": "Uitblaasrichting horizontaal",
-    "no": "Horisontal luftflødesretning",
+    "no": "Horisontal luftstrømretning",
     "sv": "Horisontell luftflödesriktning"
   },
   "type": "enum",

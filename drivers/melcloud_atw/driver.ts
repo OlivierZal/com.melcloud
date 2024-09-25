@@ -25,7 +25,7 @@ export = class extends BaseMELCloudDriver<'Atw'> {
 
   readonly #zone1Capabilities: (keyof CapabilitiesAtw)[] = [
     'onoff',
-    'onoff.forced_hot_water',
+    'hot_water_mode',
     'measure_temperature',
     'measure_temperature.outdoor',
     'measure_temperature.flow',
@@ -35,10 +35,10 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.tank_water',
     'target_temperature.flow_heat',
     'thermostat_mode',
-    'operation_mode_state',
-    'operation_mode_state.hot_water',
-    'operation_mode_state.zone1',
-    'measure_power.heat_pump_frequency',
+    'operational_state',
+    'operational_state.hot_water',
+    'operational_state.zone1',
+    'measure_frequency',
     'measure_power',
     'measure_power.produced',
   ] as const
@@ -52,7 +52,7 @@ export = class extends BaseMELCloudDriver<'Atw'> {
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
     'thermostat_mode.zone2',
-    'operation_mode_state.zone2',
+    'operational_state.zone2',
   ] as const
 
   readonly #zone2CoolCapabilities: (keyof CapabilitiesAtw)[] = [

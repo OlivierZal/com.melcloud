@@ -4,11 +4,11 @@
   "setable": false,
   "title": {
     "da": "Aktuel drift",
-    "en": "Actual operation",
+    "en": "Current operation",
     "es": "Operación actual",
     "fr": "Opération actuelle",
     "nl": "Huidige bedrijf",
-    "no": "Gjeldende drift",
+    "no": "Aktuell drift",
     "sv": "Aktuell drift"
   },
   "type": "enum",

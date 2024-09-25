@@ -6,7 +6,7 @@
       "type": "device"
     },
     {
-      "name": "operation_mode_state",
+      "name": "operational_state",
       "type": "dropdown",
       "values": [
         {
@@ -61,21 +61,21 @@
     }
   ],
   "title": {
-    "da": "Aktuel drift !{{er|er ikke}} for varmtvandsindlæsning",
-    "en": "The actual operation !{{is|is not}} for domestic hot water",
-    "es": "La operación actual !{{está|no está}} para el agua caliente sanitaria",
-    "fr": "L'opération actuelle !{{est|n'est pas}} pour l'eau chaude sanitaire",
-    "nl": "De huidige bedrijf !{{is|is niet}} voor het sanitair warm water",
-    "no": "Gjeldende drift !{{er|er ikke}} for varmvannslastning",
-    "sv": "Aktuell drift !{{är|är inte}} för varmvattenladdning"
+    "da": "Driftstilstanden for varmtvandsindlæsning !{{er|er ikke}}",
+    "en": "The operational state for domestic hot water !{{is|is not}}",
+    "es": "El estado operativo para el agua caliente sanitaria !{{está|no está}}",
+    "fr": "L'état opérationnel pour l'eau chaude sanitaire !{{est|n'est pas}}",
+    "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}}",
+    "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}}",
+    "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}}"
   },
   "titleFormatted": {
-    "da": "Aktuel drift !{{er|er ikke}} [[operation_mode_state]] for varmtvandsindlæsning",
-    "en": "The actual operation !{{is|is not}} [[operation_mode_state]] for domestic hot water",
-    "es": "La operación actual !{{está|no está}} [[operation_mode_state]] para el agua caliente sanitaria",
-    "fr": "L'opération actuelle !{{est|n'est pas}} [[operation_mode_state]] pour l'eau chaude sanitaire",
-    "nl": "De huidige bedrijf !{{is|is niet}} [[operation_mode_state]] voor het sanitair warm water",
-    "no": "Gjeldende drift !{{er|er ikke}} [[operation_mode_state]] for varmvannslastning",
-    "sv": "Aktuell drift !{{är|är inte}} [[operation_mode_state]] för varmvattenladdning"
+    "da": "Driftstilstanden for varmtvandsindlæsning !{{er|er ikke}} [[operational_state]]",
+    "en": "The operational state for domestic hot water !{{is|is not}} [[operational_state]]",
+    "es": "El estado operativo para el agua caliente sanitaria !{{está|no está}} [[operational_state]]",
+    "fr": "L'état opérationnel pour l'eau chaude sanitaire !{{est|n'est pas}} [[operational_state]]",
+    "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}} [[operational_state]]",
+    "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}} [[operational_state]]",
+    "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}} [[operational_state]]"
   }
 }

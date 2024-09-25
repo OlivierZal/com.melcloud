@@ -1,0 +1,36 @@
+{
+  "args": [
+    {
+      "filter": "driver_id=melcloud_atw",
+      "name": "device",
+      "type": "device"
+    }
+  ],
+  "title": {
+    "da": "Driftstilstanden for varmtvandsindlæsning blev ændret til",
+    "en": "The operational state for domestic hot water changed to",
+    "es": "El estado operativo para el agua caliente sanitaria ha cambiado a",
+    "fr": "L'état opérationnel pour l'eau chaude sanitaire est passé à",
+    "nl": "De operationele staat voor het sanitair warm water is veranderd naar",
+    "no": "Driftstilstanden for varmvannslastning ble endret til",
+    "sv": "Drifttillståndet för varmvattenladdning ändrades till"
+  },
+  "tokens": [
+    {
+      "example": {
+        "en": "idle"
+      },
+      "name": "operational_state.hot_water",
+      "title": {
+        "da": "Driftstilstand - varmtvandsindlæsning",
+        "en": "Operational state - domestic hot water",
+        "es": "Estado operativo - agua caliente sanitaria",
+        "fr": "État opérationnel - eau chaude sanitaire",
+        "nl": "Operationele staat - sanitair warm water",
+        "no": "Driftstilstand - varmvannslastning",
+        "sv": "Drifttillstånd - varmvattenladdning"
+      },
+      "type": "string"
+    }
+  ]
+}

@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Dyppvarmeren blev aktiveret",
+    "da": "Dyppevarmeren blev aktiveret",
     "en": "The immersion heater turned on",
     "es": "El calentador eléctrico sumergible se ha activado",
-    "fr": "Le chauffe-eau électrique s'est activé",
+    "fr": "Le thermoplongeur s'est activé",
     "nl": "De dompelelement gaat aan",
-    "no": "Nedsenkbar varmekolbe er aktivert",
+    "no": "Dyppvarmeren er aktivert",
     "sv": "Doppvärmaren är aktiverad"
   }
 }

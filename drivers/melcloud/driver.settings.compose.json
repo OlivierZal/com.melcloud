@@ -220,7 +220,7 @@
       "en": "Energy display",
       "es": "Visualización de la energía",
       "fr": "Affichage de l'énergie",
-      "nl": "Energieweergeven",
+      "nl": "Energieweergave",
       "no": "Energivisning",
       "sv": "Energivisning"
     },
@@ -330,9 +330,9 @@
     "label": {
       "da": "Daglig energivisning",
       "en": "Daily energy display",
-      "es": "Visualización de la energía daría",
+      "es": "Visualización de la energía diaria",
       "fr": "Affichage de l'énergie quotidienne",
-      "nl": "Dagelijkse energieweergeven",
+      "nl": "Dagelijkse energieweergave",
       "no": "Daglig energivisning",
       "sv": "Daglig energivisning"
     },

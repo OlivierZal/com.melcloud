@@ -20,6 +20,11 @@ import type {
   RangeOptions,
 } from './bases'
 
+export enum HotWaterMode {
+  auto = 'auto',
+  forced = 'forced',
+}
+
 export enum OperationModeStateHotWaterCapability {
   dhw = 'dhw',
   idle = 'idle',
@@ -45,7 +50,7 @@ export interface TargetTemperatureFlowCapabilities {
 export interface SetCapabilitiesAtw
   extends BaseSetCapabilities,
     TargetTemperatureFlowCapabilities {
-  readonly 'onoff.forced_hot_water': boolean
+  readonly hot_water_mode: keyof typeof HotWaterMode
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
@@ -57,7 +62,7 @@ export interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operation_mode_state: keyof typeof OperationModeState
+  readonly operational_state: keyof typeof OperationModeState
 }
 
 export interface ListCapabilitiesAtw extends BaseListCapabilities {
@@ -68,8 +73,8 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
   readonly legionella: string
+  readonly measure_frequency: number
   readonly measure_power: number
-  readonly 'measure_power.heat_pump_frequency': number
   readonly 'measure_power.produced': number
   readonly 'measure_temperature.condensing': number
   readonly 'measure_temperature.flow': number
@@ -118,17 +123,17 @@ export interface EnergyCapabilitiesAtw {
 export interface CapabilitiesAtw
   extends OpCapabilitiesAtw,
     EnergyCapabilitiesAtw {
-  readonly 'operation_mode_state.hot_water': OperationModeStateHotWaterCapability
-  readonly 'operation_mode_state.zone1': OperationModeStateZoneCapability
-  readonly 'operation_mode_state.zone2': OperationModeStateZoneCapability
+  readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
+  readonly 'operational_state.zone1': OperationModeStateZoneCapability
+  readonly 'operational_state.zone2': OperationModeStateZoneCapability
 }
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,
   keyof UpdateDeviceDataAtw
 > = {
+  hot_water_mode: 'ForcedHotWaterMode',
   onoff: 'Power',
-  'onoff.forced_hot_water': 'ForcedHotWaterMode',
   target_temperature: 'SetTemperatureZone1',
   'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
   'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
@@ -148,7 +153,7 @@ export const getCapabilityTagMappingAtw: Record<
   'measure_temperature.outdoor': 'OutdoorTemperature',
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
-  operation_mode_state: 'OperationMode',
+  operational_state: 'OperationMode',
 } as const
 
 export const listCapabilityTagMappingAtw: Record<
@@ -162,10 +167,10 @@ export const listCapabilityTagMappingAtw: Record<
   'alarm_generic.eco_hot_water': 'EcoHotWater',
   'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
   legionella: 'LastLegionellaActivationTime',
+  measure_frequency: 'HeatPumpFrequency',
   measure_power: 'CurrentEnergyConsumed',
-  'measure_power.heat_pump_frequency': 'HeatPumpFrequency',
   'measure_power.produced': 'CurrentEnergyProduced',
-  'measure_power.wifi': 'WifiSignalStrength',
+  measure_signal_strength: 'WifiSignalStrength',
   'measure_temperature.condensing': 'CondensingTemperature',
   'measure_temperature.flow': 'FlowTemperature',
   'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
@@ -246,8 +251,8 @@ export const energyCapabilityTagMappingAtw: Record<
 export interface FlowArgsAtw {
   readonly device: AtwDevice
   readonly onoff: boolean
-  readonly operation_mode_state: keyof typeof OperationModeState
   readonly operation_mode_zone: keyof typeof OperationModeZone
+  readonly operational_state: keyof typeof OperationModeState
   readonly target_temperature: number
 }
 
@@ -286,8 +291,8 @@ const curve: CapabilitiesOptionsValues<'curve'> = {
   title: {
     da: 'Varmekurve',
     en: 'Weather compensation curve',
-    es: 'Curva de compensación climática',
-    fr: 'Courbe de compensation météo',
+    es: 'Curva de calefacción',
+    fr: 'Courbe de chauffe',
     nl: 'Weerscompensatiecurve',
     no: 'Varmekurve',
     sv: 'Värmekurva',
@@ -298,8 +303,8 @@ const flow: CapabilitiesOptionsValues<'flow'> = {
   title: {
     da: 'Fast fremledningstemperatur',
     en: 'Fixed flow temperature',
-    es: 'Temperatura de flujo fija',
-    fr: 'Température de flux fixe',
+    es: 'Temperatura de partida fija',
+    fr: 'Température de départ fixe',
     nl: 'Vaste aanvoertemperatuur',
     no: 'Fast fremløpstemperatur',
     sv: 'Fast framledningstemperatur',

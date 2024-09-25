@@ -16,13 +16,13 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
+import fanSpeed from 'homey-lib/assets/capability/capabilities/fan_speed.json'
 import power from 'homey-lib/assets/capability/capabilities/onoff.json'
 import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json'
 import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json'
 
 import type MELCloudApp from '.'
 
-import fanSpeed from './.homeycompose/capabilities/fan_power.json'
 import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
