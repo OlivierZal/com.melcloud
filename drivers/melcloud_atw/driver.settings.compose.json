@@ -37,8 +37,8 @@
         "label": {
           "da": "Måltemperatur for varmekurve",
           "en": "Weather compensation curve target temperature",
-          "es": "Temperatura configurada de la curva de compensación",
-          "fr": "Température cible de la courbe de compensation météo",
+          "es": "Temperatura configurada de la curva de calefacción",
+          "fr": "Température cible de la courbe de chauffe",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
           "no": "Ønsket temperatur for varmekurve",
           "sv": "Måltemperatur för värmekurva"
@@ -51,8 +51,8 @@
         "label": {
           "da": "Måltemperatur for varmekurve - zone 2",
           "en": "Weather compensation curve target temperature - zone 2",
-          "es": "Temperatura configurada de la curva de compensación - zona 2",
-          "fr": "Température cible de la courbe de compensation météo - zone 2",
+          "es": "Temperatura configurada de la curva de calefacción - zona 2",
+          "fr": "Température cible de la courbe de chauffe - zone 2",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
           "no": "Ønsket temperatur for varmekurve - sone 2",
           "sv": "Måltemperatur för värmekurva - zon 2"
@@ -133,12 +133,12 @@
       {
         "id": "alarm_generic.immersion_heater",
         "label": {
-          "da": "Dyppvarmer",
+          "da": "Dyppevarmer",
           "en": "Immersion heater",
           "es": "Calentador eléctrico sumergible",
-          "fr": "Chauffe-eau électrique",
+          "fr": "Thermoplongeur",
           "nl": "Dompelelement",
-          "no": "Nedsenkbar varmekolbe",
+          "no": "Dyppvarmer",
           "sv": "Doppvärmare"
         },
         "type": "checkbox",
@@ -173,8 +173,8 @@
         "label": {
           "da": "Fremledningstemperatur",
           "en": "Flow temperature",
-          "es": "Temperatura de flujo",
-          "fr": "Température de flux",
+          "es": "Temperatura de partida",
+          "fr": "Température de départ",
           "nl": "Aanvoertemperatuur",
           "no": "Fremløpstemperatur ",
           "sv": "Framledningstemperatur"
@@ -219,8 +219,8 @@
         "label": {
           "da": "Fremledningstemperatur - zone 2",
           "en": "Flow temperature - zone 2",
-          "es": "Temperatura de flujo - zona 2",
-          "fr": "Température de flux - zone 2",
+          "es": "Temperatura de partida - zona 2",
+          "fr": "Température de départ - zone 2",
           "nl": "Aanvoertemperatuur - zone 2",
           "no": "Fremløpstemperatur  - sone 2",
           "sv": "Framledningstemperatur - zon 2"
@@ -350,7 +350,7 @@
       "en": "Energy display",
       "es": "Visualización de la energía",
       "fr": "Affichage de l'énergie",
-      "nl": "Energieweergeven",
+      "nl": "Energieweergave",
       "no": "Energivisning",
       "sv": "Energivisning"
     },
@@ -560,7 +560,7 @@
       "en": "Daily energy display",
       "es": "Visualización de la energía diaria",
       "fr": "Affichage de l'énergie quotidienne",
-      "nl": "Dagelijkse energieweergeven",
+      "nl": "Dagelijkse energieweergave",
       "no": "Daglig energivisning",
       "sv": "Daglig energivisning"
     },

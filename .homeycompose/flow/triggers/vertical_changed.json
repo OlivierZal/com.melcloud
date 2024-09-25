@@ -7,13 +7,13 @@
     }
   ],
   "title": {
-    "da": "Den vertikale luftflødesretningen er blevet ændret",
+    "da": "Den vertikale luftstrømsretningen er blevet ændret",
     "en": "The vertical vane has changed",
     "es": "La descarga de aire vertical ha cambiado",
     "fr": "Le soufflage d'air vertical a été modifié",
     "nl": "De uitblaasrichting verticaal is veranderd",
-    "no": "Vertikal luftflødesretningen ble endret",
-    "sv": "Vertikal luftflödesriktningen ändrades"
+    "no": "Den vertikale luftstrømretningen ble endret",
+    "sv": "Den vertikala luftflödesriktningen ändrades"
   },
   "tokens": [
     {
@@ -22,12 +22,12 @@
       },
       "name": "vertical",
       "title": {
-        "da": "Vertikal luftflødesretning",
+        "da": "Vertikal luftstrømsretning",
         "en": "Vertical vane",
         "es": "Descarga de aire vertical",
         "fr": "Soufflage d'air vertical",
         "nl": "Uitblaasrichting verticaal",
-        "no": "Vertikal luftflødesretning",
+        "no": "Vertikal luftstrømretning",
         "sv": "Vertikal luftflödesriktning"
       },
       "type": "string"

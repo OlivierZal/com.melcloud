@@ -97,20 +97,21 @@
     }
   ],
   "title": {
-    "da": "Indstil den vertikale luftflødesretningen",
+    "da": "Indstil den vertikale luftstrømsretningen",
     "en": "Set the vertical vane",
     "es": "Configurar la discarga de aire vertical",
     "fr": "Définir le soufflage d'air vertical",
     "nl": "Stel de uitblaasrichting verticaal in",
-    "no": "Innstill vertikal luftflødesretningen",
-    "sv": "Ställ in vertikal luftflödesriktningen"
+    "no": "Innstill den vertikale luftstrømretningen",
+    "sv": "Ställ in den vertikala luftflödesriktningen"
   },
   "titleFormatted": {
+    "da": "Indstil den vertikale luftstrømsretningen til [[vertical]]",
     "en": "Set the vertical vane to [[vertical]]",
     "es": "Configurar la discarga de aire vertical a [[vertical]]",
     "fr": "Définir le soufflage d'air vertical à [[vertical]]",
     "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
-    "no": "Innstill den vertikale luftflødesretningen til [[vertical]]",
-    "sv": "Ställ in vertikal luftflödesriktningen till [[vertical]]"
+    "no": "Innstill den vertikale luftstrømretningen til [[vertical]]",
+    "sv": "Ställ in den vertikala luftflödesriktningen till [[vertical]]"
   }
 }

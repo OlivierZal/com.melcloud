@@ -7,11 +7,11 @@
     }
   ],
   "title": {
-    "da": "Tilførselsvarmen 1 er !{{tændt|slukket}}",
+    "da": "Tilkoblingsvarmen 1 er !{{tændt|slukket}}",
     "en": "The booster heater 1 is !{{on|off}}",
-    "es": "El calentador de refuerzo 1 está !{{activada|desactivada}}",
+    "es": "El calentador de refuerzo 1 está !{{activado|desactivado}}",
     "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
-    "nl": "De boosterverwarmingselement 1 is !{{aan|uit}}",
+    "nl": "Het bijverwarmingselement 1 is !{{aan|uit}}",
     "no": "Tilleggsvarmen 1 er !{{på|av}}",
     "sv": "Tillskottsvärmaren 1 är !{{på|av}}"
   }

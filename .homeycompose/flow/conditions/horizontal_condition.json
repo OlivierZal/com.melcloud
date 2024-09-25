@@ -109,21 +109,21 @@
     }
   ],
   "title": {
-    "da": "Den horisontale luftflødesretningen !{{er|er ikke}}",
+    "da": "Den horisontale luftstrømsretningen !{{er|er ikke}}",
     "en": "The horizontal vane !{{is|is not}}",
     "es": "La descarga de aire horizontal !{{está|no está}}",
     "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
     "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
-    "no": "Horisontal luftflødesretningen !{{er|er ikke}}",
-    "sv": "Horisontell luftflödesriktningen !{{är|är inte}}"
+    "no": "Den horisontale luftstrømretningen !{{er|er ikke}}",
+    "sv": "Den horisontella luftflödesriktningen !{{är|är inte}}"
   },
   "titleFormatted": {
-    "da": "Den horisontale luftflødesretningen !{{er|er ikke}} [[horizontal]]",
+    "da": "Den horisontale luftstrømsretningen !{{er|er ikke}} [[horizontal]]",
     "en": "The horizontal vane !{{is|is not}} [[horizontal]]",
     "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]",
     "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
     "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
-    "no": "Horisontal luftflødesretningen !{{er|er ikke}} [[horizontal]]",
-    "sv": "Horisontell luftflödesriktningen !{{är|är inte}} [[horizontal]]"
+    "no": "Den horisontale luftstrømretningen !{{er|er ikke}} [[horizontal]]",
+    "sv": "Den horisontella luftflödesriktningen !{{är|är inte}} [[horizontal]]"
   }
 }

@@ -14,7 +14,7 @@
       "label": {
         "da": "Deaktiver slukning fra Homey",
         "en": "Disable shutdown from Homey",
-        "es": "Desactivar apagado desde Homey",
+        "es": "Desactivar el apagado desde Homey",
         "fr": "Désactiver l'extinction depuis Homey",
         "nl": "Schakel uitschakeling van Homey uit",
         "no": "Deaktiver avstenging fra Homey",
@@ -24,7 +24,7 @@
       "value": false
     },
     {
-      "id": "measure_power.wifi",
+      "id": "measure_signal_strength",
       "label": {
         "da": "Vise signalstyrke",
         "en": "Display signal strength",

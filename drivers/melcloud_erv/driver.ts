@@ -29,7 +29,7 @@ export = class extends BaseMELCloudDriver<'Erv'> {
     return [
       ...(this.capabilities ?? []).filter(
         (capability) =>
-          !['measure_co2', 'measure_pm25', 'measure_power.wifi'].includes(
+          !['measure_co2', 'measure_pm25', 'measure_signal_strength'].includes(
             capability,
           ),
       ),

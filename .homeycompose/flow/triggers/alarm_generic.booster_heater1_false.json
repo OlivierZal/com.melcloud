@@ -7,11 +7,11 @@
     }
   ],
   "title": {
-    "da": "Tilførselsvarme 1 blev deaktiveret",
+    "da": "Tilkoblingsvarmen 1 blev deaktiveret",
     "en": "The booster heater 1 turned off",
     "es": "El calentador de refuerzo 1 se ha desactivado",
     "fr": "Le chauffage d'appoint 1 s'est désactivé",
-    "nl": "De boosterverwarmingselement 1 ging uit",
+    "nl": "Het bijverwarmingselement 1 ging uit",
     "no": "Tilleggsvarmen 1 er deaktivert",
     "sv": "Tillskottsvärmaren 1 är inaktiverad"
   }

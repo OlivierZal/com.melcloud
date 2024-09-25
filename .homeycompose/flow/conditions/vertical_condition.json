@@ -97,21 +97,21 @@
     }
   ],
   "title": {
-    "da": "Den vertikale luftflødesretningen !{{er|er ikke}}",
+    "da": "Den vertikale luftstrømsretningen !{{er|er ikke}}",
     "en": "The vertical vane !{{is|is not}}",
     "es": "La descarga de aire vertical !{{está|no está}}",
     "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
     "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
-    "no": "Vertikal luftflødesretningen !{{er|er ikke}}",
-    "sv": "Vertikal luftflödesriktningen !{{är|är inte}}"
+    "no": "Den vertikale luftstrømretningen !{{er|er ikke}}",
+    "sv": "Den vertikala luftflödesriktningen !{{är|är inte}}"
   },
   "titleFormatted": {
-    "da": "Den vertikale luftflødesretningen !{{er|er ikke}} [[vertical]]",
+    "da": "Den vertikale luftstrømsretningen !{{er|er ikke}} [[vertical]]",
     "en": "The vertical vane !{{is|is not}} [[vertical]]",
     "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]",
     "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
     "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
-    "no": "Vertikal luftflødesretningen !{{er|er ikke}} [[vertical]]",
-    "sv": "Vertikal luftflödesriktningen !{{är|är inte}} [[vertical]]"
+    "no": "Den vertikale luftstrømretningen !{{er|er ikke}} [[vertical]]",
+    "sv": "Den vertikala luftflödesriktningen !{{är|är inte}} [[vertical]]"
   }
 }

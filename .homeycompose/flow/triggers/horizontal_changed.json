@@ -7,13 +7,13 @@
     }
   ],
   "title": {
-    "da": "Den horisontale luftflødesretningen er blevet ændret",
+    "da": "Den horisontale luftstrømsretningen er blevet ændret",
     "en": "The horizontal vane has changed",
     "es": "La descarga de aire horizontal ha cambiado",
     "fr": "Le soufflage d'air horizontal a été modifié",
     "nl": "De uitblaasrichting horizontaal is veranderd",
-    "no": "Horisontal luftflødesretningen ble endret",
-    "sv": "Horisontell luftflödesriktningen ändrades"
+    "no": "Den horisontale luftstrømretningen ble endret",
+    "sv": "Den horisontella luftflödesriktningen ändrades"
   },
   "tokens": [
     {
@@ -22,12 +22,12 @@
       },
       "name": "horizontal",
       "title": {
-        "da": "Horisontal luftflødesretning",
+        "da": "Horisontal luftstrømsretning",
         "en": "Horizontal vane",
         "es": "Descarga de aire horizontal",
         "fr": "Soufflage d'air horizontal",
         "nl": "Uitblaasrichting horizontaal",
-        "no": "Horisontal luftflødesretning",
+        "no": "Horisontal luftstrømretning",
         "sv": "Horisontell luftflödesriktning"
       },
       "type": "string"

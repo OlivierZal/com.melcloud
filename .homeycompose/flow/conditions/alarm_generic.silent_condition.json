@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Stille tilstanden er !{{tændt|slukket}}",
+    "da": "Den stille tilstand er !{{tændt|slukket}}",
     "en": "The silent mode is !{{on|off}}",
-    "es": "El modo silencioso está !{{activada|desactivada}}",
+    "es": "El modo silencioso está !{{activado|desactivado}}",
     "fr": "Le mode silencieux est !{{en marche|arrêté}}",
     "nl": "De stille modus is !{{aan|uit}}",
-    "no": "Stille modusen er !{{på|av}}",
-    "sv": "Tyst läget är !{{på|av}}"
+    "no": "Den stille modusen er !{{på|av}}",
+    "sv": "Det tysta läget är !{{på|av}}"
   }
 }

@@ -2,12 +2,12 @@
   "getable": true,
   "setable": true,
   "title": {
-    "da": "Vertikal luftflødesretning",
+    "da": "Vertikal luftstrømsretning",
     "en": "Vertical vane",
     "es": "Descarga de aire vertical",
     "fr": "Soufflage d'air vertical",
     "nl": "Uitblaasrichting verticaal",
-    "no": "Vertikal luftflødesretning",
+    "no": "Vertikal luftstrømretning",
     "sv": "Vertikal luftflödesriktning"
   },
   "type": "enum",

@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Dyppvarmeren blev deaktiveret",
+    "da": "Dyppevarmeren blev deaktiveret",
     "en": "The immersion heater turned off",
     "es": "El calentador eléctrico sumergible se ha desactivado",
-    "fr": "Le chauffe-eau électrique s'est désactivé",
+    "fr": "Le thermoplongeur s'est désactivé",
     "nl": "De dompelelement ging uit",
-    "no": "Nedsenkbar varmekolbe er deaktivert",
+    "no": "Dyppvarmeren er deaktivert",
     "sv": "Doppvärmaren är inaktiverad"
   }
 }

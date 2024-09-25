@@ -21,6 +21,7 @@ export {
   getCapabilitiesOptionsAtw,
 } from './atw'
 export {
+  HotWaterMode,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   energyCapabilityTagMappingAtw,

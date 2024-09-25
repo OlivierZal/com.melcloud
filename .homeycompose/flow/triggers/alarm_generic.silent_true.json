@@ -7,12 +7,12 @@
     }
   ],
   "title": {
-    "da": "Stille tilstanden blev aktiveret",
+    "da": "Den stille tilstanden blev aktiveret",
     "en": "The silent mode turned on",
     "es": "El modo silencioso se ha activado",
     "fr": "Le mode silencieux s'est activé",
     "nl": "De stille modus gaat aan",
-    "no": "Stille modusen er aktivert",
-    "sv": "Tyst läget är aktiverat"
+    "no": "Den stille modusen er aktivert",
+    "sv": "Det tysta läget är aktiverat"
   }
 }
