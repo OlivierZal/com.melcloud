@@ -1,6 +1,8 @@
-import type { DateObjectUnits, DurationLike } from 'luxon'
-
 import {
+  AreaModel,
+  BuildingModel,
+  DeviceModel,
+  FloorModel,
   type BaseModel,
   type DeviceType,
   type EnergyData,
@@ -11,10 +13,9 @@ import {
   type LoginCredentials,
   type SetDeviceData,
   type UpdateDeviceData,
-  AreaModel,
-  BuildingModel,
-  FloorModel,
 } from '@olivierzal/melcloud-api'
+
+import type { DateObjectUnits, DurationLike } from 'luxon'
 
 import type AtaDevice from '../drivers/melcloud/device'
 import type AtaDriver from '../drivers/melcloud/driver'
@@ -22,6 +23,7 @@ import type AtwDevice from '../drivers/melcloud_atw/device'
 import type AtwDriver from '../drivers/melcloud_atw/driver'
 import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
+
 import type {
   CapabilitiesAta,
   EnergyCapabilitiesAta,
@@ -329,11 +331,12 @@ export type Zone = AreaZone | BuildingZone | FloorZone
 export const modelClass = {
   areas: AreaModel,
   buildings: BuildingModel,
+  devices: DeviceModel,
   floors: FloorModel,
 } as const
 export interface ZoneData {
   zoneId: string
-  zoneType: keyof typeof modelClass
+  zoneType: Exclude<keyof typeof modelClass, 'devices'>
 }
 
 const addPrefixToTitle = (

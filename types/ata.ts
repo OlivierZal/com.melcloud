@@ -9,6 +9,7 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type AtaDevice from '../drivers/melcloud/device'
+
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,

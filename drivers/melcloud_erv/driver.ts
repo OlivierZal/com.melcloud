@@ -1,5 +1,3 @@
-import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
-
 import BaseMELCloudDriver from '../../bases/driver'
 import {
   energyCapabilityTagMappingErv,
@@ -8,6 +6,8 @@ import {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types'
+
+import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
 
 export = class extends BaseMELCloudDriver<'Erv'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv

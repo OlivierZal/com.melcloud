@@ -1,6 +1,7 @@
 {
   "errors": {
-    "zoneNotFound": "La zone est introuvable."
+    "deviceNotFound": "Appareil introuvable.",
+    "zoneNotFound": "Zone introuvable."
   },
   "settings": {
     "authenticate": {
@@ -68,7 +69,6 @@
     "title": "Paramètres MELCloud"
   },
   "warnings": {
-    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord.",
-    "deviceNotFound": "L'appareil est introuvable."
+    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
   }
 }

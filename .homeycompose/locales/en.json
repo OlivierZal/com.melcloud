@@ -1,5 +1,6 @@
 {
   "errors": {
+    "deviceNotFound": "Device not found.",
     "zoneNotFound": "Zone not found."
   },
   "settings": {
@@ -68,7 +69,6 @@
     "title": "MELCloud settings"
   },
   "warnings": {
-    "dashboard": "Exit the device and return to update your dashboard.",
-    "deviceNotFound": "Device not found."
+    "dashboard": "Exit the device and return to update your dashboard."
   }
 }

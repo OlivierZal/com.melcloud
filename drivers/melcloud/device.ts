@@ -1,19 +1,19 @@
 import {
-  type ListDeviceDataAta,
   FanSpeed,
   Horizontal,
   OperationMode,
   Vertical,
+  type ListDeviceDataAta,
 } from '@olivierzal/melcloud-api'
 
 import BaseMELCloudDevice from '../../bases/device'
 import {
+  ThermostatModeAta,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAta,
   type ReportPlanParameters,
   type SetCapabilitiesAta,
-  ThermostatModeAta,
 } from '../../types'
 
 export = class extends BaseMELCloudDevice<'Ata'> {

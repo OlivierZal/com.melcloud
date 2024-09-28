@@ -1,5 +1,6 @@
 {
   "errors": {
+    "deviceNotFound": "Dispositivo no encontrada.",
     "zoneNotFound": "Zona no encontrada."
   },
   "settings": {
@@ -68,7 +69,6 @@
     "title": "Configuración de MELCloud"
   },
   "warnings": {
-    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control.",
-    "deviceNotFound": "Dispositivo no encontrada."
+    "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."
   }
 }

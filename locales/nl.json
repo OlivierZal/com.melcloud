@@ -1,6 +1,6 @@
 {
   "errors": {
-    "endDateMissing": "Einddatum ontbreekt.",
+    "deviceNotFound": "Apparaat niet gevonden.",
     "zoneNotFound": "Zone niet gevonden."
   },
   "settings": {
@@ -60,8 +60,8 @@
     "holidayMode": {
       "enabled": "<strong>Vakantiemodus</strong> inschakelen",
       "endDate": "Einddatum",
-      "startDate": "Begindatum",
-      "endDateMissing": "Einddatum ontbreekt."
+      "endDateMissing": "Einddatum ontbreekt.",
+      "startDate": "Begindatum"
     },
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "refresh": "Herladen",
@@ -69,7 +69,6 @@
     "title": "MELCloud-instellingen"
   },
   "warnings": {
-    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten.",
-    "deviceNotFound": "Apparaat niet gevonden."
+    "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten."
   }
 }
