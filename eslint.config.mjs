@@ -283,6 +283,10 @@ export default [
           },
         ],
         '@typescript-eslint/no-redeclare': 'off',
+        '@typescript-eslint/no-unnecessary-condition': [
+          'error',
+          { checkTypePredicates: true },
+        ],
         '@typescript-eslint/no-unused-vars': [
           'error',
           {
