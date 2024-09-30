@@ -1213,7 +1213,7 @@ const login = async (homey: Homey): Promise<void> => {
 
 const setHolidayModeData = async (
   homey: Homey,
-  { enabled, from: startDate, to: endDate }: HolidayModeSettings,
+  { from: startDate, to: endDate }: HolidayModeSettings,
 ): Promise<void> =>
   withDisablingButtons(
     'holiday_mode',
@@ -1222,11 +1222,11 @@ const setHolidayModeData = async (
         homey.api(
           'PUT',
           `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
-          { enabled, from, to } satisfies HolidayModeSettings,
+          { from: startDate, to: endDate } satisfies HolidayModeSettings,
           async (error: Error | null) => {
             if (!error) {
               updateZoneMapping({
-                HMEnabled: enabled,
+                HMEnabled: Boolean(endDate),
                 HMEndDate: endDate,
                 HMStartDate: startDate,
               })
@@ -1244,15 +1244,14 @@ const setHolidayModeData = async (
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     const isEnabled = holidayModeEnabledElement.value === 'true'
-    const endDate = holidayModeEndDateElement.value
-    if (isEnabled && endDate === '') {
+    const endDate = holidayModeEndDateElement.value || null
+    if (isEnabled && endDate === null) {
       homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
         //
       })
       return
     }
     setHolidayModeData(homey, {
-      enabled: isEnabled,
       from: holidayModeStartDateElement.value || undefined,
       to: endDate,
     }).catch(() => {
@@ -1454,5 +1453,5 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   })
   addEventListeners(homey)
   await load(homey)
-  await homey.ready()
+  homey.ready()
 }

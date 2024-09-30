@@ -393,5 +393,5 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
   addEventListeners(homey)
-  await homey.ready()
+  homey.ready()
 }
