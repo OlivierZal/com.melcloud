@@ -5211,7 +5211,7 @@
           "path": "/drivers/melcloud/:zoneType/:zoneId"
         }
       },
-      "height": 270,
+      "height": 580,
       "name": {
         "da": "Luft-luft-enhedsindstilling",
         "en": "Air-to-air device setting",

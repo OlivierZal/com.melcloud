@@ -5,24 +5,31 @@
         <meta content="MELCloud settings" name="description">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="styles.css" rel="stylesheet">
     </head>
     <body class="homey-widget">
-        <div>
-            <select id="zones" aria-label="Buildings"></select>
+        <div class="homey-text-align-center">
+            <select
+                id="zones"
+                class="form-select fw-bold"
+                aria-label="Buildings"
+            ></select>
         </div>
         <div id="has_zone_ata_devices" class="hidden">
-            <div id="values_melcloud"></div>
-            <div class="container">
+            <div id="values_melcloud" class="mt-4"></div>
+            <div class="container mt-4">
                 <button
                     id="refresh_values_melcloud"
                     type="button"
+                    class="btn btn-secondary"
                     aria-label="Refresh"
                     data-i18n="settings.refresh"
                 ></button>
                 <button
                     id="apply_values_melcloud"
                     type="button"
+                    class="btn btn-primary"
                     aria-label="Update"
                     data-i18n="settings.buildings.update"
                 ></button>
