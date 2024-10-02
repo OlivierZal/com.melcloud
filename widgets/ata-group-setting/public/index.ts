@@ -178,13 +178,16 @@ const int = (
   { id, max, min, value }: HTMLInputElement,
 ): number => {
   const numberValue = Number(value)
-  const newMin = handleIntMin(id, min)
-  if (
-    !Number.isFinite(numberValue) ||
-    numberValue < Number(newMin) ||
-    numberValue > Number(max)
-  ) {
+  const newMin = Number(handleIntMin(id, min))
+  const newMax = Number(max)
+  if (!Number.isFinite(numberValue)) {
     throw new Error()
+  }
+  if (numberValue < newMin) {
+    return newMin
+  }
+  if (numberValue > newMax) {
+    return newMax
   }
   return numberValue
 }
@@ -297,6 +300,10 @@ const generateAtaValue = (
   return null
 }
 
+const setAnimation = (): void => {
+  //
+}
+
 const generateAtaValues = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
     createValueElement(ataValuesElement, {
@@ -304,6 +311,9 @@ const generateAtaValues = (homey: Homey): void => {
       valueElement: generateAtaValue(homey, { id, type, values }),
     })
   })
+  ;(
+    document.getElementById('OperationMode') as HTMLSelectElement
+  ).addEventListener('change', setAnimation)
 }
 
 const generateZones = async (
@@ -392,5 +402,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
   addEventListeners(homey)
+  setAnimation()
   homey.ready()
 }
