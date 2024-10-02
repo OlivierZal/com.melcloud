@@ -2,6 +2,10 @@
   font-weight: bold;
 }
 
+input {
+  text-align: right;
+}
+
 select:not(#zones) {
   text-align-last: right;
 }
