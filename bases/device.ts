@@ -230,6 +230,7 @@ export default abstract class<
   protected async setCapabilityValues(
     data: ListDevice[T]['Device'],
   ): Promise<void> {
+    this.homey.api.realtime('deviceUpdate', undefined)
     await Promise.all(
       this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
         if (tag in data) {

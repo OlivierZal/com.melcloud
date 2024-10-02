@@ -365,7 +365,12 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
   }
 }
 
-const addAtaValuesEventListeners = (homey: Homey): void => {
+const addEventListeners = (homey: Homey): void => {
+  zoneElement.addEventListener('change', () => {
+    fetchAtaValues(homey).catch(() => {
+      //
+    })
+  })
   refreshAtaValues.addEventListener('click', () => {
     refreshAtaValuesElement()
   })
@@ -374,15 +379,11 @@ const addAtaValuesEventListeners = (homey: Homey): void => {
       //
     })
   })
-}
-
-const addEventListeners = (homey: Homey): void => {
-  zoneElement.addEventListener('change', () => {
+  homey.on('deviceUpdate', () => {
     fetchAtaValues(homey).catch(() => {
       //
     })
   })
-  addAtaValuesEventListeners(homey)
 }
 
 // eslint-disable-next-line func-style
