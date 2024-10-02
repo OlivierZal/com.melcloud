@@ -68,7 +68,6 @@ const createLabelElement = (
   text: string,
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
-  labelElement.classList.add('form-label')
   labelElement.htmlFor = valueElement.id
   labelElement.innerText = text
   labelElement.append(valueElement)
@@ -125,7 +124,6 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
-  inputElement.classList.add('form-control')
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -153,7 +151,6 @@ const createSelectElement = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
-  selectElement.classList.add('form-select')
   selectElement.id = id
   ;[
     { id: '', label: '' },
@@ -358,12 +355,14 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const body = buildAtaValuesBody(homey)
-    await homey.api(
-      'PUT',
-      `/drivers/melcloud/${zoneElement.value.replace('_', '/')}`,
-      body satisfies GroupAtaState,
-    )
-    updateZoneMapping(body)
+    if (Object.keys(body).length) {
+      await homey.api(
+        'PUT',
+        `/drivers/melcloud/${zoneElement.value.replace('_', '/')}`,
+        body satisfies GroupAtaState,
+      )
+      updateZoneMapping(body)
+    }
   } catch (_error) {
   } finally {
     refreshAtaValuesElement()

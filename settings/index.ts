@@ -1081,6 +1081,11 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const body = buildAtaValuesBody(homey)
+    if (!Object.keys(body).length) {
+      await homey.alert(homey.__('settings.devices.apply.nothing'))
+      refreshAtaValuesElement()
+      return
+    }
     await withDisablingButtons(
       'values_melcloud',
       async () =>
