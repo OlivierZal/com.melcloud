@@ -68,16 +68,11 @@ const createLabelElement = (
   text: string,
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
+  labelElement.classList.add('label')
   labelElement.htmlFor = valueElement.id
   labelElement.innerText = text
   labelElement.append(valueElement)
   return labelElement
-}
-
-const createDivElement = (labelElement: HTMLLabelElement): HTMLDivElement => {
-  const divElement = document.createElement('div')
-  divElement.append(labelElement)
-  return divElement
 }
 
 const createValueElement = (
@@ -88,8 +83,7 @@ const createValueElement = (
   }: { title: string; valueElement: HTMLValueElement | null },
 ): void => {
   if (valueElement) {
-    const labelElement = createLabelElement(valueElement, title)
-    parentElement.append(createDivElement(labelElement))
+    parentElement.append(createLabelElement(valueElement, title))
   }
 }
 
@@ -124,6 +118,7 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
+  inputElement.classList.add('input')
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -151,6 +146,7 @@ const createSelectElement = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
+  selectElement.classList.add('select')
   selectElement.id = id
   ;[
     { id: '', label: '' },

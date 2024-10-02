@@ -1,3 +1,11 @@
+#zones {
+  font-weight: bold;
+}
+
+select:not(#zones) {
+  text-align-last: right;
+}
+
 /* Utility classes */
 .hidden {
   display: none;
