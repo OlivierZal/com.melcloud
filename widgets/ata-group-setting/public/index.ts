@@ -284,8 +284,8 @@ const createSnowflake = (speed: number): void => {
   })
   snowflake.style.fontSize = generateRandomString({
     divisor: speed,
-    max: 25,
-    min: 15,
+    max: 20,
+    min: 10,
     unit: 'px',
   })
   snowflake.style.animationDuration = generateRandomString({
@@ -336,7 +336,7 @@ const handleAnimation = (data: GroupAtaState): void => {
     clearTimeout(animationTimeout)
   }
   const { FanSpeed: speed, OperationMode: operationMode, Power: isOn } = data
-  const newSpeed = speed ?? SPEED_MODERATE
+  const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
   if (isOn !== false) {
     switch (Number(operationMode)) {
       case MODE_AUTO:
