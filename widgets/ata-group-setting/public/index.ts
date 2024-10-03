@@ -22,11 +22,11 @@ const minMapping = { SetTemperature: 10 } as const
 const maxMapping = { SetTemperature: 31 } as const
 const MIN_SET_TEMPERATURE_COOLING = 16
 
-const MODE_AUTO = '8'
-const MODE_COOL = '3'
-const MODE_DRY = '2'
-const MODE_FAN = '7'
-const MODE_HEAT = '1'
+const MODE_AUTO = 8
+const MODE_COOL = 3
+const MODE_DRY = 2
+const MODE_FAN = 7
+const MODE_HEAT = 1
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -189,22 +189,19 @@ const createSelectElement = (
   return selectElement
 }
 
-const handleIntMin = (id: string, min: string): string => {
-  if (id === 'SetTemperature') {
-    const modeElement = document.getElementById(
-      'OperationMode',
-    ) as HTMLSelectElement
-    if ([MODE_AUTO, MODE_COOL, MODE_DRY].includes(modeElement.value)) {
-      return String(MIN_SET_TEMPERATURE_COOLING)
-    }
-  }
-  return min
-}
+const handleIntMin = (id: string, min: string): string =>
+  (
+    id === 'SetTemperature' &&
+    [MODE_AUTO, MODE_COOL, MODE_DRY].includes(
+      Number(
+        (document.getElementById('OperationMode') as HTMLSelectElement).value,
+      ),
+    )
+  ) ?
+    String(MIN_SET_TEMPERATURE_COOLING)
+  : min
 
-const int = (
-  homey: Homey,
-  { id, max, min, value }: HTMLInputElement,
-): number => {
+const int = ({ id, max, min, value }: HTMLInputElement): number => {
   const numberValue = Number(value)
   const newMin = Number(handleIntMin(id, min))
   const newMax = Number(max)
@@ -220,16 +217,13 @@ const int = (
   return numberValue
 }
 
-const processValue = (
-  homey: Homey,
-  element: HTMLValueElement,
-): ValueOf<Settings> => {
+const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   if (element.value) {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
-      return int(homey, element)
+      return int(element)
     }
     if (['false', 'true'].includes(element.value)) {
       return element.value === 'true'
@@ -240,7 +234,7 @@ const processValue = (
   return null
 }
 
-const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
+const buildAtaValuesBody = (): GroupAtaState => {
   const body = Object.fromEntries(
     Array.from(
       ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
@@ -253,7 +247,7 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
               id as keyof GroupAtaState
             ]?.toString(),
       )
-      .map((element) => [element.id, processValue(homey, element)]),
+      .map((element) => [element.id, processValue(element)]),
   )
   return body
 }
@@ -344,7 +338,7 @@ const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: operationMode, Power: isOn } = data
   const newSpeed = speed ?? SPEED_MODERATE
   if (isOn !== false) {
-    switch (operationMode?.toString()) {
+    switch (Number(operationMode)) {
       case MODE_AUTO:
         startSunAnimation(newSpeed)
         break
@@ -468,7 +462,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const body = buildAtaValuesBody(homey)
+    const body = buildAtaValuesBody()
     if (Object.keys(body).length) {
       await homey.api(
         'PUT',

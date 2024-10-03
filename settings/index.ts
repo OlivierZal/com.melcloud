@@ -486,17 +486,17 @@ const generateCredentials = (): void => {
   )
 }
 
-const handleIntMin = (id: string, min: string): string => {
-  if (id === 'SetTemperature') {
-    const modeElement = document.getElementById(
-      'OperationMode',
-    ) as HTMLSelectElement
-    if ([MODE_AUTO, MODE_COOL, MODE_DRY].includes(Number(modeElement.value))) {
-      return String(MIN_SET_TEMPERATURE_COOLING)
-    }
-  }
-  return min
-}
+const handleIntMin = (id: string, min: string): string =>
+  (
+    id === 'SetTemperature' &&
+    [MODE_AUTO, MODE_COOL, MODE_DRY].includes(
+      Number(
+        (document.getElementById('OperationMode') as HTMLSelectElement).value,
+      ),
+    )
+  ) ?
+    String(MIN_SET_TEMPERATURE_COOLING)
+  : min
 
 const int = (
   homey: Homey,
