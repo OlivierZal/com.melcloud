@@ -11,7 +11,8 @@ import type {
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const DELAY = 1000
+const DELAY = 500
+const MINIMUM_DIVISOR = 1
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -26,6 +27,12 @@ const MODE_COOL = '3'
 const MODE_DRY = '2'
 const MODE_FAN = '7'
 const MODE_HEAT = '1'
+
+const SPEED_VERY_SLOW = 1
+const SPEED_MODERATE = 3
+const SPEED_VERY_FAST = 5
+const SPEED_FACTOR_MIN = 1
+const SPEED_FACTOR_MAX = 50
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -48,21 +55,24 @@ const ataValuesElement = document.getElementById(
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
-const currentAnimation = ''
 let animationTimeout: NodeJS.Timeout | null = null
-
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 const generateRandomString = ({
+  divisor,
   max,
   min,
   unit,
 }: {
   max: number
   min: number
+  divisor?: number
   unit?: string
-}): string => `${String(Math.random() * (max - min) + min)}${unit ?? ''}`
+}): string => {
+  const newdivisor = (divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR
+  return `${String((Math.random() * (max - min) + min) / newdivisor)}${unit ?? ''}`
+}
 
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
@@ -269,6 +279,92 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
+const createSnowflake = (speed: number): void => {
+  const snowflake = document.createElement('div')
+  snowflake.classList.add('snowflake')
+  snowflake.innerHTML = '❄'
+  snowflake.style.left = generateRandomString({
+    max: window.innerWidth,
+    min: 0,
+    unit: 'px',
+  })
+  snowflake.style.fontSize = generateRandomString({
+    divisor: speed,
+    max: 25,
+    min: 15,
+    unit: 'px',
+  })
+  snowflake.style.animationDuration = generateRandomString({
+    divisor: speed,
+    max: 20,
+    min: 5,
+    unit: 's',
+  })
+  snowflake.style.opacity = generateRandomString({ max: 0.5, min: 1 })
+  animationElement.append(snowflake)
+  snowflake.addEventListener('animationend', () => {
+    snowflake.remove()
+  })
+}
+
+const generateSnowflakes = (speed: number): void => {
+  const exponent =
+    (speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)
+  const speedFactor =
+    SPEED_FACTOR_MIN * (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) ** exponent
+  animationTimeout = setTimeout(
+    () => {
+      createSnowflake(speed)
+      generateSnowflakes(speed)
+    },
+    (Math.random() * DELAY) / (speedFactor || MINIMUM_DIVISOR),
+  )
+}
+
+const startSnowAnimation = (speed: number): void => {
+  generateSnowflakes(speed)
+}
+
+const startFireAnimation = (speed: number): void => {
+  //
+}
+
+const startWindAnimation = (speed: number): void => {
+  //
+}
+
+const startSunAnimation = (speed: number): void => {
+  //
+}
+
+const handleAnimation = (data: GroupAtaState): void => {
+  if (animationTimeout) {
+    clearTimeout(animationTimeout)
+  }
+  const { FanSpeed: speed, OperationMode: operationMode, Power: isOn } = data
+  const newSpeed = speed ?? SPEED_MODERATE
+  if (isOn !== false) {
+    switch (operationMode?.toString()) {
+      case MODE_AUTO:
+        startSunAnimation(newSpeed)
+        break
+      case MODE_COOL:
+        startSnowAnimation(newSpeed)
+        break
+      case MODE_DRY:
+        startSunAnimation(newSpeed)
+        break
+      case MODE_FAN:
+        startWindAnimation(newSpeed)
+        break
+      case MODE_HEAT:
+        startFireAnimation(newSpeed)
+        break
+      default:
+    }
+  }
+}
+
 const fetchAtaValues = async (
   homey: Homey,
   zone = zoneElement.value,
@@ -281,6 +377,7 @@ const fetchAtaValues = async (
     updateZoneMapping({ ...defaultAtaValues, ...state }, zone)
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
+    handleAnimation(state)
   } catch (_error) {
     hide(hasZoneAtaDevicesElement)
   }
@@ -318,85 +415,6 @@ const generateAtaValue = (
   return null
 }
 
-const createSnowflake = (): void => {
-  const snowflake = document.createElement('div')
-  snowflake.classList.add('snowflake')
-  snowflake.innerHTML = '❄'
-  snowflake.style.left = generateRandomString({
-    max: window.innerWidth,
-    min: 0,
-    unit: 'px',
-  })
-  snowflake.style.fontSize = generateRandomString({
-    max: 25,
-    min: 10,
-    unit: 'px',
-  })
-  snowflake.style.animationDuration = generateRandomString({
-    max: 20,
-    min: 10,
-    unit: 's',
-  })
-  snowflake.style.opacity = generateRandomString({ max: 0.5, min: 1 })
-  animationElement.append(snowflake)
-  snowflake.addEventListener('animationend', () => {
-    snowflake.remove()
-  })
-}
-
-const generateSnowflakes = (): void => {
-  animationTimeout = setTimeout(() => {
-    createSnowflake()
-    generateSnowflakes()
-  }, Math.random() * DELAY)
-}
-
-const startSnowAnimation = (): void => {
-  generateSnowflakes()
-}
-
-const startFireAnimation = (): void => {
-  //
-}
-
-const startWindAnimation = (): void => {
-  //
-}
-
-const startSunAnimation = (): void => {
-  //
-}
-
-const switchAnimation = (animation: string): void => {
-  if (currentAnimation !== animation && animationTimeout) {
-    clearTimeout(animationTimeout)
-  }
-  switch (animation) {
-    case MODE_COOL:
-      startSnowAnimation()
-      break
-    case MODE_DRY:
-      startSunAnimation()
-      break
-    case MODE_FAN:
-      startWindAnimation()
-      break
-    case MODE_HEAT:
-      startFireAnimation()
-      break
-    default:
-  }
-}
-
-const handleAnimation = (): void => {
-  const operationModeElement = document.getElementById(
-    'OperationMode',
-  ) as HTMLSelectElement | null
-  if (operationModeElement) {
-    switchAnimation(operationModeElement.value)
-  }
-}
-
 const generateAtaValues = (homey: Homey): void => {
   ataCapabilities.forEach(([id, { title, type, values }]) => {
     createValueElement(ataValuesElement, {
@@ -404,9 +422,6 @@ const generateAtaValues = (homey: Homey): void => {
       valueElement: generateAtaValue(homey, { id, type, values }),
     })
   })
-  ;(
-    document.getElementById('OperationMode') as HTMLSelectElement
-  ).addEventListener('change', handleAnimation)
 }
 
 const generateZones = async (
@@ -461,6 +476,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         body satisfies GroupAtaState,
       )
       updateZoneMapping(body)
+      handleAnimation(body)
     }
   } catch (_error) {
   } finally {
@@ -487,9 +503,6 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
-  ataValuesElement.addEventListener('change', () => {
-    handleAnimation()
-  })
 }
 
 // eslint-disable-next-line func-style
@@ -497,7 +510,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
-  handleAnimation()
   addEventListeners(homey)
   homey.ready()
 }
