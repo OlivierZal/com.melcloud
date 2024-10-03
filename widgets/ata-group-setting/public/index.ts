@@ -11,6 +11,8 @@ import type {
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
+const DELAY = 1000
+
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
 const LEVEL_INCREMENT = 1
@@ -19,9 +21,11 @@ const minMapping = { SetTemperature: 10 } as const
 const maxMapping = { SetTemperature: 31 } as const
 const MIN_SET_TEMPERATURE_COOLING = 16
 
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
+const MODE_AUTO = '8'
+const MODE_COOL = '3'
+const MODE_DRY = '2'
+const MODE_FAN = '7'
+const MODE_HEAT = '1'
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -34,6 +38,7 @@ const updateAtaValues = document.getElementById(
   'apply_values_melcloud',
 ) as HTMLButtonElement
 
+const animationElement = document.getElementById('animation') as HTMLDivElement
 const hasZoneAtaDevicesElement = document.getElementById(
   'has_zone_ata_devices',
 ) as HTMLDivElement
@@ -43,8 +48,21 @@ const ataValuesElement = document.getElementById(
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
+const currentAnimation = ''
+let animationTimeout: NodeJS.Timeout | null = null
+
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
+
+const generateRandomString = ({
+  max,
+  min,
+  unit,
+}: {
+  max: number
+  min: number
+  unit?: string
+}): string => `${String(Math.random() * (max - min) + min)}${unit ?? ''}`
 
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
@@ -166,7 +184,7 @@ const handleIntMin = (id: string, min: string): string => {
     const modeElement = document.getElementById(
       'OperationMode',
     ) as HTMLSelectElement
-    if ([MODE_AUTO, MODE_COOL, MODE_DRY].includes(Number(modeElement.value))) {
+    if ([MODE_AUTO, MODE_COOL, MODE_DRY].includes(modeElement.value)) {
       return String(MIN_SET_TEMPERATURE_COOLING)
     }
   }
@@ -300,8 +318,83 @@ const generateAtaValue = (
   return null
 }
 
-const setAnimation = (): void => {
+const createSnowflake = (): void => {
+  const snowflake = document.createElement('div')
+  snowflake.classList.add('snowflake')
+  snowflake.innerHTML = '❄'
+  snowflake.style.left = generateRandomString({
+    max: window.innerWidth,
+    min: 0,
+    unit: 'px',
+  })
+  snowflake.style.fontSize = generateRandomString({
+    max: 25,
+    min: 10,
+    unit: 'px',
+  })
+  snowflake.style.animationDuration = generateRandomString({
+    max: 20,
+    min: 10,
+    unit: 's',
+  })
+  snowflake.style.opacity = generateRandomString({ max: 0.5, min: 1 })
+  animationElement.append(snowflake)
+  snowflake.addEventListener('animationend', () => {
+    snowflake.remove()
+  })
+}
+
+const generateSnowflakes = (): void => {
+  animationTimeout = setTimeout(() => {
+    createSnowflake()
+    generateSnowflakes()
+  }, Math.random() * DELAY)
+}
+
+const startSnowAnimation = (): void => {
+  generateSnowflakes()
+}
+
+const startFireAnimation = (): void => {
   //
+}
+
+const startWindAnimation = (): void => {
+  //
+}
+
+const startSunAnimation = (): void => {
+  //
+}
+
+const switchAnimation = (animation: string): void => {
+  if (currentAnimation !== animation && animationTimeout) {
+    clearTimeout(animationTimeout)
+  }
+  switch (animation) {
+    case MODE_COOL:
+      startSnowAnimation()
+      break
+    case MODE_DRY:
+      startSunAnimation()
+      break
+    case MODE_FAN:
+      startWindAnimation()
+      break
+    case MODE_HEAT:
+      startFireAnimation()
+      break
+    default:
+  }
+}
+
+const handleAnimation = (): void => {
+  const operationModeElement = document.getElementById(
+    'OperationMode',
+  ) as HTMLSelectElement | null
+  if (operationModeElement) {
+    switchAnimation(operationModeElement.value)
+  }
 }
 
 const generateAtaValues = (homey: Homey): void => {
@@ -313,7 +406,7 @@ const generateAtaValues = (homey: Homey): void => {
   })
   ;(
     document.getElementById('OperationMode') as HTMLSelectElement
-  ).addEventListener('change', setAnimation)
+  ).addEventListener('change', handleAnimation)
 }
 
 const generateZones = async (
@@ -394,6 +487,9 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
+  ataValuesElement.addEventListener('change', () => {
+    handleAnimation()
+  })
 }
 
 // eslint-disable-next-line func-style
@@ -401,7 +497,7 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
+  handleAnimation()
   addEventListeners(homey)
-  setAnimation()
   homey.ready()
 }
