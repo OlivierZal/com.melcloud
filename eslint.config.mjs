@@ -329,7 +329,7 @@ const config = [
           'error',
           {
             allow: [
-              'core-js/actual/object/group-by',
+              'core-js/**',
               'source-map-support/register',
             ],
           },
