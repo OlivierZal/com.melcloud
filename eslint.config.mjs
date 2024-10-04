@@ -390,7 +390,7 @@ const config = [
       },
     },
     {
-      files: ['**/*.mjs'],
+      files: ['**/*.config.mjs'],
       ...tsConfigs.disableTypeChecked,
       rules: {
         ...tsConfigs.disableTypeChecked.rules,
