@@ -272,6 +272,7 @@ const refreshAtaValuesElement = (): void => {
     updateAtaValueElement(ataKey)
   })
 }
+
 const startFireAnimation = (speed: number): void => {
   //
 }
