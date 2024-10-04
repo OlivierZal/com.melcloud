@@ -6,7 +6,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { BaseMELCloudDevice } from '../../bases/device'
+import { BaseMELCloudDevice } from '../../bases'
 import {
   HotWaterMode,
   K_MULTIPLIER,

@@ -1,8 +1,7 @@
 import { Device } from 'homey'
 import { DateTime, type DurationLike } from 'luxon'
 
-import { addToLogs } from '../decorators/addToLogs'
-import { withTimers } from '../mixins/withTimers'
+import { addToLogs, withTimers } from '../lib'
 import {
   K_MULTIPLIER,
   type Capabilities,

@@ -273,7 +273,7 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const startFireAnimation = (speed: number): void => {
+const startFireAnimation = (): void => {
   //
 }
 
@@ -323,11 +323,11 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const startSunAnimation = (speed: number): void => {
+const startSunAnimation = (): void => {
   //
 }
 
-const startWindAnimation = (speed: number): void => {
+const startWindAnimation = (): void => {
   //
 }
 
@@ -341,16 +341,16 @@ const handleAnimation = (data: GroupAtaState): void => {
     switch (Number(operationMode)) {
       case MODE_AUTO:
       case MODE_DRY:
-        startSunAnimation(newSpeed)
+        startSunAnimation()
         break
       case MODE_COOL:
         startSnowAnimation(newSpeed)
         break
       case MODE_FAN:
-        startWindAnimation(newSpeed)
+        startWindAnimation()
         break
       case MODE_HEAT:
-        startFireAnimation(newSpeed)
+        startFireAnimation()
         break
       default:
     }
