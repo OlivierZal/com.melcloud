@@ -29,7 +29,7 @@ const SECOND_CHAR = 1
 const formatActionType = (actionType: string): string =>
   `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType.slice(SECOND_CHAR).toLowerCase()}`
 
-export default <T extends HomeyClass>(base: T): T & TimerClass =>
+export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
     public setInterval(
       callback: () => Promise<void>,

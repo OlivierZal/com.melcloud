@@ -31,7 +31,7 @@ const getArg = <T extends keyof typeof DeviceType>(
   return arg as keyof FlowArgs[T]
 }
 
-export default abstract class<
+export abstract class BaseMELCloudDriver<
   T extends keyof typeof DeviceType,
 > extends Driver {
   public readonly capabilities = (this.manifest as ManifestDriver).capabilities

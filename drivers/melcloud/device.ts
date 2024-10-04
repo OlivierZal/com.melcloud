@@ -6,7 +6,7 @@ import {
   type ListDeviceDataAta,
 } from '@olivierzal/melcloud-api'
 
-import BaseMELCloudDevice from '../../bases/device'
+import { BaseMELCloudDevice } from '../../bases/device'
 import {
   ThermostatModeAta,
   type ConvertFromDevice,

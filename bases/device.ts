@@ -1,8 +1,8 @@
 import { Device } from 'homey'
 import { DateTime, type DurationLike } from 'luxon'
 
-import addToLogs from '../decorators/addToLogs'
-import withTimers from '../mixins/withTimers'
+import { addToLogs } from '../decorators/addToLogs'
+import { withTimers } from '../mixins/withTimers'
 import {
   K_MULTIPLIER,
   type Capabilities,
@@ -55,7 +55,7 @@ const isTotalEnergyKey = (key: string): boolean =>
   !key.startsWith('measure_power') && !key.includes('daily')
 
 @addToLogs('getName()')
-export default abstract class<
+export abstract class BaseMELCloudDevice<
   T extends keyof typeof DeviceType,
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]

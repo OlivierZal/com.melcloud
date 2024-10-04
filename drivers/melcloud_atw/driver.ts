@@ -1,4 +1,4 @@
-import BaseMELCloudDriver from '../../bases/driver'
+import { BaseMELCloudDriver } from '../../bases/driver'
 import {
   energyCapabilityTagMappingAtw,
   getCapabilitiesOptionsAtw,

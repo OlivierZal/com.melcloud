@@ -3,9 +3,8 @@ import type { SimpleClass } from 'homey'
 const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
-export default <T extends abstract new (...args: any[]) => SimpleClass>(
-    ...logs: string[]
-  ) =>
+export const addToLogs =
+  <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, _context: ClassDecoratorContext): T => {
     abstract class LogDecorator extends target {
       public override error(...args: unknown[]): void {

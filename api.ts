@@ -1,4 +1,4 @@
-import { getBuildings } from './lib'
+import { getBuildings } from './lib/getBuildings'
 
 import type {
   FrostProtectionData,

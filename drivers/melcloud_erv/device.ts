@@ -3,7 +3,7 @@ import {
   type ListDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import BaseMELCloudDevice from '../../bases/device'
+import { BaseMELCloudDevice } from '../../bases/device'
 import {
   ThermostatModeErv,
   type ConvertFromDevice,

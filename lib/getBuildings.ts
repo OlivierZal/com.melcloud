@@ -37,5 +37,5 @@ const mapBuilding = ({
   name,
 })
 
-export default (): BuildingZone[] =>
+export const getBuildings = (): BuildingZone[] =>
   BuildingModel.getAll().sort(compareNames).map(mapBuilding)
