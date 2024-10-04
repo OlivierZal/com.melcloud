@@ -186,7 +186,7 @@ const config = [
         importPlugin.flatConfigs.typescript,
         prettier,
       ],
-      files: ['**/*.ts', '**/*.mjs'],
+      files: ['**/*.ts', '**/*.config.mjs'],
       languageOptions: {
         parserOptions: {
           projectService: true,

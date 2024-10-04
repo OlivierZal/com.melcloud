@@ -1,10 +1,11 @@
 import 'core-js/actual/object/group-by'
 import 'source-map-support/register'
 
-import MELCloudAPI, {
+import {
   FacadeManager,
   FanSpeed,
   Horizontal,
+  API as MELCloudAPI,
   OperationMode,
   Vertical,
   type AreaFacade,
