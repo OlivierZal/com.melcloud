@@ -272,6 +272,9 @@ const refreshAtaValuesElement = (): void => {
     updateAtaValueElement(ataKey)
   })
 }
+const startFireAnimation = (speed: number): void => {
+  //
+}
 
 const createSnowflake = (speed: number): void => {
   const snowflake = document.createElement('div')
@@ -319,15 +322,11 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const startFireAnimation = (speed: number): void => {
+const startSunAnimation = (speed: number): void => {
   //
 }
 
 const startWindAnimation = (speed: number): void => {
-  //
-}
-
-const startSunAnimation = (speed: number): void => {
   //
 }
 
@@ -340,13 +339,11 @@ const handleAnimation = (data: GroupAtaState): void => {
   if (isOn !== false) {
     switch (Number(operationMode)) {
       case MODE_AUTO:
+      case MODE_DRY:
         startSunAnimation(newSpeed)
         break
       case MODE_COOL:
         startSnowAnimation(newSpeed)
-        break
-      case MODE_DRY:
-        startSunAnimation(newSpeed)
         break
       case MODE_FAN:
         startWindAnimation(newSpeed)
