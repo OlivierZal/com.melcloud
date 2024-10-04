@@ -374,18 +374,18 @@ const config = [
         'sort-keys': 'off',
       },
       settings: {
+        perfectionist: {
+          ignoreCase: false,
+          order: 'asc',
+          partitionByComment: true,
+          type: 'natural',
+        },
         ...importPlugin.flatConfigs.typescript.settings,
         'import/resolver': {
           ...importPlugin.flatConfigs.typescript.settings['import/resolver'],
           typescript: {
             alwaysTryTypes: true,
           },
-        },
-        perfectionist: {
-          ignoreCase: false,
-          order: 'asc',
-          partitionByComment: true,
-          type: 'natural',
         },
       },
     },
