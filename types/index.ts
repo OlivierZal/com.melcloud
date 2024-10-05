@@ -30,7 +30,7 @@ export {
   K_MULTIPLIER,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
-  modelClass,
+  model,
   type AreaZone,
   type BuildingZone,
   type Capabilities,

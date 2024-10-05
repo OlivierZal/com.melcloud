@@ -327,7 +327,7 @@ export interface BuildingZone extends BaseModel {
 }
 export type Zone = AreaZone | BuildingZone | FloorZone
 
-export const modelClass = {
+export const model = {
   areas: AreaModel,
   buildings: BuildingModel,
   devices: DeviceModel,
@@ -335,7 +335,7 @@ export const modelClass = {
 } as const
 export interface ZoneData {
   zoneId: string
-  zoneType: Exclude<keyof typeof modelClass, 'devices'>
+  zoneType: Exclude<keyof typeof model, 'devices'>
 }
 
 const addPrefixToTitle = (

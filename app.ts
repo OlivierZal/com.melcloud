@@ -5,7 +5,7 @@ import {
   FacadeManager,
   FanSpeed,
   Horizontal,
-  API as MELCloudAPI,
+  MELCloudAPI,
   OperationMode,
   Vertical,
   type AreaFacade,
@@ -29,7 +29,7 @@ import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
   fanSpeedValues,
-  modelClass,
+  model,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -246,18 +246,18 @@ export = class extends App {
     id: number,
   ): AreaFacade | BuildingFacade | FloorFacade
   public getFacade(
-    zoneType: keyof typeof modelClass,
+    zoneType: keyof typeof model,
     id: number,
   ): AreaFacade | BuildingFacade | DeviceFacadeAny | FloorFacade {
-    const model = modelClass[zoneType].getById(id)
-    if (!model) {
+    const instance = model[zoneType].getById(id)
+    if (!instance) {
       throw new Error(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
         ),
       )
     }
-    return this.#facadeManager.get(model)
+    return this.#facadeManager.get(instance)
   }
 
   public async getFrostProtectionSettings({
