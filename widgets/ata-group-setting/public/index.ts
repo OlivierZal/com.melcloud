@@ -417,6 +417,9 @@ const handleAnimation = (data: GroupAtaState): void => {
   if (isOn !== false) {
     switch (Number(operationMode)) {
       case MODE_AUTO:
+        startFireAnimation(newSpeed)
+        startSnowAnimation(newSpeed)
+        break
       case MODE_DRY:
         startSunAnimation()
         break
