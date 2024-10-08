@@ -1,0 +1,6 @@
+.flame {
+  position: absolute;
+  bottom: -20px;
+  user-select: none;
+  animation-timing-function: ease-in-out;
+}

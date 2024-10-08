@@ -11,12 +11,12 @@ import type {
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const DELAY = 500
+const DEFAULT_MULTIPLIER = 1
 const MINIMUM_DIVISOR = 1
+const INCREMENT = 1
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
-const LEVEL_INCREMENT = 1
 
 const minMapping = { SetTemperature: 10 } as const
 const maxMapping = { SetTemperature: 31 } as const
@@ -33,6 +33,9 @@ const SPEED_MODERATE = 3
 const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
+
+const SNOW_DELAY = 500
+const FIRE_DELAY = 1000
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -55,24 +58,36 @@ const ataValuesElement = document.getElementById(
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
-let animationTimeout: NodeJS.Timeout | null = null
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
+let animationTimeout: NodeJS.Timeout | null = null
+let flameIndex = 0
+
 const generateRandomString = ({
   divisor,
-  max,
+  gap,
   min,
+  multiplier,
   unit,
 }: {
-  max: number
+  gap: number
   min: number
   divisor?: number
+  multiplier?: number
   unit?: string
-}): string => {
-  const newdivisor = (divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR
-  return `${String((Math.random() * (max - min) + min) / newdivisor)}${unit ?? ''}`
-}
+}): string =>
+  `${String(
+    ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
+      ((divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR),
+  )}${unit ?? ''}`
+
+const generateRandomDelay = (delay: number, speed: number): number =>
+  (Math.random() * delay) /
+  (SPEED_FACTOR_MIN *
+    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
+      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
+    MINIMUM_DIVISOR)
 
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
@@ -273,8 +288,79 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const startFireAnimation = (): void => {
-  //
+const generateFlameKeyframes = (flame: HTMLDivElement): void => {
+  flameIndex += INCREMENT
+  flame.id = `flame-${String(flameIndex)}`
+  flame.style.animationName = `flicker-${flame.id}`
+  const array = [...Array.from({ length: 101 }).keys()]
+  const [lastIndex] = array.reverse()
+  const keyframes = array
+    .map((index) => {
+      const translateY = !index || index === lastIndex ? '100' : '0'
+      const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
+      const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
+      const rotate = generateRandomString({ gap: 12, min: -6 })
+      const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
+      const brightness = generateRandomString({ gap: 40, min: 80 })
+      return `
+        ${String(index)}% {
+          transform: translateY(${translateY}%) scaleY(${scaleY}) scaleX(${scaleX}) rotate(${rotate}deg);
+          opacity: ${opacity};
+          filter: brightness(${brightness}%);
+        }
+      `
+    })
+    .join('')
+  const [styleSheet] = Array.from(document.styleSheets)
+  styleSheet.insertRule(
+    `
+      @keyframes flicker-${flame.id} {
+        ${keyframes}
+      }
+    `,
+    styleSheet.cssRules.length,
+  )
+}
+
+const createFlame = (speed: number): void => {
+  const flame = document.createElement('div')
+  flame.classList.add('flame')
+  flame.innerHTML = '🔥'
+  flame.style.left = generateRandomString({
+    gap: window.innerWidth,
+    min: -50,
+    unit: 'px',
+  })
+  flame.style.fontSize = generateRandomString({
+    gap: 10,
+    min: 40,
+    unit: 'px',
+  })
+  flame.style.animationDuration = generateRandomString({
+    divisor: speed,
+    gap: 10,
+    min: 20,
+    unit: 's',
+  })
+  generateFlameKeyframes(flame)
+  animationElement.append(flame)
+  flame.addEventListener('animationend', () => {
+    flame.remove()
+  })
+}
+
+const generateFlames = (speed: number): void => {
+  animationTimeout = setTimeout(
+    () => {
+      createFlame(speed)
+      generateFlames(speed)
+    },
+    generateRandomDelay(FIRE_DELAY, speed),
+  )
+}
+
+const startFireAnimation = (speed: number): void => {
+  generateFlames(speed)
 }
 
 const createSnowflake = (speed: number): void => {
@@ -282,23 +368,23 @@ const createSnowflake = (speed: number): void => {
   snowflake.classList.add('snowflake')
   snowflake.innerHTML = '❄'
   snowflake.style.left = generateRandomString({
-    max: window.innerWidth,
+    gap: window.innerWidth,
     min: 0,
     unit: 'px',
   })
   snowflake.style.fontSize = generateRandomString({
     divisor: speed,
-    max: 20,
+    gap: 10,
     min: 10,
     unit: 'px',
   })
   snowflake.style.animationDuration = generateRandomString({
     divisor: speed,
-    max: 20,
+    gap: 15,
     min: 5,
     unit: 's',
   })
-  snowflake.style.opacity = generateRandomString({ max: 0.5, min: 1 })
+  snowflake.style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
   animationElement.append(snowflake)
   snowflake.addEventListener('animationend', () => {
     snowflake.remove()
@@ -306,16 +392,12 @@ const createSnowflake = (speed: number): void => {
 }
 
 const generateSnowflakes = (speed: number): void => {
-  const exponent =
-    (speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)
-  const speedFactor =
-    SPEED_FACTOR_MIN * (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) ** exponent
   animationTimeout = setTimeout(
     () => {
       createSnowflake(speed)
       generateSnowflakes(speed)
     },
-    (Math.random() * DELAY) / (speedFactor || MINIMUM_DIVISOR),
+    generateRandomDelay(SNOW_DELAY, speed),
   )
 }
 
@@ -350,7 +432,7 @@ const handleAnimation = (data: GroupAtaState): void => {
         startWindAnimation()
         break
       case MODE_HEAT:
-        startFireAnimation()
+        startFireAnimation(newSpeed)
         break
       default:
     }
@@ -428,7 +510,7 @@ const generateZones = async (
       label: `${'···'.repeat(level)} ${zone.name}`,
     })
     if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas, 'areas', level + LEVEL_INCREMENT)
+      await generateZones(zone.areas, 'areas', level + INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
       await generateZones(zone.floors, 'floors', SECOND_LEVEL)

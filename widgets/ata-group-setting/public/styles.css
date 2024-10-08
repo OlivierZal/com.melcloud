@@ -19,12 +19,14 @@ select:not(#zones) {
   text-align-last: right;
 }
 
-/* Utility classes */
+.btn {
+  position: relative;
+}
+
 .hidden {
   display: none;
 }
 
-/* Grid container */
 .container {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
