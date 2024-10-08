@@ -295,28 +295,24 @@ const generateFlameKeyframes = (flame: HTMLDivElement): void => {
   const [lastIndex] = array.reverse()
   const keyframes = array
     .map((index) => {
-      const translateY = !index || index === lastIndex ? '100' : '0'
+      const translateY = !index || index === lastIndex ? '100%' : '0%'
       const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
-      const rotate = generateRandomString({ gap: 12, min: -6 })
+      const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
       const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
-      const brightness = generateRandomString({ gap: 40, min: 80 })
-      return `
-        ${String(index)}% {
-          transform: translateY(${translateY}%) scaleY(${scaleY}) scaleX(${scaleX}) rotate(${rotate}deg);
+      const brightness = generateRandomString({ gap: 40, min: 80, unit: '%' })
+      return `${String(index)}% {
+          transform: translateY(${translateY}) scaleY(${scaleY}) scaleX(${scaleX}) rotate(${rotate});
           opacity: ${opacity};
-          filter: brightness(${brightness}%);
-        }
-      `
+          filter: brightness(${brightness});
+        }`
     })
-    .join('')
+    .join('\n')
   const [styleSheet] = Array.from(document.styleSheets)
   styleSheet.insertRule(
-    `
-      @keyframes flicker-${flame.id} {
-        ${keyframes}
-      }
-    `,
+    `@keyframes flicker-${flame.id} {
+      ${keyframes}
+    }`,
     styleSheet.cssRules.length,
   )
 }
@@ -332,7 +328,7 @@ const createFlame = (speed: number): void => {
   })
   flame.style.fontSize = generateRandomString({
     gap: 10,
-    min: 40,
+    min: 60,
     unit: 'px',
   })
   flame.style.animationDuration = generateRandomString({
