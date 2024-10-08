@@ -289,8 +289,7 @@ const refreshAtaValuesElement = (): void => {
 }
 
 const generateFlameKeyframes = (flame: HTMLDivElement): void => {
-  flameIndex += INCREMENT
-  flame.id = `flame-${String(flameIndex)}`
+  flame.id = `flame-${String((flameIndex += INCREMENT))}`
   flame.style.animationName = `flicker-${flame.id}`
   const array = [...Array.from({ length: 101 }).keys()]
   const [lastIndex] = array.reverse()
