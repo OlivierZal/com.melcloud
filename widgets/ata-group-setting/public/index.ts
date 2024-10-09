@@ -61,7 +61,7 @@ const zoneElement = document.getElementById('zones') as HTMLSelectElement
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
-let animationTimeout: NodeJS.Timeout | null = null
+const animationTimeouts: NodeJS.Timeout[] = []
 let flameIndex = 0
 
 const generateRandomString = ({
@@ -346,12 +346,14 @@ const createFlame = (speed: number): void => {
 }
 
 const generateFlames = (speed: number): void => {
-  animationTimeout = setTimeout(
-    () => {
-      createFlame(speed)
-      generateFlames(speed)
-    },
-    generateRandomDelay(FIRE_DELAY, speed),
+  animationTimeouts.push(
+    setTimeout(
+      () => {
+        createFlame(speed)
+        generateFlames(speed)
+      },
+      generateRandomDelay(FIRE_DELAY, speed),
+    ),
   )
 }
 
@@ -388,12 +390,14 @@ const createSnowflake = (speed: number): void => {
 }
 
 const generateSnowflakes = (speed: number): void => {
-  animationTimeout = setTimeout(
-    () => {
-      createSnowflake(speed)
-      generateSnowflakes(speed)
-    },
-    generateRandomDelay(SNOW_DELAY, speed),
+  animationTimeouts.push(
+    setTimeout(
+      () => {
+        createSnowflake(speed)
+        generateSnowflakes(speed)
+      },
+      generateRandomDelay(SNOW_DELAY, speed),
+    ),
   )
 }
 
@@ -410,8 +414,8 @@ const startWindAnimation = (): void => {
 }
 
 const handleAnimation = (data: GroupAtaState): void => {
-  if (animationTimeout) {
-    clearTimeout(animationTimeout)
+  if (animationTimeouts.length) {
+    animationTimeouts.forEach(clearTimeout)
   }
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   if (isOn !== false) {
