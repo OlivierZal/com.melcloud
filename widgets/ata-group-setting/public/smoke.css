@@ -1,0 +1,12 @@
+.smoke {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  animation-timing-function: ease-in-out;
+  background: radial-gradient(
+    circle,
+    rgba(128, 128, 128, 0.5) 0%,
+    rgba(128, 128, 128, 0) 70%
+  );
+  border-radius: 50%;
+}
