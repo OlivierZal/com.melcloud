@@ -67,7 +67,7 @@ const zoneElement = document.getElementById('zones') as HTMLSelectElement
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
-const animationTimeouts: NodeJS.Timeout[] = []
+let animationTimeouts: NodeJS.Timeout[] = []
 let flameIndex = 0
 
 const generateRandomString = ({
@@ -294,8 +294,8 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const generateSmokeKeyframes = (smoke: HTMLDivElement): void => {
-  smoke.style.animationName = `rise-${String(flameIndex)}`
+const generateSmokeKeyframes = (style: CSSStyleDeclaration): void => {
+  style.animationName = `rise-${String(flameIndex)}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const translateX = `${String(Math.sin(index) * Math.random())}vh`
@@ -320,7 +320,7 @@ const generateSmokeKeyframes = (smoke: HTMLDivElement): void => {
     .join('\n')
   const [styleSheet] = Array.from(document.styleSheets)
   styleSheet.insertRule(
-    `@keyframes ${smoke.style.animationName} {
+    `@keyframes ${style.animationName} {
       ${keyframes}
     }`,
     styleSheet.cssRules.length,
@@ -345,7 +345,7 @@ const createSmoke = (
     min: 5,
     unit: 's',
   })
-  generateSmokeKeyframes(smoke)
+  generateSmokeKeyframes(smoke.style)
   animationElement.append(smoke)
   smoke.style.left = `${String(
     left + (width - smoke.getBoundingClientRect().width) / DIVISOR_FOR_HALF,
@@ -360,9 +360,9 @@ const createSmoke = (
   })
 }
 
-const generateFlameKeyframes = (flame: HTMLDivElement): void => {
+const generateFlameKeyframes = (style: CSSStyleDeclaration): void => {
   flameIndex += INCREMENT
-  flame.style.animationName = `flicker-${String(flameIndex)}`
+  style.animationName = `flicker-${String(flameIndex)}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
@@ -379,7 +379,7 @@ const generateFlameKeyframes = (flame: HTMLDivElement): void => {
     .join('\n')
   const [styleSheet] = Array.from(document.styleSheets)
   styleSheet.insertRule(
-    `@keyframes ${flame.style.animationName} {
+    `@keyframes ${style.animationName} {
       ${keyframes}
     }`,
     styleSheet.cssRules.length,
@@ -406,7 +406,7 @@ const createFlame = (speed: number): void => {
     min: 20,
     unit: 's',
   })
-  generateFlameKeyframes(flame)
+  generateFlameKeyframes(flame.style)
   animationElement.append(flame)
   createSmoke(flame.getBoundingClientRect(), speed)
   flame.addEventListener('animationend', () => {
@@ -485,6 +485,7 @@ const startWindAnimation = (): void => {
 const handleAnimation = (data: GroupAtaState): void => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
+    animationTimeouts = []
   }
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   if (isOn !== false) {
