@@ -2,5 +2,6 @@
   position: absolute;
   bottom: -25px;
   user-select: none;
+  pointer-events: none;
   animation-timing-function: ease-in-out;
 }

@@ -12,8 +12,9 @@ import type {
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 const DEFAULT_MULTIPLIER = 1
-const MINIMUM_DIVISOR = 1
+const DIVISOR_FOR_HALF = 2
 const INCREMENT = 1
+const MINIMUM_DIVISOR = 1
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -34,8 +35,13 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
-const SNOW_DELAY = 500
 const FIRE_DELAY = 1000
+const SNOW_DELAY = 500
+const SMOKE_BOTTOM = 50
+const SMOKE_SCALE_MIN = 1
+const SMOKE_SCALE_DIVISOR = 100
+const SMOKE_OPACITY_MAX = 1
+const SMOKE_OPACITY_DIVISOR = 100
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -288,22 +294,25 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const generateFlameKeyframes = (flame: HTMLDivElement): void => {
-  flameIndex += INCREMENT
-  flame.id = `flame-${String(flameIndex)}`
-  flame.style.animationName = `flicker-${flame.id}`
-  const array = [...Array.from({ length: 101 }).keys()]
-  const [lastIndex] = array.toReversed()
-  const keyframes = array
+const generateSmokeKeyframes = (smoke: HTMLDivElement): void => {
+  smoke.style.animationName = `rise-${String(flameIndex)}`
+  const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
-      const translateY = !index || index === lastIndex ? '100%' : '0%'
-      const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
-      const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
+      const translateX = `${String(Math.sin(index) * Math.random())}vh`
+      const translateY = `${String(-index)}vh`
+      const scaleX = generateRandomString({
+        gap: 0.4,
+        min: SMOKE_SCALE_MIN + index / SMOKE_SCALE_DIVISOR,
+      })
+      const scaleY = generateRandomString({
+        gap: 0.4,
+        min: SMOKE_SCALE_MIN + index / SMOKE_SCALE_DIVISOR,
+      })
       const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
-      const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
+      const opacity = String(SMOKE_OPACITY_MAX - index / SMOKE_OPACITY_DIVISOR)
       const brightness = generateRandomString({ gap: 40, min: 100, unit: '%' })
       return `${String(index)}% {
-          transform: translateY(${translateY}) scaleY(${scaleY}) scaleX(${scaleX}) rotate(${rotate});
+          transform: translate(${translateX}, ${translateY}) scale(${scaleX}, ${scaleY}) rotate(${rotate});
           opacity: ${opacity};
           filter: brightness(${brightness});
         }`
@@ -311,7 +320,66 @@ const generateFlameKeyframes = (flame: HTMLDivElement): void => {
     .join('\n')
   const [styleSheet] = Array.from(document.styleSheets)
   styleSheet.insertRule(
-    `@keyframes flicker-${flame.id} {
+    `@keyframes ${smoke.style.animationName} {
+      ${keyframes}
+    }`,
+    styleSheet.cssRules.length,
+  )
+}
+
+const createSmoke = (
+  {
+    height,
+    left,
+    width,
+  }: { bottom: number; height: number; left: number; width: number },
+  speed: number,
+): void => {
+  const smoke = document.createElement('div')
+  smoke.classList.add('smoke')
+  smoke.style.width = generateRandomString({ gap: 20, min: 10, unit: 'px' })
+  smoke.style.height = generateRandomString({ gap: 20, min: 10, unit: 'px' })
+  smoke.style.animationDuration = generateRandomString({
+    divisor: speed,
+    gap: 5,
+    min: 5,
+    unit: 's',
+  })
+  generateSmokeKeyframes(smoke)
+  animationElement.append(smoke)
+  smoke.style.left = `${String(
+    left + (width - smoke.getBoundingClientRect().width) / DIVISOR_FOR_HALF,
+  )}px`
+  smoke.style.bottom = `${String(
+    height -
+      SMOKE_BOTTOM -
+      smoke.getBoundingClientRect().height / DIVISOR_FOR_HALF,
+  )}px`
+  smoke.addEventListener('animationend', () => {
+    smoke.remove()
+  })
+}
+
+const generateFlameKeyframes = (flame: HTMLDivElement): void => {
+  flameIndex += INCREMENT
+  flame.style.animationName = `flicker-${String(flameIndex)}`
+  const keyframes = [...Array.from({ length: 101 }).keys()]
+    .map((index) => {
+      const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
+      const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
+      const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
+      const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
+      const brightness = generateRandomString({ gap: 40, min: 100, unit: '%' })
+      return `${String(index)}% {
+          transform: scale(${scaleX}, ${scaleY}) rotate(${rotate});
+          opacity: ${opacity};
+          filter: brightness(${brightness});
+        }`
+    })
+    .join('\n')
+  const [styleSheet] = Array.from(document.styleSheets)
+  styleSheet.insertRule(
+    `@keyframes ${flame.style.animationName} {
       ${keyframes}
     }`,
     styleSheet.cssRules.length,
@@ -340,6 +408,7 @@ const createFlame = (speed: number): void => {
   })
   generateFlameKeyframes(flame)
   animationElement.append(flame)
+  createSmoke(flame.getBoundingClientRect(), speed)
   flame.addEventListener('animationend', () => {
     flame.remove()
   })

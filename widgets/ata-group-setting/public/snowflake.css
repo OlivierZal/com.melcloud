@@ -3,6 +3,7 @@
   top: -10px;
   color: #8ecae6;
   user-select: none;
+  pointer-events: none;
   animation-name: fall;
   animation-timing-function: linear;
 }
