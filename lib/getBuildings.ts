@@ -11,10 +11,7 @@ const compareNames = (
   { name: name2 }: { name: string },
 ): number => name1.localeCompare(name2)
 
-const mapArea = ({ id, name }: AreaModelAny): AreaZone => ({
-  id,
-  name,
-})
+const mapArea = ({ id, name }: AreaModelAny): AreaZone => ({ id, name })
 
 const mapFloor = ({ areas, id, name }: FloorModel): FloorZone => ({
   areas: areas.sort(compareNames).map(mapArea),

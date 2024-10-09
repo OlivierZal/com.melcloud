@@ -672,12 +672,11 @@ const updateErrorLogElements = (
   { errors, fromDateHuman, nextFromDate, nextToDate }: ErrorLog,
 ): void => {
   errorCount += errors.length
-  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
-  periodLabelElement.innerText = homey.__('settings.errorLog.period', {
-    from: (from = fromDateHuman),
-  })
-  sinceElement.value = nextFromDate
+  from = fromDateHuman
   to = nextToDate
+  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
+  periodLabelElement.innerText = homey.__('settings.errorLog.period', { from })
+  sinceElement.value = nextFromDate
 }
 
 const generateErrorLog = async (homey: Homey): Promise<void> =>

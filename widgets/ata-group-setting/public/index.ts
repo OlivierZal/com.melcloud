@@ -289,10 +289,11 @@ const refreshAtaValuesElement = (): void => {
 }
 
 const generateFlameKeyframes = (flame: HTMLDivElement): void => {
-  flame.id = `flame-${String((flameIndex += INCREMENT))}`
+  flameIndex += INCREMENT
+  flame.id = `flame-${String(flameIndex)}`
   flame.style.animationName = `flicker-${flame.id}`
   const array = [...Array.from({ length: 101 }).keys()]
-  const [lastIndex] = array.reverse()
+  const [lastIndex] = array.toReversed()
   const keyframes = array
     .map((index) => {
       const translateY = !index || index === lastIndex ? '100%' : '0%'
@@ -300,7 +301,7 @@ const generateFlameKeyframes = (flame: HTMLDivElement): void => {
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
       const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
       const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
-      const brightness = generateRandomString({ gap: 40, min: 80, unit: '%' })
+      const brightness = generateRandomString({ gap: 40, min: 100, unit: '%' })
       return `${String(index)}% {
           transform: translateY(${translateY}) scaleY(${scaleY}) scaleX(${scaleX}) rotate(${rotate});
           opacity: ${opacity};
@@ -412,14 +413,11 @@ const handleAnimation = (data: GroupAtaState): void => {
   if (animationTimeout) {
     clearTimeout(animationTimeout)
   }
-  const { FanSpeed: speed, OperationMode: operationMode, Power: isOn } = data
-  const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
+  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   if (isOn !== false) {
-    switch (Number(operationMode)) {
+    const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
+    switch (Number(mode)) {
       case MODE_AUTO:
-        startFireAnimation(newSpeed)
-        startSnowAnimation(newSpeed)
-        break
       case MODE_DRY:
         startSunAnimation()
         break
