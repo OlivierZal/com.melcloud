@@ -102,14 +102,14 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
-const WINDOW_MARGIN = 50
+const DEFAULT_RECT_Y = 0
+const DEFAULT_RECT_X = 0
+const FLAME_WINDOW_MARGIN = 50
 
 const FLAME_DELAY = 1000
 const SMOKE_DELAY = 200
 const SNOWFLAKE_DELAY = 1000
 
-const DEFAULT_RECT_X = 0
-const DEFAULT_RECT_Y = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
@@ -421,7 +421,7 @@ const generateFlameStyle = (
   speed: number,
 ): void => {
   style.left = generateRandomString(
-    { gap: window.innerWidth + WINDOW_MARGIN, min: -WINDOW_MARGIN },
+    { gap: window.innerWidth + FLAME_WINDOW_MARGIN, min: -FLAME_WINDOW_MARGIN },
     'px',
   )
   style.fontSize = generateRandomString({ gap: 10, min: 35 }, 'px')
