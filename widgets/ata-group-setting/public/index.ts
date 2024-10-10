@@ -34,11 +34,11 @@ const generateRandomNumber = ({
   ((divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR)
 
 class SmokeParticle {
-  public opacity = generateRandomNumber({ gap: 0.1, min: 0.05 })
+  public opacity = generateRandomNumber({ gap: 0.05, min: 0.05 })
 
   public posY: number
 
-  public size = generateRandomNumber({ gap: 15, min: 5 })
+  public size = generateRandomNumber({ gap: 5, min: 5 })
 
   readonly #speedX: number
 
@@ -49,14 +49,8 @@ class SmokeParticle {
   public constructor(posX: number, posY: number) {
     this.#posX = posX
     this.posY = posY
-    this.#speedX = generateRandomNumber({
-      gap: 0.2,
-      min: -0.1,
-    })
-    this.#speedY = generateRandomNumber({
-      gap: 0.6,
-      min: 0.2,
-    })
+    this.#speedX = generateRandomNumber({ gap: 0.2, min: -0.1 })
+    this.#speedY = generateRandomNumber({ gap: 0.6, min: 0.2 })
   }
 
   public draw(): void {
@@ -107,6 +101,8 @@ const SPEED_MODERATE = 3
 const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
+
+const WINDOW_MARGIN = 50
 
 const FLAME_DELAY = 1000
 const SMOKE_DELAY = 200
@@ -424,7 +420,10 @@ const generateFlameStyle = (
   style: CSSStyleDeclaration,
   speed: number,
 ): void => {
-  style.left = generateRandomString({ gap: window.innerWidth, min: -50 }, 'px')
+  style.left = generateRandomString(
+    { gap: window.innerWidth + WINDOW_MARGIN, min: -WINDOW_MARGIN },
+    'px',
+  )
   style.fontSize = generateRandomString({ gap: 10, min: 35 }, 'px')
   style.animationDuration = generateRandomString(
     { divisor: speed, gap: 10, min: 20 },
@@ -522,12 +521,22 @@ const startWindAnimation = (): void => {
   //
 }
 
-const resetAnimations = (isSomethingOn: boolean): void => {
+const resetAnimations = (isSomethingOn: boolean, speed: number): void => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  Object.values(smokeIntervals).forEach(clearInterval)
+  Object.entries(smokeIntervals).forEach(([id, value]) => {
+    setTimeout(
+      () => {
+        clearInterval(value)
+        if (!isSomethingOn) {
+          document.getElementById(id)?.remove()
+        }
+      },
+      generateRandomDelay(FLAME_DELAY, speed),
+    )
+  })
   if (smokeAnimationFrameId !== null && isSomethingOn) {
     cancelAnimationFrame(smokeAnimationFrameId)
     smokeAnimationFrameId = null
@@ -537,9 +546,9 @@ const resetAnimations = (isSomethingOn: boolean): void => {
 const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   const isSomethingOn = isOn !== false
-  resetAnimations(isSomethingOn)
+  const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
+  resetAnimations(isSomethingOn, newSpeed)
   if (isSomethingOn) {
-    const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
     switch (Number(mode)) {
       case MODE_AUTO:
       case MODE_DRY:
