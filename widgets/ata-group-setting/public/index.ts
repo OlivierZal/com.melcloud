@@ -9,12 +9,85 @@ import type {
   Zone,
 } from '../../../types'
 
+const DEFAULT_MULTIPLIER = 1
+const MINIMUM_DIVISOR = 1
+
+const START_ANGLE = 0
+const END_ANGLE_MULTIPLIER = 2
+const SIZE_DIVISOR_FOR_BLUR = 10
+
+const canvas = document.getElementById('smoke_canvas') as HTMLCanvasElement
+const canvasCtx = canvas.getContext('2d')
+
+const generateRandomNumber = ({
+  divisor,
+  gap,
+  min,
+  multiplier,
+}: {
+  gap: number
+  min: number
+  divisor?: number
+  multiplier?: number
+}): number =>
+  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
+  ((divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR)
+
+class SmokeParticle {
+  public opacity = generateRandomNumber({ gap: 0.1, min: 0.05 })
+
+  public posY: number
+
+  public size = generateRandomNumber({ gap: 15, min: 5 })
+
+  readonly #speedX: number
+
+  readonly #speedY: number
+
+  #posX: number
+
+  public constructor(posX: number, posY: number) {
+    this.#posX = posX
+    this.posY = posY
+    this.#speedX = generateRandomNumber({
+      gap: 0.2,
+      min: -0.1,
+    })
+    this.#speedY = generateRandomNumber({
+      gap: 0.6,
+      min: 0.2,
+    })
+  }
+
+  public draw(): void {
+    if (canvasCtx) {
+      canvasCtx.beginPath()
+      canvasCtx.arc(
+        this.#posX,
+        this.posY,
+        this.size,
+        START_ANGLE,
+        Math.PI * END_ANGLE_MULTIPLIER,
+      )
+      canvasCtx.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_BLUR)}px)`
+      canvasCtx.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
+      canvasCtx.fill()
+      canvasCtx.filter = 'none'
+    }
+  }
+
+  public update(speed: number): void {
+    this.opacity -= 0.001
+    this.#posX += this.#speedX * speed
+    this.posY -= this.#speedY * speed
+    this.size /= 1.01
+  }
+}
+
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const DEFAULT_MULTIPLIER = 1
 const DIVISOR_FOR_HALF = 2
 const INCREMENT = 1
-const MINIMUM_DIVISOR = 1
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -35,13 +108,15 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
-const FIRE_DELAY = 1000
-const SNOW_DELAY = 500
-const SMOKE_BOTTOM = 50
-const SMOKE_SCALE_MIN = 1
-const SMOKE_SCALE_DIVISOR = 100
-const SMOKE_OPACITY_MAX = 1
-const SMOKE_OPACITY_DIVISOR = 100
+const FLAME_DELAY = 1000
+const SMOKE_DELAY = 200
+const SNOWFLAKE_DELAY = 1000
+
+const DEFAULT_RECT_X = 0
+const DEFAULT_RECT_Y = 0
+const SMOKE_PARTICLE_SIZE_MIN = 0.1
+const SMOKE_PARTICLE_OPACITY_MIN = 0
+const SMOKE_PARTICLE_POS_Y_MIN = -50
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -64,29 +139,19 @@ const ataValuesElement = document.getElementById(
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
+const animationTimeouts: NodeJS.Timeout[] = []
+const smokeIntervals: Record<string, NodeJS.Timeout> = {}
+
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
-let animationTimeouts: NodeJS.Timeout[] = []
 let flameIndex = 0
+let smokeParticles: SmokeParticle[] = []
 
-const generateRandomString = ({
-  divisor,
-  gap,
-  min,
-  multiplier,
-  unit,
-}: {
-  gap: number
-  min: number
-  divisor?: number
-  multiplier?: number
-  unit?: string
-}): string =>
-  `${String(
-    ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
-      ((divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR),
-  )}${unit ?? ''}`
+const generateRandomString = (
+  params: { gap: number; min: number; divisor?: number; multiplier?: number },
+  unit = '',
+): string => `${String(generateRandomNumber(params))}${unit}`
 
 const generateRandomDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
@@ -294,82 +359,49 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const generateSmokeKeyframes = (style: CSSStyleDeclaration): void => {
-  style.animationName = `rise-${String(flameIndex)}`
-  const keyframes = [...Array.from({ length: 101 }).keys()]
-    .map((index) => {
-      const translateX = `${String(Math.sin(index) * Math.random())}vh`
-      const translateY = `${String(-index)}vh`
-      const scaleX = generateRandomString({
-        gap: 0.4,
-        min: SMOKE_SCALE_MIN + index / SMOKE_SCALE_DIVISOR,
-      })
-      const scaleY = generateRandomString({
-        gap: 0.4,
-        min: SMOKE_SCALE_MIN + index / SMOKE_SCALE_DIVISOR,
-      })
-      const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
-      const opacity = String(SMOKE_OPACITY_MAX - index / SMOKE_OPACITY_DIVISOR)
-      const brightness = generateRandomString({ gap: 40, min: 100, unit: '%' })
-      return `${String(index)}% {
-          transform: translate(${translateX}, ${translateY}) scale(${scaleX}, ${scaleY}) rotate(${rotate});
-          opacity: ${opacity};
-          filter: brightness(${brightness});
-        }`
+const createSmoke = (posX: number, posY: number): void => {
+  Array.from({ length: 10 }).forEach(() => {
+    smokeParticles.push(new SmokeParticle(posX, posY))
+  })
+}
+
+const generateSmoke = (speed: number): void => {
+  if (canvasCtx) {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    canvasCtx.clearRect(
+      DEFAULT_RECT_X,
+      DEFAULT_RECT_Y,
+      canvas.width,
+      canvas.height,
+    )
+    smokeParticles = smokeParticles.filter((particle) => {
+      particle.update(speed)
+      particle.draw()
+      return (
+        particle.size > SMOKE_PARTICLE_SIZE_MIN &&
+        particle.opacity > SMOKE_PARTICLE_OPACITY_MIN &&
+        particle.posY > SMOKE_PARTICLE_POS_Y_MIN
+      )
     })
-    .join('\n')
-  const [styleSheet] = Array.from(document.styleSheets)
-  styleSheet.insertRule(
-    `@keyframes ${style.animationName} {
-      ${keyframes}
-    }`,
-    styleSheet.cssRules.length,
-  )
+    requestAnimationFrame(() => {
+      generateSmoke(speed)
+    })
+  }
 }
 
-const createSmoke = (
-  {
-    height,
-    left,
-    width,
-  }: { bottom: number; height: number; left: number; width: number },
-  speed: number,
+const generateFlameKeyframes = (
+  id: string,
+  style: CSSStyleDeclaration,
 ): void => {
-  const smoke = document.createElement('div')
-  smoke.classList.add('smoke')
-  smoke.style.width = generateRandomString({ gap: 20, min: 10, unit: 'px' })
-  smoke.style.height = generateRandomString({ gap: 20, min: 10, unit: 'px' })
-  smoke.style.animationDuration = generateRandomString({
-    divisor: speed,
-    gap: 5,
-    min: 5,
-    unit: 's',
-  })
-  generateSmokeKeyframes(smoke.style)
-  animationElement.append(smoke)
-  smoke.style.left = `${String(
-    left + (width - smoke.getBoundingClientRect().width) / DIVISOR_FOR_HALF,
-  )}px`
-  smoke.style.bottom = `${String(
-    height -
-      SMOKE_BOTTOM -
-      smoke.getBoundingClientRect().height / DIVISOR_FOR_HALF,
-  )}px`
-  smoke.addEventListener('animationend', () => {
-    smoke.remove()
-  })
-}
-
-const generateFlameKeyframes = (style: CSSStyleDeclaration): void => {
-  flameIndex += INCREMENT
-  style.animationName = `flicker-${String(flameIndex)}`
+  style.animationName = `flicker-${id}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
       const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
-      const rotate = generateRandomString({ gap: 12, min: -6, unit: 'deg' })
+      const rotate = generateRandomString({ gap: 12, min: -6 }, 'deg')
       const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
-      const brightness = generateRandomString({ gap: 40, min: 100, unit: '%' })
+      const brightness = generateRandomString({ gap: 40, min: 100 }, '%')
       return `${String(index)}% {
           transform: scale(${scaleX}, ${scaleY}) rotate(${rotate});
           opacity: ${opacity};
@@ -386,30 +418,38 @@ const generateFlameKeyframes = (style: CSSStyleDeclaration): void => {
   )
 }
 
+const generateFlameStyle = (
+  id: string,
+  style: CSSStyleDeclaration,
+  speed: number,
+): void => {
+  style.left = generateRandomString({ gap: window.innerWidth, min: -50 }, 'px')
+  style.fontSize = generateRandomString({ gap: 10, min: 35 }, 'px')
+  style.animationDuration = generateRandomString(
+    { divisor: speed, gap: 10, min: 20 },
+    's',
+  )
+  generateFlameKeyframes(id, style)
+}
+
 const createFlame = (speed: number): void => {
+  flameIndex += INCREMENT
   const flame = document.createElement('div')
   flame.classList.add('flame')
+  flame.id = `flame-${String(flameIndex)}`
   flame.innerHTML = '🔥'
-  flame.style.left = generateRandomString({
-    gap: window.innerWidth,
-    min: -50,
-    unit: 'px',
-  })
-  flame.style.fontSize = generateRandomString({
-    gap: 10,
-    min: 60,
-    unit: 'px',
-  })
-  flame.style.animationDuration = generateRandomString({
-    divisor: speed,
-    gap: 10,
-    min: 20,
-    unit: 's',
-  })
-  generateFlameKeyframes(flame.style)
+  generateFlameStyle(flame.id, flame.style, speed)
   animationElement.append(flame)
-  createSmoke(flame.getBoundingClientRect(), speed)
+  smokeIntervals[flame.id] = setInterval(() => {
+    if (!flame.isConnected) {
+      clearInterval(smokeIntervals[flame.id])
+      return
+    }
+    const { left, top, width } = flame.getBoundingClientRect()
+    createSmoke(left + width / DIVISOR_FOR_HALF, top)
+  }, SMOKE_DELAY)
   flame.addEventListener('animationend', () => {
+    clearInterval(smokeIntervals[flame.id])
     flame.remove()
   })
 }
@@ -421,36 +461,32 @@ const generateFlames = (speed: number): void => {
         createFlame(speed)
         generateFlames(speed)
       },
-      generateRandomDelay(FIRE_DELAY, speed),
+      generateRandomDelay(FLAME_DELAY, speed),
     ),
   )
 }
 
 const startFireAnimation = (speed: number): void => {
   generateFlames(speed)
+  generateSmoke(speed)
 }
 
 const createSnowflake = (speed: number): void => {
   const snowflake = document.createElement('div')
   snowflake.classList.add('snowflake')
   snowflake.innerHTML = '❄'
-  snowflake.style.left = generateRandomString({
-    gap: window.innerWidth,
-    min: 0,
-    unit: 'px',
-  })
-  snowflake.style.fontSize = generateRandomString({
-    divisor: speed,
-    gap: 10,
-    min: 10,
-    unit: 'px',
-  })
-  snowflake.style.animationDuration = generateRandomString({
-    divisor: speed,
-    gap: 15,
-    min: 5,
-    unit: 's',
-  })
+  snowflake.style.left = generateRandomString(
+    { gap: window.innerWidth, min: 0 },
+    'px',
+  )
+  snowflake.style.fontSize = generateRandomString(
+    { divisor: speed, gap: 10, min: 10 },
+    'px',
+  )
+  snowflake.style.animationDuration = generateRandomString(
+    { divisor: speed, gap: 15, min: 5 },
+    's',
+  )
   snowflake.style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
   animationElement.append(snowflake)
   snowflake.addEventListener('animationend', () => {
@@ -465,7 +501,7 @@ const generateSnowflakes = (speed: number): void => {
         createSnowflake(speed)
         generateSnowflakes(speed)
       },
-      generateRandomDelay(SNOW_DELAY, speed),
+      generateRandomDelay(SNOWFLAKE_DELAY, speed),
     ),
   )
 }
@@ -482,13 +518,19 @@ const startWindAnimation = (): void => {
   //
 }
 
-const handleAnimation = (data: GroupAtaState): void => {
+const resetAnimations = (): void => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
-    animationTimeouts = []
+    animationTimeouts.length = 0
   }
+  Object.values(smokeIntervals).forEach(clearInterval)
+}
+
+const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
-  if (isOn !== false) {
+  const isOff = isOn !== false
+  resetAnimations()
+  if (isOff) {
     const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
     switch (Number(mode)) {
       case MODE_AUTO:
