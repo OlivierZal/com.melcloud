@@ -146,6 +146,7 @@ let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let flameIndex = 0
+let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
 
 const generateRandomString = (
@@ -384,7 +385,7 @@ const generateSmoke = (speed: number): void => {
         particle.posY > SMOKE_PARTICLE_POS_Y_MIN
       )
     })
-    requestAnimationFrame(() => {
+    smokeAnimationFrameId = requestAnimationFrame(() => {
       generateSmoke(speed)
     })
   }
@@ -440,14 +441,17 @@ const createFlame = (speed: number): void => {
   flame.innerHTML = '🔥'
   generateFlameStyle(flame.id, flame.style, speed)
   animationElement.append(flame)
-  smokeIntervals[flame.id] = setInterval(() => {
-    if (!flame.isConnected) {
-      clearInterval(smokeIntervals[flame.id])
-      return
-    }
-    const { left, top, width } = flame.getBoundingClientRect()
-    createSmoke(left + width / DIVISOR_FOR_HALF, top)
-  }, SMOKE_DELAY)
+  smokeIntervals[flame.id] = setInterval(
+    () => {
+      if (!flame.isConnected) {
+        clearInterval(smokeIntervals[flame.id])
+        return
+      }
+      const { left, top, width } = flame.getBoundingClientRect()
+      createSmoke(left + width / DIVISOR_FOR_HALF, top)
+    },
+    generateRandomDelay(SMOKE_DELAY, speed),
+  )
   flame.addEventListener('animationend', () => {
     clearInterval(smokeIntervals[flame.id])
     flame.remove()
@@ -518,19 +522,23 @@ const startWindAnimation = (): void => {
   //
 }
 
-const resetAnimations = (): void => {
+const resetAnimations = (isSomethingOn: boolean): void => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
   Object.values(smokeIntervals).forEach(clearInterval)
+  if (smokeAnimationFrameId !== null && isSomethingOn) {
+    cancelAnimationFrame(smokeAnimationFrameId)
+    smokeAnimationFrameId = null
+  }
 }
 
 const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
-  const isOff = isOn !== false
-  resetAnimations()
-  if (isOff) {
+  const isSomethingOn = isOn !== false
+  resetAnimations(isSomethingOn)
+  if (isSomethingOn) {
     const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
     switch (Number(mode)) {
       case MODE_AUTO:
