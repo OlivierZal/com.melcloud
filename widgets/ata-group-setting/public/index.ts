@@ -107,7 +107,6 @@ const SPEED_FACTOR_MAX = 50
 const DEFAULT_RECT_Y = 0
 const DEFAULT_RECT_X = 0
 const FLAME_WINDOW_MARGIN = 50
-const SMOKE_POS_Y_MARGIN = 25
 
 const FLAME_DELAY = 1000
 const SMOKE_DELAY = 200
@@ -455,7 +454,10 @@ const createFlame = (speed: number): void => {
         return
       }
       const { left, top, width } = flame.getBoundingClientRect()
-      createSmoke(left + width / DIVISOR_FOR_HALF, top + SMOKE_POS_Y_MARGIN)
+      createSmoke(
+        left + width / DIVISOR_FOR_HALF,
+        top - parseFloat(getComputedStyle(flame).bottom),
+      )
     },
     generateRandomDelay(SMOKE_DELAY, speed),
   )
