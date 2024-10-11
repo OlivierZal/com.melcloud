@@ -82,7 +82,7 @@ class SmokeParticle {
   }
 }
 
-const DIVISOR_FOR_HALF = 2
+const FACTOR_TWO = 2
 const INCREMENT = 1
 
 const FIRST_LEVEL = 0
@@ -106,7 +106,7 @@ const SPEED_FACTOR_MAX = 50
 
 const DEFAULT_RECT_Y = 0
 const DEFAULT_RECT_X = 0
-const FLAME_WINDOW_MARGIN = 50
+const FLAME_WINDOW_MARGIN = 20
 
 const FLAME_DELAY = 1000
 const SMOKE_DELAY = 200
@@ -395,10 +395,10 @@ const generateSmoke = (speed: number): void => {
 }
 
 const generateFlameKeyframes = (
-  id: string,
+  id: number,
   style: CSSStyleDeclaration,
 ): void => {
-  style.animationName = `flicker-${id}`
+  style.animationName = `flicker-${String(id)}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
@@ -423,12 +423,28 @@ const generateFlameKeyframes = (
 }
 
 const generateFlameStyle = (
-  id: string,
+  id: number,
   style: CSSStyleDeclaration,
   speed: number,
 ): void => {
+  const previousFlame = document.getElementById(
+    `flame-${String(id - INCREMENT)}`,
+  )
+  const previousLeft =
+    previousFlame ?
+      parseFloat(previousFlame.style.left)
+    : -FLAME_WINDOW_MARGIN * FACTOR_TWO
   style.left = generateRandomString(
-    { gap: window.innerWidth + FLAME_WINDOW_MARGIN, min: -FLAME_WINDOW_MARGIN },
+    {
+      gap: Math.min(
+        window.innerWidth + FLAME_WINDOW_MARGIN * FACTOR_TWO,
+        FLAME_WINDOW_MARGIN,
+      ),
+      min:
+        previousLeft > window.innerWidth ?
+          -FLAME_WINDOW_MARGIN
+        : previousLeft + FLAME_WINDOW_MARGIN,
+    },
     'px',
   )
   style.fontSize = generateRandomString({ gap: 10, min: 35 }, 'px')
@@ -445,7 +461,7 @@ const createFlame = (speed: number): void => {
   flame.classList.add('flame')
   flame.id = `flame-${String(flameIndex)}`
   flame.innerHTML = '🔥'
-  generateFlameStyle(flame.id, flame.style, speed)
+  generateFlameStyle(flameIndex, flame.style, speed)
   animationElement.append(flame)
   smokeIntervals[flame.id] = setInterval(
     () => {
@@ -455,7 +471,7 @@ const createFlame = (speed: number): void => {
       }
       const { left, top, width } = flame.getBoundingClientRect()
       createSmoke(
-        left + width / DIVISOR_FOR_HALF,
+        left + width / FACTOR_TWO,
         top - parseFloat(getComputedStyle(flame).bottom),
       )
     },
