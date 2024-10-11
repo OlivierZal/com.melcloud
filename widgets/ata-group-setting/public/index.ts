@@ -9,15 +9,14 @@ import type {
   Zone,
 } from '../../../types'
 
+type HTMLValueElement = HTMLInputElement | HTMLSelectElement
+
 const DEFAULT_MULTIPLIER = 1
 const MINIMUM_DIVISOR = 1
 
 const START_ANGLE = 0
 const END_ANGLE_MULTIPLIER = 2
 const SIZE_DIVISOR_FOR_BLUR = 10
-
-const canvas = document.getElementById('smoke_canvas') as HTMLCanvasElement
-const canvasCtx = canvas.getContext('2d')
 
 const generateRandomNumber = ({
   divisor,
@@ -40,34 +39,39 @@ class SmokeParticle {
 
   public size = generateRandomNumber({ gap: 2, min: 2 })
 
+  readonly #ctx: CanvasRenderingContext2D
+
   readonly #speedX: number
 
   readonly #speedY: number
 
   #posX: number
 
-  public constructor(posX: number, posY: number) {
+  public constructor(
+    ctx: CanvasRenderingContext2D,
+    posX: number,
+    posY: number,
+  ) {
+    this.#ctx = ctx
     this.#posX = posX
-    this.posY = posY
     this.#speedX = generateRandomNumber({ gap: 0.2, min: -0.1 })
     this.#speedY = generateRandomNumber({ gap: 0.6, min: 0.2 })
+    this.posY = posY
   }
 
   public draw(): void {
-    if (canvasCtx) {
-      canvasCtx.beginPath()
-      canvasCtx.arc(
-        this.#posX,
-        this.posY,
-        this.size,
-        START_ANGLE,
-        Math.PI * END_ANGLE_MULTIPLIER,
-      )
-      canvasCtx.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_BLUR)}px)`
-      canvasCtx.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
-      canvasCtx.fill()
-      canvasCtx.filter = 'none'
-    }
+    this.#ctx.beginPath()
+    this.#ctx.arc(
+      this.#posX,
+      this.posY,
+      this.size,
+      START_ANGLE,
+      Math.PI * END_ANGLE_MULTIPLIER,
+    )
+    this.#ctx.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_BLUR)}px)`
+    this.#ctx.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
+    this.#ctx.fill()
+    this.#ctx.filter = 'none'
   }
 
   public update(speed: number): void {
@@ -77,8 +81,6 @@ class SmokeParticle {
     this.size *= 1.002
   }
 }
-
-type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 const DIVISOR_FOR_HALF = 2
 const INCREMENT = 1
@@ -125,6 +127,9 @@ const refreshAtaValues = document.getElementById(
 const updateAtaValues = document.getElementById(
   'apply_values_melcloud',
 ) as HTMLButtonElement
+
+const canvas = document.getElementById('smoke_canvas') as HTMLCanvasElement
+const canvasCtx = canvas.getContext('2d')
 
 const animationElement = document.getElementById('animation') as HTMLDivElement
 const hasZoneAtaDevicesElement = document.getElementById(
@@ -358,9 +363,11 @@ const refreshAtaValuesElement = (): void => {
 }
 
 const createSmoke = (posX: number, posY: number): void => {
-  Array.from({ length: 10 }).forEach(() => {
-    smokeParticles.push(new SmokeParticle(posX, posY))
-  })
+  if (canvasCtx) {
+    Array.from({ length: 10 }).forEach(() => {
+      smokeParticles.push(new SmokeParticle(canvasCtx, posX, posY))
+    })
+  }
 }
 
 const generateSmoke = (speed: number): void => {
