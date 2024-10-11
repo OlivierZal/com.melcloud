@@ -109,9 +109,11 @@ const DEFAULT_RECT_X = 0
 const FLAME_WINDOW_MARGIN = 20
 
 const FLAME_DELAY = 1000
+const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
 const SNOWFLAKE_DELAY = 1000
 
+const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
@@ -147,6 +149,7 @@ let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let flameIndex = 0
+let leafIndex = 0
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
 
@@ -363,7 +366,7 @@ const refreshAtaValuesElement = (): void => {
 
 const createSmoke = (posX: number, posY: number): void => {
   if (canvasCtx) {
-    Array.from({ length: 10 }).forEach(() => {
+    Array.from({ length: 11 }).forEach(() => {
       smokeParticles.push(new SmokeParticle(canvasCtx, posX, posY))
     })
   }
@@ -540,11 +543,91 @@ const startSunAnimation = (): void => {
   //
 }
 
-const startWindAnimation = (): void => {
-  //
+const generateLeafKeyframes = (
+  id: number,
+  style: CSSStyleDeclaration,
+): void => {
+  style.animationName = `blow-${String(id)}`
+  const loopStart = Math.floor(generateRandomNumber({ gap: 50, min: 10 }))
+  const loopDuration = Math.floor(generateRandomNumber({ gap: 20, min: 20 }))
+  const loopEnd = loopStart + loopDuration
+  const loopRadius = generateRandomNumber({ gap: 40, min: 10 })
+  const keyframes = [...Array.from({ length: 101 }).keys()]
+    .map((index) => {
+      const indexLoopRadius =
+        index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
+      const progress = (index - loopStart) / loopDuration
+      const angle = progress * Math.PI * FACTOR_TWO
+      const translateX = `${String(
+        index * 5 + indexLoopRadius * Math.sin(angle),
+      )}px`
+      const translateY = `${String(
+        -(index * FACTOR_TWO + indexLoopRadius * Math.cos(angle)),
+      )}px`
+      const rotate = generateRandomString({ gap: 45, min: index }, 'deg')
+      return `${String(index)}% {
+          transform: translate(${translateX}, ${translateY}) rotate(${rotate});
+        }`
+    })
+    .join('\n')
+  const [styleSheet] = Array.from(document.styleSheets)
+  styleSheet.insertRule(
+    `@keyframes ${style.animationName} {
+      ${keyframes}
+    }`,
+    styleSheet.cssRules.length,
+  )
 }
 
-const resetAnimations = (isSomethingOn: boolean, speed: number): void => {
+const generateLeafStyle = (
+  id: number,
+  style: CSSStyleDeclaration,
+  speed: number,
+): void => {
+  style.top = generateRandomString({ gap: window.innerHeight, min: 0 }, 'px')
+  style.fontSize = generateRandomString({ gap: 15, min: 20 }, 'px')
+  style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
+  style.animationDuration = generateRandomString(
+    { divisor: speed, gap: 5, min: 3 },
+    's',
+  )
+  generateLeafKeyframes(id, style)
+}
+
+const createLeaf = (speed: number): void => {
+  leafIndex += INCREMENT
+  const leaf = document.createElement('div')
+  leaf.classList.add('leaf')
+  leaf.id = `leaf-${String(leafIndex)}`
+  leaf.innerHTML = '🍁'
+  generateLeafStyle(leafIndex, leaf.style, speed)
+  animationElement.append(leaf)
+  leaf.addEventListener('animationend', () => {
+    leaf.remove()
+  })
+}
+
+const generateLeaves = (speed: number): void => {
+  animationTimeouts.push(
+    setTimeout(
+      () => {
+        createLeaf(speed)
+        generateLeaves(speed)
+      },
+      generateRandomDelay(LEAF_DELAY, speed),
+    ),
+  )
+}
+
+const startWindAnimation = (speed: number): void => {
+  generateLeaves(speed)
+}
+
+const resetAnimations = (
+  isSomethingOn: boolean,
+  speed: number,
+  mode: number,
+): void => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
@@ -553,14 +636,14 @@ const resetAnimations = (isSomethingOn: boolean, speed: number): void => {
     setTimeout(
       () => {
         clearInterval(value)
-        if (!isSomethingOn) {
+        if (!isSomethingOn || mode !== MODE_HEAT) {
           document.getElementById(id)?.remove()
         }
       },
       generateRandomDelay(FLAME_DELAY, speed),
     )
   })
-  if (smokeAnimationFrameId !== null && isSomethingOn) {
+  if (smokeAnimationFrameId !== null && isSomethingOn && mode === MODE_HEAT) {
     cancelAnimationFrame(smokeAnimationFrameId)
     smokeAnimationFrameId = null
   }
@@ -570,9 +653,10 @@ const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
-  resetAnimations(isSomethingOn, newSpeed)
+  const newMode = Number(mode)
+  resetAnimations(isSomethingOn, newSpeed, newMode)
   if (isSomethingOn) {
-    switch (Number(mode)) {
+    switch (newMode) {
       case MODE_AUTO:
       case MODE_DRY:
         startSunAnimation()
@@ -580,8 +664,8 @@ const handleAnimation = (data: GroupAtaState): void => {
       case MODE_COOL:
         startSnowAnimation(newSpeed)
         break
-      case MODE_FAN:
-        startWindAnimation()
+        case MODE_FAN:
+        startWindAnimation(newSpeed)
         break
       case MODE_HEAT:
         startFireAnimation(newSpeed)
