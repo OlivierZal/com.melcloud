@@ -83,6 +83,7 @@ class SmokeParticle {
 }
 
 const FACTOR_TWO = 2
+const FACTOR_FIVE = 5
 const INCREMENT = 1
 
 const FIRST_LEVEL = 0
@@ -559,14 +560,18 @@ const generateLeafKeyframes = (
       const progress = (index - loopStart) / loopDuration
       const angle = progress * Math.PI * FACTOR_TWO
       const translateX = `${String(
-        index * 5 + indexLoopRadius * Math.sin(angle),
+        index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
       )}px`
       const translateY = `${String(
-        -(index * FACTOR_TWO + indexLoopRadius * Math.cos(angle)),
+        -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
       )}px`
       const rotate = generateRandomString({ gap: 45, min: index }, 'deg')
+      const oscillate =
+        indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
+          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+        : ''
       return `${String(index)}% {
-          transform: translate(${translateX}, ${translateY}) rotate(${rotate});
+          transform: translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate};
         }`
     })
     .join('\n')
@@ -664,7 +669,7 @@ const handleAnimation = (data: GroupAtaState): void => {
       case MODE_COOL:
         startSnowAnimation(newSpeed)
         break
-        case MODE_FAN:
+      case MODE_FAN:
         startWindAnimation(newSpeed)
         break
       case MODE_HEAT:
