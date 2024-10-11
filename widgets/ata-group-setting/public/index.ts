@@ -38,7 +38,7 @@ class SmokeParticle {
 
   public posY: number
 
-  public size = generateRandomNumber({ gap: 5, min: 5 })
+  public size = generateRandomNumber({ gap: 2, min: 2 })
 
   readonly #speedX: number
 
@@ -74,7 +74,7 @@ class SmokeParticle {
     this.opacity -= 0.001
     this.#posX += this.#speedX * speed
     this.posY -= this.#speedY * speed
-    this.size /= 1.01
+    this.size *= 1.002
   }
 }
 
@@ -105,6 +105,7 @@ const SPEED_FACTOR_MAX = 50
 const DEFAULT_RECT_Y = 0
 const DEFAULT_RECT_X = 0
 const FLAME_WINDOW_MARGIN = 50
+const SMOKE_POS_Y_MARGIN = 25
 
 const FLAME_DELAY = 1000
 const SMOKE_DELAY = 200
@@ -447,7 +448,7 @@ const createFlame = (speed: number): void => {
         return
       }
       const { left, top, width } = flame.getBoundingClientRect()
-      createSmoke(left + width / DIVISOR_FOR_HALF, top)
+      createSmoke(left + width / DIVISOR_FOR_HALF, top + SMOKE_POS_Y_MARGIN)
     },
     generateRandomDelay(SMOKE_DELAY, speed),
   )
