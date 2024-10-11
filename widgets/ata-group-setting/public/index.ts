@@ -436,10 +436,7 @@ const generateFlameStyle = (
     : -FLAME_WINDOW_MARGIN * FACTOR_TWO
   style.left = generateRandomString(
     {
-      gap: Math.min(
-        window.innerWidth + FLAME_WINDOW_MARGIN * FACTOR_TWO,
-        FLAME_WINDOW_MARGIN,
-      ),
+      gap: FLAME_WINDOW_MARGIN,
       min:
         previousLeft > window.innerWidth ?
           -FLAME_WINDOW_MARGIN
