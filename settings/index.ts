@@ -170,6 +170,8 @@ let errorCount = 0
 let from = ''
 let to = ''
 
+const getZonePath = (): string => zoneElement.value.replace('_', '/')
+
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
@@ -707,8 +709,8 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
 
 const updateZoneMapping = (
   data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
-  zone = zoneElement.value,
 ): void => {
+  const zone = zoneElement.value
   zoneMapping[zone] = { ...zoneMapping[zone], ...data }
 }
 
@@ -754,20 +756,17 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
-const fetchHolidayModeData = async (
-  homey: Homey,
-  zone = zoneElement.value,
-): Promise<void> =>
+const fetchHolidayModeData = async (homey: Homey): Promise<void> =>
   withDisablingButtons(
     'holiday_mode',
     async () =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/settings/holiday_mode/${zone.replace('_', '/')}`,
+          `/settings/holiday_mode/${getZonePath()}`,
           (error: Error | null, data: HolidayModeData) => {
             if (!error) {
-              updateZoneMapping(data, zone)
+              updateZoneMapping(data)
               refreshHolidayModeData()
             }
             resolve()
@@ -776,20 +775,17 @@ const fetchHolidayModeData = async (
       }),
   )
 
-const fetchFrostProtectionData = async (
-  homey: Homey,
-  zone = zoneElement.value,
-): Promise<void> =>
+const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
   withDisablingButtons(
     'frost_protection',
     async () =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/settings/frost_protection/${zone.replace('_', '/')}`,
+          `/settings/frost_protection/${getZonePath()}`,
           (error: Error | null, data: FrostProtectionData) => {
             if (!error) {
-              updateZoneMapping(data, zone)
+              updateZoneMapping(data)
               refreshFrostProtectionData()
             }
             resolve()
@@ -798,20 +794,17 @@ const fetchFrostProtectionData = async (
       }),
   )
 
-const fetchAtaValues = async (
-  homey: Homey,
-  zone = zoneElement.value,
-): Promise<void> =>
+const fetchAtaValues = async (homey: Homey): Promise<void> =>
   withDisablingButtons(
     'values_melcloud',
     async () =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/drivers/melcloud/${zone.replace('_', '/')}`,
+          `/drivers/melcloud/${getZonePath()}`,
           async (error: Error | null, data: GroupAtaState) => {
             if (!error) {
-              updateZoneMapping({ ...defaultAtaValues, ...data }, zone)
+              updateZoneMapping({ ...defaultAtaValues, ...data })
               refreshAtaValuesElement()
             } else if (error.message !== 'No air-to-air device found') {
               await homey.alert(error.message)
@@ -1092,7 +1085,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         new Promise((resolve) => {
           homey.api(
             'PUT',
-            `/drivers/melcloud/${zoneElement.value.replace('_', '/')}`,
+            `/drivers/melcloud/${getZonePath()}`,
             body satisfies GroupAtaState,
             async (error: Error | null) => {
               if (!error) {
@@ -1334,7 +1327,7 @@ const setFrostProtectionData = async (
       new Promise((resolve) => {
         homey.api(
           'PUT',
-          `/settings/frost_protection/${zoneElement.value.replace('_', '/')}`,
+          `/settings/frost_protection/${getZonePath()}`,
           { enabled, max, min } satisfies FrostProtectionSettings,
           async (error: Error | null) => {
             if (!error) {

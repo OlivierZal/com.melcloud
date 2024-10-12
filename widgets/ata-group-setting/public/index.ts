@@ -156,6 +156,8 @@ let leafIndex = 0
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
 
+const getZonePath = (): string => zoneElement.value.replace('_', '/')
+
 const generateRandomString = (
   params: { gap: number; min: number; divisor?: number; multiplier?: number },
   unit = '',
@@ -346,10 +348,8 @@ const buildAtaValuesBody = (): GroupAtaState => {
   return body
 }
 
-const updateZoneMapping = (
-  data: Partial<GroupAtaState>,
-  zone = zoneElement.value,
-): void => {
+const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
+  const zone = zoneElement.value
   zoneMapping[zone] = { ...zoneMapping[zone], ...data }
 }
 
@@ -697,16 +697,13 @@ const handleAnimation = (data: GroupAtaState): void => {
   }
 }
 
-const fetchAtaValues = async (
-  homey: Homey,
-  zone = zoneElement.value,
-): Promise<void> => {
+const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const state = (await homey.api(
       'GET',
-      `/drivers/melcloud/${zone.replace('_', '/')}`,
+      `/drivers/melcloud/${getZonePath()}`,
     )) as GroupAtaState
-    updateZoneMapping({ ...defaultAtaValues, ...state }, zone)
+    updateZoneMapping({ ...defaultAtaValues, ...state })
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
     handleAnimation(state)
@@ -804,7 +801,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
     if (Object.keys(body).length) {
       await homey.api(
         'PUT',
-        `/drivers/melcloud/${zoneElement.value.replace('_', '/')}`,
+        `/drivers/melcloud/${getZonePath()}`,
         body satisfies GroupAtaState,
       )
       updateZoneMapping(body)
