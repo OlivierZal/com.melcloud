@@ -672,8 +672,8 @@ const handleAnimation = (data: GroupAtaState): void => {
   if (isSomethingOn) {
     switch (newMode) {
       case MODE_AUTO:
-        startSnowAnimation(newSpeed)
         startFireAnimation(newSpeed)
+        startSnowAnimation(newSpeed)
         break
       case MODE_COOL:
         startSnowAnimation(newSpeed)
@@ -688,8 +688,8 @@ const handleAnimation = (data: GroupAtaState): void => {
         startFireAnimation(newSpeed)
         break
       default:
-        startSnowAnimation(newSpeed)
         startFireAnimation(newSpeed)
+        startSnowAnimation(newSpeed)
         startWindAnimation(newSpeed)
     }
   }
