@@ -93,11 +93,13 @@ const minMapping = { SetTemperature: 10 } as const
 const maxMapping = { SetTemperature: 31 } as const
 const MIN_SET_TEMPERATURE_COOLING = 16
 
+const MODE_MIXED = 0
 const MODE_AUTO = 8
 const MODE_COOL = 3
 const MODE_DRY = 2
 const MODE_FAN = 7
 const MODE_HEAT = 1
+const HEAT_MODES = [MODE_AUTO, MODE_HEAT, MODE_MIXED]
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -637,7 +639,7 @@ const resetAnimations = (
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  if (isSomethingOn && mode === MODE_HEAT) {
+  if (isSomethingOn && HEAT_MODES.includes(mode)) {
     Object.values(smokeIntervals).forEach((value) => {
       setTimeout(
         () => {
@@ -667,7 +669,7 @@ const handleAnimation = (data: GroupAtaState): void => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
-  const newMode = Number(mode)
+  const newMode = Number(mode ?? null)
   resetAnimations(isSomethingOn, newSpeed, newMode)
   if (isSomethingOn) {
     switch (newMode) {
