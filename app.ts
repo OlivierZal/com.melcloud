@@ -11,7 +11,6 @@ import {
   type AreaFacade,
   type BuildingFacade,
   type DeviceFacadeAny,
-  type DeviceModel,
   type FloorFacade,
   type FrostProtectionData,
   type GroupAtaState,
@@ -224,15 +223,13 @@ export = class extends App {
         Object.fromEntries(
           this.getAtaCapabilities().map(([key]) => [
             key,
-            (
-              model[zoneType]
-                .getById(Number(zoneId))
-                ?.devices.filter(
-                  ({ type }) => type === 'Ata',
-                ) as DeviceModel<'Ata'>[]
-            ).map(
-              ({ data }) => (status === 'on' ? data.Power : true) && data[key],
-            ),
+            model[zoneType]
+              .getById(Number(zoneId))
+              ?.devices.filter((device) => device.type === 'Ata')
+              .map(
+                ({ data }) =>
+                  (status === 'on' ? data.Power : true) && data[key],
+              ),
           ]),
         )
       : this.getFacade(zoneType, Number(zoneId)).getAta()
