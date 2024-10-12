@@ -11,10 +11,12 @@ import {
   type AreaFacade,
   type BuildingFacade,
   type DeviceFacadeAny,
+  type DeviceModel,
   type FloorFacade,
   type FrostProtectionData,
   type GroupAtaState,
   type HolidayModeData,
+  type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import { App } from 'homey'
@@ -36,6 +38,7 @@ import {
   type ErrorLog,
   type ErrorLogQuery,
   type FrostProtectionSettings,
+  type GetAtaMode,
   type HolidayModeSettings,
   type LoginSetting,
   type MELCloudDevice,
@@ -168,7 +171,7 @@ export = class extends App {
   }
 
   public getAtaCapabilities(): [
-    keyof GroupAtaState,
+    keyof GroupAtaState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
   ][] {
     return [
@@ -198,7 +201,7 @@ export = class extends App {
         },
       },
     ].map(({ enumType, key, options }) => [
-      key as keyof GroupAtaState,
+      key as keyof GroupAtaState & keyof ListDeviceDataAta,
       getLocalizedCapabilitiesOptions(options, this.#language, enumType),
     ])
   }
@@ -206,8 +209,29 @@ export = class extends App {
   public async getAtaValues({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<GroupAtaState> {
-    return this.getFacade(zoneType, Number(zoneId)).getAta()
+  }: ZoneData): Promise<GroupAtaState>
+  public async getAtaValues<T extends keyof GroupAtaState>(
+    { zoneId, zoneType }: ZoneData,
+    mode: GetAtaMode['mode'],
+  ): Promise<Record<T, GroupAtaState[T][]>>
+  public async getAtaValues<T extends keyof GroupAtaState>(
+    { zoneId, zoneType }: ZoneData,
+    mode?: GetAtaMode['mode'],
+  ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
+    return mode === 'detailed' ?
+        Object.fromEntries(
+          this.getAtaCapabilities().map(([key]) => [
+            key,
+            (
+              model[zoneType]
+                .getById(Number(zoneId))
+                ?.devices.filter(
+                  ({ type }) => type === 'Ata',
+                ) as DeviceModel<'Ata'>[]
+            ).map((device) => this.#facadeManager.get(device).data[key]),
+          ]),
+        )
+      : this.getFacade(zoneType, Number(zoneId)).getAta()
   }
 
   public getDeviceSettings(): DeviceSettings {

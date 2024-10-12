@@ -1,9 +1,14 @@
-import type { GroupAtaState, ZoneSettings } from '@olivierzal/melcloud-api'
+import type {
+  GroupAtaState,
+  OperationMode,
+  ZoneSettings,
+} from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
+  GetAtaMode,
   Settings,
   ValueOf,
   Zone,
@@ -630,7 +635,7 @@ const startWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-const resetAnimations = (
+const resetAnimation = (
   isSomethingOn: boolean,
   speed: number,
   mode: number,
@@ -665,12 +670,39 @@ const resetAnimations = (
   }
 }
 
-const handleAnimation = (data: GroupAtaState): void => {
+const handleMixedAnimation = async (
+  homey: Homey,
+  speed: number,
+): Promise<void> => {
+  const { OperationMode: modes } = (await homey.api(
+    'GET',
+    `/values/ata/${getZonePath()}?${new URLSearchParams({
+      mode: 'detailed',
+    } satisfies GetAtaMode).toString()}`,
+  )) as { OperationMode: OperationMode[] }
+  if (modes.includes(MODE_AUTO) || modes.includes(MODE_COOL)) {
+    startSnowAnimation(speed)
+  }
+  if (modes.includes(MODE_AUTO) || modes.includes(MODE_HEAT)) {
+    startFireAnimation(speed)
+  }
+  if (modes.includes(MODE_DRY)) {
+    startSunAnimation()
+  }
+  if (modes.includes(MODE_FAN)) {
+    startWindAnimation(speed)
+  }
+}
+
+const handleAnimation = async (
+  homey: Homey,
+  data: GroupAtaState,
+): Promise<void> => {
   const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
   const newMode = Number(mode ?? null)
-  resetAnimations(isSomethingOn, newSpeed, newMode)
+  resetAnimation(isSomethingOn, newSpeed, newMode)
   if (isSomethingOn) {
     switch (newMode) {
       case MODE_AUTO:
@@ -690,9 +722,7 @@ const handleAnimation = (data: GroupAtaState): void => {
         startFireAnimation(newSpeed)
         break
       default:
-        startFireAnimation(newSpeed)
-        startSnowAnimation(newSpeed)
-        startWindAnimation(newSpeed)
+        await handleMixedAnimation(homey, newSpeed)
     }
   }
 }
@@ -706,7 +736,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
     updateZoneMapping({ ...defaultAtaValues, ...state })
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
-    handleAnimation(state)
+    await handleAnimation(homey, state)
   } catch (_error) {
     hide(hasZoneAtaDevicesElement)
   }
@@ -805,7 +835,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         body satisfies GroupAtaState,
       )
       updateZoneMapping(body)
-      handleAnimation(body)
+      await handleAnimation(homey, body)
     }
   } catch (_error) {
   } finally {

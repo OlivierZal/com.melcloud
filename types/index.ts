@@ -51,6 +51,7 @@ export {
   type FloorZone,
   type FlowArgs,
   type FrostProtectionSettings,
+  type GetAtaMode,
   type GetCapabilityTagMapping,
   type HolidayModeSettings,
   type HomeySettingsUI,

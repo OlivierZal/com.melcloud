@@ -7,6 +7,7 @@ import type MELCloudApp from '../..'
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
+  GetAtaMode,
   ZoneData,
 } from '../../types'
 
@@ -20,14 +21,18 @@ export = {
   }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
     return getApp(homey).getAtaCapabilities()
   },
-  async getAtaValues({
+  async getAtaValues<T extends keyof GroupAtaState>({
     homey,
     params,
+    query,
   }: {
     homey: Homey
     params: ZoneData
-  }): Promise<GroupAtaState> {
-    return getApp(homey).getAtaValues(params)
+    query?: GetAtaMode
+  }): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
+    return query?.mode === 'detailed' ?
+        getApp(homey).getAtaValues(params, query.mode)
+      : getApp(homey).getAtaValues(params)
   },
   getBuildings(): BuildingZone[] {
     return getBuildings()
