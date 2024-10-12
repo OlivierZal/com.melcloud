@@ -637,20 +637,29 @@ const resetAnimations = (
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  Object.entries(smokeIntervals).forEach(([id, value]) => {
-    setTimeout(
-      () => {
-        clearInterval(value)
-        if (!isSomethingOn || mode !== MODE_HEAT) {
+  if (isSomethingOn && mode === MODE_HEAT) {
+    Object.values(smokeIntervals).forEach((value) => {
+      setTimeout(
+        () => {
+          clearInterval(value)
+        },
+        generateRandomDelay(FLAME_DELAY, speed),
+      )
+    })
+    if (smokeAnimationFrameId !== null) {
+      cancelAnimationFrame(smokeAnimationFrameId)
+      smokeAnimationFrameId = null
+    }
+  } else {
+    Object.entries(smokeIntervals).forEach(([id, value]) => {
+      setTimeout(
+        () => {
+          clearInterval(value)
           document.getElementById(id)?.remove()
-        }
-      },
-      generateRandomDelay(FLAME_DELAY, speed),
-    )
-  })
-  if (smokeAnimationFrameId !== null && isSomethingOn && mode === MODE_HEAT) {
-    cancelAnimationFrame(smokeAnimationFrameId)
-    smokeAnimationFrameId = null
+        },
+        generateRandomDelay(FLAME_DELAY, speed),
+      )
+    })
   }
 }
 
