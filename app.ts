@@ -38,7 +38,7 @@ import {
   type ErrorLog,
   type ErrorLogQuery,
   type FrostProtectionSettings,
-  type GetAtaMode,
+  type GetAtaOptions,
   type HolidayModeSettings,
   type LoginSetting,
   type MELCloudDevice,
@@ -212,26 +212,31 @@ export = class extends App {
   }: ZoneData): Promise<GroupAtaState>
   public async getAtaValues<T extends keyof GroupAtaState>(
     { zoneId, zoneType }: ZoneData,
-    mode: GetAtaMode['mode'],
+    mode: 'detailed',
+    status?: GetAtaOptions['status'],
   ): Promise<Record<T, GroupAtaState[T][]>>
   public async getAtaValues<T extends keyof GroupAtaState>(
     { zoneId, zoneType }: ZoneData,
-    mode?: GetAtaMode['mode'],
+    mode?: GetAtaOptions['mode'],
+    status?: GetAtaOptions['status'],
   ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
-    return mode === 'detailed' ?
-        Object.fromEntries(
-          this.getAtaCapabilities().map(([key]) => [
-            key,
-            (
-              model[zoneType]
-                .getById(Number(zoneId))
-                ?.devices.filter(
-                  ({ type }) => type === 'Ata',
-                ) as DeviceModel<'Ata'>[]
-            ).map((device) => this.#facadeManager.get(device).data[key]),
-          ]),
-        )
-      : this.getFacade(zoneType, Number(zoneId)).getAta()
+    if (mode === 'detailed') {
+      return Object.fromEntries(
+        this.getAtaCapabilities().map(([key]) => [
+          key,
+          (
+            model[zoneType]
+              .getById(Number(zoneId))
+              ?.devices.filter(
+                ({ type }) => type === 'Ata',
+              ) as DeviceModel<'Ata'>[]
+          ).map(
+            ({ data }) => (status === 'on' ? data.Power : true) && data[key],
+          ),
+        ]),
+      )
+    }
+    return this.getFacade(zoneType, Number(zoneId)).getAta()
   }
 
   public getDeviceSettings(): DeviceSettings {

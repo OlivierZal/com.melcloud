@@ -8,7 +8,7 @@ import type Homey from 'homey/lib/HomeyWidget'
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
-  GetAtaMode,
+  GetAtaOptions,
   Settings,
   ValueOf,
   Zone,
@@ -678,7 +678,8 @@ const handleMixedAnimation = async (
     'GET',
     `/values/ata/${getZonePath()}?${new URLSearchParams({
       mode: 'detailed',
-    } satisfies GetAtaMode).toString()}`,
+      status: 'on',
+    } satisfies Required<GetAtaOptions>).toString()}`,
   )) as { OperationMode: OperationMode[] }
   if (modes.includes(MODE_AUTO) || modes.includes(MODE_COOL)) {
     startSnowAnimation(speed)

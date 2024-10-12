@@ -426,6 +426,7 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ] as const
 
-export interface GetAtaMode {
-  mode: 'detailed'
+export interface GetAtaOptions {
+  mode?: 'detailed'
+  status?: 'on'
 }
