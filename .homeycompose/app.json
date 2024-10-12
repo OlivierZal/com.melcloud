@@ -2,11 +2,11 @@
   "api": {
     "getAtaCapabilities": {
       "method": "GET",
-      "path": "/capabilities/drivers/melcloud"
+      "path": "/capabilities/ata"
     },
     "getAtaValues": {
       "method": "GET",
-      "path": "/drivers/melcloud/:zoneType/:zoneId"
+      "path": "/values/ata/:zoneType/:zoneId"
     },
     "getBuildings": {
       "method": "GET",
@@ -42,7 +42,7 @@
     },
     "setAtaValues": {
       "method": "PUT",
-      "path": "/drivers/melcloud/:zoneType/:zoneId"
+      "path": "/values/ata/:zoneType/:zoneId"
     },
     "setDeviceSettings": {
       "method": "PUT",

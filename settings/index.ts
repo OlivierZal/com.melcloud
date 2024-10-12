@@ -801,7 +801,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/drivers/melcloud/${getZonePath()}`,
+          `/values/ata/${getZonePath()}`,
           async (error: Error | null, data: GroupAtaState) => {
             if (!error) {
               updateZoneMapping({ ...defaultAtaValues, ...data })
@@ -1053,7 +1053,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
   new Promise((resolve) => {
     homey.api(
       'GET',
-      '/capabilities/drivers/melcloud',
+      '/capabilities/ata',
       async (
         error: Error | null,
         capabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][],
@@ -1085,7 +1085,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         new Promise((resolve) => {
           homey.api(
             'PUT',
-            `/drivers/melcloud/${getZonePath()}`,
+            `/values/ata/${getZonePath()}`,
             body satisfies GroupAtaState,
             async (error: Error | null) => {
               if (!error) {
