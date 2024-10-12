@@ -220,23 +220,22 @@ export = class extends App {
     mode?: GetAtaOptions['mode'],
     status?: GetAtaOptions['status'],
   ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
-    if (mode === 'detailed') {
-      return Object.fromEntries(
-        this.getAtaCapabilities().map(([key]) => [
-          key,
-          (
-            model[zoneType]
-              .getById(Number(zoneId))
-              ?.devices.filter(
-                ({ type }) => type === 'Ata',
-              ) as DeviceModel<'Ata'>[]
-          ).map(
-            ({ data }) => (status === 'on' ? data.Power : true) && data[key],
-          ),
-        ]),
-      )
-    }
-    return this.getFacade(zoneType, Number(zoneId)).getAta()
+    return mode === 'detailed' ?
+        Object.fromEntries(
+          this.getAtaCapabilities().map(([key]) => [
+            key,
+            (
+              model[zoneType]
+                .getById(Number(zoneId))
+                ?.devices.filter(
+                  ({ type }) => type === 'Ata',
+                ) as DeviceModel<'Ata'>[]
+            ).map(
+              ({ data }) => (status === 'on' ? data.Power : true) && data[key],
+            ),
+          ]),
+        )
+      : this.getFacade(zoneType, Number(zoneId)).getAta()
   }
 
   public getDeviceSettings(): DeviceSettings {
