@@ -473,10 +473,9 @@ export abstract class BaseMELCloudDevice<
         this.#clearEnergyReportPlan(total)
         return
       }
-      const { minus } = this.reportPlanParameters
       const { duration, interval, values } =
         total ? reportPlanParametersTotal : this.reportPlanParameters
-      await this.#getEnergyReport(total, minus)
+      await this.#getEnergyReport(total, this.reportPlanParameters.minus)
       this.#planEnergyReport(total, { duration, interval, values })
     }
   }
@@ -574,8 +573,8 @@ export abstract class BaseMELCloudDevice<
     total: boolean,
   ): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
-      this.#linkedDeviceCount =
-        data.UsageDisclaimerPercentages.split(',').length
+      ;({ length: this.#linkedDeviceCount } =
+        data.UsageDisclaimerPercentages.split(','))
     }
     await Promise.all(
       (

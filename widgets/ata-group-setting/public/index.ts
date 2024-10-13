@@ -198,7 +198,7 @@ const createLabelElement = (
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
   labelElement.classList.add('label')
-  labelElement.htmlFor = valueElement.id
+  ;({ id: labelElement.htmlFor } = valueElement)
   labelElement.innerText = text
   labelElement.append(valueElement)
   return labelElement
@@ -354,8 +354,8 @@ const buildAtaValuesBody = (): GroupAtaState => {
 }
 
 const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
-  const zone = zoneElement.value
-  zoneMapping[zone] = { ...zoneMapping[zone], ...data }
+  const { value } = zoneElement
+  zoneMapping[value] = { ...zoneMapping[value], ...data }
 }
 
 const updateAtaValueElement = (id: keyof GroupAtaState): void => {
@@ -382,8 +382,7 @@ const createSmoke = (posX: number, posY: number): void => {
 
 const generateSmoke = (speed: number): void => {
   if (canvasCtx) {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    ;({ innerHeight: canvas.height, innerWidth: canvas.width } = window)
     canvasCtx.clearRect(
       DEFAULT_RECT_X,
       DEFAULT_RECT_Y,

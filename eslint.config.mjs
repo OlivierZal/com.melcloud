@@ -297,6 +297,17 @@ const config = [
             varsIgnorePattern: '^onHomeyReady$',
           },
         ],
+        '@typescript-eslint/prefer-destructuring': [
+          'error',
+          {
+            array: true,
+            object: true,
+          },
+          {
+            enforceForDeclarationWithTypeAnnotation: true,
+            enforceForRenamedProperties: true,
+          },
+        ],
         '@typescript-eslint/prefer-readonly-parameter-types': 'off',
         '@typescript-eslint/return-await': ['error', 'in-try-catch'],
         '@typescript-eslint/typedef': 'off',

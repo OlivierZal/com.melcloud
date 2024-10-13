@@ -332,7 +332,7 @@ const createLabelElement = (
   labelElement.classList.add(
     isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
   )
-  labelElement.htmlFor = valueElement.id
+  ;({ id: labelElement.htmlFor } = valueElement)
   if (isCheckbox) {
     addTextToCheckbox(labelElement, valueElement, text)
   } else {
@@ -710,12 +710,12 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
 const updateZoneMapping = (
   data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
 ): void => {
-  const zone = zoneElement.value
-  zoneMapping[zone] = { ...zoneMapping[zone], ...data }
+  const { value } = zoneElement
+  zoneMapping[value] = { ...zoneMapping[value], ...data }
 }
 
 const refreshHolidayModeData = (): void => {
-  const data = zoneMapping[zoneElement.value]
+  const { [zoneElement.value]: data } = zoneMapping
   if (data) {
     const {
       HMEnabled: isEnabled = false,
@@ -729,7 +729,7 @@ const refreshHolidayModeData = (): void => {
 }
 
 const refreshFrostProtectionData = (): void => {
-  const data = zoneMapping[zoneElement.value]
+  const { [zoneElement.value]: data } = zoneMapping
   if (data) {
     const {
       FPEnabled: isEnabled,
@@ -924,7 +924,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
 
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('__')
-  const values = flatDeviceSettings[id]
+  const { [id]: values } = flatDeviceSettings
   if (values && new Set(values).size === SIZE_ONE) {
     const [value] = values
     element.value = String(value)

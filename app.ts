@@ -237,13 +237,15 @@ export = class extends App {
 
   public getDeviceSettings(): DeviceSettings {
     return this.#getDevices().reduce<DeviceSettings>((acc, device) => {
-      const driverId = device.driver.id
-      acc[driverId] ??= {}
+      const {
+        driver: { id },
+      } = device
+      acc[id] ??= {}
       Object.entries(device.getSettings() as Settings).forEach(
         ([settingId, value]) => {
-          acc[driverId][settingId] ??= []
-          if (!acc[driverId][settingId].includes(value)) {
-            acc[driverId][settingId].push(value)
+          acc[id][settingId] ??= []
+          if (!acc[id][settingId].includes(value)) {
+            acc[id][settingId].push(value)
           }
         },
       )
@@ -369,7 +371,8 @@ export = class extends App {
       this.homey.settings.get('notifiedVersion') !== version &&
       version in changelog
     ) {
-      const versionChangelog = changelog[version as keyof typeof changelog]
+      const { [version as keyof typeof changelog]: versionChangelog } =
+        changelog
       this.homey.setTimeout(async () => {
         try {
           await this.homey.notifications.createNotification({
