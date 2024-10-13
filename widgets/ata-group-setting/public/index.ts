@@ -648,7 +648,7 @@ const resetAnimation = (
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  smokeIntervals.entries().forEach(([id, value]) => {
+  ;[...smokeIntervals].forEach(([id, value]) => {
     setTimeout(
       () => {
         clearInterval(value)
