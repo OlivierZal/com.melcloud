@@ -238,17 +238,19 @@ export = class extends App {
   public getDeviceSettings(): DeviceSettings {
     return this.#getDevices().reduce<DeviceSettings>((acc, device) => {
       const {
-        driver: { id },
+        driver: { id: driverId },
       } = device
-      acc[id] ??= {}
-      Object.entries(device.getSettings() as Settings).forEach(
-        ([settingId, value]) => {
-          acc[id][settingId] ??= []
-          if (!acc[id][settingId].includes(value)) {
-            acc[id][settingId].push(value)
-          }
-        },
-      )
+      acc[driverId] ??= {}
+      for (const [id, value] of Object.entries(
+        device.getSettings() as Settings,
+      )) {
+        if (!(id in acc[driverId])) {
+          acc[driverId][id] = value
+        } else if (acc[driverId][id] !== value) {
+          acc[driverId][id] = null
+          break
+        }
+      }
       return acc
     }, {})
   }

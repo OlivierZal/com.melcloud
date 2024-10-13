@@ -260,17 +260,21 @@ const fetchHomeySettings = async (homey: Homey): Promise<void> =>
   })
 
 const fetchFlattenDeviceSettings = (): void => {
-  const groupedSettings = Object.groupBy(
-    Object.values(deviceSettings).flatMap((settings) =>
-      Object.entries(settings ?? {}).map(([id, values]) => ({ id, values })),
-    ),
-    ({ id }) => id,
-  )
   flatDeviceSettings = Object.fromEntries(
-    Object.entries(groupedSettings).map(([id, groupedValues]) => [
-      id,
-      [...new Set(groupedValues?.flatMap(({ values }) => values) ?? [])],
-    ]),
+    Object.entries(
+      Object.groupBy(
+        Object.values(deviceSettings).flatMap((settings) =>
+          Object.entries(settings ?? {}).map(([id, values]) => ({
+            id,
+            values,
+          })),
+        ),
+        ({ id }) => id,
+      ),
+    ).map(([id, groupedValues]) => {
+      const set = new Set(groupedValues?.map(({ values }) => values))
+      return [id, set.size === SIZE_ONE ? set.values().next().value : null]
+    }),
   )
 }
 
@@ -535,13 +539,7 @@ const shouldUpdate = (
       driverId === undefined ?
         flatDeviceSettings[id]
       : deviceSettings[driverId]?.[id]
-    if (setting) {
-      if (new Set(setting).size === SIZE_ONE) {
-        const [settingValue] = setting
-        return value !== settingValue
-      }
-      return true
-    }
+    return setting === null ? true : value !== setting
   }
   return false
 }
@@ -908,7 +906,7 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   if (driverId !== undefined) {
     Object.entries(body).forEach(([id, value]) => {
       deviceSettings[driverId] ??= {}
-      deviceSettings[driverId][id] = [value]
+      deviceSettings[driverId][id] = value
     })
     fetchFlattenDeviceSettings()
     return
@@ -916,21 +914,16 @@ const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   Object.entries(body).forEach(([id, value]) => {
     Object.keys(deviceSettings).forEach((driver) => {
       deviceSettings[driver] ??= {}
-      deviceSettings[driver][id] = [value]
+      deviceSettings[driver][id] = value
     })
-    flatDeviceSettings[id] = [value]
+    flatDeviceSettings[id] = value
   })
 }
 
 const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('__')
-  const { [id]: values } = flatDeviceSettings
-  if (values && new Set(values).size === SIZE_ONE) {
-    const [value] = values
-    element.value = String(value)
-    return
-  }
-  element.value = ''
+  const { [id]: value } = flatDeviceSettings
+  element.value = value === null ? '' : String(value)
 }
 
 const refreshSettingsCommon = (elements: HTMLSelectElement[]): void => {
@@ -942,9 +935,9 @@ const updateCheckboxChildrenElement = (
   driverId: string,
 ): void => {
   const [id] = element.id.split('__')
-  const values = deviceSettings[driverId]?.[id] as boolean[]
-  if (new Set(values).size === SIZE_ONE) {
-    ;[element.checked] = values
+  const isChecked = deviceSettings[driverId]?.[id] as boolean | null
+  if (isChecked !== null) {
+    element.checked = isChecked
     return
   }
   element.indeterminate = true

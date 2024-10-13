@@ -188,7 +188,7 @@ export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
 }
 
-export type DeviceSetting = Record<string, ValueOf<Settings>[]>
+export type DeviceSetting = Record<string, ValueOf<Settings>>
 
 export type DeviceSettings = Record<string, DeviceSetting>
 
