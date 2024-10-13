@@ -6,10 +6,11 @@
     "build": "homey app validate --level publish",
     "deploy": "homey app install",
     "format": "prettier . --check",
+    "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run lint:fix && npm run format:fix",
+    "prepare": "npm run format:docs && npm run lint:fix && npm run format:fix",
     "publish": "homey app publish"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@eslint/js": "^9.12.0",
     "@eslint/json": "^0.5.0",
+    "@eslint/markdown": "^6.2.0",
     "@html-eslint/eslint-plugin": "^0.27.0",
     "@html-eslint/parser": "^0.27.0",
     "@stylistic/eslint-plugin": "^2.9.0",

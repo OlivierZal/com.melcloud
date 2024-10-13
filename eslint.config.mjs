@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import json from '@eslint/json'
+import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier'
@@ -460,6 +461,18 @@ const config = [
     ],
     language: 'json/json',
     ...json.configs.recommended,
+  },
+  {
+    files: ['**/*.md'],
+    language: 'markdown/gfm',
+    plugins: {
+      markdown,
+    },
+    rules: {
+      ...markdown.configs.recommended.rules,
+      'markdown/no-duplicate-headings': 'error',
+      'markdown/no-html': 'error',
+    },
   },
   packageJson,
 ]
