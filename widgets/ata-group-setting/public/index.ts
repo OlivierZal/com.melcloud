@@ -151,7 +151,7 @@ const ataValuesElement = document.getElementById(
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
 const animationTimeouts: NodeJS.Timeout[] = []
-const smokeIntervals: Record<string, NodeJS.Timeout> = {}
+const smokeIntervals = new Map<string, NodeJS.Timeout>()
 
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
@@ -470,22 +470,27 @@ const createFlame = (speed: number): void => {
   flame.innerHTML = '🔥'
   generateFlameStyle(flameIndex, flame.style, speed)
   animationElement.append(flame)
-  smokeIntervals[flame.id] = setInterval(
-    () => {
-      if (!flame.isConnected) {
-        clearInterval(smokeIntervals[flame.id])
-        return
-      }
-      const { left, top, width } = flame.getBoundingClientRect()
-      createSmoke(
-        left + width / FACTOR_TWO,
-        top - parseFloat(getComputedStyle(flame).bottom),
-      )
-    },
-    generateRandomDelay(SMOKE_DELAY, speed),
+  smokeIntervals.set(
+    flame.id,
+    setInterval(
+      () => {
+        if (!flame.isConnected) {
+          clearInterval(smokeIntervals.get(flame.id))
+          smokeIntervals.delete(flame.id)
+          return
+        }
+        const { left, top, width } = flame.getBoundingClientRect()
+        createSmoke(
+          left + width / FACTOR_TWO,
+          top - parseFloat(getComputedStyle(flame).bottom),
+        )
+      },
+      generateRandomDelay(SMOKE_DELAY, speed),
+    ),
   )
   flame.addEventListener('animationend', () => {
-    clearInterval(smokeIntervals[flame.id])
+    clearInterval(smokeIntervals.get(flame.id))
+    smokeIntervals.delete(flame.id)
     flame.remove()
   })
 }
@@ -643,29 +648,26 @@ const resetAnimation = (
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  if (isSomethingOn && HEAT_MODES.includes(mode)) {
-    Object.values(smokeIntervals).forEach((value) => {
-      setTimeout(
-        () => {
-          clearInterval(value)
-        },
-        generateRandomDelay(FLAME_DELAY, speed),
-      )
-    })
-    if (smokeAnimationFrameId !== null) {
-      cancelAnimationFrame(smokeAnimationFrameId)
-      smokeAnimationFrameId = null
-    }
-  } else {
-    Object.entries(smokeIntervals).forEach(([id, value]) => {
-      setTimeout(
-        () => {
-          clearInterval(value)
+  smokeIntervals.entries().forEach(([id, value]) => {
+    setTimeout(
+      () => {
+        clearInterval(value)
+        smokeIntervals.delete(id)
+        if (!isSomethingOn || !HEAT_MODES.includes(mode)) {
           document.getElementById(id)?.remove()
-        },
-        generateRandomDelay(FLAME_DELAY, speed),
-      )
-    })
+        }
+      },
+      generateRandomDelay(FLAME_DELAY, speed),
+    )
+  })
+
+  if (
+    isSomethingOn &&
+    HEAT_MODES.includes(mode) &&
+    smokeAnimationFrameId !== null
+  ) {
+    cancelAnimationFrame(smokeAnimationFrameId)
+    smokeAnimationFrameId = null
   }
 }
 
