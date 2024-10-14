@@ -18,33 +18,40 @@ type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
+const DEFAULT_DIVISOR = 1
+const DEFAULT_GAP = 0
+const DEFAULT_MIN = 0
 const DEFAULT_MULTIPLIER = 1
-const MINIMUM_DIVISOR = 1
 
 const START_ANGLE = 0
 const END_ANGLE_MULTIPLIER = 2
-const SIZE_DIVISOR_FOR_BLUR = 10
+const SIZE_DIVISOR_FOR_SMOKE_BLUR = 10
 
-const generateRandomNumber = ({
+const generateStyleNumber = ({
   divisor,
   gap,
   min,
   multiplier,
 }: {
-  gap: number
-  min: number
   divisor?: number
+  gap?: number
+  min?: number
   multiplier?: number
-}): number =>
-  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
-  ((divisor ?? MINIMUM_DIVISOR) || MINIMUM_DIVISOR)
+}): number => {
+  const newGap = gap ?? DEFAULT_GAP
+  const newMin = min ?? DEFAULT_MIN
+  return (
+    ((Math.random() * newGap + newMin) * (multiplier ?? DEFAULT_MULTIPLIER)) /
+    ((divisor ?? DEFAULT_DIVISOR) || DEFAULT_DIVISOR)
+  )
+}
 
 class SmokeParticle {
-  public opacity = generateRandomNumber({ gap: 0.05, min: 0.05 })
+  public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
 
   public posY: number
 
-  public size = generateRandomNumber({ gap: 2, min: 2 })
+  public size = generateStyleNumber({ gap: 2, min: 2 })
 
   readonly #ctx: CanvasRenderingContext2D
 
@@ -61,8 +68,8 @@ class SmokeParticle {
   ) {
     this.#ctx = ctx
     this.#posX = posX
-    this.#speedX = generateRandomNumber({ gap: 0.2, min: -0.1 })
-    this.#speedY = generateRandomNumber({ gap: 0.6, min: 0.2 })
+    this.#speedX = generateStyleNumber({ gap: 0.2, min: -0.1 })
+    this.#speedY = generateStyleNumber({ gap: 0.6, min: 0.2 })
     this.posY = posY
   }
 
@@ -75,7 +82,7 @@ class SmokeParticle {
       START_ANGLE,
       Math.PI * END_ANGLE_MULTIPLIER,
     )
-    this.#ctx.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_BLUR)}px)`
+    this.#ctx.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_SMOKE_BLUR)}px)`
     this.#ctx.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
     this.#ctx.fill()
     this.#ctx.filter = 'none'
@@ -114,8 +121,8 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
-const DEFAULT_RECT_Y = 0
 const DEFAULT_RECT_X = 0
+const DEFAULT_RECT_Y = 0
 const FLAME_WINDOW_MARGIN = 20
 
 const FLAME_DELAY = 1000
@@ -187,17 +194,17 @@ const createAnimationMapping = (): Record<
 
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const generateRandomString = (
-  params: { gap: number; min: number; divisor?: number; multiplier?: number },
+const generateStyleString = (
+  params: { divisor?: number; gap?: number; min?: number; multiplier?: number },
   unit = '',
-): string => `${String(generateRandomNumber(params))}${unit}`
+): string => `${String(generateStyleNumber(params))}${unit}`
 
-const generateRandomDelay = (delay: number, speed: number): number =>
+const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
   (SPEED_FACTOR_MIN *
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
       ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
-    MINIMUM_DIVISOR)
+    DEFAULT_DIVISOR)
 
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
@@ -427,7 +434,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       () => {
         createSmoke(flame, speed)
       },
-      generateRandomDelay(SMOKE_DELAY, speed),
+      generateDelay(SMOKE_DELAY, speed),
     )
   }
 }
@@ -460,11 +467,11 @@ const generateFlameKeyframes = ({ id, style }: HTMLDivElement): void => {
   style.animationName = `flicker-${id}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
-      const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
-      const scaleY = generateRandomString({ gap: 0.4, min: 0.8 })
-      const rotate = generateRandomString({ gap: 12, min: -6 }, 'deg')
-      const opacity = generateRandomString({ gap: 0.4, min: 0.8 })
-      const brightness = generateRandomString({ gap: 40, min: 100 }, '%')
+      const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
+      const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
+      const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
+      const opacity = generateStyleString({ gap: 0.4, min: 0.8 })
+      const brightness = generateStyleString({ gap: 40, min: 100 }, '%')
       return `${String(index)}% {
           transform: scale(${scaleX}, ${scaleY}) rotate(${rotate});
           opacity: ${opacity};
@@ -491,7 +498,7 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
     previousElement ?
       parseFloat(previousElement.style.left)
     : -FLAME_WINDOW_MARGIN * FACTOR_TWO
-  style.left = generateRandomString(
+  style.left = generateStyleString(
     {
       gap: FLAME_WINDOW_MARGIN,
       min:
@@ -501,8 +508,8 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
     },
     'px',
   )
-  style.fontSize = generateRandomString({ gap: 10, min: 35 }, 'px')
-  style.animationDuration = generateRandomString(
+  style.fontSize = generateStyleString({ gap: 10, min: 35 }, 'px')
+  style.animationDuration = generateStyleString(
     { divisor: speed, gap: 10, min: 20 },
     's',
   )
@@ -528,7 +535,7 @@ const generateFlames = (speed: number): void => {
         createFlame(speed)
         generateFlames(speed)
       },
-      generateRandomDelay(FLAME_DELAY, speed),
+      generateDelay(FLAME_DELAY, speed),
     ),
   )
 }
@@ -540,19 +547,19 @@ const startFireAnimation = (speed: number): void => {
 
 const createSnowflake = (speed: number): void => {
   const snowflake = createAnimatedElement('snowflake')
-  snowflake.style.left = generateRandomString(
+  snowflake.style.left = generateStyleString(
     { gap: window.innerWidth, min: 0 },
     'px',
   )
-  snowflake.style.fontSize = generateRandomString(
+  snowflake.style.fontSize = generateStyleString(
     { divisor: speed, gap: 10, min: 10 },
     'px',
   )
-  snowflake.style.animationDuration = generateRandomString(
+  snowflake.style.animationDuration = generateStyleString(
     { divisor: speed, gap: 15, min: 5 },
     's',
   )
-  snowflake.style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
+  snowflake.style.opacity = generateStyleString({ gap: 0.5, min: 0.5 })
   animationElement.append(snowflake)
   snowflake.addEventListener('animationend', () => {
     snowflake.remove()
@@ -566,7 +573,7 @@ const generateSnowflakes = (speed: number): void => {
         createSnowflake(speed)
         generateSnowflakes(speed)
       },
-      generateRandomDelay(SNOWFLAKE_DELAY, speed),
+      generateDelay(SNOWFLAKE_DELAY, speed),
     ),
   )
 }
@@ -575,22 +582,58 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const createSun = (speed: number): void => {
-  console.log(speed)
-  const sun = createAnimatedElement('sun')
+const generateSunKeyframes = (): void => {
+  const [styleSheet] = Array.from(document.styleSheets)
+  styleSheet.insertRule(
+    `@keyframes shine {
+      0% {
+        transform: rotate(0deg) scale(1);
+        filter: brightness(130%) blur(20px);
+      }
+      25% {
+        transform: rotate(90deg) scale(1.1);
+        filter: brightness(140%) blur(20px);
+      }
+      50% {
+        transform: rotate(180deg) scale(1);
+        filter: brightness(150%) blur(20px);
+      }
+      75% {
+        transform: rotate(270deg) scale(1.2);
+        filter: brightness(140%) blur(20px);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+        filter: brightness(130%) blur(20px);
+      }
+    }`,
+    styleSheet.cssRules.length,
+  )
+}
+
+const generateSun = (speed: number): void => {
+  let sun = document.querySelector<HTMLDivElement>('.sun')
+  if (!sun) {
+    sun = createAnimatedElement('sun')
+  }
+  sun.style.animationDuration = generateStyleString(
+    { divisor: speed, min: 25 },
+    's',
+  )
+  generateSunKeyframes()
   animationElement.append(sun)
 }
 
 const startSunAnimation = (speed: number): void => {
-  createSun(speed)
+  generateSun(speed)
 }
 
 const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
   style.animationName = `blow-${id}`
-  const loopStart = Math.floor(generateRandomNumber({ gap: 50, min: 10 }))
-  const loopDuration = Math.floor(generateRandomNumber({ gap: 20, min: 20 }))
+  const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
+  const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
   const loopEnd = loopStart + loopDuration
-  const loopRadius = generateRandomNumber({ gap: 40, min: 10 })
+  const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const indexLoopRadius =
@@ -603,7 +646,7 @@ const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
       const translateY = `${String(
         -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
       )}px`
-      const rotate = generateRandomString({ gap: 45, min: index }, 'deg')
+      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
       const oscillate =
         indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
           ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
@@ -624,10 +667,10 @@ const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
 
 const generateLeafStyle = (element: HTMLDivElement, speed: number): void => {
   const { style } = element
-  style.top = generateRandomString({ gap: window.innerHeight, min: 0 }, 'px')
-  style.fontSize = generateRandomString({ gap: 15, min: 20 }, 'px')
-  style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
-  style.animationDuration = generateRandomString(
+  style.top = generateStyleString({ gap: window.innerHeight, min: 0 }, 'px')
+  style.fontSize = generateStyleString({ gap: 15, min: 20 }, 'px')
+  style.opacity = generateStyleString({ gap: 0.5, min: 0.5 })
+  style.animationDuration = generateStyleString(
     { divisor: speed, gap: 5, min: 3 },
     's',
   )
@@ -650,7 +693,7 @@ const generateLeaves = (speed: number): void => {
         createLeaf(speed)
         generateLeaves(speed)
       },
-      generateRandomDelay(LEAF_DELAY, speed),
+      generateDelay(LEAF_DELAY, speed),
     ),
   )
 }
@@ -689,12 +732,12 @@ const resetFireAnimation = async (
     }
     return
   }
-  document.querySelectorAll('.flame').forEach((element) => {
+  document.querySelectorAll('.flame').forEach((flame) => {
     setTimeout(
       () => {
-        element.remove()
+        flame.remove()
       },
-      generateRandomDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+      generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
     )
   })
 }
@@ -714,7 +757,6 @@ const resetSunAnimation = async (
   ) {
     const sun = document.querySelector<HTMLDivElement>('.sun')
     if (sun) {
-      sun.style.animationPlayState = 'paused'
       sun.remove()
     }
   }

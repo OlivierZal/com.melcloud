@@ -1,9 +1,11 @@
 .sun {
   position: absolute;
-  color: gold;
-  top: -50px;
-  right: -50px;
-  font-size: 100px;
+  top: -120px;
+  right: -60px;
+  font-size: 200px;
   user-select: none;
   pointer-events: none;
+  animation-name: shine;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }

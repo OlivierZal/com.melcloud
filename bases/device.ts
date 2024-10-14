@@ -34,7 +34,8 @@ import type {
 import type MELCloudApp from '../app'
 
 const INITIAL_SUM = 0
-const MINIMUM_DIVISOR = 1
+const DEFAULT_DEVICE_COUNT = 1
+const DEFAULT_DIVISOR = 1
 const SYNC_DELAY = 1000
 
 const reportPlanParametersTotal = {
@@ -74,7 +75,7 @@ export abstract class BaseMELCloudDevice<
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
 
-  #linkedDeviceCount = MINIMUM_DIVISOR
+  #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
@@ -279,7 +280,7 @@ export abstract class BaseMELCloudDevice<
       (consumedTags.reduce(
         (acc, tag) => acc + (data[tag] as number),
         INITIAL_SUM,
-      ) || MINIMUM_DIVISOR)
+      ) || DEFAULT_DIVISOR)
     )
   }
 
