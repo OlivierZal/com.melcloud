@@ -143,11 +143,11 @@ const canvas = document.getElementById('smoke_canvas') as HTMLCanvasElement
 const canvasCtx = canvas.getContext('2d')
 
 const animationElement = document.getElementById('animation') as HTMLDivElement
-const hasZoneAtaDevicesElement = document.getElementById(
-  'has_zone_ata_devices',
-) as HTMLDivElement
 const ataValuesElement = document.getElementById(
   'values_melcloud',
+) as HTMLDivElement
+const hasZoneAtaDevicesElement = document.getElementById(
+  'has_zone_ata_devices',
 ) as HTMLDivElement
 
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
@@ -179,6 +179,7 @@ const createAnimationMapping = (): Record<
       innerHTML: '❄',
     },
     sun: {
+      getIndex: () => INCREMENT,
       innerHTML: '☀',
     },
   }
@@ -669,15 +670,11 @@ const getModes = async (homey: Homey): Promise<OperationMode[]> =>
     )) as { OperationMode: OperationMode[] }
   ).OperationMode
 
-const resetAnimation = async (
+const resetFireAnimation = async (
   homey: Homey,
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  if (animationTimeouts.length) {
-    animationTimeouts.forEach(clearTimeout)
-    animationTimeouts.length = 0
-  }
   if (
     isSomethingOn &&
     (HEAT_MODES.includes(mode) ||
@@ -690,11 +687,50 @@ const resetAnimation = async (
       cancelAnimationFrame(smokeAnimationFrameId)
       smokeAnimationFrameId = null
     }
-  } else {
-    document.querySelectorAll('.flame').forEach((element) => {
-      element.remove()
-    })
+    return
   }
+  document.querySelectorAll('.flame').forEach((element) => {
+    setTimeout(
+      () => {
+        element.remove()
+      },
+      generateRandomDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+    )
+  })
+}
+
+const resetSunAnimation = async (
+  homey: Homey,
+  isSomethingOn: boolean,
+  mode: number,
+): Promise<void> => {
+  if (
+    !isSomethingOn ||
+    (mode !== MODE_DRY &&
+      mode !== MODE_MIXED &&
+      (await getModes(homey)).every(
+        (currentMode: number) => currentMode !== MODE_DRY,
+      ))
+  ) {
+    const sun = document.querySelector<HTMLDivElement>('.sun')
+    if (sun) {
+      sun.style.animationPlayState = 'paused'
+      sun.remove()
+    }
+  }
+}
+
+const resetAnimation = async (
+  homey: Homey,
+  isSomethingOn: boolean,
+  mode: number,
+): Promise<void> => {
+  if (animationTimeouts.length) {
+    animationTimeouts.forEach(clearTimeout)
+    animationTimeouts.length = 0
+  }
+  await resetFireAnimation(homey, isSomethingOn, mode)
+  await resetSunAnimation(homey, isSomethingOn, mode)
 }
 
 const handleMixedAnimation = async (

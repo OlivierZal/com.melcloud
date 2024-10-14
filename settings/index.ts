@@ -90,22 +90,22 @@ const updateHolidayModeElement = document.getElementById(
   'apply_holiday_mode',
 ) as HTMLButtonElement
 
+const ataValuesElement = document.getElementById(
+  'values_melcloud',
+) as HTMLDivElement
 const authenticatedElement = document.getElementById(
   'authenticated',
 ) as HTMLDivElement
 const authenticatingElement = document.getElementById(
   'authenticating',
 ) as HTMLDivElement
+const errorLogElement = document.getElementById('error_log') as HTMLDivElement
 const hasZoneAtaDevicesElement = document.getElementById(
   'has_zone_ata_devices',
 ) as HTMLDivElement
-const errorLogElement = document.getElementById('error_log') as HTMLDivElement
 const loginElement = document.getElementById('login') as HTMLDivElement
 const settingsCommonElement = document.getElementById(
   'settings_common',
-) as HTMLDivElement
-const ataValuesElement = document.getElementById(
-  'values_melcloud',
 ) as HTMLDivElement
 
 const sinceElement = document.getElementById('since') as HTMLInputElement
