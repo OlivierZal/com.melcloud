@@ -653,21 +653,19 @@ const resetAnimation = (
       () => {
         clearInterval(value)
         smokeIntervals.delete(id)
-        if (!isSomethingOn || !HEAT_MODES.includes(mode)) {
-          document.getElementById(id)?.remove()
-        }
       },
       generateRandomDelay(FLAME_DELAY, speed),
     )
   })
-
-  if (
-    isSomethingOn &&
-    HEAT_MODES.includes(mode) &&
-    smokeAnimationFrameId !== null
-  ) {
-    cancelAnimationFrame(smokeAnimationFrameId)
-    smokeAnimationFrameId = null
+  if (isSomethingOn && HEAT_MODES.includes(mode)) {
+    if (smokeAnimationFrameId !== null) {
+      cancelAnimationFrame(smokeAnimationFrameId)
+      smokeAnimationFrameId = null
+    }
+  } else {
+    document.querySelectorAll('.flame').forEach((element) => {
+      element.remove()
+    })
   }
 }
 
