@@ -106,7 +106,7 @@ const MODE_COOL = 3
 const MODE_DRY = 2
 const MODE_FAN = 7
 const MODE_HEAT = 1
-const HEAT_MODES = [MODE_AUTO, MODE_HEAT, MODE_MIXED]
+const HEAT_MODES = [MODE_AUTO, MODE_HEAT]
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -579,8 +579,16 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const startSunAnimation = (): void => {
-  //
+const createSun = (speed: number): void => {
+  const sun = createAnimatedElement('sun')
+  sun.style.fontSize = generateRandomString(
+    { gap: 50, min: 50, multiplier: speed },
+    'px',
+  )
+}
+
+const startSunAnimation = (speed: number): void => {
+  createSun(speed)
 }
 
 const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
@@ -657,11 +665,29 @@ const startWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-const resetAnimation = (
-  isSomethingOn: boolean,
-  speed: number,
-  mode: number,
-): void => {
+const getModes = async (homey: Homey): Promise<OperationMode[]> =>
+  (
+    (await homey.api(
+      'GET',
+      `/values/ata/${getZonePath()}?${new URLSearchParams({
+        mode: 'detailed',
+        status: 'on',
+      } satisfies Required<GetAtaOptions>).toString()}`,
+    )) as { OperationMode: OperationMode[] }
+  ).OperationMode
+
+const resetAnimation = async (
+  homey: Homey,
+  {
+    isSomethingOn,
+    mode,
+    speed,
+  }: {
+    isSomethingOn: boolean
+    mode: number
+    speed: number
+  },
+): Promise<void> => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
@@ -675,7 +701,14 @@ const resetAnimation = (
       generateRandomDelay(FLAME_DELAY, speed),
     )
   })
-  if (isSomethingOn && HEAT_MODES.includes(mode)) {
+  if (
+    isSomethingOn &&
+    (HEAT_MODES.includes(mode) ||
+      (mode === MODE_MIXED &&
+        (await getModes(homey)).some((currentMode) =>
+          HEAT_MODES.includes(currentMode),
+        )))
+  ) {
     if (smokeAnimationFrameId !== null) {
       cancelAnimationFrame(smokeAnimationFrameId)
       smokeAnimationFrameId = null
@@ -691,13 +724,7 @@ const handleMixedAnimation = async (
   homey: Homey,
   speed: number,
 ): Promise<void> => {
-  const { OperationMode: modes } = (await homey.api(
-    'GET',
-    `/values/ata/${getZonePath()}?${new URLSearchParams({
-      mode: 'detailed',
-      status: 'on',
-    } satisfies Required<GetAtaOptions>).toString()}`,
-  )) as { OperationMode: OperationMode[] }
+  const modes = await getModes(homey)
   if (modes.includes(MODE_AUTO) || modes.includes(MODE_COOL)) {
     startSnowAnimation(speed)
   }
@@ -705,7 +732,7 @@ const handleMixedAnimation = async (
     startFireAnimation(speed)
   }
   if (modes.includes(MODE_DRY)) {
-    startSunAnimation()
+    startSunAnimation(speed)
   }
   if (modes.includes(MODE_FAN)) {
     startWindAnimation(speed)
@@ -720,7 +747,7 @@ const handleAnimation = async (
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
   const newMode = Number(mode ?? null)
-  resetAnimation(isSomethingOn, newSpeed, newMode)
+  await resetAnimation(homey, { isSomethingOn, mode: newMode, speed: newSpeed })
   if (isSomethingOn) {
     switch (newMode) {
       case MODE_AUTO:
@@ -731,7 +758,7 @@ const handleAnimation = async (
         startSnowAnimation(newSpeed)
         break
       case MODE_DRY:
-        startSunAnimation()
+        startSunAnimation(newSpeed)
         break
       case MODE_FAN:
         startWindAnimation(newSpeed)
@@ -739,8 +766,10 @@ const handleAnimation = async (
       case MODE_HEAT:
         startFireAnimation(newSpeed)
         break
-      default:
+      case MODE_MIXED:
         await handleMixedAnimation(homey, newSpeed)
+        break
+      default:
     }
   }
 }
