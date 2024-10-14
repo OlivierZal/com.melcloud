@@ -153,7 +153,6 @@ const ataValuesElement = document.getElementById(
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
 const animationTimeouts: NodeJS.Timeout[] = []
-const smokeTimeouts = new Map<string, NodeJS.Timeout>()
 
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
@@ -412,7 +411,7 @@ const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
 }
 
 const createSmoke = (flame: HTMLDivElement, speed: number): void => {
-  if (canvasCtx) {
+  if (flame.isConnected && canvasCtx) {
     const { left, top, width } = flame.getBoundingClientRect()
     Array.from({ length: 11 }).forEach(() => {
       smokeParticles.push(
@@ -423,19 +422,11 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
         ),
       )
     })
-    smokeTimeouts.set(
-      flame.id,
-      setTimeout(
-        () => {
-          if (!flame.isConnected) {
-            clearTimeout(smokeTimeouts.get(flame.id))
-            smokeTimeouts.delete(flame.id)
-            return
-          }
-          createSmoke(flame, speed)
-        },
-        generateRandomDelay(SMOKE_DELAY, speed),
-      ),
+    setTimeout(
+      () => {
+        createSmoke(flame, speed)
+      },
+      generateRandomDelay(SMOKE_DELAY, speed),
     )
   }
 }
@@ -523,8 +514,6 @@ const createFlame = (speed: number): void => {
     createSmoke(flame, speed)
   })
   flame.addEventListener('animationend', () => {
-    clearTimeout(smokeTimeouts.get(flame.id))
-    smokeTimeouts.delete(flame.id)
     flame.remove()
   })
   generateFlameStyle(flame, speed)
@@ -682,29 +671,13 @@ const getModes = async (homey: Homey): Promise<OperationMode[]> =>
 
 const resetAnimation = async (
   homey: Homey,
-  {
-    isSomethingOn,
-    mode,
-    speed,
-  }: {
-    isSomethingOn: boolean
-    mode: number
-    speed: number
-  },
+  isSomethingOn: boolean,
+  mode: number,
 ): Promise<void> => {
   if (animationTimeouts.length) {
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  ;[...smokeTimeouts].forEach(([id, value]) => {
-    setTimeout(
-      () => {
-        clearTimeout(value)
-        smokeTimeouts.delete(id)
-      },
-      generateRandomDelay(FLAME_DELAY, speed),
-    )
-  })
   if (
     isSomethingOn &&
     (HEAT_MODES.includes(mode) ||
@@ -751,7 +724,7 @@ const handleAnimation = async (
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
   const newMode = Number(mode ?? null)
-  await resetAnimation(homey, { isSomethingOn, mode: newMode, speed: newSpeed })
+  await resetAnimation(homey, isSomethingOn, newMode)
   if (isSomethingOn) {
     switch (newMode) {
       case MODE_AUTO:
