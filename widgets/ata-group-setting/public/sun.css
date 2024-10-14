@@ -1,0 +1,9 @@
+.sun {
+  position: absolute;
+  color: gold;
+  top: -50px;
+  right: -50px;
+  font-size: 100px;
+  user-select: none;
+  pointer-events: none;
+}

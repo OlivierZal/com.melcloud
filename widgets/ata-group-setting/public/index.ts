@@ -153,7 +153,7 @@ const ataValuesElement = document.getElementById(
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
 const animationTimeouts: NodeJS.Timeout[] = []
-const smokeIntervals = new Map<string, NodeJS.Timeout>()
+const smokeTimeouts = new Map<string, NodeJS.Timeout>()
 
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
@@ -411,11 +411,32 @@ const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
   return element
 }
 
-const createSmoke = (posX: number, posY: number): void => {
+const createSmoke = (flame: HTMLDivElement, speed: number): void => {
   if (canvasCtx) {
+    const { left, top, width } = flame.getBoundingClientRect()
     Array.from({ length: 11 }).forEach(() => {
-      smokeParticles.push(new SmokeParticle(canvasCtx, posX, posY))
+      smokeParticles.push(
+        new SmokeParticle(
+          canvasCtx,
+          left + width / FACTOR_TWO,
+          top - parseFloat(getComputedStyle(flame).bottom),
+        ),
+      )
     })
+    smokeTimeouts.set(
+      flame.id,
+      setTimeout(
+        () => {
+          if (!flame.isConnected) {
+            clearTimeout(smokeTimeouts.get(flame.id))
+            smokeTimeouts.delete(flame.id)
+            return
+          }
+          createSmoke(flame, speed)
+        },
+        generateRandomDelay(SMOKE_DELAY, speed),
+      ),
+    )
   }
 }
 
@@ -498,31 +519,16 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
 
 const createFlame = (speed: number): void => {
   const flame = createAnimatedElement('flame')
-  generateFlameStyle(flame, speed)
-  animationElement.append(flame)
-  smokeIntervals.set(
-    flame.id,
-    setInterval(
-      () => {
-        if (!flame.isConnected) {
-          clearInterval(smokeIntervals.get(flame.id))
-          smokeIntervals.delete(flame.id)
-          return
-        }
-        const { left, top, width } = flame.getBoundingClientRect()
-        createSmoke(
-          left + width / FACTOR_TWO,
-          top - parseFloat(getComputedStyle(flame).bottom),
-        )
-      },
-      generateRandomDelay(SMOKE_DELAY, speed),
-    ),
-  )
+  flame.addEventListener('animationstart', () => {
+    createSmoke(flame, speed)
+  })
   flame.addEventListener('animationend', () => {
-    clearInterval(smokeIntervals.get(flame.id))
-    smokeIntervals.delete(flame.id)
+    clearTimeout(smokeTimeouts.get(flame.id))
+    smokeTimeouts.delete(flame.id)
     flame.remove()
   })
+  generateFlameStyle(flame, speed)
+  animationElement.append(flame)
 }
 
 const generateFlames = (speed: number): void => {
@@ -580,11 +586,9 @@ const startSnowAnimation = (speed: number): void => {
 }
 
 const createSun = (speed: number): void => {
+  console.log(speed)
   const sun = createAnimatedElement('sun')
-  sun.style.fontSize = generateRandomString(
-    { gap: 50, min: 50, multiplier: speed },
-    'px',
-  )
+  animationElement.append(sun)
 }
 
 const startSunAnimation = (speed: number): void => {
@@ -692,11 +696,11 @@ const resetAnimation = async (
     animationTimeouts.forEach(clearTimeout)
     animationTimeouts.length = 0
   }
-  ;[...smokeIntervals].forEach(([id, value]) => {
+  ;[...smokeTimeouts].forEach(([id, value]) => {
     setTimeout(
       () => {
-        clearInterval(value)
-        smokeIntervals.delete(id)
+        clearTimeout(value)
+        smokeTimeouts.delete(id)
       },
       generateRandomDelay(FLAME_DELAY, speed),
     )
