@@ -16,6 +16,8 @@ import type {
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
+type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
+
 const DEFAULT_MULTIPLIER = 1
 const MINIMUM_DIVISOR = 1
 
@@ -156,10 +158,32 @@ const smokeIntervals = new Map<string, NodeJS.Timeout>()
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
-let flameIndex = 0
-let leafIndex = 0
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
+
+const createAnimationMapping = (): Record<
+  AnimatedElement,
+  { readonly innerHTML: string; readonly getIndex?: () => number }
+> => {
+  let flameIndex = 0
+  let leafIndex = 0
+  return {
+    flame: {
+      getIndex: () => (flameIndex += INCREMENT),
+      innerHTML: '🔥',
+    },
+    leaf: {
+      getIndex: () => (leafIndex += INCREMENT),
+      innerHTML: '🍁',
+    },
+    snowflake: {
+      innerHTML: '❄',
+    },
+    sun: {
+      innerHTML: '☀',
+    },
+  }
+}
 
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
@@ -372,6 +396,21 @@ const refreshAtaValuesElement = (): void => {
   })
 }
 
+const animationMapping = createAnimationMapping()
+
+const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
+  const element = document.createElement('div')
+  element.classList.add(name)
+  if (name in animationMapping) {
+    const { [name]: mapping } = animationMapping
+    ;({ innerHTML: element.innerHTML } = mapping)
+    if (mapping.getIndex) {
+      element.id = `${name}-${String(mapping.getIndex())}`
+    }
+  }
+  return element
+}
+
 const createSmoke = (posX: number, posY: number): void => {
   if (canvasCtx) {
     Array.from({ length: 11 }).forEach(() => {
@@ -404,11 +443,8 @@ const generateSmoke = (speed: number): void => {
   }
 }
 
-const generateFlameKeyframes = (
-  id: number,
-  style: CSSStyleDeclaration,
-): void => {
-  style.animationName = `flicker-${String(id)}`
+const generateFlameKeyframes = ({ id, style }: HTMLDivElement): void => {
+  style.animationName = `flicker-${id}`
   const keyframes = [...Array.from({ length: 101 }).keys()]
     .map((index) => {
       const scaleX = generateRandomString({ gap: 0.4, min: 0.8 })
@@ -432,17 +468,15 @@ const generateFlameKeyframes = (
   )
 }
 
-const generateFlameStyle = (
-  id: number,
-  style: CSSStyleDeclaration,
-  speed: number,
-): void => {
-  const previousFlame = document.getElementById(
-    `flame-${String(id - INCREMENT)}`,
+const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
+  const { id, style } = element
+  const [name, index] = id.split('-')
+  const previousElement = document.getElementById(
+    `${name}-${String(Number(index) - INCREMENT)}`,
   )
   const previousLeft =
-    previousFlame ?
-      parseFloat(previousFlame.style.left)
+    previousElement ?
+      parseFloat(previousElement.style.left)
     : -FLAME_WINDOW_MARGIN * FACTOR_TWO
   style.left = generateRandomString(
     {
@@ -459,16 +493,12 @@ const generateFlameStyle = (
     { divisor: speed, gap: 10, min: 20 },
     's',
   )
-  generateFlameKeyframes(id, style)
+  generateFlameKeyframes(element)
 }
 
 const createFlame = (speed: number): void => {
-  flameIndex += INCREMENT
-  const flame = document.createElement('div')
-  flame.classList.add('flame')
-  flame.id = `flame-${String(flameIndex)}`
-  flame.innerHTML = '🔥'
-  generateFlameStyle(flameIndex, flame.style, speed)
+  const flame = createAnimatedElement('flame')
+  generateFlameStyle(flame, speed)
   animationElement.append(flame)
   smokeIntervals.set(
     flame.id,
@@ -513,9 +543,7 @@ const startFireAnimation = (speed: number): void => {
 }
 
 const createSnowflake = (speed: number): void => {
-  const snowflake = document.createElement('div')
-  snowflake.classList.add('snowflake')
-  snowflake.innerHTML = '❄'
+  const snowflake = createAnimatedElement('snowflake')
   snowflake.style.left = generateRandomString(
     { gap: window.innerWidth, min: 0 },
     'px',
@@ -555,11 +583,8 @@ const startSunAnimation = (): void => {
   //
 }
 
-const generateLeafKeyframes = (
-  id: number,
-  style: CSSStyleDeclaration,
-): void => {
-  style.animationName = `blow-${String(id)}`
+const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
+  style.animationName = `blow-${id}`
   const loopStart = Math.floor(generateRandomNumber({ gap: 50, min: 10 }))
   const loopDuration = Math.floor(generateRandomNumber({ gap: 20, min: 20 }))
   const loopEnd = loopStart + loopDuration
@@ -595,11 +620,8 @@ const generateLeafKeyframes = (
   )
 }
 
-const generateLeafStyle = (
-  id: number,
-  style: CSSStyleDeclaration,
-  speed: number,
-): void => {
+const generateLeafStyle = (element: HTMLDivElement, speed: number): void => {
+  const { style } = element
   style.top = generateRandomString({ gap: window.innerHeight, min: 0 }, 'px')
   style.fontSize = generateRandomString({ gap: 15, min: 20 }, 'px')
   style.opacity = generateRandomString({ gap: 0.5, min: 0.5 })
@@ -607,16 +629,12 @@ const generateLeafStyle = (
     { divisor: speed, gap: 5, min: 3 },
     's',
   )
-  generateLeafKeyframes(id, style)
+  generateLeafKeyframes(element)
 }
 
 const createLeaf = (speed: number): void => {
-  leafIndex += INCREMENT
-  const leaf = document.createElement('div')
-  leaf.classList.add('leaf')
-  leaf.id = `leaf-${String(leafIndex)}`
-  leaf.innerHTML = '🍁'
-  generateLeafStyle(leafIndex, leaf.style, speed)
+  const leaf = createAnimatedElement('leaf')
+  generateLeafStyle(leaf, speed)
   animationElement.append(leaf)
   leaf.addEventListener('animationend', () => {
     leaf.remove()
