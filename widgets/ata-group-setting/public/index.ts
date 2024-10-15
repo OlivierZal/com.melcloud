@@ -583,33 +583,41 @@ const startSnowAnimation = (speed: number): void => {
 const generateSunEnterAnimation = (
   sun: HTMLDivElement | null,
   speed: number,
+  firstEntrance = false,
 ): void => {
   if (sun) {
-    sun.style.animation = `enter 1s ease-out 1 forwards, shine ${generateStyleString(
+    sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
       { divisor: speed, min: 25 },
       's',
     )} linear infinite`
   }
 }
 
-const generateSunExitAnimation = (sun: HTMLDivElement, delay: string): void => {
-  sun.style.animation = `exit ${delay}s ease-in 1 forwards, shine 1s linear infinite`
+const generateSunExitAnimation = (
+  sun: HTMLDivElement,
+  speed?: number,
+): void => {
+  sun.style.animation = `exit ${speed === undefined ? '5' : '1'}s ease-in 1 forwards, shine 1s linear infinite`
+  setTimeout(
+    () => {
+      if (speed === undefined) {
+        sun.remove()
+        return
+      }
+      generateSunEnterAnimation(sun, speed)
+    },
+    SUN_DELAY * parseInt(sun.style.animationDuration, 10),
+  )
 }
 
 const generateSun = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
-    generateSunExitAnimation(sun, '1')
-    setTimeout(
-      () => {
-        generateSunEnterAnimation(sun, speed)
-      },
-      SUN_DELAY * parseInt(sun.style.animationDuration, 10),
-    )
+    generateSunExitAnimation(sun, speed)
     return
   }
   sun = createAnimatedElement('sun')
-  generateSunEnterAnimation(sun, speed)
+  generateSunEnterAnimation(sun, speed, true)
   animationElement.append(sun)
 }
 
@@ -759,13 +767,7 @@ const resetSunAnimation = async (
           (currentMode: number) => currentMode !== MODE_DRY,
         ))
     ) {
-      generateSunExitAnimation(sun, '5')
-      setTimeout(
-        () => {
-          sun.remove()
-        },
-        SUN_DELAY * parseInt(sun.style.animationDuration, 10),
-      )
+      generateSunExitAnimation(sun)
     }
   }
 }
