@@ -585,33 +585,16 @@ const generateSunEnterAnimation = (
   speed: number,
   firstEntrance = false,
 ): void => {
-    sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
-      { divisor: speed, min: 25 },
-      's',
-    )} linear infinite`
-}
-
-const generateSunExitAnimation = (
-  sun: HTMLDivElement,
-  speed?: number,
-): void => {
-  sun.style.animation = `exit ${speed === undefined ? '5' : '1'}s ease-in 1 forwards, shine 1s linear infinite`
-  setTimeout(
-    () => {
-      if (speed === undefined) {
-        sun.remove()
-        return
-      }
-      generateSunEnterAnimation(sun, speed)
-    },
-    SUN_DELAY * parseInt(sun.style.animationDuration, 10),
-  )
+  sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
+    { divisor: speed, min: 25 },
+    's',
+  )} linear infinite`
 }
 
 const generateSun = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
-    generateSunExitAnimation(sun, speed)
+    generateSunEnterAnimation(sun, speed, true)
     return
   }
   sun = createAnimatedElement('sun')
@@ -748,6 +731,16 @@ const resetFireAnimation = async (
       generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
     )
   })
+}
+
+const generateSunExitAnimation = (sun: HTMLDivElement): void => {
+  sun.style.animation = 'exit 5s ease-in 1 forwards, shine 1s linear infinite'
+  setTimeout(
+    () => {
+      sun.remove()
+    },
+    SUN_DELAY * parseInt(sun.style.animationDuration, 10),
+  )
 }
 
 const resetSunAnimation = async (
