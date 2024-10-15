@@ -702,16 +702,29 @@ const startWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-const getModes = async (homey: Homey): Promise<OperationMode[]> =>
-  (
-    (await homey.api(
-      'GET',
-      `/values/ata/${getZonePath()}?${new URLSearchParams({
-        mode: 'detailed',
-        status: 'on',
-      } satisfies Required<GetAtaOptions>).toString()}`,
-    )) as { OperationMode: OperationMode[] }
-  ).OperationMode
+const getAtaValues = async <T extends keyof GroupAtaState>(
+  homey: Homey,
+  detailed = false,
+): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> => {
+  let endPoint = `/values/ata/${getZonePath()}`
+  if (detailed) {
+    endPoint += `?${new URLSearchParams({
+      mode: 'detailed',
+      status: 'on',
+    } satisfies Required<GetAtaOptions>).toString()}`
+  }
+  return (await homey.api('GET', endPoint)) as Promise<
+    GroupAtaState | Record<T, GroupAtaState[T][]>
+  >
+}
+
+const getModes = async (homey: Homey): Promise<OperationMode[]> => {
+  try {
+    return (await getAtaValues(homey, true)).OperationMode as OperationMode[]
+  } catch (_error) {
+    return []
+  }
+}
 
 const resetFireAnimation = async (
   homey: Homey,
@@ -831,10 +844,7 @@ const handleAnimation = async (
 
 const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const state = (await homey.api(
-      'GET',
-      `/values/ata/${getZonePath()}`,
-    )) as GroupAtaState
+    const state = getAtaValues(homey) as GroupAtaState
     updateZoneMapping({ ...defaultAtaValues, ...state })
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)

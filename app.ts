@@ -219,18 +219,22 @@ export = class extends App {
     mode?: GetAtaOptions['mode'],
     status?: GetAtaOptions['status'],
   ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
-    return mode === 'detailed' ?
-        Object.fromEntries(
-          this.getAtaCapabilities().map(([key]) => [
-            key,
-            model[zoneType]
-              .getById(Number(zoneId))
-              ?.devices.filter((device) => device.type === 'Ata')
-              .filter(({ data }) => (status === 'on' ? data.Power : true))
-              .map(({ data }) => data[key]),
-          ]),
-        )
-      : this.getFacade(zoneType, Number(zoneId)).getAta()
+    if (mode === 'detailed') {
+      const { devices } = model[zoneType].getById(Number(zoneId)) ?? {}
+      if (!devices) {
+        throw new Error(this.homey.__('errors.deviceNotFound'))
+      }
+      return Object.fromEntries(
+        this.getAtaCapabilities().map(([key]) => [
+          key,
+          devices
+            .filter((device) => device.type === 'Ata')
+            .filter(({ data }) => (status === 'on' ? data.Power : true))
+            .map(({ data }) => data[key]),
+        ]),
+      )
+    }
+    return this.getFacade(zoneType, zoneId).getAta()
   }
 
   public getDeviceSettings(): DeviceSettings {
@@ -267,16 +271,16 @@ export = class extends App {
     return this.#facadeManager.getErrors(query)
   }
 
-  public getFacade(zoneType: 'devices', id: number): DeviceFacadeAny
+  public getFacade(zoneType: 'devices', id: number | string): DeviceFacadeAny
   public getFacade(
     zoneType: 'areas' | 'buildings' | 'floors',
-    id: number,
+    id: number | string,
   ): AreaFacade | BuildingFacade | FloorFacade
   public getFacade(
     zoneType: keyof typeof model,
-    id: number,
+    id: number | string,
   ): AreaFacade | BuildingFacade | DeviceFacadeAny | FloorFacade {
-    const instance = model[zoneType].getById(id)
+    const instance = model[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
         this.homey.__(
@@ -291,14 +295,14 @@ export = class extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
-    return this.getFacade(zoneType, Number(zoneId)).getFrostProtection()
+    return this.getFacade(zoneType, zoneId).getFrostProtection()
   }
 
   public async getHolidayModeSettings({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
-    return this.getFacade(zoneType, Number(zoneId)).getHolidayMode()
+    return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
   public getLanguage(): string {
@@ -314,8 +318,7 @@ export = class extends App {
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(
-      (await this.getFacade(zoneType, Number(zoneId)).setAta(state))
-        .AttributeErrors,
+      (await this.getFacade(zoneType, zoneId).setAta(state)).AttributeErrors,
     )
   }
 
@@ -347,11 +350,8 @@ export = class extends App {
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(
-      (
-        await this.getFacade(zoneType, Number(zoneId)).setFrostProtection(
-          settings,
-        )
-      ).AttributeErrors,
+      (await this.getFacade(zoneType, zoneId).setFrostProtection(settings))
+        .AttributeErrors,
     )
   }
 
@@ -360,7 +360,7 @@ export = class extends App {
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(
-      (await this.getFacade(zoneType, Number(zoneId)).setHolidayMode(settings))
+      (await this.getFacade(zoneType, zoneId).setHolidayMode(settings))
         .AttributeErrors,
     )
   }
