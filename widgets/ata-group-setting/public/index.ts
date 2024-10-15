@@ -129,6 +129,7 @@ const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
 const SNOWFLAKE_DELAY = 1000
+const SUN_DELAY = 1000
 
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
@@ -515,13 +516,13 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
 
 const createFlame = (speed: number): void => {
   const flame = createAnimatedElement('flame')
+  generateFlameStyle(flame, speed)
   flame.addEventListener('animationstart', () => {
     createSmoke(flame, speed)
   })
   flame.addEventListener('animationend', () => {
     flame.remove()
   })
-  generateFlameStyle(flame, speed)
   animationElement.append(flame)
 }
 
@@ -557,10 +558,10 @@ const createSnowflake = (speed: number): void => {
     's',
   )
   snowflake.style.opacity = generateStyleString({ gap: 0.5, min: 0.5 })
-  animationElement.append(snowflake)
   snowflake.addEventListener('animationend', () => {
     snowflake.remove()
   })
+  animationElement.append(snowflake)
 }
 
 const generateSnowflakes = (speed: number): void => {
@@ -579,45 +580,36 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const generateSunKeyframes = (): void => {
-  const [styleSheet] = Array.from(document.styleSheets)
-  styleSheet.insertRule(
-    `@keyframes shine {
-      0% {
-        transform: rotate(0deg);
-        filter: brightness(120%) blur(20px);
-      }
-      25% {
-        transform: rotate(90deg);
-        filter: brightness(120%) blur(20px);
-      }
-      50% {
-        transform: rotate(180deg);
-        filter: brightness(120%) blur(20px);
-      }
-      75% {
-        transform: rotate(270deg);
-        filter: brightness(120%) blur(20px);
-      }
-      100% {
-        transform: rotate(360deg);
-        filter: brightness(120%) blur(20px);
-      }
-    }`,
-    styleSheet.cssRules.length,
-  )
+const generateSunEnterAnimation = (
+  sun: HTMLDivElement | null,
+  speed: number,
+): void => {
+  if (sun) {
+    sun.style.animation = `enter 1s ease-out 1 forwards, shine ${generateStyleString(
+      { divisor: speed, min: 25 },
+      's',
+    )} linear infinite`
+  }
+}
+
+const generateSunExitAnimation = (sun: HTMLDivElement, delay: string): void => {
+  sun.style.animation = `exit ${delay}s ease-in 1 forwards, shine 1s linear infinite`
 }
 
 const generateSun = (speed: number): void => {
-  let sun = document.getElementById('sun-1')
-  if (!sun) {
-    sun = createAnimatedElement('sun')
+  let sun = document.getElementById('sun-1') as HTMLDivElement | null
+  if (sun) {
+    generateSunExitAnimation(sun, '1')
+    setTimeout(
+      () => {
+        generateSunEnterAnimation(sun, speed)
+      },
+      SUN_DELAY * parseInt(sun.style.animationDuration, 10),
+    )
+    return
   }
-  sun.style.animationDuration = generateStyleString(
-    { divisor: speed, min: 25 },
-    's',
-  )
-  generateSunKeyframes()
+  sun = createAnimatedElement('sun')
+  generateSunEnterAnimation(sun, speed)
   animationElement.append(sun)
 }
 
@@ -677,10 +669,10 @@ const generateLeafStyle = (element: HTMLDivElement, speed: number): void => {
 const createLeaf = (speed: number): void => {
   const leaf = createAnimatedElement('leaf')
   generateLeafStyle(leaf, speed)
-  animationElement.append(leaf)
   leaf.addEventListener('animationend', () => {
     leaf.remove()
   })
+  animationElement.append(leaf)
 }
 
 const generateLeaves = (speed: number): void => {
@@ -757,17 +749,23 @@ const resetSunAnimation = async (
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  if (
-    !isSomethingOn ||
-    (mode !== MODE_DRY &&
-      mode !== MODE_MIXED &&
-      (await getModes(homey)).every(
-        (currentMode: number) => currentMode !== MODE_DRY,
-      ))
-  ) {
-    const sun = document.getElementById('sun-1')
-    if (sun) {
-      sun.remove()
+  const sun = document.getElementById('sun-1') as HTMLDivElement | null
+  if (sun) {
+    if (
+      !isSomethingOn ||
+      (mode !== MODE_DRY &&
+        mode !== MODE_MIXED &&
+        (await getModes(homey)).every(
+          (currentMode: number) => currentMode !== MODE_DRY,
+        ))
+    ) {
+      generateSunExitAnimation(sun, '5')
+      setTimeout(
+        () => {
+          sun.remove()
+        },
+        SUN_DELAY * parseInt(sun.style.animationDuration, 10),
+      )
     }
   }
 }

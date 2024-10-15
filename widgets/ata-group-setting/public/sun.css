@@ -1,11 +1,51 @@
 .sun {
   position: absolute;
-  top: -120px;
-  right: -60px;
   font-size: 200px;
   user-select: none;
   pointer-events: none;
-  animation-name: shine;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+}
+
+@keyframes enter {
+  from {
+    top: -240px;
+    right: -180px;
+  }
+  to {
+    top: -120px;
+    right: -60px;
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: rotate(0deg);
+    filter: brightness(120%) blur(20px);
+  }
+  25% {
+    transform: rotate(90deg);
+    filter: brightness(120%) blur(20px);
+  }
+  50% {
+    transform: rotate(180deg);
+    filter: brightness(120%) blur(20px);
+  }
+  75% {
+    transform: rotate(270deg);
+    filter: brightness(120%) blur(20px);
+  }
+  100% {
+    transform: rotate(360deg);
+    filter: brightness(120%) blur(20px);
+  }
+}
+
+@keyframes exit {
+  from {
+    top: -120px;
+    right: -60px;
+  }
+  to {
+    top: -240px;
+    right: -180px;
+  }
 }
