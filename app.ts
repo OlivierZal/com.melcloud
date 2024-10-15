@@ -226,10 +226,8 @@ export = class extends App {
             model[zoneType]
               .getById(Number(zoneId))
               ?.devices.filter((device) => device.type === 'Ata')
-              .map(
-                ({ data }) =>
-                  (status === 'on' ? data.Power : true) && data[key],
-              ),
+              .filter(({ data }) => (status === 'on' ? data.Power : true))
+              .map(({ data }) => data[key]),
           ]),
         )
       : this.getFacade(zoneType, Number(zoneId)).getAta()
