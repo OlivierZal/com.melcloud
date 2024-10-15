@@ -182,9 +182,7 @@ const createAnimationMapping = (): Record<
       getIndex: () => (leafIndex += INCREMENT),
       innerHTML: '🍁',
     },
-    snowflake: {
-      innerHTML: '❄',
-    },
+    snowflake: { innerHTML: '❄' },
     sun: {
       getIndex: () => INCREMENT,
       innerHTML: '☀',
@@ -321,6 +319,19 @@ const createSelectElement = (
   return selectElement
 }
 
+const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
+  const element = document.createElement('div')
+  element.classList.add(name)
+  if (name in animationMapping) {
+    const { [name]: mapping } = animationMapping
+    ;({ innerHTML: element.innerHTML } = mapping)
+    if (mapping.getIndex) {
+      element.id = `${name}-${String(mapping.getIndex())}`
+    }
+  }
+  return element
+}
+
 const handleIntMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
@@ -404,19 +415,6 @@ const refreshAtaValuesElement = (): void => {
 }
 
 const animationMapping = createAnimationMapping()
-
-const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
-  const element = document.createElement('div')
-  element.classList.add(name)
-  if (name in animationMapping) {
-    const { [name]: mapping } = animationMapping
-    ;({ innerHTML: element.innerHTML } = mapping)
-    if (mapping.getIndex) {
-      element.id = `${name}-${String(mapping.getIndex())}`
-    }
-  }
-  return element
-}
 
 const createSmoke = (flame: HTMLDivElement, speed: number): void => {
   if (flame.isConnected && canvasCtx) {
@@ -612,7 +610,7 @@ const generateSunKeyframes = (): void => {
 }
 
 const generateSun = (speed: number): void => {
-  let sun = document.querySelector<HTMLDivElement>('.sun')
+  let sun = document.getElementById('sun-1')
   if (!sun) {
     sun = createAnimatedElement('sun')
   }
@@ -768,7 +766,7 @@ const resetSunAnimation = async (
         (currentMode: number) => currentMode !== MODE_DRY,
       ))
   ) {
-    const sun = document.querySelector<HTMLDivElement>('.sun')
+    const sun = document.getElementById('sun-1')
     if (sun) {
       sun.remove()
     }
