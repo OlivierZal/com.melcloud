@@ -585,10 +585,10 @@ const generateSunEnterAnimation = (
   speed: number,
   firstEntrance = false,
 ): void => {
-    sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
-      { divisor: speed, min: 25 },
-      's',
-    )} linear infinite`
+  sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
+    { divisor: speed, min: 25 },
+    's',
+  )} linear infinite`
 }
 
 const generateSunExitAnimation = (
