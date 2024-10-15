@@ -189,6 +189,7 @@ const createAnimationMapping = (): Record<
     },
   }
 }
+const animationMapping = createAnimationMapping()
 
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
@@ -413,8 +414,6 @@ const refreshAtaValuesElement = (): void => {
     updateAtaValueElement(ataKey)
   })
 }
-
-const animationMapping = createAnimationMapping()
 
 const createSmoke = (flame: HTMLDivElement, speed: number): void => {
   if (flame.isConnected && canvasCtx) {
