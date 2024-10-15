@@ -581,16 +581,14 @@ const startSnowAnimation = (speed: number): void => {
 }
 
 const generateSunEnterAnimation = (
-  sun: HTMLDivElement | null,
+  sun: HTMLDivElement,
   speed: number,
   firstEntrance = false,
 ): void => {
-  if (sun) {
     sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
       { divisor: speed, min: 25 },
       's',
     )} linear infinite`
-  }
 }
 
 const generateSunExitAnimation = (
