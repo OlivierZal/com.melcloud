@@ -584,24 +584,24 @@ const generateSunKeyframes = (): void => {
   styleSheet.insertRule(
     `@keyframes shine {
       0% {
-        transform: rotate(0deg) scale(1);
-        filter: brightness(130%) blur(20px);
+        transform: rotate(0deg);
+        filter: brightness(120%) blur(20px);
       }
       25% {
-        transform: rotate(90deg) scale(1.1);
-        filter: brightness(140%) blur(20px);
+        transform: rotate(90deg);
+        filter: brightness(120%) blur(20px);
       }
       50% {
-        transform: rotate(180deg) scale(1);
-        filter: brightness(150%) blur(20px);
+        transform: rotate(180deg);
+        filter: brightness(120%) blur(20px);
       }
       75% {
-        transform: rotate(270deg) scale(1.2);
-        filter: brightness(140%) blur(20px);
+        transform: rotate(270deg);
+        filter: brightness(120%) blur(20px);
       }
       100% {
-        transform: rotate(360deg) scale(1);
-        filter: brightness(130%) blur(20px);
+        transform: rotate(360deg);
+        filter: brightness(120%) blur(20px);
       }
     }`,
     styleSheet.cssRules.length,
@@ -841,7 +841,7 @@ const handleAnimation = async (
 
 const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const state = getAtaValues(homey) as GroupAtaState
+    const state = (await getAtaValues(homey)) as GroupAtaState
     updateZoneMapping({ ...defaultAtaValues, ...state })
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
