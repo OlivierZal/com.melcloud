@@ -784,9 +784,9 @@ const handleMixedAnimation = async (
 
 const handleAnimation = async (
   homey: Homey,
-  data: GroupAtaState,
+  state: GroupAtaState,
 ): Promise<void> => {
-  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = data
+  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
   const isSomethingOn = isOn !== false
   const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
   const newMode = Number(mode ?? null)
