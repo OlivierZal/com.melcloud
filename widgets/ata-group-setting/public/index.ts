@@ -119,16 +119,17 @@ const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
-const SNOWFLAKE_DELAY = 500
+const SNOWFLAKE_DELAY = 200
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
+const FLAME_INTERVAL = 20
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
+const SNOWFLAKE_INTERVAL = 50
 const SUN_SHINE_BASE_DURATION = 5
-const WINDOW_MARGIN = 20
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -488,14 +489,14 @@ const createFlame = (speed: number): void => {
   const previousLeft =
     previousElement ?
       parseFloat(previousElement.style.left)
-    : -WINDOW_MARGIN * FACTOR_TWO
+    : -FLAME_INTERVAL * FACTOR_TWO
   flame.style.left = generateStyleString(
     {
-      gap: WINDOW_MARGIN,
+      gap: FLAME_INTERVAL,
       min:
         previousLeft > window.innerWidth ?
-          -WINDOW_MARGIN
-        : previousLeft + WINDOW_MARGIN,
+          -FLAME_INTERVAL
+        : previousLeft + FLAME_INTERVAL,
     },
     'px',
   )
@@ -548,15 +549,29 @@ const generateSnowflakeAnimation = (
 
 const createSnowflake = (speed: number): void => {
   const snowflake = createAnimatedElement('snowflake')
+  const [name, index] = snowflake.id.split('-')
+  const previousElement = document.getElementById(
+    `${name}-${String(Number(index) - INCREMENT)}`,
+  )
+  const previousLeft =
+    previousElement ?
+      parseFloat(previousElement.style.left)
+    : -SNOWFLAKE_INTERVAL * FACTOR_TWO
   snowflake.style.left = generateStyleString(
-    { gap: window.innerWidth, min: 0 },
+    {
+      gap: SNOWFLAKE_INTERVAL,
+      min:
+        previousLeft > window.innerWidth ?
+          -SNOWFLAKE_INTERVAL
+        : previousLeft + SNOWFLAKE_INTERVAL,
+    },
     'px',
   )
   snowflake.style.fontSize = generateStyleString(
-    { divisor: speed, gap: 1, min: 30 },
+    { divisor: speed, gap: 10, min: 20 },
     'px',
   )
-  snowflake.style.filter = `brightness(${generateStyleString({ gap: 20, min: 100 }, '%')})`
+  snowflake.style.filter = `brightness(${generateStyleString({ gap: 30, min: 100 }, '%')})`
   animationElement.append(snowflake)
   generateSnowflakeAnimation(snowflake, speed)
 }
