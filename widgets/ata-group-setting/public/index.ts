@@ -476,6 +476,7 @@ const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
   animation.onfinish = (): void => {
     flame.remove()
   }
+  createSmoke(flame, speed)
 }
 
 const createFlame = (speed: number): void => {
@@ -501,7 +502,6 @@ const createFlame = (speed: number): void => {
   flame.style.fontSize = generateStyleString({ gap: 10, min: 35 }, 'px')
   animationElement.append(flame)
   generateFlameAnimation(flame, speed)
-  createSmoke(flame, speed)
 }
 
 const generateFlames = (speed: number): void => {
