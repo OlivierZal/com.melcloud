@@ -34,8 +34,8 @@ const generateStyleNumber = ({
   multiplier,
 }: {
   divisor?: number
-  gap?: number
-  min?: number
+  gap: number
+  min: number
   multiplier?: number
 }): number => {
   const newGap = gap ?? DEFAULT_GAP
@@ -121,20 +121,20 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
-const DEFAULT_RECT_X = 0
-const DEFAULT_RECT_Y = 0
-const FLAME_WINDOW_MARGIN = 20
-
 const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
 const SNOWFLAKE_DELAY = 1000
 const SUN_DELAY = 1000
 
+const DEFAULT_RECT_X = 0
+const DEFAULT_RECT_Y = 0
+const FLAME_WINDOW_MARGIN = 20
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
+const SUN_BASE_SHINE_DURATION = 25
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -195,7 +195,7 @@ const animationMapping = createAnimationMapping()
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const generateStyleString = (
-  params: { divisor?: number; gap?: number; min?: number; multiplier?: number },
+  params: { divisor?: number; gap: number; min: number; multiplier?: number },
   unit = '',
 ): string => `${String(generateStyleNumber(params))}${unit}`
 
@@ -580,30 +580,25 @@ const startSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const generateSunEnterAnimation = (
+const generateSunShineAnimation = (
   sun: HTMLDivElement,
   speed: number,
-  firstEntrance = false,
+  enter = false,
 ): void => {
-  sun.style.animation = `enter ${firstEntrance ? '5' : '1'}s ease-out 1 forwards, shine ${generateStyleString(
-    { divisor: speed, min: 25 },
-    's',
-  )} linear infinite`
-}
-
-const generateSun = (speed: number): void => {
-  let sun = document.getElementById('sun-1') as HTMLDivElement | null
-  if (sun) {
-    generateSunEnterAnimation(sun, speed, true)
-    return
-  }
-  sun = createAnimatedElement('sun')
-  generateSunEnterAnimation(sun, speed, true)
-  animationElement.append(sun)
+  sun.style.animation = `${enter ? 'enter 5s ease-out 1 forwards, ' : ''}shine ${String(
+    SUN_BASE_SHINE_DURATION / speed
+  )}s linear infinite`
 }
 
 const startSunAnimation = (speed: number): void => {
-  generateSun(speed)
+  let sun = document.getElementById('sun-1') as HTMLDivElement | null
+  if (sun) {
+    generateSunShineAnimation(sun, speed)
+    return
+  }
+  sun = createAnimatedElement('sun')
+  generateSunShineAnimation(sun, speed, true)
+  animationElement.append(sun)
 }
 
 const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
