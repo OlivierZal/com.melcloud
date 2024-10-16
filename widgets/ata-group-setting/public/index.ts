@@ -524,7 +524,7 @@ const generateFlames = (speed: number): void => {
   )
 }
 
-const startFireAnimation = (speed: number): void => {
+const handleFireAnimation = (speed: number): void => {
   generateFlames(speed)
   generateSmoke(speed)
 }
@@ -562,7 +562,7 @@ const generateSnowflakes = (speed: number): void => {
   )
 }
 
-const startSnowAnimation = (speed: number): void => {
+const handleSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
@@ -580,7 +580,7 @@ const generateSunShineAnimation = (
   )}s linear infinite${enter ? ', enter 5s ease-out 1 forwards' : ''}`
 }
 
-const startSunAnimation = (speed: number): void => {
+const handleSunAnimation = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
     generateSunShineAnimation(sun, speed)
@@ -666,7 +666,7 @@ const generateLeaves = (speed: number): void => {
   )
 }
 
-const startWindAnimation = (speed: number): void => {
+const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
@@ -768,16 +768,16 @@ const handleMixedAnimation = async (
 ): Promise<void> => {
   const modes = await getModes(homey)
   if (modes.includes(MODE_AUTO) || modes.includes(MODE_COOL)) {
-    startSnowAnimation(speed)
+    handleSnowAnimation(speed)
   }
   if (modes.includes(MODE_AUTO) || modes.includes(MODE_HEAT)) {
-    startFireAnimation(speed)
+    handleFireAnimation(speed)
   }
   if (modes.includes(MODE_DRY)) {
-    startSunAnimation(speed)
+    handleSunAnimation(speed)
   }
   if (modes.includes(MODE_FAN)) {
-    startWindAnimation(speed)
+    handleWindAnimation(speed)
   }
 }
 
@@ -793,20 +793,20 @@ const handleAnimation = async (
   if (isSomethingOn) {
     switch (newMode) {
       case MODE_AUTO:
-        startFireAnimation(newSpeed)
-        startSnowAnimation(newSpeed)
+        handleFireAnimation(newSpeed)
+        handleSnowAnimation(newSpeed)
         break
       case MODE_COOL:
-        startSnowAnimation(newSpeed)
+        handleSnowAnimation(newSpeed)
         break
       case MODE_DRY:
-        startSunAnimation(newSpeed)
+        handleSunAnimation(newSpeed)
         break
       case MODE_FAN:
-        startWindAnimation(newSpeed)
+        handleWindAnimation(newSpeed)
         break
       case MODE_HEAT:
-        startFireAnimation(newSpeed)
+        handleFireAnimation(newSpeed)
         break
       case MODE_MIXED:
         await handleMixedAnimation(homey, newSpeed)
