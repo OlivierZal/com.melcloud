@@ -114,6 +114,7 @@ const SPEED_VERY_FAST = 5
 const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
+const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
@@ -154,6 +155,8 @@ const hasZoneAtaDevicesElement = document.getElementById(
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
 const animationTimeouts: NodeJS.Timeout[] = []
+
+let debounceTimeout: NodeJS.Timeout | null = null
 
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
@@ -921,13 +924,8 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         `/values/ata/${getZonePath()}`,
         state satisfies GroupAtaState,
       )
-      updateZoneMapping(state)
-      await handleAnimation(homey, state)
     }
-  } catch (_error) {
-  } finally {
-    refreshAtaValuesElement()
-  }
+  } catch (_error) {}
 }
 
 const addEventListeners = (homey: Homey): void => {
@@ -950,9 +948,14 @@ const addEventListeners = (homey: Homey): void => {
       })
   })
   homey.on('deviceupdate', () => {
-    fetchAtaValues(homey).catch(() => {
-      //
-    })
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout)
+    }
+    debounceTimeout = setTimeout(() => {
+      fetchAtaValues(homey).catch(() => {
+        //
+      })
+    }, DEBOUNCE_DELAY)
   })
 }
 
