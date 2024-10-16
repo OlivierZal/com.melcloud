@@ -92,6 +92,7 @@ class SmokeParticle {
 const FACTOR_TWO = 2
 const FACTOR_FIVE = 5
 const INCREMENT = 1
+const PERCENTAGE = 100
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -165,14 +166,18 @@ let smokeParticles: SmokeParticle[] = []
 
 const createAnimationMapping = (): Record<
   AnimatedElement,
-  { readonly innerHTML: string; readonly getIndex?: () => number }
+  { readonly getIndex: () => number; readonly innerHTML: string }
 > => {
   let flameIndex = 0
   let leafIndex = 0
+  let snowflakeIndex = 0
   return {
     flame: { getIndex: () => (flameIndex += INCREMENT), innerHTML: '🔥' },
     leaf: { getIndex: () => (leafIndex += INCREMENT), innerHTML: '🍁' },
-    snowflake: { innerHTML: '❄' },
+    snowflake: {
+      getIndex: () => (snowflakeIndex += INCREMENT),
+      innerHTML: '❄',
+    },
     sun: { getIndex: () => INCREMENT, innerHTML: '☀' },
   }
 }
@@ -313,9 +318,7 @@ const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
   if (name in animationMapping) {
     const { [name]: mapping } = animationMapping
     ;({ innerHTML: element.innerHTML } = mapping)
-    if (mapping.getIndex) {
-      element.id = `${name}-${String(mapping.getIndex())}`
-    }
+    element.id = `${name}-${String(mapping.getIndex())}`
   }
   return element
 }
@@ -447,34 +450,37 @@ const generateSmoke = (speed: number): void => {
   }
 }
 
-const generateFlameKeyframes = ({ id, style }: HTMLDivElement): void => {
-  style.animationName = `flicker-${id}`
-  const keyframes = [...Array.from({ length: 101 }).keys()]
-    .map((index) => {
+const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
+  const animation = flame.animate(
+    [...Array.from({ length: 101 }).keys()].map((index) => {
+      const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
+      const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
       const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
       const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
-      const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
-      const opacity = generateStyleString({ gap: 0.4, min: 0.8 })
-      const brightness = generateStyleString({ gap: 40, min: 100 }, '%')
-      return `${String(index)}% {
-          transform: scale(${scaleX}, ${scaleY}) rotate(${rotate});
-          opacity: ${opacity};
-          filter: brightness(${brightness});
-        }`
-    })
-    .join('\n')
-  const [styleSheet] = Array.from(document.styleSheets)
-  styleSheet.insertRule(
-    `@keyframes ${style.animationName} {
-      ${keyframes}
-    }`,
-    styleSheet.cssRules.length,
+      return {
+        filter: `brightness(${brightness})`,
+        offset: index / PERCENTAGE,
+        transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
+      }
+    }),
+    {
+      duration: generateStyleNumber({
+        divisor: speed,
+        gap: 10,
+        min: 20,
+        multiplier: 1000,
+      }),
+      easing: 'ease-in-out',
+    },
   )
+  animation.onfinish = (): void => {
+    flame.remove()
+  }
 }
 
-const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
-  const { id, style } = element
-  const [name, index] = id.split('-')
+const createFlame = (speed: number): void => {
+  const flame = createAnimatedElement('flame')
+  const [name, index] = flame.id.split('-')
   const previousElement = document.getElementById(
     `${name}-${String(Number(index) - INCREMENT)}`,
   )
@@ -482,7 +488,7 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
     previousElement ?
       parseFloat(previousElement.style.left)
     : -FLAME_WINDOW_MARGIN * FACTOR_TWO
-  style.left = generateStyleString(
+  flame.style.left = generateStyleString(
     {
       gap: FLAME_WINDOW_MARGIN,
       min:
@@ -492,24 +498,10 @@ const generateFlameStyle = (element: HTMLDivElement, speed: number): void => {
     },
     'px',
   )
-  style.fontSize = generateStyleString({ gap: 10, min: 35 }, 'px')
-  style.animationDuration = generateStyleString(
-    { divisor: speed, gap: 10, min: 20 },
-    's',
-  )
-  generateFlameKeyframes(element)
-}
-
-const createFlame = (speed: number): void => {
-  const flame = createAnimatedElement('flame')
-  generateFlameStyle(flame, speed)
-  flame.addEventListener('animationstart', () => {
-    createSmoke(flame, speed)
-  })
-  flame.addEventListener('animationend', () => {
-    flame.remove()
-  })
+  flame.style.fontSize = generateStyleString({ gap: 10, min: 35 }, 'px')
   animationElement.append(flame)
+  generateFlameAnimation(flame, speed)
+  createSmoke(flame, speed)
 }
 
 const generateFlames = (speed: number): void => {
@@ -536,14 +528,14 @@ const createSnowflake = (speed: number): void => {
     'px',
   )
   snowflake.style.fontSize = generateStyleString(
-    { divisor: speed, gap: 10, min: 10 },
+    { divisor: speed, gap: 5, min: 15 },
     'px',
   )
+  snowflake.style.filter = `brightness(${generateStyleString({ gap: 20, min: 100 }, '%')})`
   snowflake.style.animationDuration = generateStyleString(
-    { divisor: speed, gap: 15, min: 5 },
+    { divisor: speed, gap: 2, min: 2 },
     's',
   )
-  snowflake.style.opacity = generateStyleString({ gap: 0.5, min: 0.5 })
   snowflake.addEventListener('animationend', () => {
     snowflake.remove()
   })
@@ -596,62 +588,59 @@ const handleSunAnimation = (speed: number): void => {
   animationElement.append(sun)
 }
 
-const generateLeafKeyframes = ({ id, style }: HTMLDivElement): void => {
-  style.animationName = `blow-${id}`
+const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
   const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
   const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
   const loopEnd = loopStart + loopDuration
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
-  const keyframes = [...Array.from({ length: 101 }).keys()]
-    .map((index) => {
-      const indexLoopRadius =
-        index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
+  const animation = leaf.animate(
+    [...Array.from({ length: 101 }).keys()].map((index) => {
       const progress = (index - loopStart) / loopDuration
       const angle = progress * Math.PI * FACTOR_TWO
+      const indexLoopRadius =
+        index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
+      const oscillate =
+        indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
+          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+        : ''
+      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
       const translateX = `${String(
         index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
       )}px`
       const translateY = `${String(
         -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
       )}px`
-      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-      const oscillate =
-        indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
-        : ''
-      return `${String(index)}% {
-          transform: translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate};
-        }`
-    })
-    .join('\n')
-  const [styleSheet] = Array.from(document.styleSheets)
-  styleSheet.insertRule(
-    `@keyframes ${style.animationName} {
-      ${keyframes}
-    }`,
-    styleSheet.cssRules.length,
+      return {
+        offset: index / PERCENTAGE,
+        transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
+      }
+    }),
+    {
+      duration: generateStyleNumber({
+        divisor: speed,
+        gap: 5,
+        min: 3,
+        multiplier: 1000,
+      }),
+      easing: 'linear',
+      fill: 'forwards',
+    },
   )
-}
-
-const generateLeafStyle = (element: HTMLDivElement, speed: number): void => {
-  const { style } = element
-  style.top = generateStyleString({ gap: window.innerHeight, min: 0 }, 'px')
-  style.fontSize = generateStyleString({ gap: 15, min: 20 }, 'px')
-  style.opacity = generateStyleString({ gap: 0.5, min: 0.5 })
-  style.animationDuration = generateStyleString(
-    { divisor: speed, gap: 5, min: 3 },
-    's',
-  )
-  generateLeafKeyframes(element)
+  animation.onfinish = (): void => {
+    leaf.remove()
+  }
 }
 
 const createLeaf = (speed: number): void => {
   const leaf = createAnimatedElement('leaf')
-  generateLeafStyle(leaf, speed)
-  leaf.addEventListener('animationend', () => {
-    leaf.remove()
-  })
+  leaf.style.top = generateStyleString(
+    { gap: window.innerHeight, min: 0 },
+    'px',
+  )
+  leaf.style.fontSize = generateStyleString({ gap: 15, min: 20 }, 'px')
+  leaf.style.filter = `brightness(${generateStyleString({ gap: 50, min: 100 }, '%')})`
   animationElement.append(leaf)
+  generateLeafAnimation(leaf, speed)
 }
 
 const generateLeaves = (speed: number): void => {
