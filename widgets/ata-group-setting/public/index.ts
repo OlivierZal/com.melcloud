@@ -119,7 +119,6 @@ const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
 const SNOWFLAKE_DELAY = 1000
-const SUN_DELAY = 1000
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
@@ -589,6 +588,11 @@ const startSunAnimation = (speed: number): void => {
   }
   sun = createAnimatedElement('sun')
   generateSunShineAnimation(sun, speed, true)
+  sun.addEventListener('animationend', (event) => {
+    if (event.animationName === 'exit') {
+      sun.remove()
+    }
+  })
   animationElement.append(sun)
 }
 
@@ -723,12 +727,6 @@ const generateSunExitAnimation = (sun: HTMLDivElement): void => {
   const [shineAnimation] = sun.style.animation.split(',')
   sun.style.animation = ['exit 5s ease-in 1 forwards', shineAnimation].join(
     ', ',
-  )
-  setTimeout(
-    () => {
-      sun.remove()
-    },
-    SUN_DELAY * parseFloat(sun.style.animationDuration),
   )
 }
 
