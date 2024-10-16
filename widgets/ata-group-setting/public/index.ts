@@ -118,12 +118,13 @@ const SPEED_FACTOR_MAX = 50
 const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
-const SMOKE_DELAY = 200
-const SNOWFLAKE_DELAY = 200
+const SMOKE_DELAY = 600
+const SNOWFLAKE_DELAY = 400
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
 const FLAME_INTERVAL = 20
+const LEAF_INTERVAL = 50
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
@@ -568,10 +569,13 @@ const createSnowflake = (speed: number): void => {
     'px',
   )
   snowflake.style.fontSize = generateStyleString(
-    { divisor: speed, gap: 10, min: 20 },
+    { divisor: speed, gap: 10, min: 30 },
     'px',
   )
-  snowflake.style.filter = `brightness(${generateStyleString({ gap: 30, min: 100 }, '%')})`
+  snowflake.style.filter = `brightness(${generateStyleString(
+    { gap: 20, min: 100 },
+    '%',
+  )})`
   animationElement.append(snowflake)
   generateSnowflakeAnimation(snowflake, speed)
 }
@@ -667,12 +671,29 @@ const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
 
 const createLeaf = (speed: number): void => {
   const leaf = createAnimatedElement('leaf')
+  const [name, index] = leaf.id.split('-')
+  const previousElement = document.getElementById(
+    `${name}-${String(Number(index) - INCREMENT)}`,
+  )
+  const previousTop =
+    previousElement ?
+      parseFloat(previousElement.style.top)
+    : -LEAF_INTERVAL * FACTOR_TWO
   leaf.style.top = generateStyleString(
-    { gap: window.innerHeight, min: 0 },
+    {
+      gap: LEAF_INTERVAL,
+      min:
+        previousTop > window.innerHeight ?
+          -LEAF_INTERVAL
+        : previousTop + LEAF_INTERVAL,
+    },
     'px',
   )
-  leaf.style.fontSize = generateStyleString({ gap: 15, min: 20 }, 'px')
-  leaf.style.filter = `brightness(${generateStyleString({ gap: 50, min: 100 }, '%')})`
+  leaf.style.fontSize = generateStyleString({ gap: 10, min: 30 }, 'px')
+  leaf.style.filter = `brightness(${generateStyleString(
+    { gap: 50, min: 100 },
+    '%',
+  )})`
   animationElement.append(leaf)
   generateLeafAnimation(leaf, speed)
 }
