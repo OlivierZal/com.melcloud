@@ -119,16 +119,16 @@ const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 1000
 const LEAF_DELAY = 1000
 const SMOKE_DELAY = 200
-const SNOWFLAKE_DELAY = 1000
+const SNOWFLAKE_DELAY = 500
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
-const FLAME_WINDOW_MARGIN = 20
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SUN_SHINE_BASE_DURATION = 5
+const WINDOW_MARGIN = 20
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -487,14 +487,14 @@ const createFlame = (speed: number): void => {
   const previousLeft =
     previousElement ?
       parseFloat(previousElement.style.left)
-    : -FLAME_WINDOW_MARGIN * FACTOR_TWO
+    : -WINDOW_MARGIN * FACTOR_TWO
   flame.style.left = generateStyleString(
     {
-      gap: FLAME_WINDOW_MARGIN,
+      gap: WINDOW_MARGIN,
       min:
         previousLeft > window.innerWidth ?
-          -FLAME_WINDOW_MARGIN
-        : previousLeft + FLAME_WINDOW_MARGIN,
+          -WINDOW_MARGIN
+        : previousLeft + WINDOW_MARGIN,
     },
     'px',
   )
@@ -521,6 +521,31 @@ const handleFireAnimation = (speed: number): void => {
   generateSmoke(speed)
 }
 
+const generateSnowflakeAnimation = (
+  snowflake: HTMLDivElement,
+  speed: number,
+): void => {
+  const animation = snowflake.animate(
+    [
+      { offset: 0, transform: 'translateY(0) rotate(0deg)' },
+      { offset: 1, transform: 'translateY(100vh) rotate(360deg)' },
+    ],
+    {
+      duration: generateStyleNumber({
+        divisor: speed,
+        gap: 1,
+        min: 5,
+        multiplier: 1000,
+      }),
+      easing: 'linear',
+      fill: 'forwards',
+    },
+  )
+  animation.onfinish = (): void => {
+    snowflake.remove()
+  }
+}
+
 const createSnowflake = (speed: number): void => {
   const snowflake = createAnimatedElement('snowflake')
   snowflake.style.left = generateStyleString(
@@ -528,18 +553,12 @@ const createSnowflake = (speed: number): void => {
     'px',
   )
   snowflake.style.fontSize = generateStyleString(
-    { divisor: speed, gap: 5, min: 15 },
+    { divisor: speed, gap: 1, min: 30 },
     'px',
   )
   snowflake.style.filter = `brightness(${generateStyleString({ gap: 20, min: 100 }, '%')})`
-  snowflake.style.animationDuration = generateStyleString(
-    { divisor: speed, gap: 2, min: 2 },
-    's',
-  )
-  snowflake.addEventListener('animationend', () => {
-    snowflake.remove()
-  })
   animationElement.append(snowflake)
+  generateSnowflakeAnimation(snowflake, speed)
 }
 
 const generateSnowflakes = (speed: number): void => {

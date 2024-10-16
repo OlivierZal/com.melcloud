@@ -1,8 +1,6 @@
 .sun {
   position: absolute;
   font-size: 200px;
-  user-select: none;
-  pointer-events: none;
 }
 
 @keyframes enter {

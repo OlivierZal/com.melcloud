@@ -1,6 +1,4 @@
 .flame {
   position: absolute;
   bottom: -15px;
-  user-select: none;
-  pointer-events: none;
 }

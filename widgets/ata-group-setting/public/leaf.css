@@ -1,6 +1,4 @@
 .leaf {
   position: absolute;
   top: -50px;
-  user-select: none;
-  pointer-events: none;
 }
