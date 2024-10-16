@@ -127,7 +127,7 @@ const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
-const SUN_BASE_SHINE_DURATION = 25
+const SUN_SHINE_BASE_DURATION = 5
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -167,20 +167,12 @@ const createAnimationMapping = (): Record<
 > => {
   let flameIndex = 0
   let leafIndex = 0
+  let sunIndex = 0
   return {
-    flame: {
-      getIndex: () => (flameIndex += INCREMENT),
-      innerHTML: '🔥',
-    },
-    leaf: {
-      getIndex: () => (leafIndex += INCREMENT),
-      innerHTML: '🍁',
-    },
+    flame: { getIndex: () => (flameIndex += INCREMENT), innerHTML: '🔥' },
+    leaf: { getIndex: () => (leafIndex += INCREMENT), innerHTML: '🍁' },
     snowflake: { innerHTML: '❄' },
-    sun: {
-      getIndex: () => INCREMENT,
-      innerHTML: '☀',
-    },
+    sun: { getIndex: () => (sunIndex += INCREMENT), innerHTML: '☀' },
   }
 }
 const animationMapping = createAnimationMapping()
@@ -578,13 +570,17 @@ const generateSunShineAnimation = (
   speed: number,
   enter = false,
 ): void => {
-  sun.style.animation = `${enter ? 'enter 5s ease-out 1 forwards, ' : ''}shine ${String(
-    SUN_BASE_SHINE_DURATION / speed,
-  )}s linear infinite`
+  if (!enter) {
+    sun.style.top = '-120px'
+    sun.style.right = '-60px'
+  }
+  sun.style.animation = `shine ${String(
+    SUN_SHINE_BASE_DURATION / speed,
+  )}s linear infinite${enter ? ', enter 5s ease-out 1 forwards' : ''}`
 }
 
 const startSunAnimation = (speed: number): void => {
-  let sun = document.getElementById('sun-1') as HTMLDivElement | null
+  let sun = document.querySelector<HTMLDivElement>('.sun')
   if (sun) {
     generateSunShineAnimation(sun, speed)
     return
@@ -722,12 +718,15 @@ const resetFireAnimation = async (
 }
 
 const generateSunExitAnimation = (sun: HTMLDivElement): void => {
-  sun.style.animation = 'exit 5s ease-in 1 forwards, shine 1s linear infinite'
+  const [shineAnimation] = sun.style.animation.split(',')
+  sun.style.animation = ['exit 5s ease-in 1 forwards', shineAnimation].join(
+    ', ',
+  )
   setTimeout(
     () => {
       sun.remove()
     },
-    SUN_DELAY * parseInt(sun.style.animationDuration, 10),
+    SUN_DELAY * parseFloat(sun.style.animationDuration),
   )
 }
 
@@ -736,7 +735,7 @@ const resetSunAnimation = async (
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  const sun = document.getElementById('sun-1') as HTMLDivElement | null
+  const sun = document.querySelector<HTMLDivElement>('.sun')
   if (sun) {
     if (
       !isSomethingOn ||
@@ -915,15 +914,15 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const body = buildAtaValuesBody()
-    if (Object.keys(body).length) {
+    const state = buildAtaValuesBody()
+    if (Object.keys(state).length) {
       await homey.api(
         'PUT',
         `/values/ata/${getZonePath()}`,
-        body satisfies GroupAtaState,
+        state satisfies GroupAtaState,
       )
-      updateZoneMapping(body)
-      await handleAnimation(homey, body)
+      updateZoneMapping(state)
+      await handleAnimation(homey, state)
     }
   } catch (_error) {
   } finally {
@@ -945,7 +944,7 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
-  homey.on('deviceUpdate', () => {
+  homey.on('deviceupdate', () => {
     fetchAtaValues(homey).catch(() => {
       //
     })

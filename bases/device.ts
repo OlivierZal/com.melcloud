@@ -230,7 +230,7 @@ export abstract class BaseMELCloudDevice<
   protected async setCapabilityValues(
     data: ListDevice[T]['Device'],
   ): Promise<void> {
-    this.homey.api.realtime('deviceUpdate', undefined)
+    this.homey.api.realtime('deviceupdate', undefined)
     await Promise.all(
       this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
         if (tag in data) {
