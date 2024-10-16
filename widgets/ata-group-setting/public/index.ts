@@ -937,12 +937,17 @@ const addEventListeners = (homey: Homey): void => {
     })
   })
   refreshAtaValues.addEventListener('click', () => {
+    homey.hapticFeedback()
     refreshAtaValuesElement()
   })
   updateAtaValues.addEventListener('click', () => {
-    setAtaValues(homey).catch(() => {
-      //
-    })
+    setAtaValues(homey)
+      .then(() => {
+        homey.hapticFeedback()
+      })
+      .catch(() => {
+        //
+      })
   })
   homey.on('deviceupdate', () => {
     fetchAtaValues(homey).catch(() => {
