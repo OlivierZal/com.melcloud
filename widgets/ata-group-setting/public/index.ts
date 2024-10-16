@@ -92,7 +92,7 @@ class SmokeParticle {
 const FACTOR_TWO = 2
 const FACTOR_FIVE = 5
 const INCREMENT = 1
-const PERCENTAGE = 100
+const MILLISECONDS = 1000
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -157,6 +157,11 @@ const hasZoneAtaDevicesElement = document.getElementById(
 const zoneElement = document.getElementById('zones') as HTMLSelectElement
 
 const animationTimeouts: NodeJS.Timeout[] = []
+const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
+  enter: null,
+  exit: null,
+  shine: null,
+}
 
 let debounceTimeout: NodeJS.Timeout | null = null
 
@@ -454,14 +459,13 @@ const generateSmoke = (speed: number): void => {
 
 const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
   const animation = flame.animate(
-    [...Array.from({ length: 101 }).keys()].map((index) => {
+    [...Array.from({ length: 101 }).keys()].map(() => {
       const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
       const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
       const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
       const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
       return {
         filter: `brightness(${brightness})`,
-        offset: index / PERCENTAGE,
         transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
       }
     }),
@@ -470,7 +474,7 @@ const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
         divisor: speed,
         gap: 10,
         min: 20,
-        multiplier: 1000,
+        multiplier: MILLISECONDS,
       }),
       easing: 'ease-in-out',
     },
@@ -529,15 +533,15 @@ const generateSnowflakeAnimation = (
 ): void => {
   const animation = snowflake.animate(
     [
-      { offset: 0, transform: 'translateY(0) rotate(0deg)' },
-      { offset: 1, transform: 'translateY(100vh) rotate(360deg)' },
+      { transform: 'translateY(0) rotate(0deg)' },
+      { transform: 'translateY(100vh) rotate(360deg)' },
     ],
     {
       duration: generateStyleNumber({
         divisor: speed,
         gap: 1,
         min: 5,
-        multiplier: 1000,
+        multiplier: MILLISECONDS,
       }),
       easing: 'linear',
       fill: 'forwards',
@@ -596,34 +600,75 @@ const handleSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
+const generateSunExitAnimation = (sun: HTMLDivElement): void => {
+  sunAnimation.enter?.cancel()
+  sunAnimation.exit = sun.animate(
+    [
+      { right: '-60px', top: '-120px' },
+      { right: '-180px', top: '-240px' },
+    ],
+    { duration: 5000, easing: 'ease-in', fill: 'forwards' },
+  )
+  sunAnimation.exit.oncancel = (): void => {
+    sunAnimation.exit = null
+  }
+  sunAnimation.exit.onfinish = (): void => {
+    sun.remove()
+    sunAnimation.shine?.cancel()
+    sunAnimation.exit = null
+  }
+}
+
+const generateSunEnterAnimation = (sun: HTMLDivElement): void => {
+  sunAnimation.exit?.cancel()
+  sunAnimation.enter = sun.animate(
+    [
+      { right: '-180px', top: '-240px' },
+      { right: '-60px', top: '-120px' },
+    ],
+    { duration: 5000, easing: 'ease-out', fill: 'forwards' },
+  )
+  sunAnimation.enter.oncancel = (): void => {
+    sunAnimation.enter = null
+  }
+  sunAnimation.enter.onfinish = (): void => {
+    sunAnimation.enter = null
+  }
+}
+
 const generateSunShineAnimation = (
   sun: HTMLDivElement,
   speed: number,
-  enter = false,
 ): void => {
-  if (!enter) {
-    sun.style.top = '-120px'
-    sun.style.right = '-60px'
+  sunAnimation.shine = sun.animate(
+    [
+      { filter: 'brightness(120%) blur(20px)', transform: 'rotate(0deg)' },
+      { filter: 'brightness(120%) blur(20px)', transform: 'rotate(360deg)' },
+    ],
+    {
+      duration: (SUN_SHINE_BASE_DURATION / speed) * MILLISECONDS,
+      easing: 'linear',
+      iterations: Infinity,
+    },
+  )
+  sunAnimation.shine.oncancel = (): void => {
+    sun.remove()
+    sunAnimation.shine = null
   }
-  sun.style.animation = `shine ${String(
-    SUN_SHINE_BASE_DURATION / speed,
-  )}s linear infinite${enter ? ', enter 5s ease-out 1 forwards' : ''}`
 }
 
 const handleSunAnimation = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
+    sun.style.top = '-120px'
+    sun.style.right = '-60px'
     generateSunShineAnimation(sun, speed)
     return
   }
   sun = createAnimatedElement('sun')
-  generateSunShineAnimation(sun, speed, true)
-  sun.addEventListener('animationend', (event) => {
-    if (event.animationName === 'exit') {
-      sun.remove()
-    }
-  })
   animationElement.append(sun)
+  generateSunShineAnimation(sun, speed)
+  generateSunEnterAnimation(sun)
 }
 
 const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
@@ -649,7 +694,6 @@ const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
         -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
       )}px`
       return {
-        offset: index / PERCENTAGE,
         transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
       }
     }),
@@ -765,13 +809,6 @@ const resetFireAnimation = async (
       generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
     )
   })
-}
-
-const generateSunExitAnimation = (sun: HTMLDivElement): void => {
-  const [shineAnimation] = sun.style.animation.split(',')
-  sun.style.animation = ['exit 5s ease-in 1 forwards', shineAnimation].join(
-    ', ',
-  )
 }
 
 const resetSunAnimation = async (
