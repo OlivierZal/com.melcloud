@@ -170,12 +170,11 @@ const createAnimationMapping = (): Record<
 > => {
   let flameIndex = 0
   let leafIndex = 0
-  let sunIndex = 0
   return {
     flame: { getIndex: () => (flameIndex += INCREMENT), innerHTML: '🔥' },
     leaf: { getIndex: () => (leafIndex += INCREMENT), innerHTML: '🍁' },
     snowflake: { innerHTML: '❄' },
-    sun: { getIndex: () => (sunIndex += INCREMENT), innerHTML: '☀' },
+    sun: { getIndex: () => INCREMENT, innerHTML: '☀' },
   }
 }
 const animationMapping = createAnimationMapping()
@@ -583,7 +582,7 @@ const generateSunShineAnimation = (
 }
 
 const startSunAnimation = (speed: number): void => {
-  let sun = document.querySelector<HTMLDivElement>('.sun')
+  let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
     generateSunShineAnimation(sun, speed)
     return
@@ -738,18 +737,17 @@ const resetSunAnimation = async (
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  const sun = document.querySelector<HTMLDivElement>('.sun')
-  if (sun) {
-    if (
-      !isSomethingOn ||
+  const sun = document.getElementById('sun-1') as HTMLDivElement | null
+  if (
+    sun &&
+    (!isSomethingOn ||
       (mode !== MODE_DRY &&
         mode !== MODE_MIXED &&
         (await getModes(homey)).every(
           (currentMode: number) => currentMode !== MODE_DRY,
-        ))
-    ) {
-      generateSunExitAnimation(sun)
-    }
+        )))
+  ) {
+    generateSunExitAnimation(sun)
   }
 }
 
