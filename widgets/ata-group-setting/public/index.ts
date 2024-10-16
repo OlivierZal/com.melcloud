@@ -31,16 +31,13 @@ const generateStyleNumber = ({
   min,
   multiplier,
 }: {
-  divisor?: number
   gap: number
   min: number
+  divisor?: number
   multiplier?: number
-}): number => {
-  return (
-    ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
-    ((divisor ?? DEFAULT_DIVISOR) || DEFAULT_DIVISOR)
-  )
-}
+}): number =>
+  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
+  ((divisor ?? DEFAULT_DIVISOR) || DEFAULT_DIVISOR)
 
 class SmokeParticle {
   public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
@@ -191,7 +188,7 @@ const animationMapping = createAnimationMapping()
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const generateStyleString = (
-  params: { divisor?: number; gap: number; min: number; multiplier?: number },
+  params: { gap: number; min: number; divisor?: number; multiplier?: number },
   unit = '',
 ): string => `${String(generateStyleNumber(params))}${unit}`
 
@@ -582,7 +579,7 @@ const generateSunShineAnimation = (
   enter = false,
 ): void => {
   sun.style.animation = `${enter ? 'enter 5s ease-out 1 forwards, ' : ''}shine ${String(
-    SUN_BASE_SHINE_DURATION / speed
+    SUN_BASE_SHINE_DURATION / speed,
   )}s linear infinite`
 }
 
