@@ -19,8 +19,6 @@ type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
 const DEFAULT_DIVISOR = 1
-const DEFAULT_GAP = 0
-const DEFAULT_MIN = 0
 const DEFAULT_MULTIPLIER = 1
 
 const START_ANGLE = 0
@@ -38,10 +36,8 @@ const generateStyleNumber = ({
   min: number
   multiplier?: number
 }): number => {
-  const newGap = gap ?? DEFAULT_GAP
-  const newMin = min ?? DEFAULT_MIN
   return (
-    ((Math.random() * newGap + newMin) * (multiplier ?? DEFAULT_MULTIPLIER)) /
+    ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
     ((divisor ?? DEFAULT_DIVISOR) || DEFAULT_DIVISOR)
   )
 }
