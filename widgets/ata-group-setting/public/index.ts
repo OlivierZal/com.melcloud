@@ -130,7 +130,7 @@ const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_INTERVAL = 50
-const SUN_SHINE_BASE_DURATION = 5
+const SUN_SHINE_DURATION = 5000
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -170,6 +170,7 @@ let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
+let sunCurrentSpeed = SPEED_VERY_SLOW
 
 const createAnimationMapping = (): Record<
   AnimatedElement,
@@ -457,7 +458,10 @@ const generateSmoke = (speed: number): void => {
   }
 }
 
-const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
+const generateFlameAnimation = (
+  flame: HTMLDivElement,
+  speed: number,
+): Animation => {
   const animation = flame.animate(
     [...Array.from({ length: 101 }).keys()].map(() => {
       const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
@@ -483,6 +487,7 @@ const generateFlameAnimation = (flame: HTMLDivElement, speed: number): void => {
     flame.remove()
   }
   createSmoke(flame, speed)
+  return animation
 }
 
 const createFlame = (speed: number): void => {
@@ -530,7 +535,7 @@ const handleFireAnimation = (speed: number): void => {
 const generateSnowflakeAnimation = (
   snowflake: HTMLDivElement,
   speed: number,
-): void => {
+): Animation => {
   const animation = snowflake.animate(
     [
       { transform: 'translateY(0) rotate(0deg)' },
@@ -550,6 +555,7 @@ const generateSnowflakeAnimation = (
   animation.onfinish = (): void => {
     snowflake.remove()
   }
+  return animation
 }
 
 const createSnowflake = (speed: number): void => {
@@ -600,78 +606,78 @@ const handleSnowAnimation = (speed: number): void => {
   generateSnowflakes(speed)
 }
 
-const generateSunExitAnimation = (sun: HTMLDivElement): void => {
+const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.enter?.cancel()
-  sunAnimation.exit = sun.animate(
+  const animation = sun.animate(
     [
       { right: '-60px', top: '-120px' },
       { right: '-180px', top: '-240px' },
     ],
     { duration: 5000, easing: 'ease-in', fill: 'forwards' },
   )
-  sunAnimation.exit.oncancel = (): void => {
+  animation.oncancel = (): void => {
     sunAnimation.exit = null
   }
-  sunAnimation.exit.onfinish = (): void => {
+  animation.onfinish = (): void => {
     sun.remove()
     sunAnimation.shine?.cancel()
     sunAnimation.exit = null
   }
+  return animation
 }
 
-const generateSunEnterAnimation = (sun: HTMLDivElement): void => {
+const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.exit?.cancel()
-  sunAnimation.enter = sun.animate(
+  const animation = sun.animate(
     [
       { right: '-180px', top: '-240px' },
       { right: '-60px', top: '-120px' },
     ],
     { duration: 5000, easing: 'ease-out', fill: 'forwards' },
   )
-  sunAnimation.enter.oncancel = (): void => {
+  animation.oncancel = (): void => {
     sunAnimation.enter = null
   }
-  sunAnimation.enter.onfinish = (): void => {
+  animation.onfinish = (): void => {
     sunAnimation.enter = null
   }
+  return animation
 }
 
-const generateSunShineAnimation = (
-  sun: HTMLDivElement,
-  speed: number,
-): void => {
-  sunAnimation.shine = sun.animate(
+const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
+  const animation = sun.animate(
     [
       { filter: 'brightness(120%) blur(20px)', transform: 'rotate(0deg)' },
       { filter: 'brightness(120%) blur(20px)', transform: 'rotate(360deg)' },
     ],
-    {
-      duration: (SUN_SHINE_BASE_DURATION / speed) * MILLISECONDS,
-      easing: 'linear',
-      iterations: Infinity,
-    },
+    { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
   )
-  sunAnimation.shine.oncancel = (): void => {
+  animation.oncancel = (): void => {
     sun.remove()
     sunAnimation.shine = null
   }
+  return animation
 }
 
 const handleSunAnimation = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
-  if (sun) {
-    sunAnimation.shine?.cancel()
-    sun.style.top = '-120px'
-    sun.style.right = '-60px'
-  } else {
+  if (!sun) {
     sun = createAnimatedElement('sun')
     animationElement.append(sun)
-    generateSunEnterAnimation(sun)
+    sunAnimation.enter = generateSunEnterAnimation(sun)
   }
-  generateSunShineAnimation(sun, speed)
+  if (!sunAnimation.shine) {
+    sunCurrentSpeed = SPEED_VERY_SLOW
+    sunAnimation.shine = generateSunShineAnimation(sun)
+  }
+  sunAnimation.shine.playbackRate = speed / sunCurrentSpeed
+  sunCurrentSpeed = speed
 }
 
-const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
+const generateLeafAnimation = (
+  leaf: HTMLDivElement,
+  speed: number,
+): Animation => {
   const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
   const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
   const loopEnd = loopStart + loopDuration
@@ -711,6 +717,7 @@ const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
   animation.onfinish = (): void => {
     leaf.remove()
   }
+  return animation
 }
 
 const createLeaf = (speed: number): void => {
@@ -826,7 +833,7 @@ const resetSunAnimation = async (
           (currentMode: number) => currentMode !== MODE_DRY,
         )))
   ) {
-    generateSunExitAnimation(sun)
+    sunAnimation.exit = generateSunExitAnimation(sun)
   }
 }
 
