@@ -170,7 +170,6 @@ let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
-let sunCurrentSpeed = SPEED_VERY_SLOW
 
 const createAnimationMapping = (): Record<
   AnimatedElement,
@@ -667,11 +666,9 @@ const handleSunAnimation = (speed: number): void => {
     sunAnimation.enter = generateSunEnterAnimation(sun)
   }
   if (!sunAnimation.shine) {
-    sunCurrentSpeed = SPEED_VERY_SLOW
     sunAnimation.shine = generateSunShineAnimation(sun)
   }
-  sunAnimation.shine.playbackRate = speed / sunCurrentSpeed
-  sunCurrentSpeed = speed
+  sunAnimation.shine.playbackRate = speed
 }
 
 const generateLeafAnimation = (
