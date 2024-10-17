@@ -660,15 +660,15 @@ const generateSunShineAnimation = (
 const handleSunAnimation = (speed: number): void => {
   let sun = document.getElementById('sun-1') as HTMLDivElement | null
   if (sun) {
+    sunAnimation.shine?.cancel()
     sun.style.top = '-120px'
     sun.style.right = '-60px'
-    generateSunShineAnimation(sun, speed)
-    return
+  } else {
+    sun = createAnimatedElement('sun')
+    animationElement.append(sun)
+    generateSunEnterAnimation(sun)
   }
-  sun = createAnimatedElement('sun')
-  animationElement.append(sun)
   generateSunShineAnimation(sun, speed)
-  generateSunEnterAnimation(sun)
 }
 
 const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
