@@ -132,42 +132,18 @@ export abstract class BaseMELCloudDevice<
         this.#isCapability(setting) &&
         typeof newSettings[setting] === 'boolean',
     )
-    if (changedCapabilities.length) {
-      await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
-      await this.setWarning(this.homey.__('warnings.dashboard'))
-    }
-    if (
-      changedKeys.includes('always_on') &&
-      newSettings.always_on === true &&
-      (await this.#fetchDevice())?.data.Power !== true
-    ) {
-      await this.triggerCapabilityListener('onoff', true)
-    } else if (
-      changedKeys.some(
-        (setting) =>
-          setting !== 'always_on' &&
-          !(setting in this.driver.energyCapabilityTagMapping),
-      )
-    ) {
-      await this.syncFromDevice()
-    }
-
+    await this.#updateDeviceOnSettings({
+      changedCapabilities,
+      changedKeys,
+      newSettings,
+    })
     const changedEnergyKeys = changedCapabilities.filter((setting) =>
       this.#isEnergyCapability(setting),
     )
     if (changedEnergyKeys.length) {
-      await Promise.all(
-        modes.map(async (mode) => {
-          if (
-            changedEnergyKeys.some(
-              (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
-            )
-          ) {
-            this.#setEnergyCapabilityTagEntries(mode)
-            await this.#runEnergyReport(mode)
-          }
-        }),
-      )
+      await this.#updateEnergyReportsOnSettings({
+        changedKeys: changedEnergyKeys,
+      })
     }
   }
 
@@ -330,13 +306,6 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
-  #clearEnergyReportPlan(mode: EnergyReportMode): void {
-    this.homey.clearTimeout(this.#reportTimeout[mode])
-    this.homey.clearInterval(this.#reportInterval[mode])
-    this.#reportTimeout[mode] = null
-    this.log(`${mode} energy report has been stopped`)
-  }
-
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
@@ -461,7 +430,7 @@ export abstract class BaseMELCloudDevice<
   async #runEnergyReport(mode: EnergyReportMode): Promise<void> {
     if (this.reportPlanParameters) {
       if (!(this.#energyCapabilityTagEntries[mode] ?? []).length) {
-        this.#clearEnergyReportPlan(mode)
+        this.#unscheduleEnergyReport(mode)
         return
       }
       const { duration, interval, values } =
@@ -643,5 +612,65 @@ export abstract class BaseMELCloudDevice<
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
     }) as OpCapabilityTagEntry<T>[]
+  }
+
+  #unscheduleEnergyReport(mode: EnergyReportMode): void {
+    this.homey.clearTimeout(this.#reportTimeout[mode])
+    this.homey.clearInterval(this.#reportInterval[mode])
+    this.#reportTimeout[mode] = null
+    this.log(`${mode} energy report has been stopped`)
+  }
+
+  async #updateDeviceOnSettings({
+    changedCapabilities,
+    changedKeys,
+    newSettings,
+  }: {
+    changedCapabilities: string[]
+    changedKeys: string[]
+    newSettings: Settings
+  }): Promise<void> {
+    if (changedCapabilities.length) {
+      await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
+      await this.setWarning(this.homey.__('warnings.dashboard'))
+    }
+    if (
+      changedKeys.includes('always_on') &&
+      newSettings.always_on === true &&
+      (await this.#fetchDevice())?.data.Power !== true
+    ) {
+      await this.triggerCapabilityListener('onoff', true)
+    } else if (
+      changedKeys.some(
+        (setting) =>
+          setting !== 'always_on' &&
+          !(setting in this.driver.energyCapabilityTagMapping),
+      )
+    ) {
+      await this.syncFromDevice()
+    }
+  }
+
+  async #updateEnergyReport(mode: EnergyReportMode): Promise<void> {
+    this.#setEnergyCapabilityTagEntries(mode)
+    await this.#runEnergyReport(mode)
+  }
+
+  async #updateEnergyReportsOnSettings({
+    changedKeys,
+  }: {
+    changedKeys: string[]
+  }): Promise<void> {
+    await Promise.all(
+      modes.map(async (mode) => {
+        if (
+          changedKeys.some(
+            (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
+          )
+        ) {
+          await this.#updateEnergyReport(mode)
+        }
+      }),
+    )
   }
 }
