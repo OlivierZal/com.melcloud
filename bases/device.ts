@@ -106,8 +106,7 @@ export abstract class BaseMELCloudDevice<
 
   public override onDeleted(): void {
     modes.forEach((mode) => {
-      this.homey.clearTimeout(this.#reportTimeout[mode])
-      this.homey.clearInterval(this.#reportInterval[mode])
+      this.#unscheduleEnergyReport(mode)
     })
   }
 
