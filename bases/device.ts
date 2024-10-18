@@ -95,30 +95,6 @@ export abstract class BaseMELCloudDevice<
     Record<keyof SetCapabilities[T], ConvertToDevice<T>>
   >
 
-  public override async addCapability(capability: string): Promise<void> {
-    if (!this.hasCapability(capability)) {
-      await super.addCapability(capability)
-    }
-  }
-
-  public override getCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions[T],
-  >(capability: K): CapabilitiesOptions[T][K] {
-    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
-  }
-
-  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
-    capability: K,
-  ): Capabilities[T][K] {
-    return super.getCapabilityValue(capability) as Capabilities[T][K]
-  }
-
-  public override getSetting<K extends Extract<keyof Settings, string>>(
-    setting: K,
-  ): NonNullable<Settings[K]> {
-    return super.getSetting(setting) as NonNullable<Settings[K]>
-  }
-
   public override onDeleted(): void {
     ;(['false', 'true'] as const).forEach((total) => {
       this.homey.clearTimeout(this.#reportTimeout[total])
@@ -189,6 +165,30 @@ export abstract class BaseMELCloudDevice<
   public override async onUninit(): Promise<void> {
     this.onDeleted()
     return Promise.resolve()
+  }
+
+  public override async addCapability(capability: string): Promise<void> {
+    if (!this.hasCapability(capability)) {
+      await super.addCapability(capability)
+    }
+  }
+
+  public override getCapabilityOptions<
+    K extends string & keyof CapabilitiesOptions[T],
+  >(capability: K): CapabilitiesOptions[T][K] {
+    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
+  }
+
+  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
+    capability: K,
+  ): Capabilities[T][K] {
+    return super.getCapabilityValue(capability) as Capabilities[T][K]
+  }
+
+  public override getSetting<K extends Extract<keyof Settings, string>>(
+    setting: K,
+  ): NonNullable<Settings[K]> {
+    return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
   public override async removeCapability(capability: string): Promise<void> {

@@ -26,6 +26,7 @@ const selectorOrder = [
   'constructor',
   'accessor-property',
   ['get-method', 'set-method'],
+  'event-handler',
   'method',
 ]
 
@@ -58,19 +59,34 @@ const compatibleModifierCombos = allModifierCombos.filter((combo) =>
   ),
 )
 
+const allModifiers = [
+  'abstract',
+  'declare',
+  'decorated',
+  'optional',
+  'override',
+  'private',
+  'protected',
+  'readonly',
+  'static',
+]
+const baseMethodIncompatibilities = ['declare', 'readonly']
+const accessorIncompatibilities = [...baseMethodIncompatibilities, 'optional']
+const propertyIncompatibilities = []
+
 const selectorIncompatibilities = {
-  'accessor-property': ['declare', 'optional', 'readonly'],
+  'accessor-property': accessorIncompatibilities,
   constructor: [
+    ...baseMethodIncompatibilities,
     'abstract',
-    'declare',
     'decorated',
     'optional',
     'override',
-    'readonly',
     'static',
   ],
-  'function-property': ['abstract', 'declare'],
-  'get-method': ['declare', 'optional', 'readonly'],
+  'event-handler': allModifiers,
+  'function-property': propertyIncompatibilities,
+  'get-method': accessorIncompatibilities,
   'index-signature': [
     'abstract',
     'declare',
@@ -80,20 +96,10 @@ const selectorIncompatibilities = {
     'private',
     'protected',
   ],
-  method: ['declare', 'readonly'],
-  property: [],
-  'set-method': ['declare', 'optional', 'readonly'],
-  'static-block': [
-    'abstract',
-    'declare',
-    'decorated',
-    'optional',
-    'override',
-    'private',
-    'protected',
-    'readonly',
-    'static',
-  ],
+  method: baseMethodIncompatibilities,
+  property: propertyIncompatibilities,
+  'set-method': accessorIncompatibilities,
+  'static-block': allModifiers,
 }
 
 const generateGroupsForSelector = (selector) =>
@@ -120,6 +126,13 @@ const groups = selectorOrder.flatMap((selector) => {
 })
 
 const classGroups = {
+  customGroups: [
+    {
+      elementNamePattern: 'on*',
+      groupName: 'event-handler',
+      selector: 'method',
+    },
+  ],
   groups,
 }
 
