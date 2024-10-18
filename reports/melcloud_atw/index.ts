@@ -1,2 +1,2 @@
-export { EnergyReportAtwRegular } from './regular'
-export { EnergyReportAtwTotal } from './total'
+export { EnergyReportRegularAtw } from './regular'
+export { EnergyReportTotalAtw } from './total'

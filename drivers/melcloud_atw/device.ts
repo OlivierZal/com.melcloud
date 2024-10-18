@@ -8,6 +8,7 @@ import { DateTime } from 'luxon'
 
 import { BaseMELCloudDevice } from '../../bases'
 import { K_MULTIPLIER } from '../../lib'
+import { EnergyReportRegularAtw, EnergyReportTotalAtw } from '../../reports'
 import {
   HotWaterMode,
   OperationModeStateHotWaterCapability,
@@ -15,7 +16,6 @@ import {
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAtw,
-  type ReportPlanParameters,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
 } from '../../types'
@@ -103,13 +103,6 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
   } as const
 
-  protected readonly reportPlanParameters: ReportPlanParameters = {
-    duration: { days: 1 },
-    interval: { days: 1 },
-    minus: { days: 1 },
-    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
-  } as const
-
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
   > = {
@@ -120,6 +113,10 @@ export = class extends BaseMELCloudDevice<'Atw'> {
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<'Atw'>,
   } as const
+
+  protected EnergyReportRegular = EnergyReportRegularAtw
+
+  protected EnergyReportTotal = EnergyReportTotalAtw
 
   protected override async setCapabilityValues(
     data: ListDeviceDataAtw,

@@ -67,7 +67,6 @@ export {
   type OpCapabilityTagEntry,
   type OpDeviceData,
   type PairSetting,
-  type ReportPlanParameters,
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,

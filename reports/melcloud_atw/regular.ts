@@ -1,8 +1,8 @@
-import { BaseMELCloudEnergyReportAtw } from './base'
+import { BaseEnergyReportAtw } from './base'
 
 import type { EnergyReportMode } from '../../types'
 
-export class EnergyReportAtwRegular extends BaseMELCloudEnergyReportAtw {
+export class EnergyReportRegularAtw extends BaseEnergyReportAtw {
   protected duration = { days: 1 }
 
   protected interval = { days: 1 }

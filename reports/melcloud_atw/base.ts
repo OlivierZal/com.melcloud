@@ -1,5 +1,5 @@
-import { BaseMELCloudEnergyReport } from '../../bases'
+import { BaseEnergyReport } from '../../bases'
 
-export abstract class BaseMELCloudEnergyReportAtw extends BaseMELCloudEnergyReport<'Atw'> {
+export abstract class BaseEnergyReportAtw extends BaseEnergyReport<'Atw'> {
   protected readonly minus = { days: 1 }
 }

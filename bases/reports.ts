@@ -24,9 +24,7 @@ const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
 const DEFAULT_DIVISOR = 1
 
-export abstract class BaseMELCloudEnergyReport<
-  T extends keyof typeof DeviceType,
-> {
+export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
 
   readonly #driver: MELCloudDriver[T]
@@ -62,11 +60,19 @@ export abstract class BaseMELCloudEnergyReport<
   public async handle(): Promise<void> {
     this.#setEnergyCapabilityTagEntries()
     if (!this.#energyCapabilityTagEntries.length) {
-      this.#unschedule()
+      this.unschedule()
       return
     }
     await this.#get()
     this.#schedule()
+  }
+
+  public unschedule(): void {
+    this.#homey.clearTimeout(this.#reportTimeout)
+    this.#reportTimeout = null
+    this.#homey.clearInterval(this.#reportInterval)
+    this.#reportInterval = null
+    this.#device.log(`${this.mode} energy report has been stopped`)
   }
 
   #calculateCopValue(
@@ -191,13 +197,5 @@ export abstract class BaseMELCloudEnergyReport<
       ([capability]) =>
         isTotalEnergyKey(capability) === (this.mode === 'total'),
     )
-  }
-
-  #unschedule(): void {
-    this.#homey.clearTimeout(this.#reportTimeout)
-    this.#reportTimeout = null
-    this.#homey.clearInterval(this.#reportInterval)
-    this.#reportInterval = null
-    this.#device.log(`${this.mode} energy report has been stopped`)
   }
 }
