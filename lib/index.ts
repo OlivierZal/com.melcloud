@@ -1,3 +1,5 @@
 export { addToLogs } from './addToLogs'
+export { K_MULTIPLIER } from './constants'
 export { getBuildings } from './getBuildings'
+export { isTotalEnergyKey } from './isTotalEnergyKey'
 export { withTimers } from './withTimers'

@@ -22,12 +22,14 @@ export = class extends BaseMELCloudDevice<'Erv'> {
       : ThermostatModeErv.off) as ConvertFromDevice<'Erv'>,
   } as const
 
-  protected readonly reportPlanParameters = null
-
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesErv, ConvertToDevice<'Erv'>>
   > = {
     thermostat_mode: ((value: keyof typeof VentilationMode) =>
       VentilationMode[value]) as ConvertToDevice<'Erv'>,
   } as const
+
+  protected EnergyReportRegular = undefined
+
+  protected EnergyReportTotal = undefined
 }
