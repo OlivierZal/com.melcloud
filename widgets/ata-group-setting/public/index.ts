@@ -428,7 +428,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       () => {
         createSmoke(flame, speed)
       },
-      generateDelay(SMOKE_DELAY, speed),
+      generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
     )
   }
 }
@@ -705,7 +705,7 @@ const generateLeafAnimation = (
         divisor: speed,
         gap: 5,
         min: 3,
-        multiplier: 1000,
+        multiplier: MILLISECONDS,
       }),
       easing: 'linear',
       fill: 'forwards',
