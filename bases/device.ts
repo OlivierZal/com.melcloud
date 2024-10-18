@@ -600,7 +600,7 @@ export abstract class BaseMELCloudDevice<
     }
     this.#energyCapabilityTagEntries = Object.groupBy(
       energyCapabilityTagEntries,
-      ([capability]) => String(isTotalEnergyKey(capability)),
+      ([capability]) => (isTotalEnergyKey(capability) ? 'total' : 'regular'),
     )
   }
 
