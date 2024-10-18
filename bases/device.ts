@@ -29,7 +29,7 @@ import type {
   Settings,
 } from '../types'
 
-import type { BaseEnergyReport } from './reports'
+import type { BaseEnergyReport } from './report'
 
 const SYNC_DELAY = 1000
 
