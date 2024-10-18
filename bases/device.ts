@@ -438,27 +438,6 @@ export abstract class BaseMELCloudDevice<
     return setting in this.driver.energyCapabilityTagMapping
   }
 
-  #planEnergyReport(
-    mode: EnergyReportMode,
-    { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
-  ): void {
-    if (!this.#reportTimeout[mode]) {
-      const actionType = `${mode} energy report`
-      this.#reportTimeout[mode] = this.setTimeout(
-        async () => {
-          await this.#runEnergyReport(mode)
-          this.#reportInterval[mode] = this.setInterval(
-            async () => this.#runEnergyReport(mode),
-            interval,
-            actionType,
-          )
-        },
-        DateTime.now().plus(duration).set(values).diffNow(),
-        actionType,
-      )
-    }
-  }
-
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
       Object.keys(this.#setCapabilityTagMapping),
@@ -488,7 +467,28 @@ export abstract class BaseMELCloudDevice<
       const { duration, interval, values } =
         mode === 'total' ? reportPlanParametersTotal : this.reportPlanParameters
       await this.#getEnergyReport(mode, this.reportPlanParameters.minus)
-      this.#planEnergyReport(mode, { duration, interval, values })
+      this.#scheduleEnergyReport(mode, { duration, interval, values })
+    }
+  }
+
+  #scheduleEnergyReport(
+    mode: EnergyReportMode,
+    { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
+  ): void {
+    if (!this.#reportTimeout[mode]) {
+      const actionType = `${mode} energy report`
+      this.#reportTimeout[mode] = this.setTimeout(
+        async () => {
+          await this.#runEnergyReport(mode)
+          this.#reportInterval[mode] = this.setInterval(
+            async () => this.#runEnergyReport(mode),
+            interval,
+            actionType,
+          )
+        },
+        DateTime.now().plus(duration).set(values).diffNow(),
+        actionType,
+      )
     }
   }
 
