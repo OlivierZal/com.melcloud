@@ -45,6 +45,7 @@ export {
   type EnergyCapabilities,
   type EnergyCapabilityTagEntry,
   type EnergyCapabilityTagMapping,
+  type EnergyReportMode,
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogQuery,

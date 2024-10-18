@@ -430,3 +430,5 @@ export interface GetAtaOptions {
   mode?: 'detailed'
   status?: 'on'
 }
+
+export type EnergyReportMode = 'regular' | 'total'

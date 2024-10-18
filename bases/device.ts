@@ -12,6 +12,7 @@ import {
   type EnergyCapabilities,
   type EnergyCapabilityTagEntry,
   type EnergyCapabilityTagMapping,
+  type EnergyReportMode,
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type MELCloudDriver,
@@ -37,6 +38,8 @@ const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
 const DEFAULT_DIVISOR = 1
 const SYNC_DELAY = 1000
+
+const modes: EnergyReportMode[] = ['regular', 'total']
 
 const reportPlanParametersTotal = {
   duration: { days: 1 },
@@ -64,17 +67,19 @@ export abstract class BaseMELCloudDevice<
 
   readonly #id = (this.getData() as DeviceDetails<T>['data']).id
 
-  readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
-    {}
+  readonly #reportInterval: {
+    regular?: NodeJS.Timeout
+    total?: NodeJS.Timeout
+  } = {}
 
   readonly #reportTimeout: {
-    false: NodeJS.Timeout | null
-    true: NodeJS.Timeout | null
-  } = { false: null, true: null }
+    regular: NodeJS.Timeout | null
+    total: NodeJS.Timeout | null
+  } = { regular: null, total: null }
 
   #energyCapabilityTagEntries: {
-    false?: EnergyCapabilityTagEntry<T>[]
-    true?: EnergyCapabilityTagEntry<T>[]
+    regular?: EnergyCapabilityTagEntry<T>[]
+    total?: EnergyCapabilityTagEntry<T>[]
   } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
@@ -100,9 +105,9 @@ export abstract class BaseMELCloudDevice<
   >
 
   public override onDeleted(): void {
-    ;(['false', 'true'] as const).forEach((total) => {
-      this.homey.clearTimeout(this.#reportTimeout[total])
-      this.homey.clearInterval(this.#reportInterval[total])
+    modes.forEach((mode) => {
+      this.homey.clearTimeout(this.#reportTimeout[mode])
+      this.homey.clearInterval(this.#reportInterval[mode])
     })
   }
 
@@ -152,14 +157,14 @@ export abstract class BaseMELCloudDevice<
     )
     if (changedEnergyKeys.length) {
       await Promise.all(
-        [false, true].map(async (total) => {
+        modes.map(async (mode) => {
           if (
             changedEnergyKeys.some(
-              (setting) => isTotalEnergyKey(setting) === total,
+              (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
             )
           ) {
-            this.#setEnergyCapabilityTagEntries(total)
-            await this.#runEnergyReport(total)
+            this.#setEnergyCapabilityTagEntries(mode)
+            await this.#runEnergyReport(mode)
           }
         }),
       )
@@ -325,12 +330,11 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
-  #clearEnergyReportPlan(total: boolean): void {
-    const totalString = String(total) as `${boolean}`
-    this.homey.clearTimeout(this.#reportTimeout[totalString])
-    this.homey.clearInterval(this.#reportInterval[totalString])
-    this.#reportTimeout[totalString] = null
-    this.log(total ? 'Total' : 'Regular', 'energy report has been stopped')
+  #clearEnergyReportPlan(mode: EnergyReportMode): void {
+    this.homey.clearTimeout(this.#reportTimeout[mode])
+    this.homey.clearInterval(this.#reportInterval[mode])
+    this.#reportTimeout[mode] = null
+    this.log(`${mode} energy report has been stopped`)
   }
 
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
@@ -368,7 +372,10 @@ export abstract class BaseMELCloudDevice<
     return this.#device
   }
 
-  async #getEnergyReport(total: boolean, minus: DurationLike): Promise<void> {
+  async #getEnergyReport(
+    mode: EnergyReportMode,
+    minus: DurationLike,
+  ): Promise<void> {
     const device = await this.#fetchDevice()
     if (device) {
       try {
@@ -376,11 +383,11 @@ export abstract class BaseMELCloudDevice<
         const to = toDateTime.toISODate()
         await this.#setEnergyCapabilities(
           (await device.getEnergyReport({
-            from: total ? undefined : to,
+            from: mode === 'total' ? undefined : to,
             to,
           })) as EnergyData[T],
           toDateTime.hour,
-          total,
+          mode,
         )
       } catch (error) {
         await this.setWarning(error)
@@ -409,14 +416,18 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
+  async #handleReports(): Promise<void> {
+    this.#setEnergyCapabilityTagEntries()
+    await Promise.all(modes.map(async (mode) => this.#runEnergyReport(mode)))
+  }
+
   async #init(data: ListDevice[T]['Device']): Promise<void> {
     await this.#setCapabilities(data)
     await this.#setCapabilityOptions(data)
     this.#setCapabilityTagMappings()
-    this.#setEnergyCapabilityTagEntries()
     this.#registerCapabilityListeners()
     await this.syncFromDevice()
-    await this.#runEnergyReports()
+    await this.#handleReports()
   }
 
   #isCapability(setting: string): boolean {
@@ -428,17 +439,16 @@ export abstract class BaseMELCloudDevice<
   }
 
   #planEnergyReport(
-    total: boolean,
+    mode: EnergyReportMode,
     { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
   ): void {
-    const totalString = String(total) as `${boolean}`
-    if (!this.#reportTimeout[totalString]) {
-      const actionType = `${total ? 'total' : 'regular'} energy report`
-      this.#reportTimeout[totalString] = this.setTimeout(
+    if (!this.#reportTimeout[mode]) {
+      const actionType = `${mode} energy report`
+      this.#reportTimeout[mode] = this.setTimeout(
         async () => {
-          await this.#runEnergyReport(total)
-          this.#reportInterval[totalString] = this.setInterval(
-            async () => this.#runEnergyReport(total),
+          await this.#runEnergyReport(mode)
+          this.#reportInterval[mode] = this.setInterval(
+            async () => this.#runEnergyReport(mode),
             interval,
             actionType,
           )
@@ -469,26 +479,17 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  async #runEnergyReport(total: boolean): Promise<void> {
+  async #runEnergyReport(mode: EnergyReportMode): Promise<void> {
     if (this.reportPlanParameters) {
-      if (
-        !(this.#energyCapabilityTagEntries[String(total) as `${boolean}`] ?? [])
-          .length
-      ) {
-        this.#clearEnergyReportPlan(total)
+      if (!(this.#energyCapabilityTagEntries[mode] ?? []).length) {
+        this.#clearEnergyReportPlan(mode)
         return
       }
       const { duration, interval, values } =
-        total ? reportPlanParametersTotal : this.reportPlanParameters
-      await this.#getEnergyReport(total, this.reportPlanParameters.minus)
-      this.#planEnergyReport(total, { duration, interval, values })
+        mode === 'total' ? reportPlanParametersTotal : this.reportPlanParameters
+      await this.#getEnergyReport(mode, this.reportPlanParameters.minus)
+      this.#planEnergyReport(mode, { duration, interval, values })
     }
-  }
-
-  async #runEnergyReports(): Promise<void> {
-    await Promise.all(
-      [false, true].map(async (total) => this.#runEnergyReport(total)),
-    )
   }
 
   async #set(
@@ -575,16 +576,14 @@ export abstract class BaseMELCloudDevice<
   async #setEnergyCapabilities(
     data: EnergyData[T],
     hour: number,
-    total: boolean,
+    mode: EnergyReportMode,
   ): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))
     }
     await Promise.all(
-      (
-        this.#energyCapabilityTagEntries[String(total) as `${boolean}`] ?? []
-      ).map(
+      (this.#energyCapabilityTagEntries[mode] ?? []).map(
         async <
           K extends Extract<keyof EnergyCapabilities[T], string>,
           L extends keyof EnergyData[T],
@@ -612,16 +611,16 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  #setEnergyCapabilityTagEntries(total?: boolean): void {
+  #setEnergyCapabilityTagEntries(mode?: EnergyReportMode): void {
     const energyCapabilityTagEntries = Object.entries(
       this.#cleanMapping(
         this.driver.energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
       ),
     ) as EnergyCapabilityTagEntry<T>[]
-    if (total !== undefined) {
-      this.#energyCapabilityTagEntries[String(total) as `${boolean}`] =
+    if (mode !== undefined) {
+      this.#energyCapabilityTagEntries[mode] =
         energyCapabilityTagEntries.filter(
-          ([capability]) => isTotalEnergyKey(capability) === total,
+          ([capability]) => isTotalEnergyKey(capability) === (mode === 'total'),
         )
       return
     }
