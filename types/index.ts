@@ -27,7 +27,6 @@ export {
   type TargetTemperatureFlowCapabilities,
 } from './atw'
 export {
-  K_MULTIPLIER,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
   model,

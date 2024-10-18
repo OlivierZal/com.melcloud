@@ -1,28 +1,7 @@
 import { Device } from 'homey'
 import { DateTime, type DurationLike } from 'luxon'
 
-import { addToLogs, withTimers } from '../lib'
-import {
-  K_MULTIPLIER,
-  type Capabilities,
-  type CapabilitiesOptions,
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type DeviceDetails,
-  type EnergyCapabilities,
-  type EnergyCapabilityTagEntry,
-  type EnergyCapabilityTagMapping,
-  type EnergyReportMode,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type MELCloudDriver,
-  type OpCapabilities,
-  type OpCapabilityTagEntry,
-  type ReportPlanParameters,
-  type SetCapabilities,
-  type SetCapabilityTagMapping,
-  type Settings,
-} from '../types'
+import { K_MULTIPLIER, addToLogs, withTimers } from '../lib'
 
 import type {
   DeviceFacade,
@@ -33,6 +12,26 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type MELCloudApp from '../app'
+import type {
+  Capabilities,
+  CapabilitiesOptions,
+  ConvertFromDevice,
+  ConvertToDevice,
+  DeviceDetails,
+  EnergyCapabilities,
+  EnergyCapabilityTagEntry,
+  EnergyCapabilityTagMapping,
+  EnergyReportMode,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  MELCloudDriver,
+  OpCapabilities,
+  OpCapabilityTagEntry,
+  ReportPlanParameters,
+  SetCapabilities,
+  SetCapabilityTagMapping,
+  Settings,
+} from '../types'
 
 const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
@@ -207,6 +206,20 @@ export abstract class BaseMELCloudDevice<
     await super.setWarning(null)
   }
 
+  public cleanMapping<
+    M extends
+      | EnergyCapabilityTagMapping[T]
+      | GetCapabilityTagMapping[T]
+      | ListCapabilityTagMapping[T]
+      | SetCapabilityTagMapping[T],
+  >(capabilityTagMapping: M): Partial<M> {
+    return Object.fromEntries(
+      Object.entries(capabilityTagMapping).filter(([capability]) =>
+        this.hasCapability(capability),
+      ),
+    ) as Partial<M>
+  }
+
   public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
     const newData = data ?? (await this.#fetchDevice())?.data
     if (newData) {
@@ -292,20 +305,6 @@ export abstract class BaseMELCloudDevice<
         INITIAL_SUM,
       ) / this.#linkedDeviceCount
     )
-  }
-
-  #cleanMapping<
-    M extends
-      | EnergyCapabilityTagMapping[T]
-      | GetCapabilityTagMapping[T]
-      | ListCapabilityTagMapping[T]
-      | SetCapabilityTagMapping[T],
-  >(capabilityTagMapping: M): Partial<M> {
-    return Object.fromEntries(
-      Object.entries(capabilityTagMapping).filter(([capability]) =>
-        this.hasCapability(capability),
-      ),
-    ) as Partial<M>
   }
 
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
@@ -537,10 +536,10 @@ export abstract class BaseMELCloudDevice<
   }
 
   #setCapabilityTagMappings(): void {
-    this.#setCapabilityTagMapping = this.#cleanMapping(
+    this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
     )
-    this.#getCapabilityTagMapping = this.#cleanMapping(
+    this.#getCapabilityTagMapping = this.cleanMapping(
       this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
     )
     this.#setListCapabilityTagMappings()
@@ -586,7 +585,7 @@ export abstract class BaseMELCloudDevice<
 
   #setEnergyCapabilityTagEntries(mode?: EnergyReportMode): void {
     const energyCapabilityTagEntries = Object.entries(
-      this.#cleanMapping(
+      this.cleanMapping(
         this.driver.energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
       ),
     ) as EnergyCapabilityTagEntry<T>[]
@@ -604,7 +603,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   #setListCapabilityTagMappings(): void {
-    this.#listCapabilityTagMapping = this.#cleanMapping(
+    this.#listCapabilityTagMapping = this.cleanMapping(
       this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
     )
     this.#setOpCapabilityTagEntries()

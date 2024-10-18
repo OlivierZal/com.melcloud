@@ -7,9 +7,9 @@ import {
 import { DateTime } from 'luxon'
 
 import { BaseMELCloudDevice } from '../../bases'
+import { K_MULTIPLIER } from '../../lib'
 import {
   HotWaterMode,
-  K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   type ConvertFromDevice,
