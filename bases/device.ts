@@ -60,6 +60,10 @@ export abstract class BaseMELCloudDevice<
 > extends withTimers(Device) {
   public declare readonly driver: MELCloudDriver[T]
 
+  readonly #app = this.homey.app as MELCloudApp
+
+  readonly #id = (this.getData() as DeviceDetails<T>['data']).id
+
   readonly #reportInterval: { false?: NodeJS.Timeout; true?: NodeJS.Timeout } =
     {}
 
@@ -98,7 +102,7 @@ export abstract class BaseMELCloudDevice<
   public override onDeleted(): void {
     ;(['false', 'true'] as const).forEach((total) => {
       this.homey.clearTimeout(this.#reportTimeout[total])
-      this.homey.clearTimeout(this.#reportInterval[total])
+      this.homey.clearInterval(this.#reportInterval[total])
     })
   }
 
@@ -352,9 +356,9 @@ export abstract class BaseMELCloudDevice<
   async #fetchDevice(): Promise<DeviceFacade[T] | undefined> {
     if (!this.#device) {
       try {
-        this.#device = (this.homey.app as MELCloudApp).getFacade(
+        this.#device = this.#app.getFacade(
           'devices',
-          (this.getData() as DeviceDetails<T>['data']).id,
+          this.#id,
         ) as DeviceFacade[T]
         await this.#init(this.#device.data)
       } catch (error) {
