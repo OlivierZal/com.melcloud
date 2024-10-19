@@ -72,7 +72,7 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     this.#reportTimeout = null
     this.#homey.clearInterval(this.#reportInterval)
     this.#reportInterval = null
-    this.#device.log(`${this.mode} energy report has been stopped`)
+    this.#device.log(`${this.mode} energy report has been cancelled`)
   }
 
   #calculateCopValue(
