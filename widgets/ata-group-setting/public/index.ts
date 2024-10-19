@@ -626,7 +626,7 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   }
   animation.onfinish = (): void => {
     sun.remove()
-    sunAnimation.shine?.cancel()
+    sunAnimation.shine = null
     sunAnimation.exit = null
   }
   return animation
@@ -669,10 +669,6 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
     ],
     { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
   )
-  animation.oncancel = (): void => {
-    sun.remove()
-    sunAnimation.shine = null
-  }
   return animation
 }
 
