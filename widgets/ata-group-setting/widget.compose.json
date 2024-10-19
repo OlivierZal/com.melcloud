@@ -17,7 +17,7 @@
       "path": "/values/ata/:zoneType/:zoneId"
     }
   },
-  "height": 510,
+  "height": 515,
   "name": {
     "da": "Luft-luft-enhedsindstilling",
     "en": "Air-to-air device setting",

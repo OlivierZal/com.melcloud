@@ -92,7 +92,6 @@ class SmokeParticle {
 const FACTOR_TWO = 2
 const FACTOR_FIVE = 5
 const INCREMENT = 1
-const MILLISECONDS = 1000
 
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
@@ -116,9 +115,9 @@ const SPEED_FACTOR_MIN = 1
 const SPEED_FACTOR_MAX = 50
 
 const DEBOUNCE_DELAY = 1000
-const FLAME_DELAY = 1000
+const FLAME_DELAY = 2000
 const LEAF_DELAY = 1000
-const SMOKE_DELAY = 600
+const SMOKE_DELAY = 500
 const SNOWFLAKE_DELAY = 400
 
 const DEFAULT_RECT_X = 0
@@ -130,6 +129,7 @@ const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_INTERVAL = 50
+const SUN_BOTTOM_POS_Y_FACTOR = 1.25
 const SUN_SHINE_DURATION = 5000
 
 const zoneMapping: Partial<
@@ -477,7 +477,7 @@ const generateFlameAnimation = (
         divisor: speed,
         gap: 10,
         min: 20,
-        multiplier: MILLISECONDS,
+        multiplier: 1000,
       }),
       easing: 'ease-in-out',
     },
@@ -509,7 +509,7 @@ const createFlame = (speed: number): void => {
     },
     'px',
   )
-  flame.style.fontSize = generateStyleString({ gap: 10, min: 35 }, 'px')
+  flame.style.fontSize = generateStyleString({ gap: 10, min: 50 }, 'px')
   animationElement.append(flame)
   generateFlameAnimation(flame, speed)
 }
@@ -545,7 +545,7 @@ const generateSnowflakeAnimation = (
         divisor: speed,
         gap: 1,
         min: 5,
-        multiplier: MILLISECONDS,
+        multiplier: 1000,
       }),
       easing: 'linear',
       fill: 'forwards',
@@ -607,10 +607,21 @@ const handleSnowAnimation = (speed: number): void => {
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.enter?.cancel()
+  const { height, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      { right: '-60px', top: '-120px' },
-      { right: '-180px', top: '-240px' },
+      {
+        bottom: `${String(
+          (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
+        )}px`,
+        left: `${String(
+          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
+        )}px`,
+      },
+      {
+        bottom: `${String(window.innerHeight)}px`,
+        left: `${String(window.innerWidth)}px`,
+      },
     ],
     { duration: 5000, easing: 'ease-in', fill: 'forwards' },
   )
@@ -627,10 +638,21 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.exit?.cancel()
+  const { height, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      { right: '-180px', top: '-240px' },
-      { right: '-60px', top: '-120px' },
+      {
+        bottom: `${String(window.innerHeight)}px`,
+        left: `${String(window.innerWidth)}px`,
+      },
+      {
+        bottom: `${String(
+          (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
+        )}px`,
+        left: `${String(
+          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
+        )}px`,
+      },
     ],
     { duration: 5000, easing: 'ease-out', fill: 'forwards' },
   )
@@ -705,7 +727,7 @@ const generateLeafAnimation = (
         divisor: speed,
         gap: 5,
         min: 3,
-        multiplier: MILLISECONDS,
+        multiplier: 1000,
       }),
       easing: 'linear',
       fill: 'forwards',
