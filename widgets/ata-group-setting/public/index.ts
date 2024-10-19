@@ -610,7 +610,10 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   const { bottom, left } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      { bottom, left },
+      {
+        bottom: `${String(parseFloat(bottom))}px`,
+        left: `${String(parseFloat(left))}px`,
+      },
       {
         bottom: `${String(window.innerHeight)}px`,
         left: `${String(window.innerWidth)}px`,
@@ -634,7 +637,10 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   const { bottom, height, left, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      { bottom, left },
+      {
+        bottom: `${String(parseFloat(bottom))}px`,
+        left: `${String(parseFloat(left))}px`,
+      },
       {
         bottom: `${String(
           (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
