@@ -23,6 +23,12 @@ import type AtwDevice from '../drivers/melcloud_atw/device'
 import type AtwDriver from '../drivers/melcloud_atw/driver'
 import type ErvDevice from '../drivers/melcloud_erv/device'
 import type ErvDriver from '../drivers/melcloud_erv/driver'
+import type {
+  EnergyReportRegularAta,
+  EnergyReportRegularAtw,
+  EnergyReportTotalAta,
+  EnergyReportTotalAtw,
+} from '../reports'
 
 import type {
   CapabilitiesAta,
@@ -327,7 +333,7 @@ export interface BuildingZone extends BaseModel {
 }
 export type Zone = AreaZone | BuildingZone | FloorZone
 
-export const model = {
+export const zoneModel = {
   areas: AreaModel,
   buildings: BuildingModel,
   devices: DeviceModel,
@@ -335,7 +341,7 @@ export const model = {
 } as const
 export interface ZoneData {
   zoneId: string
-  zoneType: Exclude<keyof typeof model, 'devices'>
+  zoneType: Exclude<keyof typeof zoneModel, 'devices'>
 }
 
 const addPrefixToTitle = (
@@ -432,3 +438,13 @@ export interface GetAtaOptions {
 }
 
 export type EnergyReportMode = 'regular' | 'total'
+export interface EnergyReportRegular {
+  readonly Ata: EnergyReportRegularAta
+  readonly Atw: EnergyReportRegularAtw
+  readonly Erv: never
+}
+export interface EnergyReportTotal {
+  readonly Ata: EnergyReportTotalAta
+  readonly Atw: EnergyReportTotalAtw
+  readonly Erv: never
+}

@@ -10,7 +10,6 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type MELCloudApp from '../app'
-import type { EnergyReportRegular, EnergyReportTotal } from '../reports'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -19,6 +18,8 @@ import type {
   DeviceDetails,
   EnergyCapabilityTagMapping,
   EnergyReportMode,
+  EnergyReportRegular,
+  EnergyReportTotal,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   MELCloudDriver,
@@ -28,8 +29,6 @@ import type {
   SetCapabilityTagMapping,
   Settings,
 } from '../types'
-
-import type { BaseEnergyReport } from './report'
 
 const SYNC_DELAY = 1000
 
@@ -56,8 +55,8 @@ export abstract class BaseMELCloudDevice<
   readonly #id = (this.getData() as DeviceDetails<T>['data']).id
 
   readonly #reports: {
-    regular?: BaseEnergyReport<T>
-    total?: BaseEnergyReport<T>
+    regular?: EnergyReportRegular[T]
+    total?: EnergyReportTotal[T]
   } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
@@ -81,12 +80,12 @@ export abstract class BaseMELCloudDevice<
   protected abstract EnergyReportRegular?: new (
     device: BaseMELCloudDevice<T>,
     facade: DeviceFacade[T],
-  ) => BaseEnergyReport<T> & EnergyReportRegular[T]
+  ) => EnergyReportRegular[T]
 
   protected abstract EnergyReportTotal?: new (
     device: BaseMELCloudDevice<T>,
     facade: DeviceFacade[T],
-  ) => BaseEnergyReport<T> & EnergyReportTotal[T]
+  ) => EnergyReportTotal[T]
 
   public override onDeleted(): void {
     modes.forEach((mode) => {
@@ -126,7 +125,7 @@ export abstract class BaseMELCloudDevice<
         this.#isEnergyCapability(setting),
       )
       if (changedEnergyKeys.length) {
-        await this.#updateEnergyReportsOnSettings(device, {
+        await this.#updateEnergyReportsOnSettings({
           changedKeys: changedEnergyKeys,
         })
       }
@@ -478,14 +477,11 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #updateEnergyReportsOnSettings(
-    device: DeviceFacade[T],
-    {
-      changedKeys,
-    }: {
-      changedKeys: string[]
-    },
-  ): Promise<void> {
+  async #updateEnergyReportsOnSettings({
+    changedKeys,
+  }: {
+    changedKeys: string[]
+  }): Promise<void> {
     await Promise.all(
       modes.map(async (mode) => {
         if (

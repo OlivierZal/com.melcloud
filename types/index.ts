@@ -29,7 +29,7 @@ export {
 export {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
-  model,
+  zoneModel,
   type AreaZone,
   type BuildingZone,
   type Capabilities,
@@ -45,6 +45,8 @@ export {
   type EnergyCapabilityTagEntry,
   type EnergyCapabilityTagMapping,
   type EnergyReportMode,
+  type EnergyReportRegular,
+  type EnergyReportTotal,
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogQuery,
