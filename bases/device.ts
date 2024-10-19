@@ -1,51 +1,38 @@
 import { Device } from 'homey'
-import { DateTime, type DurationLike } from 'luxon'
 
 import { addToLogs, withTimers } from '../lib'
-import {
-  K_MULTIPLIER,
-  type Capabilities,
-  type CapabilitiesOptions,
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type DeviceDetails,
-  type EnergyCapabilities,
-  type EnergyCapabilityTagEntry,
-  type EnergyCapabilityTagMapping,
-  type EnergyReportMode,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type MELCloudDriver,
-  type OpCapabilities,
-  type OpCapabilityTagEntry,
-  type ReportPlanParameters,
-  type SetCapabilities,
-  type SetCapabilityTagMapping,
-  type Settings,
-} from '../types'
 
 import type {
   DeviceFacade,
   DeviceType,
-  EnergyData,
   ListDevice,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
 import type MELCloudApp from '../app'
+import type {
+  Capabilities,
+  CapabilitiesOptions,
+  ConvertFromDevice,
+  ConvertToDevice,
+  DeviceDetails,
+  EnergyCapabilityTagMapping,
+  EnergyReportMode,
+  EnergyReportRegular,
+  EnergyReportTotal,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  MELCloudDriver,
+  OpCapabilities,
+  OpCapabilityTagEntry,
+  SetCapabilities,
+  SetCapabilityTagMapping,
+  Settings,
+} from '../types'
 
-const INITIAL_SUM = 0
-const DEFAULT_DEVICE_COUNT = 1
-const DEFAULT_DIVISOR = 1
 const SYNC_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
-
-const reportPlanParametersTotal = {
-  duration: { days: 1 },
-  interval: { days: 1 },
-  values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-} as const
 
 const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
@@ -67,24 +54,12 @@ export abstract class BaseMELCloudDevice<
 
   readonly #id = (this.getData() as DeviceDetails<T>['data']).id
 
-  readonly #reportInterval: {
-    regular?: NodeJS.Timeout
-    total?: NodeJS.Timeout
-  } = {}
-
-  readonly #reportTimeout: {
-    regular: NodeJS.Timeout | null
-    total: NodeJS.Timeout | null
-  } = { regular: null, total: null }
-
-  #energyCapabilityTagEntries: {
-    regular?: EnergyCapabilityTagEntry<T>[]
-    total?: EnergyCapabilityTagEntry<T>[]
+  readonly #reports: {
+    regular?: EnergyReportRegular[T]
+    total?: EnergyReportTotal[T]
   } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
-
-  #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
   #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
 
@@ -98,15 +73,23 @@ export abstract class BaseMELCloudDevice<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
   >
 
-  protected abstract readonly reportPlanParameters: ReportPlanParameters | null
-
   protected abstract toDevice: Partial<
     Record<keyof SetCapabilities[T], ConvertToDevice<T>>
   >
 
+  protected abstract EnergyReportRegular?: new (
+    device: BaseMELCloudDevice<T>,
+    facade: DeviceFacade[T],
+  ) => EnergyReportRegular[T]
+
+  protected abstract EnergyReportTotal?: new (
+    device: BaseMELCloudDevice<T>,
+    facade: DeviceFacade[T],
+  ) => EnergyReportTotal[T]
+
   public override onDeleted(): void {
     modes.forEach((mode) => {
-      this.#unscheduleEnergyReport(mode)
+      this.#reports[mode]?.unschedule()
     })
   }
 
@@ -142,7 +125,7 @@ export abstract class BaseMELCloudDevice<
         this.#isEnergyCapability(setting),
       )
       if (changedEnergyKeys.length) {
-        await this.#updateEnergyReportsOnSettings(device, {
+        await this.#updateEnergyReportsOnSettings({
           changedKeys: changedEnergyKeys,
         })
       }
@@ -207,6 +190,20 @@ export abstract class BaseMELCloudDevice<
     await super.setWarning(null)
   }
 
+  public cleanMapping<
+    M extends
+      | EnergyCapabilityTagMapping[T]
+      | GetCapabilityTagMapping[T]
+      | ListCapabilityTagMapping[T]
+      | SetCapabilityTagMapping[T],
+  >(capabilityTagMapping: M): Partial<M> {
+    return Object.fromEntries(
+      Object.entries(capabilityTagMapping).filter(([capability]) =>
+        this.hasCapability(capability),
+      ),
+    ) as Partial<M>
+  }
+
   public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
     const newData = data ?? (await this.#fetchDevice())?.data
     if (newData) {
@@ -249,65 +246,6 @@ export abstract class BaseMELCloudDevice<
     ) as UpdateDeviceData[T]
   }
 
-  #calculateCopValue(
-    data: EnergyData[T],
-    capability: string & keyof EnergyCapabilities[T],
-  ): number {
-    const producedTags = this.driver.producedTagMapping[
-      capability
-    ] as (keyof EnergyData[T])[]
-    const consumedTags = this.driver.consumedTagMapping[
-      capability
-    ] as (keyof EnergyData[T])[]
-    return (
-      producedTags.reduce(
-        (acc, tag) => acc + (data[tag] as number),
-        INITIAL_SUM,
-      ) /
-      (consumedTags.reduce(
-        (acc, tag) => acc + (data[tag] as number),
-        INITIAL_SUM,
-      ) || DEFAULT_DIVISOR)
-    )
-  }
-
-  #calculateEnergyValue(
-    data: EnergyData[T],
-    tags: (keyof EnergyData[T])[],
-  ): number {
-    return (
-      tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
-      this.#linkedDeviceCount
-    )
-  }
-
-  #calculatePowerValue(
-    data: EnergyData[T],
-    tags: (keyof EnergyData[T])[],
-    hour: number,
-  ): number {
-    return (
-      tags.reduce(
-        (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
-        INITIAL_SUM,
-      ) / this.#linkedDeviceCount
-    )
-  }
-
-  #cleanMapping<
-    M extends
-      | EnergyCapabilityTagMapping[T]
-      | GetCapabilityTagMapping[T]
-      | ListCapabilityTagMapping[T]
-      | SetCapabilityTagMapping[T],
-  >(capabilityTagMapping: M): Partial<M> {
-    return Object.fromEntries(
-      Object.entries(capabilityTagMapping).filter(([capability]) =>
-        this.hasCapability(capability),
-      ),
-    ) as Partial<M>
-  }
-
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
     value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
@@ -343,24 +281,14 @@ export abstract class BaseMELCloudDevice<
     return this.#device
   }
 
-  async #getEnergyReport(
-    device: DeviceFacade[T],
-    mode: EnergyReportMode,
-    minus: DurationLike,
-  ): Promise<void> {
-    try {
-      const toDateTime = DateTime.now().minus(minus)
-      const to = toDateTime.toISODate()
-      await this.#setEnergyCapabilities(
-        (await device.getEnergyReport({
-          from: mode === 'total' ? undefined : to,
-          to,
-        })) as EnergyData[T],
-        toDateTime.hour,
-        mode,
-      )
-    } catch (error) {
-      await this.setWarning(error)
+  async #handleEnergyReports(device: DeviceFacade[T]): Promise<void> {
+    if (this.EnergyReportRegular) {
+      this.#reports.regular = new this.EnergyReportRegular(this, device)
+      await this.#reports.regular.handle()
+    }
+    if (this.EnergyReportTotal) {
+      this.#reports.total = new this.EnergyReportTotal(this, device)
+      await this.#reports.total.handle()
     }
   }
 
@@ -385,13 +313,6 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #handleReports(device: DeviceFacade[T]): Promise<void> {
-    this.#setEnergyCapabilityTagEntries()
-    await Promise.all(
-      modes.map(async (mode) => this.#runEnergyReport(device, mode)),
-    )
-  }
-
   async #init(device: DeviceFacade[T]): Promise<void> {
     const { data } = device
     await this.#setCapabilities(data)
@@ -399,7 +320,7 @@ export abstract class BaseMELCloudDevice<
     this.#setCapabilityTagMappings()
     this.#registerCapabilityListeners(device)
     await this.syncFromDevice(data)
-    await this.#handleReports(device)
+    await this.#handleEnergyReports(device)
   }
 
   #isCapability(setting: string): boolean {
@@ -425,44 +346,6 @@ export abstract class BaseMELCloudDevice<
       },
       SYNC_DELAY,
     )
-  }
-
-  async #runEnergyReport(
-    device: DeviceFacade[T],
-    mode: EnergyReportMode,
-  ): Promise<void> {
-    if (this.reportPlanParameters) {
-      if (!(this.#energyCapabilityTagEntries[mode] ?? []).length) {
-        this.#unscheduleEnergyReport(mode)
-        return
-      }
-      const { duration, interval, values } =
-        mode === 'total' ? reportPlanParametersTotal : this.reportPlanParameters
-      await this.#getEnergyReport(device, mode, this.reportPlanParameters.minus)
-      this.#scheduleEnergyReport(device, mode, { duration, interval, values })
-    }
-  }
-
-  #scheduleEnergyReport(
-    device: DeviceFacade[T],
-    mode: EnergyReportMode,
-    { duration, interval, values }: Omit<ReportPlanParameters, 'minus'>,
-  ): void {
-    if (!this.#reportTimeout[mode]) {
-      const actionType = `${mode} energy report`
-      this.#reportTimeout[mode] = this.setTimeout(
-        async () => {
-          await this.#runEnergyReport(device, mode)
-          this.#reportInterval[mode] = this.setInterval(
-            async () => this.#runEnergyReport(device, mode),
-            interval,
-            actionType,
-          )
-        },
-        DateTime.now().plus(duration).set(values).diffNow(),
-        actionType,
-      )
-    }
   }
 
   async #set(
@@ -537,74 +420,17 @@ export abstract class BaseMELCloudDevice<
   }
 
   #setCapabilityTagMappings(): void {
-    this.#setCapabilityTagMapping = this.#cleanMapping(
+    this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
     )
-    this.#getCapabilityTagMapping = this.#cleanMapping(
+    this.#getCapabilityTagMapping = this.cleanMapping(
       this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
     )
     this.#setListCapabilityTagMappings()
   }
 
-  async #setEnergyCapabilities(
-    data: EnergyData[T],
-    hour: number,
-    mode: EnergyReportMode,
-  ): Promise<void> {
-    if ('UsageDisclaimerPercentages' in data) {
-      ;({ length: this.#linkedDeviceCount } =
-        data.UsageDisclaimerPercentages.split(','))
-    }
-    await Promise.all(
-      (this.#energyCapabilityTagEntries[mode] ?? []).map(
-        async <
-          K extends Extract<keyof EnergyCapabilities[T], string>,
-          L extends keyof EnergyData[T],
-        >([capability, tags]: [K, L[]]) => {
-          if (capability.includes('cop')) {
-            await this.setCapabilityValue(
-              capability,
-              this.#calculateCopValue(data, capability) as Capabilities[T][K],
-            )
-            return
-          }
-          if (capability.startsWith('measure_power')) {
-            await this.setCapabilityValue(
-              capability,
-              this.#calculatePowerValue(data, tags, hour) as Capabilities[T][K],
-            )
-            return
-          }
-          await this.setCapabilityValue(
-            capability,
-            this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
-          )
-        },
-      ),
-    )
-  }
-
-  #setEnergyCapabilityTagEntries(mode?: EnergyReportMode): void {
-    const energyCapabilityTagEntries = Object.entries(
-      this.#cleanMapping(
-        this.driver.energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
-      ),
-    ) as EnergyCapabilityTagEntry<T>[]
-    if (mode !== undefined) {
-      this.#energyCapabilityTagEntries[mode] =
-        energyCapabilityTagEntries.filter(
-          ([capability]) => isTotalEnergyKey(capability) === (mode === 'total'),
-        )
-      return
-    }
-    this.#energyCapabilityTagEntries = Object.groupBy(
-      energyCapabilityTagEntries,
-      ([capability]) => (isTotalEnergyKey(capability) ? 'total' : 'regular'),
-    )
-  }
-
   #setListCapabilityTagMappings(): void {
-    this.#listCapabilityTagMapping = this.#cleanMapping(
+    this.#listCapabilityTagMapping = this.cleanMapping(
       this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
     )
     this.#setOpCapabilityTagEntries()
@@ -616,13 +442,6 @@ export abstract class BaseMELCloudDevice<
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
     }) as OpCapabilityTagEntry<T>[]
-  }
-
-  #unscheduleEnergyReport(mode: EnergyReportMode): void {
-    this.homey.clearTimeout(this.#reportTimeout[mode])
-    this.homey.clearInterval(this.#reportInterval[mode])
-    this.#reportTimeout[mode] = null
-    this.log(`${mode} energy report has been stopped`)
   }
 
   async #updateDeviceOnSettings(
@@ -658,22 +477,11 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #updateEnergyReport(
-    device: DeviceFacade[T],
-    mode: EnergyReportMode,
-  ): Promise<void> {
-    this.#setEnergyCapabilityTagEntries(mode)
-    await this.#runEnergyReport(device, mode)
-  }
-
-  async #updateEnergyReportsOnSettings(
-    device: DeviceFacade[T],
-    {
-      changedKeys,
-    }: {
-      changedKeys: string[]
-    },
-  ): Promise<void> {
+  async #updateEnergyReportsOnSettings({
+    changedKeys,
+  }: {
+    changedKeys: string[]
+  }): Promise<void> {
     await Promise.all(
       modes.map(async (mode) => {
         if (
@@ -681,7 +489,7 @@ export abstract class BaseMELCloudDevice<
             (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
           )
         ) {
-          await this.#updateEnergyReport(device, mode)
+          await this.#reports[mode]?.handle()
         }
       }),
     )

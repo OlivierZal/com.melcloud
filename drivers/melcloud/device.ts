@@ -7,12 +7,12 @@ import {
 } from '@olivierzal/melcloud-api'
 
 import { BaseMELCloudDevice } from '../../bases'
+import { EnergyReportRegularAta, EnergyReportTotalAta } from '../../reports'
 import {
   ThermostatModeAta,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAta,
-  type ReportPlanParameters,
   type SetCapabilitiesAta,
 } from '../../types'
 
@@ -36,13 +36,6 @@ export = class extends BaseMELCloudDevice<'Ata'> {
       Vertical[value]) as ConvertFromDevice<'Ata'>,
   } as const
 
-  protected readonly reportPlanParameters: ReportPlanParameters = {
-    duration: { hours: 1 },
-    interval: { hours: 1 },
-    minus: { hours: 1 },
-    values: { millisecond: 0, minute: 5, second: 0 },
-  } as const
-
   protected readonly toDevice: Partial<
     Record<keyof SetCapabilitiesAta, ConvertToDevice<'Ata'>>
   > = {
@@ -53,4 +46,8 @@ export = class extends BaseMELCloudDevice<'Ata'> {
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<'Ata'>,
   } as const
+
+  protected EnergyReportRegular = EnergyReportRegularAta
+
+  protected EnergyReportTotal = EnergyReportTotalAta
 }

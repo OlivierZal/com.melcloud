@@ -27,10 +27,9 @@ export {
   type TargetTemperatureFlowCapabilities,
 } from './atw'
 export {
-  K_MULTIPLIER,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
-  model,
+  zoneModel,
   type AreaZone,
   type BuildingZone,
   type Capabilities,
@@ -46,6 +45,8 @@ export {
   type EnergyCapabilityTagEntry,
   type EnergyCapabilityTagMapping,
   type EnergyReportMode,
+  type EnergyReportRegular,
+  type EnergyReportTotal,
   type ErrorDetails,
   type ErrorLog,
   type ErrorLogQuery,
@@ -68,7 +69,6 @@ export {
   type OpCapabilityTagEntry,
   type OpDeviceData,
   type PairSetting,
-  type ReportPlanParameters,
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,

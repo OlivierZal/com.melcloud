@@ -30,7 +30,7 @@ import horizontal from './.homeycompose/capabilities/horizontal.json'
 import vertical from './.homeycompose/capabilities/vertical.json'
 import {
   fanSpeedValues,
-  model,
+  zoneModel,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -220,7 +220,7 @@ export = class extends App {
     status?: GetAtaOptions['status'],
   ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
     if (mode === 'detailed') {
-      const { devices } = model[zoneType].getById(Number(zoneId)) ?? {}
+      const { devices } = zoneModel[zoneType].getById(Number(zoneId)) ?? {}
       if (!devices) {
         throw new Error(this.homey.__('errors.deviceNotFound'))
       }
@@ -277,10 +277,10 @@ export = class extends App {
     id: number | string,
   ): AreaFacade | BuildingFacade | FloorFacade
   public getFacade(
-    zoneType: keyof typeof model,
+    zoneType: keyof typeof zoneModel,
     id: number | string,
   ): AreaFacade | BuildingFacade | DeviceFacadeAny | FloorFacade {
-    const instance = model[zoneType].getById(Number(id))
+    const instance = zoneModel[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
         this.homey.__(
