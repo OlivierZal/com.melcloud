@@ -607,17 +607,10 @@ const handleSnowAnimation = (speed: number): void => {
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.enter?.cancel()
-  const { height, width } = getComputedStyle(sun)
+  const { bottom, left } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      {
-        bottom: `${String(
-          (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
-        )}px`,
-        left: `${String(
-          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
-        )}px`,
-      },
+      { bottom, left },
       {
         bottom: `${String(window.innerHeight)}px`,
         left: `${String(window.innerWidth)}px`,
@@ -638,13 +631,10 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   sunAnimation.exit?.cancel()
-  const { height, width } = getComputedStyle(sun)
+  const { bottom, height, left, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
-      {
-        bottom: `${String(window.innerHeight)}px`,
-        left: `${String(window.innerWidth)}px`,
-      },
+      { bottom, left },
       {
         bottom: `${String(
           (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
