@@ -606,7 +606,9 @@ const handleSnowAnimation = (speed: number): void => {
 }
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
+  let duration = SUN_DURATION
   if (sunAnimation.enter) {
+    duration = Number(sunAnimation.enter.currentTime)
     sunAnimation.enter.pause()
     sunAnimation.enter = null
   }
@@ -622,7 +624,7 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
         left: `${String(window.innerWidth)}px`,
       },
     ],
-    { duration: 5000, easing: 'ease-in-out', fill: 'forwards' },
+    { duration, easing: 'ease-in-out', fill: 'forwards' },
   )
   animation.onfinish = (): void => {
     sun.remove()
@@ -634,7 +636,9 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 }
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
+  let duration = SUN_DURATION
   if (sunAnimation.exit) {
+    duration = Number(sunAnimation.exit.currentTime)
     sunAnimation.exit.pause()
     sunAnimation.exit = null
   }
@@ -654,7 +658,7 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
         )}px`,
       },
     ],
-    { duration: 5000, easing: 'ease-in-out', fill: 'forwards' },
+    { duration, easing: 'ease-in-out', fill: 'forwards' },
   )
   animation.onfinish = (): void => {
     sunAnimation.enter = null
