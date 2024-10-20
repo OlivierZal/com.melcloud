@@ -661,8 +661,8 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
 const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
   const animation = sun.animate(
     [
-      { filter: 'brightness(120%) blur(20px)', transform: 'rotate(0deg)' },
-      { filter: 'brightness(120%) blur(20px)', transform: 'rotate(360deg)' },
+      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
+      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
     ],
     { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
   )
