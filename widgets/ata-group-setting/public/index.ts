@@ -129,8 +129,11 @@ const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_INTERVAL = 50
-const SUN_BOTTOM_POS_Y_FACTOR = 1.25
-const SUN_DURATION = 5000
+const SUN_POS_X_OFFSET = 30
+const SUN_POS_Y_FACTOR = 1.25
+const SUN_POS_Y_OFFSET = 20
+const SUN_ENTER_AND_EXIT_DURATION = 5000
+const SUN_SHINE_DURATION = 5000
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -606,7 +609,9 @@ const handleSnowAnimation = (speed: number): void => {
 }
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
-  const duration = Number(sunAnimation.enter?.currentTime ?? SUN_DURATION)
+  const duration = Number(
+    sunAnimation.enter?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+  )
   sunAnimation.enter?.pause()
   sunAnimation.enter = null
   const { bottom, left } = getComputedStyle(sun)
@@ -633,7 +638,9 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 }
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
-  const duration = Number(sunAnimation.exit?.currentTime ?? SUN_DURATION)
+  const duration = Number(
+    sunAnimation.exit?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+  )
   sunAnimation.exit?.pause()
   sunAnimation.exit = null
   const { bottom, height, left, width } = getComputedStyle(sun)
@@ -645,10 +652,12 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
       },
       {
         bottom: `${String(
-          (window.innerHeight - parseFloat(height)) * SUN_BOTTOM_POS_Y_FACTOR,
+          (window.innerHeight - parseFloat(height)) * SUN_POS_Y_FACTOR -
+            SUN_POS_Y_OFFSET,
         )}px`,
         left: `${String(
-          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
+          (window.innerWidth - parseFloat(width)) / FACTOR_TWO +
+            SUN_POS_X_OFFSET,
         )}px`,
       },
     ],
@@ -666,7 +675,7 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
     ],
-    { duration: SUN_DURATION, easing: 'linear', iterations: Infinity },
+    { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
   )
   return animation
 }
