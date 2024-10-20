@@ -130,7 +130,7 @@ const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_INTERVAL = 50
 const SUN_BOTTOM_POS_Y_FACTOR = 1.25
-const SUN_SHINE_DURATION = 5000
+const SUN_DURATION = 5000
 
 const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
@@ -606,8 +606,15 @@ const handleSnowAnimation = (speed: number): void => {
 }
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
-  sunAnimation.enter?.pause()
-  sunAnimation.enter = null
+  let duration = SUN_DURATION
+  if (sunAnimation.enter) {
+    const {
+      enter: { currentTime, startTime },
+    } = sunAnimation
+    duration = Number(currentTime) - Number(startTime)
+    sunAnimation.enter.pause()
+    sunAnimation.enter = null
+  }
   const { bottom, left } = getComputedStyle(sun)
   const animation = sun.animate(
     [
@@ -620,7 +627,7 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
         left: `${String(window.innerWidth)}px`,
       },
     ],
-    { duration: 5000, easing: 'ease-in', fill: 'forwards' },
+    { duration, easing: 'ease-in-out', fill: 'forwards' },
   )
   animation.onfinish = (): void => {
     sun.remove()
@@ -632,8 +639,15 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 }
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
-  sunAnimation.exit?.pause()
-  sunAnimation.exit = null
+  let duration = SUN_DURATION
+  if (sunAnimation.exit) {
+    const {
+      exit: { currentTime, startTime },
+    } = sunAnimation
+    duration = Number(currentTime) - Number(startTime)
+    sunAnimation.exit.pause()
+    sunAnimation.exit = null
+  }
   const { bottom, height, left, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
@@ -650,7 +664,7 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
         )}px`,
       },
     ],
-    { duration: 5000, easing: 'ease-out', fill: 'forwards' },
+    { duration, easing: 'ease-in-out', fill: 'forwards' },
   )
   animation.onfinish = (): void => {
     sunAnimation.enter = null
@@ -664,7 +678,7 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
     ],
-    { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
+    { duration: SUN_DURATION, easing: 'linear', iterations: Infinity },
   )
   return animation
 }
