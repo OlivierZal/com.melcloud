@@ -674,12 +674,14 @@ const handleSunAnimation = (speed: number): void => {
   if (!sun) {
     sun = createAnimatedElement('sun')
     animationElement.append(sun)
-    sunAnimation.enter = generateSunEnterAnimation(sun)
   }
   if (!sunAnimation.shine) {
     sunAnimation.shine = generateSunShineAnimation(sun)
   }
   sunAnimation.shine.playbackRate = speed
+  if (!sunAnimation.enter) {
+    sunAnimation.enter = generateSunEnterAnimation(sun)
+  }
 }
 
 const generateLeafAnimation = (
