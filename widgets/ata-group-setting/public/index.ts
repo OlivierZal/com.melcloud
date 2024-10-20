@@ -854,10 +854,8 @@ const resetAnimation = async (
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  if (animationTimeouts.length) {
-    animationTimeouts.forEach(clearTimeout)
-    animationTimeouts.length = 0
-  }
+  animationTimeouts.forEach(clearTimeout)
+  animationTimeouts.length = 0
   await resetFireAnimation(homey, isSomethingOn, mode)
   await resetSunAnimation(homey, isSomethingOn, mode)
 }
