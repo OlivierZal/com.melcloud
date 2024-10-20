@@ -606,12 +606,9 @@ const handleSnowAnimation = (speed: number): void => {
 }
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
-  let duration = SUN_DURATION
-  if (sunAnimation.enter) {
-    duration = Number(sunAnimation.enter.currentTime)
-    sunAnimation.enter.pause()
-    sunAnimation.enter = null
-  }
+  const duration = Number(sunAnimation.enter?.currentTime ?? SUN_DURATION)
+  sunAnimation.enter?.pause()
+  sunAnimation.enter = null
   const { bottom, left } = getComputedStyle(sun)
   const animation = sun.animate(
     [
@@ -636,12 +633,9 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
 }
 
 const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
-  let duration = SUN_DURATION
-  if (sunAnimation.exit) {
-    duration = Number(sunAnimation.exit.currentTime)
-    sunAnimation.exit.pause()
-    sunAnimation.exit = null
-  }
+  const duration = Number(sunAnimation.exit?.currentTime ?? SUN_DURATION)
+  sunAnimation.exit?.pause()
+  sunAnimation.exit = null
   const { bottom, height, left, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
