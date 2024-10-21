@@ -3,7 +3,6 @@
     "lib": ["DOM", "ESNext"],
     "module": "NodeNext",
     "noImplicitOverride": true,
-    "noImplicitReturns": true,
     "noUncheckedSideEffectImports": true,
     "outDir": ".homeybuild",
     "resolveJsonModule": true,
