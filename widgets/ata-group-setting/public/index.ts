@@ -378,8 +378,8 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const buildAtaValuesBody = (): GroupAtaState => {
-  const body = Object.fromEntries(
+const buildAtaValuesBody = (): GroupAtaState =>
+  Object.fromEntries(
     Array.from(
       ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
     )
@@ -393,8 +393,6 @@ const buildAtaValuesBody = (): GroupAtaState => {
       )
       .map((element) => [element.id, processValue(element)]),
   )
-  return body
-}
 
 const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
   const { value } = zoneElement
@@ -925,11 +923,11 @@ const handleAnimation = async (
 
 const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const state = (await getAtaValues(homey)) as GroupAtaState
-    updateZoneMapping({ ...defaultAtaValues, ...state })
+    const values = (await getAtaValues(homey)) as GroupAtaState
+    updateZoneMapping({ ...defaultAtaValues, ...values })
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
-    await handleAnimation(homey, state)
+    await handleAnimation(homey, values)
   } catch (_error) {
     hide(hasZoneAtaDevicesElement)
   }
@@ -1020,12 +1018,12 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const state = buildAtaValuesBody()
-    if (Object.keys(state).length) {
+    const body = buildAtaValuesBody()
+    if (Object.keys(body).length) {
       await homey.api(
         'PUT',
         `/values/ata/${getZonePath()}`,
-        state satisfies GroupAtaState,
+        body satisfies GroupAtaState,
       )
     }
   } catch (_error) {}

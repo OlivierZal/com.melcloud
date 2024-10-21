@@ -590,7 +590,7 @@ const buildSettingsBody = (
 
 const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
   const errors: string[] = []
-  const body = Object.fromEntries(
+  const values = Object.fromEntries(
     Array.from(
       ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
     )
@@ -614,7 +614,7 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
   if (errors.length) {
     throw new Error(errors.join('\n'))
   }
-  return body
+  return values
 }
 
 const generateErrorLogTable = (
