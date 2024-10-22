@@ -445,13 +445,6 @@ const config = [
         ],
       },
     },
-    {
-      files: ['app.mts', 'bases/{device,driver}.mts'],
-      rules: {
-        'import/default': 'off',
-        'import/no-named-as-default-member': 'off',
-      },
-    },
   ),
   {
     files: ['**/*.html'],

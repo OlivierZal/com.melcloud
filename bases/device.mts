@@ -1,5 +1,4 @@
-import Homey from 'homey'
-
+import { Homey } from '../homey.mjs'
 import { addToLogs, withTimers } from '../lib/index.mjs'
 
 import type {

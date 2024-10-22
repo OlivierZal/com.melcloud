@@ -18,7 +18,6 @@ import {
   type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import Homey from 'homey'
 import fanSpeed from 'homey-lib/assets/capability/capabilities/fan_speed.json' assert { type: 'json' }
 import power from 'homey-lib/assets/capability/capabilities/onoff.json' assert { type: 'json' }
 import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json' assert { type: 'json' }
@@ -28,6 +27,7 @@ import { Settings as LuxonSettings } from 'luxon'
 import changelog from './.homeychangelog.json' assert { type: 'json' }
 import horizontal from './.homeycompose/capabilities/horizontal.json' assert { type: 'json' }
 import vertical from './.homeycompose/capabilities/vertical.json' assert { type: 'json' }
+import { Homey } from './homey.mjs'
 import {
   fanSpeedValues,
   zoneModel,

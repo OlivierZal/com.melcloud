@@ -5,7 +5,8 @@ import {
   type ListDevice,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import Homey from 'homey'
+
+import { Homey } from '../homey.mjs'
 
 import type PairSession from 'homey/lib/PairSession'
 
