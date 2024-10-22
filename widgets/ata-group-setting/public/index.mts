@@ -3,7 +3,7 @@ import type {
   OperationMode,
   ZoneSettings,
 } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/HomeyWidget.js'
+import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
   BuildingZone,

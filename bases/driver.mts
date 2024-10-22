@@ -7,7 +7,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import Homey from 'homey'
 
-import type PairSession from 'homey/lib/PairSession.js'
+import type PairSession from 'homey/lib/PairSession'
 
 import type MELCloudApp from '../app.mjs'
 import type {

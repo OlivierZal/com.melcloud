@@ -7,7 +7,7 @@ import type {
   DeviceType,
   EnergyData,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Device.js'
+import type Homey from 'homey/lib/Homey'
 
 import type {
   Capabilities,

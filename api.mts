@@ -6,7 +6,7 @@ import type {
   HolidayModeData,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey.js'
+import type Homey from 'homey/lib/Homey'
 
 import type MELCloudApp from './app.mjs'
 import type {

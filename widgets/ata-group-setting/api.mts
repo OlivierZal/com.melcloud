@@ -1,7 +1,7 @@
 import { getBuildings } from '../../lib/index.mjs'
 
 import type { GroupAtaState } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey.js'
+import type Homey from 'homey/lib/Homey'
 
 import type MELCloudApp from '../../app.mjs'
 import type {

@@ -1,4 +1,4 @@
-import homey from 'homey'
+import Homey from 'homey'
 
 import { addToLogs, withTimers } from '../lib/index.mjs'
 
@@ -47,7 +47,7 @@ const isTotalEnergyKey = (key: string): boolean =>
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends keyof typeof DeviceType,
-> extends withTimers(homey.Device) {
+> extends withTimers(Homey.Device) {
   public declare readonly driver: MELCloudDriver[T]
 
   readonly #app = this.homey.app as MELCloudApp
