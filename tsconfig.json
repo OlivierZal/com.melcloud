@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
-    "module": "NodeNext",
+    "module": "Preserve",
     "noImplicitOverride": true,
     "noUncheckedSideEffectImports": true,
     "outDir": ".homeybuild",
