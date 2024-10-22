@@ -201,7 +201,9 @@ const config = [
       files: ['**/*.{ts,mts,js}'],
       languageOptions: {
         parserOptions: {
-          projectService: true,
+          projectService: {
+            allowDefaultProject: ['*.js'],
+          },
           tsconfigRootDir: import.meta.dirname,
           warnOnUnsupportedTypeScriptVersion: false,
         },
@@ -422,10 +424,9 @@ const config = [
       },
     },
     {
+      extends: [tsConfigs.disableTypeChecked],
       files: ['**/*.js'],
-      ...tsConfigs.disableTypeChecked,
       rules: {
-        ...tsConfigs.disableTypeChecked.rules,
         '@typescript-eslint/explicit-function-return-type': 'off',
       },
     },
