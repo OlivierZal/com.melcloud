@@ -10,7 +10,7 @@ import type {
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mjs'
+import type { MELCloudDeviceAtw } from '../drivers/index.mjs'
 
 import type {
   BaseGetCapabilities,
