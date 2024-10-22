@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "com.melcloud",
   "version": "39.1.1",
   "type": "module",
