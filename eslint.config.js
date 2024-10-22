@@ -431,9 +431,9 @@ const config = [
     {
       files: [
         '**/*.config.js',
+        '**/api.mts',
         'app.mts',
         'drivers/*/{device,driver}.mts',
-        '**/api.mts',
       ],
       rules: {
         'import/no-default-export': 'off',
