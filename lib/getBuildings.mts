@@ -1,38 +1,43 @@
 import {
   BuildingModel,
   type AreaModelAny,
+  type DeviceModelAny,
   type FloorModel,
 } from '@olivierzal/melcloud-api'
 
 import type { AreaZone, BuildingZone, FloorZone } from '../types/index.mjs'
+
+const hasDevices = (zone: { devices: DeviceModelAny[] }): boolean =>
+  Boolean(zone.devices.length)
 
 const compareNames = (
   { name: name1 }: { name: string },
   { name: name2 }: { name: string },
 ): number => name1.localeCompare(name2)
 
-const mapArea = ({ id, name }: AreaModelAny): AreaZone => ({ id, name })
+const filterAndMapAreas = (areas: AreaModelAny[]): AreaZone[] =>
+  areas
+    .filter(hasDevices)
+    .toSorted(compareNames)
+    .map(({ id, name }) => ({ id, name }))
 
-const mapFloor = ({ areas, id, name }: FloorModel): FloorZone => ({
-  areas: areas.sort(compareNames).map(mapArea),
-  id,
-  name,
-})
-
-const mapBuilding = ({
-  areas,
-  floors,
-  id,
-  name,
-}: BuildingModel): BuildingZone => ({
-  areas: areas
-    .filter(({ floorId }: { floorId: number | null }) => floorId === null)
-    .sort(compareNames)
-    .map(mapArea),
-  floors: floors.sort(compareNames).map(mapFloor),
-  id,
-  name,
-})
+const filterAndMapFloors = (floors: FloorModel[]): FloorZone[] =>
+  floors
+    .filter(hasDevices)
+    .toSorted(compareNames)
+    .map(({ areas, id, name }) => ({
+      areas: filterAndMapAreas(areas),
+      id,
+      name,
+    }))
 
 export const getBuildings = (): BuildingZone[] =>
-  BuildingModel.getAll().sort(compareNames).map(mapBuilding)
+  BuildingModel.getAll()
+    .filter(hasDevices)
+    .toSorted(compareNames)
+    .map(({ areas, floors, id, name }) => ({
+      areas: filterAndMapAreas(areas.filter(({ floorId }) => floorId === null)),
+      floors: filterAndMapFloors(floors),
+      id,
+      name,
+    }))
