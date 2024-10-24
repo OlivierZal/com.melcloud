@@ -106,7 +106,7 @@ const MODE_COOL = 3
 const MODE_DRY = 2
 const MODE_FAN = 7
 const MODE_HEAT = 1
-const HEAT_MODES = [MODE_AUTO, MODE_HEAT]
+const heatModes = [MODE_AUTO, MODE_HEAT]
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -815,10 +815,10 @@ const resetFireAnimation = async (
 ): Promise<void> => {
   if (
     isSomethingOn &&
-    (HEAT_MODES.includes(mode) ||
+    (heatModes.includes(mode) ||
       (mode === MODE_MIXED &&
         (await getModes(homey)).some((currentMode) =>
-          HEAT_MODES.includes(currentMode),
+          heatModes.includes(currentMode),
         )))
   ) {
     if (smokeAnimationFrameId !== null) {

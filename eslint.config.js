@@ -274,15 +274,10 @@ const config = [
             types: ['boolean'],
           },
           {
-            format: ['camelCase'],
-            modifiers: ['global'],
+            format: ['UPPER_CASE'],
+            modifiers: ['const', 'global'],
             selector: 'variable',
-            types: ['function'],
-          },
-          {
-            format: ['camelCase', 'UPPER_CASE'],
-            modifiers: ['global'],
-            selector: 'variable',
+            types: ['boolean', 'number', 'string'],
           },
           {
             format: ['PascalCase'],
