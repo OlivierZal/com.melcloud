@@ -1,3 +1,4 @@
+*.config.{ts,js}
 /.github/
 /.gitignore
 /.homeybuild/
@@ -9,8 +10,5 @@
 /README.md
 /coverage/
 /docs/
-/eslint.config.mjs
-/jest.config.ts
-/prettier.config.mjs
 /sonar-project.properties
 /tests/

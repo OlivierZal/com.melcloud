@@ -2,16 +2,16 @@
   "name": "com.melcloud",
   "version": "39.1.1",
   "type": "module",
-  "exports": "./app.ts",
   "scripts": {
     "build": "homey app validate --level publish",
+    "css": "tailwindcss -i widgets/ata-group-setting/public/input.css -o widgets/ata-group-setting/public/output.css",
     "deploy": "homey app install",
     "format": "prettier . --check",
     "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run format:docs && npm run lint:fix && npm run format:fix",
+    "prepare": "npm run format:docs && npm run lint:fix && npm run format:fix && npm run css",
     "publish": "homey app publish"
   },
   "dependencies": {
@@ -30,7 +30,8 @@
     "@stylistic/eslint-plugin": "^2.9.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.9",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.7.9",
+    "@types/node": "^22.8.0",
+    "daisyui": "^4.12.13",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -40,6 +41,7 @@
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.3",
+    "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.11.0"
   }

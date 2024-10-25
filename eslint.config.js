@@ -427,7 +427,7 @@ const config = [
     },
     {
       files: [
-        '**/*.config.js',
+        '**/*.config.{ts,js}',
         '**/api.mts',
         'app.mts',
         'drivers/*/{device,driver}.mts',

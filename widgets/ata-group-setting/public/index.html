@@ -5,8 +5,7 @@
         <meta content="MELCloud air-to-air device setting" name="description">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
-        <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet">
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="output.css" rel="stylesheet">
         <link href="styles.css" rel="stylesheet">
         <link href="flame.css" rel="stylesheet">
         <link href="leaf.css" rel="stylesheet">
@@ -19,7 +18,7 @@
         <div class="homey-text-align-center">
             <select
                 id="zones"
-                class="select w-full max-w-xs border-color-green color-green"
+                class="select select-accent select-ghost w-full max-w-xs"
                 aria-label="Buildings"
             ></select>
         </div>
@@ -29,14 +28,14 @@
                 <button
                     id="refresh_values_melcloud"
                     type="button"
-                    class="btn btn-outline color-blue"
+                    class="btn btn-outline btn-primary"
                     aria-label="Refresh"
                     data-i18n="settings.refresh"
                 ></button>
                 <button
                     id="apply_values_melcloud"
                     type="button"
-                    class="btn btn-outline color-danger"
+                    class="btn btn-outline btn-secondary"
                     aria-label="Update"
                     data-i18n="settings.buildings.update"
                 ></button>

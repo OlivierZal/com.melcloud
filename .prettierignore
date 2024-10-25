@@ -1,5 +1,6 @@
 *.html
 /.homeycompose/app.json
+/README.md
 /app.json
 /locales/
-/README.md
+/widgets/ata-group-setting/public/output.css
