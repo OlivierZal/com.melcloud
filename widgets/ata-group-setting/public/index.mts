@@ -279,7 +279,7 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
-  inputElement.classList.add('input')
+  inputElement.classList.add('input', 'input-ghost')
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -307,7 +307,7 @@ const createSelectElement = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
-  selectElement.classList.add('select')
+  selectElement.classList.add('select', 'select-ghost')
   selectElement.id = id
   ;[
     { id: '', label: '' },
