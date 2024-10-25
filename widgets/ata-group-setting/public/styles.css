@@ -1,3 +1,7 @@
+html {
+  font-family: 'Roboto', Helvetica, sans-serif !important;
+}
+
 #animation,
 #smoke_canvas {
   position: fixed;
@@ -33,4 +37,20 @@ select:not(#zones) {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.border-color-green {
+  border-color: var(--homey-color-green);
+}
+
+.color-blue {
+  color: var(--homey-color-blue);
+}
+
+.color-danger {
+  color: var(--homey-color-danger);
+}
+
+.color-green {
+  color: var(--homey-color-green);
 }
