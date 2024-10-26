@@ -168,7 +168,10 @@ export abstract class BaseMELCloudDevice<
 
   public override async setCapabilityOptions<
     K extends string & keyof CapabilitiesOptions[T],
-  >(capability: K, options: object & CapabilitiesOptions[T][K]): Promise<void> {
+  >(
+    capability: K,
+    options: CapabilitiesOptions[T][K] & Record<string, unknown>,
+  ): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
@@ -407,11 +410,11 @@ export abstract class BaseMELCloudDevice<
         this.setCapabilityOptions(
           ...(capabilityOptions as [
             string & keyof CapabilitiesOptions[T],
-            object &
-              CapabilitiesOptions[T][Extract<
-                keyof CapabilitiesOptions[T],
-                string
-              >],
+            CapabilitiesOptions[T][Extract<
+              keyof CapabilitiesOptions[T],
+              string
+            >] &
+              Record<string, unknown>,
           ]),
         ),
       ),

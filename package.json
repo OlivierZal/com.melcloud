@@ -3,15 +3,16 @@
   "version": "39.1.1",
   "type": "module",
   "scripts": {
-    "build": "homey app validate --level publish",
-    "css": "tailwindcss -i widgets/ata-group-setting/public/input.css -o widgets/ata-group-setting/public/output.css",
-    "deploy": "homey app install",
+    "build": "npm run prepare && homey app validate --level publish",
+    "build:css": "tailwindcss -i widgets/ata-group-setting/public/input.css -o widgets/ata-group-setting/public/output.css",
+    "deploy": "npm run prepare && homey app install",
     "format": "prettier . --check",
+    "format:css": "prettier widgets/ata-group-setting/public/output.css --ignore-path --write",
     "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
     "lint": "eslint . --flag unstable_ts_config",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run format:docs && npm run lint:fix && npm run format:fix && npm run css",
+    "prepare": "npm run build:css && npm run format:css && npm run format:docs && npm run lint:fix && npm run format:fix",
     "publish": "homey app publish"
   },
   "dependencies": {

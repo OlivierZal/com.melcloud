@@ -10,7 +10,19 @@ import packageJson from 'eslint-plugin-package-json/configs/recommended'
 import perfectionist from 'eslint-plugin-perfectionist'
 import ts, { configs as tsConfigs } from 'typescript-eslint'
 
+import type { Linter as TSLinter } from '@typescript-eslint/utils/ts-eslint'
 import type { Linter } from 'eslint'
+
+const { flatConfigs: importPluginConfigs } = importPlugin as {
+  flatConfigs: {
+    errors: Linter.Config
+    typescript: Linter.Config & {
+      settings: Record<string, unknown> & {
+        'import/resolver': Record<string, unknown>
+      }
+    }
+  }
+}
 
 const modifiersOrder = [
   ['declare', 'override', ''],
@@ -205,14 +217,13 @@ const config = [
         js.configs.all,
         ...tsConfigs.all,
         ...tsConfigs.strictTypeChecked,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        importPlugin.flatConfigs.errors,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        importPlugin.flatConfigs.typescript,
+        importPluginConfigs.errors,
+        importPluginConfigs.typescript,
         prettier,
       ],
       files: ['**/*.{ts,mts,js}'],
       languageOptions: {
+        ecmaVersion: 'latest',
         parserOptions: {
           projectService: {
             allowDefaultProject: ['*.js'],
@@ -220,6 +231,7 @@ const config = [
           tsconfigRootDir: import.meta.dirname,
           warnOnUnsupportedTypeScriptVersion: false,
         },
+        sourceType: 'module',
       },
       linterOptions: {
         reportUnusedDisableDirectives: true,
@@ -415,7 +427,6 @@ const config = [
         'sort-imports': 'off',
         'sort-keys': 'off',
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       settings: {
         perfectionist: {
           ignoreCase: false,
@@ -423,12 +434,9 @@ const config = [
           partitionByComment: true,
           type: 'natural',
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        ...importPlugin.flatConfigs.typescript.settings,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        ...importPluginConfigs.typescript.settings,
         'import/resolver': {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          ...importPlugin.flatConfigs.typescript.settings['import/resolver'],
+          ...importPluginConfigs.typescript.settings['import/resolver'],
           typescript: {
             alwaysTryTypes: true,
           },
@@ -502,8 +510,7 @@ const config = [
       'locales/*.json',
     ],
     language: 'json/json',
-    // @ts-expect-error: `eslint-plugin-json` is not typed
-    ...json.configs.recommended,
+    ...(json.configs as Record<string, Linter.Config>).recommended,
   },
   {
     files: ['**/*.md'],
@@ -512,12 +519,12 @@ const config = [
       markdown,
     },
     rules: {
-      ...(markdown.configs?.recommended as Linter.Config).rules,
+      ...(markdown.configs as Record<string, Linter.Config>).recommended.rules,
       'markdown/no-duplicate-headings': 'error',
       'markdown/no-html': 'error',
     },
   },
   packageJson,
-] satisfies Linter.Config[]
+] satisfies (Linter.Config | TSLinter.ConfigType)[]
 
 export default config
