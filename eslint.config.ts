@@ -374,6 +374,7 @@ const config = [
         'import/no-duplicates': 'error',
         'import/no-dynamic-require': 'error',
         'import/no-empty-named-blocks': 'error',
+        'import/no-extraneous-dependencies': 'error',
         'import/no-import-module-exports': 'error',
         'import/no-mutable-exports': 'error',
         'import/no-named-as-default': 'error',
