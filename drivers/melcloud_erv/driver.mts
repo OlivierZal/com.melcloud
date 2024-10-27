@@ -1,4 +1,4 @@
-import { BaseMELCloudDriver } from '../../bases/index.mjs'
+import { BaseMELCloudDriver } from '../../bases/driver.mjs'
 import {
   energyCapabilityTagMappingErv,
   getCapabilitiesOptionsAtaErv,

@@ -1,6 +1,7 @@
 import { DateTime, type DateObjectUnits, type DurationLike } from 'luxon'
 
-import { K_MULTIPLIER, isTotalEnergyKey } from '../lib/index.mjs'
+import { K_MULTIPLIER } from '../lib/constants.mjs'
+import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mjs'
 
 import type {
   DeviceFacade,

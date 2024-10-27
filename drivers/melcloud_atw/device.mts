@@ -6,12 +6,10 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { BaseMELCloudDevice } from '../../bases/index.mjs'
-import { K_MULTIPLIER } from '../../lib/index.mjs'
-import {
-  EnergyReportRegularAtw,
-  EnergyReportTotalAtw,
-} from '../../reports/index.mjs'
+import { BaseMELCloudDevice } from '../../bases/device.mjs'
+import { K_MULTIPLIER } from '../../lib/constants.mjs'
+import { EnergyReportRegularAtw } from '../../reports/melcloud_atw/regular.mjs'
+import { EnergyReportTotalAtw } from '../../reports/melcloud_atw/total.mjs'
 import {
   HotWaterMode,
   OperationModeStateHotWaterCapability,

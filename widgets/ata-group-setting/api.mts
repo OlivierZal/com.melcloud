@@ -1,4 +1,4 @@
-import { getBuildings } from '../../lib/index.mjs'
+import { getBuildings } from '../../lib/getBuildings.mjs'
 
 import type { GroupAtaState } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'

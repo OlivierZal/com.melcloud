@@ -1,4 +1,4 @@
-import { getBuildings } from './lib/index.mjs'
+import { getBuildings } from './lib/getBuildings.mjs'
 
 import type {
   FrostProtectionData,

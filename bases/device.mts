@@ -1,5 +1,6 @@
 import { Homey } from '../homey.mjs'
-import { addToLogs, withTimers } from '../lib/index.mjs'
+import { addToLogs } from '../lib/addToLogs.mjs'
+import { withTimers } from '../lib/withTimers.mjs'
 
 import type {
   DeviceFacade,

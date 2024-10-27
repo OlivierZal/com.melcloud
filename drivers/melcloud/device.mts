@@ -6,11 +6,9 @@ import {
   type ListDeviceDataAta,
 } from '@olivierzal/melcloud-api'
 
-import { BaseMELCloudDevice } from '../../bases/index.mjs'
-import {
-  EnergyReportRegularAta,
-  EnergyReportTotalAta,
-} from '../../reports/index.mjs'
+import { BaseMELCloudDevice } from '../../bases/device.mjs'
+import { EnergyReportRegularAta } from '../../reports/melcloud/regular.mjs'
+import { EnergyReportTotalAta } from '../../reports/melcloud/total.mjs'
 import {
   ThermostatModeAta,
   type ConvertFromDevice,

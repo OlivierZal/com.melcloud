@@ -5,7 +5,7 @@ import type {
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import type { MELCloudDeviceErv } from '../drivers/index.mjs'
+import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mjs'
 
 import type {
   BaseGetCapabilities,

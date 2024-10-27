@@ -17,20 +17,16 @@ import {
 
 import type { DateObjectUnits, DurationLike } from 'luxon'
 
-import type {
-  MELCloudDeviceAta,
-  MELCloudDeviceAtw,
-  MELCloudDeviceErv,
-  MELCloudDriverAta,
-  MELCloudDriverAtw,
-  MELCloudDriverErv,
-} from '../drivers/index.mjs'
-import type {
-  EnergyReportRegularAta,
-  EnergyReportRegularAtw,
-  EnergyReportTotalAta,
-  EnergyReportTotalAtw,
-} from '../reports/index.mjs'
+import type MELCloudDeviceAta from '../drivers/melcloud/device.mjs'
+import type MELCloudDriverAta from '../drivers/melcloud/driver.mjs'
+import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mjs'
+import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mjs'
+import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mjs'
+import type MELCloudDriverErv from '../drivers/melcloud_erv/driver.mjs'
+import type { EnergyReportRegularAta } from '../reports/melcloud/regular.mjs'
+import type { EnergyReportTotalAta } from '../reports/melcloud/total.mjs'
+import type { EnergyReportRegularAtw } from '../reports/melcloud_atw/regular.mjs'
+import type { EnergyReportTotalAtw } from '../reports/melcloud_atw/total.mjs'
 
 import type {
   CapabilitiesAta,
