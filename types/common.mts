@@ -3,10 +3,10 @@ import {
   BuildingModel,
   DeviceModel,
   FloorModel,
-  type BaseModel,
   type DeviceType,
   type EnergyData,
   type FanSpeed,
+  type IBaseModel,
   type ListDevice,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
@@ -324,11 +324,11 @@ export interface HolidayModeSettings {
   readonly to?: string | null
 }
 
-export type AreaZone = BaseModel
-export interface FloorZone extends BaseModel {
+export type AreaZone = IBaseModel
+export interface FloorZone extends IBaseModel {
   areas?: AreaZone[]
 }
-export interface BuildingZone extends BaseModel {
+export interface BuildingZone extends IBaseModel {
   areas?: AreaZone[]
   floors?: FloorZone[]
 }
