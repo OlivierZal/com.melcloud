@@ -1660,14 +1660,14 @@ html {
   line-height: 1.25rem;
 }
 
-.text-primary {
+.text-blue-500 {
   --tw-text-opacity: 1;
-  color: var(--fallback-p, oklch(var(--p) / var(--tw-text-opacity)));
+  color: rgb(59 130 246 / var(--tw-text-opacity));
 }
 
-.text-secondary {
+.text-red-500 {
   --tw-text-opacity: 1;
-  color: var(--fallback-s, oklch(var(--s) / var(--tw-text-opacity)));
+  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 
 .blur {
