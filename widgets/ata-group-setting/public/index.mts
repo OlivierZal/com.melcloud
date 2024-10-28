@@ -129,8 +129,6 @@ const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_INTERVAL = 50
-const SUN_POS_X_OFFSET = 30
-const SUN_POS_Y_FACTOR = 1.25
 const SUN_POS_Y_OFFSET = 20
 const SUN_ENTER_AND_EXIT_DURATION = 5000
 const SUN_SHINE_DURATION = 5000
@@ -229,7 +227,7 @@ const createLabelElement = (
   text: string,
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
-  labelElement.classList.add('label')
+  labelElement.classList.add('label', 'text-sm', '-mb-5')
   ;({ id: labelElement.htmlFor } = valueElement)
   labelElement.innerText = text
   labelElement.append(valueElement)
@@ -279,7 +277,7 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
-  inputElement.classList.add('input', 'input-ghost')
+  inputElement.classList.add('input', 'input-ghost', 'text-sm')
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -307,7 +305,7 @@ const createSelectElement = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
-  selectElement.classList.add('select', 'select-ghost')
+  selectElement.classList.add('select', 'select-ghost', 'text-sm')
   selectElement.id = id
   ;[
     { id: '', label: '' },
@@ -650,12 +648,11 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
       },
       {
         bottom: `${String(
-          (window.innerHeight - parseFloat(height)) * SUN_POS_Y_FACTOR -
+          (window.innerHeight - parseFloat(height)) / FACTOR_TWO +
             SUN_POS_Y_OFFSET,
         )}px`,
         left: `${String(
-          (window.innerWidth - parseFloat(width)) / FACTOR_TWO +
-            SUN_POS_X_OFFSET,
+          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
         )}px`,
       },
     ],
