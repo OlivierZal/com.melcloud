@@ -1995,6 +1995,11 @@ html {
     scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.text-accent {
+  --tw-text-opacity: 1;
+  color: var(--fallback-a, oklch(var(--a) / var(--tw-text-opacity)));
+}
+
 .blur {
   --tw-blur: blur(8px);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast)
