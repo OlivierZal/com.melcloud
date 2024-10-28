@@ -5212,7 +5212,7 @@
           "path": "/values/ata/:zoneType/:zoneId"
         }
       },
-      "height": 400,
+      "height": 380,
       "name": {
         "da": "Luft-luft-enhedsindstilling",
         "en": "Air-to-air device setting",
@@ -5223,6 +5223,7 @@
         "sv": "Luft-luft-enhetsinställning"
       },
       "settings": [],
+      "transparent": true,
       "id": "ata-group-setting"
     }
   },

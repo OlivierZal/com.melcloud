@@ -1,3 +1,8 @@
+#zones {
+  font-weight: bold;
+  text-align-last: center;
+}
+
 /* Table */
 .bordered {
   border-collapse: collapse;

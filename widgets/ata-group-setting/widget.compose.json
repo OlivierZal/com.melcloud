@@ -17,7 +17,7 @@
       "path": "/values/ata/:zoneType/:zoneId"
     }
   },
-  "height": 400,
+  "height": 380,
   "name": {
     "da": "Luft-luft-enhedsindstilling",
     "en": "Air-to-air device setting",
@@ -27,5 +27,6 @@
     "no": "Luft-luft-enhetsinnstilling",
     "sv": "Luft-luft-enhetsinställning"
   },
-  "settings": []
+  "settings": [],
+  "transparent": true
 }
