@@ -19,15 +19,15 @@ import {
   type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import fanSpeed from 'homey-lib/assets/capability/capabilities/fan_speed.json' assert { type: 'json' }
-import power from 'homey-lib/assets/capability/capabilities/onoff.json' assert { type: 'json' }
-import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json' assert { type: 'json' }
-import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json' assert { type: 'json' }
+import fanSpeed from 'homey-lib/assets/capability/capabilities/fan_speed.json' with { type: 'json' }
+import power from 'homey-lib/assets/capability/capabilities/onoff.json' with { type: 'json' }
+import setTemperature from 'homey-lib/assets/capability/capabilities/target_temperature.json' with { type: 'json' }
+import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json' with { type: 'json' }
 import { Settings as LuxonSettings } from 'luxon'
 
-import changelog from './.homeychangelog.json' assert { type: 'json' }
-import horizontal from './.homeycompose/capabilities/horizontal.json' assert { type: 'json' }
-import vertical from './.homeycompose/capabilities/vertical.json' assert { type: 'json' }
+import changelog from './.homeychangelog.json' with { type: 'json' }
+import horizontal from './.homeycompose/capabilities/horizontal.json' with { type: 'json' }
+import vertical from './.homeycompose/capabilities/vertical.json' with { type: 'json' }
 import { Homey } from './homey.mjs'
 import {
   fanSpeedValues,

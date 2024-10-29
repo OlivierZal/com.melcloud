@@ -1,4 +1,4 @@
-import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json' assert { type: 'json' }
+import thermostatMode from 'homey-lib/assets/capability/capabilities/thermostat_mode.json' with { type: 'json' }
 
 import type {
   EnergyDataAtw,
