@@ -227,7 +227,7 @@ const createLabelElement = (
   text: string,
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
-  labelElement.classList.add('label', 'text-sm', '-mb-5')
+  labelElement.classList.add('label', 'homey-text-regular', 'text-sm', '-mb-5')
   ;({ id: labelElement.htmlFor } = valueElement)
   labelElement.innerText = text
   labelElement.append(valueElement)
@@ -277,7 +277,12 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
-  inputElement.classList.add('input', 'input-ghost', 'text-sm')
+  inputElement.classList.add(
+    'input',
+    'input-ghost',
+    'homey-text-medium',
+    'text-sm',
+  )
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -305,7 +310,12 @@ const createSelectElement = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const selectElement = document.createElement('select')
-  selectElement.classList.add('select', 'select-ghost', 'text-sm')
+  selectElement.classList.add(
+    'select',
+    'select-ghost',
+    'homey-text-medium',
+    'text-sm',
+  )
   selectElement.id = id
   ;[
     { id: '', label: '' },
