@@ -227,7 +227,7 @@ const createLabelElement = (
   text: string,
 ): HTMLLabelElement => {
   const labelElement = document.createElement('label')
-  labelElement.classList.add('label', 'homey-text-medium', 'text-sm', '-mb-5')
+  labelElement.classList.add('label', 'text-default', 'font-regular', '-mb-5')
   ;({ id: labelElement.htmlFor } = valueElement)
   labelElement.innerText = text
   labelElement.append(valueElement)
@@ -280,8 +280,8 @@ const createInputElement = ({
   inputElement.classList.add(
     'input',
     'input-ghost',
-    'homey-text-regular',
-    'text-sm',
+    'text-default',
+    'font-regular',
   )
   inputElement.id = id
   inputElement.value = value ?? ''
@@ -313,8 +313,8 @@ const createSelectElement = (
   selectElement.classList.add(
     'select',
     'select-ghost',
-    'homey-text-regular',
-    'text-sm',
+    'text-default',
+    'font-regular',
   )
   selectElement.id = id
   ;[

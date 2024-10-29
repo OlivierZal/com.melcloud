@@ -9,7 +9,17 @@ const config = {
   },
   plugins: [daisyui],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Roboto', 'sans-serif'],
+      },
+      fontSize: {
+        default: ['17px', '24px'],
+      },
+      fontWeight: {
+        regular: '400',
+      },
+    },
   },
 } satisfies Config
 
