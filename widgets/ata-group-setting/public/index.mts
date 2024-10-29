@@ -122,13 +122,13 @@ const SNOWFLAKE_DELAY = 400
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
-const FLAME_INTERVAL = 20
-const LEAF_INTERVAL = 50
+const FLAME_GAP = 20
+const LEAF_GAP = 50
 const LEAF_NO_LOOP_RADIUS = 0
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
-const SNOWFLAKE_INTERVAL = 50
+const SNOWFLAKE_GAP = 50
 const SUN_POS_Y_OFFSET = 10
 const SUN_ENTER_AND_EXIT_DURATION = 5000
 const SUN_SHINE_DURATION = 5000
@@ -497,14 +497,14 @@ const createFlame = (speed: number): void => {
   const previousLeft =
     previousElement ?
       parseFloat(previousElement.style.left)
-    : -FLAME_INTERVAL * FACTOR_TWO
+    : -FLAME_GAP * FACTOR_TWO
   flame.style.left = generateStyleString(
     {
-      gap: FLAME_INTERVAL,
+      gap: FLAME_GAP,
       min:
         previousLeft > window.innerWidth ?
-          -FLAME_INTERVAL
-        : previousLeft + FLAME_INTERVAL,
+          -FLAME_GAP
+        : previousLeft + FLAME_GAP,
     },
     'px',
   )
@@ -565,14 +565,14 @@ const createSnowflake = (speed: number): void => {
   const previousLeft =
     previousElement ?
       parseFloat(previousElement.style.left)
-    : -SNOWFLAKE_INTERVAL * FACTOR_TWO
+    : -SNOWFLAKE_GAP * FACTOR_TWO
   snowflake.style.left = generateStyleString(
     {
-      gap: SNOWFLAKE_INTERVAL,
+      gap: SNOWFLAKE_GAP,
       min:
         previousLeft > window.innerWidth ?
-          -SNOWFLAKE_INTERVAL
-        : previousLeft + SNOWFLAKE_INTERVAL,
+          -SNOWFLAKE_GAP
+        : previousLeft + SNOWFLAKE_GAP,
     },
     'px',
   )
@@ -745,14 +745,12 @@ const createLeaf = (speed: number): void => {
   const previousTop =
     previousElement ?
       parseFloat(previousElement.style.top)
-    : -LEAF_INTERVAL * FACTOR_TWO
+    : -LEAF_GAP * FACTOR_TWO
   leaf.style.top = generateStyleString(
     {
-      gap: LEAF_INTERVAL,
+      gap: LEAF_GAP,
       min:
-        previousTop > window.innerHeight ?
-          -LEAF_INTERVAL
-        : previousTop + LEAF_INTERVAL,
+        previousTop > window.innerHeight ? -LEAF_GAP : previousTop + LEAF_GAP,
     },
     'px',
   )
