@@ -277,12 +277,7 @@ const createInputElement = ({
   value?: string
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
-  inputElement.classList.add(
-    'input',
-    'input-ghost',
-    'text-default',
-    'font-regular',
-  )
+  inputElement.classList.add('input', 'input-ghost', 'text-sm', 'font-regular')
   inputElement.id = id
   inputElement.value = value ?? ''
   inputElement.type = type
@@ -313,7 +308,7 @@ const createSelectElement = (
   selectElement.classList.add(
     'select',
     'select-ghost',
-    'text-default',
+    'text-sm',
     'font-regular',
   )
   selectElement.id = id
