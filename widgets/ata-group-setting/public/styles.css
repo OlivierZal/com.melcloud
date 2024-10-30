@@ -15,7 +15,7 @@
 }
 
 input {
-  text-align-last: right;
+  text-align: right;
 }
 
 select:not(#zones) {
