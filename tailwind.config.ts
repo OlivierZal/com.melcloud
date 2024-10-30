@@ -23,6 +23,12 @@ const config = {
           'var(--homey-font-size-default)',
           'var(--homey-line-height-default)',
         ],
+        sm: ['var(--homey-font-size-small)', 'var(--homey-line-height-small)'],
+      },
+      fontWeight: {
+        bold: 'var(--homey-font-weight-bold)',
+        medium: 'var(--homey-font-weight-medium)',
+        normal: 'var(--homey-font-weight-normal)',
       },
     },
   },
