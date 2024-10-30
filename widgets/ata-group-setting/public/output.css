@@ -1639,8 +1639,8 @@ html {
 }
 
 .text-default {
-  font-size: 17px;
-  line-height: 24px;
+  font-size: var(--homey-font-size-default);
+  line-height: var(--homey-line-height-default);
 }
 
 .text-sm {
@@ -1656,18 +1656,20 @@ html {
   font-weight: 500;
 }
 
-.font-regular {
+.font-normal {
   font-weight: 400;
 }
 
-.text-blue-500 {
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
+.text-blue {
+  color: var(--homey-color-blue);
 }
 
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity));
+.text-color {
+  color: var(--homey-text-color);
+}
+
+.text-danger {
+  color: var(--homey-text-color-danger);
 }
 
 .blur {

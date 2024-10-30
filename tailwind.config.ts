@@ -10,14 +10,19 @@ const config = {
   plugins: [daisyui],
   theme: {
     extend: {
+      colors: {
+        blue: 'var(--homey-color-blue)',
+        color: 'var(--homey-text-color)',
+        danger: 'var(--homey-text-color-danger)',
+      },
       fontFamily: {
         sans: ['Roboto', 'sans-serif'],
       },
       fontSize: {
-        default: ['17px', '24px'],
-      },
-      fontWeight: {
-        regular: '400',
+        default: [
+          'var(--homey-font-size-default)',
+          'var(--homey-line-height-default)',
+        ],
       },
     },
   },
