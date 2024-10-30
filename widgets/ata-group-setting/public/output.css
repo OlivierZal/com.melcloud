@@ -1596,6 +1596,10 @@ html {
   margin-top: -1.25rem;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
 .flex {
   display: flex;
 }
