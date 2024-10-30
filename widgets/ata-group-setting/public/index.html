@@ -15,16 +15,14 @@
     <body class="homey-widget">
         <canvas id="smoke_canvas"></canvas>
         <div id="animation"></div>
-        <div>
-            <select
-                id="zones"
-                class="select select-ghost text-default text-color font-bold -mb-5 -mt-5 w-full max-w-xs"
-                aria-label="Buildings"
-            ></select>
-        </div>
+        <select
+            id="zones"
+            class="select select-ghost text-default text-color font-bold -mt-5 w-full"
+            aria-label="Buildings"
+        ></select>
         <div id="has_zone_ata_devices" class="hidden">
             <div id="values_melcloud"></div>
-            <div class="flex gap-4 mt-5 mr-5">
+            <div class="flex justify-between">
                 <button
                     id="refresh_values_melcloud"
                     type="button"

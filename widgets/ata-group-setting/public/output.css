@@ -1592,20 +1592,8 @@ html {
   margin-top: 0px;
 }
 
-.-mb-5 {
-  margin-bottom: -1.25rem;
-}
-
 .-mt-5 {
   margin-top: -1.25rem;
-}
-
-.mr-5 {
-  margin-right: 1.25rem;
-}
-
-.mt-5 {
-  margin-top: 1.25rem;
 }
 
 .flex {
@@ -1624,18 +1612,14 @@ html {
   width: 100%;
 }
 
-.max-w-xs {
-  max-width: 20rem;
-}
-
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y))
     rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
     scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.gap-4 {
-  gap: 1rem;
+.justify-between {
+  justify-content: space-between;
 }
 
 .text-default {
