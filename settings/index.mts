@@ -1426,7 +1426,7 @@ const load = async (homey: Homey): Promise<void> => {
     try {
       await fetchBuildings(homey)
       return
-    } catch (_error) {}
+    } catch {}
   }
   needsAuthentication()
 }

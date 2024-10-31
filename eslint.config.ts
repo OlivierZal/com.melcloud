@@ -331,13 +331,14 @@ const config = [
         '@typescript-eslint/no-redeclare': 'off',
         '@typescript-eslint/no-unnecessary-condition': [
           'error',
-          { checkTypePredicates: true },
+          {
+            checkTypePredicates: true,
+          },
         ],
         '@typescript-eslint/no-unused-vars': [
           'error',
           {
             argsIgnorePattern: '^_context$',
-            caughtErrorsIgnorePattern: '^_',
             varsIgnorePattern: '^onHomeyReady$',
           },
         ],
@@ -357,7 +358,6 @@ const config = [
         '@typescript-eslint/typedef': 'off',
         camelcase: 'off',
         curly: 'error',
-        'import/dynamic-import-chunkname': 'error',
         'import/first': 'error',
         'import/max-dependencies': [
           'error',

@@ -385,7 +385,7 @@ class MELCloudApp extends Homey.App {
               ],
           })
           this.homey.settings.set('notifiedVersion', version)
-        } catch (_error) {}
+        } catch {}
       }, NOTIFICATION_DELAY)
     }
   }

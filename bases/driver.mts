@@ -114,7 +114,7 @@ export abstract class BaseMELCloudDriver<
             args[getArg(capability)],
           )
         })
-    } catch (_error) {}
+    } catch {}
   }
 
   #registerConditionRunListener(
@@ -133,7 +133,7 @@ export abstract class BaseMELCloudDriver<
               (value as number | string) === args[getArg(capability)]
             )
         })
-    } catch (_error) {}
+    } catch {}
   }
 
   #registerRunListeners(): void {

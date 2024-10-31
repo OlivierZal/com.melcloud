@@ -219,7 +219,7 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> => {
       'GET',
       '/language',
     )) as string
-  } catch (_error) {}
+  } catch {}
 }
 
 const createLabelElement = (
@@ -816,7 +816,7 @@ const getAtaValues = async <T extends keyof GroupAtaState>(
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   try {
     return (await getAtaValues(homey, true)).OperationMode as OperationMode[]
-  } catch (_error) {
+  } catch {
     return []
   }
 }
@@ -941,7 +941,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
     refreshAtaValuesElement()
     unhide(hasZoneAtaDevicesElement)
     await handleAnimation(homey, values)
-  } catch (_error) {
+  } catch {
     hide(hasZoneAtaDevicesElement)
   }
 }
@@ -1014,7 +1014,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
       await generateZones(buildings)
       await fetchAtaValues(homey)
     }
-  } catch (_error) {}
+  } catch {}
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
@@ -1026,7 +1026,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
     defaultAtaValues = Object.fromEntries(
       ataCapabilities.map(([ataKey]) => [ataKey, null]),
     )
-  } catch (_error) {}
+  } catch {}
 }
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
@@ -1039,7 +1039,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
         body satisfies GroupAtaState,
       )
     }
-  } catch (_error) {}
+  } catch {}
 }
 
 const addEventListeners = (homey: Homey): void => {
