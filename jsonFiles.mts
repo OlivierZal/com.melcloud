@@ -1,6 +1,6 @@
 import type { ManifestDriverCapabilitiesOptions } from './types/common.mjs'
 
-const {
+export const {
   changelog,
   fanSpeed,
   horizontal,
@@ -23,13 +23,3 @@ const {
     return import('./lib/jsonFilesWithRequire.mjs')
   }
 })()
-
-export {
-  changelog,
-  fanSpeed,
-  horizontal,
-  power,
-  setTemperature,
-  thermostatMode,
-  vertical,
-}
