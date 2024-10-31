@@ -2,7 +2,7 @@ import { createRequire } from 'module'
 
 import type { ManifestDriverCapabilitiesOptions } from '../types/common.mjs'
 
-const LOCAL_CAPABILITIES_PATH = './.homeycompose/capabilities'
+const LOCAL_CAPABILITIES_PATH = '../.homeycompose/capabilities'
 const MODULE_CAPABILITIES_PATH = 'homey-lib/assets/capability/capabilities'
 
 const createdRequire = createRequire(import.meta.url)
@@ -11,7 +11,7 @@ const load = (path: string): object => createdRequire(path) as object
 const loadCapability = (path: string): ManifestDriverCapabilitiesOptions =>
   load(path) as ManifestDriverCapabilitiesOptions
 
-const changelog = load('./.homeychangelog.json')
+const changelog = load('../.homeychangelog.json')
 
 const horizontal = loadCapability(`${LOCAL_CAPABILITIES_PATH}/horizontal.json`)
 const vertical = loadCapability(`${LOCAL_CAPABILITIES_PATH}/vertical.json`)
