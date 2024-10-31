@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@eslint/json": "^0.5.0",
+    "@eslint/json": "^0.6.0",
     "@eslint/markdown": "^6.2.1",
     "@html-eslint/eslint-plugin": "^0.27.0",
     "@html-eslint/parser": "^0.27.0",
@@ -33,7 +33,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.9",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.8.4",
+    "@types/node": "^22.8.6",
     "daisyui": "^4.12.14",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "^9.1.0",
