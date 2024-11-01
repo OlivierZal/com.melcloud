@@ -129,7 +129,6 @@ const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POS_Y_MIN = -50
 const SNOWFLAKE_GAP = 50
-const SUN_POS_Y_OFFSET = 10
 const SUN_ENTER_AND_EXIT_DURATION = 5000
 const SUN_SHINE_DURATION = 5000
 
@@ -286,7 +285,7 @@ const createInputElement = ({
   inputElement.classList.add(
     'input',
     'input-ghost',
-    'text-sm',
+    'text-default',
     'text-color',
     'font-normal',
   )
@@ -320,7 +319,7 @@ const createSelectElement = (
   selectElement.classList.add(
     'select',
     'select-ghost',
-    'text-sm',
+    'text-default',
     'text-color',
     'font-normal',
   )
@@ -666,8 +665,7 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
       },
       {
         bottom: `${String(
-          (window.innerHeight - parseFloat(height)) / FACTOR_TWO +
-            SUN_POS_Y_OFFSET,
+          (window.innerHeight - parseFloat(height)) / FACTOR_TWO,
         )}px`,
         left: `${String(
           (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
@@ -1076,5 +1074,5 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
   addEventListeners(homey)
-  homey.ready()
+  homey.ready({ height: document.body.scrollHeight })
 }

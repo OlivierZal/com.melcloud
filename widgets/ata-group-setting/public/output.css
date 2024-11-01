@@ -1631,11 +1631,6 @@ html {
   line-height: var(--homey-line-height-default);
 }
 
-.text-sm {
-  font-size: var(--homey-font-size-small);
-  line-height: var(--homey-line-height-small);
-}
-
 .font-bold {
   font-weight: var(--homey-font-weight-bold);
 }
