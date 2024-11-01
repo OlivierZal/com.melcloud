@@ -9,8 +9,8 @@
   "title": {
     "da": "Den vertikale luftstrømsretningen er blevet ændret",
     "en": "The vertical vane has changed",
-    "es": "La descarga de aire vertical ha cambiado",
-    "fr": "Le soufflage d'air vertical a été modifié",
+    "es": "La descarga vertical ha cambiado",
+    "fr": "Le soufflage vertical a été modifié",
     "nl": "De uitblaasrichting verticaal is veranderd",
     "no": "Den vertikale luftstrømretningen ble endret",
     "sv": "Den vertikala luftflödesriktningen ändrades"
@@ -24,8 +24,8 @@
       "title": {
         "da": "Vertikal luftstrømsretning",
         "en": "Vertical vane",
-        "es": "Descarga de aire vertical",
-        "fr": "Soufflage d'air vertical",
+        "es": "Descarga vertical",
+        "fr": "Soufflage vertical",
         "nl": "Uitblaasrichting verticaal",
         "no": "Vertikal luftstrømretning",
         "sv": "Vertikal luftflödesriktning"

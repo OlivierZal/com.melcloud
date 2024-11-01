@@ -511,8 +511,8 @@
         "title": {
           "da": "Den horisontale luftstrømsretningen er blevet ændret",
           "en": "The horizontal vane has changed",
-          "es": "La descarga de aire horizontal ha cambiado",
-          "fr": "Le soufflage d'air horizontal a été modifié",
+          "es": "La descarga horizontal ha cambiado",
+          "fr": "Le soufflage horizontal a été modifié",
           "nl": "De uitblaasrichting horizontaal is veranderd",
           "no": "Den horisontale luftstrømretningen ble endret",
           "sv": "Den horisontella luftflödesriktningen ändrades"
@@ -526,8 +526,8 @@
             "title": {
               "da": "Horisontal luftstrømsretning",
               "en": "Horizontal vane",
-              "es": "Descarga de aire horizontal",
-              "fr": "Soufflage d'air horizontal",
+              "es": "Descarga horizontal",
+              "fr": "Soufflage horizontal",
               "nl": "Uitblaasrichting horizontaal",
               "no": "Horisontal luftstrømretning",
               "sv": "Horisontell luftflödesriktning"
@@ -696,8 +696,8 @@
         "title": {
           "da": "Den vertikale luftstrømsretningen er blevet ændret",
           "en": "The vertical vane has changed",
-          "es": "La descarga de aire vertical ha cambiado",
-          "fr": "Le soufflage d'air vertical a été modifié",
+          "es": "La descarga vertical ha cambiado",
+          "fr": "Le soufflage vertical a été modifié",
           "nl": "De uitblaasrichting verticaal is veranderd",
           "no": "Den vertikale luftstrømretningen ble endret",
           "sv": "Den vertikala luftflödesriktningen ändrades"
@@ -711,8 +711,8 @@
             "title": {
               "da": "Vertikal luftstrømsretning",
               "en": "Vertical vane",
-              "es": "Descarga de aire vertical",
-              "fr": "Soufflage d'air vertical",
+              "es": "Descarga vertical",
+              "fr": "Soufflage vertical",
               "nl": "Uitblaasrichting verticaal",
               "no": "Vertikal luftstrømretning",
               "sv": "Vertikal luftflödesriktning"
@@ -970,8 +970,8 @@
         "title": {
           "da": "Den horisontale luftstrømsretningen !{{er|er ikke}}",
           "en": "The horizontal vane !{{is|is not}}",
-          "es": "La descarga de aire horizontal !{{está|no está}}",
-          "fr": "Le soufflage d'air horizontal !{{est|n'est pas}}",
+          "es": "La descarga horizontal !{{está|no está}}",
+          "fr": "Le soufflage horizontal !{{est|n'est pas}}",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}}",
           "no": "Den horisontale luftstrømretningen !{{er|er ikke}}",
           "sv": "Den horisontella luftflödesriktningen !{{är|är inte}}"
@@ -979,8 +979,8 @@
         "titleFormatted": {
           "da": "Den horisontale luftstrømsretningen !{{er|er ikke}} [[horizontal]]",
           "en": "The horizontal vane !{{is|is not}} [[horizontal]]",
-          "es": "La descarga de aire horizontal !{{está|no está}} [[horizontal]]",
-          "fr": "Le soufflage d'air horizontal !{{est|n'est pas}} [[horizontal]]",
+          "es": "La descarga horizontal !{{está|no está}} [[horizontal]]",
+          "fr": "Le soufflage horizontal !{{est|n'est pas}} [[horizontal]]",
           "nl": "De uitblaasrichting horizontaal !{{is|is niet}} [[horizontal]]",
           "no": "Den horisontale luftstrømretningen !{{er|er ikke}} [[horizontal]]",
           "sv": "Den horisontella luftflödesriktningen !{{är|är inte}} [[horizontal]]"
@@ -1461,8 +1461,8 @@
         "title": {
           "da": "Den vertikale luftstrømsretningen !{{er|er ikke}}",
           "en": "The vertical vane !{{is|is not}}",
-          "es": "La descarga de aire vertical !{{está|no está}}",
-          "fr": "Le soufflage d'air vertical !{{est|n'est pas}}",
+          "es": "La descarga vertical !{{está|no está}}",
+          "fr": "Le soufflage vertical !{{est|n'est pas}}",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}}",
           "no": "Den vertikale luftstrømretningen !{{er|er ikke}}",
           "sv": "Den vertikala luftflödesriktningen !{{är|är inte}}"
@@ -1470,8 +1470,8 @@
         "titleFormatted": {
           "da": "Den vertikale luftstrømsretningen !{{er|er ikke}} [[vertical]]",
           "en": "The vertical vane !{{is|is not}} [[vertical]]",
-          "es": "La descarga de aire vertical !{{está|no está}} [[vertical]]",
-          "fr": "Le soufflage d'air vertical !{{est|n'est pas}} [[vertical]]",
+          "es": "La descarga vertical !{{está|no está}} [[vertical]]",
+          "fr": "Le soufflage vertical !{{est|n'est pas}} [[vertical]]",
           "nl": "De uitblaasrichting verticaal !{{is|is niet}} [[vertical]]",
           "no": "Den vertikale luftstrømretningen !{{er|er ikke}} [[vertical]]",
           "sv": "Den vertikala luftflödesriktningen !{{är|är inte}} [[vertical]]"
@@ -1593,8 +1593,8 @@
         "title": {
           "da": "Indstil den horisontale luftstrømsretningen",
           "en": "Set the horizontal vane",
-          "es": "Configurar la descarga de aire horizontal",
-          "fr": "Définir le soufflage d'air horizontal",
+          "es": "Configurar la descarga horizontal",
+          "fr": "Définir le soufflage horizontal",
           "nl": "Stel de uitblaasrichting horizontaal in",
           "no": "Innstill den horisontale luftstrømretningen",
           "sv": "Ställ in den horisontella luftflödesriktningen"
@@ -1602,8 +1602,8 @@
         "titleFormatted": {
           "da": "Indstil den horisontale luftstrømsretningen til [[horizontal]]",
           "en": "Set the horizontal vane to [[horizontal]]",
-          "es": "Configurar la descarga de aire horizontal a [[horizontal]]",
-          "fr": "Définir le soufflage d'air horizontal à [[horizontal]]",
+          "es": "Configurar la descarga horizontal a [[horizontal]]",
+          "fr": "Définir le soufflage horizontal à [[horizontal]]",
           "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
           "no": "Innstill den horisontale luftstrømretningen til [[horizontal]]",
           "sv": "Ställ in den horisontella luftflödesriktningen till [[horizontal]]"
@@ -2024,7 +2024,7 @@
           "da": "Indstil den vertikale luftstrømsretningen",
           "en": "Set the vertical vane",
           "es": "Configurar la discarga de aire vertical",
-          "fr": "Définir le soufflage d'air vertical",
+          "fr": "Définir le soufflage vertical",
           "nl": "Stel de uitblaasrichting verticaal in",
           "no": "Innstill den vertikale luftstrømretningen",
           "sv": "Ställ in den vertikala luftflödesriktningen"
@@ -2033,7 +2033,7 @@
           "da": "Indstil den vertikale luftstrømsretningen til [[vertical]]",
           "en": "Set the vertical vane to [[vertical]]",
           "es": "Configurar la discarga de aire vertical a [[vertical]]",
-          "fr": "Définir le soufflage d'air vertical à [[vertical]]",
+          "fr": "Définir le soufflage vertical à [[vertical]]",
           "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
           "no": "Innstill den vertikale luftstrømretningen til [[vertical]]",
           "sv": "Ställ in den vertikala luftflödesriktningen till [[vertical]]"
@@ -5286,8 +5286,8 @@
       "title": {
         "da": "Horisontal luftstrømsretning",
         "en": "Horizontal vane",
-        "es": "Descarga de aire horizontal",
-        "fr": "Soufflage d'air horizontal",
+        "es": "Descarga horizontal",
+        "fr": "Soufflage horizontal",
         "nl": "Uitblaasrichting horizontaal",
         "no": "Horisontal luftstrømretning",
         "sv": "Horisontell luftflödesriktning"
@@ -5516,8 +5516,8 @@
       "title": {
         "da": "Vertikal luftstrømsretning",
         "en": "Vertical vane",
-        "es": "Descarga de aire vertical",
-        "fr": "Soufflage d'air vertical",
+        "es": "Descarga vertical",
+        "fr": "Soufflage vertical",
         "nl": "Uitblaasrichting verticaal",
         "no": "Vertikal luftstrømretning",
         "sv": "Vertikal luftflödesriktning"
