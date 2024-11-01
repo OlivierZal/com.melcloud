@@ -14,6 +14,7 @@ const config = {
         blue: 'var(--homey-color-blue)',
         color: 'var(--homey-text-color)',
         danger: 'var(--homey-text-color-danger)',
+        light: 'var(--homey-text-color-light)',
       },
       fontFamily: {
         sans: ['Roboto', 'sans-serif'],

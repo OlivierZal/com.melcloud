@@ -286,7 +286,7 @@ const createInputElement = ({
     'input',
     'input-ghost',
     'text-default',
-    'text-color',
+    'text-light',
     'font-normal',
   )
   inputElement.id = id
@@ -320,7 +320,7 @@ const createSelectElement = (
     'select',
     'select-ghost',
     'text-default',
-    'text-color',
+    'text-light',
     'font-normal',
   )
   selectElement.id = id
