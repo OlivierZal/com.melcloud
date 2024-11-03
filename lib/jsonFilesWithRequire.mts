@@ -1,4 +1,4 @@
-import { createRequire } from 'module'
+import { createRequire } from 'node:module'
 
 import type { ManifestDriverCapabilitiesOptions } from '../types/common.mjs'
 
