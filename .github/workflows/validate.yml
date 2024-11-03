@@ -8,6 +8,9 @@ jobs:
   validate:
     name: Validate app
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['16.x', '18.x', 'latest']
     if: github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v4
@@ -15,7 +18,7 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: ${{ matrix.node-version }}
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
@@ -23,11 +26,13 @@ jobs:
         run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm_config_ignore_scripts: ${{ matrix.node-version == '16.x' }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
           level: publish
       - name: Commit & push changes
+        if: matrix.node-version == 'latest'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
