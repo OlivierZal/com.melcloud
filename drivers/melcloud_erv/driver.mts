@@ -9,7 +9,7 @@ import {
 
 import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
 
-class MELCloudDriverErv extends BaseMELCloudDriver<'Erv'> {
+export default class MELCloudDriverErv extends BaseMELCloudDriver<'Erv'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
@@ -38,5 +38,3 @@ class MELCloudDriverErv extends BaseMELCloudDriver<'Erv'> {
     ]
   }
 }
-
-export default MELCloudDriverErv

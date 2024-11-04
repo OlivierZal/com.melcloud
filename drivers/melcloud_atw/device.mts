@@ -64,7 +64,7 @@ const getOperationModeStateZoneValue = (
   return OperationModeStateZoneCapability.idle
 }
 
-class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
+export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilitiesAtw, ConvertFromDevice<'Atw'>>
   > = {
@@ -169,5 +169,3 @@ class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
     await this.#setOperationModeStateZones(data, operationModeState)
   }
 }
-
-export default MELCloudDeviceAtw

@@ -12,7 +12,7 @@ import {
   type SetCapabilitiesErv,
 } from '../../types/index.mjs'
 
-class MELCloudDeviceErv extends BaseMELCloudDevice<'Erv'> {
+export default class MELCloudDeviceErv extends BaseMELCloudDevice<'Erv'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilitiesErv, ConvertFromDevice<'Erv'>>
   > = {
@@ -33,5 +33,3 @@ class MELCloudDeviceErv extends BaseMELCloudDevice<'Erv'> {
 
   protected EnergyReportTotal = undefined
 }
-
-export default MELCloudDeviceErv

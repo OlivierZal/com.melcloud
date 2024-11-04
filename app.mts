@@ -134,7 +134,7 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-class MELCloudApp extends Homey.App {
+export default class MELCloudApp extends Homey.App {
   readonly #language = this.homey.i18n.getLanguage()
 
   #api!: MELCloudAPI
@@ -407,5 +407,3 @@ class MELCloudApp extends Homey.App {
     )
   }
 }
-
-export default MELCloudApp

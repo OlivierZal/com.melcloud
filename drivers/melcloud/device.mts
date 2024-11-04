@@ -17,7 +17,7 @@ import {
   type SetCapabilitiesAta,
 } from '../../types/index.mjs'
 
-class MELCloudDeviceAta extends BaseMELCloudDevice<'Ata'> {
+export default class MELCloudDeviceAta extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<
     Record<keyof OpCapabilitiesAta, ConvertFromDevice<'Ata'>>
   > = {
@@ -52,5 +52,3 @@ class MELCloudDeviceAta extends BaseMELCloudDevice<'Ata'> {
 
   protected EnergyReportTotal = EnergyReportTotalAta
 }
-
-export default MELCloudDeviceAta

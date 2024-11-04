@@ -10,7 +10,7 @@ import {
 
 import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
 
-class MELCloudDriverAtw extends BaseMELCloudDriver<'Atw'> {
+export default class MELCloudDriverAtw extends BaseMELCloudDriver<'Atw'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
@@ -75,5 +75,3 @@ class MELCloudDriverAtw extends BaseMELCloudDriver<'Atw'> {
     ]
   }
 }
-
-export default MELCloudDriverAtw
