@@ -65,7 +65,7 @@
     },
     "intError": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
-    "success": "Update successful.",
+    "success": "Update succeeded.",
     "title": "MELCloud settings"
   },
   "warnings": {
