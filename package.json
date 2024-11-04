@@ -41,7 +41,7 @@
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.15.4",
     "eslint-plugin-perfectionist": "^3.9.1",
-    "jiti": "^2.3.3",
+    "jiti": "^2.4.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.3",
