@@ -16,10 +16,4 @@ export const {
   setTemperature: ManifestDriverCapabilitiesOptions
   thermostatMode: ManifestDriverCapabilitiesOptions
   vertical: ManifestDriverCapabilitiesOptions
-}> => {
-  try {
-    return await import('./lib/jsonFilesWithImport.mjs')
-  } catch {
-    return import('./lib/jsonFilesWithRequire.mjs')
-  }
-})()
+}> => import('./lib/jsonFilesWithImport.mjs'))()
