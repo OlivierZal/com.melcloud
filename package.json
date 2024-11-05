@@ -33,7 +33,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.9",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.8.7",
+    "@types/node": "^22.9.0",
     "daisyui": "^4.12.14",
     "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
