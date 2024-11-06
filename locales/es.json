@@ -6,7 +6,7 @@
   "settings": {
     "authenticate": {
       "button": "Iniciar sesión",
-      "failure": "Autenticación fallida.",
+      "failure": "La autenticación falló.",
       "legend": "Credenciales"
     },
     "boolean": {
@@ -65,7 +65,7 @@
     },
     "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
-    "success": "Actualización exitosa.",
+    "success": "La actualización fue exitosa.",
     "title": "Configuración de MELCloud"
   },
   "warnings": {
