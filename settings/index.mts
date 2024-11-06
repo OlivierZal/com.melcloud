@@ -1,4 +1,7 @@
 import type {
+  ErrorDetails,
+  ErrorLog,
+  ErrorLogQuery,
   FrostProtectionData,
   GroupAtaState,
   HolidayModeData,
@@ -13,9 +16,6 @@ import type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
-  ErrorDetails,
-  ErrorLog,
-  ErrorLogQuery,
   FrostProtectionSettings,
   HolidayModeSettings,
   HomeySettingsUI,

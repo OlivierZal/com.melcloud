@@ -1,6 +1,8 @@
 import { getBuildings } from './lib/getBuildings.mjs'
 
 import type {
+  ErrorLog,
+  ErrorLogQuery,
   FrostProtectionData,
   GroupAtaState,
   HolidayModeData,
@@ -14,8 +16,6 @@ import type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
-  ErrorLog,
-  ErrorLogQuery,
   FrostProtectionSettings,
   HolidayModeSettings,
   Settings,

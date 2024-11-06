@@ -293,26 +293,6 @@ export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly name: string
 }
 
-export interface ErrorLogQuery {
-  readonly from?: string
-  readonly limit?: string
-  readonly offset?: string
-  readonly to?: string
-}
-
-export interface ErrorDetails {
-  readonly date: string
-  readonly device: string
-  readonly error: string
-}
-
-export interface ErrorLog {
-  readonly errors: ErrorDetails[]
-  readonly fromDateHuman: string
-  readonly nextFromDate: string
-  readonly nextToDate: string
-}
-
 export interface FrostProtectionSettings {
   readonly enabled: boolean
   readonly max: number
