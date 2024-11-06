@@ -99,6 +99,8 @@ export abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     await this.setWarning(null)
+    this.#setCapabilityTagMappings()
+    this.#registerCapabilityListeners()
     await this.#fetchDevice()
   }
 
@@ -320,8 +322,6 @@ export abstract class BaseMELCloudDevice<
     const { data } = device
     await this.#setCapabilities(data)
     await this.#setCapabilityOptions(data)
-    this.#setCapabilityTagMappings()
-    this.#registerCapabilityListeners(device)
     await this.syncFromDevice(data)
     await this.#handleEnergyReports(device)
   }
@@ -334,7 +334,7 @@ export abstract class BaseMELCloudDevice<
     return setting in this.driver.energyCapabilityTagMapping
   }
 
-  #registerCapabilityListeners(device: DeviceFacade[T]): void {
+  #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
       Object.keys(this.#setCapabilityTagMapping),
       async (values) => {
@@ -345,7 +345,10 @@ export abstract class BaseMELCloudDevice<
             delete values.thermostat_mode
           }
         }
-        await this.#set(device, values as Partial<SetCapabilities[T]>)
+        const device = await this.#fetchDevice()
+        if (device) {
+          await this.#set(device, values as Partial<SetCapabilities[T]>)
+        }
       },
       SYNC_DELAY,
     )
