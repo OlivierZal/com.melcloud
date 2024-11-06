@@ -3,8 +3,10 @@ import type {
   ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
+  FrostProtectionQuery,
   GroupAtaState,
   HolidayModeData,
+  HolidayModeQuery,
   LoginCredentials,
   ZoneSettings,
 } from '@olivierzal/melcloud-api'
@@ -16,8 +18,6 @@ import type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
-  FrostProtectionSettings,
-  HolidayModeSettings,
   HomeySettingsUI,
   LoginDriverSetting,
   Settings,
@@ -1204,7 +1204,7 @@ const login = async (homey: Homey): Promise<void> => {
 
 const setHolidayModeData = async (
   homey: Homey,
-  { from: startDate, to: endDate }: HolidayModeSettings,
+  { from: startDate, to: endDate }: HolidayModeQuery,
 ): Promise<void> =>
   withDisablingButtons(
     'holiday_mode',
@@ -1213,7 +1213,7 @@ const setHolidayModeData = async (
         homey.api(
           'PUT',
           `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
-          { from: startDate, to: endDate } satisfies HolidayModeSettings,
+          { from: startDate, to: endDate } satisfies HolidayModeQuery,
           async (error: Error | null) => {
             if (!error) {
               updateZoneMapping({
@@ -1312,7 +1312,7 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
 
 const setFrostProtectionData = async (
   homey: Homey,
-  { enabled, max, min }: FrostProtectionSettings,
+  { enabled, max, min }: FrostProtectionQuery,
 ): Promise<void> =>
   withDisablingButtons(
     'frost_protection',
@@ -1321,7 +1321,7 @@ const setFrostProtectionData = async (
         homey.api(
           'PUT',
           `/settings/frost_protection/${getZonePath()}`,
-          { enabled, max, min } satisfies FrostProtectionSettings,
+          { enabled, max, min } satisfies FrostProtectionQuery,
           async (error: Error | null) => {
             if (!error) {
               updateZoneMapping({

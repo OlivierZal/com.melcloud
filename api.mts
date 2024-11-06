@@ -4,8 +4,10 @@ import type {
   ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
+  FrostProtectionQuery,
   GroupAtaState,
   HolidayModeData,
+  HolidayModeQuery,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
@@ -16,8 +18,6 @@ import type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
-  FrostProtectionSettings,
-  HolidayModeSettings,
   Settings,
   ZoneData,
 } from './types/index.mjs'
@@ -120,7 +120,7 @@ const api = {
     homey,
     params,
   }: {
-    body: FrostProtectionSettings
+    body: FrostProtectionQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {
@@ -131,7 +131,7 @@ const api = {
     homey,
     params,
   }: {
-    body: HolidayModeSettings
+    body: HolidayModeQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {

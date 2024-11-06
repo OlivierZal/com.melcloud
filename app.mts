@@ -16,8 +16,10 @@ import {
   type ErrorLogQuery,
   type FloorFacade,
   type FrostProtectionData,
+  type FrostProtectionQuery,
   type GroupAtaState,
   type HolidayModeData,
+  type HolidayModeQuery,
   type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
@@ -39,9 +41,7 @@ import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
-  type FrostProtectionSettings,
   type GetAtaOptions,
-  type HolidayModeSettings,
   type LoginSetting,
   type MELCloudDevice,
   type Manifest,
@@ -313,7 +313,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async login(credentials: LoginCredentials): Promise<boolean> {
-    return this.api.login(credentials)
+    return this.api.authenticate(credentials)
   }
 
   public async setAtaValues(
@@ -349,7 +349,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async setFrostProtectionSettings(
-    settings: FrostProtectionSettings,
+    settings: FrostProtectionQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(
@@ -359,7 +359,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async setHolidayModeSettings(
-    settings: HolidayModeSettings,
+    settings: HolidayModeQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(

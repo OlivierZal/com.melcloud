@@ -43,8 +43,6 @@ export abstract class BaseMELCloudDriver<
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
     {}
 
-  readonly #api = (this.homey.app as MELCloudApp).api
-
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
 
   public abstract readonly getCapabilitiesOptions: (
@@ -68,7 +66,7 @@ export abstract class BaseMELCloudDriver<
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
-        if (await this.#api.login()) {
+        if (await this.#login()) {
           await session.showView('list_devices')
           return
         }
@@ -98,8 +96,12 @@ export abstract class BaseMELCloudDriver<
 
   #handleLogin(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) =>
-      this.#api.login(data),
+      this.#login(data),
     )
+  }
+
+  async #login(data?: LoginCredentials): Promise<boolean> {
+    return (this.homey.app as MELCloudApp).api.authenticate(data)
   }
 
   #registerActionRunListener(

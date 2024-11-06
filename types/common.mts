@@ -293,17 +293,6 @@ export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly name: string
 }
 
-export interface FrostProtectionSettings {
-  readonly enabled: boolean
-  readonly max: number
-  readonly min: number
-}
-
-export interface HolidayModeSettings {
-  readonly from?: string
-  readonly to?: string | null
-}
-
 export type AreaZone = IBaseModel
 export interface FloorZone extends IBaseModel {
   areas?: AreaZone[]
