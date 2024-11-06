@@ -312,8 +312,8 @@ export default class MELCloudApp extends Homey.App {
     return this.homey.i18n.getLanguage()
   }
 
-  public async login(credentials: LoginCredentials): Promise<boolean> {
-    return this.api.authenticate(credentials)
+  public async login(data: LoginCredentials): Promise<boolean> {
+    return this.api.authenticate(data)
   }
 
   public async setAtaValues(
