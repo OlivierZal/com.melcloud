@@ -222,9 +222,9 @@ export interface EnergyCapabilities {
 }
 
 export interface Capabilities {
-  Ata: CapabilitiesAta
-  Atw: CapabilitiesAtw
-  Erv: CapabilitiesErv
+  readonly Ata: CapabilitiesAta
+  readonly Atw: CapabilitiesAtw
+  readonly Erv: CapabilitiesErv
 }
 
 export interface SetCapabilityTagMapping {
