@@ -3,11 +3,7 @@ import { DateTime, type DateObjectUnits, type DurationLike } from 'luxon'
 import { K_MULTIPLIER } from '../lib/constants.mjs'
 import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mjs'
 
-import type {
-  DeviceFacade,
-  DeviceType,
-  EnergyData,
-} from '@olivierzal/melcloud-api'
+import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
 
 import type {
@@ -30,8 +26,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
 
   readonly #driver: MELCloudDriver[T]
 
-  readonly #facade: DeviceFacade[T]
-
   readonly #homey: Homey
 
   #energyCapabilityTagEntries: EnergyCapabilityTagEntry<T>[] = []
@@ -52,10 +46,9 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
 
   protected abstract readonly values: DateObjectUnits
 
-  public constructor(device: BaseMELCloudDevice<T>, facade: DeviceFacade[T]) {
+  public constructor(device: BaseMELCloudDevice<T>) {
     this.#device = device
     ;({ driver: this.#driver, homey: this.#homey } = this.#device)
-    this.#facade = facade
   }
 
   public async handle(): Promise<void> {
@@ -122,18 +115,21 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   }
 
   async #get(): Promise<void> {
-    try {
-      const toDateTime = DateTime.now().minus(this.minus)
-      const to = toDateTime.toISODate()
-      await this.#set(
-        (await this.#facade.getEnergyReport({
-          from: this.mode === 'total' ? undefined : to,
-          to,
-        })) as EnergyData[T],
-        toDateTime.hour,
-      )
-    } catch (error) {
-      await this.#device.setWarning(error)
+    const device = await this.#device.fetchDevice()
+    if (device) {
+      try {
+        const toDateTime = DateTime.now().minus(this.minus)
+        const to = toDateTime.toISODate()
+        await this.#set(
+          (await device.getEnergyReport({
+            from: this.mode === 'total' ? undefined : to,
+            to,
+          })) as EnergyData[T],
+          toDateTime.hour,
+        )
+      } catch (error) {
+        await this.#device.setWarning(error)
+      }
     }
   }
 

@@ -73,18 +73,14 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract EnergyReportRegular?: new (
     device: BaseMELCloudDevice<T>,
-    facade: DeviceFacade[T],
   ) => EnergyReportRegular[T]
 
   protected abstract EnergyReportTotal?: new (
     device: BaseMELCloudDevice<T>,
-    facade: DeviceFacade[T],
   ) => EnergyReportTotal[T]
 
   public override onDeleted(): void {
-    modes.forEach((mode) => {
-      this.#reports[mode]?.unschedule()
-    })
+    this.#unscheduleReports()
   }
 
   public override async onInit(): Promise<void> {
@@ -95,7 +91,7 @@ export abstract class BaseMELCloudDevice<
     await this.setWarning(null)
     this.#setCapabilityTagMappings()
     this.#registerCapabilityListeners()
-    await this.#fetchDevice()
+    await this.fetchDevice()
   }
 
   public override async onSettings({
@@ -110,21 +106,18 @@ export abstract class BaseMELCloudDevice<
         this.#isCapability(setting) &&
         typeof newSettings[setting] === 'boolean',
     )
-    const device = await this.#fetchDevice()
-    if (device) {
-      await this.#updateDeviceOnSettings(device.data, {
-        changedCapabilities,
-        changedKeys,
-        newSettings,
+    await this.#updateDeviceOnSettings({
+      changedCapabilities,
+      changedKeys,
+      newSettings,
+    })
+    const changedEnergyKeys = changedCapabilities.filter((setting) =>
+      this.#isEnergyCapability(setting),
+    )
+    if (changedEnergyKeys.length) {
+      await this.#updateEnergyReportsOnSettings({
+        changedKeys: changedEnergyKeys,
       })
-      const changedEnergyKeys = changedCapabilities.filter((setting) =>
-        this.#isEnergyCapability(setting),
-      )
-      if (changedEnergyKeys.length) {
-        await this.#updateEnergyReportsOnSettings({
-          changedKeys: changedEnergyKeys,
-        })
-      }
     }
   }
 
@@ -203,8 +196,24 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
+  public async fetchDevice(): Promise<DeviceFacade[T] | undefined> {
+    try {
+      if (!this.#device) {
+        this.#device = this.#app.getFacade('devices', this.#id) as
+          | DeviceFacade[T]
+          | undefined
+        if (this.#device) {
+          await this.#init(this.#device.data)
+        }
+      }
+      return this.#device
+    } catch (error) {
+      await this.setWarning(getErrorMessage(error))
+    }
+  }
+
   public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
-    const newData = data ?? (await this.#fetchDevice())?.data
+    const newData = data ?? (await this.#fetchData())
     if (newData) {
       await this.setCapabilityValues(newData)
     }
@@ -265,28 +274,23 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  async #fetchDevice(): Promise<DeviceFacade[T] | undefined> {
-    if (!this.#device) {
-      try {
-        this.#device = this.#app.getFacade(
-          'devices',
-          this.#id,
-        ) as DeviceFacade[T]
-        await this.#init(this.#device)
-      } catch (error) {
-        await this.setWarning(getErrorMessage(error))
-      }
+  async #fetchData(): Promise<ListDevice[T]['Device'] | undefined> {
+    try {
+      return (await this.fetchDevice())?.data
+    } catch {
+      await this.setWarning(
+        this.homey.__(this.homey.__('errors.deviceNotFound')),
+      )
     }
-    return this.#device
   }
 
-  async #handleEnergyReports(device: DeviceFacade[T]): Promise<void> {
+  async #handleEnergyReports(): Promise<void> {
     if (this.EnergyReportRegular) {
-      this.#reports.regular = new this.EnergyReportRegular(this, device)
+      this.#reports.regular = new this.EnergyReportRegular(this)
       await this.#reports.regular.handle()
     }
     if (this.EnergyReportTotal) {
-      this.#reports.total = new this.EnergyReportTotal(this, device)
+      this.#reports.total = new this.EnergyReportTotal(this)
       await this.#reports.total.handle()
     }
   }
@@ -312,12 +316,11 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #init(device: DeviceFacade[T]): Promise<void> {
-    const { data } = device
+  async #init(data: ListDevice[T]['Device']): Promise<void> {
     await this.#setCapabilities(data)
     await this.#setCapabilityOptions(data)
     await this.syncFromDevice(data)
-    await this.#handleEnergyReports(device)
+    await this.#handleEnergyReports()
   }
 
   #isCapability(setting: string): boolean {
@@ -339,30 +342,27 @@ export abstract class BaseMELCloudDevice<
             delete values.thermostat_mode
           }
         }
-        const device = await this.#fetchDevice()
-        if (device) {
-          await this.#set(device, values as Partial<SetCapabilities[T]>)
-        }
+        await this.#set(values as Partial<SetCapabilities[T]>)
       },
       SYNC_DELAY,
     )
   }
 
-  async #set(
-    device: DeviceFacade[T],
-    values: Partial<SetCapabilities[T]>,
-  ): Promise<void> {
-    const updateData = this.#buildUpdateData(values)
-    if (Object.keys(updateData).length) {
-      try {
-        await device.set(updateData)
-        this.homey.setTimeout(
-          async () => this.setCapabilityValues(device.data),
-          SYNC_DELAY,
-        )
-      } catch (error) {
-        if (!(error instanceof Error) || error.message !== 'No data to set') {
-          await this.setWarning(error)
+  async #set(values: Partial<SetCapabilities[T]>): Promise<void> {
+    const device = await this.fetchDevice()
+    if (device) {
+      const updateData = this.#buildUpdateData(values)
+      if (Object.keys(updateData).length) {
+        try {
+          await device.set(updateData)
+          this.homey.setTimeout(
+            async () => this.setCapabilityValues(device.data),
+            SYNC_DELAY,
+          )
+        } catch (error) {
+          if (!(error instanceof Error) || error.message !== 'No data to set') {
+            await this.setWarning(error)
+          }
         }
       }
     }
@@ -443,36 +443,37 @@ export abstract class BaseMELCloudDevice<
     }) as OpCapabilityTagEntry<T>[]
   }
 
-  async #updateDeviceOnSettings(
-    data: ListDevice[T]['Device'],
-    {
-      changedCapabilities,
-      changedKeys,
-      newSettings,
-    }: {
-      changedCapabilities: string[]
-      changedKeys: string[]
-      newSettings: Settings
-    },
-  ): Promise<void> {
+  #unscheduleReports(): void {
+    modes.forEach((mode) => {
+      this.#reports[mode]?.unschedule()
+    })
+  }
+
+  async #updateDeviceOnSettings({
+    changedCapabilities,
+    changedKeys,
+    newSettings,
+  }: {
+    changedCapabilities: string[]
+    changedKeys: string[]
+    newSettings: Settings
+  }): Promise<void> {
     if (changedCapabilities.length) {
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
-    if (
-      changedKeys.includes('always_on') &&
-      newSettings.always_on === true &&
-      !data.Power
-    ) {
+    if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.triggerCapabilityListener('onoff', true)
-    } else if (
+      return
+    }
+    if (
       changedKeys.some(
         (setting) =>
           setting !== 'always_on' &&
           !(setting in this.driver.energyCapabilityTagMapping),
       )
     ) {
-      await this.syncFromDevice(data)
+      await this.syncFromDevice()
     }
   }
 
