@@ -215,7 +215,10 @@ export abstract class BaseMELCloudDevice<
   public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
     const newData = data ?? (await this.#fetchData())
     if (newData) {
-      await this.setCapabilityValues(newData)
+      this.homey.setTimeout(
+        async () => this.setCapabilityValues(newData),
+        SYNC_DELAY,
+      )
     }
   }
 
@@ -355,10 +358,6 @@ export abstract class BaseMELCloudDevice<
       if (Object.keys(updateData).length) {
         try {
           await device.set(updateData)
-          this.homey.setTimeout(
-            async () => this.setCapabilityValues(device.data),
-            SYNC_DELAY,
-          )
         } catch (error) {
           if (!(error instanceof Error) || error.message !== 'No data to set') {
             await this.setWarning(error)
