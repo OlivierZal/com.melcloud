@@ -35,6 +35,7 @@ import {
   thermostatMode,
   vertical,
 } from './jsonFiles.mjs'
+import { getErrorMessage } from './lib/getErrorMessage.mjs'
 import {
   fanSpeedValues,
   zoneModel,
@@ -403,7 +404,13 @@ export default class MELCloudApp extends Homey.App {
 
   async #syncFromDevices(): Promise<void> {
     await Promise.all(
-      this.#getDevices().map(async (device) => device.syncFromDevice()),
+      this.#getDevices().map(async (device) => {
+        try {
+          await device.syncFromDevice()
+        } catch (error) {
+          device.error(getErrorMessage(error))
+        }
+      }),
     )
   }
 }

@@ -1,5 +1,6 @@
 import { Homey } from '../homey.mjs'
 import { addToLogs } from '../lib/addToLogs.mjs'
+import { getErrorMessage } from '../lib/getErrorMessage.mjs'
 import { withTimers } from '../lib/withTimers.mjs'
 
 import type {
@@ -33,13 +34,6 @@ import type {
 const SYNC_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
-
-const getErrorMessage = (error: unknown): string | null => {
-  if (error !== null) {
-    return error instanceof Error ? error.message : String(error)
-  }
-  return null
-}
 
 const isTotalEnergyKey = (key: string): boolean =>
   !key.startsWith('measure_power') && !key.includes('daily')
@@ -362,15 +356,14 @@ export abstract class BaseMELCloudDevice<
     if (Object.keys(updateData).length) {
       try {
         await device.set(updateData)
-      } catch (error) {
-        if (!(error instanceof Error) || error.message !== 'No data to set') {
-          await this.setWarning(error)
-        }
-      } finally {
         this.homey.setTimeout(
           async () => this.setCapabilityValues(device.data),
           SYNC_DELAY,
         )
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== 'No data to set') {
+          await this.setWarning(error)
+        }
       }
     }
   }
