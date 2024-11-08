@@ -97,12 +97,6 @@ export abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
-    )
     this.#registerCapabilityListeners()
     await this.fetchDevice()
   }
@@ -337,7 +331,7 @@ export abstract class BaseMELCloudDevice<
 
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
-      Object.keys(this.#setCapabilityTagMapping),
+      Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
         if (this.driver.type !== 'Atw' && 'thermostat_mode' in values) {
           const isOn = values.thermostat_mode !== 'off'
@@ -393,6 +387,12 @@ export abstract class BaseMELCloudDevice<
         await acc
         await this.removeCapability(capability)
       }, Promise.resolve())
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
+    )
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
+    )
   }
 
   async #setCapabilityOptions(data: ListDevice[T]['Device']): Promise<void> {
