@@ -32,7 +32,7 @@ import type {
   Settings,
 } from '../types/index.mjs'
 
-const SYNC_DELAY = 1000
+const DEBOUNCE_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
 
@@ -342,7 +342,7 @@ export abstract class BaseMELCloudDevice<
         }
         await this.#set(values as Partial<SetCapabilities[T]>)
       },
-      SYNC_DELAY,
+      DEBOUNCE_DELAY,
     )
   }
 
