@@ -181,9 +181,7 @@ export abstract class BaseMELCloudDevice<
   public override async setCapabilityValue<
     K extends string & keyof Capabilities[T],
   >(capability: K, value: Capabilities[T][K]): Promise<void> {
-    if (value !== this.getCapabilityValue(capability)) {
-      await super.setCapabilityValue(capability, value)
-    }
+    await super.setCapabilityValue(capability, value)
     this.log('Capability', capability, 'is', value)
   }
 
@@ -228,10 +226,7 @@ export abstract class BaseMELCloudDevice<
   public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
     const newData = data ?? (await this.#fetchData())
     if (newData) {
-      this.homey.setTimeout(
-        async () => this.setCapabilityValues(newData),
-        SYNC_DELAY,
-      )
+      await this.setCapabilityValues(newData)
     }
   }
 
