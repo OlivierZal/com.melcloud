@@ -28,8 +28,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
 
   readonly #homey: Homey
 
-  #energyCapabilityTagEntries: EnergyCapabilityTagEntry<T>[] = []
-
   #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
   #reportInterval: NodeJS.Timeout | null = null
@@ -51,8 +49,21 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     ;({ driver: this.#driver, homey: this.#homey } = this.#device)
   }
 
+  get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
+    return (
+      Object.entries(
+        this.#device.cleanMapping(
+          this.#driver
+            .energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
+        ),
+      ) as EnergyCapabilityTagEntry<T>[]
+    ).filter(
+      ([capability]) =>
+        isTotalEnergyKey(capability) === (this.mode === 'total'),
+    )
+  }
+
   public async handle(): Promise<void> {
-    this.#setEnergyCapabilityTagEntries()
     if (!this.#energyCapabilityTagEntries.length) {
       this.unschedule()
       return
@@ -180,19 +191,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
           )
         },
       ),
-    )
-  }
-
-  #setEnergyCapabilityTagEntries(): void {
-    const energyCapabilityTagEntries = Object.entries(
-      this.#device.cleanMapping(
-        this.#driver
-          .energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
-      ),
-    ) as EnergyCapabilityTagEntry<T>[]
-    this.#energyCapabilityTagEntries = energyCapabilityTagEntries.filter(
-      ([capability]) =>
-        isTotalEnergyKey(capability) === (this.mode === 'total'),
     )
   }
 }

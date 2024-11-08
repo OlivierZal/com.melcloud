@@ -1,6 +1,7 @@
 import { Homey } from '../homey.mjs'
 import { addToLogs } from '../lib/addToLogs.mjs'
 import { getErrorMessage } from '../lib/getErrorMessage.mjs'
+import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mjs'
 import { withTimers } from '../lib/withTimers.mjs'
 
 import type {
@@ -35,9 +36,6 @@ const SYNC_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
 
-const isTotalEnergyKey = (key: string): boolean =>
-  !key.startsWith('measure_power') && !key.includes('daily')
-
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends keyof typeof DeviceType,
@@ -54,10 +52,6 @@ export abstract class BaseMELCloudDevice<
   } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
-
-  #listCapabilityTagMapping: Partial<ListCapabilityTagMapping[T]> = {}
-
-  #opCapabilityTagEntries: OpCapabilityTagEntry<T>[] = []
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
@@ -79,6 +73,20 @@ export abstract class BaseMELCloudDevice<
     device: BaseMELCloudDevice<T>,
   ) => EnergyReportTotal[T]
 
+  get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping[T]> {
+    return this.cleanMapping(
+      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
+    )
+  }
+
+  get #opCapabilityTagEntries(): OpCapabilityTagEntry<T>[] {
+    return Object.entries({
+      ...this.#setCapabilityTagMapping,
+      ...this.#getCapabilityTagMapping,
+      ...this.#listCapabilityTagMapping,
+    }) as OpCapabilityTagEntry<T>[]
+  }
+
   public override onDeleted(): void {
     this.#unscheduleReports()
   }
@@ -89,7 +97,12 @@ export abstract class BaseMELCloudDevice<
       ...this.toDevice,
     }
     await this.setWarning(null)
-    this.#setCapabilityTagMappings()
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
+    )
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
+    )
     this.#registerCapabilityListeners()
     await this.fetchDevice()
   }
@@ -310,13 +323,6 @@ export abstract class BaseMELCloudDevice<
       }
       await this.removeCapability(capability)
     }, Promise.resolve())
-    if (
-      changedCapabilities.some(
-        (capability) => !this.#isEnergyCapability(capability),
-      )
-    ) {
-      this.#setListCapabilityTagMappings()
-    }
   }
 
   async #init(data: ListDevice[T]['Device']): Promise<void> {
@@ -415,31 +421,6 @@ export abstract class BaseMELCloudDevice<
         ),
       ),
     )
-  }
-
-  #setCapabilityTagMappings(): void {
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
-    )
-    this.#setListCapabilityTagMappings()
-  }
-
-  #setListCapabilityTagMappings(): void {
-    this.#listCapabilityTagMapping = this.cleanMapping(
-      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
-    )
-    this.#setOpCapabilityTagEntries()
-  }
-
-  #setOpCapabilityTagEntries(): void {
-    this.#opCapabilityTagEntries = Object.entries({
-      ...this.#setCapabilityTagMapping,
-      ...this.#getCapabilityTagMapping,
-      ...this.#listCapabilityTagMapping,
-    }) as OpCapabilityTagEntry<T>[]
   }
 
   #unscheduleReports(): void {
