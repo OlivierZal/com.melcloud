@@ -221,7 +221,7 @@ export abstract class BaseMELCloudDevice<
       }
       return this.#device
     } catch (error) {
-      await this.setWarning(getErrorMessage(error))
+      await this.setWarning(error)
     }
   }
 
