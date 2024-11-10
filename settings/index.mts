@@ -694,10 +694,15 @@ const addRefreshSettingsEventListener = (
   ) as HTMLButtonElement
   buttonElement.addEventListener('click', () => {
     if (driverId !== undefined) {
-      refreshDriverSettings(elements as HTMLInputElement[], driverId)
+      refreshDriverSettings(
+        elements.filter((element) => element instanceof HTMLInputElement),
+        driverId,
+      )
       return
     }
-    refreshCommonSettings(elements as HTMLSelectElement[])
+    refreshCommonSettings(
+      elements.filter((element) => element instanceof HTMLSelectElement),
+    )
   })
 }
 
