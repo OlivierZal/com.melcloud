@@ -157,8 +157,6 @@ let homeySettings: HomeySettingsUI = {
 let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
 let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
-let driverSettings: Partial<Record<string, DriverSetting[]>> = {}
-
 let deviceSettings: Partial<DeviceSettings> = {}
 let flatDeviceSettings: Partial<DeviceSetting> = {}
 
@@ -289,25 +287,6 @@ const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
         } else {
           deviceSettings = settings
           fetchFlattenDeviceSettings()
-        }
-        resolve()
-      },
-    )
-  })
-
-const fetchDriverSettings = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      '/settings/drivers',
-      async (
-        error: Error | null,
-        settings: Partial<Record<string, DriverSetting[]>>,
-      ) => {
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          driverSettings = settings
         }
         resolve()
       },
@@ -466,30 +445,41 @@ const createSelectElement = (
   return selectElement
 }
 
-const generateCredential = (
-  credentialKey: keyof LoginCredentials,
-): HTMLInputElement | null => {
-  const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
-    ({ id }) => id === credentialKey,
-  )
-  if (loginSetting) {
-    const { id, placeholder, title, type } = loginSetting
-    const valueElement = createInputElement({
-      id,
-      placeholder,
-      type,
-      value: homeySettings[id],
-    })
-    createValueElement(loginElement, { title, valueElement })
-    return valueElement
-  }
-  return null
+const updateCommonSetting = (element: HTMLSelectElement): void => {
+  const [id] = element.id.split('__')
+  const { [id]: value } = flatDeviceSettings
+  element.value = value === null ? '' : String(value)
 }
 
-const generateCredentials = (): void => {
-  ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
-    generateCredential,
-  )
+const refreshCommonSettings = (elements: HTMLSelectElement[]): void => {
+  elements.forEach(updateCommonSetting)
+}
+
+const updateDriverSetting = (
+  element: HTMLInputElement,
+  driverId: string,
+): void => {
+  const [id] = element.id.split('__')
+  const isChecked = deviceSettings[driverId]?.[id] as boolean | null
+  if (isChecked !== null) {
+    element.checked = isChecked
+    return
+  }
+  element.indeterminate = true
+  element.addEventListener('change', () => {
+    if (element.indeterminate) {
+      element.indeterminate = false
+    }
+  })
+}
+
+const refreshDriverSettings = (
+  elements: HTMLInputElement[],
+  driverId: string,
+): void => {
+  elements.forEach((element) => {
+    updateDriverSetting(element, driverId)
+  })
 }
 
 const handleIntMin = (id: string, min: string): string =>
@@ -616,6 +606,224 @@ const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
   }
   return values
 }
+
+const updateDeviceSettings = (body: Settings, driverId?: string): void => {
+  if (driverId !== undefined) {
+    Object.entries(body).forEach(([id, value]) => {
+      deviceSettings[driverId] ??= {}
+      deviceSettings[driverId][id] = value
+    })
+    fetchFlattenDeviceSettings()
+    return
+  }
+  Object.entries(body).forEach(([id, value]) => {
+    Object.keys(deviceSettings).forEach((driver) => {
+      deviceSettings[driver] ??= {}
+      deviceSettings[driver][id] = value
+    })
+    flatDeviceSettings[id] = value
+  })
+}
+
+const setDeviceSettings = async (
+  homey: Homey,
+  elements: HTMLValueElement[],
+  driverId?: string,
+): Promise<void> => {
+  const body = buildSettingsBody(homey, elements, driverId)
+  if (!Object.keys(body).length) {
+    if (driverId === undefined) {
+      refreshCommonSettings(elements as HTMLSelectElement[])
+    }
+    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
+      //
+    })
+    return
+  }
+  let endPoint = '/settings/devices'
+  if (driverId !== undefined) {
+    endPoint += `?${new URLSearchParams({ driverId } satisfies {
+      driverId: string
+    }).toString()}`
+  }
+  await withDisablingButtons(
+    `settings_${driverId ?? 'common'}`,
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'PUT',
+          endPoint,
+          body satisfies Settings,
+          async (error: Error | null) => {
+            if (!error) {
+              updateDeviceSettings(body, driverId)
+            }
+            await homey.alert(
+              error ? error.message : homey.__('settings.success'),
+            )
+            resolve()
+          },
+        )
+      }),
+  )
+}
+
+const addApplySettingsEventListener = (
+  homey: Homey,
+  elements: HTMLValueElement[],
+  driverId?: string,
+): void => {
+  const settings = `settings_${driverId ?? 'common'}`
+  const buttonElement = document.getElementById(
+    `apply_${settings}`,
+  ) as HTMLButtonElement
+  buttonElement.addEventListener('click', () => {
+    setDeviceSettings(homey, elements, driverId).catch(() => {
+      //
+    })
+  })
+}
+
+const addRefreshSettingsEventListener = (
+  elements: HTMLValueElement[],
+  driverId?: string,
+): void => {
+  const settings = `settings_${driverId ?? 'common'}`
+  const buttonElement = document.getElementById(
+    `refresh_${settings}`,
+  ) as HTMLButtonElement
+  buttonElement.addEventListener('click', () => {
+    if (driverId !== undefined) {
+      refreshDriverSettings(elements as HTMLInputElement[], driverId)
+      return
+    }
+    refreshCommonSettings(elements as HTMLSelectElement[])
+  })
+}
+
+const addSettingsEventListeners = (
+  homey: Homey,
+  elements: HTMLValueElement[],
+  driverId?: string,
+): void => {
+  addApplySettingsEventListener(homey, elements, driverId)
+  addRefreshSettingsEventListener(elements, driverId)
+}
+
+const generateCommonSettings = (
+  homey: Homey,
+  driverSettings: Partial<Record<string, DriverSetting[]>>,
+): void => {
+  ;(driverSettings.options ?? []).forEach(({ id, title, type, values }) => {
+    const settingId = `${id}__setting`
+    if (
+      !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
+      ['checkbox', 'dropdown'].includes(type)
+    ) {
+      const valueElement = createSelectElement(homey, settingId, values)
+      createValueElement(settingsCommonElement, { title, valueElement })
+      updateCommonSetting(valueElement)
+    }
+  })
+  addSettingsEventListeners(
+    homey,
+    Array.from(settingsCommonElement.querySelectorAll('select')),
+  )
+}
+
+const generateDriverSettings = (
+  homey: Homey,
+  driverSettings: Partial<Record<string, DriverSetting[]>>,
+  driverId: string,
+): void => {
+  if (driverSettings[driverId]) {
+    const settingsElement = document.getElementById(`settings_${driverId}`)
+    if (settingsElement) {
+      const fieldSetElement = document.createElement('fieldset')
+      fieldSetElement.classList.add('homey-form-checkbox-set')
+      let previousGroupLabel = ''
+      driverSettings[driverId].forEach(({ groupLabel, id, title, type }) => {
+        if (type === 'checkbox') {
+          if (groupLabel !== previousGroupLabel) {
+            previousGroupLabel = groupLabel ?? ''
+            createLegendElement(fieldSetElement, groupLabel)
+          }
+          const valueElement = createCheckboxElement(id, driverId)
+          createValueElement(fieldSetElement, { title, valueElement }, false)
+          updateDriverSetting(valueElement, driverId)
+        }
+      })
+      settingsElement.append(fieldSetElement)
+      addSettingsEventListeners(
+        homey,
+        Array.from(fieldSetElement.querySelectorAll('input')),
+        driverId,
+      )
+      unhide(
+        document.getElementById(`has_devices_${driverId}`) as HTMLDivElement,
+      )
+    }
+  }
+}
+
+const generateSettings = (
+  homey: Homey,
+  driverSettings: Partial<Record<string, DriverSetting[]>>,
+): void => {
+  generateCommonSettings(homey, driverSettings)
+  Object.keys(deviceSettings).forEach((driverId) => {
+    generateDriverSettings(homey, driverSettings, driverId)
+  })
+}
+
+const generateCredential = (
+  credentialKey: keyof LoginCredentials,
+  driverSettings: Partial<Record<string, DriverSetting[]>>,
+): HTMLInputElement | null => {
+  const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
+    ({ id }) => id === credentialKey,
+  )
+  if (loginSetting) {
+    const { id, placeholder, title, type } = loginSetting
+    const valueElement = createInputElement({
+      id,
+      placeholder,
+      type,
+      value: homeySettings[id],
+    })
+    createValueElement(loginElement, { title, valueElement })
+    return valueElement
+  }
+  return null
+}
+
+const generateCredentials = (
+  driverSettings: Partial<Record<string, DriverSetting[]>>,
+): void => {
+  ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
+    (element) => generateCredential(element, driverSettings),
+  )
+}
+
+const fetchDriverSettings = async (homey: Homey): Promise<void> =>
+  new Promise((resolve) => {
+    homey.api(
+      'GET',
+      '/settings/drivers',
+      async (
+        error: Error | null,
+        settings: Partial<Record<string, DriverSetting[]>>,
+      ) => {
+        if (error) {
+          await homey.alert(error.message)
+        } else {
+          generateSettings(homey, settings)
+          generateCredentials(settings)
+        }
+        resolve()
+      },
+    )
+  })
 
 const generateErrorLogTable = (
   homey: Homey,
@@ -902,146 +1110,6 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
     )
   })
 
-const updateDeviceSettings = (body: Settings, driverId?: string): void => {
-  if (driverId !== undefined) {
-    Object.entries(body).forEach(([id, value]) => {
-      deviceSettings[driverId] ??= {}
-      deviceSettings[driverId][id] = value
-    })
-    fetchFlattenDeviceSettings()
-    return
-  }
-  Object.entries(body).forEach(([id, value]) => {
-    Object.keys(deviceSettings).forEach((driver) => {
-      deviceSettings[driver] ??= {}
-      deviceSettings[driver][id] = value
-    })
-    flatDeviceSettings[id] = value
-  })
-}
-
-const updateCommonChildrenElement = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('__')
-  const { [id]: value } = flatDeviceSettings
-  element.value = value === null ? '' : String(value)
-}
-
-const refreshSettingsCommon = (elements: HTMLSelectElement[]): void => {
-  elements.forEach(updateCommonChildrenElement)
-}
-
-const updateCheckboxChildrenElement = (
-  element: HTMLInputElement,
-  driverId: string,
-): void => {
-  const [id] = element.id.split('__')
-  const isChecked = deviceSettings[driverId]?.[id] as boolean | null
-  if (isChecked !== null) {
-    element.checked = isChecked
-    return
-  }
-  element.indeterminate = true
-  element.addEventListener('change', () => {
-    if (element.indeterminate) {
-      element.indeterminate = false
-    }
-  })
-}
-
-const refreshSettingsDriver = (
-  elements: HTMLInputElement[],
-  driverId: string,
-): void => {
-  elements.forEach((element) => {
-    updateCheckboxChildrenElement(element, driverId)
-  })
-}
-
-const setDeviceSettings = async (
-  homey: Homey,
-  elements: HTMLValueElement[],
-  driverId?: string,
-): Promise<void> => {
-  const body = buildSettingsBody(homey, elements, driverId)
-  if (!Object.keys(body).length) {
-    if (driverId === undefined) {
-      refreshSettingsCommon(elements as HTMLSelectElement[])
-    }
-    homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
-      //
-    })
-    return
-  }
-  let endPoint = '/settings/devices'
-  if (driverId !== undefined) {
-    endPoint += `?${new URLSearchParams({ driverId } satisfies {
-      driverId: string
-    }).toString()}`
-  }
-  await withDisablingButtons(
-    `settings_${driverId ?? 'common'}`,
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'PUT',
-          endPoint,
-          body satisfies Settings,
-          async (error: Error | null) => {
-            if (!error) {
-              updateDeviceSettings(body, driverId)
-            }
-            await homey.alert(
-              error ? error.message : homey.__('settings.success'),
-            )
-            resolve()
-          },
-        )
-      }),
-  )
-}
-
-const addApplySettingsEventListener = (
-  homey: Homey,
-  elements: HTMLValueElement[],
-  driverId?: string,
-): void => {
-  const settings = `settings_${driverId ?? 'common'}`
-  const buttonElement = document.getElementById(
-    `apply_${settings}`,
-  ) as HTMLButtonElement
-  buttonElement.addEventListener('click', () => {
-    setDeviceSettings(homey, elements, driverId).catch(() => {
-      //
-    })
-  })
-}
-
-const addRefreshSettingsEventListener = (
-  elements: HTMLValueElement[],
-  driverId?: string,
-): void => {
-  const settings = `settings_${driverId ?? 'common'}`
-  const buttonElement = document.getElementById(
-    `refresh_${settings}`,
-  ) as HTMLButtonElement
-  buttonElement.addEventListener('click', () => {
-    if (driverId !== undefined) {
-      refreshSettingsDriver(elements as HTMLInputElement[], driverId)
-      return
-    }
-    refreshSettingsCommon(elements as HTMLSelectElement[])
-  })
-}
-
-const addSettingsEventListeners = (
-  homey: Homey,
-  elements: HTMLValueElement[],
-  driverId?: string,
-): void => {
-  addApplySettingsEventListener(homey, elements, driverId)
-  addRefreshSettingsEventListener(elements, driverId)
-}
-
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
   new Promise((resolve) => {
     homey.api(
@@ -1098,59 +1166,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
   }
 }
 
-const generateCommonSettings = (homey: Homey): void => {
-  ;(driverSettings.options ?? []).forEach(({ id, title, type, values }) => {
-    const settingId = `${id}__setting`
-    if (
-      !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
-      ['checkbox', 'dropdown'].includes(type)
-    ) {
-      const valueElement = createSelectElement(homey, settingId, values)
-      createValueElement(settingsCommonElement, { title, valueElement })
-      updateCommonChildrenElement(valueElement)
-    }
-  })
-  addSettingsEventListeners(
-    homey,
-    Array.from(settingsCommonElement.querySelectorAll('select')),
-  )
-}
-
-const generateDriverSettings = (homey: Homey, driverId: string): void => {
-  if (driverSettings[driverId]) {
-    const settingsElement = document.getElementById(`settings_${driverId}`)
-    if (settingsElement) {
-      const fieldSetElement = document.createElement('fieldset')
-      fieldSetElement.classList.add('homey-form-checkbox-set')
-      let previousGroupLabel = ''
-      driverSettings[driverId].forEach(({ groupLabel, id, title, type }) => {
-        if (type === 'checkbox') {
-          if (groupLabel !== previousGroupLabel) {
-            previousGroupLabel = groupLabel ?? ''
-            createLegendElement(fieldSetElement, groupLabel)
-          }
-          const valueElement = createCheckboxElement(id, driverId)
-          createValueElement(fieldSetElement, { title, valueElement }, false)
-          updateCheckboxChildrenElement(valueElement, driverId)
-        }
-      })
-      settingsElement.append(fieldSetElement)
-      addSettingsEventListeners(
-        homey,
-        Array.from(fieldSetElement.querySelectorAll('input')),
-        driverId,
-      )
-      unhide(
-        document.getElementById(`has_devices_${driverId}`) as HTMLDivElement,
-      )
-    }
-  }
-}
-
 const needsAuthentication = (value = true): void => {
-  if (!loginElement.childElementCount) {
-    generateCredentials()
-  }
   hide(authenticatedElement, value)
   unhide(authenticatingElement, value)
 }
@@ -1438,10 +1454,6 @@ async function onHomeyReady(homey: Homey): Promise<void> {
   await fetchAtaCapabilities(homey)
   await fetchDeviceSettings(homey)
   await fetchDriverSettings(homey)
-  generateCommonSettings(homey)
-  Object.keys(deviceSettings).forEach((driverId) => {
-    generateDriverSettings(homey, driverId)
-  })
   addEventListeners(homey)
   await load(homey)
   homey.ready()
