@@ -93,15 +93,7 @@
     "small": "/assets/images/small.jpg",
     "xlarge": "/assets/images/xlarge.jpg"
   },
-  "name": {
-    "da": "MELCloud",
-    "en": "MELCloud",
-    "es": "MELCloud",
-    "fr": "MELCloud",
-    "nl": "MELCloud",
-    "no": "MELCloud",
-    "sv": "MELCloud"
-  },
+  "name": "MELCloud",
   "platforms": [
     "local"
   ],
@@ -474,10 +466,10 @@
           }
         ],
         "title": {
-          "da": "Den aktuelle ventilatorhastigheden en ændrede sig",
-          "en": "The actual fan speed changed",
-          "es": "La velocidad del ventilador actual ha cambiado",
-          "fr": "La vitesse de ventilation actuelle a changé",
+          "da": "Den aktuelle ventilatorhastigheden ændrede sig",
+          "en": "The current fan speed changed",
+          "es": "La velocidad actual del ventilador ha cambiado",
+          "fr": "La vitesse actuelle de ventilation a changé",
           "nl": "De huidige ventilatorsnelheid is veranderd",
           "no": "Den aktuelle viftehastigheten ble endret",
           "sv": "Den aktuella fläkthastigheten ändrades"
@@ -485,20 +477,20 @@
         "tokens": [
           {
             "example": 5,
-            "name": "fan_speed_state",
+            "name": "fan_speed.state",
             "title": {
-              "da": "Aktuel blæserhastighed",
-              "en": "Actual fan speed",
-              "es": "Velocidad del ventilador actual",
-              "fr": "Vitesse du ventilateur actuelle",
-              "nl": "Huidige ventilatiesnelheid",
-              "no": "Aktuell viftehastighet",
+              "da": "Aktuel ventilatorhastighed",
+              "en": "Current fan speed",
+              "es": "Velocidad actual del ventilador",
+              "fr": "Vitesse actuelle de ventilation",
+              "nl": "Huidige ventilatorsnelheid",
+              "no": "Nåværende viftehastighet",
               "sv": "Aktuell fläkthastighet"
             },
             "type": "number"
           }
         ],
-        "id": "fan_speed_state_changed"
+        "id": "fan_speed.state_changed"
       },
       {
         "args": [
@@ -2162,7 +2154,7 @@
         "target_temperature",
         "thermostat_mode",
         "fan_speed",
-        "fan_speed_state",
+        "fan_speed.state",
         "vertical",
         "horizontal",
         "alarm_generic.silent",
@@ -2218,6 +2210,12 @@
             "no": "Stille modus",
             "sv": "Tyst läge"
           }
+        },
+        "fan_speed.state": {
+          "icon": "/assets/fan_speed.svg",
+          "setable": false,
+          "uiComponent": "sensor",
+          "units": ""
         },
         "measure_power": {
           "approximated": true
@@ -3483,15 +3481,7 @@
             "no": "CoP",
             "sv": "CoP"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_cooling": {
           "title": {
@@ -3503,15 +3493,7 @@
             "no": "CoP - kjøling",
             "sv": "CoP - kylning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_daily": {
           "title": {
@@ -3523,15 +3505,7 @@
             "no": "Daglig CoP",
             "sv": "Daglig CoP"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_daily_cooling": {
           "title": {
@@ -3543,15 +3517,7 @@
             "no": "Daglig CoP - kjøling",
             "sv": "Daglig CoP - kylning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_daily_heating": {
           "title": {
@@ -3563,15 +3529,7 @@
             "no": "Daglig CoP - oppvarming",
             "sv": "Daglig CoP - uppvärmning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_daily_hotwater": {
           "title": {
@@ -3583,15 +3541,7 @@
             "no": "Daglig CoP - varmvannslastning",
             "sv": "Daglig CoP - varmvattenladdning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_heating": {
           "title": {
@@ -3603,15 +3553,7 @@
             "no": "CoP - oppvarming",
             "sv": "CoP - uppvärmning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.cop_hotwater": {
           "title": {
@@ -3623,15 +3565,7 @@
             "no": "CoP - varmvannslastning",
             "sv": "CoP - varmvattenladdning"
           },
-          "units": {
-            "da": "",
-            "en": "",
-            "es": "",
-            "fr": "",
-            "nl": "",
-            "no": "",
-            "sv": ""
-          }
+          "units": ""
         },
         "meter_power.daily": {
           "title": {
@@ -5256,23 +5190,6 @@
         "es": "Velocidad actual del ventilador",
         "fr": "Vitesse actuelle du ventilateur",
         "nl": "Huidige ventilatiesnelheid",
-        "no": "Aktuell viftehastighet",
-        "sv": "Aktuell fläkthastighet"
-      },
-      "type": "number",
-      "uiComponent": "sensor"
-    },
-    "fan_speed_state": {
-      "getable": true,
-      "icon": "/assets/fan_speed_state.svg",
-      "insights": true,
-      "setable": false,
-      "title": {
-        "da": "Aktuell ventilatorhastighed",
-        "en": "Actual fan speed",
-        "es": "Velocidad del ventilador actual",
-        "fr": "Vitesse de ventilation actuelle",
-        "nl": "Huidige ventilatorsnelheid",
         "no": "Aktuell viftehastighet",
         "sv": "Aktuell fläkthastighet"
       },

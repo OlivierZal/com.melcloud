@@ -447,15 +447,7 @@
         "no": "CoP",
         "sv": "CoP"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_cooling": {
       "title": {
@@ -467,15 +459,7 @@
         "no": "CoP - kjøling",
         "sv": "CoP - kylning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_daily": {
       "title": {
@@ -487,15 +471,7 @@
         "no": "Daglig CoP",
         "sv": "Daglig CoP"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_daily_cooling": {
       "title": {
@@ -507,15 +483,7 @@
         "no": "Daglig CoP - kjøling",
         "sv": "Daglig CoP - kylning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_daily_heating": {
       "title": {
@@ -527,15 +495,7 @@
         "no": "Daglig CoP - oppvarming",
         "sv": "Daglig CoP - uppvärmning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_daily_hotwater": {
       "title": {
@@ -547,15 +507,7 @@
         "no": "Daglig CoP - varmvannslastning",
         "sv": "Daglig CoP - varmvattenladdning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_heating": {
       "title": {
@@ -567,15 +519,7 @@
         "no": "CoP - oppvarming",
         "sv": "CoP - uppvärmning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.cop_hotwater": {
       "title": {
@@ -587,15 +531,7 @@
         "no": "CoP - varmvannslastning",
         "sv": "CoP - varmvattenladdning"
       },
-      "units": {
-        "da": "",
-        "en": "",
-        "es": "",
-        "fr": "",
-        "nl": "",
-        "no": "",
-        "sv": ""
-      }
+      "units": ""
     },
     "meter_power.daily": {
       "title": {

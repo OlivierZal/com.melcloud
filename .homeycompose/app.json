@@ -92,15 +92,7 @@
     "small": "/assets/images/small.jpg",
     "xlarge": "/assets/images/xlarge.jpg"
   },
-  "name": {
-    "da": "MELCloud",
-    "en": "MELCloud",
-    "es": "MELCloud",
-    "fr": "MELCloud",
-    "nl": "MELCloud",
-    "no": "MELCloud",
-    "sv": "MELCloud"
-  },
+  "name": "MELCloud",
   "platforms": [
     "local"
   ],

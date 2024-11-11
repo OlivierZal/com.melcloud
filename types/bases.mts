@@ -23,5 +23,5 @@ export interface RangeOptions {
   readonly max: number
   readonly min: number
   readonly step?: number
-  readonly units?: LocalizedStrings
+  readonly units?: string
 }

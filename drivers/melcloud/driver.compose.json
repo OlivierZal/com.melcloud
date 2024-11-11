@@ -7,7 +7,7 @@
     "target_temperature",
     "thermostat_mode",
     "fan_speed",
-    "fan_speed_state",
+    "fan_speed.state",
     "vertical",
     "horizontal",
     "alarm_generic.silent",
@@ -63,6 +63,12 @@
         "no": "Stille modus",
         "sv": "Tyst läge"
       }
+    },
+    "fan_speed.state": {
+      "icon": "/assets/fan_speed.svg",
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": ""
     },
     "measure_power": {
       "approximated": true
