@@ -2522,13 +2522,13 @@
         }
       },
       "name": {
-        "da": "Luft-luft varmepumpe",
+        "da": "Luft-til-luft varmepumpe",
         "en": "Air-to-air heat pump",
         "es": "Bomba de calor aire-aire",
         "fr": "Pompe à chaleur air-air",
         "nl": "Lucht-lucht warmtepomp",
-        "no": "Luft-luft varmepumpe",
-        "sv": "Luft-luft värmepump"
+        "no": "Luft-til-luft varmepumpe",
+        "sv": "Luft-till-luft värmepump"
       },
       "id": "melcloud",
       "settings": [
@@ -4105,13 +4105,13 @@
         }
       },
       "name": {
-        "da": "Luft-vand varmepumpe",
+        "da": "Luft-til-vand varmepumpe",
         "en": "Air-to-water heat pump",
         "es": "Bomba de calor aire-agua",
         "fr": "Pompe à chaleur air-eau",
         "nl": "Lucht-water warmtepomp",
-        "no": "Luft-vann varmepumpe",
-        "sv": "Luft-vatten värmepump"
+        "no": "Luft-til-vann varmepumpe",
+        "sv": "Luft-till-vatten värmepump"
       },
       "id": "melcloud_atw",
       "settings": [
@@ -5147,13 +5147,13 @@
         }
       },
       "name": {
-        "da": "Luft-luft-enhedsindstilling",
+        "da": "Luft-til-luft-enhedsindstilling",
         "en": "Air-to-air device setting",
         "es": "Ajuste de dispositivos aire-aire",
         "fr": "Réglage des appareils air-air",
         "nl": "Lucht-lucht apparaatinstelling",
-        "no": "Luft-luft-enhetsinnstilling",
-        "sv": "Luft-luft-enhetsinställning"
+        "no": "Luft-til-luft-enhetsinnstilling",
+        "sv": "Luft-till-luft-enhetsinställning"
       },
       "settings": [],
       "transparent": true,

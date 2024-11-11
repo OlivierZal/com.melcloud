@@ -1071,12 +1071,12 @@
     }
   },
   "name": {
-    "da": "Luft-vand varmepumpe",
+    "da": "Luft-til-vand varmepumpe",
     "en": "Air-to-water heat pump",
     "es": "Bomba de calor aire-agua",
     "fr": "Pompe à chaleur air-eau",
     "nl": "Lucht-water warmtepomp",
-    "no": "Luft-vann varmepumpe",
-    "sv": "Luft-vatten värmepump"
+    "no": "Luft-til-vann varmepumpe",
+    "sv": "Luft-till-vatten värmepump"
   }
 }

@@ -29,10 +29,10 @@
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
-      "legend": "Luft-luft enhetsinställningar"
+      "legend": "Luft-til-luft enhetsinställningar"
     },
     "devicesAtw": {
-      "legend": "Luft-vatten enhetsinställningar"
+      "legend": "Luft-til-vatten enhetsinställningar"
     },
     "errorLog": {
       "columns": {

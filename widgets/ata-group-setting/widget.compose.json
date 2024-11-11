@@ -18,13 +18,13 @@
     }
   },
   "name": {
-    "da": "Luft-luft-enhedsindstilling",
+    "da": "Luft-til-luft-enhedsindstilling",
     "en": "Air-to-air device setting",
     "es": "Ajuste de dispositivos aire-aire",
     "fr": "Réglage des appareils air-air",
     "nl": "Lucht-lucht apparaatinstelling",
-    "no": "Luft-luft-enhetsinnstilling",
-    "sv": "Luft-luft-enhetsinställning"
+    "no": "Luft-til-luft-enhetsinnstilling",
+    "sv": "Luft-till-luft-enhetsinställning"
   },
   "settings": [],
   "transparent": true

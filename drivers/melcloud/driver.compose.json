@@ -67,6 +67,15 @@
     "fan_speed.state": {
       "icon": "/assets/fan_speed.svg",
       "setable": false,
+      "title": {
+        "da": "Aktuel ventilatorhastighed",
+        "en": "Current fan speed",
+        "es": "Velocidad actual del ventilador",
+        "fr": "Vitesse actuelle de ventilation",
+        "nl": "Huidige ventilatorsnelheid",
+        "no": "Nåværende viftehastighet",
+        "sv": "Aktuell fläkthastighet"
+      },
       "uiComponent": "sensor",
       "units": ""
     },
@@ -375,12 +384,12 @@
     }
   },
   "name": {
-    "da": "Luft-luft varmepumpe",
+    "da": "Luft-til-luft varmepumpe",
     "en": "Air-to-air heat pump",
     "es": "Bomba de calor aire-aire",
     "fr": "Pompe à chaleur air-air",
     "nl": "Lucht-lucht warmtepomp",
-    "no": "Luft-luft varmepumpe",
-    "sv": "Luft-luft värmepump"
+    "no": "Luft-til-luft varmepumpe",
+    "sv": "Luft-till-luft värmepump"
   }
 }

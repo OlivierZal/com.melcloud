@@ -29,10 +29,10 @@
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "legend": "Luft-luft enhedsindstillinger"
+      "legend": "Luft-til-luft enhedsindstillinger"
     },
     "devicesAtw": {
-      "legend": "Luft-vand enhedsindstillinger"
+      "legend": "Luft-til-vand enhedsindstillinger"
     },
     "errorLog": {
       "columns": {
