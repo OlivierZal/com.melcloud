@@ -395,6 +395,12 @@ const config = [
         'import/unambiguous': 'error',
         'max-lines': 'off',
         'no-bitwise': 'off',
+        'no-else-return': [
+          'error',
+          {
+            allowElseIf: false,
+          },
+        ],
         'no-empty': [
           'error',
           {
