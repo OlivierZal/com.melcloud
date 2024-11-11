@@ -20,7 +20,8 @@ export const addToLogs =
           ...logs.flatMap((log) => {
             if (log in this) {
               return [this[log as keyof this], '-']
-            } else if (log.endsWith(PARENTHESES)) {
+            }
+            if (log.endsWith(PARENTHESES)) {
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
                 funcName in this &&
