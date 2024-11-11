@@ -106,8 +106,8 @@
       "ecodan",
       "erv",
       "klimaanlæg",
-      "luft luft",
-      "luft vand",
+      "luft til luft",
+      "luft til vand",
       "melcloud",
       "mitsubishi",
       "varmegenvinding",
@@ -167,8 +167,8 @@
     "no": [
       "ecodan",
       "erv",
-      "luft luft",
-      "luft vann",
+      "luft til luft",
+      "luft til vann",
       "luftkondisjonering",
       "melcloud",
       "mitsubishi",
@@ -178,8 +178,8 @@
     "sv": [
       "ecodan",
       "erv",
-      "luft luft",
-      "luft vatten",
+      "luft till luft",
+      "luft till vatten",
       "luftkonditionering",
       "melcloud",
       "mitsubishi",
@@ -2214,6 +2214,15 @@
         "fan_speed.state": {
           "icon": "/assets/fan_speed.svg",
           "setable": false,
+          "title": {
+            "da": "Aktuel ventilatorhastighed",
+            "en": "Current fan speed",
+            "es": "Velocidad actual del ventilador",
+            "fr": "Vitesse actuelle de ventilation",
+            "nl": "Huidige ventilatorsnelheid",
+            "no": "Nåværende viftehastighet",
+            "sv": "Aktuell fläkthastighet"
+          },
           "uiComponent": "sensor",
           "units": ""
         },
