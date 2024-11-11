@@ -187,8 +187,7 @@
       "värmepump"
     ]
   },
-  "version": "39.1.1",
-  "esm": true,
+  "version": "40.0.0",
   "flow": {
     "triggers": [
       {
