@@ -136,10 +136,10 @@ const zoneMapping: Partial<
   Record<string, Partial<GroupAtaState & ZoneSettings>>
 > = {}
 
-const refreshAtaValues = document.getElementById(
+const refreshAtaValuesElement = document.getElementById(
   'refresh_values_melcloud',
 ) as HTMLButtonElement
-const updateAtaValues = document.getElementById(
+const updateAtaValuesElement = document.getElementById(
   'apply_values_melcloud',
 ) as HTMLButtonElement
 
@@ -414,7 +414,7 @@ const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
   zoneMapping[value] = { ...zoneMapping[value], ...data }
 }
 
-const updateAtaValueElement = (id: keyof GroupAtaState): void => {
+const updateAtaValue = (id: keyof GroupAtaState): void => {
   const ataValueElement = document.getElementById(id) as HTMLValueElement | null
   if (ataValueElement) {
     ataValueElement.value =
@@ -422,9 +422,9 @@ const updateAtaValueElement = (id: keyof GroupAtaState): void => {
   }
 }
 
-const refreshAtaValuesElement = (): void => {
+const refreshAtaValues = (): void => {
   ataCapabilities.forEach(([ataKey]) => {
-    updateAtaValueElement(ataKey)
+    updateAtaValue(ataKey)
   })
 }
 
@@ -936,7 +936,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const values = (await getAtaValues(homey)) as GroupAtaState
     updateZoneMapping({ ...defaultAtaValues, ...values })
-    refreshAtaValuesElement()
+    refreshAtaValues()
     unhide(hasZoneAtaDevicesElement)
     await handleAnimation(homey, values)
   } catch {
@@ -1046,11 +1046,11 @@ const addEventListeners = (homey: Homey): void => {
       //
     })
   })
-  refreshAtaValues.addEventListener('click', () => {
+  refreshAtaValuesElement.addEventListener('click', () => {
     homey.hapticFeedback()
-    refreshAtaValuesElement()
+    refreshAtaValues()
   })
-  updateAtaValues.addEventListener('click', () => {
+  updateAtaValuesElement.addEventListener('click', () => {
     homey.hapticFeedback()
     setAtaValues(homey).catch(() => {
       //

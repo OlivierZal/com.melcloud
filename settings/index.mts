@@ -70,7 +70,7 @@ const authenticateElement = document.getElementById(
 const autoAdjustElement = document.getElementById(
   'auto_adjust',
 ) as HTMLButtonElement
-const refreshAtaValues = document.getElementById(
+const refreshAtaValuesElement = document.getElementById(
   'refresh_values_melcloud',
 ) as HTMLButtonElement
 const refreshFrostProtectionElement = document.getElementById(
@@ -80,7 +80,7 @@ const refreshHolidayModeElement = document.getElementById(
   'refresh_holiday_mode',
 ) as HTMLButtonElement
 const seeElement = document.getElementById('see') as HTMLButtonElement
-const updateAtaValues = document.getElementById(
+const updateAtaValuesElement = document.getElementById(
   'apply_values_melcloud',
 ) as HTMLButtonElement
 const updateFrostProtectionElement = document.getElementById(
@@ -953,7 +953,7 @@ const refreshFrostProtectionData = (): void => {
   }
 }
 
-const updateAtaValueElement = (id: keyof GroupAtaState): void => {
+const updateAtaValue = (id: keyof GroupAtaState): void => {
   const ataValueElement = document.getElementById(id) as HTMLValueElement | null
   if (ataValueElement) {
     ataValueElement.value =
@@ -961,9 +961,9 @@ const updateAtaValueElement = (id: keyof GroupAtaState): void => {
   }
 }
 
-const refreshAtaValuesElement = (): void => {
+const refreshAtaValues = (): void => {
   ataCapabilities.forEach(([ataKey]) => {
-    updateAtaValueElement(ataKey)
+    updateAtaValue(ataKey)
   })
 }
 
@@ -1016,7 +1016,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> =>
           async (error: Error | null, data: GroupAtaState) => {
             if (!error) {
               updateZoneMapping({ ...defaultAtaValues, ...data })
-              refreshAtaValuesElement()
+              refreshAtaValues()
             } else if (error.message !== 'No air-to-air device found') {
               await homey.alert(error.message)
             }
@@ -1142,7 +1142,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
     const body = buildAtaValuesBody(homey)
     if (!Object.keys(body).length) {
       await homey.alert(homey.__('settings.devices.apply.nothing'))
-      refreshAtaValuesElement()
+      refreshAtaValues()
       return
     }
     await withDisablingButtons(
@@ -1156,7 +1156,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
             async (error: Error | null) => {
               if (!error) {
                 updateZoneMapping(body)
-                refreshAtaValuesElement()
+                refreshAtaValues()
               }
               await homey.alert(
                 error ? error.message : homey.__('settings.success'),
@@ -1394,10 +1394,10 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
 }
 
 const addAtaValuesEventListeners = (homey: Homey): void => {
-  refreshAtaValues.addEventListener('click', () => {
-    refreshAtaValuesElement()
+  refreshAtaValuesElement.addEventListener('click', () => {
+    refreshAtaValues()
   })
-  updateAtaValues.addEventListener('click', () => {
+  updateAtaValuesElement.addEventListener('click', () => {
     setAtaValues(homey).catch(() => {
       //
     })
