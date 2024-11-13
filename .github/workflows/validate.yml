@@ -38,7 +38,6 @@ jobs:
           if ! git diff --cached --exit-code; then
             git commit -m "Code maintenance: lint, format and build code"
             if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
-              echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
               BRANCH_NAME="maintenance-$(date +'%Y%m%d%H%M%S')"
               git checkout -b "$BRANCH_NAME"
               git push origin "$BRANCH_NAME"
@@ -50,3 +49,6 @@ jobs:
               git push origin HEAD:${{ github.head_ref }}
             fi
           fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
