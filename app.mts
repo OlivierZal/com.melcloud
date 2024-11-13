@@ -12,6 +12,7 @@ import {
   type AreaFacade,
   type BuildingFacade,
   type DeviceFacadeAny,
+  type DeviceType,
   type ErrorLog,
   type ErrorLogQuery,
   type FloorFacade,
@@ -52,6 +53,12 @@ import {
 } from './types/index.mjs'
 
 const NOTIFICATION_DELAY = 10000
+
+const drivers: Record<keyof typeof DeviceType, string> = {
+  Ata: 'melcloud',
+  Atw: 'melcloud_atw',
+  Erv: 'melcloud_erv',
+} as const
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -159,7 +166,10 @@ export default class MELCloudApp extends Homey.App {
           this.log(...args)
         },
       },
-      onSync: async () => this.#syncFromDevices(),
+      onSync: async (params?: {
+        id?: number
+        type?: keyof typeof DeviceType
+      }) => this.#syncFromDevices(params),
       settingManager: this.homey.settings,
       timezone,
     })
@@ -330,7 +340,7 @@ export default class MELCloudApp extends Homey.App {
     driverId?: string,
   ): Promise<void> {
     await Promise.all(
-      this.#getDevices(driverId).map(async (device) => {
+      this.#getDevices({ driverId }).map(async (device) => {
         const changedKeys = Object.keys(settings).filter(
           (changedKey) =>
             settings[changedKey] !== device.getSetting(changedKey),
@@ -392,18 +402,35 @@ export default class MELCloudApp extends Homey.App {
     }
   }
 
-  #getDevices(driverId?: string): MELCloudDevice[] {
+  #getDevices({
+    driverId,
+    id,
+  }: {
+    driverId?: string
+    id?: number
+  } = {}): MELCloudDevice[] {
     return (
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
-      : [this.homey.drivers.getDriver(driverId)]).flatMap(
-      (driver) => driver.getDevices() as MELCloudDevice[],
-    )
+      : [this.homey.drivers.getDriver(driverId)]).flatMap((driver) => {
+      const devices = driver.getDevices() as MELCloudDevice[]
+      return id === undefined ? devices : (
+          devices.filter(({ id: deviceId }) => id === deviceId)
+        )
+    })
   }
 
-  async #syncFromDevices(): Promise<void> {
+  async #syncFromDevices({
+    id,
+    type,
+  }: {
+    id?: number
+    type?: keyof typeof DeviceType
+  } = {}): Promise<void> {
     await Promise.all(
-      this.#getDevices().map(async (device) => device.syncFromDevice()),
+      this.#getDevices({ driverId: type ? drivers[type] : undefined, id }).map(
+        async (device) => device.syncFromDevice(),
+      ),
     )
   }
 }

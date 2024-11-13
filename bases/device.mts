@@ -42,9 +42,9 @@ export abstract class BaseMELCloudDevice<
 > extends withTimers(Homey.Device) {
   public declare readonly driver: MELCloudDriver[T]
 
-  readonly #app = this.homey.app as MELCloudApp
+  public readonly id = (this.getData() as DeviceDetails<T>['data']).id
 
-  readonly #id = (this.getData() as DeviceDetails<T>['data']).id
+  readonly #app = this.homey.app as MELCloudApp
 
   readonly #reports: {
     regular?: EnergyReportRegular[T]
@@ -204,7 +204,7 @@ export abstract class BaseMELCloudDevice<
   public async fetchDevice(): Promise<DeviceFacade[T] | undefined> {
     try {
       if (!this.#device) {
-        this.#device = this.#app.getFacade('devices', this.#id) as
+        this.#device = this.#app.getFacade('devices', this.id) as
           | DeviceFacade[T]
           | undefined
         if (this.#device) {
