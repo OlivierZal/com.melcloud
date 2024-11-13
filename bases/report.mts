@@ -138,9 +138,7 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
           })) as EnergyData[T],
           toDateTime.hour,
         )
-      } catch (error) {
-        await this.#device.setWarning(error)
-      }
+      } catch {}
     }
   }
 
