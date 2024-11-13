@@ -34,7 +34,7 @@ import type {
 
 const DEBOUNCE_DELAY = 1000
 
-const modes:   EnergyReportMode[] = ['regular', 'total']
+const modes: EnergyReportMode[] = ['regular', 'total']
 
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
