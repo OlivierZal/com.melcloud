@@ -18,17 +18,17 @@
     "en": "Set the cool flow temperature in zone 2",
     "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2",
     "fr": "Définir la température de départ pour le refroidissement dans la zone 2",
-    "nl": "Stel de aanvoertemperatuur voor koeling in in zone 2",
+    "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in",
     "no": "Innstill fremløpstemperaturen for kjøling i sone 2",
     "sv": "Ställ in framledningstemperaturen för kylning i zon 2"
   },
   "titleFormatted": {
-    "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]] i zone 2",
-    "en": "Set the cool flow temperature to [[target_temperature]] in zone 2",
-    "es": "Configurar la temperatura de partida para el enfriamiento a [[target_temperature]] en la zona 2",
-    "fr": "Définir la température de départ pour le refroidissement à [[target_temperature]] dans la zone 2",
-    "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]] in zone 2",
-    "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]] i sone 2",
-    "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]] i zon 2"
+    "da": "Indstil fremledningstemperaturen for køling i zone 2 til [[target_temperature]]",
+    "en": "Set the cool flow temperature in zone 2 to [[target_temperature]]",
+    "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2 a [[target_temperature]]",
+    "fr": "Définir la température de départ pour le refroidissement dans la zone 2 à [[target_temperature]]",
+    "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in op [[target_temperature]]",
+    "no": "Innstill fremløpstemperaturen for kjøling i sone 2 til [[target_temperature]]",
+    "sv": "Ställ in framledningstemperaturen för kylning i zon 2 till [[target_temperature]]"
   }
 }

@@ -7,13 +7,13 @@
     }
   ],
   "title": {
-    "da": "Termostattilstand er blevet ændret i zone 2",
-    "en": "Thermostat mode has changed in zone 2",
-    "es": "El modo del termostato ha cambiado en la zona 2",
-    "fr": "Mode thermostat a été modifié dans la zone 2",
-    "nl": "Thermostaat modus is veranderd in zone 2",
-    "no": "Termostatmodus ble endret i sone 2",
-    "sv": "Termostatläge ändrades i zon 2"
+    "da": "Termostattilstand i zone 2 er blevet ændret",
+    "en": "Thermostat mode in zone 2 has changed",
+    "es": "El modo del termostato en la zona 2 ha cambiado",
+    "fr": "Mode thermostat dans la zone 2 a été modifié",
+    "nl": "Thermostaat modus in zone 2 is veranderd",
+    "no": "Termostatmodus i sone 2 ble endret",
+    "sv": "Termostatläge i zon 2 ändrades"
   },
   "tokens": [
     {
@@ -22,13 +22,13 @@
       },
       "name": "thermostat_mode.zone2",
       "title": {
-        "da": "Termostattilstand i zone 2",
-        "en": "Thermostat mode in zone 2",
-        "es": "Modo del termostato en la zona 2",
-        "fr": "Mode thermostat dans la zone 2",
-        "nl": "Thermostaat modus in zone 2",
-        "no": "Termostatmodus i sone 2",
-        "sv": "Termostatläge i zon 2"
+        "da": "Termostattilstand - zone 2",
+        "en": "Thermostat mode - zone 2",
+        "es": "Modo del termostato - zona 2",
+        "fr": "Mode thermostat - zone 2",
+        "nl": "Thermostaat modus - zone 2",
+        "no": "Termostatmodus - sone 2",
+        "sv": "Termostatläge - zon 2"
       },
       "type": "string"
     }

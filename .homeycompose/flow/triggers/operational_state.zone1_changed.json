@@ -7,13 +7,13 @@
     }
   ],
   "title": {
-    "da": "Driftstilstanden i zone 1 blev ændret til",
-    "en": "The operational state in zone 1 changed to",
-    "es": "El estado operativo en la zona 1 ha cambiado a",
-    "fr": "L'état opérationnel dans la zone 1 est passé à",
-    "nl": "De operationele staat in zone 1 is veranderd naar",
-    "no": "Driftstilstanden i sone 1 ble endret til",
-    "sv": "Drifttillståndet i zon 1 ändrades till"
+    "da": "Driftstilstanden i zone 1 blev ændret",
+    "en": "The operational state in zone 1 changed",
+    "es": "El estado operativo en la zona 1 ha cambiado",
+    "fr": "L'état opérationnel dans la zone 1 a changé",
+    "nl": "De operationele staat in zone 1 is veranderd",
+    "no": "Driftstilstanden i sone 1 ble endret",
+    "sv": "Drifttillståndet i zon 1 ändrades"
   },
   "tokens": [
     {

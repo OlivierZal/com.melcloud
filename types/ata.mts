@@ -40,7 +40,7 @@ export interface GetCapabilitiesAta extends BaseGetCapabilities {
 export interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
   readonly fan_speed: FanSpeed
-  readonly 'fan_speed.current': number
+  readonly 'fan_speed.state': number
   readonly horizontal: keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
 
@@ -106,7 +106,7 @@ export const listCapabilityTagMappingAta: Record<
 > = {
   'alarm_generic.silent': 'FanSpeed',
   fan_speed: 'FanSpeed',
-  'fan_speed.current': 'ActualFanSpeed',
+  'fan_speed.state': 'ActualFanSpeed',
   horizontal: 'VaneHorizontalDirection',
   measure_signal_strength: 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',

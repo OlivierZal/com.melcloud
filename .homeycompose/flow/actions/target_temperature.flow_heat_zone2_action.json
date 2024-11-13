@@ -18,17 +18,17 @@
     "en": "Set the flow temperature in zone 2",
     "es": "Configurar la temperatura de partida en la zona 2",
     "fr": "Définir la température de départ dans la zone 2",
-    "nl": "Stel de aanvoertemperatuur in in zone 2",
+    "nl": "Stel de aanvoertemperatuur in zone 2 in",
     "no": "Innstill fremløpstemperaturen i sone 2",
     "sv": "Ställ in framledningstemperaturen i zon 2"
   },
   "titleFormatted": {
-    "da": "Indstil fremledningstemperaturen til [[target_temperature]] i zone 2",
-    "en": "Set the flow temperature to [[target_temperature]] in zone 2",
-    "es": "Configurar la temperatura de partida a [[target_temperature]] en la zona 2",
-    "fr": "Définir la température de départ à [[target_temperature]] dans la zone 2",
-    "nl": "Stel de aanvoertemperatuur in op [[target_temperature]] in zone 2",
-    "no": "Innstill fremløpstemperaturen til [[target_temperature]] i sone 2",
-    "sv": "Ställ in framledningstemperaturen till [[target_temperature]] i zon 2"
+    "da": "Indstil fremledningstemperaturen i zone 2 til [[target_temperature]]",
+    "en": "Set the flow temperature in zone 2 to [[target_temperature]]",
+    "es": "Configurar la temperatura de partida en la zona 2 a [[target_temperature]]",
+    "fr": "Définir la température de départ dans la zone 2 à [[target_temperature]]",
+    "nl": "Stel de aanvoertemperatuur in zone 2 in op [[target_temperature]]",
+    "no": "Innstill fremløpstemperaturen i sone 2 til [[target_temperature]]",
+    "sv": "Ställ in framledningstemperaturen i zon 2 till [[target_temperature]]"
   }
 }

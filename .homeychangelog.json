@@ -215,13 +215,13 @@
     "no": "Løser et problem med krasj ved oppstart av appen.",
     "sv": "Åtgärdar ett kraschproblem vid appstart."
   },
-  "40.0.0": {
-    "da": "✨ **Ny funktion** ✨\n\nEn widget til gruppestyring af luft-til-luft-enheder er blevet oprettet.\n\n⚠️ **Brudændring** ⚠️\n\nBrugen af nye systemfunktioner i Homey kan kræve, at visse flow-kort skal genoprettes.",
+  "40.0.1": {
+    "da": "✨ **Ny funktion** ✨\n\nEn widget til gruppestyring af luft-til-luft-enheder er blevet oprettet.\n\n⚠️ **Brudændring** ⚠️\n\nBrugen af de nye systemfunktioner i Homey kan kræve, at visse flow-kort skal genoprettes.",
     "en": "✨ **New feature** ✨\n\nA widget for grouped control of air-to-air devices has been created.\n\n⚠️ **Breaking change** ⚠️\n\nThe use of new Homey system capabilities may require some flow cards to be recreated.",
-    "es": "✨ **Nueva función** ✨\n\nSe ha creado un widget para el control agrupado de dispositivos aire-aire.\n\n⚠️ **Cambio importante** ⚠️\n\nEl uso de nuevas capacidades del sistema Homey puede requerir la recreación de algunas tarjetas de flujo.",
-    "fr": "✨ **Nouvelle fonctionnalité** ✨\n\nUn widget permettant le contrôle groupé des appareils air-air a été créé.\n\n⚠️ **Changement majeur** ⚠️\n\nL’utilisation des capacités systèmes de Homey peut nécessiter la recréation de certaines cartes flow.",
-    "nl": "✨ **Nieuwe functie** ✨\n\nEr is een widget gecreëerd voor gegroepeerde bediening van lucht-lucht apparaten.\n\n⚠️ **Belangrijke wijziging** ⚠️\n\nHet gebruik van Homey-systeemmogelijkheden kan vereisen dat sommige flowkaarten opnieuw worden gemaakt.",
-    "no": "✨ **Ny funksjon** ✨\n\nEn widget for gruppekontroll av luft-til-luft-enheter er blitt opprettet.\n\n⚠️ **Betydelig endring** ⚠️\n\nBruken av Homey-systemfunksjoner kan kreve at enkelte flytkort må opprettes på nytt.",
-    "sv": "✨ **Ny funktion** ✨\n\nEn widget för gruppstyrning av luft-till-luft-enheter har skapats.\n\n⚠️ **Större förändring** ⚠️\n\nAnvändningen av systemfunktioner i Homey kan kräva att vissa flödeskort återskapas."
+    "es": "✨ **Nueva función** ✨\n\nSe ha creado un widget para el control agrupado de dispositivos aire-aire.\n\n⚠️ **Cambio importante** ⚠️\n\nEl uso de las nuevas capacidades del sistema Homey puede requerir la recreación de algunas tarjetas de flujo.",
+    "fr": "✨ **Nouvelle fonctionnalité** ✨\n\nUn widget permettant le contrôle groupé des appareils air-air a été créé.\n\n⚠️ **Changement majeur** ⚠️\n\nL’utilisation des nouvelles capacités systèmes de Homey peut nécessiter la recréation de certaines cartes flow.",
+    "nl": "✨ **Nieuwe functie** ✨\n\nEr is een widget gecreëerd voor gegroepeerde bediening van lucht-lucht apparaten.\n\n⚠️ **Belangrijke wijziging** ⚠️\n\nHet gebruik van de nieuwe Homey-systeemmogelijkheden kan vereisen dat sommige flowkaarten opnieuw worden gemaakt.",
+    "no": "✨ **Ny funksjon** ✨\n\nEn widget for gruppekontroll av luft-til-luft-enheter er blitt opprettet.\n\n⚠️ **Betydelig endring** ⚠️\n\nBruken av de nye systemfunksjonene i Homey kan kreve at enkelte flytkort må opprettes på nytt.",
+    "sv": "✨ **Ny funktion** ✨\n\nEn widget för gruppstyrning av luft-till-luft-enheter har skapats.\n\n⚠️ **Större förändring** ⚠️\n\nAnvändningen av de nya systemfunktionerna i Homey kan kräva att vissa flödeskort återskapas."
   }
 }

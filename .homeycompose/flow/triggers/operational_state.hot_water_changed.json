@@ -7,13 +7,13 @@
     }
   ],
   "title": {
-    "da": "Driftstilstanden for varmtvandsindlæsning blev ændret til",
-    "en": "The operational state for domestic hot water changed to",
-    "es": "El estado operativo para el agua caliente sanitaria ha cambiado a",
-    "fr": "L'état opérationnel pour l'eau chaude sanitaire est passé à",
-    "nl": "De operationele staat voor het sanitair warm water is veranderd naar",
-    "no": "Driftstilstanden for varmvannslastning ble endret til",
-    "sv": "Drifttillståndet för varmvattenladdning ändrades till"
+    "da": "Driftstilstanden for varmtvandsindlæsning blev ændret",
+    "en": "The operational state for domestic hot water changed",
+    "es": "El estado operativo para el agua caliente sanitaria ha cambiado",
+    "fr": "L'état opérationnel pour l'eau chaude sanitaire a changé",
+    "nl": "De operationele staat voor het sanitair warm water is veranderd",
+    "no": "Driftstilstanden for varmvannslastning ble endret",
+    "sv": "Drifttillståndet för varmvattenladdning ändrades"
   },
   "tokens": [
     {

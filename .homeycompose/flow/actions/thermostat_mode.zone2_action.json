@@ -86,17 +86,17 @@
     "en": "Set the mode in zone 2",
     "es": "Configurar el modo en la zona 2",
     "fr": "Définir le mode dans la zone 2",
-    "nl": "Stel de modus in in zone 2",
+    "nl": "Stel de modus in zone 2 in",
     "no": "Innstill modusen i sone 2",
     "sv": "Ställ in läget i zon 2"
   },
   "titleFormatted": {
-    "da": "Indstil tilstanden til [[thermostat_mode]] i zone 2",
-    "en": "Set the mode to [[thermostat_mode]] in zone 2",
-    "es": "Configurar el modo a [[thermostat_mode]] en la zona 2",
-    "fr": "Définir le mode à [[thermostat_mode]] dans la zone 2",
-    "nl": "Stel de modus in op [[thermostat_mode]] in zone 2",
-    "no": "Innstill modusen til [[thermostat_mode]] i sone 2",
-    "sv": "Ställ in läget till [[thermostat_mode]] i zon 2"
+    "da": "Indstil tilstanden i zone 2 til [[thermostat_mode]]",
+    "en": "Set the mode in zone 2 to [[thermostat_mode]]",
+    "es": "Configurar el modo en la zona 2 a [[thermostat_mode]]",
+    "fr": "Définir le mode dans la zone 2 à [[thermostat_mode]]",
+    "nl": "Stel de modus in zone 2 in op [[thermostat_mode]]",
+    "no": "Innstill modusen i sone 2 til [[thermostat_mode]]",
+    "sv": "Ställ in läget i zon 2 till [[thermostat_mode]]"
   }
 }
