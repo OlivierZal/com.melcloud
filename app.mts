@@ -9,18 +9,18 @@ import {
   MELCloudAPI,
   OperationMode,
   Vertical,
-  type AreaFacade,
-  type BuildingFacade,
-  type DeviceFacadeAny,
   type DeviceType,
   type ErrorLog,
   type ErrorLogQuery,
-  type FloorFacade,
   type FrostProtectionData,
   type FrostProtectionQuery,
   type GroupAtaState,
   type HolidayModeData,
   type HolidayModeQuery,
+  type IBuildingFacade,
+  type IDeviceFacade,
+  type IFacade,
+  type ISuperDeviceFacade,
   type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
@@ -284,15 +284,18 @@ export default class MELCloudApp extends Homey.App {
     return this.#facadeManager.getErrors(query)
   }
 
-  public getFacade(zoneType: 'devices', id: number | string): DeviceFacadeAny
-  public getFacade(
-    zoneType: 'areas' | 'buildings' | 'floors',
+  public getFacade<T extends keyof typeof DeviceType>(
+    zoneType: 'devices',
     id: number | string,
-  ): AreaFacade | BuildingFacade | FloorFacade
+  ): IDeviceFacade<T>
+  public getFacade(
+    zoneType: Exclude<keyof typeof zoneModel, 'devices'>,
+    id: number | string,
+  ): IBuildingFacade | ISuperDeviceFacade
   public getFacade(
     zoneType: keyof typeof zoneModel,
     id: number | string,
-  ): AreaFacade | BuildingFacade | DeviceFacadeAny | FloorFacade {
+  ): IFacade {
     const instance = zoneModel[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(

@@ -1,13 +1,13 @@
 import {
   BuildingModel,
-  type AreaModelAny,
-  type DeviceModelAny,
-  type FloorModel,
+  type IAreaModel,
+  type IDeviceModelAny,
+  type IFloorModel,
 } from '@olivierzal/melcloud-api'
 
 import type { AreaZone, BuildingZone, FloorZone } from '../types/index.mjs'
 
-const hasDevices = (zone: { devices: DeviceModelAny[] }): boolean =>
+const hasDevices = (zone: { devices: IDeviceModelAny[] }): boolean =>
   Boolean(zone.devices.length)
 
 const compareNames = (
@@ -15,13 +15,13 @@ const compareNames = (
   { name: name2 }: { name: string },
 ): number => name1.localeCompare(name2)
 
-const filterAndMapAreas = (areas: AreaModelAny[]): AreaZone[] =>
+const filterAndMapAreas = (areas: IAreaModel[]): AreaZone[] =>
   areas
     .filter(hasDevices)
     .toSorted(compareNames)
     .map(({ id, name }) => ({ id, name }))
 
-const filterAndMapFloors = (floors: FloorModel[]): FloorZone[] =>
+const filterAndMapFloors = (floors: IFloorModel[]): FloorZone[] =>
   floors
     .filter(hasDevices)
     .toSorted(compareNames)

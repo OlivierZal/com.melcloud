@@ -14,7 +14,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^14.2.1",
+    "@olivierzal/melcloud-api": "^15.0.0",
     "core-js": "^3.39.0",
     "homey-lib": "^2.32.8",
     "luxon": "^3.5.0",

@@ -6,7 +6,7 @@ import {
   type DeviceType,
   type EnergyData,
   type FanSpeed,
-  type IBaseModel,
+  type IModel,
   type ListDevice,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
@@ -293,11 +293,11 @@ export interface DeviceDetails<T extends keyof typeof DeviceType> {
   readonly name: string
 }
 
-export type AreaZone = IBaseModel
-export interface FloorZone extends IBaseModel {
+export type AreaZone = IModel
+export interface FloorZone extends IModel {
   areas?: AreaZone[]
 }
-export interface BuildingZone extends IBaseModel {
+export interface BuildingZone extends IModel {
   areas?: AreaZone[]
   floors?: FloorZone[]
 }

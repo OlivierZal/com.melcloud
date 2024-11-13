@@ -5,8 +5,8 @@ import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mjs'
 import { withTimers } from '../lib/withTimers.mjs'
 
 import type {
-  DeviceFacade,
   DeviceType,
+  IDeviceFacade,
   ListDevice,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -55,7 +55,7 @@ export abstract class BaseMELCloudDevice<
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
 
-  #device?: DeviceFacade[T]
+  #device?: IDeviceFacade<T>
 
   protected abstract readonly fromDevice: Partial<
     Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
@@ -201,15 +201,11 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
-  public async fetchDevice(): Promise<DeviceFacade[T] | undefined> {
+  public async fetchDevice(): Promise<IDeviceFacade<T> | undefined> {
     try {
       if (!this.#device) {
-        this.#device = this.#app.getFacade('devices', this.id) as
-          | DeviceFacade[T]
-          | undefined
-        if (this.#device) {
-          await this.#init(this.#device.data)
-        }
+        this.#device = this.#app.getFacade('devices', this.id)
+        await this.#init(this.#device.data)
       }
       return this.#device
     } catch (error) {

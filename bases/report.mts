@@ -132,10 +132,10 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
         const toDateTime = DateTime.now().minus(this.minus)
         const to = toDateTime.toISODate()
         await this.#set(
-          (await device.getEnergyReport({
+          await device.getEnergyReport({
             from: this.mode === 'total' ? undefined : to,
             to,
-          })) as EnergyData[T],
+          }),
           toDateTime.hour,
         )
       } catch {}
