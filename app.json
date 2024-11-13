@@ -538,13 +538,13 @@
           }
         ],
         "title": {
-          "da": "Driftstilstanden for varmtvandsindlæsning blev ændret til",
-          "en": "The operational state for domestic hot water changed to",
-          "es": "El estado operativo para el agua caliente sanitaria ha cambiado a",
-          "fr": "L'état opérationnel pour l'eau chaude sanitaire est passé à",
-          "nl": "De operationele staat voor het sanitair warm water is veranderd naar",
-          "no": "Driftstilstanden for varmvannslastning ble endret til",
-          "sv": "Drifttillståndet för varmvattenladdning ändrades till"
+          "da": "Driftstilstanden for varmtvandsindlæsning blev ændret",
+          "en": "The operational state for domestic hot water changed",
+          "es": "El estado operativo para el agua caliente sanitaria ha cambiado",
+          "fr": "L'état opérationnel pour l'eau chaude sanitaire a changé",
+          "nl": "De operationele staat voor het sanitair warm water is veranderd",
+          "no": "Driftstilstanden for varmvannslastning ble endret",
+          "sv": "Drifttillståndet för varmvattenladdning ändrades"
         },
         "tokens": [
           {
@@ -575,13 +575,13 @@
           }
         ],
         "title": {
-          "da": "Driftstilstanden i zone 1 blev ændret til",
-          "en": "The operational state in zone 1 changed to",
-          "es": "El estado operativo en la zona 1 ha cambiado a",
-          "fr": "L'état opérationnel dans la zone 1 est passé à",
-          "nl": "De operationele staat in zone 1 is veranderd naar",
-          "no": "Driftstilstanden i sone 1 ble endret til",
-          "sv": "Drifttillståndet i zon 1 ändrades till"
+          "da": "Driftstilstanden i zone 1 blev ændret",
+          "en": "The operational state in zone 1 changed",
+          "es": "El estado operativo en la zona 1 ha cambiado",
+          "fr": "L'état opérationnel dans la zone 1 a changé",
+          "nl": "De operationele staat in zone 1 is veranderd",
+          "no": "Driftstilstanden i sone 1 ble endret",
+          "sv": "Drifttillståndet i zon 1 ändrades"
         },
         "tokens": [
           {
@@ -612,13 +612,13 @@
           }
         ],
         "title": {
-          "da": "Driftstilstanden i zone 2 blev ændret til",
-          "en": "The operational state in zone 2 changed to",
-          "es": "El estado operativo en la zona 2 ha cambiado a",
-          "fr": "L'état opérationnel dans la zone 2 est passé à",
-          "nl": "De operationele staat in zone 2 is veranderd naar",
-          "no": "Driftstilstanden i sone 2 ble endret til",
-          "sv": "Drifttillståndet i zon 2 ändrades till"
+          "da": "Driftstilstanden i zone 2 blev ændret",
+          "en": "The operational state in zone 2 changed",
+          "es": "El estado operativo en la zona 2 ha cambiado",
+          "fr": "L'état opérationnel dans la zone 2 a changé",
+          "nl": "De operationele staat in zone 2 is veranderd",
+          "no": "Driftstilstanden i sone 2 ble endret",
+          "sv": "Drifttillståndet i zon 2 ändrades"
         },
         "tokens": [
           {
@@ -649,13 +649,13 @@
           }
         ],
         "title": {
-          "da": "Termostattilstand er blevet ændret i zone 2",
-          "en": "Thermostat mode has changed in zone 2",
-          "es": "El modo del termostato ha cambiado en la zona 2",
-          "fr": "Mode thermostat a été modifié dans la zone 2",
-          "nl": "Thermostaat modus is veranderd in zone 2",
-          "no": "Termostatmodus ble endret i sone 2",
-          "sv": "Termostatläge ändrades i zon 2"
+          "da": "Termostattilstand i zone 2 er blevet ændret",
+          "en": "Thermostat mode in zone 2 has changed",
+          "es": "El modo del termostato en la zona 2 ha cambiado",
+          "fr": "Mode thermostat dans la zone 2 a été modifié",
+          "nl": "Thermostaat modus in zone 2 is veranderd",
+          "no": "Termostatmodus i sone 2 ble endret",
+          "sv": "Termostatläge i zon 2 ändrades"
         },
         "tokens": [
           {
@@ -664,13 +664,13 @@
             },
             "name": "thermostat_mode.zone2",
             "title": {
-              "da": "Termostattilstand i zone 2",
-              "en": "Thermostat mode in zone 2",
-              "es": "Modo del termostato en la zona 2",
-              "fr": "Mode thermostat dans la zone 2",
-              "nl": "Thermostaat modus in zone 2",
-              "no": "Termostatmodus i sone 2",
-              "sv": "Termostatläge i zon 2"
+              "da": "Termostattilstand - zone 2",
+              "en": "Thermostat mode - zone 2",
+              "es": "Modo del termostato - zona 2",
+              "fr": "Mode thermostat - zone 2",
+              "nl": "Thermostaat modus - zone 2",
+              "no": "Termostatmodus - sone 2",
+              "sv": "Termostatläge - zon 2"
             },
             "type": "string"
           }
@@ -1657,18 +1657,18 @@
           "en": "Set the cool flow temperature in zone 2",
           "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2",
           "fr": "Définir la température de départ pour le refroidissement dans la zone 2",
-          "nl": "Stel de aanvoertemperatuur voor koeling in in zone 2",
+          "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in",
           "no": "Innstill fremløpstemperaturen for kjøling i sone 2",
           "sv": "Ställ in framledningstemperaturen för kylning i zon 2"
         },
         "titleFormatted": {
-          "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]] i zone 2",
-          "en": "Set the cool flow temperature to [[target_temperature]] in zone 2",
-          "es": "Configurar la temperatura de partida para el enfriamiento a [[target_temperature]] en la zona 2",
-          "fr": "Définir la température de départ pour le refroidissement à [[target_temperature]] dans la zone 2",
-          "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]] in zone 2",
-          "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]] i sone 2",
-          "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]] i zon 2"
+          "da": "Indstil fremledningstemperaturen for køling i zone 2 til [[target_temperature]]",
+          "en": "Set the cool flow temperature in zone 2 to [[target_temperature]]",
+          "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2 a [[target_temperature]]",
+          "fr": "Définir la température de départ pour le refroidissement dans la zone 2 à [[target_temperature]]",
+          "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in op [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen for kjøling i sone 2 til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen för kylning i zon 2 till [[target_temperature]]"
         },
         "id": "target_temperature.flow_cool_zone2_action"
       },
@@ -1727,18 +1727,18 @@
           "en": "Set the flow temperature in zone 2",
           "es": "Configurar la temperatura de partida en la zona 2",
           "fr": "Définir la température de départ dans la zone 2",
-          "nl": "Stel de aanvoertemperatuur in in zone 2",
+          "nl": "Stel de aanvoertemperatuur in zone 2 in",
           "no": "Innstill fremløpstemperaturen i sone 2",
           "sv": "Ställ in framledningstemperaturen i zon 2"
         },
         "titleFormatted": {
-          "da": "Indstil fremledningstemperaturen til [[target_temperature]] i zone 2",
-          "en": "Set the flow temperature to [[target_temperature]] in zone 2",
-          "es": "Configurar la temperatura de partida a [[target_temperature]] en la zona 2",
-          "fr": "Définir la température de départ à [[target_temperature]] dans la zone 2",
-          "nl": "Stel de aanvoertemperatuur in op [[target_temperature]] in zone 2",
-          "no": "Innstill fremløpstemperaturen til [[target_temperature]] i sone 2",
-          "sv": "Ställ in framledningstemperaturen till [[target_temperature]] i zon 2"
+          "da": "Indstil fremledningstemperaturen i zone 2 til [[target_temperature]]",
+          "en": "Set the flow temperature in zone 2 to [[target_temperature]]",
+          "es": "Configurar la temperatura de partida en la zona 2 a [[target_temperature]]",
+          "fr": "Définir la température de départ dans la zone 2 à [[target_temperature]]",
+          "nl": "Stel de aanvoertemperatuur in zone 2 in op [[target_temperature]]",
+          "no": "Innstill fremløpstemperaturen i sone 2 til [[target_temperature]]",
+          "sv": "Ställ in framledningstemperaturen i zon 2 till [[target_temperature]]"
         },
         "id": "target_temperature.flow_heat_zone2_action"
       },
@@ -1796,18 +1796,18 @@
           "en": "Set the temperature in zone 2",
           "es": "Configurar la temperatura en la zona 2",
           "fr": "Définir la température dans la zone 2",
-          "nl": "Stel de temperatuur in in zone 2",
+          "nl": "Stel de temperatuur in zone 2 in",
           "no": "Innstill temperaturen i sone 2",
           "sv": "Ställ in temperaturen i zon 2"
         },
         "titleFormatted": {
-          "da": "Indstil temperaturen til [[target_temperature]] i zone 2",
-          "en": "Set the temperature to [[target_temperature]] in zone 2",
-          "es": "Configurar la temperatura a [[target_temperature]] en la zona 2",
-          "fr": "Définir la température à [[target_temperature]] dans la zone 2",
-          "nl": "Stel de temperatuur in op [[target_temperature]] in zone 2",
-          "no": "Innstill temperaturen til [[target_temperature]] i sone 2",
-          "sv": "Ställ in temperaturen till [[target_temperature]] i zon 2"
+          "da": "Indstil temperaturen i zone 2 til [[target_temperature]]",
+          "en": "Set the temperature in zone 2 to [[target_temperature]]",
+          "es": "Configurar la temperatura en la zona 2 a [[target_temperature]]",
+          "fr": "Définir la température dans la zone 2 à [[target_temperature]]",
+          "nl": "Stel de temperatuur in zone 2 in op [[target_temperature]]",
+          "no": "Innstill temperaturen i sone 2 til [[target_temperature]]",
+          "sv": "Ställ in temperaturen i zon 2 till [[target_temperature]]"
         },
         "id": "target_temperature.zone2_action"
       },
@@ -1899,18 +1899,18 @@
           "en": "Set the mode in zone 2",
           "es": "Configurar el modo en la zona 2",
           "fr": "Définir le mode dans la zone 2",
-          "nl": "Stel de modus in in zone 2",
+          "nl": "Stel de modus in zone 2 in",
           "no": "Innstill modusen i sone 2",
           "sv": "Ställ in läget i zon 2"
         },
         "titleFormatted": {
-          "da": "Indstil tilstanden til [[thermostat_mode]] i zone 2",
-          "en": "Set the mode to [[thermostat_mode]] in zone 2",
-          "es": "Configurar el modo a [[thermostat_mode]] en la zona 2",
-          "fr": "Définir le mode à [[thermostat_mode]] dans la zone 2",
-          "nl": "Stel de modus in op [[thermostat_mode]] in zone 2",
-          "no": "Innstill modusen til [[thermostat_mode]] i sone 2",
-          "sv": "Ställ in läget till [[thermostat_mode]] i zon 2"
+          "da": "Indstil tilstanden i zone 2 til [[thermostat_mode]]",
+          "en": "Set the mode in zone 2 to [[thermostat_mode]]",
+          "es": "Configurar el modo en la zona 2 a [[thermostat_mode]]",
+          "fr": "Définir le mode dans la zone 2 à [[thermostat_mode]]",
+          "nl": "Stel de modus in zone 2 in op [[thermostat_mode]]",
+          "no": "Innstill modusen i sone 2 til [[thermostat_mode]]",
+          "sv": "Ställ in läget i zon 2 till [[thermostat_mode]]"
         },
         "id": "thermostat_mode.zone2_action"
       },
