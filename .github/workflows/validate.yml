@@ -41,7 +41,7 @@ jobs:
               BRANCH_NAME="maintenance-$(date +'%Y%m%d%H%M%S')"
               git checkout -b "$BRANCH_NAME"
               git push origin "$BRANCH_NAME"
-              gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code."
+              PR_URL=$(gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code.")
               gh pr merge --auto --squash --delete-branch "$PR_URL"
             else
               git pull origin ${{ github.head_ref }} --rebase
@@ -49,5 +49,4 @@ jobs:
             fi
           fi
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
