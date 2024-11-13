@@ -48,9 +48,12 @@ jobs:
               git checkout -b "$BRANCH_NAME"
               git push origin "$BRANCH_NAME"
               gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code."
-              gh pr merge --auto --merge --delete-branch ${{ github.event.pull_request.html_url }}
+              gh pr merge --auto --merge --delete-branch "$PR_URL"
             else
               git pull origin ${{ github.head_ref }} --rebase
               git push origin HEAD:${{ github.head_ref }}
             fi
           fi
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
