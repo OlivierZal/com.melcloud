@@ -43,7 +43,7 @@ jobs:
               git push origin "$BRANCH_NAME"
               gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code."
               PR_URL=$(gh pr view "$BRANCH_NAME" --json url -q '.url')
-              gh pr merge --auto --squash --delete-branch "$PR_URL"
+              gh pr merge --auto --squash --no-ff --delete-branch "$PR_URL"
             else
               git pull origin ${{ github.head_ref }} --rebase
               git push origin HEAD:${{ github.head_ref }}
