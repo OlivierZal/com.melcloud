@@ -86,6 +86,7 @@
     "no": "Ta kontroll over varmepumpen din",
     "sv": "Ta kontroll över din värmepump"
   },
+  "esm": true,
   "homeyCommunityTopicId": 73094,
   "id": "com.mecloud",
   "images": {
@@ -188,7 +189,6 @@
     ]
   },
   "version": "40.0.2",
-  "esm": true,
   "flow": {
     "triggers": [
       {
