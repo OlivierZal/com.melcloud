@@ -9,7 +9,7 @@ export {
   type FlowArgsAta,
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
-} from './ata.mjs'
+} from './ata.mts'
 export {
   HotWaterMode,
   OperationModeStateHotWaterCapability,
@@ -25,7 +25,7 @@ export {
   type OpCapabilitiesAtw,
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
-} from './atw.mjs'
+} from './atw.mts'
 export {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
@@ -70,7 +70,7 @@ export {
   type ValueOf,
   type Zone,
   type ZoneData,
-} from './common.mjs'
+} from './common.mts'
 export {
   ThermostatModeErv,
   energyCapabilityTagMappingErv,
@@ -82,5 +82,5 @@ export {
   type FlowArgsErv,
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
-} from './erv.mjs'
-export type { LocalizedStrings } from './bases.mjs'
+} from './erv.mts'
+export type { LocalizedStrings } from './bases.mts'

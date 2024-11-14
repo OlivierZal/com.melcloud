@@ -6,16 +6,16 @@ import {
   type ListDeviceDataAta,
 } from '@olivierzal/melcloud-api'
 
-import { BaseMELCloudDevice } from '../../bases/device.mjs'
-import { EnergyReportRegularAta } from '../../reports/melcloud/regular.mjs'
-import { EnergyReportTotalAta } from '../../reports/melcloud/total.mjs'
+import { BaseMELCloudDevice } from '../../bases/device.mts'
+import { EnergyReportRegularAta } from '../../reports/melcloud/regular.mts'
+import { EnergyReportTotalAta } from '../../reports/melcloud/total.mts'
 import {
   ThermostatModeAta,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
-} from '../../types/index.mjs'
+} from '../../types/index.mts'
 
 export default class MELCloudDeviceAta extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<

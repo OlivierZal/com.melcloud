@@ -140,8 +140,8 @@ const groups = selectorOrder.flatMap((selector): (string | string[])[] => {
       generateGroupsForSelector(pairedSelector),
     )
     const [groupPair] = groupPairs
-    return [...Array(groupPair.length).keys()].map((index) =>
-      groupPairs.map((group) => group[index]),
+    return [...Array(groupPair.length).keys()].map((index: number) =>
+      groupPairs.map((group) => group.at(index) ?? ''),
     )
   }
   return generateGroupsForSelector(selector)
@@ -386,7 +386,7 @@ const config = [
         'import/no-unassigned-import': [
           'error',
           {
-            allow: ['core-js/**', 'source-map-support/register.js'],
+            allow: ['source-map-support/register.js', 'core-js/actual/**'],
           },
         ],
         'import/no-unused-modules': 'error',

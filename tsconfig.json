@@ -5,9 +5,10 @@
     "noImplicitOverride": true,
     "noUncheckedSideEffectImports": true,
     "outDir": ".homeybuild",
+    "rewriteRelativeImportExtensions": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2023"
+    "target": "ES2024"
   }
 }

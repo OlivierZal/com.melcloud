@@ -3,14 +3,14 @@ import {
   type ListDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import { BaseMELCloudDevice } from '../../bases/device.mjs'
+import { BaseMELCloudDevice } from '../../bases/device.mts'
 import {
   ThermostatModeErv,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
-} from '../../types/index.mjs'
+} from '../../types/index.mts'
 
 export default class MELCloudDeviceErv extends BaseMELCloudDevice<'Erv'> {
   protected readonly fromDevice: Partial<

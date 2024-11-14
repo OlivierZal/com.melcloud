@@ -6,11 +6,11 @@ import {
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
 
-import { Homey } from '../homey.mjs'
+import { Homey } from '../homey.mts'
 
 import type PairSession from 'homey/lib/PairSession'
 
-import type MELCloudApp from '../app.mjs'
+import type MELCloudApp from '../app.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -23,7 +23,7 @@ import type {
   OpCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
-} from '../types/index.mjs'
+} from '../types/index.mts'
 
 const getArg = <T extends keyof typeof DeviceType>(
   capability: Extract<keyof OpCapabilities[T], string>,

@@ -1,4 +1,4 @@
-import { thermostatMode } from '../jsonFiles.mjs'
+import { thermostatMode } from '../jsonFiles.mts'
 
 import type {
   EnergyDataAtw,
@@ -10,7 +10,7 @@ import type {
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mjs'
+import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mts'
 
 import type {
   BaseGetCapabilities,
@@ -19,7 +19,7 @@ import type {
   CapabilitiesOptionsValues,
   LocalizedStrings,
   RangeOptions,
-} from './bases.mjs'
+} from './bases.mts'
 
 export enum HotWaterMode {
   auto = 'auto',

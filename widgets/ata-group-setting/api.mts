@@ -1,15 +1,15 @@
-import { getBuildings } from '../../lib/getBuildings.mjs'
+import { getBuildings } from '../../lib/getBuildings.mts'
 
 import type { GroupAtaState } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
 
-import type MELCloudApp from '../../app.mjs'
+import type MELCloudApp from '../../app.mts'
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
   GetAtaOptions,
   ZoneData,
-} from '../../types/index.mjs'
+} from '../../types/index.mts'
 
 const getApp = (homey: Homey): MELCloudApp => homey.app as MELCloudApp
 

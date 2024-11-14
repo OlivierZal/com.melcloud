@@ -8,13 +8,13 @@ import type {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceAta from '../drivers/melcloud/device.mjs'
+import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
 
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
-} from './bases.mjs'
+} from './bases.mts'
 
 export enum ThermostatModeAta {
   auto = 'auto',

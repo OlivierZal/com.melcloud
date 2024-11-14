@@ -23,7 +23,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../types/index.mjs'
+} from '../types/index.mts'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 

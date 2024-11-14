@@ -26,7 +26,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { Settings as LuxonSettings } from 'luxon'
 
-import { Homey } from './homey.mjs'
+import { Homey } from './homey.mts'
 import {
   changelog,
   fanSpeed,
@@ -35,7 +35,7 @@ import {
   setTemperature,
   thermostatMode,
   vertical,
-} from './jsonFiles.mjs'
+} from './jsonFiles.mts'
 import {
   fanSpeedValues,
   zoneModel,
@@ -50,7 +50,7 @@ import {
   type ManifestDriverCapabilitiesOptions,
   type Settings,
   type ZoneData,
-} from './types/index.mjs'
+} from './types/index.mts'
 
 const NOTIFICATION_DELAY = 10000
 

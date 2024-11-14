@@ -12,7 +12,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../../../types/index.mjs'
+} from '../../../types/index.mts'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
@@ -715,7 +715,7 @@ const generateLeafAnimation = (
   const loopEnd = loopStart + loopDuration
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const animation = leaf.animate(
-    [...Array.from({ length: 101 }).keys()].map((index) => {
+    [...Array.from({ length: 101 }).keys()].map((index: number) => {
       const progress = (index - loopStart) / loopDuration
       const angle = progress * Math.PI * FACTOR_TWO
       const indexLoopRadius =

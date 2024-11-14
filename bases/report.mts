@@ -1,7 +1,7 @@
 import { DateTime, type DateObjectUnits, type DurationLike } from 'luxon'
 
-import { K_MULTIPLIER } from '../lib/constants.mjs'
-import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mjs'
+import { K_MULTIPLIER } from '../lib/constants.mts'
+import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mts'
 
 import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
@@ -13,9 +13,9 @@ import type {
   EnergyCapabilityTagMapping,
   EnergyReportMode,
   MELCloudDriver,
-} from '../types/index.mjs'
+} from '../types/index.mts'
 
-import type { BaseMELCloudDevice } from './device.mjs'
+import type { BaseMELCloudDevice } from './device.mts'
 
 const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1

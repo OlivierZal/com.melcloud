@@ -5,13 +5,13 @@ import type {
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mjs'
+import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
 
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
-} from './bases.mjs'
+} from './bases.mts'
 
 export enum ThermostatModeErv {
   auto = 'auto',

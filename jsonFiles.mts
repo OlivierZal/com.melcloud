@@ -1,4 +1,4 @@
-import type { ManifestDriverCapabilitiesOptions } from './types/common.mjs'
+import type { ManifestDriverCapabilitiesOptions } from './types/common.mts'
 
 export const {
   changelog,
@@ -18,7 +18,7 @@ export const {
   vertical: ManifestDriverCapabilitiesOptions
 }> => {
   try {
-    return await import('./lib/jsonFilesWithImport.mjs')
+    return await import('./lib/jsonFilesWithImport.mts')
   } catch {
     return import('./lib/jsonFilesWithRequire.mjs')
   }

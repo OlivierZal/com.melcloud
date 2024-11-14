@@ -17,16 +17,16 @@ import {
 
 import type { DateObjectUnits, DurationLike } from 'luxon'
 
-import type MELCloudDeviceAta from '../drivers/melcloud/device.mjs'
-import type MELCloudDriverAta from '../drivers/melcloud/driver.mjs'
-import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mjs'
-import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mjs'
-import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mjs'
-import type MELCloudDriverErv from '../drivers/melcloud_erv/driver.mjs'
-import type { EnergyReportRegularAta } from '../reports/melcloud/regular.mjs'
-import type { EnergyReportTotalAta } from '../reports/melcloud/total.mjs'
-import type { EnergyReportRegularAtw } from '../reports/melcloud_atw/regular.mjs'
-import type { EnergyReportTotalAtw } from '../reports/melcloud_atw/total.mjs'
+import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
+import type MELCloudDriverAta from '../drivers/melcloud/driver.mts'
+import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mts'
+import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mts'
+import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
+import type MELCloudDriverErv from '../drivers/melcloud_erv/driver.mts'
+import type { EnergyReportRegularAta } from '../reports/melcloud/regular.mts'
+import type { EnergyReportTotalAta } from '../reports/melcloud/total.mts'
+import type { EnergyReportRegularAtw } from '../reports/melcloud_atw/regular.mts'
+import type { EnergyReportTotalAtw } from '../reports/melcloud_atw/total.mts'
 
 import type {
   CapabilitiesAta,
@@ -38,7 +38,7 @@ import type {
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
-} from './ata.mjs'
+} from './ata.mts'
 import type {
   CapabilitiesAtw,
   CapabilitiesOptionsAtw,
@@ -50,12 +50,12 @@ import type {
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
-} from './atw.mjs'
+} from './atw.mts'
 import type {
   CapabilitiesOptionsValues,
   LocalizedStrings,
   RangeOptions,
-} from './bases.mjs'
+} from './bases.mts'
 import type {
   CapabilitiesErv,
   EnergyCapabilitiesErv,
@@ -66,7 +66,7 @@ import type {
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
-} from './erv.mjs'
+} from './erv.mts'
 
 export const K_MULTIPLIER = 1000
 
