@@ -18,14 +18,12 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
       - uses: actions/setup-node@v4
         with:
-          node-version: '23.1.0'
+          node-version: 'latest'
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
       - name: Lint & format code
         run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
