@@ -1,8 +1,6 @@
 name: Publish app on Homey
 on:
   workflow_dispatch:
-permissions:
-  packages: read
 jobs:
   publish:
     name: Publish app on Homey
@@ -15,12 +13,11 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
           cache: 'npm'
+      - run: cp $NPM_CONFIG_USERCONFIG ${{ github.workspace }}/.npmrc
       - name: Publish
         uses: athombv/github-action-homey-app-publish@master
         id: publish
         with:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: URL
         run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
