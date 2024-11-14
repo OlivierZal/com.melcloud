@@ -4,9 +4,6 @@ on:
   push:
     branches: main
   workflow_dispatch:
-permissions:
-  contents: write
-  pull-requests: write
 jobs:
   validate:
     name: Validate app
@@ -24,6 +21,8 @@ jobs:
           cache: 'npm'
       - name: Lint & format code
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
