@@ -188,6 +188,7 @@
     ]
   },
   "version": "40.0.1",
+  "esm": true,
   "flow": {
     "triggers": [
       {

@@ -166,10 +166,7 @@ export default class MELCloudApp extends Homey.App {
           this.log(...args)
         },
       },
-      onSync: async (params?: {
-        id?: number
-        type?: keyof typeof DeviceType
-      }) => this.#syncFromDevices(params),
+      onSync: async (params) => this.#syncFromDevices(params),
       settingManager: this.homey.settings,
       timezone,
     })
@@ -407,31 +404,31 @@ export default class MELCloudApp extends Homey.App {
 
   #getDevices({
     driverId,
-    id,
+    ids,
   }: {
     driverId?: string
-    id?: number
+    ids?: number[]
   } = {}): MELCloudDevice[] {
     return (
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
       : [this.homey.drivers.getDriver(driverId)]).flatMap((driver) => {
       const devices = driver.getDevices() as MELCloudDevice[]
-      return id === undefined ? devices : (
-          devices.filter(({ id: deviceId }) => id === deviceId)
+      return ids === undefined ? devices : (
+          devices.filter(({ id }) => ids.includes(id))
         )
     })
   }
 
   async #syncFromDevices({
-    id,
+    ids,
     type,
   }: {
-    id?: number
+    ids?: number[]
     type?: keyof typeof DeviceType
   } = {}): Promise<void> {
     await Promise.all(
-      this.#getDevices({ driverId: type ? drivers[type] : undefined, id }).map(
+      this.#getDevices({ driverId: type ? drivers[type] : undefined, ids }).map(
         async (device) => device.syncFromDevice(),
       ),
     )
