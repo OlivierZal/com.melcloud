@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  packages: read
   pull-requests: write
 jobs:
   validate:
