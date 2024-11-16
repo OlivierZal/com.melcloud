@@ -63,13 +63,19 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     )
   }
 
+  get #isScheduled(): boolean {
+    return this.#reportTimeout !== null || this.#reportInterval !== null
+  }
+
   public async handle(): Promise<void> {
     if (!this.#energyCapabilityTagEntries.length) {
       this.unschedule()
       return
     }
     await this.#get()
-    this.#schedule()
+    if (!this.#isScheduled) {
+      this.#schedule()
+    }
   }
 
   public unschedule(): void {
