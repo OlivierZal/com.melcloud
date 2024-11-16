@@ -215,7 +215,7 @@
     "no": "Løser et problem med krasj ved oppstart av appen.",
     "sv": "Åtgärdar ett kraschproblem vid appstart."
   },
-  "40.0.2": {
+  "40.0.3": {
     "da": "✨ **Ny funktion** ✨\n\nEn widget til gruppestyring af luft-til-luft-enheder er blevet oprettet.\n\n⚠️ **Brudændring** ⚠️\n\nBrugen af de nye systemfunktioner i Homey kan kræve, at visse flow-kort skal genoprettes.",
     "en": "✨ **New feature** ✨\n\nA widget for grouped control of air-to-air devices has been created.\n\n⚠️ **Breaking change** ⚠️\n\nThe use of new Homey system capabilities may require some flow cards to be recreated.",
     "es": "✨ **Nueva función** ✨\n\nSe ha creado un widget para el control agrupado de dispositivos aire-aire.\n\n⚠️ **Cambio importante** ⚠️\n\nEl uso de las nuevas capacidades del sistema Homey puede requerir la recreación de algunas tarjetas de flujo.",
