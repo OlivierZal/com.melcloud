@@ -30,9 +30,9 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
 
   #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
-  #reportInterval: NodeJS.Timeout | null = null
-
   #reportTimeout: NodeJS.Timeout | null = null
+
+  #reportInterval?: NodeJS.Timeout
 
   protected abstract readonly duration: DurationLike
 
@@ -63,26 +63,19 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     )
   }
 
-  get #isScheduled(): boolean {
-    return this.#reportTimeout !== null || this.#reportInterval !== null
-  }
-
   public async handle(): Promise<void> {
     if (!this.#energyCapabilityTagEntries.length) {
       this.unschedule()
       return
     }
     await this.#get()
-    if (!this.#isScheduled) {
-      this.#schedule()
-    }
+    this.#schedule()
   }
 
   public unschedule(): void {
     this.#homey.clearTimeout(this.#reportTimeout)
     this.#reportTimeout = null
     this.#homey.clearInterval(this.#reportInterval)
-    this.#reportInterval = null
     this.#device.log(`${this.mode} energy report has been cancelled`)
   }
 
@@ -149,19 +142,21 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   }
 
   #schedule(): void {
-    const actionType = `${this.mode} energy report`
-    this.#reportTimeout = this.#device.setTimeout(
-      async () => {
-        await this.handle()
-        this.#reportInterval = this.#device.setInterval(
-          async () => this.handle(),
-          this.interval,
-          actionType,
-        )
-      },
-      DateTime.now().plus(this.duration).set(this.values).diffNow(),
-      actionType,
-    )
+    if (!this.#reportTimeout) {
+      const actionType = `${this.mode} energy report`
+      this.#reportTimeout = this.#device.setTimeout(
+        async () => {
+          await this.handle()
+          this.#reportInterval = this.#device.setInterval(
+            async () => this.handle(),
+            this.interval,
+            actionType,
+          )
+        },
+        DateTime.now().plus(this.duration).set(this.values).diffNow(),
+        actionType,
+      )
+    }
   }
 
   async #set(data: EnergyData[T], hour: number): Promise<void> {
