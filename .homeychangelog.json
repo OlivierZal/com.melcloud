@@ -223,5 +223,14 @@
     "nl": "✨ **Nieuwe functie** ✨\n\nEr is een widget gecreëerd voor gegroepeerde bediening van lucht-lucht apparaten.\n\n⚠️ **Belangrijke wijziging** ⚠️\n\nHet gebruik van de nieuwe Homey-systeemmogelijkheden kan vereisen dat sommige flowkaarten opnieuw worden gemaakt.",
     "no": "✨ **Ny funksjon** ✨\n\nEn widget for gruppekontroll av luft-til-luft-enheter er blitt opprettet.\n\n⚠️ **Betydelig endring** ⚠️\n\nBruken av de nye systemfunksjonene i Homey kan kreve at enkelte flytkort må opprettes på nytt.",
     "sv": "✨ **Ny funktion** ✨\n\nEn widget för gruppstyrning av luft-till-luft-enheter har skapats.\n\n⚠️ **Större förändring** ⚠️\n\nAnvändningen av de nya systemfunktionerna i Homey kan kräva att vissa flödeskort återskapas."
+  },
+  "40.1.0": {
+    "da": "Det er nu muligt at deaktivere widget-animationer, hvilket kan forhindre, at widget'en fryser på nogle enheder.",
+    "en": "It is now possible to disable widget animations, which can prevent the widget from freezing on some devices.",
+    "es": "Ahora es posible desactivar las animaciones del widget, lo que puede evitar que se congele en algunos dispositivos.",
+    "fr": "Il est désormais possible de désactiver les animations du widget, ce qui peut éviter qu'il ne se fige sur certains appareils.",
+    "nl": "Het is nu mogelijk om widget-animaties uit te schakelen, wat kan voorkomen dat de widget op sommige apparaten vastloopt.",
+    "no": "Det er nå mulig å deaktivere widget-animasjoner, noe som kan forhindre at widgeten fryser på enkelte enheter.",
+    "sv": "Det är nu möjligt att inaktivera widget-animationer, vilket kan förhindra att widgeten fryser på vissa enheter."
   }
 }
