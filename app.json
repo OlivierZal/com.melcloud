@@ -5164,7 +5164,31 @@
         "no": "Luft-til-luft-enhetsinnstilling",
         "sv": "Luft-till-luft-enhetsinställning"
       },
-      "settings": [],
+      "settings": [
+        {
+          "id": "animations",
+          "hint": {
+            "da": "Animationer kan få widgeten til at fryse på visse enheder.",
+            "en": "Animations may cause the widget to freeze on some devices.",
+            "es": "Las animaciones pueden hacer que el widget se congele en algunos dispositivos.",
+            "fr": "Les animations peuvent figer le widget sur certains appareils.",
+            "nl": "Animaties kunnen ervoor zorgen dat de widget vastloopt op sommige apparaten.",
+            "no": "Animasjoner kan få widgeten til å fryse på enkelte enheter.",
+            "sv": "Animationer kan få widgeten att frysa på vissa enheter."
+          },
+          "title": {
+            "da": "Animationer",
+            "en": "Animations",
+            "es": "Animaciones",
+            "fr": "Animations",
+            "nl": "Animaties",
+            "no": "Animasjoner",
+            "sv": "Animationer"
+          },
+          "type": "checkbox",
+          "value": true
+        }
+      ],
       "transparent": true,
       "id": "ata-group-setting"
     }

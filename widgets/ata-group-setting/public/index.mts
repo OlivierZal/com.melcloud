@@ -901,33 +901,35 @@ const handleAnimation = async (
   homey: Homey,
   state: GroupAtaState,
 ): Promise<void> => {
-  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
-  const isSomethingOn = isOn !== false
-  const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
-  const newMode = Number(mode ?? null)
-  await resetAnimation(homey, isSomethingOn, newMode)
-  if (isSomethingOn) {
-    switch (newMode) {
-      case MODE_AUTO:
-        handleFireAnimation(newSpeed)
-        handleSnowAnimation(newSpeed)
-        break
-      case MODE_COOL:
-        handleSnowAnimation(newSpeed)
-        break
-      case MODE_DRY:
-        handleSunAnimation(newSpeed)
-        break
-      case MODE_FAN:
-        handleWindAnimation(newSpeed)
-        break
-      case MODE_HEAT:
-        handleFireAnimation(newSpeed)
-        break
-      case MODE_MIXED:
-        await handleMixedAnimation(homey, newSpeed)
-        break
-      default:
+  if (homey.getSettings().animations as boolean) {
+    const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+    const isSomethingOn = isOn !== false
+    const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
+    const newMode = Number(mode ?? null)
+    await resetAnimation(homey, isSomethingOn, newMode)
+    if (isSomethingOn) {
+      switch (newMode) {
+        case MODE_AUTO:
+          handleFireAnimation(newSpeed)
+          handleSnowAnimation(newSpeed)
+          break
+        case MODE_COOL:
+          handleSnowAnimation(newSpeed)
+          break
+        case MODE_DRY:
+          handleSunAnimation(newSpeed)
+          break
+        case MODE_FAN:
+          handleWindAnimation(newSpeed)
+          break
+        case MODE_HEAT:
+          handleFireAnimation(newSpeed)
+          break
+        case MODE_MIXED:
+          await handleMixedAnimation(homey, newSpeed)
+          break
+        default:
+      }
     }
   }
 }
