@@ -14,6 +14,10 @@ import type {
   Zone,
 } from '../../../types/index.mts'
 
+interface HomeySettings extends Record<string, unknown> {
+  animations: boolean
+}
+
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
@@ -162,6 +166,8 @@ const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
   exit: null,
   shine: null,
 }
+
+let settings = { animations: true }
 
 let debounceTimeout: NodeJS.Timeout | null = null
 
@@ -901,7 +907,7 @@ const handleAnimation = async (
   homey: Homey,
   state: GroupAtaState,
 ): Promise<void> => {
-  if (homey.getSettings().animations as boolean) {
+  if (settings.animations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
     const isSomethingOn = isOn !== false
     const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
@@ -1072,6 +1078,7 @@ const addEventListeners = (homey: Homey): void => {
 
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
+  settings = homey.getSettings() as HomeySettings
   await setDocumentLanguage(homey)
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
