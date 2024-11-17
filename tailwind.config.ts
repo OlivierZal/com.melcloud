@@ -11,7 +11,7 @@ const config = {
   theme: {
     extend: {
       colors: {
-        blue: 'var(--homey-color-blue)',
+        blue: 'var(--homey-text-color-blue)',
         color: 'var(--homey-text-color)',
         danger: 'var(--homey-text-color-danger)',
         light: 'var(--homey-text-color-light)',

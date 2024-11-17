@@ -1644,7 +1644,7 @@ html {
 }
 
 .text-blue {
-  color: var(--homey-color-blue);
+  color: var(--homey-text-color-blue);
 }
 
 .text-color {
