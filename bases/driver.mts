@@ -57,32 +57,6 @@ export abstract class BaseMELCloudDriver<
 
   public abstract readonly type: T
 
-  public override async onInit(): Promise<void> {
-    this.#setProducedAndConsumedTagMappings()
-    this.#registerRunListeners()
-    return Promise.resolve()
-  }
-
-  public override async onPair(session: PairSession): Promise<void> {
-    session.setHandler('showView', async (view) => {
-      if (view === 'loading') {
-        if (await this.#login()) {
-          await session.showView('list_devices')
-          return
-        }
-        await session.showView('login')
-      }
-    })
-    this.#handleLogin(session)
-    session.setHandler('list_devices', async () => this.#discoverDevices())
-    return Promise.resolve()
-  }
-
-  public override async onRepair(session: PairSession): Promise<void> {
-    this.#handleLogin(session)
-    return Promise.resolve()
-  }
-
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
       DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
@@ -138,23 +112,6 @@ export abstract class BaseMELCloudDriver<
     } catch {}
   }
 
-  #registerRunListeners(): void {
-    Object.keys({
-      ...this.setCapabilityTagMapping,
-      ...this.getCapabilityTagMapping,
-      ...this.listCapabilityTagMapping,
-    }).forEach((capability) => {
-      this.#registerConditionRunListener(
-        capability as Extract<keyof OpCapabilities[T], string>,
-      )
-      if (capability in this.setCapabilityTagMapping) {
-        this.#registerActionRunListener(
-          capability as Extract<keyof SetCapabilities[T], string>,
-        )
-      }
-    })
-  }
-
   #setProducedAndConsumedTagMappings(): void {
     Object.entries(this.energyCapabilityTagMapping).forEach(
       ([capability, tags]: [
@@ -173,6 +130,49 @@ export abstract class BaseMELCloudDriver<
         )
       },
     )
+  }
+
+  public override async onInit(): Promise<void> {
+    this.#setProducedAndConsumedTagMappings()
+    this.#registerRunListeners()
+    return Promise.resolve()
+  }
+
+  public override async onPair(session: PairSession): Promise<void> {
+    session.setHandler('showView', async (view) => {
+      if (view === 'loading') {
+        if (await this.#login()) {
+          await session.showView('list_devices')
+          return
+        }
+        await session.showView('login')
+      }
+    })
+    this.#handleLogin(session)
+    session.setHandler('list_devices', async () => this.#discoverDevices())
+    return Promise.resolve()
+  }
+
+  public override async onRepair(session: PairSession): Promise<void> {
+    this.#handleLogin(session)
+    return Promise.resolve()
+  }
+
+  #registerRunListeners(): void {
+    Object.keys({
+      ...this.setCapabilityTagMapping,
+      ...this.getCapabilityTagMapping,
+      ...this.listCapabilityTagMapping,
+    }).forEach((capability) => {
+      this.#registerConditionRunListener(
+        capability as Extract<keyof OpCapabilities[T], string>,
+      )
+      if (capability in this.setCapabilityTagMapping) {
+        this.#registerActionRunListener(
+          capability as Extract<keyof SetCapabilities[T], string>,
+        )
+      }
+    })
   }
 
   public abstract getRequiredCapabilities(

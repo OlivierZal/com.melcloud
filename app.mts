@@ -44,10 +44,10 @@ import {
   type DriverSetting,
   type GetAtaOptions,
   type LoginSetting,
-  type MELCloudDevice,
   type Manifest,
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
+  type MELCloudDevice,
   type Settings,
   type ZoneData,
 } from './types/index.mts'
@@ -152,6 +152,66 @@ export default class MELCloudApp extends Homey.App {
     return this.#api
   }
 
+  #createNotification(): void {
+    const { version } = this.homey.manifest as Manifest
+    if (
+      this.homey.settings.get('notifiedVersion') !== version &&
+      version in changelog
+    ) {
+      const { [version as keyof typeof changelog]: versionChangelog } =
+        changelog
+      this.homey.setTimeout(async () => {
+        try {
+          await this.homey.notifications.createNotification({
+            excerpt:
+              versionChangelog[
+                this.#language in versionChangelog ?
+                  (this.#language as keyof typeof versionChangelog)
+                : 'en'
+              ],
+          })
+          this.homey.settings.set('notifiedVersion', version)
+        } catch {}
+      }, NOTIFICATION_DELAY)
+    }
+  }
+
+  async #syncFromDevices({
+    ids,
+    type,
+  }: {
+    ids?: number[]
+    type?: keyof typeof DeviceType
+  } = {}): Promise<void> {
+    await Promise.all(
+      this.#getDevices({ driverId: type ? drivers[type] : undefined, ids }).map(
+        async (device) => device.syncFromDevice(),
+      ),
+    )
+  }
+
+  public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
+    return this.#facadeManager.getErrors(query)
+  }
+
+  public async getFrostProtectionSettings({
+    zoneId,
+    zoneType,
+  }: ZoneData): Promise<FrostProtectionData> {
+    return this.getFacade(zoneType, zoneId).getFrostProtection()
+  }
+
+  public async getHolidayModeSettings({
+    zoneId,
+    zoneType,
+  }: ZoneData): Promise<HolidayModeData> {
+    return this.getFacade(zoneType, zoneId).getHolidayMode()
+  }
+
+  public async login(data: LoginCredentials): Promise<boolean> {
+    return this.api.authenticate(data)
+  }
+
   public override async onInit(): Promise<void> {
     const timezone = this.homey.clock.getTimezone()
     LuxonSettings.defaultZone = timezone
@@ -177,6 +237,26 @@ export default class MELCloudApp extends Homey.App {
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
     return Promise.resolve()
+  }
+
+  public async setFrostProtectionSettings(
+    settings: FrostProtectionQuery,
+    { zoneId, zoneType }: ZoneData,
+  ): Promise<void> {
+    handleResponse(
+      (await this.getFacade(zoneType, zoneId).setFrostProtection(settings))
+        .AttributeErrors,
+    )
+  }
+
+  public async setHolidayModeSettings(
+    settings: HolidayModeQuery,
+    { zoneId, zoneType }: ZoneData,
+  ): Promise<void> {
+    handleResponse(
+      (await this.getFacade(zoneType, zoneId).setHolidayMode(settings))
+        .AttributeErrors,
+    )
   }
 
   public getAtaCapabilities(): [
@@ -214,16 +294,17 @@ export default class MELCloudApp extends Homey.App {
       getLocalizedCapabilitiesOptions(options, this.#language, enumType),
     ])
   }
-
   public async getAtaValues({
     zoneId,
     zoneType,
   }: ZoneData): Promise<GroupAtaState>
+
   public async getAtaValues<T extends keyof GroupAtaState>(
     { zoneId, zoneType }: ZoneData,
     mode: 'detailed',
     status?: GetAtaOptions['status'],
   ): Promise<Record<T, GroupAtaState[T][]>>
+
   public async getAtaValues<T extends keyof GroupAtaState>(
     { zoneId, zoneType }: ZoneData,
     mode?: GetAtaOptions['mode'],
@@ -277,18 +358,16 @@ export default class MELCloudApp extends Homey.App {
     )
   }
 
-  public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
-    return this.#facadeManager.getErrors(query)
-  }
-
   public getFacade<T extends keyof typeof DeviceType>(
     zoneType: 'devices',
     id: number | string,
   ): IDeviceFacade<T>
+
   public getFacade(
     zoneType: Exclude<keyof typeof zoneModel, 'devices'>,
     id: number | string,
   ): IBuildingFacade | ISuperDeviceFacade
+
   public getFacade(
     zoneType: keyof typeof zoneModel,
     id: number | string,
@@ -304,26 +383,8 @@ export default class MELCloudApp extends Homey.App {
     return this.#facadeManager.get(instance)
   }
 
-  public async getFrostProtectionSettings({
-    zoneId,
-    zoneType,
-  }: ZoneData): Promise<FrostProtectionData> {
-    return this.getFacade(zoneType, zoneId).getFrostProtection()
-  }
-
-  public async getHolidayModeSettings({
-    zoneId,
-    zoneType,
-  }: ZoneData): Promise<HolidayModeData> {
-    return this.getFacade(zoneType, zoneId).getHolidayMode()
-  }
-
   public getLanguage(): string {
     return this.homey.i18n.getLanguage()
-  }
-
-  public async login(data: LoginCredentials): Promise<boolean> {
-    return this.api.authenticate(data)
   }
 
   public async setAtaValues(
@@ -358,50 +419,6 @@ export default class MELCloudApp extends Homey.App {
     )
   }
 
-  public async setFrostProtectionSettings(
-    settings: FrostProtectionQuery,
-    { zoneId, zoneType }: ZoneData,
-  ): Promise<void> {
-    handleResponse(
-      (await this.getFacade(zoneType, zoneId).setFrostProtection(settings))
-        .AttributeErrors,
-    )
-  }
-
-  public async setHolidayModeSettings(
-    settings: HolidayModeQuery,
-    { zoneId, zoneType }: ZoneData,
-  ): Promise<void> {
-    handleResponse(
-      (await this.getFacade(zoneType, zoneId).setHolidayMode(settings))
-        .AttributeErrors,
-    )
-  }
-
-  #createNotification(): void {
-    const { version } = this.homey.manifest as Manifest
-    if (
-      this.homey.settings.get('notifiedVersion') !== version &&
-      version in changelog
-    ) {
-      const { [version as keyof typeof changelog]: versionChangelog } =
-        changelog
-      this.homey.setTimeout(async () => {
-        try {
-          await this.homey.notifications.createNotification({
-            excerpt:
-              versionChangelog[
-                this.#language in versionChangelog ?
-                  (this.#language as keyof typeof versionChangelog)
-                : 'en'
-              ],
-          })
-          this.homey.settings.set('notifiedVersion', version)
-        } catch {}
-      }, NOTIFICATION_DELAY)
-    }
-  }
-
   #getDevices({
     driverId,
     ids,
@@ -418,19 +435,5 @@ export default class MELCloudApp extends Homey.App {
           devices.filter(({ id }) => ids.includes(id))
         )
     })
-  }
-
-  async #syncFromDevices({
-    ids,
-    type,
-  }: {
-    ids?: number[]
-    type?: keyof typeof DeviceType
-  } = {}): Promise<void> {
-    await Promise.all(
-      this.#getDevices({ driverId: type ? drivers[type] : undefined, ids }).map(
-        async (device) => device.syncFromDevice(),
-      ),
-    )
   }
 }

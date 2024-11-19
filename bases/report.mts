@@ -44,11 +44,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
 
   protected abstract readonly values: DateObjectUnits
 
-  public constructor(device: BaseMELCloudDevice<T>) {
-    this.#device = device
-    ;({ driver: this.#driver, homey: this.#homey } = this.#device)
-  }
-
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
     return (
       Object.entries(
@@ -61,22 +56,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
       ([capability]) =>
         isTotalEnergyKey(capability) === (this.mode === 'total'),
     )
-  }
-
-  public async handle(): Promise<void> {
-    if (!this.#energyCapabilityTagEntries.length) {
-      this.unschedule()
-      return
-    }
-    await this.#get()
-    this.#schedule()
-  }
-
-  public unschedule(): void {
-    this.#homey.clearTimeout(this.#reportTimeout)
-    this.#reportTimeout = null
-    this.#homey.clearInterval(this.#reportInterval)
-    this.#device.log(`${this.mode} energy report has been cancelled`)
   }
 
   #calculateCopValue(
@@ -101,16 +80,6 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     )
   }
 
-  #calculateEnergyValue(
-    data: EnergyData[T],
-    tags: (keyof EnergyData[T])[],
-  ): number {
-    return (
-      tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
-      this.#linkedDeviceCount
-    )
-  }
-
   #calculatePowerValue(
     data: EnergyData[T],
     tags: (keyof EnergyData[T])[],
@@ -121,6 +90,37 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
         (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
         INITIAL_SUM,
       ) / this.#linkedDeviceCount
+    )
+  }
+
+  public constructor(device: BaseMELCloudDevice<T>) {
+    this.#device = device
+    ;({ driver: this.#driver, homey: this.#homey } = this.#device)
+  }
+
+  public async handle(): Promise<void> {
+    if (!this.#energyCapabilityTagEntries.length) {
+      this.unschedule()
+      return
+    }
+    await this.#get()
+    this.#schedule()
+  }
+
+  public unschedule(): void {
+    this.#homey.clearTimeout(this.#reportTimeout)
+    this.#reportTimeout = null
+    this.#homey.clearInterval(this.#reportInterval)
+    this.#device.log(`${this.mode} energy report has been cancelled`)
+  }
+
+  #calculateEnergyValue(
+    data: EnergyData[T],
+    tags: (keyof EnergyData[T])[],
+  ): number {
+    return (
+      tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
+      this.#linkedDeviceCount
     )
   }
 

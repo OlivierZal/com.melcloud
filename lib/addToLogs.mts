@@ -7,14 +7,6 @@ export const addToLogs =
   <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, _context: ClassDecoratorContext): T => {
     abstract class LogDecorator extends target {
-      public override error(...args: unknown[]): void {
-        this.#commonLog('error', ...args)
-      }
-
-      public override log(...args: unknown[]): void {
-        this.#commonLog('log', ...args)
-      }
-
       #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
           ...logs.flatMap((log) => {
@@ -39,6 +31,14 @@ export const addToLogs =
           }),
           ...args,
         )
+      }
+
+      public override error(...args: unknown[]): void {
+        this.#commonLog('error', ...args)
+      }
+
+      public override log(...args: unknown[]): void {
+        this.#commonLog('log', ...args)
       }
     }
     return LogDecorator

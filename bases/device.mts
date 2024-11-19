@@ -79,12 +79,110 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
+  #convertFromDevice<K extends keyof OpCapabilities[T]>(
+    capability: K,
+    value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
+    data?: ListDevice[T]['Device'],
+  ): OpCapabilities[T][K] {
+    return (this.fromDevice[capability]?.(value, data) ??
+      value) as OpCapabilities[T][K]
+  }
+
+  #convertToDevice(
+    capability: keyof SetCapabilities[T],
+    value: UpdateDeviceData[T][keyof UpdateDeviceData[T]],
+  ): UpdateDeviceData[T][keyof UpdateDeviceData[T]] {
+    return (
+      this.toDevice[capability]?.(
+        value as SetCapabilities[T][keyof SetCapabilities[T]],
+      ) ?? value
+    )
+  }
+
+  async #handleEnergyReports(): Promise<void> {
+    if (this.EnergyReportRegular) {
+      this.#reports.regular = new this.EnergyReportRegular(this)
+      await this.#reports.regular.handle()
+    }
+    if (this.EnergyReportTotal) {
+      this.#reports.total = new this.EnergyReportTotal(this)
+      await this.#reports.total.handle()
+    }
+  }
+
+  async #handleOptionalCapabilities(
+    newSettings: Settings,
+    changedCapabilities: string[],
+  ): Promise<void> {
+    await changedCapabilities.reduce(async (acc, capability) => {
+      await acc
+      if (newSettings[capability] === true) {
+        await this.addCapability(capability)
+        return
+      }
+      await this.removeCapability(capability)
+    }, Promise.resolve())
+  }
+
   get #opCapabilityTagEntries(): OpCapabilityTagEntry<T>[] {
     return Object.entries({
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
     }) as OpCapabilityTagEntry<T>[]
+  }
+
+  async #setCapabilityOptions(data: ListDevice[T]['Device']): Promise<void> {
+    await Promise.all(
+      Object.entries(
+        (
+          this.driver.getCapabilitiesOptions as (
+            data: ListDevice[T]['Device'],
+          ) => Partial<CapabilitiesOptions[T]>
+        )(data),
+      ).map(async (capabilityOptions) =>
+        this.setCapabilityOptions(
+          ...(capabilityOptions as [
+            string & keyof CapabilitiesOptions[T],
+            CapabilitiesOptions[T][Extract<
+              keyof CapabilitiesOptions[T],
+              string
+            >] &
+              Record<string, unknown>,
+          ]),
+        ),
+      ),
+    )
+  }
+
+  #unscheduleReports(): void {
+    modes.forEach((mode) => {
+      this.#reports[mode]?.unschedule()
+    })
+  }
+
+  async #updateEnergyReportsOnSettings({
+    changedKeys,
+  }: {
+    changedKeys: string[]
+  }): Promise<void> {
+    await Promise.all(
+      modes.map(async (mode) => {
+        if (
+          changedKeys.some(
+            (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
+          )
+        ) {
+          await this.#reports[mode]?.handle()
+        }
+      }),
+    )
+  }
+
+  public override getCapabilityOptions<
+    K extends string & keyof CapabilitiesOptions[T],
+  >(capability: K): CapabilitiesOptions[T][K] {
+    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
   }
 
   public override onDeleted(): void {
@@ -133,30 +231,6 @@ export abstract class BaseMELCloudDevice<
     return Promise.resolve()
   }
 
-  public override async addCapability(capability: string): Promise<void> {
-    if (!this.hasCapability(capability)) {
-      await super.addCapability(capability)
-    }
-  }
-
-  public override getCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions[T],
-  >(capability: K): CapabilitiesOptions[T][K] {
-    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
-  }
-
-  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
-    capability: K,
-  ): Capabilities[T][K] {
-    return super.getCapabilityValue(capability) as Capabilities[T][K]
-  }
-
-  public override getSetting<K extends Extract<keyof Settings, string>>(
-    setting: K,
-  ): NonNullable<Settings[K]> {
-    return super.getSetting(setting) as NonNullable<Settings[K]>
-  }
-
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
@@ -170,6 +244,31 @@ export abstract class BaseMELCloudDevice<
     options: CapabilitiesOptions[T][K] & Record<string, unknown>,
   ): Promise<void> {
     await super.setCapabilityOptions(capability, options)
+  }
+
+  public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
+    const newData = data ?? (await this.#fetchData())
+    if (newData) {
+      await this.setCapabilityValues(newData)
+    }
+  }
+
+  public override async addCapability(capability: string): Promise<void> {
+    if (!this.hasCapability(capability)) {
+      await super.addCapability(capability)
+    }
+  }
+
+  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
+    capability: K,
+  ): Capabilities[T][K] {
+    return super.getCapabilityValue(capability) as Capabilities[T][K]
+  }
+
+  public override getSetting<K extends Extract<keyof Settings, string>>(
+    setting: K,
+  ): NonNullable<Settings[K]> {
+    return super.getSetting(setting) as NonNullable<Settings[K]>
   }
 
   public override async setCapabilityValue<
@@ -213,13 +312,6 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
-    const newData = data ?? (await this.#fetchData())
-    if (newData) {
-      await this.setCapabilityValues(newData)
-    }
-  }
-
   protected async setCapabilityValues(
     data: ListDevice[T]['Device'],
   ): Promise<void> {
@@ -255,26 +347,6 @@ export abstract class BaseMELCloudDevice<
     ) as UpdateDeviceData[T]
   }
 
-  #convertFromDevice<K extends keyof OpCapabilities[T]>(
-    capability: K,
-    value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
-    data?: ListDevice[T]['Device'],
-  ): OpCapabilities[T][K] {
-    return (this.fromDevice[capability]?.(value, data) ??
-      value) as OpCapabilities[T][K]
-  }
-
-  #convertToDevice(
-    capability: keyof SetCapabilities[T],
-    value: UpdateDeviceData[T][keyof UpdateDeviceData[T]],
-  ): UpdateDeviceData[T][keyof UpdateDeviceData[T]] {
-    return (
-      this.toDevice[capability]?.(
-        value as SetCapabilities[T][keyof SetCapabilities[T]],
-      ) ?? value
-    )
-  }
-
   async #fetchData(): Promise<ListDevice[T]['Device'] | undefined> {
     try {
       return (await this.fetchDevice())?.data
@@ -283,31 +355,6 @@ export abstract class BaseMELCloudDevice<
         this.homey.__(this.homey.__('errors.deviceNotFound')),
       )
     }
-  }
-
-  async #handleEnergyReports(): Promise<void> {
-    if (this.EnergyReportRegular) {
-      this.#reports.regular = new this.EnergyReportRegular(this)
-      await this.#reports.regular.handle()
-    }
-    if (this.EnergyReportTotal) {
-      this.#reports.total = new this.EnergyReportTotal(this)
-      await this.#reports.total.handle()
-    }
-  }
-
-  async #handleOptionalCapabilities(
-    newSettings: Settings,
-    changedCapabilities: string[],
-  ): Promise<void> {
-    await changedCapabilities.reduce(async (acc, capability) => {
-      await acc
-      if (newSettings[capability] === true) {
-        await this.addCapability(capability)
-        return
-      }
-      await this.removeCapability(capability)
-    }, Promise.resolve())
   }
 
   async #init(data: ListDevice[T]['Device']): Promise<void> {
@@ -391,35 +438,6 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  async #setCapabilityOptions(data: ListDevice[T]['Device']): Promise<void> {
-    await Promise.all(
-      Object.entries(
-        (
-          this.driver.getCapabilitiesOptions as (
-            data: ListDevice[T]['Device'],
-          ) => Partial<CapabilitiesOptions[T]>
-        )(data),
-      ).map(async (capabilityOptions) =>
-        this.setCapabilityOptions(
-          ...(capabilityOptions as [
-            string & keyof CapabilitiesOptions[T],
-            CapabilitiesOptions[T][Extract<
-              keyof CapabilitiesOptions[T],
-              string
-            >] &
-              Record<string, unknown>,
-          ]),
-        ),
-      ),
-    )
-  }
-
-  #unscheduleReports(): void {
-    modes.forEach((mode) => {
-      this.#reports[mode]?.unschedule()
-    })
-  }
-
   async #updateDeviceOnSettings({
     changedCapabilities,
     changedKeys,
@@ -446,23 +464,5 @@ export abstract class BaseMELCloudDevice<
     ) {
       await this.syncFromDevice()
     }
-  }
-
-  async #updateEnergyReportsOnSettings({
-    changedKeys,
-  }: {
-    changedKeys: string[]
-  }): Promise<void> {
-    await Promise.all(
-      modes.map(async (mode) => {
-        if (
-          changedKeys.some(
-            (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
-          )
-        ) {
-          await this.#reports[mode]?.handle()
-        }
-      }),
-    )
   }
 }

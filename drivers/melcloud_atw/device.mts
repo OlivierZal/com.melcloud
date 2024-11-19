@@ -119,13 +119,6 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
 
   protected EnergyReportTotal = EnergyReportTotalAtw
 
-  protected override async setCapabilityValues(
-    data: ListDeviceDataAtw,
-  ): Promise<void> {
-    await super.setCapabilityValues(data)
-    await this.#setOperationModeStates(data)
-  }
-
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<'Atw'> {
@@ -142,6 +135,14 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
       'operational_state.hot_water',
       getOperationModeStateHotWaterValue(data, operationModeState),
     )
+  }
+
+  async #setOperationModeStates(data: ListDeviceDataAtw): Promise<void> {
+    const operationModeState = OperationModeState[
+      data.OperationMode
+    ] as keyof typeof OperationModeState
+    await this.#setOperationModeStateHotWater(data, operationModeState)
+    await this.#setOperationModeStateZones(data, operationModeState)
   }
 
   async #setOperationModeStateZones(
@@ -161,11 +162,10 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
     )
   }
 
-  async #setOperationModeStates(data: ListDeviceDataAtw): Promise<void> {
-    const operationModeState = OperationModeState[
-      data.OperationMode
-    ] as keyof typeof OperationModeState
-    await this.#setOperationModeStateHotWater(data, operationModeState)
-    await this.#setOperationModeStateZones(data, operationModeState)
+  protected override async setCapabilityValues(
+    data: ListDeviceDataAtw,
+  ): Promise<void> {
+    await super.setCapabilityValues(data)
+    await this.#setOperationModeStates(data)
   }
 }

@@ -31,18 +31,6 @@ const formatActionType = (actionType: string): string =>
 
 export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
-    public setInterval(
-      callback: () => Promise<void>,
-      interval: DurationLike,
-      actionType: string,
-    ): NodeJS.Timeout {
-      return this.#setTimer(callback, interval, {
-        actionType,
-        timerType: 'setInterval',
-        timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
-      })
-    }
-
     public setTimeout(
       callback: () => Promise<void>,
       interval: DurationLike,
@@ -52,6 +40,18 @@ export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
         actionType,
         timerType: 'setTimeout',
         timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
+      })
+    }
+
+    public setInterval(
+      callback: () => Promise<void>,
+      interval: DurationLike,
+      actionType: string,
+    ): NodeJS.Timeout {
+      return this.#setTimer(callback, interval, {
+        actionType,
+        timerType: 'setInterval',
+        timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
       })
     }
 
