@@ -16,7 +16,6 @@ import type MELCloudApp from './app.mts'
 import type {
   BuildingZone,
   DeviceSettings,
-  DriverCapabilitiesOptions,
   DriverSetting,
   Settings,
   ZoneData,
@@ -25,22 +24,6 @@ import type {
 const getApp = (homey: Homey): MELCloudApp => homey.app as MELCloudApp
 
 const api = {
-  getAtaCapabilities({
-    homey,
-  }: {
-    homey: Homey
-  }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
-    return getApp(homey).getAtaCapabilities()
-  },
-  async getAtaValues({
-    homey,
-    params,
-  }: {
-    homey: Homey
-    params: ZoneData
-  }): Promise<GroupAtaState> {
-    return getApp(homey).getAtaValues(params)
-  },
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
