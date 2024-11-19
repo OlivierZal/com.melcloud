@@ -144,6 +144,14 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
     )
   }
 
+  async #setOperationModeStates(data: ListDeviceDataAtw): Promise<void> {
+    const operationModeState = OperationModeState[
+      data.OperationMode
+    ] as keyof typeof OperationModeState
+    await this.#setOperationModeStateHotWater(data, operationModeState)
+    await this.#setOperationModeStateZones(data, operationModeState)
+  }
+
   async #setOperationModeStateZones(
     data: ListDeviceDataAtw,
     operationModeState: keyof typeof OperationModeState,
@@ -159,13 +167,5 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
         }
       }),
     )
-  }
-
-  async #setOperationModeStates(data: ListDeviceDataAtw): Promise<void> {
-    const operationModeState = OperationModeState[
-      data.OperationMode
-    ] as keyof typeof OperationModeState
-    await this.#setOperationModeStateHotWater(data, operationModeState)
-    await this.#setOperationModeStateZones(data, operationModeState)
   }
 }

@@ -31,24 +31,24 @@ import type { EnergyReportTotalAtw } from '../reports/melcloud_atw/total.mts'
 import type {
   CapabilitiesAta,
   EnergyCapabilitiesAta,
-  FlowArgsAta,
-  OpCapabilitiesAta,
-  SetCapabilitiesAta,
   energyCapabilityTagMappingAta,
+  FlowArgsAta,
   getCapabilityTagMappingAta,
   listCapabilityTagMappingAta,
+  OpCapabilitiesAta,
+  SetCapabilitiesAta,
   setCapabilityTagMappingAta,
 } from './ata.mts'
 import type {
   CapabilitiesAtw,
   CapabilitiesOptionsAtw,
   EnergyCapabilitiesAtw,
-  FlowArgsAtw,
-  OpCapabilitiesAtw,
-  SetCapabilitiesAtw,
   energyCapabilityTagMappingAtw,
+  FlowArgsAtw,
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
+  OpCapabilitiesAtw,
+  SetCapabilitiesAtw,
   setCapabilityTagMappingAtw,
 } from './atw.mts'
 import type {
@@ -59,12 +59,12 @@ import type {
 import type {
   CapabilitiesErv,
   EnergyCapabilitiesErv,
-  FlowArgsErv,
-  OpCapabilitiesErv,
-  SetCapabilitiesErv,
   energyCapabilityTagMappingErv,
+  FlowArgsErv,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
+  OpCapabilitiesErv,
+  SetCapabilitiesErv,
   setCapabilityTagMappingErv,
 } from './erv.mts'
 
@@ -84,91 +84,38 @@ export const getCapabilitiesOptionsAtaErv = ({
   },
 })
 
-export interface MELCloudDriver {
-  readonly Ata: MELCloudDriverAta
-  readonly Atw: MELCloudDriverAtw
-  readonly Erv: MELCloudDriverErv
+export interface BuildingZone extends IModel {
+  areas?: AreaZone[]
+  floors?: FloorZone[]
 }
 
-export type MELCloudDevice =
-  | MELCloudDeviceAta
-  | MELCloudDeviceAtw
-  | MELCloudDeviceErv
-
-export type ValueOf<T> = T[keyof T]
-
-export interface Settings
-  extends Record<string, boolean | number | string | null | undefined> {
-  readonly always_on?: boolean
+export interface Capabilities {
+  readonly Ata: CapabilitiesAta
+  readonly Atw: CapabilitiesAtw
+  readonly Erv: CapabilitiesErv
 }
 
-export interface HomeySettingsUI {
-  readonly contextKey?: string
-  readonly expiry?: string
-  readonly password?: string
-  readonly username?: string
+export interface CapabilitiesOptions {
+  readonly Ata: CapabilitiesOptionsAtaErv
+  readonly Atw: CapabilitiesOptionsAtw
+  readonly Erv: CapabilitiesOptionsAtaErv
 }
 
-export interface ReportPlanParameters {
-  readonly duration: DurationLike
-  readonly interval: DurationLike
-  readonly minus: DurationLike
-  readonly values: DateObjectUnits
+export interface CapabilitiesOptionsAtaErv {
+  readonly fan_speed: RangeOptions
 }
 
-export interface ManifestDriverSettingData {
-  readonly id: string
-  readonly label: LocalizedStrings
+export interface DeviceDetails<T extends keyof typeof DeviceType> {
+  readonly capabilities: readonly string[]
+  readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
+  readonly data: { readonly id: number }
+  readonly name: string
+}
+
+export interface DriverCapabilitiesOptions {
+  readonly title: string
   readonly type: string
-  readonly max?: number
-  readonly min?: number
-  readonly units?: string
-  readonly values?: readonly {
-    readonly id: string
-    readonly label: LocalizedStrings
-  }[]
-}
-
-export interface ManifestDriverSetting {
-  readonly label: LocalizedStrings
-  readonly children?: readonly ManifestDriverSettingData[]
-  readonly id?: string
-}
-
-export interface PairSetting {
-  readonly id: string
-}
-
-export interface LoginSetting extends PairSetting {
-  readonly id: 'login'
-  readonly options: {
-    readonly passwordLabel: LocalizedStrings
-    readonly passwordPlaceholder: LocalizedStrings
-    readonly usernameLabel: LocalizedStrings
-    readonly usernamePlaceholder: LocalizedStrings
-  }
-}
-
-export interface ManifestDriverCapabilitiesOptions {
-  readonly title: LocalizedStrings
-  readonly type: string
-  readonly values?: readonly CapabilitiesOptionsValues<string>[]
-}
-
-export interface ManifestDriver {
-  readonly id: string
-  readonly capabilities?: readonly string[]
-  readonly capabilitiesOptions?: Record<
-    string,
-    ManifestDriverCapabilitiesOptions
-  >
-  readonly pair?: LoginSetting & readonly PairSetting[]
-  readonly settings?: readonly ManifestDriverSetting[]
-}
-
-export interface Manifest {
-  readonly drivers: readonly ManifestDriver[]
-  readonly version: string
+  readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
 export interface DriverSetting {
@@ -185,64 +132,10 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
-export interface DriverCapabilitiesOptions {
-  readonly title: string
-  readonly type: string
-  readonly values?: readonly { readonly id: string; readonly label: string }[]
-}
-
-export interface LoginDriverSetting extends DriverSetting {
-  readonly id: keyof LoginCredentials
-}
-
-export type DeviceSetting = Record<string, ValueOf<Settings>>
-
-export type DeviceSettings = Record<string, DeviceSetting>
-
-export type OpDeviceData<T extends keyof typeof DeviceType> =
-  | keyof ListDevice[T]['Device']
-  | keyof SetDeviceData[T]
-
-export interface SetCapabilities {
-  readonly Ata: SetCapabilitiesAta
-  readonly Atw: SetCapabilitiesAtw
-  readonly Erv: SetCapabilitiesErv
-}
-
-export interface OpCapabilities {
-  readonly Ata: OpCapabilitiesAta
-  readonly Atw: OpCapabilitiesAtw
-  readonly Erv: OpCapabilitiesErv
-}
-
 export interface EnergyCapabilities {
   readonly Ata: EnergyCapabilitiesAta
   readonly Atw: EnergyCapabilitiesAtw
   readonly Erv: EnergyCapabilitiesErv
-}
-
-export interface Capabilities {
-  readonly Ata: CapabilitiesAta
-  readonly Atw: CapabilitiesAtw
-  readonly Erv: CapabilitiesErv
-}
-
-export interface SetCapabilityTagMapping {
-  readonly Ata: typeof setCapabilityTagMappingAta
-  readonly Atw: typeof setCapabilityTagMappingAtw
-  readonly Erv: typeof setCapabilityTagMappingErv
-}
-
-export interface GetCapabilityTagMapping {
-  readonly Ata: typeof getCapabilityTagMappingAta
-  readonly Atw: typeof getCapabilityTagMappingAtw
-  readonly Erv: typeof getCapabilityTagMappingErv
-}
-
-export interface ListCapabilityTagMapping {
-  readonly Ata: typeof listCapabilityTagMappingAta
-  readonly Atw: typeof listCapabilityTagMappingAtw
-  readonly Erv: typeof listCapabilityTagMappingErv
 }
 
 export interface EnergyCapabilityTagMapping {
@@ -251,15 +144,131 @@ export interface EnergyCapabilityTagMapping {
   readonly Erv: typeof energyCapabilityTagMappingErv
 }
 
-export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
-  capability: Extract<keyof OpCapabilities[T], string>,
-  tag: OpDeviceData<T>,
-]
+export interface FloorZone extends IModel {
+  areas?: AreaZone[]
+}
 
-export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
-  capability: Extract<keyof EnergyCapabilities[T], string>,
-  tags: (keyof EnergyData[T])[],
-]
+export interface FlowArgs {
+  readonly Ata: FlowArgsAta
+  readonly Atw: FlowArgsAtw
+  readonly Erv: FlowArgsErv
+}
+
+export interface GetCapabilityTagMapping {
+  readonly Ata: typeof getCapabilityTagMappingAta
+  readonly Atw: typeof getCapabilityTagMappingAtw
+  readonly Erv: typeof getCapabilityTagMappingErv
+}
+
+export interface HomeySettingsUI {
+  readonly contextKey?: string
+  readonly expiry?: string
+  readonly password?: string
+  readonly username?: string
+}
+
+export interface ListCapabilityTagMapping {
+  readonly Ata: typeof listCapabilityTagMappingAta
+  readonly Atw: typeof listCapabilityTagMappingAtw
+  readonly Erv: typeof listCapabilityTagMappingErv
+}
+
+export interface LoginDriverSetting extends DriverSetting {
+  readonly id: keyof LoginCredentials
+}
+
+export interface LoginSetting extends PairSetting {
+  readonly id: 'login'
+  readonly options: {
+    readonly passwordLabel: LocalizedStrings
+    readonly passwordPlaceholder: LocalizedStrings
+    readonly usernameLabel: LocalizedStrings
+    readonly usernamePlaceholder: LocalizedStrings
+  }
+}
+
+export interface Manifest {
+  readonly drivers: readonly ManifestDriver[]
+  readonly version: string
+}
+
+export interface ManifestDriver {
+  readonly id: string
+  readonly capabilities?: readonly string[]
+  readonly capabilitiesOptions?: Record<
+    string,
+    ManifestDriverCapabilitiesOptions
+  >
+  readonly pair?: LoginSetting & readonly PairSetting[]
+  readonly settings?: readonly ManifestDriverSetting[]
+}
+
+export interface ManifestDriverCapabilitiesOptions {
+  readonly title: LocalizedStrings
+  readonly type: string
+  readonly values?: readonly CapabilitiesOptionsValues<string>[]
+}
+
+export interface ManifestDriverSetting {
+  readonly label: LocalizedStrings
+  readonly children?: readonly ManifestDriverSettingData[]
+  readonly id?: string
+}
+
+export interface ManifestDriverSettingData {
+  readonly id: string
+  readonly label: LocalizedStrings
+  readonly type: string
+  readonly max?: number
+  readonly min?: number
+  readonly units?: string
+  readonly values?: readonly {
+    readonly id: string
+    readonly label: LocalizedStrings
+  }[]
+}
+
+export interface MELCloudDriver {
+  readonly Ata: MELCloudDriverAta
+  readonly Atw: MELCloudDriverAtw
+  readonly Erv: MELCloudDriverErv
+}
+
+export interface OpCapabilities {
+  readonly Ata: OpCapabilitiesAta
+  readonly Atw: OpCapabilitiesAtw
+  readonly Erv: OpCapabilitiesErv
+}
+
+export interface PairSetting {
+  readonly id: string
+}
+
+export interface ReportPlanParameters {
+  readonly duration: DurationLike
+  readonly interval: DurationLike
+  readonly minus: DurationLike
+  readonly values: DateObjectUnits
+}
+
+export interface SetCapabilities {
+  readonly Ata: SetCapabilitiesAta
+  readonly Atw: SetCapabilitiesAtw
+  readonly Erv: SetCapabilitiesErv
+}
+
+export interface SetCapabilityTagMapping {
+  readonly Ata: typeof setCapabilityTagMappingAta
+  readonly Atw: typeof setCapabilityTagMappingAtw
+  readonly Erv: typeof setCapabilityTagMappingErv
+}
+
+export interface Settings
+  extends Record<string, boolean | number | string | null | undefined> {
+  readonly always_on?: boolean
+}
+
+export type AreaZone = IModel
 
 export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
   value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
@@ -270,37 +279,30 @@ export type ConvertToDevice<T extends keyof typeof DeviceType> = (
   value: SetCapabilities[T][keyof SetCapabilities[T]],
 ) => UpdateDeviceData[T][keyof UpdateDeviceData[T]]
 
-export interface FlowArgs {
-  readonly Ata: FlowArgsAta
-  readonly Atw: FlowArgsAtw
-  readonly Erv: FlowArgsErv
-}
+export type DeviceSetting = Record<string, ValueOf<Settings>>
 
-export interface CapabilitiesOptionsAtaErv {
-  readonly fan_speed: RangeOptions
-}
+export type DeviceSettings = Record<string, DeviceSetting>
 
-export interface CapabilitiesOptions {
-  readonly Ata: CapabilitiesOptionsAtaErv
-  readonly Atw: CapabilitiesOptionsAtw
-  readonly Erv: CapabilitiesOptionsAtaErv
-}
+export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
+  capability: Extract<keyof EnergyCapabilities[T], string>,
+  tags: (keyof EnergyData[T])[],
+]
 
-export interface DeviceDetails<T extends keyof typeof DeviceType> {
-  readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
-  readonly data: { readonly id: number }
-  readonly name: string
-}
+export type MELCloudDevice =
+  | MELCloudDeviceAta
+  | MELCloudDeviceAtw
+  | MELCloudDeviceErv
 
-export type AreaZone = IModel
-export interface FloorZone extends IModel {
-  areas?: AreaZone[]
-}
-export interface BuildingZone extends IModel {
-  areas?: AreaZone[]
-  floors?: FloorZone[]
-}
+export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
+  capability: Extract<keyof OpCapabilities[T], string>,
+  tag: OpDeviceData<T>,
+]
+
+export type OpDeviceData<T extends keyof typeof DeviceType> =
+  | keyof ListDevice[T]['Device']
+  | keyof SetDeviceData[T]
+
+export type ValueOf<T> = T[keyof T]
 export type Zone = AreaZone | BuildingZone | FloorZone
 
 export const zoneModel = {
@@ -337,6 +339,7 @@ const auto: CapabilitiesOptionsValues<'auto'> = {
     sv: 'Automatiskt',
   },
 } as const
+
 const fast: CapabilitiesOptionsValues<'fast'> = {
   id: 'fast',
   title: {
@@ -349,6 +352,7 @@ const fast: CapabilitiesOptionsValues<'fast'> = {
     sv: 'Snabb',
   },
 } as const
+
 const moderate: CapabilitiesOptionsValues<'moderate'> = {
   id: 'moderate',
   title: {
@@ -361,6 +365,7 @@ const moderate: CapabilitiesOptionsValues<'moderate'> = {
     sv: 'Måttlig',
   },
 } as const
+
 const slow: CapabilitiesOptionsValues<'slow'> = {
   id: 'slow',
   title: {
@@ -402,19 +407,21 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ] as const
 
+export interface EnergyReportRegular {
+  readonly Ata: EnergyReportRegularAta
+  readonly Atw: EnergyReportRegularAtw
+  readonly Erv: never
+}
+
+export interface EnergyReportTotal {
+  readonly Ata: EnergyReportTotalAta
+  readonly Atw: EnergyReportTotalAtw
+  readonly Erv: never
+}
+
 export interface GetAtaOptions {
   mode?: 'detailed'
   status?: 'on'
 }
 
 export type EnergyReportMode = 'regular' | 'total'
-export interface EnergyReportRegular {
-  readonly Ata: EnergyReportRegularAta
-  readonly Atw: EnergyReportRegularAtw
-  readonly Erv: never
-}
-export interface EnergyReportTotal {
-  readonly Ata: EnergyReportTotalAta
-  readonly Atw: EnergyReportTotalAtw
-  readonly Erv: never
-}

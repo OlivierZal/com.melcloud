@@ -18,9 +18,9 @@ interface HomeySettings extends Record<string, unknown> {
   animations: boolean
 }
 
-type HTMLValueElement = HTMLInputElement | HTMLSelectElement
-
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
+
+type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 const DEFAULT_DIVISOR = 1
 const DEFAULT_MULTIPLIER = 1

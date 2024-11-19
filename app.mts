@@ -44,10 +44,10 @@ import {
   type DriverSetting,
   type GetAtaOptions,
   type LoginSetting,
-  type MELCloudDevice,
   type Manifest,
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
+  type MELCloudDevice,
   type Settings,
   type ZoneData,
 } from './types/index.mts'

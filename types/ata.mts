@@ -25,32 +25,9 @@ export enum ThermostatModeAta {
   off = 'off',
 }
 
-export interface SetCapabilitiesAta extends BaseSetCapabilities {
-  readonly fan_speed: FanSpeed
-  readonly horizontal: keyof typeof Horizontal
-  readonly target_temperature: number
-  readonly thermostat_mode: keyof typeof ThermostatModeAta
-  readonly vertical: keyof typeof Vertical
-}
-
-export interface GetCapabilitiesAta extends BaseGetCapabilities {
-  readonly 'alarm_generic.silent': boolean
-}
-
-export interface ListCapabilitiesAta extends BaseListCapabilities {
-  readonly 'alarm_generic.silent': boolean
-  readonly fan_speed: FanSpeed
-  readonly 'fan_speed.state': number
-  readonly horizontal: keyof typeof Horizontal
-  readonly 'measure_temperature.outdoor': number
-
-  readonly vertical: keyof typeof Vertical
-}
-
-export interface OpCapabilitiesAta
-  extends SetCapabilitiesAta,
-    GetCapabilitiesAta,
-    ListCapabilitiesAta {}
+export interface CapabilitiesAta
+  extends EnergyCapabilitiesAta,
+    OpCapabilitiesAta {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number
@@ -76,9 +53,32 @@ export interface EnergyCapabilitiesAta {
   readonly 'meter_power.other': number
 }
 
-export interface CapabilitiesAta
-  extends OpCapabilitiesAta,
-    EnergyCapabilitiesAta {}
+export interface GetCapabilitiesAta extends BaseGetCapabilities {
+  readonly 'alarm_generic.silent': boolean
+}
+
+export interface ListCapabilitiesAta extends BaseListCapabilities {
+  readonly 'alarm_generic.silent': boolean
+  readonly fan_speed: FanSpeed
+  readonly 'fan_speed.state': number
+  readonly horizontal: keyof typeof Horizontal
+  readonly 'measure_temperature.outdoor': number
+
+  readonly vertical: keyof typeof Vertical
+}
+
+export interface OpCapabilitiesAta
+  extends GetCapabilitiesAta,
+    ListCapabilitiesAta,
+    SetCapabilitiesAta {}
+
+export interface SetCapabilitiesAta extends BaseSetCapabilities {
+  readonly fan_speed: FanSpeed
+  readonly horizontal: keyof typeof Horizontal
+  readonly target_temperature: number
+  readonly thermostat_mode: keyof typeof ThermostatModeAta
+  readonly vertical: keyof typeof Vertical
+}
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,

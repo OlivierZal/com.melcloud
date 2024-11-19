@@ -41,22 +41,39 @@ export enum OperationModeStateZoneCapability {
   prohibited = 'prohibited',
 }
 
-export interface TargetTemperatureFlowCapabilities {
-  readonly 'target_temperature.flow_cool': number
-  readonly 'target_temperature.flow_cool_zone2': number
-  readonly 'target_temperature.flow_heat': number
-  readonly 'target_temperature.flow_heat_zone2': number
+export interface CapabilitiesAtw
+  extends EnergyCapabilitiesAtw,
+    OpCapabilitiesAtw {
+  readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
+  readonly 'operational_state.zone1': OperationModeStateZoneCapability
+  readonly 'operational_state.zone2': OperationModeStateZoneCapability
 }
 
-export interface SetCapabilitiesAtw
-  extends BaseSetCapabilities,
-    TargetTemperatureFlowCapabilities {
-  readonly hot_water_mode: keyof typeof HotWaterMode
-  readonly target_temperature: number
-  readonly 'target_temperature.tank_water': number
-  readonly 'target_temperature.zone2': number
-  readonly thermostat_mode: keyof typeof OperationModeZone
-  readonly 'thermostat_mode.zone2': keyof typeof OperationModeZone
+export interface EnergyCapabilitiesAtw {
+  readonly meter_power: number
+  readonly 'meter_power.cooling': number
+  readonly 'meter_power.cop': number
+  readonly 'meter_power.cop_cooling': number
+  readonly 'meter_power.cop_daily': number
+  readonly 'meter_power.cop_daily_cooling': number
+  readonly 'meter_power.cop_daily_heating': number
+  readonly 'meter_power.cop_daily_hotwater': number
+  readonly 'meter_power.cop_heating': number
+  readonly 'meter_power.cop_hotwater': number
+  readonly 'meter_power.daily': number
+  readonly 'meter_power.daily_cooling': number
+  readonly 'meter_power.daily_heating': number
+  readonly 'meter_power.daily_hotwater': number
+  readonly 'meter_power.heating': number
+  readonly 'meter_power.hotwater': number
+  readonly 'meter_power.produced': number
+  readonly 'meter_power.produced_cooling': number
+  readonly 'meter_power.produced_daily': number
+  readonly 'meter_power.produced_daily_cooling': number
+  readonly 'meter_power.produced_daily_heating': number
+  readonly 'meter_power.produced_daily_hotwater': number
+  readonly 'meter_power.produced_heating': number
+  readonly 'meter_power.produced_hotwater': number
 }
 
 export interface GetCapabilitiesAtw extends BaseGetCapabilities {
@@ -90,43 +107,26 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
 }
 
 export interface OpCapabilitiesAtw
-  extends SetCapabilitiesAtw,
-    GetCapabilitiesAtw,
-    ListCapabilitiesAtw {}
+  extends GetCapabilitiesAtw,
+    ListCapabilitiesAtw,
+    SetCapabilitiesAtw {}
 
-export interface EnergyCapabilitiesAtw {
-  readonly meter_power: number
-  readonly 'meter_power.cooling': number
-  readonly 'meter_power.cop': number
-  readonly 'meter_power.cop_cooling': number
-  readonly 'meter_power.cop_daily': number
-  readonly 'meter_power.cop_daily_cooling': number
-  readonly 'meter_power.cop_daily_heating': number
-  readonly 'meter_power.cop_daily_hotwater': number
-  readonly 'meter_power.cop_heating': number
-  readonly 'meter_power.cop_hotwater': number
-  readonly 'meter_power.daily': number
-  readonly 'meter_power.daily_cooling': number
-  readonly 'meter_power.daily_heating': number
-  readonly 'meter_power.daily_hotwater': number
-  readonly 'meter_power.heating': number
-  readonly 'meter_power.hotwater': number
-  readonly 'meter_power.produced': number
-  readonly 'meter_power.produced_cooling': number
-  readonly 'meter_power.produced_daily': number
-  readonly 'meter_power.produced_daily_cooling': number
-  readonly 'meter_power.produced_daily_heating': number
-  readonly 'meter_power.produced_daily_hotwater': number
-  readonly 'meter_power.produced_heating': number
-  readonly 'meter_power.produced_hotwater': number
+export interface SetCapabilitiesAtw
+  extends BaseSetCapabilities,
+    TargetTemperatureFlowCapabilities {
+  readonly hot_water_mode: keyof typeof HotWaterMode
+  readonly target_temperature: number
+  readonly 'target_temperature.tank_water': number
+  readonly 'target_temperature.zone2': number
+  readonly thermostat_mode: keyof typeof OperationModeZone
+  readonly 'thermostat_mode.zone2': keyof typeof OperationModeZone
 }
 
-export interface CapabilitiesAtw
-  extends OpCapabilitiesAtw,
-    EnergyCapabilitiesAtw {
-  readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
-  readonly 'operational_state.zone1': OperationModeStateZoneCapability
-  readonly 'operational_state.zone2': OperationModeStateZoneCapability
+export interface TargetTemperatureFlowCapabilities {
+  readonly 'target_temperature.flow_cool': number
+  readonly 'target_temperature.flow_cool_zone2': number
+  readonly 'target_temperature.flow_heat': number
+  readonly 'target_temperature.flow_heat_zone2': number
 }
 
 export const setCapabilityTagMappingAtw: Record<
@@ -249,14 +249,6 @@ export const energyCapabilityTagMappingAtw: Record<
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
 } as const
 
-export interface FlowArgsAtw {
-  readonly device: MELCloudDeviceAtw
-  readonly onoff: boolean
-  readonly operation_mode_zone: keyof typeof OperationModeZone
-  readonly operational_state: keyof typeof OperationModeState
-  readonly target_temperature: number
-}
-
 export interface CapabilitiesOptionsAtw {
   readonly 'target_temperature.flow_cool': RangeOptions
   readonly 'target_temperature.flow_cool_zone2': RangeOptions
@@ -274,6 +266,14 @@ export interface CapabilitiesOptionsAtw {
       readonly title: LocalizedStrings
     }[]
   }
+}
+
+export interface FlowArgsAtw {
+  readonly device: MELCloudDeviceAtw
+  readonly onoff: boolean
+  readonly operation_mode_zone: keyof typeof OperationModeZone
+  readonly operational_state: keyof typeof OperationModeState
+  readonly target_temperature: number
 }
 
 const addSuffixToTitle = (
@@ -299,6 +299,7 @@ const curve: CapabilitiesOptionsValues<'curve'> = {
     sv: 'Värmekurva',
   },
 } as const
+
 const flow: CapabilitiesOptionsValues<'flow'> = {
   id: 'flow',
   title: {
@@ -311,6 +312,7 @@ const flow: CapabilitiesOptionsValues<'flow'> = {
     sv: 'Fast framledningstemperatur',
   },
 } as const
+
 const room: CapabilitiesOptionsValues<'room'> = {
   id: 'room',
   title: {
@@ -325,6 +327,7 @@ const room: CapabilitiesOptionsValues<'room'> = {
 } as const
 
 const COOL_SUFFIX = 'cool'
+
 const createCoolObject = ({
   id,
   title,
@@ -353,6 +356,7 @@ const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
   no: '- sone 2',
   sv: '- zon 2',
 })
+
 const thermostatModeValuesAtw = [
   room,
   flow,

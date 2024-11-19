@@ -3,15 +3,15 @@ import { DateTime, Duration, type DurationLike } from 'luxon'
 import type { SimpleClass } from 'homey'
 import type Homey from 'homey/lib/Homey'
 
-type HomeyClass = new (
-  ...args: any[]
-) => SimpleClass & { readonly homey: Homey }
-
 interface TimerOptions {
   readonly actionType: string
   readonly timerType: 'setInterval' | 'setTimeout'
   readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
 }
+
+type HomeyClass = new (
+  ...args: any[]
+) => SimpleClass & { readonly homey: Homey }
 
 type Timer = (
   callback: () => Promise<void>,
