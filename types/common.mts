@@ -7,11 +7,10 @@ import {
   type EnergyData,
   type FanSpeed,
   type IModel,
-  type ListDevice,
+  type ListDeviceData,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
   type LoginCredentials,
-  type SetDeviceData,
   type UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
@@ -90,22 +89,22 @@ export interface BuildingZone extends IModel {
 }
 
 export interface Capabilities {
-  readonly Ata: CapabilitiesAta
-  readonly Atw: CapabilitiesAtw
-  readonly Erv: CapabilitiesErv
+  readonly [DeviceType.Ata]: CapabilitiesAta
+  readonly [DeviceType.Atw]: CapabilitiesAtw
+  readonly [DeviceType.Erv]: CapabilitiesErv
 }
 
 export interface CapabilitiesOptions {
-  readonly Ata: CapabilitiesOptionsAtaErv
-  readonly Atw: CapabilitiesOptionsAtw
-  readonly Erv: CapabilitiesOptionsAtaErv
+  readonly [DeviceType.Ata]: CapabilitiesOptionsAtaErv
+  readonly [DeviceType.Atw]: CapabilitiesOptionsAtw
+  readonly [DeviceType.Erv]: CapabilitiesOptionsAtaErv
 }
 
 export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
-export interface DeviceDetails<T extends keyof typeof DeviceType> {
+export interface DeviceDetails<T extends DeviceType> {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions: Partial<CapabilitiesOptions[T]>
   readonly data: { readonly id: number }
@@ -133,15 +132,15 @@ export interface DriverSetting {
 }
 
 export interface EnergyCapabilities {
-  readonly Ata: EnergyCapabilitiesAta
-  readonly Atw: EnergyCapabilitiesAtw
-  readonly Erv: EnergyCapabilitiesErv
+  readonly [DeviceType.Ata]: EnergyCapabilitiesAta
+  readonly [DeviceType.Atw]: EnergyCapabilitiesAtw
+  readonly [DeviceType.Erv]: EnergyCapabilitiesErv
 }
 
 export interface EnergyCapabilityTagMapping {
-  readonly Ata: typeof energyCapabilityTagMappingAta
-  readonly Atw: typeof energyCapabilityTagMappingAtw
-  readonly Erv: typeof energyCapabilityTagMappingErv
+  readonly [DeviceType.Ata]: typeof energyCapabilityTagMappingAta
+  readonly [DeviceType.Atw]: typeof energyCapabilityTagMappingAtw
+  readonly [DeviceType.Erv]: typeof energyCapabilityTagMappingErv
 }
 
 export interface FloorZone extends IModel {
@@ -149,15 +148,15 @@ export interface FloorZone extends IModel {
 }
 
 export interface FlowArgs {
-  readonly Ata: FlowArgsAta
-  readonly Atw: FlowArgsAtw
-  readonly Erv: FlowArgsErv
+  readonly [DeviceType.Ata]: FlowArgsAta
+  readonly [DeviceType.Atw]: FlowArgsAtw
+  readonly [DeviceType.Erv]: FlowArgsErv
 }
 
 export interface GetCapabilityTagMapping {
-  readonly Ata: typeof getCapabilityTagMappingAta
-  readonly Atw: typeof getCapabilityTagMappingAtw
-  readonly Erv: typeof getCapabilityTagMappingErv
+  readonly [DeviceType.Ata]: typeof getCapabilityTagMappingAta
+  readonly [DeviceType.Atw]: typeof getCapabilityTagMappingAtw
+  readonly [DeviceType.Erv]: typeof getCapabilityTagMappingErv
 }
 
 export interface HomeySettingsUI {
@@ -168,9 +167,9 @@ export interface HomeySettingsUI {
 }
 
 export interface ListCapabilityTagMapping {
-  readonly Ata: typeof listCapabilityTagMappingAta
-  readonly Atw: typeof listCapabilityTagMappingAtw
-  readonly Erv: typeof listCapabilityTagMappingErv
+  readonly [DeviceType.Ata]: typeof listCapabilityTagMappingAta
+  readonly [DeviceType.Atw]: typeof listCapabilityTagMappingAtw
+  readonly [DeviceType.Erv]: typeof listCapabilityTagMappingErv
 }
 
 export interface LoginDriverSetting extends DriverSetting {
@@ -229,15 +228,15 @@ export interface ManifestDriverSettingData {
 }
 
 export interface MELCloudDriver {
-  readonly Ata: MELCloudDriverAta
-  readonly Atw: MELCloudDriverAtw
-  readonly Erv: MELCloudDriverErv
+  readonly [DeviceType.Ata]: MELCloudDriverAta
+  readonly [DeviceType.Atw]: MELCloudDriverAtw
+  readonly [DeviceType.Erv]: MELCloudDriverErv
 }
 
 export interface OpCapabilities {
-  readonly Ata: OpCapabilitiesAta
-  readonly Atw: OpCapabilitiesAtw
-  readonly Erv: OpCapabilitiesErv
+  readonly [DeviceType.Ata]: OpCapabilitiesAta
+  readonly [DeviceType.Atw]: OpCapabilitiesAtw
+  readonly [DeviceType.Erv]: OpCapabilitiesErv
 }
 
 export interface PairSetting {
@@ -252,15 +251,15 @@ export interface ReportPlanParameters {
 }
 
 export interface SetCapabilities {
-  readonly Ata: SetCapabilitiesAta
-  readonly Atw: SetCapabilitiesAtw
-  readonly Erv: SetCapabilitiesErv
+  readonly [DeviceType.Ata]: SetCapabilitiesAta
+  readonly [DeviceType.Atw]: SetCapabilitiesAtw
+  readonly [DeviceType.Erv]: SetCapabilitiesErv
 }
 
 export interface SetCapabilityTagMapping {
-  readonly Ata: typeof setCapabilityTagMappingAta
-  readonly Atw: typeof setCapabilityTagMappingAtw
-  readonly Erv: typeof setCapabilityTagMappingErv
+  readonly [DeviceType.Ata]: typeof setCapabilityTagMappingAta
+  readonly [DeviceType.Atw]: typeof setCapabilityTagMappingAtw
+  readonly [DeviceType.Erv]: typeof setCapabilityTagMappingErv
 }
 
 export interface Settings
@@ -270,22 +269,22 @@ export interface Settings
 
 export type AreaZone = IModel
 
-export type ConvertFromDevice<T extends keyof typeof DeviceType> = (
-  value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
-  data?: ListDevice[T]['Device'],
+export type ConvertFromDevice<T extends DeviceType> = (
+  value: ListDeviceData<T>[keyof ListDeviceData<T>],
+  data?: ListDeviceData<T>,
 ) => OpCapabilities[T][keyof OpCapabilities[T]]
 
-export type ConvertToDevice<T extends keyof typeof DeviceType> = (
+export type ConvertToDevice<T extends DeviceType> = (
   value: SetCapabilities[T][keyof SetCapabilities[T]],
-) => UpdateDeviceData[T][keyof UpdateDeviceData[T]]
+) => UpdateDeviceData<T>[keyof UpdateDeviceData<T>]
 
 export type DeviceSetting = Record<string, ValueOf<Settings>>
 
 export type DeviceSettings = Record<string, DeviceSetting>
 
-export type EnergyCapabilityTagEntry<T extends keyof typeof DeviceType> = [
+export type EnergyCapabilityTagEntry<T extends DeviceType> = [
   capability: Extract<keyof EnergyCapabilities[T], string>,
-  tags: (keyof EnergyData[T])[],
+  tags: (keyof EnergyData<T>)[],
 ]
 
 export type MELCloudDevice =
@@ -293,14 +292,12 @@ export type MELCloudDevice =
   | MELCloudDeviceAtw
   | MELCloudDeviceErv
 
-export type OpCapabilityTagEntry<T extends keyof typeof DeviceType> = [
+export type OpCapabilityTagEntry<T extends DeviceType> = [
   capability: Extract<keyof OpCapabilities[T], string>,
   tag: OpDeviceData<T>,
 ]
 
-export type OpDeviceData<T extends keyof typeof DeviceType> =
-  | keyof ListDevice[T]['Device']
-  | keyof SetDeviceData[T]
+export type OpDeviceData<T extends DeviceType> = keyof ListDeviceData<T>
 
 export type ValueOf<T> = T[keyof T]
 export type Zone = AreaZone | BuildingZone | FloorZone
@@ -408,15 +405,15 @@ export const fanSpeedValues = [
 ] as const
 
 export interface EnergyReportRegular {
-  readonly Ata: EnergyReportRegularAta
-  readonly Atw: EnergyReportRegularAtw
-  readonly Erv: never
+  readonly [DeviceType.Ata]: EnergyReportRegularAta
+  readonly [DeviceType.Atw]: EnergyReportRegularAtw
+  readonly [DeviceType.Erv]: never
 }
 
 export interface EnergyReportTotal {
-  readonly Ata: EnergyReportTotalAta
-  readonly Atw: EnergyReportTotalAtw
-  readonly Erv: never
+  readonly [DeviceType.Ata]: EnergyReportTotalAta
+  readonly [DeviceType.Atw]: EnergyReportTotalAtw
+  readonly [DeviceType.Erv]: never
 }
 
 export interface GetAtaOptions {

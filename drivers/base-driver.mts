@@ -2,7 +2,7 @@ import {
   DeviceModel,
   type DeviceType,
   type EnergyData,
-  type ListDevice,
+  type ListDeviceData,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
 
@@ -25,7 +25,7 @@ import type {
   SetCapabilityTagMapping,
 } from '../types/index.mts'
 
-const getArg = <T extends keyof typeof DeviceType>(
+const getArg = <T extends DeviceType>(
   capability: Extract<keyof OpCapabilities[T], string>,
 ): keyof FlowArgs[T] => {
   const [arg] = capability.split('.')
@@ -33,7 +33,7 @@ const getArg = <T extends keyof typeof DeviceType>(
 }
 
 export abstract class BaseMELCloudDriver<
-  T extends keyof typeof DeviceType,
+  T extends DeviceType,
 > extends Homey.Driver {
   public readonly capabilities = (this.manifest as ManifestDriver).capabilities
 
@@ -46,7 +46,7 @@ export abstract class BaseMELCloudDriver<
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
 
   public abstract readonly getCapabilitiesOptions: (
-    data: ListDevice[T]['Device'],
+    data: ListDeviceData<T>,
   ) => Partial<CapabilitiesOptions[T]>
 
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
@@ -159,23 +159,21 @@ export abstract class BaseMELCloudDriver<
     Object.entries(this.energyCapabilityTagMapping).forEach(
       ([capability, tags]: [
         string,
-        Extract<keyof EnergyData[T], string>[],
+        Extract<keyof EnergyData<T>, string>[],
       ]) => {
         ;(this.producedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as (keyof EnergyData[T])[]) = tags.filter(
+        ] as (keyof EnergyData<T>)[]) = tags.filter(
           (tag) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
           capability as keyof EnergyCapabilityTagMapping[T]
-        ] as (keyof EnergyData[T])[]) = tags.filter((tag) =>
+        ] as (keyof EnergyData<T>)[]) = tags.filter((tag) =>
           tag.endsWith('Consumed'),
         )
       },
     )
   }
 
-  public abstract getRequiredCapabilities(
-    data: ListDevice[T]['Device'],
-  ): string[]
+  public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]
 }

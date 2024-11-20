@@ -3,13 +3,13 @@ import 'core-js/actual/object/group-by.js'
 import 'source-map-support/register.js'
 
 import {
+  DeviceType,
   FacadeManager,
   FanSpeed,
   Horizontal,
   MELCloudAPI,
   OperationMode,
   Vertical,
-  type DeviceType,
   type ErrorLog,
   type ErrorLogQuery,
   type FrostProtectionData,
@@ -54,10 +54,10 @@ import {
 
 const NOTIFICATION_DELAY = 10000
 
-const drivers: Record<keyof typeof DeviceType, string> = {
-  Ata: 'melcloud',
-  Atw: 'melcloud_atw',
-  Erv: 'melcloud_erv',
+const drivers: Record<DeviceType, string> = {
+  [DeviceType.Ata]: 'melcloud',
+  [DeviceType.Atw]: 'melcloud_atw',
+  [DeviceType.Erv]: 'melcloud_erv',
 } as const
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
@@ -238,7 +238,7 @@ export default class MELCloudApp extends Homey.App {
         this.getAtaCapabilities().map(([key]) => [
           key,
           devices
-            .filter((device) => device.type === 'Ata')
+            .filter((device) => device.type === DeviceType.Ata)
             .filter(({ data }) => (status === 'on' ? data.Power : true))
             .map(({ data }) => data[key]),
         ]),
@@ -281,7 +281,7 @@ export default class MELCloudApp extends Homey.App {
     return this.#facadeManager.getErrors(query)
   }
 
-  public getFacade<T extends keyof typeof DeviceType>(
+  public getFacade<T extends DeviceType>(
     zoneType: 'devices',
     id: number | string,
   ): IDeviceFacade<T>
@@ -425,12 +425,13 @@ export default class MELCloudApp extends Homey.App {
     type,
   }: {
     ids?: number[]
-    type?: keyof typeof DeviceType
+    type?: DeviceType
   } = {}): Promise<void> {
     await Promise.all(
-      this.#getDevices({ driverId: type ? drivers[type] : undefined, ids }).map(
-        async (device) => device.syncFromDevice(),
-      ),
+      this.#getDevices({
+        driverId: type === undefined ? undefined : drivers[type],
+        ids,
+      }).map(async (device) => device.syncFromDevice()),
     )
   }
 }

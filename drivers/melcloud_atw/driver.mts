@@ -1,3 +1,5 @@
+import { DeviceType, type ListDeviceDataAtw } from '@olivierzal/melcloud-api'
+
 import {
   energyCapabilityTagMappingAtw,
   getCapabilitiesOptionsAtw,
@@ -8,9 +10,7 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
-import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
-
-export default class MELCloudDriverAtw extends BaseMELCloudDriver<'Atw'> {
+export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
@@ -21,7 +21,7 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<'Atw'> {
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
 
-  public readonly type = 'Atw'
+  public readonly type = DeviceType.Atw
 
   readonly #zone1Capabilities: (keyof CapabilitiesAtw)[] = [
     'onoff',

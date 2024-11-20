@@ -1,3 +1,5 @@
+import { DeviceType, type ListDeviceDataErv } from '@olivierzal/melcloud-api'
+
 import {
   energyCapabilityTagMappingErv,
   getCapabilitiesOptionsAtaErv,
@@ -7,9 +9,7 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
-import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
-
-export default class MELCloudDriverErv extends BaseMELCloudDriver<'Erv'> {
+export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
@@ -20,7 +20,7 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<'Erv'> {
 
   public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
 
-  public readonly type = 'Erv'
+  public readonly type = DeviceType.Erv
 
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,

@@ -1,15 +1,15 @@
+import {
+  DeviceType,
+  type IDeviceFacade,
+  type ListDeviceData,
+  type UpdateDeviceData,
+} from '@olivierzal/melcloud-api'
+
 import { addToLogs } from '../decorators/add-to-logs.mts'
 import { Homey } from '../homey.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withTimers } from '../with-timers.mts'
-
-import type {
-  DeviceType,
-  IDeviceFacade,
-  ListDevice,
-  UpdateDeviceData,
-} from '@olivierzal/melcloud-api'
 
 import type MELCloudApp from '../app.mts'
 import type {
@@ -38,7 +38,7 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
-  T extends keyof typeof DeviceType,
+  T extends DeviceType,
 > extends withTimers(Homey.Device) {
   public declare readonly driver: MELCloudDriver[T]
 
@@ -213,16 +213,14 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public async syncFromDevice(data?: ListDevice[T]['Device']): Promise<void> {
+  public async syncFromDevice(data?: ListDeviceData<T>): Promise<void> {
     const newData = data ?? (await this.#fetchData())
     if (newData) {
       await this.setCapabilityValues(newData)
     }
   }
 
-  protected async setCapabilityValues(
-    data: ListDevice[T]['Device'],
-  ): Promise<void> {
+  protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
     this.homey.api.realtime('deviceupdate', undefined)
     await Promise.all(
       this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
@@ -231,7 +229,7 @@ export abstract class BaseMELCloudDevice<
             capability,
             this.#convertFromDevice(
               capability,
-              data[tag as keyof ListDevice[T]['Device']],
+              data[tag],
               data,
             ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
           )
@@ -240,7 +238,7 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  #buildUpdateData(values: Partial<SetCapabilities[T]>): UpdateDeviceData[T] {
+  #buildUpdateData(values: Partial<SetCapabilities[T]>): UpdateDeviceData<T> {
     this.log('Requested data:', values)
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
@@ -249,16 +247,16 @@ export abstract class BaseMELCloudDevice<
         ],
         this.#convertToDevice(
           capability as keyof SetCapabilities[T],
-          value as UpdateDeviceData[T][keyof UpdateDeviceData[T]],
+          value as UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
         ),
       ]),
-    ) as UpdateDeviceData[T]
+    ) as UpdateDeviceData<T>
   }
 
   #convertFromDevice<K extends keyof OpCapabilities[T]>(
     capability: K,
-    value: ListDevice[T]['Device'][keyof ListDevice[T]['Device']],
-    data?: ListDevice[T]['Device'],
+    value: ListDeviceData<T>[keyof ListDeviceData<T>],
+    data?: ListDeviceData<T>,
   ): OpCapabilities[T][K] {
     return (this.fromDevice[capability]?.(value, data) ??
       value) as OpCapabilities[T][K]
@@ -266,16 +264,16 @@ export abstract class BaseMELCloudDevice<
 
   #convertToDevice(
     capability: keyof SetCapabilities[T],
-    value: UpdateDeviceData[T][keyof UpdateDeviceData[T]],
-  ): UpdateDeviceData[T][keyof UpdateDeviceData[T]] {
+    value: UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
+  ): UpdateDeviceData<T>[keyof UpdateDeviceData<T>] {
     return (
       this.toDevice[capability]?.(
-        value as SetCapabilities[T][keyof SetCapabilities[T]],
+        value as unknown as SetCapabilities[T][keyof SetCapabilities[T]],
       ) ?? value
     )
   }
 
-  async #fetchData(): Promise<ListDevice[T]['Device'] | undefined> {
+  async #fetchData(): Promise<ListDeviceData<T> | undefined> {
     try {
       return (await this.fetchDevice())?.data
     } catch {
@@ -310,7 +308,7 @@ export abstract class BaseMELCloudDevice<
     }, Promise.resolve())
   }
 
-  async #init(data: ListDevice[T]['Device']): Promise<void> {
+  async #init(data: ListDeviceData<T>): Promise<void> {
     await this.#setCapabilities(data)
     await this.#setCapabilityOptions(data)
     await this.syncFromDevice(data)
@@ -329,7 +327,10 @@ export abstract class BaseMELCloudDevice<
     this.registerMultipleCapabilityListener(
       Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
-        if (this.driver.type !== 'Atw' && 'thermostat_mode' in values) {
+        if (
+          this.driver.type !== DeviceType.Atw &&
+          'thermostat_mode' in values
+        ) {
           const isOn = values.thermostat_mode !== 'off'
           values.onoff = isOn
           if (!isOn) {
@@ -358,12 +359,12 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #setCapabilities(data: ListDevice[T]['Device']): Promise<void> {
+  async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings() as Settings
     const capabilities = [
       ...(
         this.driver.getRequiredCapabilities as (
-          data: ListDevice[T]['Device'],
+          data: ListDeviceData<T>,
         ) => string[]
       )(data),
       ...Object.keys(settings).filter(
@@ -391,12 +392,12 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  async #setCapabilityOptions(data: ListDevice[T]['Device']): Promise<void> {
+  async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
     await Promise.all(
       Object.entries(
         (
-          this.driver.getCapabilitiesOptions as (
-            data: ListDevice[T]['Device'],
+          this.driver.getCapabilitiesOptions as unknown as (
+            data: ListDeviceData<T>,
           ) => Partial<CapabilitiesOptions[T]>
         )(data),
       ).map(async (capabilityOptions) =>

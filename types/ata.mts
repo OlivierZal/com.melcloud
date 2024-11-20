@@ -1,9 +1,10 @@
 import type {
+  DeviceType,
   EnergyDataAta,
   FanSpeed,
-  GetDeviceDataAta,
+  GetDeviceData,
   Horizontal,
-  ListDeviceAta,
+  ListDeviceDataAta,
   UpdateDeviceDataAta,
   Vertical,
 } from '@olivierzal/melcloud-api'
@@ -94,7 +95,7 @@ export const setCapabilityTagMappingAta: Record<
 
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
-  keyof GetDeviceDataAta
+  keyof GetDeviceData<DeviceType.Ata>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
@@ -102,7 +103,7 @@ export const getCapabilityTagMappingAta: Record<
 
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
-  keyof ListDeviceAta['Device']
+  keyof ListDeviceDataAta
 > = {
   'alarm_generic.silent': 'FanSpeed',
   fan_speed: 'FanSpeed',

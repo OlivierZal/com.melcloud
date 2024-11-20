@@ -1,7 +1,8 @@
 import type {
+  DeviceType,
   FanSpeed,
-  GetDeviceDataErv,
-  ListDeviceErv,
+  GetDeviceData,
+  ListDeviceDataErv,
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
@@ -55,7 +56,7 @@ export const setCapabilityTagMappingErv: Record<
 
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  keyof GetDeviceDataErv
+  keyof GetDeviceData<DeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
@@ -64,7 +65,7 @@ export const getCapabilityTagMappingErv: Record<
 
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
-  keyof ListDeviceErv['Device']
+  keyof ListDeviceDataErv
 > = {
   measure_pm25: 'PM25Level',
   measure_signal_strength: 'WifiSignalStrength',

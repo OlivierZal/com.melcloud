@@ -20,7 +20,7 @@ const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
 const DEFAULT_DIVISOR = 1
 
-export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
+export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
 
   readonly #driver: MELCloudDriver[T]
@@ -79,15 +79,15 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   }
 
   #calculateCopValue(
-    data: EnergyData[T],
+    data: EnergyData<T>,
     capability: string & keyof EnergyCapabilities[T],
   ): number {
     const producedTags = this.#driver.producedTagMapping[
       capability
-    ] as (keyof EnergyData[T])[]
+    ] as (keyof EnergyData<T>)[]
     const consumedTags = this.#driver.consumedTagMapping[
       capability
-    ] as (keyof EnergyData[T])[]
+    ] as (keyof EnergyData<T>)[]
     return (
       producedTags.reduce(
         (acc, tag) => acc + (data[tag] as number),
@@ -101,8 +101,8 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   }
 
   #calculateEnergyValue(
-    data: EnergyData[T],
-    tags: (keyof EnergyData[T])[],
+    data: EnergyData<T>,
+    tags: (keyof EnergyData<T>)[],
   ): number {
     return (
       tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
@@ -111,8 +111,8 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
   }
 
   #calculatePowerValue(
-    data: EnergyData[T],
-    tags: (keyof EnergyData[T])[],
+    data: EnergyData<T>,
+    tags: (keyof EnergyData<T>)[],
     hour: number,
   ): number {
     return (
@@ -158,7 +158,7 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
     }
   }
 
-  async #set(data: EnergyData[T], hour: number): Promise<void> {
+  async #set(data: EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))
@@ -167,7 +167,7 @@ export abstract class BaseEnergyReport<T extends keyof typeof DeviceType> {
       this.#energyCapabilityTagEntries.map(
         async <
           K extends Extract<keyof EnergyCapabilities[T], string>,
-          L extends keyof EnergyData[T],
+          L extends keyof EnergyData<T>,
         >([capability, tags]: [K, L[]]) => {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(

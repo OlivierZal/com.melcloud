@@ -1,5 +1,7 @@
 import { BaseEnergyReport } from '../base.mts'
 
-export abstract class BaseEnergyReportAtw extends BaseEnergyReport<'Atw'> {
+import type { DeviceType } from '@olivierzal/melcloud-api'
+
+export abstract class BaseEnergyReportAtw extends BaseEnergyReport<DeviceType.Atw> {
   protected readonly minus = { days: 1 }
 }

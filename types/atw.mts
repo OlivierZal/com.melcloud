@@ -1,9 +1,9 @@
 import { thermostatMode } from '../json-files.mts'
 
 import type {
+  DeviceType,
   EnergyDataAtw,
-  GetDeviceDataAtw,
-  ListDeviceAtw,
+  GetDeviceData,
   ListDeviceDataAtw,
   OperationModeState,
   OperationModeZone,
@@ -148,7 +148,7 @@ export const setCapabilityTagMappingAtw: Record<
 
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  keyof GetDeviceDataAtw
+  keyof GetDeviceData<DeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
@@ -159,7 +159,7 @@ export const getCapabilityTagMappingAtw: Record<
 
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
-  keyof ListDeviceAtw['Device']
+  keyof ListDeviceDataAtw
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',

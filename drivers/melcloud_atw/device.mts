@@ -1,6 +1,7 @@
 import {
   OperationModeState,
   OperationModeZone,
+  type DeviceType,
   type ListDeviceDataAtw,
   type ZoneAtw,
 } from '@olivierzal/melcloud-api'
@@ -22,10 +23,10 @@ import {
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
-  value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>
+  value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
 
 const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
-  OperationModeZone[value]) as ConvertFromDevice<'Atw'>
+  OperationModeZone[value]) as ConvertFromDevice<DeviceType.Atw>
 
 const getOperationModeStateHotWaterValue = (
   data: ListDeviceDataAtw,
@@ -64,26 +65,26 @@ const getOperationModeStateZoneValue = (
   return OperationModeStateZoneCapability.idle
 }
 
-export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
+export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw> {
   protected readonly fromDevice: Partial<
-    Record<keyof OpCapabilitiesAtw, ConvertFromDevice<'Atw'>>
+    Record<keyof OpCapabilitiesAtw, ConvertFromDevice<DeviceType.Atw>>
   > = {
     'alarm_generic.defrost': ((value: number) =>
-      Boolean(value)) as ConvertFromDevice<'Atw'>,
+      Boolean(value)) as ConvertFromDevice<DeviceType.Atw>,
     hot_water_mode: ((value: boolean) =>
       value ?
         HotWaterMode.forced
-      : HotWaterMode.auto) as ConvertFromDevice<'Atw'>,
+      : HotWaterMode.auto) as ConvertFromDevice<DeviceType.Atw>,
     legionella: ((value: string) =>
       DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
         month: 'short',
         weekday: 'short',
-      })) as ConvertFromDevice<'Atw'>,
+      })) as ConvertFromDevice<DeviceType.Atw>,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
     operational_state: ((value: OperationModeState) =>
-      OperationModeState[value]) as ConvertFromDevice<'Atw'>,
+      OperationModeState[value]) as ConvertFromDevice<DeviceType.Atw>,
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool',
@@ -105,14 +106,14 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
   } as const
 
   protected readonly toDevice: Partial<
-    Record<keyof SetCapabilitiesAtw, ConvertToDevice<'Atw'>>
+    Record<keyof SetCapabilitiesAtw, ConvertToDevice<DeviceType.Atw>>
   > = {
     hot_water_mode: ((value: keyof typeof HotWaterMode) =>
-      value === HotWaterMode.forced) as ConvertToDevice<'Atw'>,
+      value === HotWaterMode.forced) as ConvertToDevice<DeviceType.Atw>,
     thermostat_mode: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+      OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<'Atw'>,
+      OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
   } as const
 
   protected EnergyReportRegular = EnergyReportRegularAtw
@@ -128,10 +129,11 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<'Atw'> {
 
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
-  ): ConvertFromDevice<'Atw'> {
+  ): ConvertFromDevice<DeviceType.Atw> {
     return ((value: number) =>
       value ||
-      this.getCapabilityOptions(capability).min) as ConvertFromDevice<'Atw'>
+      this.getCapabilityOptions(capability)
+        .min) as ConvertFromDevice<DeviceType.Atw>
   }
 
   async #setOperationModeStateHotWater(
