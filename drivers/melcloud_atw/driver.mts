@@ -6,7 +6,7 @@ import {
   setCapabilityTagMappingAtw,
   type CapabilitiesAtw,
 } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../bases/driver.mts'
+import { BaseMELCloudDriver } from '../base-driver.mts'
 
 import type { ListDeviceDataAtw } from '@olivierzal/melcloud-api'
 

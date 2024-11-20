@@ -5,7 +5,7 @@ import {
   listCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../bases/driver.mts'
+import { BaseMELCloudDriver } from '../base-driver.mts'
 
 export default class MELCloudDriverAta extends BaseMELCloudDriver<'Ata'> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta

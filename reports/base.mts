@@ -6,7 +6,7 @@ import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
 
-import type { BaseMELCloudDevice } from '../drivers/bases/device.mts'
+import type { BaseMELCloudDevice } from '../drivers/base-device.mts'
 import type {
   Capabilities,
   EnergyCapabilities,

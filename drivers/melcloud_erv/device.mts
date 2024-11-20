@@ -10,7 +10,7 @@ import {
   type OpCapabilitiesErv,
   type SetCapabilitiesErv,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../bases/device.mts'
+import { BaseMELCloudDevice } from '../base-device.mts'
 
 export default class MELCloudDeviceErv extends BaseMELCloudDevice<'Erv'> {
   protected readonly fromDevice: Partial<

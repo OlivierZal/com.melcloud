@@ -15,7 +15,7 @@ import {
   type OpCapabilitiesAta,
   type SetCapabilitiesAta,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../bases/device.mts'
+import { BaseMELCloudDevice } from '../base-device.mts'
 
 export default class MELCloudDeviceAta extends BaseMELCloudDevice<'Ata'> {
   protected readonly fromDevice: Partial<

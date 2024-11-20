@@ -19,7 +19,7 @@ import {
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../bases/device.mts'
+import { BaseMELCloudDevice } from '../base-device.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>

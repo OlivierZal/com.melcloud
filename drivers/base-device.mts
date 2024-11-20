@@ -1,8 +1,8 @@
-import { addToLogs } from '../../decorators/add-to-logs.mts'
-import { Homey } from '../../homey.mts'
-import { getErrorMessage } from '../../lib/get-error-message.mts'
-import { isTotalEnergyKey } from '../../lib/is-total-energy-key.mts'
-import { withTimers } from '../../with-timers.mts'
+import { addToLogs } from '../decorators/add-to-logs.mts'
+import { Homey } from '../homey.mts'
+import { getErrorMessage } from '../lib/get-error-message.mts'
+import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { withTimers } from '../with-timers.mts'
 
 import type {
   DeviceType,
@@ -11,7 +11,7 @@ import type {
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudApp from '../../app.mts'
+import type MELCloudApp from '../app.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -30,7 +30,7 @@ import type {
   SetCapabilities,
   SetCapabilityTagMapping,
   Settings,
-} from '../../types/index.mts'
+} from '../types/index.mts'
 
 const DEBOUNCE_DELAY = 1000
 
