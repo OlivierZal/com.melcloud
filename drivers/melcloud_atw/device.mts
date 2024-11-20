@@ -6,8 +6,8 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { BaseMELCloudDevice } from '../../bases/device.mts'
-import { K_MULTIPLIER } from '../../lib/constants.mts'
+import { BaseMELCloudDevice } from '../device.mts'
+import { K_MULTIPLIER } from '../../constants.mts'
 import { EnergyReportRegularAtw } from '../../reports/melcloud_atw/regular.mts'
 import { EnergyReportTotalAtw } from '../../reports/melcloud_atw/total.mts'
 import {

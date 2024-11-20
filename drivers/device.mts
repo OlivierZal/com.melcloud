@@ -1,8 +1,8 @@
 import { Homey } from '../homey.mts'
-import { addToLogs } from '../lib/addToLogs.mts'
-import { getErrorMessage } from '../lib/getErrorMessage.mts'
-import { isTotalEnergyKey } from '../lib/isTotalEnergyKey.mts'
-import { withTimers } from '../lib/withTimers.mts'
+import { addToLogs } from '../decorators/add-to-logs.mts'
+import { getErrorMessage } from '../lib/get-error-message.mts'
+import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { withTimers } from '../with-timers.mts'
 
 import type {
   DeviceType,

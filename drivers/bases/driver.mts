@@ -1,4 +1,4 @@
-import { BaseMELCloudDriver } from '../../bases/driver.mts'
+import { BaseMELCloudDriver } from '../driver.mts'
 import {
   energyCapabilityTagMappingAta,
   getCapabilitiesOptionsAtaErv,

@@ -6,7 +6,7 @@ import {
   type ListDeviceDataAta,
 } from '@olivierzal/melcloud-api'
 
-import { BaseMELCloudDevice } from '../../bases/device.mts'
+import { BaseMELCloudDevice } from '../device.mts'
 import { EnergyReportRegularAta } from '../../reports/melcloud/regular.mts'
 import { EnergyReportTotalAta } from '../../reports/melcloud/total.mts'
 import {

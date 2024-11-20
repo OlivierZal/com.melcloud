@@ -1,4 +1,4 @@
-import { buildGroups } from './buildGroups.js'
+import { buildGroups } from './build-groups.js'
 
 const orderedModifiers = [
   ['declare', 'override', ''],

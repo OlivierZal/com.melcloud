@@ -35,7 +35,7 @@ import {
   setTemperature,
   thermostatMode,
   vertical,
-} from './jsonFiles.mts'
+} from './json-files.mts'
 import {
   fanSpeedValues,
   zoneModel,

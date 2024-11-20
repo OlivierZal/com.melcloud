@@ -1,4 +1,4 @@
-import { thermostatMode } from '../jsonFiles.mts'
+import { thermostatMode } from '../json-files.mts'
 
 import type {
   EnergyDataAtw,
