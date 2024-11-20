@@ -1,4 +1,3 @@
-import { BaseMELCloudDriver } from '../driver.mts'
 import {
   energyCapabilityTagMappingErv,
   getCapabilitiesOptionsAtaErv,
@@ -6,6 +5,7 @@ import {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types/index.mts'
+import { BaseMELCloudDriver } from '../bases/driver.mts'
 
 import type { ListDeviceDataErv } from '@olivierzal/melcloud-api'
 

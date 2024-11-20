@@ -352,6 +352,7 @@ const config = [
         'app.mts',
         'drivers/*/{device,driver}.mts',
       ],
+      ignores: ['drivers/bases/{device,driver}.mts'],
       rules: {
         'import/no-default-export': 'off',
         'import/prefer-default-export': [

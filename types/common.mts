@@ -17,8 +17,8 @@ import {
 
 import type { DateObjectUnits, DurationLike } from 'luxon'
 
-import type MELCloudDeviceAta from '../drivers/bases/device.mts'
-import type MELCloudDriverAta from '../drivers/bases/driver.mts'
+import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
+import type MELCloudDriverAta from '../drivers/melcloud/driver.mts'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mts'
 import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mts'
 import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'

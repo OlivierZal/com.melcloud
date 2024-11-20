@@ -6,7 +6,6 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { BaseMELCloudDevice } from '../device.mts'
 import { K_MULTIPLIER } from '../../constants.mts'
 import { EnergyReportRegularAtw } from '../../reports/melcloud_atw/regular.mts'
 import { EnergyReportTotalAtw } from '../../reports/melcloud_atw/total.mts'
@@ -20,6 +19,7 @@ import {
   type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
 } from '../../types/index.mts'
+import { BaseMELCloudDevice } from '../bases/device.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<'Atw'>

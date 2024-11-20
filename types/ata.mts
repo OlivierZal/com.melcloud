@@ -8,7 +8,7 @@ import type {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceAta from '../drivers/bases/device.mts'
+import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
 
 import type {
   BaseGetCapabilities,
