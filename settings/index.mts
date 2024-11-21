@@ -831,7 +831,7 @@ const updateErrorLogElements = (
   sinceElement.value = nextFromDate
 }
 
-const generateErrorLog = async (homey: Homey): Promise<void> =>
+const fetchErrorLog = async (homey: Homey): Promise<void> =>
   withDisablingButton(
     seeElement.id,
     async () =>
@@ -966,7 +966,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           return
         }
         await generateZones(buildings)
-        await generateErrorLog(homey)
+        await fetchErrorLog(homey)
         await fetchZoneSettings(homey)
         resolve()
       },
@@ -1214,7 +1214,7 @@ const addEventListeners = (homey: Homey): void => {
     }
   })
   seeElement.addEventListener('click', () => {
-    generateErrorLog(homey).catch(() => {
+    fetchErrorLog(homey).catch(() => {
       //
     })
   })
