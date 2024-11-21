@@ -23,7 +23,7 @@ const DEFAULT_DIVISOR = 1
 export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
 
-  readonly #driver: MELCloudDriver[T]
+  readonly #driver: MELCloudDriver<T>
 
   readonly #homey: Homey
 
@@ -53,7 +53,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
       Object.entries(
         this.#device.cleanMapping(
           this.#driver
-            .energyCapabilityTagMapping as EnergyCapabilityTagMapping[T],
+            .energyCapabilityTagMapping as EnergyCapabilityTagMapping<T>,
         ),
       ) as EnergyCapabilityTagEntry<T>[]
     ).filter(
@@ -80,7 +80,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
 
   #calculateCopValue(
     data: EnergyData<T>,
-    capability: string & keyof EnergyCapabilities[T],
+    capability: string & keyof EnergyCapabilities<T>,
   ): number {
     const producedTags = this.#driver.producedTagMapping[
       capability
@@ -166,26 +166,26 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     await Promise.all(
       this.#energyCapabilityTagEntries.map(
         async <
-          K extends Extract<keyof EnergyCapabilities[T], string>,
+          K extends Extract<keyof EnergyCapabilities<T>, string>,
           L extends keyof EnergyData<T>,
         >([capability, tags]: [K, L[]]) => {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(
               capability,
-              this.#calculateCopValue(data, capability) as Capabilities[T][K],
+              this.#calculateCopValue(data, capability) as Capabilities<T>[K],
             )
             return
           }
           if (capability.startsWith('measure_power')) {
             await this.#device.setCapabilityValue(
               capability,
-              this.#calculatePowerValue(data, tags, hour) as Capabilities[T][K],
+              this.#calculatePowerValue(data, tags, hour) as Capabilities<T>[K],
             )
             return
           }
           await this.#device.setCapabilityValue(
             capability,
-            this.#calculateEnergyValue(data, tags) as Capabilities[T][K],
+            this.#calculateEnergyValue(data, tags) as Capabilities<T>[K],
           )
         },
       ),

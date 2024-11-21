@@ -26,10 +26,10 @@ import type {
 } from '../types/index.mts'
 
 const getArg = <T extends DeviceType>(
-  capability: Extract<keyof OpCapabilities[T], string>,
-): keyof FlowArgs[T] => {
+  capability: Extract<keyof OpCapabilities<T>, string>,
+): keyof FlowArgs<T> => {
   const [arg] = capability.split('.')
-  return arg as keyof FlowArgs[T]
+  return arg as keyof FlowArgs<T>
 }
 
 export abstract class BaseMELCloudDriver<
@@ -37,23 +37,23 @@ export abstract class BaseMELCloudDriver<
 > extends Homey.Driver {
   public readonly capabilities = (this.manifest as ManifestDriver).capabilities
 
-  public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
+  public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping[T]> =
+  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping[T]
+  public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
   public abstract readonly getCapabilitiesOptions: (
     data: ListDeviceData<T>,
-  ) => Partial<CapabilitiesOptions[T]>
+  ) => Partial<CapabilitiesOptions<T>>
 
-  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping[T]
+  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
 
-  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping[T]
+  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
 
-  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping[T]
+  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
 
   public abstract readonly type: T
 
@@ -105,12 +105,12 @@ export abstract class BaseMELCloudDriver<
   }
 
   #registerActionRunListener(
-    capability: Extract<keyof SetCapabilities[T], string>,
+    capability: Extract<keyof SetCapabilities<T>, string>,
   ): void {
     try {
       this.homey.flow
         .getActionCard(`${capability}_action`)
-        .registerRunListener(async (args: FlowArgs[T]) => {
+        .registerRunListener(async (args: FlowArgs<T>) => {
           await args.device.triggerCapabilityListener(
             capability,
             args[getArg(capability)],
@@ -120,16 +120,16 @@ export abstract class BaseMELCloudDriver<
   }
 
   #registerConditionRunListener(
-    capability: Extract<keyof OpCapabilities[T], string>,
+    capability: Extract<keyof OpCapabilities<T>, string>,
   ): void {
     try {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
-        .registerRunListener((args: FlowArgs[T]) => {
+        .registerRunListener((args: FlowArgs<T>) => {
           const value = (
             args.device.getCapabilityValue as (
-              capability: string & keyof Capabilities[T],
-            ) => Capabilities[T][string & keyof Capabilities[T]]
+              capability: string & keyof Capabilities<T>,
+            ) => Capabilities<T>[string & keyof Capabilities<T>]
           )(capability)
           return typeof value === 'boolean' ? value : (
               (value as number | string) === args[getArg(capability)]
@@ -145,11 +145,11 @@ export abstract class BaseMELCloudDriver<
       ...this.listCapabilityTagMapping,
     }).forEach((capability) => {
       this.#registerConditionRunListener(
-        capability as Extract<keyof OpCapabilities[T], string>,
+        capability as Extract<keyof OpCapabilities<T>, string>,
       )
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
-          capability as Extract<keyof SetCapabilities[T], string>,
+          capability as Extract<keyof SetCapabilities<T>, string>,
         )
       }
     })
@@ -162,12 +162,12 @@ export abstract class BaseMELCloudDriver<
         Extract<keyof EnergyData<T>, string>[],
       ]) => {
         ;(this.producedTagMapping[
-          capability as keyof EnergyCapabilityTagMapping[T]
+          capability as keyof EnergyCapabilityTagMapping<T>
         ] as (keyof EnergyData<T>)[]) = tags.filter(
           (tag) => !tag.endsWith('Consumed'),
         )
         ;(this.consumedTagMapping[
-          capability as keyof EnergyCapabilityTagMapping[T]
+          capability as keyof EnergyCapabilityTagMapping<T>
         ] as (keyof EnergyData<T>)[]) = tags.filter((tag) =>
           tag.endsWith('Consumed'),
         )

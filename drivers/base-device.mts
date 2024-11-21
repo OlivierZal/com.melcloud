@@ -40,42 +40,42 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
 > extends withTimers(Homey.Device) {
-  public declare readonly driver: MELCloudDriver[T]
+  public declare readonly driver: MELCloudDriver<T>
 
   public readonly id = (this.getData() as DeviceDetails<T>['data']).id
 
   readonly #app = this.homey.app as MELCloudApp
 
   readonly #reports: {
-    regular?: EnergyReportRegular[T]
-    total?: EnergyReportTotal[T]
+    regular?: EnergyReportRegular<T>
+    total?: EnergyReportTotal<T>
   } = {}
 
-  #getCapabilityTagMapping: Partial<GetCapabilityTagMapping[T]> = {}
+  #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
 
-  #setCapabilityTagMapping: Partial<SetCapabilityTagMapping[T]> = {}
+  #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
 
   #device?: IDeviceFacade<T>
 
   protected abstract readonly fromDevice: Partial<
-    Record<keyof OpCapabilities[T], ConvertFromDevice<T>>
+    Record<keyof OpCapabilities<T>, ConvertFromDevice<T>>
   >
 
   protected abstract toDevice: Partial<
-    Record<keyof SetCapabilities[T], ConvertToDevice<T>>
+    Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
   protected abstract EnergyReportRegular?: new (
     device: BaseMELCloudDevice<T>,
-  ) => EnergyReportRegular[T]
+  ) => EnergyReportRegular<T>
 
   protected abstract EnergyReportTotal?: new (
     device: BaseMELCloudDevice<T>,
-  ) => EnergyReportTotal[T]
+  ) => EnergyReportTotal<T>
 
-  get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping[T]> {
+  get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
     return this.cleanMapping(
-      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping[T],
+      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping<T>,
     )
   }
 
@@ -140,15 +140,15 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override getCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions[T],
-  >(capability: K): CapabilitiesOptions[T][K] {
-    return super.getCapabilityOptions(capability) as CapabilitiesOptions[T][K]
+    K extends string & keyof CapabilitiesOptions<T>,
+  >(capability: K): CapabilitiesOptions<T>[K] {
+    return super.getCapabilityOptions(capability) as CapabilitiesOptions<T>[K]
   }
 
-  public override getCapabilityValue<K extends string & keyof Capabilities[T]>(
+  public override getCapabilityValue<K extends string & keyof Capabilities<T>>(
     capability: K,
-  ): Capabilities[T][K] {
-    return super.getCapabilityValue(capability) as Capabilities[T][K]
+  ): Capabilities<T>[K] {
+    return super.getCapabilityValue(capability) as Capabilities<T>[K]
   }
 
   public override getSetting<K extends Extract<keyof Settings, string>>(
@@ -164,17 +164,17 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override async setCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions[T],
+    K extends string & keyof CapabilitiesOptions<T>,
   >(
     capability: K,
-    options: CapabilitiesOptions[T][K] & Record<string, unknown>,
+    options: CapabilitiesOptions<T>[K] & Record<string, unknown>,
   ): Promise<void> {
     await super.setCapabilityOptions(capability, options)
   }
 
   public override async setCapabilityValue<
-    K extends string & keyof Capabilities[T],
-  >(capability: K, value: Capabilities[T][K]): Promise<void> {
+    K extends string & keyof Capabilities<T>,
+  >(capability: K, value: Capabilities<T>[K]): Promise<void> {
     await super.setCapabilityValue(capability, value)
     this.log('Capability', capability, 'is', value)
   }
@@ -189,10 +189,10 @@ export abstract class BaseMELCloudDevice<
 
   public cleanMapping<
     M extends
-      | EnergyCapabilityTagMapping[T]
-      | GetCapabilityTagMapping[T]
-      | ListCapabilityTagMapping[T]
-      | SetCapabilityTagMapping[T],
+      | EnergyCapabilityTagMapping<T>
+      | GetCapabilityTagMapping<T>
+      | ListCapabilityTagMapping<T>
+      | SetCapabilityTagMapping<T>,
   >(capabilityTagMapping: M): Partial<M> {
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
@@ -231,44 +231,44 @@ export abstract class BaseMELCloudDevice<
               capability,
               data[tag],
               data,
-            ) as Capabilities[T][Extract<keyof OpCapabilities[T], string>],
+            ) as Capabilities<T>[Extract<keyof OpCapabilities<T>, string>],
           )
         }
       }),
     )
   }
 
-  #buildUpdateData(values: Partial<SetCapabilities[T]>): UpdateDeviceData<T> {
+  #buildUpdateData(values: Partial<SetCapabilities<T>>): UpdateDeviceData<T> {
     this.log('Requested data:', values)
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
         this.#setCapabilityTagMapping[
-          capability as keyof SetCapabilityTagMapping[T]
+          capability as keyof SetCapabilityTagMapping<T>
         ],
         this.#convertToDevice(
-          capability as keyof SetCapabilities[T],
+          capability as keyof SetCapabilities<T>,
           value as UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
         ),
       ]),
     ) as UpdateDeviceData<T>
   }
 
-  #convertFromDevice<K extends keyof OpCapabilities[T]>(
+  #convertFromDevice<K extends keyof OpCapabilities<T>>(
     capability: K,
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
     data?: ListDeviceData<T>,
-  ): OpCapabilities[T][K] {
+  ): OpCapabilities<T>[K] {
     return (this.fromDevice[capability]?.(value, data) ??
-      value) as OpCapabilities[T][K]
+      value) as OpCapabilities<T>[K]
   }
 
   #convertToDevice(
-    capability: keyof SetCapabilities[T],
+    capability: keyof SetCapabilities<T>,
     value: UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
   ): UpdateDeviceData<T>[keyof UpdateDeviceData<T>] {
     return (
       this.toDevice[capability]?.(
-        value as unknown as SetCapabilities[T][keyof SetCapabilities[T]],
+        value as SetCapabilities<T>[keyof SetCapabilities<T>],
       ) ?? value
     )
   }
@@ -337,13 +337,13 @@ export abstract class BaseMELCloudDevice<
             delete values.thermostat_mode
           }
         }
-        await this.#set(values as Partial<SetCapabilities[T]>)
+        await this.#set(values as Partial<SetCapabilities<T>>)
       },
       DEBOUNCE_DELAY,
     )
   }
 
-  async #set(values: Partial<SetCapabilities[T]>): Promise<void> {
+  async #set(values: Partial<SetCapabilities<T>>): Promise<void> {
     const device = await this.fetchDevice()
     if (device) {
       const updateData = this.#buildUpdateData(values)
@@ -385,10 +385,10 @@ export abstract class BaseMELCloudDevice<
         await this.removeCapability(capability)
       }, Promise.resolve())
     this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping[T],
+      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping<T>,
     )
     this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping[T],
+      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping<T>,
     )
   }
 
@@ -398,14 +398,14 @@ export abstract class BaseMELCloudDevice<
         (
           this.driver.getCapabilitiesOptions as unknown as (
             data: ListDeviceData<T>,
-          ) => Partial<CapabilitiesOptions[T]>
+          ) => Partial<CapabilitiesOptions<T>>
         )(data),
       ).map(async (capabilityOptions) =>
         this.setCapabilityOptions(
           ...(capabilityOptions as [
-            string & keyof CapabilitiesOptions[T],
-            CapabilitiesOptions[T][Extract<
-              keyof CapabilitiesOptions[T],
+            string & keyof CapabilitiesOptions<T>,
+            CapabilitiesOptions<T>[Extract<
+              keyof CapabilitiesOptions<T>,
               string
             >] &
               Record<string, unknown>,
