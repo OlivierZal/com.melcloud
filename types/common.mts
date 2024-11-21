@@ -388,7 +388,7 @@ export type OpCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? OpCapabilitiesAta
   : T extends DeviceType.Atw ? OpCapabilitiesAtw
   : OpCapabilitiesErv
-  
+
 export type OpCapabilityTagEntry<T extends DeviceType> = [
   capability: Extract<keyof OpCapabilities<T>, string>,
   tag: OpDeviceData<T>,
