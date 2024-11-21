@@ -52,6 +52,8 @@ import {
   type ZoneData,
 } from './types/index.mts'
 
+import type { GroupAtaStates } from './types/common.mts'
+
 const NOTIFICATION_DELAY = 10000
 
 const drivers: Record<DeviceType, string> = {
@@ -210,40 +212,37 @@ export default class MELCloudApp extends Homey.App {
         },
       },
     ].map(({ enumType, key, options }) => [
-      key as keyof GroupAtaState & keyof ListDeviceDataAta,
+      key,
       getLocalizedCapabilitiesOptions(options, this.#language, enumType),
-    ])
+    ]) as [
+      keyof GroupAtaState & keyof ListDeviceDataAta,
+      DriverCapabilitiesOptions,
+    ][]
+  }
+
+  public getAtaDetailedValues(
+    { zoneId, zoneType }: ZoneData,
+    status?: GetAtaOptions['status'],
+  ): GroupAtaStates {
+    const { devices } = zoneModel[zoneType].getById(Number(zoneId)) ?? {}
+    if (!devices) {
+      throw new Error(this.homey.__('errors.deviceNotFound'))
+    }
+    return Object.fromEntries(
+      this.getAtaCapabilities().map(([key]) => [
+        key,
+        devices
+          .filter((device) => device.type === DeviceType.Ata)
+          .filter(({ data }) => (status === 'on' ? data.Power : true))
+          .map(({ data }) => data[key]),
+      ]),
+    ) as unknown as GroupAtaStates
   }
 
   public async getAtaValues({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<GroupAtaState>
-  public async getAtaValues<T extends keyof GroupAtaState>(
-    { zoneId, zoneType }: ZoneData,
-    mode: 'detailed',
-    status?: GetAtaOptions['status'],
-  ): Promise<Record<T, GroupAtaState[T][]>>
-  public async getAtaValues<T extends keyof GroupAtaState>(
-    { zoneId, zoneType }: ZoneData,
-    mode?: GetAtaOptions['mode'],
-    status?: GetAtaOptions['status'],
-  ): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
-    if (mode === 'detailed') {
-      const { devices } = zoneModel[zoneType].getById(Number(zoneId)) ?? {}
-      if (!devices) {
-        throw new Error(this.homey.__('errors.deviceNotFound'))
-      }
-      return Object.fromEntries(
-        this.getAtaCapabilities().map(([key]) => [
-          key,
-          devices
-            .filter((device) => device.type === DeviceType.Ata)
-            .filter(({ data }) => (status === 'on' ? data.Power : true))
-            .map(({ data }) => data[key]),
-        ]),
-      )
-    }
+  }: ZoneData): Promise<GroupAtaState> {
     return this.getFacade(zoneType, zoneId).getAta()
   }
 

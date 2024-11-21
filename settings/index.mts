@@ -4,7 +4,6 @@ import type {
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
-  GroupAtaState,
   HolidayModeData,
   HolidayModeQuery,
   LoginCredentials,
@@ -16,7 +15,6 @@ import type {
   BuildingZone,
   DeviceSetting,
   DeviceSettings,
-  DriverCapabilitiesOptions,
   DriverSetting,
   HomeySettingsUI,
   LoginDriverSetting,
@@ -49,103 +47,93 @@ const PLURAL_EXCEPTION_13 = 13
 const PLURAL_EXCEPTION_14 = 14
 const PLURAL_THRESHOLD = 2
 
-const minMapping = { SetTemperature: 10 } as const
-const maxMapping = { SetTemperature: 31 } as const
-const MIN_SET_TEMPERATURE_COOLING = 16
-
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-
 const frostProtectionTemperatureRange = { max: 16, min: 4 } as const
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
-const zoneMapping: Partial<
-  Record<string, Partial<GroupAtaState & ZoneSettings>>
-> = {}
+const zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
 
-const authenticateElement = document.getElementById(
-  'authenticate',
-) as HTMLButtonElement
-const autoAdjustElement = document.getElementById(
-  'auto_adjust',
-) as HTMLButtonElement
-const refreshAtaValuesElement = document.getElementById(
-  'refresh_values_melcloud',
-) as HTMLButtonElement
-const refreshFrostProtectionElement = document.getElementById(
+const getButtonElement = (id: string): HTMLButtonElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLButtonElement)) {
+    throw new Error('Element is not a button')
+  }
+  return element
+}
+
+const getDivElement = (id: string): HTMLDivElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLDivElement)) {
+    throw new Error('Element is not a div')
+  }
+  return element
+}
+
+const getInputElement = (id: string): HTMLInputElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLInputElement)) {
+    throw new Error('Element is not an input')
+  }
+  return element
+}
+
+const getLabelElement = (id: string): HTMLLabelElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLLabelElement)) {
+    throw new Error('Element is not a label')
+  }
+  return element
+}
+
+const getSelectElement = (id: string): HTMLSelectElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLSelectElement)) {
+    throw new Error('Element is not a select')
+  }
+  return element
+}
+
+const authenticateElement = getButtonElement('authenticate')
+const autoAdjustElement = getButtonElement('auto_adjust')
+const refreshFrostProtectionElement = getButtonElement(
   'refresh_frost_protection',
-) as HTMLButtonElement
-const refreshHolidayModeElement = document.getElementById(
-  'refresh_holiday_mode',
-) as HTMLButtonElement
-const seeElement = document.getElementById('see') as HTMLButtonElement
-const updateAtaValuesElement = document.getElementById(
-  'apply_values_melcloud',
-) as HTMLButtonElement
-const updateFrostProtectionElement = document.getElementById(
-  'apply_frost_protection',
-) as HTMLButtonElement
-const updateHolidayModeElement = document.getElementById(
-  'apply_holiday_mode',
-) as HTMLButtonElement
+)
+const refreshHolidayModeElement = getButtonElement('refresh_holiday_mode')
+const seeElement = getButtonElement('see')
+const updateFrostProtectionElement = getButtonElement('apply_frost_protection')
+const updateHolidayModeElement = getButtonElement('apply_holiday_mode')
 
-const ataValuesElement = document.getElementById(
-  'values_melcloud',
-) as HTMLDivElement
-const authenticatedElement = document.getElementById(
-  'authenticated',
-) as HTMLDivElement
-const authenticatingElement = document.getElementById(
-  'authenticating',
-) as HTMLDivElement
-const errorLogElement = document.getElementById('error_log') as HTMLDivElement
-const hasZoneAtaDevicesElement = document.getElementById(
-  'has_zone_ata_devices',
-) as HTMLDivElement
-const loginElement = document.getElementById('login') as HTMLDivElement
-const settingsCommonElement = document.getElementById(
-  'settings_common',
-) as HTMLDivElement
+const authenticatedElement = getDivElement('authenticated')
+const authenticatingElement = getDivElement('authenticating')
+const errorLogElement = getDivElement('error_log')
+const loginElement = getDivElement('login')
+const settingsCommonElement = getDivElement('settings_common')
 
-const sinceElement = document.getElementById('since') as HTMLInputElement
-const frostProtectionMinTemperatureElement = document.getElementById(
-  'min',
-) as HTMLInputElement
+const sinceElement = getInputElement('since')
+const frostProtectionMinTemperatureElement = getInputElement('min')
 frostProtectionMinTemperatureElement.min = String(
   frostProtectionTemperatureRange.min,
 )
 frostProtectionMinTemperatureElement.max = String(
   frostProtectionTemperatureRange.max - FROST_PROTECTION_TEMPERATURE_GAP,
 )
-const frostProtectionMaxTemperatureElement = document.getElementById(
-  'max',
-) as HTMLInputElement
+const frostProtectionMaxTemperatureElement = getInputElement('max')
 frostProtectionMaxTemperatureElement.min = String(
   frostProtectionTemperatureRange.min + FROST_PROTECTION_TEMPERATURE_GAP,
 )
 frostProtectionMaxTemperatureElement.max = String(
   frostProtectionTemperatureRange.max,
 )
-const holidayModeStartDateElement = document.getElementById(
-  'start_date',
-) as HTMLInputElement
-const holidayModeEndDateElement = document.getElementById(
-  'end_date',
-) as HTMLInputElement
+const holidayModeStartDateElement = getInputElement('start_date')
+const holidayModeEndDateElement = getInputElement('end_date')
 
-const errorCountLabelElement = document.getElementById(
-  'error_count',
-) as HTMLLabelElement
-const periodLabelElement = document.getElementById('period') as HTMLLabelElement
+const errorCountLabelElement = getLabelElement('error_count')
+const periodLabelElement = getLabelElement('period')
 
-const zoneElement = document.getElementById('zones') as HTMLSelectElement
-const frostProtectionEnabledElement = document.getElementById(
+const zoneElement = getSelectElement('zones')
+const frostProtectionEnabledElement = getSelectElement(
   'enabled_frost_protection',
-) as HTMLSelectElement
-const holidayModeEnabledElement = document.getElementById(
-  'enabled_holiday_mode',
-) as HTMLSelectElement
+)
+const holidayModeEnabledElement = getSelectElement('enabled_holiday_mode')
 
 let homeySettings: HomeySettingsUI = {
   contextKey: '',
@@ -153,9 +141,6 @@ let homeySettings: HomeySettingsUI = {
   password: '',
   username: '',
 }
-
-let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
-let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
 
 let deviceSettings: Partial<DeviceSettings> = {}
 let flatDeviceSettings: Partial<DeviceSetting> = {}
@@ -460,8 +445,8 @@ const updateDriverSetting = (
   driverId: string,
 ): void => {
   const [id] = element.id.split('__')
-  const isChecked = deviceSettings[driverId]?.[id] as boolean | null
-  if (isChecked !== null) {
+  const isChecked = deviceSettings[driverId]?.[id]
+  if (typeof isChecked === 'boolean') {
     element.checked = isChecked
     return
   }
@@ -482,33 +467,20 @@ const refreshDriverSettings = (
   })
 }
 
-const handleIntMin = (id: string, min: string): string =>
-  (
-    id === 'SetTemperature' &&
-    [MODE_AUTO, MODE_COOL, MODE_DRY].includes(
-      Number(
-        (document.getElementById('OperationMode') as HTMLSelectElement).value,
-      ),
-    )
-  ) ?
-    String(MIN_SET_TEMPERATURE_COOLING)
-  : min
-
 const int = (
   homey: Homey,
   { id, max, min, value }: HTMLInputElement,
 ): number => {
   const numberValue = Number(value)
-  const newMin = handleIntMin(id, min)
   if (
     !Number.isFinite(numberValue) ||
-    numberValue < Number(newMin) ||
+    numberValue < Number(min) ||
     numberValue > Number(max)
   ) {
     throw new Error(
       homey.__('settings.intError', {
         max,
-        min: newMin,
+        min,
         name: homey.__(
           document.querySelector<HTMLLabelElement>(`label[for="${id}"]`)
             ?.innerText ?? '',
@@ -578,35 +550,6 @@ const buildSettingsBody = (
   return settings
 }
 
-const buildAtaValuesBody = (homey: Homey): GroupAtaState => {
-  const errors: string[] = []
-  const values = Object.fromEntries(
-    Array.from(
-      ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
-    )
-      .filter(
-        ({ id, value }) =>
-          value !== '' &&
-          value !==
-            zoneMapping[zoneElement.value]?.[
-              id as keyof GroupAtaState
-            ]?.toString(),
-      )
-      .map((element) => {
-        try {
-          return [element.id, processValue(homey, element)]
-        } catch (error) {
-          errors.push(getErrorMessage(error))
-          return [element.id, Number(element.value)]
-        }
-      }),
-  )
-  if (errors.length) {
-    throw new Error(errors.join('\n'))
-  }
-  return values
-}
-
 const updateDeviceSettings = (body: Settings, driverId?: string): void => {
   if (driverId !== undefined) {
     Object.entries(body).forEach(([id, value]) => {
@@ -633,7 +576,9 @@ const setDeviceSettings = async (
   const body = buildSettingsBody(homey, elements, driverId)
   if (!Object.keys(body).length) {
     if (driverId === undefined) {
-      refreshCommonSettings(elements as HTMLSelectElement[])
+      refreshCommonSettings(
+        elements.filter((element) => element instanceof HTMLSelectElement),
+      )
     }
     homey.alert(homey.__('settings.devices.apply.nothing')).catch(() => {
       //
@@ -674,9 +619,7 @@ const addApplySettingsEventListener = (
   driverId?: string,
 ): void => {
   const settings = `settings_${driverId ?? 'common'}`
-  const buttonElement = document.getElementById(
-    `apply_${settings}`,
-  ) as HTMLButtonElement
+  const buttonElement = getButtonElement(`apply_${settings}`)
   buttonElement.addEventListener('click', () => {
     setDeviceSettings(homey, elements, driverId).catch(() => {
       //
@@ -689,9 +632,7 @@ const addRefreshSettingsEventListener = (
   driverId?: string,
 ): void => {
   const settings = `settings_${driverId ?? 'common'}`
-  const buttonElement = document.getElementById(
-    `refresh_${settings}`,
-  ) as HTMLButtonElement
+  const buttonElement = getButtonElement(`refresh_${settings}`)
   buttonElement.addEventListener('click', () => {
     if (driverId !== undefined) {
       refreshDriverSettings(
@@ -764,9 +705,7 @@ const generateDriverSettings = (
         Array.from(fieldSetElement.querySelectorAll('input')),
         driverId,
       )
-      unhide(
-        document.getElementById(`has_devices_${driverId}`) as HTMLDivElement,
-      )
+      unhide(getDivElement(`has_devices_${driverId}`))
     }
   }
 }
@@ -785,8 +724,8 @@ const generateCredential = (
   credentialKey: keyof LoginCredentials,
   driverSettings: Partial<Record<string, DriverSetting[]>>,
 ): HTMLInputElement | null => {
-  const loginSetting = (driverSettings.login as LoginDriverSetting[]).find(
-    ({ id }) => id === credentialKey,
+  const loginSetting = driverSettings.login?.find(
+    (setting): setting is LoginDriverSetting => setting.id === credentialKey,
   )
   if (loginSetting) {
     const { id, placeholder, title, type } = loginSetting
@@ -918,9 +857,7 @@ const generateErrorLog = async (homey: Homey): Promise<void> =>
       }),
   )
 
-const updateZoneMapping = (
-  data: Partial<FrostProtectionData | GroupAtaState | HolidayModeData>,
-): void => {
+const updateZoneMapping = (data: Partial<ZoneSettings>): void => {
   const { value } = zoneElement
   zoneMapping[value] = { ...zoneMapping[value], ...data }
 }
@@ -951,20 +888,6 @@ const refreshFrostProtectionData = (): void => {
     frostProtectionMinTemperatureElement.value = String(min)
     frostProtectionMaxTemperatureElement.value = String(max)
   }
-}
-
-const updateAtaValue = (id: keyof GroupAtaState): void => {
-  const ataValueElement = document.getElementById(id) as HTMLValueElement | null
-  if (ataValueElement) {
-    ataValueElement.value =
-      zoneMapping[zoneElement.value]?.[id]?.toString() ?? ''
-  }
-}
-
-const refreshAtaValues = (): void => {
-  ataCapabilities.forEach(([ataKey]) => {
-    updateAtaValue(ataKey)
-  })
 }
 
 const fetchHolidayModeData = async (homey: Homey): Promise<void> =>
@@ -1005,69 +928,6 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
       }),
   )
 
-const fetchAtaValues = async (homey: Homey): Promise<void> =>
-  withDisablingButtons(
-    'values_melcloud',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'GET',
-          `/values/ata/${getZonePath()}`,
-          async (error: Error | null, data: GroupAtaState) => {
-            if (!error) {
-              updateZoneMapping({ ...defaultAtaValues, ...data })
-              refreshAtaValues()
-            } else if (error.message !== 'No air-to-air device found') {
-              await homey.alert(error.message)
-            }
-            unhide(hasZoneAtaDevicesElement, error === null)
-            resolve()
-          },
-        )
-      }),
-  )
-
-const generateAtaValue = (
-  homey: Homey,
-  {
-    id,
-    type,
-    values,
-  }: {
-    id: string
-    type: string
-    values?: readonly { id: string; label: string }[]
-  },
-): HTMLValueElement | null => {
-  if (['boolean', 'enum'].includes(type)) {
-    return createSelectElement(homey, id, values)
-  }
-  if (type === 'number') {
-    return createInputElement({
-      id,
-      max:
-        id in maxMapping ?
-          maxMapping[id as keyof typeof maxMapping]
-        : undefined,
-      min:
-        id in minMapping ?
-          minMapping[id as keyof typeof minMapping]
-        : undefined,
-      type,
-    })
-  }
-  return null
-}
-
-const generateAtaValues = (homey: Homey): void => {
-  ataCapabilities.forEach(([id, { title, type, values }]) => {
-    createValueElement(ataValuesElement, {
-      title,
-      valueElement: generateAtaValue(homey, { id, type, values }),
-    })
-  })
-}
-
 const generateZones = async (
   zones: Zone[],
   zoneType = 'buildings',
@@ -1088,7 +948,6 @@ const generateZones = async (
   }, Promise.resolve())
 
 const fetchZoneSettings = async (homey: Homey): Promise<void> => {
-  await fetchAtaValues(homey)
   await fetchFrostProtectionData(homey)
   await fetchHolidayModeData(homey)
 }
@@ -1106,7 +965,6 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
           reject(error ?? new NoDeviceError(homey))
           return
         }
-        generateAtaValues(homey)
         await generateZones(buildings)
         await generateErrorLog(homey)
         await fetchZoneSettings(homey)
@@ -1114,62 +972,6 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
       },
     )
   })
-
-const fetchAtaCapabilities = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      '/capabilities/ata',
-      async (
-        error: Error | null,
-        capabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][],
-      ) => {
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          ataCapabilities = capabilities
-          defaultAtaValues = Object.fromEntries(
-            ataCapabilities.map(([ataKey]) => [ataKey, null]),
-          )
-        }
-        resolve()
-      },
-    )
-  })
-
-const setAtaValues = async (homey: Homey): Promise<void> => {
-  try {
-    const body = buildAtaValuesBody(homey)
-    if (!Object.keys(body).length) {
-      await homey.alert(homey.__('settings.devices.apply.nothing'))
-      refreshAtaValues()
-      return
-    }
-    await withDisablingButtons(
-      'values_melcloud',
-      async () =>
-        new Promise((resolve) => {
-          homey.api(
-            'PUT',
-            `/values/ata/${getZonePath()}`,
-            body satisfies GroupAtaState,
-            async (error: Error | null) => {
-              if (!error) {
-                updateZoneMapping(body)
-                refreshAtaValues()
-              }
-              await homey.alert(
-                error ? error.message : homey.__('settings.success'),
-              )
-              resolve()
-            },
-          )
-        }),
-    )
-  } catch (error) {
-    await homey.alert(getErrorMessage(error))
-  }
-}
 
 const needsAuthentication = (value = true): void => {
   hide(authenticatedElement, value)
@@ -1393,17 +1195,6 @@ const addFrostProtectionEventListeners = (homey: Homey): void => {
   })
 }
 
-const addAtaValuesEventListeners = (homey: Homey): void => {
-  refreshAtaValuesElement.addEventListener('click', () => {
-    refreshAtaValues()
-  })
-  updateAtaValuesElement.addEventListener('click', () => {
-    setAtaValues(homey).catch(() => {
-      //
-    })
-  })
-}
-
 const addEventListeners = (homey: Homey): void => {
   authenticateElement.addEventListener('click', () => {
     login(homey).catch(() => {
@@ -1439,7 +1230,6 @@ const addEventListeners = (homey: Homey): void => {
   })
   addHolidayModeEventListeners(homey)
   addFrostProtectionEventListeners(homey)
-  addAtaValuesEventListeners(homey)
 }
 
 const load = async (homey: Homey): Promise<void> => {
@@ -1456,7 +1246,6 @@ const load = async (homey: Homey): Promise<void> => {
 async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)
   await fetchHomeySettings(homey)
-  await fetchAtaCapabilities(homey)
   await fetchDeviceSettings(homey)
   await fetchDriverSettings(homey)
   addEventListeners(homey)

@@ -51,6 +51,7 @@ export {
   type FlowArgs,
   type GetAtaOptions,
   type GetCapabilityTagMapping,
+  type GroupAtaStates,
   type HomeySettingsUI,
   type ListCapabilityTagMapping,
   type LoginDriverSetting,

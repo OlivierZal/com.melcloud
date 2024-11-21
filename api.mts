@@ -10,9 +10,8 @@ import type {
   HolidayModeQuery,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey'
+import type { Homey } from 'homey/lib/Homey'
 
-import type MELCloudApp from './app.mts'
 import type {
   BuildingZone,
   DeviceSettings,
@@ -22,15 +21,13 @@ import type {
   ZoneData,
 } from './types/index.mts'
 
-const getApp = (homey: Homey): MELCloudApp => homey.app as MELCloudApp
-
 const api = {
   getAtaCapabilities({
     homey,
   }: {
     homey: Homey
   }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
-    return getApp(homey).getAtaCapabilities()
+    return homey.app.getAtaCapabilities()
   },
   async getAtaValues({
     homey,
@@ -39,20 +36,20 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<GroupAtaState> {
-    return getApp(homey).getAtaValues(params)
+    return homey.app.getAtaValues(params)
   },
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
   getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
-    return getApp(homey).getDeviceSettings()
+    return homey.app.getDeviceSettings()
   },
   getDriverSettings({
     homey,
   }: {
     homey: Homey
   }): Partial<Record<string, DriverSetting[]>> {
-    return getApp(homey).getDriverSettings()
+    return homey.app.getDriverSettings()
   },
   async getErrors({
     homey,
@@ -61,7 +58,7 @@ const api = {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    return getApp(homey).getErrors(query)
+    return homey.app.getErrors(query)
   },
   async getFrostProtectionSettings({
     homey,
@@ -70,7 +67,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<FrostProtectionData> {
-    return getApp(homey).getFrostProtectionSettings(params)
+    return homey.app.getFrostProtectionSettings(params)
   },
   async getHolidayModeSettings({
     homey,
@@ -79,7 +76,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<HolidayModeData> {
-    return getApp(homey).getHolidayModeSettings(params)
+    return homey.app.getHolidayModeSettings(params)
   },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()
@@ -91,7 +88,7 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return getApp(homey).login(body)
+    return homey.app.login(body)
   },
   async setAtaValues({
     body,
@@ -102,7 +99,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return getApp(homey).setAtaValues(body, params)
+    return homey.app.setAtaValues(body, params)
   },
   async setDeviceSettings({
     body,
@@ -113,7 +110,7 @@ const api = {
     homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
-    return getApp(homey).setDeviceSettings(body, query?.driverId)
+    return homey.app.setDeviceSettings(body, query?.driverId)
   },
   async setFrostProtectionSettings({
     body,
@@ -124,7 +121,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return getApp(homey).setFrostProtectionSettings(body, params)
+    return homey.app.setFrostProtectionSettings(body, params)
   },
   async setHolidayModeSettings({
     body,
@@ -135,7 +132,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return getApp(homey).setHolidayModeSettings(body, params)
+    return homey.app.setHolidayModeSettings(body, params)
   },
 }
 

@@ -1,17 +1,15 @@
 import { getBuildings } from '../../lib/get-buildings.mts'
 
 import type { GroupAtaState } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey'
+import type { Homey } from 'homey/lib/Homey'
 
-import type MELCloudApp from '../../app.mts'
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
   GetAtaOptions,
+  GroupAtaStates,
   ZoneData,
 } from '../../types/index.mts'
-
-const getApp = (homey: Homey): MELCloudApp => homey.app as MELCloudApp
 
 const api = {
   getAtaCapabilities({
@@ -19,9 +17,9 @@ const api = {
   }: {
     homey: Homey
   }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
-    return getApp(homey).getAtaCapabilities()
+    return homey.app.getAtaCapabilities()
   },
-  async getAtaValues<T extends keyof GroupAtaState>({
+  async getAtaValues({
     homey,
     params,
     query,
@@ -29,11 +27,11 @@ const api = {
     homey: Homey
     params: ZoneData
     query?: GetAtaOptions
-  }): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> {
+  }): Promise<GroupAtaState | GroupAtaStates> {
     const { mode, status } = query ?? {}
     return mode === 'detailed' ?
-        getApp(homey).getAtaValues(params, mode, status)
-      : getApp(homey).getAtaValues(params)
+        homey.app.getAtaDetailedValues(params, status)
+      : homey.app.getAtaValues(params)
   },
   getBuildings(): BuildingZone[] {
     return getBuildings()
@@ -47,7 +45,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return getApp(homey).setAtaValues(body, params)
+    return homey.app.setAtaValues(body, params)
   },
 }
 

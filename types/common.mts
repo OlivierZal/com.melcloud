@@ -6,12 +6,15 @@ import {
   type DeviceType,
   type EnergyData,
   type FanSpeed,
+  type Horizontal,
   type IModel,
   type ListDeviceData,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
   type LoginCredentials,
+  type OperationMode,
   type UpdateDeviceData,
+  type Vertical,
 } from '@olivierzal/melcloud-api'
 
 import type { DateObjectUnits, DurationLike } from 'luxon'
@@ -226,6 +229,17 @@ export interface GetAtaOptions {
   status?: 'on'
 }
 
+export interface GroupAtaStates {
+  readonly FanSpeed: Exclude<FanSpeed, FanSpeed.silent>[]
+  readonly OperationMode: OperationMode[]
+  readonly Power: boolean[]
+  readonly SetTemperature: number[]
+  readonly VaneHorizontalDirection: Horizontal[]
+  readonly VaneHorizontalSwing: boolean[]
+  readonly VaneVerticalDirection: Vertical[]
+  readonly VaneVerticalSwing: boolean[]
+}
+
 export interface HomeySettingsUI {
   readonly contextKey?: string
   readonly expiry?: string
@@ -388,7 +402,7 @@ export type OpCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? OpCapabilitiesAta
   : T extends DeviceType.Atw ? OpCapabilitiesAtw
   : OpCapabilitiesErv
-  
+
 export type OpCapabilityTagEntry<T extends DeviceType> = [
   capability: Extract<keyof OpCapabilities<T>, string>,
   tag: OpDeviceData<T>,

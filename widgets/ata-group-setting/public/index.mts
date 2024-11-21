@@ -1,14 +1,11 @@
-import type {
-  GroupAtaState,
-  OperationMode,
-  ZoneSettings,
-} from '@olivierzal/melcloud-api'
+import type { GroupAtaState, OperationMode } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
   BuildingZone,
   DriverCapabilitiesOptions,
   GetAtaOptions,
+  GroupAtaStates,
   Settings,
   ValueOf,
   Zone,
@@ -100,8 +97,8 @@ const INCREMENT = 1
 const FIRST_LEVEL = 0
 const SECOND_LEVEL = 1
 
-const minMapping = { SetTemperature: 10 } as const
-const maxMapping = { SetTemperature: 31 } as const
+const MIN_SET_TEMPERATURE = 10
+const MAX_SET_TEMPERATURE = 31
 const MIN_SET_TEMPERATURE_COOLING = 16
 
 const MODE_MIXED = 0
@@ -136,29 +133,51 @@ const SNOWFLAKE_GAP = 50
 const SUN_ENTER_AND_EXIT_DURATION = 5000
 const SUN_SHINE_DURATION = 5000
 
-const zoneMapping: Partial<
-  Record<string, Partial<GroupAtaState & ZoneSettings>>
-> = {}
+const zoneMapping: Partial<Record<string, Partial<GroupAtaState>>> = {}
 
-const refreshAtaValuesElement = document.getElementById(
-  'refresh_values_melcloud',
-) as HTMLButtonElement
-const updateAtaValuesElement = document.getElementById(
-  'apply_values_melcloud',
-) as HTMLButtonElement
+const getButtonElement = (id: string): HTMLButtonElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLButtonElement)) {
+    throw new Error('Element is not a button')
+  }
+  return element
+}
 
-const canvas = document.getElementById('smoke_canvas') as HTMLCanvasElement
+const getCanvasElement = (id: string): HTMLCanvasElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLCanvasElement)) {
+    throw new Error('Element is not a canvas')
+  }
+  return element
+}
+
+const getDivElement = (id: string): HTMLDivElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLDivElement)) {
+    throw new Error('Element is not a div')
+  }
+  return element
+}
+
+const getSelectElement = (id: string): HTMLSelectElement => {
+  const element = document.getElementById(id)
+  if (!(element instanceof HTMLSelectElement)) {
+    throw new Error('Element is not a select')
+  }
+  return element
+}
+
+const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
+const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
+
+const canvas = getCanvasElement('smoke_canvas')
 const canvasCtx = canvas.getContext('2d')
 
-const animationElement = document.getElementById('animation') as HTMLDivElement
-const ataValuesElement = document.getElementById(
-  'values_melcloud',
-) as HTMLDivElement
-const hasZoneAtaDevicesElement = document.getElementById(
-  'has_zone_ata_devices',
-) as HTMLDivElement
+const animationElement = getDivElement('animation')
+const ataValuesElement = getDivElement('values_melcloud')
+const hasZoneAtaDevicesElement = getDivElement('has_zone_ata_devices')
 
-const zoneElement = document.getElementById('zones') as HTMLSelectElement
+const zoneElement = getSelectElement('zones')
 
 const animationTimeouts: NodeJS.Timeout[] = []
 const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
@@ -220,10 +239,9 @@ const unhide = (element: HTMLDivElement, value = true): void => {
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   try {
-    document.documentElement.lang = (await homey.api(
-      'GET',
-      '/language',
-    )) as string
+    const language = await homey.api('GET', '/language')
+    document.documentElement.lang =
+      typeof language === 'string' ? language : 'en'
   } catch {}
 }
 
@@ -358,9 +376,7 @@ const handleIntMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
     [MODE_AUTO, MODE_COOL, MODE_DRY].includes(
-      Number(
-        (document.getElementById('OperationMode') as HTMLSelectElement).value,
-      ),
+      Number(getSelectElement('OperationMode').value),
     )
   ) ?
     String(MIN_SET_TEMPERATURE_COOLING)
@@ -399,6 +415,9 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
+const isKeyofGroupAtaState = (key: string): key is keyof GroupAtaState =>
+  key in defaultAtaValues
+
 const buildAtaValuesBody = (): GroupAtaState =>
   Object.fromEntries(
     Array.from(
@@ -407,10 +426,8 @@ const buildAtaValuesBody = (): GroupAtaState =>
       .filter(
         ({ id, value }) =>
           value !== '' &&
-          value !==
-            zoneMapping[zoneElement.value]?.[
-              id as keyof GroupAtaState
-            ]?.toString(),
+          isKeyofGroupAtaState(id) &&
+          zoneMapping[zoneElement.value]?.[id]?.toString(),
       )
       .map((element) => [element.id, processValue(element)]),
   )
@@ -421,8 +438,12 @@ const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
 }
 
 const updateAtaValue = (id: keyof GroupAtaState): void => {
-  const ataValueElement = document.getElementById(id) as HTMLValueElement | null
-  if (ataValueElement) {
+  const ataValueElement = document.getElementById(id)
+  if (
+    ataValueElement &&
+    (ataValueElement instanceof HTMLInputElement ||
+      ataValueElement instanceof HTMLSelectElement)
+  ) {
     ataValueElement.value =
       zoneMapping[zoneElement.value]?.[id]?.toString() ?? ''
   }
@@ -697,12 +718,18 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
   return animation
 }
 
-const handleSunAnimation = (speed: number): void => {
-  let sun = document.getElementById('sun-1') as HTMLDivElement | null
-  if (!sun) {
-    sun = createAnimatedElement('sun')
-    animationElement.append(sun)
+const getSunElement = (): HTMLDivElement => {
+  const sun = document.getElementById('sun-1')
+  if (!(sun instanceof HTMLDivElement)) {
+    const newSun = createAnimatedElement('sun')
+    animationElement.append(newSun)
+    return newSun
   }
+  return sun
+}
+
+const handleSunAnimation = (speed: number): void => {
+  const sun = getSunElement()
   if (!sunAnimation.shine) {
     sunAnimation.shine = generateSunShineAnimation(sun)
   }
@@ -801,25 +828,21 @@ const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-const getAtaValues = async <T extends keyof GroupAtaState>(
-  homey: Homey,
-  detailed = false,
-): Promise<GroupAtaState | Record<T, GroupAtaState[T][]>> => {
-  let endPoint = `/values/ata/${getZonePath()}`
-  if (detailed) {
-    endPoint += `?${new URLSearchParams({
+const getAtaValues = async (homey: Homey): Promise<GroupAtaState> =>
+  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupAtaState
+
+const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
+  (await homey.api(
+    'GET',
+    `/values/ata/${getZonePath()}?${new URLSearchParams({
       mode: 'detailed',
       status: 'on',
-    } satisfies Required<GetAtaOptions>).toString()}`
-  }
-  return (await homey.api('GET', endPoint)) as Promise<
-    GroupAtaState | Record<T, GroupAtaState[T][]>
-  >
-}
+    } satisfies Required<GetAtaOptions>).toString()}`,
+  )) as GroupAtaStates
 
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   try {
-    return (await getAtaValues(homey, true)).OperationMode as OperationMode[]
+    return (await getDetailedAtaValues(homey)).OperationMode
   } catch {
     return []
   }
@@ -859,9 +882,10 @@ const resetSunAnimation = async (
   isSomethingOn: boolean,
   mode: number,
 ): Promise<void> => {
-  const sun = document.getElementById('sun-1') as HTMLDivElement | null
+  const sun = document.getElementById('sun-1')
   if (
     sun &&
+    sun instanceof HTMLDivElement &&
     (!isSomethingOn ||
       (mode !== MODE_DRY &&
         mode !== MODE_MIXED &&
@@ -942,7 +966,7 @@ const handleAnimation = async (
 
 const fetchAtaValues = async (homey: Homey): Promise<void> => {
   try {
-    const values = (await getAtaValues(homey)) as GroupAtaState
+    const values = await getAtaValues(homey)
     updateZoneMapping({ ...defaultAtaValues, ...values })
     refreshAtaValues()
     unhide(hasZoneAtaDevicesElement)
@@ -970,14 +994,8 @@ const generateAtaValue = (
   if (type === 'number') {
     return createInputElement({
       id,
-      max:
-        id in maxMapping ?
-          maxMapping[id as keyof typeof maxMapping]
-        : undefined,
-      min:
-        id in minMapping ?
-          minMapping[id as keyof typeof minMapping]
-        : undefined,
+      max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
+      min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
       type,
     })
   }
