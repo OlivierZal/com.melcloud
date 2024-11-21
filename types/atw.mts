@@ -20,6 +20,115 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
+import type { OpCapabilities } from './common.mts'
+
+const addSuffixToTitle = (
+  title: LocalizedStrings,
+  suffix: LocalizedStrings,
+): LocalizedStrings =>
+  Object.fromEntries(
+    Object.entries(suffix).map(([language, localizedSuffix]) => [
+      language,
+      `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
+    ]),
+  ) as LocalizedStrings
+
+const curve: CapabilitiesOptionsValues<'curve'> = {
+  id: 'curve',
+  title: {
+    da: 'Varmekurve',
+    en: 'Weather compensation curve',
+    es: 'Curva de calefacción',
+    fr: 'Courbe de chauffe',
+    nl: 'Weerscompensatiecurve',
+    no: 'Varmekurve',
+    sv: 'Värmekurva',
+  },
+} as const
+
+const flow: CapabilitiesOptionsValues<'flow'> = {
+  id: 'flow',
+  title: {
+    da: 'Fast fremledningstemperatur',
+    en: 'Fixed flow temperature',
+    es: 'Temperatura de partida fija',
+    fr: 'Température de départ fixe',
+    nl: 'Vaste aanvoertemperatuur',
+    no: 'Fast fremløpstemperatur',
+    sv: 'Fast framledningstemperatur',
+  },
+} as const
+
+const room: CapabilitiesOptionsValues<'room'> = {
+  id: 'room',
+  title: {
+    da: 'Indendørs føler',
+    en: 'Indoor temperature',
+    es: 'Temperatura interior',
+    fr: 'Température intérieure',
+    nl: 'Binnentemperatuur',
+    no: 'Innendørs føler',
+    sv: 'Inomhusgivare',
+  },
+} as const
+
+const COOL_SUFFIX = 'cool'
+
+const createCoolObject = ({
+  id,
+  title,
+}: {
+  id: 'flow' | 'room'
+  title: LocalizedStrings
+}): CapabilitiesOptionsValues<keyof typeof OperationModeZone> => ({
+  id: `${id}_${COOL_SUFFIX}`,
+  title: addSuffixToTitle(title, {
+    da: '- køling',
+    en: '- cooling',
+    es: '- enfriamiento',
+    fr: '- refroidissement',
+    nl: '- koeling',
+    no: '- kjøling',
+    sv: '- kylning',
+  }),
+})
+
+const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
+  da: '- zone 2',
+  en: '- zone 2',
+  es: '- zona 2',
+  fr: '- zone 2',
+  nl: '- zone 2',
+  no: '- sone 2',
+  sv: '- zon 2',
+})
+
+const thermostatModeValuesAtw = [
+  room,
+  flow,
+  curve,
+  createCoolObject(room),
+  createCoolObject(flow),
+] as const
+
+export const getCapabilitiesOptionsAtw = ({
+  CanCool: canCool,
+  HasZone2: hasZone2,
+}: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
+  const thermostatModeValues =
+    canCool ?
+      thermostatModeValuesAtw
+    : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
+  return {
+    thermostat_mode: { values: thermostatModeValues },
+    ...(hasZone2 && {
+      'thermostat_mode.zone2': {
+        title: thermostatModeTitleAtw,
+        values: thermostatModeValues,
+      },
+    }),
+  }
+}
 
 export enum HotWaterMode {
   auto = 'auto',
@@ -43,7 +152,7 @@ export enum OperationModeStateZoneCapability {
 
 export interface CapabilitiesAtw
   extends EnergyCapabilitiesAtw,
-    OpCapabilitiesAtw {
+    OpCapabilities<DeviceType.Atw> {
   readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
   readonly 'operational_state.zone1': OperationModeStateZoneCapability
   readonly 'operational_state.zone2': OperationModeStateZoneCapability
@@ -105,11 +214,6 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'measure_temperature.target_curve': number
   readonly 'measure_temperature.target_curve_zone2': number
 }
-
-export interface OpCapabilitiesAtw
-  extends GetCapabilitiesAtw,
-    ListCapabilitiesAtw,
-    SetCapabilitiesAtw {}
 
 export interface SetCapabilitiesAtw
   extends BaseSetCapabilities,
@@ -274,112 +378,4 @@ export interface FlowArgsAtw {
   readonly operation_mode_zone: keyof typeof OperationModeZone
   readonly operational_state: keyof typeof OperationModeState
   readonly target_temperature: number
-}
-
-const addSuffixToTitle = (
-  title: LocalizedStrings,
-  suffix: LocalizedStrings,
-): LocalizedStrings =>
-  Object.fromEntries(
-    Object.entries(suffix).map(([language, localizedSuffix]) => [
-      language,
-      `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
-    ]),
-  ) as LocalizedStrings
-
-const curve: CapabilitiesOptionsValues<'curve'> = {
-  id: 'curve',
-  title: {
-    da: 'Varmekurve',
-    en: 'Weather compensation curve',
-    es: 'Curva de calefacción',
-    fr: 'Courbe de chauffe',
-    nl: 'Weerscompensatiecurve',
-    no: 'Varmekurve',
-    sv: 'Värmekurva',
-  },
-} as const
-
-const flow: CapabilitiesOptionsValues<'flow'> = {
-  id: 'flow',
-  title: {
-    da: 'Fast fremledningstemperatur',
-    en: 'Fixed flow temperature',
-    es: 'Temperatura de partida fija',
-    fr: 'Température de départ fixe',
-    nl: 'Vaste aanvoertemperatuur',
-    no: 'Fast fremløpstemperatur',
-    sv: 'Fast framledningstemperatur',
-  },
-} as const
-
-const room: CapabilitiesOptionsValues<'room'> = {
-  id: 'room',
-  title: {
-    da: 'Indendørs føler',
-    en: 'Indoor temperature',
-    es: 'Temperatura interior',
-    fr: 'Température intérieure',
-    nl: 'Binnentemperatuur',
-    no: 'Innendørs føler',
-    sv: 'Inomhusgivare',
-  },
-} as const
-
-const COOL_SUFFIX = 'cool'
-
-const createCoolObject = ({
-  id,
-  title,
-}: {
-  id: 'flow' | 'room'
-  title: LocalizedStrings
-}): CapabilitiesOptionsValues<keyof typeof OperationModeZone> => ({
-  id: `${id}_${COOL_SUFFIX}`,
-  title: addSuffixToTitle(title, {
-    da: '- køling',
-    en: '- cooling',
-    es: '- enfriamiento',
-    fr: '- refroidissement',
-    nl: '- koeling',
-    no: '- kjøling',
-    sv: '- kylning',
-  }),
-})
-
-const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
-  da: '- zone 2',
-  en: '- zone 2',
-  es: '- zona 2',
-  fr: '- zone 2',
-  nl: '- zone 2',
-  no: '- sone 2',
-  sv: '- zon 2',
-})
-
-const thermostatModeValuesAtw = [
-  room,
-  flow,
-  curve,
-  createCoolObject(room),
-  createCoolObject(flow),
-] as const
-
-export const getCapabilitiesOptionsAtw = ({
-  CanCool: canCool,
-  HasZone2: hasZone2,
-}: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
-  const thermostatModeValues =
-    canCool ?
-      thermostatModeValuesAtw
-    : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
-  return {
-    thermostat_mode: { values: thermostatModeValues },
-    ...(hasZone2 && {
-      'thermostat_mode.zone2': {
-        title: thermostatModeTitleAtw,
-        values: thermostatModeValues,
-      },
-    }),
-  }
 }

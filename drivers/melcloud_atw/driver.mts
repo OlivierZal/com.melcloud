@@ -1,4 +1,4 @@
-import { DeviceType, type ListDeviceDataAtw } from '@olivierzal/melcloud-api'
+import { DeviceType, type ListDeviceData } from '@olivierzal/melcloud-api'
 
 import {
   energyCapabilityTagMappingAtw,
@@ -6,7 +6,7 @@ import {
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
-  type CapabilitiesAtw,
+  type Capabilities,
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
@@ -23,7 +23,7 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
 
   public readonly type = DeviceType.Atw
 
-  readonly #zone1Capabilities: (keyof CapabilitiesAtw)[] = [
+  readonly #zone1Capabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'onoff',
     'hot_water_mode',
     'measure_temperature',
@@ -43,11 +43,11 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'measure_power.produced',
   ] as const
 
-  readonly #zone1CoolCapabilities: (keyof CapabilitiesAtw)[] = [
+  readonly #zone1CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'target_temperature.flow_cool',
   ] as const
 
-  readonly #zone2Capabilities: (keyof CapabilitiesAtw)[] = [
+  readonly #zone2Capabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -55,14 +55,14 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'operational_state.zone2',
   ] as const
 
-  readonly #zone2CoolCapabilities: (keyof CapabilitiesAtw)[] = [
+  readonly #zone2CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'target_temperature.flow_cool_zone2',
   ] as const
 
   public getRequiredCapabilities({
     CanCool: canCool,
     HasZone2: hasZone2,
-  }: ListDeviceDataAtw): string[] {
+  }: ListDeviceData<DeviceType.Atw>): string[] {
     return [
       ...this.#zone1Capabilities,
       ...(canCool ? this.#zone1CoolCapabilities : []),

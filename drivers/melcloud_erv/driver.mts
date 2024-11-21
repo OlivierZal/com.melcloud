@@ -1,4 +1,4 @@
-import { DeviceType, type ListDeviceDataErv } from '@olivierzal/melcloud-api'
+import { DeviceType, type ListDeviceData } from '@olivierzal/melcloud-api'
 
 import {
   energyCapabilityTagMappingErv,
@@ -25,7 +25,7 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,
     HasPM25Sensor: hasPM25Sensor,
-  }: ListDeviceDataErv): string[] {
+  }: ListDeviceData<DeviceType.Erv>): string[] {
     return [
       ...(this.capabilities ?? []).filter(
         (capability) =>

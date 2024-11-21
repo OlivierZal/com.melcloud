@@ -35,9 +35,10 @@ import type {
   EnergyCapabilitiesAta,
   energyCapabilityTagMappingAta,
   FlowArgsAta,
+  GetCapabilitiesAta,
   getCapabilityTagMappingAta,
+  ListCapabilitiesAta,
   listCapabilityTagMappingAta,
-  OpCapabilitiesAta,
   SetCapabilitiesAta,
   setCapabilityTagMappingAta,
 } from './ata.mts'
@@ -47,9 +48,10 @@ import type {
   EnergyCapabilitiesAtw,
   energyCapabilityTagMappingAtw,
   FlowArgsAtw,
+  GetCapabilitiesAtw,
   getCapabilityTagMappingAtw,
+  ListCapabilitiesAtw,
   listCapabilityTagMappingAtw,
-  OpCapabilitiesAtw,
   SetCapabilitiesAtw,
   setCapabilityTagMappingAtw,
 } from './atw.mts'
@@ -63,9 +65,10 @@ import type {
   EnergyCapabilitiesErv,
   energyCapabilityTagMappingErv,
   FlowArgsErv,
+  GetCapabilitiesErv,
   getCapabilityTagMappingErv,
+  ListCapabilitiesErv,
   listCapabilityTagMappingErv,
-  OpCapabilitiesErv,
   SetCapabilitiesErv,
   setCapabilityTagMappingErv,
 } from './erv.mts'
@@ -323,6 +326,16 @@ export interface ZoneData {
   zoneType: Exclude<keyof typeof zoneModel, 'devices'>
 }
 
+type GetCapabilities<T extends DeviceType> =
+  T extends DeviceType.Ata ? GetCapabilitiesAta
+  : T extends DeviceType.Atw ? GetCapabilitiesAtw
+  : GetCapabilitiesErv
+
+type ListCapabilities<T extends DeviceType> =
+  T extends DeviceType.Ata ? ListCapabilitiesAta
+  : T extends DeviceType.Atw ? ListCapabilitiesAtw
+  : ListCapabilitiesErv
+
 export type AreaZone = IModel
 
 export type Capabilities<T extends DeviceType> =
@@ -398,10 +411,9 @@ export type MELCloudDriver<T extends DeviceType> =
   : T extends DeviceType.Atw ? MELCloudDriverAtw
   : MELCloudDriverErv
 
-export type OpCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? OpCapabilitiesAta
-  : T extends DeviceType.Atw ? OpCapabilitiesAtw
-  : OpCapabilitiesErv
+export type OpCapabilities<T extends DeviceType> = GetCapabilities<T> &
+  ListCapabilities<T> &
+  SetCapabilities<T>
 
 export type OpCapabilityTagEntry<T extends DeviceType> = [
   capability: Extract<keyof OpCapabilities<T>, string>,

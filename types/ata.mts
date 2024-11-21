@@ -16,6 +16,7 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
+import type { OpCapabilities } from './common.mts'
 
 export enum ThermostatModeAta {
   auto = 'auto',
@@ -28,7 +29,7 @@ export enum ThermostatModeAta {
 
 export interface CapabilitiesAta
   extends EnergyCapabilitiesAta,
-    OpCapabilitiesAta {}
+    OpCapabilities<DeviceType.Ata> {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number
@@ -67,11 +68,6 @@ export interface ListCapabilitiesAta extends BaseListCapabilities {
 
   readonly vertical: keyof typeof Vertical
 }
-
-export interface OpCapabilitiesAta
-  extends GetCapabilitiesAta,
-    ListCapabilitiesAta,
-    SetCapabilitiesAta {}
 
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_speed: FanSpeed
