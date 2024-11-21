@@ -425,9 +425,10 @@ const buildAtaValuesBody = (): GroupAtaState =>
     )
       .filter(
         ({ id, value }) =>
-          value !== '' &&
           isKeyofGroupAtaState(id) &&
-          zoneMapping[zoneElement.value]?.[id]?.toString(),
+          !['', zoneMapping[zoneElement.value]?.[id]?.toString()].includes(
+            value,
+          ),
       )
       .map((element) => [element.id, processValue(element)]),
   )
