@@ -21,14 +21,14 @@ import type { DateObjectUnits, DurationLike } from 'luxon'
 
 import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
 import type MELCloudDriverAta from '../drivers/melcloud/driver.mts'
+import type { EnergyReportRegularAta } from '../drivers/melcloud/reports/regular.mts'
+import type { EnergyReportTotalAta } from '../drivers/melcloud/reports/total.mts'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mts'
 import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mts'
+import type { EnergyReportRegularAtw } from '../drivers/melcloud_atw/reports/regular.mts'
+import type { EnergyReportTotalAtw } from '../drivers/melcloud_atw/reports/total.mts'
 import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
 import type MELCloudDriverErv from '../drivers/melcloud_erv/driver.mts'
-import type { EnergyReportRegularAta } from '../reports/melcloud/regular.mts'
-import type { EnergyReportTotalAta } from '../reports/melcloud/total.mts'
-import type { EnergyReportRegularAtw } from '../reports/melcloud_atw/regular.mts'
-import type { EnergyReportTotalAtw } from '../reports/melcloud_atw/total.mts'
 
 import type {
   CapabilitiesAta,

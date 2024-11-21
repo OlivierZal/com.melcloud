@@ -1,6 +1,6 @@
 import { BaseEnergyReportAta } from './base.mts'
 
-import type { EnergyReportMode } from '../../types/index.mts'
+import type { EnergyReportMode } from '../../../types/index.mts'
 
 export class EnergyReportRegularAta extends BaseEnergyReportAta {
   protected duration = { hours: 1 }

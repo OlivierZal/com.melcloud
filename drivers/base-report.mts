@@ -6,7 +6,6 @@ import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
 
-import type { BaseMELCloudDevice } from '../drivers/base-device.mts'
 import type {
   Capabilities,
   EnergyCapabilities,
@@ -15,6 +14,8 @@ import type {
   EnergyReportMode,
   MELCloudDriver,
 } from '../types/index.mts'
+
+import type { BaseMELCloudDevice } from './base-device.mts'
 
 const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
