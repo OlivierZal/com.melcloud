@@ -89,12 +89,9 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
       capability
     ] as (keyof EnergyData<T>)[]
     return (
-      producedTags.reduce(
-        (acc, tag) => acc + (data[tag] as number),
-        INITIAL_SUM,
-      ) /
+      producedTags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /
       (consumedTags.reduce(
-        (acc, tag) => acc + (data[tag] as number),
+        (acc, tag) => acc + Number(data[tag]),
         INITIAL_SUM,
       ) || DEFAULT_DIVISOR)
     )
@@ -105,7 +102,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     tags: (keyof EnergyData<T>)[],
   ): number {
     return (
-      tags.reduce((acc, tag) => acc + (data[tag] as number), INITIAL_SUM) /
+      tags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /
       this.#linkedDeviceCount
     )
   }
