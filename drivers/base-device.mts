@@ -114,9 +114,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
-    return this.cleanMapping(
-      this.driver.listCapabilityTagMapping as ListCapabilityTagMapping<T>,
-    )
+    return this.cleanMapping(this.driver.listCapabilityTagMapping)
   }
 
   get #opCapabilityTagEntries(): OpCapabilityTagEntry<T>[] {
@@ -387,10 +385,10 @@ export abstract class BaseMELCloudDevice<
         await this.removeCapability(capability)
       }, Promise.resolve())
     this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping as SetCapabilityTagMapping<T>,
+      this.driver.setCapabilityTagMapping,
     )
     this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping as GetCapabilityTagMapping<T>,
+      this.driver.getCapabilityTagMapping,
     )
   }
 

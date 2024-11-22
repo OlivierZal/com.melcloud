@@ -6,6 +6,7 @@ import {
   type DeviceType,
   type EnergyData,
   type FanSpeed,
+  type GetDeviceData,
   type Horizontal,
   type IModel,
   type ListDeviceData,
@@ -32,11 +33,8 @@ import type {
   EnergyCapabilitiesAta,
   FlowArgsAta,
   GetCapabilitiesAta,
-  getCapabilityTagMappingAta,
   ListCapabilitiesAta,
-  listCapabilityTagMappingAta,
   SetCapabilitiesAta,
-  setCapabilityTagMappingAta,
 } from './ata.mts'
 import type {
   CapabilitiesAtw,
@@ -44,11 +42,8 @@ import type {
   EnergyCapabilitiesAtw,
   FlowArgsAtw,
   GetCapabilitiesAtw,
-  getCapabilityTagMappingAtw,
   ListCapabilitiesAtw,
-  listCapabilityTagMappingAtw,
   SetCapabilitiesAtw,
-  setCapabilityTagMappingAtw,
 } from './atw.mts'
 import type {
   CapabilitiesOptionsValues,
@@ -60,11 +55,8 @@ import type {
   EnergyCapabilitiesErv,
   FlowArgsErv,
   GetCapabilitiesErv,
-  getCapabilityTagMappingErv,
   ListCapabilitiesErv,
-  listCapabilityTagMappingErv,
   SetCapabilitiesErv,
-  setCapabilityTagMappingErv,
 } from './erv.mts'
 
 export const K_MULTIPLIER = 1000
@@ -386,15 +378,15 @@ export type FlowArgs<T extends DeviceType> =
   : T extends DeviceType.Atw ? FlowArgsAtw
   : FlowArgsErv
 
-export type GetCapabilityTagMapping<T extends DeviceType> =
-  T extends DeviceType.Ata ? typeof getCapabilityTagMappingAta
-  : T extends DeviceType.Atw ? typeof getCapabilityTagMappingAtw
-  : typeof getCapabilityTagMappingErv
+export type GetCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof GetCapabilities<T>,
+  keyof GetDeviceData<T>
+>
 
-export type ListCapabilityTagMapping<T extends DeviceType> =
-  T extends DeviceType.Ata ? typeof listCapabilityTagMappingAta
-  : T extends DeviceType.Atw ? typeof listCapabilityTagMappingAtw
-  : typeof listCapabilityTagMappingErv
+export type ListCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof ListCapabilities<T>,
+  keyof ListDeviceData<T>
+>
 
 export type MELCloudDevice =
   | MELCloudDeviceAta
@@ -417,10 +409,10 @@ export type SetCapabilities<T extends DeviceType> =
   : T extends DeviceType.Atw ? SetCapabilitiesAtw
   : SetCapabilitiesErv
 
-export type SetCapabilityTagMapping<T extends DeviceType> =
-  T extends DeviceType.Ata ? typeof setCapabilityTagMappingAta
-  : T extends DeviceType.Atw ? typeof setCapabilityTagMappingAtw
-  : typeof setCapabilityTagMappingErv
+export type SetCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof SetCapabilities<T>,
+  keyof UpdateDeviceData<T>
+>
 
 export type ValueOf<T> = T[keyof T]
 
