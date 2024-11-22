@@ -352,7 +352,7 @@ export type EnergyCapabilities<T extends DeviceType> =
   : EnergyCapabilitiesErv
 
 export type EnergyCapabilityTagEntry<T extends DeviceType> = [
-  capability: Extract<keyof EnergyCapabilities<T>, string>,
+  capability: string & keyof EnergyCapabilities<T>,
   tags: (keyof EnergyData<T>)[],
 ]
 
@@ -398,7 +398,7 @@ export type OpCapabilities<T extends DeviceType> = GetCapabilities<T> &
   SetCapabilities<T>
 
 export type OpCapabilityTagEntry<T extends DeviceType> = [
-  capability: Extract<keyof OpCapabilities<T>, string>,
+  capability: string & keyof OpCapabilities<T>,
   tag: OpDeviceData<T>,
 ]
 

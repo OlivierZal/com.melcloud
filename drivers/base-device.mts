@@ -235,7 +235,7 @@ export abstract class BaseMELCloudDevice<
               capability,
               data[tag],
               data,
-            ) as Capabilities<T>[Extract<keyof OpCapabilities<T>, string>],
+            ) as Capabilities<T>[string & keyof OpCapabilities<T>],
           )
         }
       }),

@@ -26,7 +26,7 @@ import type {
 } from '../types/index.mts'
 
 const getArg = <T extends DeviceType>(
-  capability: Extract<keyof OpCapabilities<T>, string>,
+  capability: string & keyof OpCapabilities<T>,
 ): keyof FlowArgs<T> => {
   const [arg] = capability.split('.')
   return arg as keyof FlowArgs<T>
@@ -110,7 +110,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   }
 
   #registerActionRunListener(
-    capability: Extract<keyof SetCapabilities<T>, string>,
+    capability: string & keyof SetCapabilities<T>,
   ): void {
     try {
       this.homey.flow
@@ -125,7 +125,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   }
 
   #registerConditionRunListener(
-    capability: Extract<keyof OpCapabilities<T>, string>,
+    capability: string & keyof OpCapabilities<T>,
   ): void {
     try {
       this.homey.flow
@@ -133,12 +133,12 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
         .registerRunListener((args: FlowArgs<T>) => {
           const value = (
             args.device.getCapabilityValue as (
-              capability: string & keyof Capabilities<T>,
-            ) => Capabilities<T>[string & keyof Capabilities<T>]
+              capability: keyof Capabilities<T>,
+            ) => Capabilities<T>[keyof Capabilities<T>]
           )(capability)
-          return typeof value === 'boolean' ? value : (
-              (value as number | string) === args[getArg(capability)]
-            )
+          return typeof value === 'string' || typeof value === 'number' ?
+              value === args[getArg(capability)]
+            : value
         })
     } catch {}
   }
@@ -150,11 +150,11 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
       ...this.listCapabilityTagMapping,
     }).forEach((capability) => {
       this.#registerConditionRunListener(
-        capability as Extract<keyof OpCapabilities<T>, string>,
+        capability as string & keyof OpCapabilities<T>,
       )
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
-          capability as Extract<keyof SetCapabilities<T>, string>,
+          capability as string & keyof SetCapabilities<T>,
         )
       }
     })
