@@ -248,12 +248,6 @@ export interface HomeySettings {
   readonly username?: string | null
 }
 
-export interface HomeySettingsUI {
-  readonly contextKey?: string
-  readonly password?: string
-  readonly username?: string
-}
-
 export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
 }

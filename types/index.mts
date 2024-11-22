@@ -43,7 +43,6 @@ export {
   type GetCapabilityTagMapping,
   type GroupAtaStates,
   type HomeySettings,
-  type HomeySettingsUI,
   type ListCapabilityTagMapping,
   type LoginDriverSetting,
   type LoginSetting,

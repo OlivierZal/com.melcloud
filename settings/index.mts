@@ -16,7 +16,7 @@ import type {
   DeviceSetting,
   DeviceSettings,
   DriverSetting,
-  HomeySettingsUI,
+  HomeySettings,
   LoginDriverSetting,
   Settings,
   ValueOf,
@@ -135,7 +135,7 @@ const frostProtectionEnabledElement = getSelectElement(
 )
 const holidayModeEnabledElement = getSelectElement('enabled_holiday_mode')
 
-let homeySettings: HomeySettingsUI = {}
+let homeySettings: HomeySettings = {}
 let deviceSettings: Partial<DeviceSettings> = {}
 let flatDeviceSettings: Partial<DeviceSetting> = {}
 
@@ -226,7 +226,7 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> =>
 
 const fetchHomeySettings = async (homey: Homey): Promise<void> =>
   new Promise((resolve) => {
-    homey.get(async (error: Error | null, settings: HomeySettingsUI) => {
+    homey.get(async (error: Error | null, settings: HomeySettings) => {
       if (error) {
         await homey.alert(error.message)
       } else {
@@ -355,7 +355,7 @@ const createInputElement = ({
   max?: number
   min?: number
   placeholder?: string
-  value?: string
+  value?: string | null
 }): HTMLInputElement => {
   const inputElement = document.createElement('input')
   inputElement.classList.add('homey-form-input')
