@@ -240,9 +240,16 @@ export interface GroupAtaStates {
   readonly VaneVerticalSwing: boolean[]
 }
 
+export interface HomeySettings {
+  readonly contextKey?: string | null
+  readonly expiry?: string | null
+  readonly notifiedVersion?: string | null
+  readonly password?: string | null
+  readonly username?: string | null
+}
+
 export interface HomeySettingsUI {
   readonly contextKey?: string
-  readonly expiry?: string
   readonly password?: string
   readonly username?: string
 }

@@ -135,13 +135,7 @@ const frostProtectionEnabledElement = getSelectElement(
 )
 const holidayModeEnabledElement = getSelectElement('enabled_holiday_mode')
 
-let homeySettings: HomeySettingsUI = {
-  contextKey: '',
-  expiry: '',
-  password: '',
-  username: '',
-}
-
+let homeySettings: HomeySettingsUI = {}
 let deviceSettings: Partial<DeviceSettings> = {}
 let flatDeviceSettings: Partial<DeviceSetting> = {}
 
