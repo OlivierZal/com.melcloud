@@ -44,9 +44,39 @@ export abstract class BaseMELCloudDevice<
 > extends withTimers(Homey.Device) {
   public declare readonly driver: BaseMELCloudDriver<T>
 
+  public declare readonly getCapabilityOptions: <
+    K extends string & keyof CapabilitiesOptions<T>,
+  >(
+    capability: K,
+  ) => CapabilitiesOptions<T>[K]
+
+  public declare readonly getCapabilityValue: <
+    K extends string & keyof Capabilities<T>,
+  >(
+    capability: K,
+  ) => Capabilities<T>[K]
+
+  public declare readonly getData: () => DeviceDetails<T>['data']
+
+  public declare readonly getSetting: <K extends keyof Settings>(
+    setting: K,
+  ) => NonNullable<Settings[K]>
+
   public declare readonly homey: Homey.Homey
 
-  public readonly id = (this.getData() as DeviceDetails<T>['data']).id
+  public declare readonly setCapabilityOptions: <
+    K extends string & keyof CapabilitiesOptions<T>,
+  >(
+    capability: K,
+    options: CapabilitiesOptions<T>[K] & Record<string, unknown>,
+  ) => Promise<void>
+
+  public declare readonly setCapabilityValue: <
+    K extends string & keyof Capabilities<T>,
+  >(
+    capability: K,
+    value: Capabilities<T>[K],
+  ) => Promise<void>
 
   readonly #reports: {
     regular?: EnergyReportRegular<T>
@@ -74,6 +104,10 @@ export abstract class BaseMELCloudDevice<
   protected abstract EnergyReportTotal?: new (
     device: BaseMELCloudDevice<T>,
   ) => EnergyReportTotal<T>
+
+  public get id(): number {
+    return this.getData().id
+  }
 
   get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
     return this.cleanMapping(
@@ -141,44 +175,10 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public override getCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions<T>,
-  >(capability: K): CapabilitiesOptions<T>[K] {
-    return super.getCapabilityOptions(capability) as CapabilitiesOptions<T>[K]
-  }
-
-  public override getCapabilityValue<K extends string & keyof Capabilities<T>>(
-    capability: K,
-  ): Capabilities<T>[K] {
-    return super.getCapabilityValue(capability) as Capabilities<T>[K]
-  }
-
-  public override getSetting<K extends Extract<keyof Settings, string>>(
-    setting: K,
-  ): NonNullable<Settings[K]> {
-    return super.getSetting(setting) as NonNullable<Settings[K]>
-  }
-
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
     }
-  }
-
-  public override async setCapabilityOptions<
-    K extends string & keyof CapabilitiesOptions<T>,
-  >(
-    capability: K,
-    options: CapabilitiesOptions<T>[K] & Record<string, unknown>,
-  ): Promise<void> {
-    await super.setCapabilityOptions(capability, options)
-  }
-
-  public override async setCapabilityValue<
-    K extends string & keyof Capabilities<T>,
-  >(capability: K, value: Capabilities<T>[K]): Promise<void> {
-    await super.setCapabilityValue(capability, value)
-    this.log('Capability', capability, 'is', value)
   }
 
   public override async setWarning(error: unknown): Promise<void> {

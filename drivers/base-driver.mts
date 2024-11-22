@@ -36,6 +36,8 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   // eslint-disable-next-line import/no-named-as-default-member
   extends Homey.Driver
 {
+  public declare readonly getDevices: () => MELCloudDevice[]
+
   public declare readonly homey: Homey.Homey
 
   public declare readonly manifest: ManifestDriver
@@ -84,10 +86,6 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   public override async onRepair(session: PairSession): Promise<void> {
     this.#handleLogin(session)
     return Promise.resolve()
-  }
-
-  public override getDevices(): MELCloudDevice[] {
-    return super.getDevices() as MELCloudDevice[]
   }
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
@@ -164,20 +162,16 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
 
   #setProducedAndConsumedTagMappings(): void {
     Object.entries(this.energyCapabilityTagMapping).forEach(
-      ([capability, tags]: [
-        string,
-        Extract<keyof EnergyData<T>, string>[],
-      ]) => {
-        ;(this.producedTagMapping[
-          capability as keyof EnergyCapabilityTagMapping<T>
-        ] as (keyof EnergyData<T>)[]) = tags.filter(
-          (tag) => !tag.endsWith('Consumed'),
+      ([capability, tags]: [string, (string & keyof EnergyData<T>)[]]) => {
+        const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
+          tag.endsWith('Consumed') ? 'consumed' : 'produced',
         )
         ;(this.consumedTagMapping[
           capability as keyof EnergyCapabilityTagMapping<T>
-        ] as (keyof EnergyData<T>)[]) = tags.filter((tag) =>
-          tag.endsWith('Consumed'),
-        )
+        ] as (keyof EnergyData<T>)[]) = consumed
+        ;(this.producedTagMapping[
+          capability as keyof EnergyCapabilityTagMapping<T>
+        ] as (keyof EnergyData<T>)[]) = produced
       },
     )
   }
