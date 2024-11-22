@@ -1,7 +1,6 @@
 import {
   DeviceModel,
   type DeviceType,
-  type EnergyData,
   type ListDeviceData,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
@@ -166,12 +165,12 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
         const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
           (tag as string).endsWith('Consumed') ? 'consumed' : 'produced',
         )
-        ;(this.consumedTagMapping[
+        this.consumedTagMapping[
           capability as keyof EnergyCapabilityTagMapping<T>
-        ] as (keyof EnergyData<T>)[]) = consumed
-        ;(this.producedTagMapping[
+        ] = consumed
+        this.producedTagMapping[
           capability as keyof EnergyCapabilityTagMapping<T>
-        ] as (keyof EnergyData<T>)[]) = produced
+        ] = produced
       },
     )
   }
