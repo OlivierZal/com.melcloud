@@ -50,7 +50,6 @@ export {
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
   type MELCloudDevice,
-  type MELCloudDriver,
   type OpCapabilities,
   type OpCapabilityTagEntry,
   type OpDeviceData,

@@ -12,10 +12,10 @@ import type {
   EnergyCapabilityTagEntry,
   EnergyCapabilityTagMapping,
   EnergyReportMode,
-  MELCloudDriver,
 } from '../types/index.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
+import type { BaseMELCloudDriver } from './base-driver.mts'
 
 const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
@@ -24,9 +24,9 @@ const DEFAULT_DIVISOR = 1
 export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
 
-  readonly #driver: MELCloudDriver<T>
+  readonly #driver: BaseMELCloudDriver<T>
 
-  readonly #homey: Homey
+  readonly #homey: Homey.Homey
 
   #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
@@ -84,10 +84,10 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
     const producedTags = this.#driver.producedTagMapping[
-      capability
+      capability as keyof EnergyCapabilityTagMapping<T>
     ] as (keyof EnergyData<T>)[]
     const consumedTags = this.#driver.consumedTagMapping[
-      capability
+      capability as keyof EnergyCapabilityTagMapping<T>
     ] as (keyof EnergyData<T>)[]
     return (
       producedTags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /

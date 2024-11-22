@@ -4,14 +4,14 @@ import {
   type ListDeviceData,
   type UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
+// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+import Homey from 'homey'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
-import { Homey } from '../homey.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
-import { withTimers } from '../with-timers.mts'
+import { withTimers } from '../mixins/with-timers.mts'
 
-import type MELCloudApp from '../app.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -24,13 +24,14 @@ import type {
   EnergyReportTotal,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  MELCloudDriver,
   OpCapabilities,
   OpCapabilityTagEntry,
   SetCapabilities,
   SetCapabilityTagMapping,
   Settings,
 } from '../types/index.mts'
+
+import type { BaseMELCloudDriver } from './base-driver.mts'
 
 const DEBOUNCE_DELAY = 1000
 
@@ -39,12 +40,13 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
+  // eslint-disable-next-line import/no-named-as-default-member
 > extends withTimers(Homey.Device) {
-  public declare readonly driver: MELCloudDriver<T>
+  public declare readonly driver: BaseMELCloudDriver<T>
+
+  public declare readonly homey: Homey.Homey
 
   public readonly id = (this.getData() as DeviceDetails<T>['data']).id
-
-  readonly #app = this.homey.app as MELCloudApp
 
   readonly #reports: {
     regular?: EnergyReportRegular<T>
@@ -204,7 +206,7 @@ export abstract class BaseMELCloudDevice<
   public async fetchDevice(): Promise<IDeviceFacade<T> | undefined> {
     try {
       if (!this.#device) {
-        this.#device = this.#app.getFacade('devices', this.id)
+        this.#device = this.homey.app.getFacade('devices', this.id)
         await this.#init(this.#device.data)
       }
       return this.#device
@@ -316,7 +318,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   #isCapability(setting: string): boolean {
-    return (this.driver.capabilities ?? []).includes(setting)
+    return (this.driver.manifest.capabilities ?? []).includes(setting)
   }
 
   #isEnergyCapability(setting: string): boolean {
@@ -394,23 +396,18 @@ export abstract class BaseMELCloudDevice<
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
     await Promise.all(
-      Object.entries(
-        (
-          this.driver.getCapabilitiesOptions as unknown as (
-            data: ListDeviceData<T>,
-          ) => Partial<CapabilitiesOptions<T>>
-        )(data),
-      ).map(async (capabilityOptions) =>
-        this.setCapabilityOptions(
-          ...(capabilityOptions as [
-            string & keyof CapabilitiesOptions<T>,
-            CapabilitiesOptions<T>[Extract<
-              keyof CapabilitiesOptions<T>,
-              string
-            >] &
-              Record<string, unknown>,
-          ]),
-        ),
+      Object.entries(this.driver.getCapabilitiesOptions(data)).map(
+        async (capabilityOptions) =>
+          this.setCapabilityOptions(
+            ...(capabilityOptions as [
+              string & keyof CapabilitiesOptions<T>,
+              CapabilitiesOptions<T>[Extract<
+                keyof CapabilitiesOptions<T>,
+                string
+              >] &
+                Record<string, unknown>,
+            ]),
+          ),
       ),
     )
   }

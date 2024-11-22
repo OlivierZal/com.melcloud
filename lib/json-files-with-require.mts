@@ -10,7 +10,10 @@ const load = (path: string): object =>
 const loadCapability = (path: string): ManifestDriverCapabilitiesOptions =>
   load(path) as ManifestDriverCapabilitiesOptions
 
-export const changelog = load('../.homeychangelog.json')
+export const changelog = load('../.homeychangelog.json') as Record<
+  string,
+  object
+>
 export const horizontal = loadCapability(
   `${LOCAL_CAPABILITIES_PATH}/horizontal.json`,
 )

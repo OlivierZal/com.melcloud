@@ -9,7 +9,7 @@ export const {
   thermostatMode,
   vertical,
 } = await (async (): Promise<{
-  changelog: object
+  changelog: Record<string, object>
   fanSpeed: ManifestDriverCapabilitiesOptions
   horizontal: ManifestDriverCapabilitiesOptions
   power: ManifestDriverCapabilitiesOptions

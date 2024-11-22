@@ -5,12 +5,11 @@ import {
   type ListDeviceData,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
-
-import { Homey } from '../homey.mts'
+// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+import Homey from 'homey'
 
 import type PairSession from 'homey/lib/PairSession'
 
-import type MELCloudApp from '../app.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -20,6 +19,7 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   ManifestDriver,
+  MELCloudDevice,
   OpCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
@@ -32,10 +32,13 @@ const getArg = <T extends DeviceType>(
   return arg as keyof FlowArgs<T>
 }
 
-export abstract class BaseMELCloudDriver<
-  T extends DeviceType,
-> extends Homey.Driver {
-  public readonly capabilities = (this.manifest as ManifestDriver).capabilities
+export abstract class BaseMELCloudDriver<T extends DeviceType>
+  // eslint-disable-next-line import/no-named-as-default-member
+  extends Homey.Driver
+{
+  public declare readonly homey: Homey.Homey
+
+  public declare readonly manifest: ManifestDriver
 
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
@@ -83,6 +86,10 @@ export abstract class BaseMELCloudDriver<
     return Promise.resolve()
   }
 
+  public override getDevices(): MELCloudDevice[] {
+    return super.getDevices() as MELCloudDevice[]
+  }
+
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     return Promise.resolve(
       DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
@@ -101,7 +108,7 @@ export abstract class BaseMELCloudDriver<
   }
 
   async #login(data?: LoginCredentials): Promise<boolean> {
-    return (this.homey.app as MELCloudApp).api.authenticate(data)
+    return this.homey.app.api.authenticate(data)
   }
 
   #registerActionRunListener(

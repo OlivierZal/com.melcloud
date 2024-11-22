@@ -20,15 +20,12 @@ import {
 import type { DateObjectUnits, DurationLike } from 'luxon'
 
 import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
-import type MELCloudDriverAta from '../drivers/melcloud/driver.mts'
 import type { EnergyReportRegularAta } from '../drivers/melcloud/reports/regular.mts'
 import type { EnergyReportTotalAta } from '../drivers/melcloud/reports/total.mts'
 import type MELCloudDeviceAtw from '../drivers/melcloud_atw/device.mts'
-import type MELCloudDriverAtw from '../drivers/melcloud_atw/driver.mts'
 import type { EnergyReportRegularAtw } from '../drivers/melcloud_atw/reports/regular.mts'
 import type { EnergyReportTotalAtw } from '../drivers/melcloud_atw/reports/total.mts'
 import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
-import type MELCloudDriverErv from '../drivers/melcloud_erv/driver.mts'
 
 import type {
   CapabilitiesAta,
@@ -405,11 +402,6 @@ export type MELCloudDevice =
   | MELCloudDeviceAta
   | MELCloudDeviceAtw
   | MELCloudDeviceErv
-
-export type MELCloudDriver<T extends DeviceType> =
-  T extends DeviceType.Ata ? MELCloudDriverAta
-  : T extends DeviceType.Atw ? MELCloudDriverAtw
-  : MELCloudDriverErv
 
 export type OpCapabilities<T extends DeviceType> = GetCapabilities<T> &
   ListCapabilities<T> &

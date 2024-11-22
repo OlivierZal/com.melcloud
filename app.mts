@@ -24,9 +24,10 @@ import {
   type ListDeviceDataAta,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
+// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+import Homey from 'homey'
 import { Settings as LuxonSettings } from 'luxon'
 
-import { Homey } from './homey.mts'
 import {
   changelog,
   fanSpeed,
@@ -61,6 +62,11 @@ const drivers: Record<DeviceType, string> = {
   [DeviceType.Atw]: 'melcloud_atw',
   [DeviceType.Erv]: 'melcloud_erv',
 } as const
+
+const hasChangelogLanguage = (
+  versionChangelog: object,
+  language: string,
+): language is keyof typeof versionChangelog => language in versionChangelog
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -143,8 +149,9 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
+// eslint-disable-next-line import/no-named-as-default-member
 export default class MELCloudApp extends Homey.App {
-  readonly #language = this.homey.i18n.getLanguage()
+  public declare readonly homey: Homey.Homey
 
   #api!: MELCloudAPI
 
@@ -155,11 +162,12 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public override async onInit(): Promise<void> {
+    const language = this.homey.i18n.getLanguage()
     const timezone = this.homey.clock.getTimezone()
+    LuxonSettings.defaultLocale = language
     LuxonSettings.defaultZone = timezone
-    LuxonSettings.defaultLocale = this.#language
     this.#api = await MELCloudAPI.create({
-      language: this.#language,
+      language,
       logger: {
         error: (...args) => {
           this.error(...args)
@@ -213,7 +221,11 @@ export default class MELCloudApp extends Homey.App {
       },
     ].map(({ enumType, key, options }) => [
       key,
-      getLocalizedCapabilitiesOptions(options, this.#language, enumType),
+      getLocalizedCapabilitiesOptions(
+        options,
+        this.homey.i18n.getLanguage(),
+        enumType,
+      ),
     ]) as [
       keyof GroupAtaState & keyof ListDeviceDataAta,
       DriverCapabilitiesOptions,
@@ -267,10 +279,11 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
+    const language = this.homey.i18n.getLanguage()
     return Object.groupBy(
       (this.homey.manifest as Manifest).drivers.flatMap((driver) => [
-        ...getDriverSettings(driver, this.#language),
-        ...getDriverLoginSetting(driver, this.#language),
+        ...getDriverSettings(driver, language),
+        ...getDriverLoginSetting(driver, language),
       ]),
       ({ driverId, groupId }) => groupId ?? driverId,
     )
@@ -378,26 +391,26 @@ export default class MELCloudApp extends Homey.App {
   }
 
   #createNotification(): void {
-    const { version } = this.homey.manifest as Manifest
-    if (
-      this.homey.settings.get('notifiedVersion') !== version &&
-      version in changelog
-    ) {
-      const { [version as keyof typeof changelog]: versionChangelog } =
-        changelog
-      this.homey.setTimeout(async () => {
-        try {
-          await this.homey.notifications.createNotification({
-            excerpt:
-              versionChangelog[
-                this.#language in versionChangelog ?
-                  (this.#language as keyof typeof versionChangelog)
-                : 'en'
-              ],
-          })
-          this.homey.settings.set('notifiedVersion', version)
-        } catch {}
-      }, NOTIFICATION_DELAY)
+    const {
+      homey: {
+        manifest: { version },
+      },
+    } = this
+    if (this.homey.settings.get('notifiedVersion') !== version) {
+      const { [version]: versionChangelog } = changelog
+      const language = this.homey.i18n.getLanguage()
+      if (language in versionChangelog) {
+        this.homey.setTimeout(async () => {
+          try {
+            if (hasChangelogLanguage(versionChangelog, language)) {
+              await this.homey.notifications.createNotification({
+                excerpt: versionChangelog[language],
+              })
+              this.homey.settings.set('notifiedVersion', version)
+            }
+          } catch {}
+        }, NOTIFICATION_DELAY)
+      }
     }
   }
 
@@ -412,7 +425,7 @@ export default class MELCloudApp extends Homey.App {
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
       : [this.homey.drivers.getDriver(driverId)]).flatMap((driver) => {
-      const devices = driver.getDevices() as MELCloudDevice[]
+      const devices = driver.getDevices()
       return ids === undefined ? devices : (
           devices.filter(({ id }) => ids.includes(id))
         )
