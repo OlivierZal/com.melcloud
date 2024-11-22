@@ -144,14 +144,14 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   }
 
   #registerRunListeners(): void {
-    Object.keys({
-      ...this.setCapabilityTagMapping,
-      ...this.getCapabilityTagMapping,
-      ...this.listCapabilityTagMapping,
-    }).forEach((capability) => {
-      this.#registerConditionRunListener(
-        capability as string & keyof OpCapabilities<T>,
-      )
+    ;(
+      Object.keys({
+        ...this.setCapabilityTagMapping,
+        ...this.getCapabilityTagMapping,
+        ...this.listCapabilityTagMapping,
+      }) as (string & keyof OpCapabilities<T>)[]
+    ).forEach((capability) => {
+      this.#registerConditionRunListener(capability)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
           capability as string & keyof SetCapabilities<T>,
