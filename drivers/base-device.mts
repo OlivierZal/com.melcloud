@@ -62,6 +62,8 @@ export abstract class BaseMELCloudDevice<
     setting: K,
   ) => NonNullable<Settings[K]>
 
+  public declare readonly getSettings: () => Settings
+
   public declare readonly homey: Homey.Homey
 
   public declare readonly setCapabilityOptions: <
@@ -77,6 +79,8 @@ export abstract class BaseMELCloudDevice<
     capability: K,
     value: Capabilities<T>[K],
   ) => Promise<void>
+
+  public declare readonly setSettings: (settings: Settings) => Promise<void>
 
   readonly #reports: {
     regular?: EnergyReportRegular<T>
@@ -362,13 +366,9 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
-    const settings = this.getSettings() as Settings
+    const settings = this.getSettings()
     const capabilities = [
-      ...(
-        this.driver.getRequiredCapabilities as (
-          data: ListDeviceData<T>,
-        ) => string[]
-      )(data),
+      ...this.driver.getRequiredCapabilities(data),
       ...Object.keys(settings).filter(
         (setting) =>
           this.#isCapability(setting) &&

@@ -264,9 +264,7 @@ export default class MELCloudApp extends Homey.App {
         driver: { id: driverId },
       } = device
       acc[driverId] ??= {}
-      for (const [id, value] of Object.entries(
-        device.getSettings() as Settings,
-      )) {
+      for (const [id, value] of Object.entries(device.getSettings())) {
         if (!(id in acc[driverId])) {
           acc[driverId][id] = value
         } else if (acc[driverId][id] !== value) {
@@ -363,7 +361,7 @@ export default class MELCloudApp extends Homey.App {
           )
           await device.onSettings({
             changedKeys,
-            newSettings: device.getSettings() as Settings,
+            newSettings: device.getSettings(),
           })
         }
       }),
