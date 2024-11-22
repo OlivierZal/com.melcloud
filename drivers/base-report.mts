@@ -10,7 +10,6 @@ import type {
   Capabilities,
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
-  EnergyCapabilityTagMapping,
   EnergyReportMode,
 } from '../types/index.mts'
 
@@ -24,9 +23,9 @@ const DEFAULT_DIVISOR = 1
 export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
 
-  readonly #driver: BaseMELCloudDriver<T>
-
   readonly #homey: Homey.Homey
+
+  private readonly driver: BaseMELCloudDriver<T>
 
   #linkedDeviceCount = DEFAULT_DEVICE_COUNT
 
@@ -46,16 +45,13 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
 
   public constructor(device: BaseMELCloudDevice<T>) {
     this.#device = device
-    ;({ driver: this.#driver, homey: this.#homey } = this.#device)
+    ;({ driver: this.driver, homey: this.#homey } = this.#device)
   }
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
     return (
       Object.entries(
-        this.#device.cleanMapping(
-          this.#driver
-            .energyCapabilityTagMapping as EnergyCapabilityTagMapping<T>,
-        ),
+        this.#device.cleanMapping(this.driver.energyCapabilityTagMapping),
       ) as EnergyCapabilityTagEntry<T>[]
     ).filter(
       ([capability]) =>
@@ -83,18 +79,22 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     data: EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
-    const producedTags = this.#driver.producedTagMapping[
-      capability as keyof EnergyCapabilityTagMapping<T>
-    ] as (keyof EnergyData<T>)[]
-    const consumedTags = this.#driver.consumedTagMapping[
-      capability as keyof EnergyCapabilityTagMapping<T>
-    ] as (keyof EnergyData<T>)[]
+    const {
+      driver: {
+        producedTagMapping: { [capability]: producedTags = [] },
+      },
+    } = this
+    const {
+      driver: {
+        consumedTagMapping: { [capability]: consumedTags = [] },
+      },
+    } = this
     return (
       producedTags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /
-      (consumedTags.reduce(
-        (acc, tag) => acc + Number(data[tag]),
-        INITIAL_SUM,
-      ) || DEFAULT_DIVISOR)
+        consumedTags.reduce(
+          (acc, tag) => acc + Number(data[tag]),
+          INITIAL_SUM,
+        ) || DEFAULT_DIVISOR
     )
   }
 
@@ -164,7 +164,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     await Promise.all(
       this.#energyCapabilityTagEntries.map(
         async <
-          K extends Extract<keyof EnergyCapabilities<T>, string>,
+          K extends string & keyof EnergyCapabilities<T>,
           L extends keyof EnergyData<T>,
         >([capability, tags]: [K, L[]]) => {
           if (capability.includes('cop')) {

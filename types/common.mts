@@ -30,7 +30,6 @@ import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
 import type {
   CapabilitiesAta,
   EnergyCapabilitiesAta,
-  energyCapabilityTagMappingAta,
   FlowArgsAta,
   GetCapabilitiesAta,
   getCapabilityTagMappingAta,
@@ -43,7 +42,6 @@ import type {
   CapabilitiesAtw,
   CapabilitiesOptionsAtw,
   EnergyCapabilitiesAtw,
-  energyCapabilityTagMappingAtw,
   FlowArgsAtw,
   GetCapabilitiesAtw,
   getCapabilityTagMappingAtw,
@@ -60,7 +58,6 @@ import type {
 import type {
   CapabilitiesErv,
   EnergyCapabilitiesErv,
-  energyCapabilityTagMappingErv,
   FlowArgsErv,
   GetCapabilitiesErv,
   getCapabilityTagMappingErv,
@@ -367,10 +364,10 @@ export type EnergyCapabilityTagEntry<T extends DeviceType> = [
   tags: (keyof EnergyData<T>)[],
 ]
 
-export type EnergyCapabilityTagMapping<T extends DeviceType> =
-  T extends DeviceType.Ata ? typeof energyCapabilityTagMappingAta
-  : T extends DeviceType.Atw ? typeof energyCapabilityTagMappingAtw
-  : typeof energyCapabilityTagMappingErv
+export type EnergyCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof EnergyCapabilities<T>,
+  readonly (keyof EnergyData<T>)[]
+>
 
 export type EnergyReportMode = 'regular' | 'total'
 
