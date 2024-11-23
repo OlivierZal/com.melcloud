@@ -13,10 +13,7 @@ const cartesianProduct = (arrays) =>
 const modifierCombos = ({ modifiers }) =>
   cartesianProduct(modifiers).map((combo) => combo.filter(Boolean))
 
-const compatibleModifierCombos = ({
-  modifierIncompatibilities,
-  modifiers,
-}) =>
+const compatibleModifierCombos = ({ modifierIncompatibilities, modifiers }) =>
   modifierCombos({ modifiers }).filter((combo) =>
     combo.every((modifier) =>
       (modifierIncompatibilities[modifier] ?? []).every(
