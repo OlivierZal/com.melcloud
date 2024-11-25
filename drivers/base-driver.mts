@@ -22,7 +22,7 @@ import type {
   OpCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
-} from '../types/index.mts'
+} from '../types/common.mts'
 
 const getArg = <T extends DeviceType>(
   capability: string & keyof OpCapabilities<T>,

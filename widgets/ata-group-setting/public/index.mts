@@ -9,7 +9,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../../../types/index.mts'
+} from '../../../types/common.mts'
 
 interface HomeySettings extends Record<string, unknown> {
   animations: boolean

@@ -21,7 +21,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../types/index.mts'
+} from '../types/common.mts'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 

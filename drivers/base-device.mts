@@ -29,7 +29,7 @@ import type {
   SetCapabilities,
   SetCapabilityTagMapping,
   Settings,
-} from '../types/index.mts'
+} from '../types/common.mts'
 
 import type { BaseMELCloudDriver } from './base-driver.mts'
 

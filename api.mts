@@ -19,7 +19,7 @@ import type {
   DriverSetting,
   Settings,
   ZoneData,
-} from './types/index.mts'
+} from './types/common.mts'
 
 const api = {
   getAtaCapabilities({

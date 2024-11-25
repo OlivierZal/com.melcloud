@@ -44,6 +44,7 @@ import {
   type DriverCapabilitiesOptions,
   type DriverSetting,
   type GetAtaOptions,
+  type GroupAtaStates,
   type LoginSetting,
   type Manifest,
   type ManifestDriver,
@@ -51,9 +52,7 @@ import {
   type MELCloudDevice,
   type Settings,
   type ZoneData,
-} from './types/index.mts'
-
-import type { GroupAtaStates } from './types/common.mts'
+} from './types/common.mts'
 
 const NOTIFICATION_DELAY = 10000
 

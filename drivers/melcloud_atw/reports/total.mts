@@ -1,6 +1,6 @@
 import { BaseEnergyReportAtw } from './base.mts'
 
-import type { EnergyReportMode } from '../../../types/index.mts'
+import type { EnergyReportMode } from '../../../types/common.mts'
 
 export class EnergyReportTotalAtw extends BaseEnergyReportAtw {
   protected duration = { days: 1 }

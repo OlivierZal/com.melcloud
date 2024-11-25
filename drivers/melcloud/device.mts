@@ -7,17 +7,18 @@ import {
   type ListDeviceData,
 } from '@olivierzal/melcloud-api'
 
-import {
-  ThermostatModeAta,
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OpCapabilities,
-  type SetCapabilities,
-} from '../../types/index.mts'
+import { ThermostatModeAta } from '../../types/ata.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import { EnergyReportRegularAta } from './reports/regular.mts'
 import { EnergyReportTotalAta } from './reports/total.mts'
+
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OpCapabilities,
+  SetCapabilities,
+} from '../../types/common.mts'
 
 export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata> {
   protected readonly fromDevice: Partial<

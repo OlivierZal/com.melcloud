@@ -6,9 +6,10 @@ import {
   getCapabilityTagMappingAtw,
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
-  type Capabilities,
-} from '../../types/index.mts'
+} from '../../types/atw.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
+
+import type { Capabilities } from '../../types/common.mts'
 
 export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw

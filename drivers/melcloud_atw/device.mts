@@ -12,16 +12,19 @@ import {
   HotWaterMode,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OpCapabilities,
-  type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
-} from '../../types/index.mts'
+} from '../../types/atw.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import { EnergyReportRegularAtw } from './reports/regular.mts'
 import { EnergyReportTotalAtw } from './reports/total.mts'
+
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OpCapabilities,
+  SetCapabilities,
+} from '../../types/common.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>

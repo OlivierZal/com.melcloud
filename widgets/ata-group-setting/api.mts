@@ -9,7 +9,7 @@ import type {
   GetAtaOptions,
   GroupAtaStates,
   ZoneData,
-} from '../../types/index.mts'
+} from '../../types/common.mts'
 
 const api = {
   getAtaCapabilities({

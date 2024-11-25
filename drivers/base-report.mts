@@ -1,4 +1,9 @@
-import { DateTime, type DateObjectUnits, type DurationLike } from 'luxon'
+import {
+  DateTime,
+  type DateObjectUnits,
+  type DurationLike,
+  type HourNumbers,
+} from 'luxon'
 
 import { K_MULTIPLIER } from '../constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
@@ -11,7 +16,7 @@ import type {
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
   EnergyReportMode,
-} from '../types/index.mts'
+} from '../types/common.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
@@ -111,7 +116,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
   #calculatePowerValue(
     data: EnergyData<T>,
     tags: (keyof EnergyData<T>)[],
-    hour: number,
+    hour: HourNumbers,
   ): number {
     return (
       tags.reduce(
@@ -156,7 +161,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     }
   }
 
-  async #set(data: EnergyData<T>, hour: number): Promise<void> {
+  async #set(data: EnergyData<T>, hour: HourNumbers): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))

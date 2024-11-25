@@ -5,7 +5,7 @@ import {
   type IFloorModel,
 } from '@olivierzal/melcloud-api'
 
-import type { AreaZone, BuildingZone, FloorZone } from '../types/index.mts'
+import type { AreaZone, BuildingZone, FloorZone } from '../types/common.mts'
 
 const hasDevices = (zone: { devices: IDeviceModelAny[] }): boolean =>
   Boolean(zone.devices.length)

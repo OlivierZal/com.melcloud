@@ -1,12 +1,12 @@
 import { DeviceType, type ListDeviceData } from '@olivierzal/melcloud-api'
 
+import { getCapabilitiesOptionsAtaErv } from '../../types/common.mts'
 import {
   energyCapabilityTagMappingErv,
-  getCapabilitiesOptionsAtaErv,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
-} from '../../types/index.mts'
+} from '../../types/erv.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
 export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv> {
