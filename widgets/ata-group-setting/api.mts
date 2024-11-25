@@ -1,6 +1,6 @@
 import { getBuildings } from '../../lib/get-buildings.mts'
 
-import type { GroupState } from '@olivierzal/melcloud-api'
+import type { DeviceType, GroupState } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
 
 import type {
@@ -33,8 +33,12 @@ const api = {
         homey.app.getAtaDetailedValues(params, status)
       : homey.app.getAtaValues(params)
   },
-  getBuildings(): BuildingZone[] {
-    return getBuildings()
+  getBuildings({
+    query,
+  }: {
+    query?: { type: `${DeviceType}` }
+  }): BuildingZone[] {
+    return getBuildings(query ? Number(query.type) : undefined)
   },
   async setAtaValues({
     body,

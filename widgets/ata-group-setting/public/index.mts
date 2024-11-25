@@ -1,4 +1,8 @@
-import type { GroupState, OperationMode } from '@olivierzal/melcloud-api'
+import type {
+  DeviceType,
+  GroupState,
+  OperationMode,
+} from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
@@ -843,7 +847,7 @@ const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
     `/values/ata/${getZonePath()}?${new URLSearchParams({
       mode: 'detailed',
       status: 'on',
-    } satisfies Required<GetAtaOptions>).toString()}`,
+    } satisfies Required<GetAtaOptions>)}`,
   )) as GroupAtaStates
 
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
@@ -1042,7 +1046,12 @@ const generateZones = async (
 
 const fetchBuildings = async (homey: Homey): Promise<void> => {
   try {
-    const buildings = (await homey.api('GET', '/buildings')) as BuildingZone[]
+    const buildings = (await homey.api(
+      'GET',
+      `/buildings?${new URLSearchParams({
+        type: '0',
+      } satisfies { type: `${DeviceType}` })}`,
+    )) as BuildingZone[]
     if (buildings.length) {
       generateAtaValues(homey)
       await generateZones(buildings)

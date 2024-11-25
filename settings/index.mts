@@ -583,7 +583,7 @@ const setDeviceSettings = async (
   if (driverId !== undefined) {
     endPoint += `?${new URLSearchParams({ driverId } satisfies {
       driverId: string
-    }).toString()}`
+    })}`
   }
   await withDisablingButtons(
     `settings_${driverId ?? 'common'}`,
@@ -837,7 +837,7 @@ const fetchErrorLog = async (homey: Homey): Promise<void> =>
             limit: '29',
             offset: '0',
             to,
-          } satisfies ErrorLogQuery).toString()}`,
+          } satisfies ErrorLogQuery)}`,
           async (error: Error | null, data: ErrorLog) => {
             if (error) {
               await homey.alert(error.message)

@@ -30,18 +30,18 @@
     "@stylistic/eslint-plugin": "^2.11.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.9.3",
+    "@types/node": "^22.9.4",
     "daisyui": "^4.12.14",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.15.6",
-    "eslint-plugin-perfectionist": "^4.0.3",
+    "eslint-plugin-perfectionist": "^4.1.2",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.6",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.15.0"
+    "typescript-eslint": "^8.16.0"
   }
 }

@@ -5,7 +5,6 @@ import type {
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
-  GroupState,
   HolidayModeData,
   HolidayModeQuery,
   LoginCredentials,
@@ -15,29 +14,12 @@ import type { Homey } from 'homey/lib/Homey'
 import type {
   BuildingZone,
   DeviceSettings,
-  DriverCapabilitiesOptions,
   DriverSetting,
   Settings,
   ZoneData,
 } from './types/common.mts'
 
 const api = {
-  getAtaCapabilities({
-    homey,
-  }: {
-    homey: Homey
-  }): [keyof GroupState, DriverCapabilitiesOptions][] {
-    return homey.app.getAtaCapabilities()
-  },
-  async getAtaValues({
-    homey,
-    params,
-  }: {
-    homey: Homey
-    params: ZoneData
-  }): Promise<GroupState> {
-    return homey.app.getAtaValues(params)
-  },
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
@@ -89,17 +71,6 @@ const api = {
     homey: Homey
   }): Promise<boolean> {
     return homey.app.login(body)
-  },
-  async setAtaValues({
-    body,
-    homey,
-    params,
-  }: {
-    body: GroupState
-    homey: Homey
-    params: ZoneData
-  }): Promise<void> {
-    return homey.app.setAtaValues(body, params)
   },
   async setDeviceSettings({
     body,

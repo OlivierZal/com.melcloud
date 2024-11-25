@@ -1,14 +1,6 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
-    "getAtaCapabilities": {
-      "method": "GET",
-      "path": "/capabilities/ata"
-    },
-    "getAtaValues": {
-      "method": "GET",
-      "path": "/values/ata/:zoneType/:zoneId"
-    },
     "getBuildings": {
       "method": "GET",
       "path": "/buildings"
@@ -40,10 +32,6 @@
     "login": {
       "method": "POST",
       "path": "/sessions"
-    },
-    "setAtaValues": {
-      "method": "PUT",
-      "path": "/values/ata/:zoneType/:zoneId"
     },
     "setDeviceSettings": {
       "method": "PUT",
