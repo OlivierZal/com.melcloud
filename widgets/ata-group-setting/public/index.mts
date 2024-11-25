@@ -15,6 +15,11 @@ interface HomeySettings extends Record<string, unknown> {
   animations: boolean
 }
 
+interface ResetParams {
+  isSomethingOn: boolean
+  mode: number
+}
+
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
@@ -851,22 +856,24 @@ const getModes = async (homey: Homey): Promise<OperationMode[]> => {
 
 const resetFireAnimation = async (
   homey: Homey,
-  isSomethingOn: boolean,
-  mode: number,
+  resetParams?: ResetParams,
 ): Promise<void> => {
-  if (
-    isSomethingOn &&
-    (heatModes.includes(mode) ||
-      (mode === MODE_MIXED &&
-        (await getModes(homey)).some((currentMode) =>
-          heatModes.includes(currentMode),
-        )))
-  ) {
-    if (smokeAnimationFrameId !== null) {
-      cancelAnimationFrame(smokeAnimationFrameId)
-      smokeAnimationFrameId = null
+  if (resetParams) {
+    const { isSomethingOn, mode } = resetParams
+    if (
+      isSomethingOn &&
+      (heatModes.includes(mode) ||
+        (mode === MODE_MIXED &&
+          (await getModes(homey)).some((currentMode) =>
+            heatModes.includes(currentMode),
+          )))
+    ) {
+      if (smokeAnimationFrameId !== null) {
+        cancelAnimationFrame(smokeAnimationFrameId)
+        smokeAnimationFrameId = null
+      }
+      return
     }
-    return
   }
   document.querySelectorAll('.flame').forEach((flame) => {
     setTimeout(
@@ -880,19 +887,19 @@ const resetFireAnimation = async (
 
 const resetSunAnimation = async (
   homey: Homey,
-  isSomethingOn: boolean,
-  mode: number,
+  resetParams?: ResetParams,
 ): Promise<void> => {
   const sun = document.getElementById('sun-1')
   if (
     sun &&
     sun instanceof HTMLDivElement &&
-    (!isSomethingOn ||
-      (mode !== MODE_DRY &&
-        mode !== MODE_MIXED &&
-        (await getModes(homey)).every(
-          (currentMode: number) => currentMode !== MODE_DRY,
-        )))
+    (!resetParams ||
+      !resetParams.isSomethingOn ||
+      (resetParams.mode !== MODE_DRY &&
+        (resetParams.mode !== MODE_MIXED ||
+          (await getModes(homey)).every(
+            (currentMode: number) => currentMode !== MODE_DRY,
+          ))))
   ) {
     sunAnimation.exit = generateSunExitAnimation(sun)
   }
@@ -900,13 +907,12 @@ const resetSunAnimation = async (
 
 const resetAnimation = async (
   homey: Homey,
-  isSomethingOn: boolean,
-  mode: number,
+  resetParams?: ResetParams,
 ): Promise<void> => {
   animationTimeouts.forEach(clearTimeout)
   animationTimeouts.length = 0
-  await resetFireAnimation(homey, isSomethingOn, mode)
-  await resetSunAnimation(homey, isSomethingOn, mode)
+  await resetFireAnimation(homey, resetParams)
+  await resetSunAnimation(homey, resetParams)
 }
 
 const handleMixedAnimation = async (
@@ -937,7 +943,7 @@ const handleAnimation = async (
     const isSomethingOn = isOn !== false
     const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
     const newMode = Number(mode ?? null)
-    await resetAnimation(homey, isSomethingOn, newMode)
+    await resetAnimation(homey, { isSomethingOn, mode: newMode })
     if (isSomethingOn) {
       switch (newMode) {
         case MODE_AUTO:
@@ -973,7 +979,10 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
     unhide(hasZoneAtaDevicesElement)
     await handleAnimation(homey, values)
   } catch {
+    await resetAnimation(homey)
     hide(hasZoneAtaDevicesElement)
+  } finally {
+    await homey.setHeight(document.body.scrollHeight)
   }
 }
 
