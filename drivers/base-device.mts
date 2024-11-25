@@ -353,7 +353,7 @@ export abstract class BaseMELCloudDevice<
       const updateData = this.#buildUpdateData(values)
       if (Object.keys(updateData).length) {
         try {
-          await device.set(updateData)
+          await device.setValues(updateData)
         } catch (error) {
           if (!(error instanceof Error) || error.message !== 'No data to set') {
             await this.setWarning(error)

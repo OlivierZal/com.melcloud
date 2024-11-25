@@ -1,4 +1,4 @@
-import type { GroupAtaState, OperationMode } from '@olivierzal/melcloud-api'
+import type { GroupState, OperationMode } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
@@ -133,7 +133,7 @@ const SNOWFLAKE_GAP = 50
 const SUN_ENTER_AND_EXIT_DURATION = 5000
 const SUN_SHINE_DURATION = 5000
 
-const zoneMapping: Partial<Record<string, Partial<GroupAtaState>>> = {}
+const zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
 
 const getButtonElement = (id: string): HTMLButtonElement => {
   const element = document.getElementById(id)
@@ -190,8 +190,8 @@ let settings = { animations: true }
 
 let debounceTimeout: NodeJS.Timeout | null = null
 
-let ataCapabilities: [keyof GroupAtaState, DriverCapabilitiesOptions][] = []
-let defaultAtaValues: Partial<Record<keyof GroupAtaState, null>> = {}
+let ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
+let defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
 
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
@@ -415,10 +415,10 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const isKeyofGroupAtaState = (key: string): key is keyof GroupAtaState =>
+const isKeyofGroupAtaState = (key: string): key is keyof GroupState =>
   key in defaultAtaValues
 
-const buildAtaValuesBody = (): GroupAtaState =>
+const buildAtaValuesBody = (): GroupState =>
   Object.fromEntries(
     Array.from(
       ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
@@ -433,12 +433,12 @@ const buildAtaValuesBody = (): GroupAtaState =>
       .map((element) => [element.id, processValue(element)]),
   )
 
-const updateZoneMapping = (data: Partial<GroupAtaState>): void => {
+const updateZoneMapping = (data: Partial<GroupState>): void => {
   const { value } = zoneElement
   zoneMapping[value] = { ...zoneMapping[value], ...data }
 }
 
-const updateAtaValue = (id: keyof GroupAtaState): void => {
+const updateAtaValue = (id: keyof GroupState): void => {
   const ataValueElement = document.getElementById(id)
   if (
     ataValueElement &&
@@ -829,8 +829,8 @@ const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-const getAtaValues = async (homey: Homey): Promise<GroupAtaState> =>
-  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupAtaState
+const getAtaValues = async (homey: Homey): Promise<GroupState> =>
+  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupState
 
 const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
   (await homey.api(
@@ -930,7 +930,7 @@ const handleMixedAnimation = async (
 
 const handleAnimation = async (
   homey: Homey,
-  state: GroupAtaState,
+  state: GroupState,
 ): Promise<void> => {
   if (settings.animations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
@@ -1045,7 +1045,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
   try {
     ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
-      keyof GroupAtaState,
+      keyof GroupState,
       DriverCapabilitiesOptions,
     ][]
     defaultAtaValues = Object.fromEntries(
@@ -1061,7 +1061,7 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
       await homey.api(
         'PUT',
         `/values/ata/${getZonePath()}`,
-        body satisfies GroupAtaState,
+        body satisfies GroupState,
       )
     }
   } catch {}

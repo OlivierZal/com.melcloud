@@ -1052,8 +1052,8 @@ const setHolidayModeData = async (
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
     const isEnabled = holidayModeEnabledElement.value === 'true'
-    const endDate = holidayModeEndDateElement.value || null
-    if (isEnabled && endDate === null) {
+    const endDate = holidayModeEndDateElement.value || undefined
+    if (isEnabled && endDate === undefined) {
       homey.alert(homey.__('settings.holidayMode.endDateMissing')).catch(() => {
         //
       })

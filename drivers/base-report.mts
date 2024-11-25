@@ -128,7 +128,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
         const toDateTime = DateTime.now().minus(this.minus)
         const to = toDateTime.toISODate()
         await this.#set(
-          await device.getEnergyReport({
+          await device.energy({
             from: this.mode === 'total' ? undefined : to,
             to,
           }),

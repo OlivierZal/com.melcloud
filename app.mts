@@ -14,7 +14,7 @@ import {
   type ErrorLogQuery,
   type FrostProtectionData,
   type FrostProtectionQuery,
-  type GroupAtaState,
+  type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
   type IBuildingFacade,
@@ -190,7 +190,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public getAtaCapabilities(): [
-    keyof GroupAtaState & keyof ListDeviceDataAta,
+    keyof GroupState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
   ][] {
     return [
@@ -227,7 +227,7 @@ export default class MELCloudApp extends Homey.App {
         enumType,
       ),
     ]) as [
-      keyof GroupAtaState & keyof ListDeviceDataAta,
+      keyof GroupState & keyof ListDeviceDataAta,
       DriverCapabilitiesOptions,
     ][]
   }
@@ -254,8 +254,8 @@ export default class MELCloudApp extends Homey.App {
   public async getAtaValues({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<GroupAtaState> {
-    return this.getFacade(zoneType, zoneId).getAta()
+  }: ZoneData): Promise<GroupState> {
+    return this.getFacade(zoneType, zoneId).group()
   }
 
   public getDeviceSettings(): DeviceSettings {
@@ -288,7 +288,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
-    return this.#facadeManager.getErrors(query)
+    return this.#api.errorLog(query)
   }
 
   public getFacade<T extends DeviceType>(
@@ -318,14 +318,14 @@ export default class MELCloudApp extends Homey.App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
-    return this.getFacade(zoneType, zoneId).getFrostProtection()
+    return this.getFacade(zoneType, zoneId).frostProtection()
   }
 
   public async getHolidayModeSettings({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
-    return this.getFacade(zoneType, zoneId).getHolidayMode()
+    return this.getFacade(zoneType, zoneId).holidayMode()
   }
 
   public getLanguage(): string {
@@ -337,11 +337,11 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async setAtaValues(
-    state: GroupAtaState,
+    state: GroupState,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     handleResponse(
-      (await this.getFacade(zoneType, zoneId).setAta(state)).AttributeErrors,
+      (await this.getFacade(zoneType, zoneId).setGroup(state)).AttributeErrors,
     )
   }
 

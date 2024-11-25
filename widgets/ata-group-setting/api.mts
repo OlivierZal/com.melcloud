@@ -1,6 +1,6 @@
 import { getBuildings } from '../../lib/get-buildings.mts'
 
-import type { GroupAtaState } from '@olivierzal/melcloud-api'
+import type { GroupState } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
 
 import type {
@@ -16,7 +16,7 @@ const api = {
     homey,
   }: {
     homey: Homey
-  }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
+  }): [keyof GroupState, DriverCapabilitiesOptions][] {
     return homey.app.getAtaCapabilities()
   },
   async getAtaValues({
@@ -27,7 +27,7 @@ const api = {
     homey: Homey
     params: ZoneData
     query?: GetAtaOptions
-  }): Promise<GroupAtaState | GroupAtaStates> {
+  }): Promise<GroupAtaStates | GroupState> {
     const { mode, status } = query ?? {}
     return mode === 'detailed' ?
         homey.app.getAtaDetailedValues(params, status)
@@ -41,7 +41,7 @@ const api = {
     homey,
     params,
   }: {
-    body: GroupAtaState
+    body: GroupState
     homey: Homey
     params: ZoneData
   }): Promise<void> {

@@ -316,19 +316,22 @@ export interface ZoneData {
 type GetCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? GetCapabilitiesAta
   : T extends DeviceType.Atw ? GetCapabilitiesAtw
-  : GetCapabilitiesErv
+  : T extends DeviceType.Erv ? GetCapabilitiesErv
+  : never
 
 type ListCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? ListCapabilitiesAta
   : T extends DeviceType.Atw ? ListCapabilitiesAtw
-  : ListCapabilitiesErv
+  : T extends DeviceType.Erv ? ListCapabilitiesErv
+  : never
 
 export type AreaZone = IModel
 
 export type Capabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? CapabilitiesAta
   : T extends DeviceType.Atw ? CapabilitiesAtw
-  : CapabilitiesErv
+  : T extends DeviceType.Erv ? CapabilitiesErv
+  : never
 
 export type CapabilitiesOptions<T extends DeviceType> =
   T extends DeviceType.Atw ? CapabilitiesOptionsAtw : CapabilitiesOptionsAtaErv
@@ -349,7 +352,8 @@ export type DeviceSettings = Record<string, DeviceSetting>
 export type EnergyCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? EnergyCapabilitiesAta
   : T extends DeviceType.Atw ? EnergyCapabilitiesAtw
-  : EnergyCapabilitiesErv
+  : T extends DeviceType.Erv ? EnergyCapabilitiesErv
+  : Record<string, never>
 
 export type EnergyCapabilityTagEntry<T extends DeviceType> = [
   capability: string & keyof EnergyCapabilities<T>,
@@ -376,7 +380,8 @@ export type EnergyReportTotal<T extends DeviceType> =
 export type FlowArgs<T extends DeviceType> =
   T extends DeviceType.Ata ? FlowArgsAta
   : T extends DeviceType.Atw ? FlowArgsAtw
-  : FlowArgsErv
+  : T extends DeviceType.Erv ? FlowArgsErv
+  : never
 
 export type GetCapabilityTagMapping<T extends DeviceType> = Record<
   keyof GetCapabilities<T>,
@@ -407,7 +412,8 @@ export type OpDeviceData<T extends DeviceType> = keyof ListDeviceData<T>
 export type SetCapabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? SetCapabilitiesAta
   : T extends DeviceType.Atw ? SetCapabilitiesAtw
-  : SetCapabilitiesErv
+  : T extends DeviceType.Erv ? SetCapabilitiesErv
+  : never
 
 export type SetCapabilityTagMapping<T extends DeviceType> = Record<
   keyof SetCapabilities<T>,

@@ -5,7 +5,7 @@ import type {
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
-  GroupAtaState,
+  GroupState,
   HolidayModeData,
   HolidayModeQuery,
   LoginCredentials,
@@ -26,7 +26,7 @@ const api = {
     homey,
   }: {
     homey: Homey
-  }): [keyof GroupAtaState, DriverCapabilitiesOptions][] {
+  }): [keyof GroupState, DriverCapabilitiesOptions][] {
     return homey.app.getAtaCapabilities()
   },
   async getAtaValues({
@@ -35,7 +35,7 @@ const api = {
   }: {
     homey: Homey
     params: ZoneData
-  }): Promise<GroupAtaState> {
+  }): Promise<GroupState> {
     return homey.app.getAtaValues(params)
   },
   getBuildings(): BuildingZone[] {
@@ -95,7 +95,7 @@ const api = {
     homey,
     params,
   }: {
-    body: GroupAtaState
+    body: GroupState
     homey: Homey
     params: ZoneData
   }): Promise<void> {
