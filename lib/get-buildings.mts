@@ -10,7 +10,7 @@ import type { AreaZone, BuildingZone, FloorZone } from '../types/common.mts'
 
 const hasDevices = (
   zone: { devices: IDeviceModelAny[] },
-  type?: DeviceType,
+  { type }: { type?: DeviceType } = {},
 ): boolean =>
   type === undefined ?
     Boolean(zone.devices.length)
@@ -23,36 +23,38 @@ const compareNames = (
 
 const filterAndMapAreas = (
   areas: IAreaModel[],
-  type?: DeviceType,
+  { type }: { type?: DeviceType } = {},
 ): AreaZone[] =>
   areas
-    .filter((area) => hasDevices(area, type))
+    .filter((area) => hasDevices(area, { type }))
     .toSorted(compareNames)
     .map(({ id, name }) => ({ id, name }))
 
 const filterAndMapFloors = (
   floors: IFloorModel[],
-  type?: DeviceType,
+  { type }: { type?: DeviceType } = {},
 ): FloorZone[] =>
   floors
-    .filter((floor) => hasDevices(floor, type))
+    .filter((floor) => hasDevices(floor, { type }))
     .toSorted(compareNames)
     .map(({ areas, id, name }) => ({
-      areas: filterAndMapAreas(areas, type),
+      areas: filterAndMapAreas(areas, { type }),
       id,
       name,
     }))
 
-export const getBuildings = (type?: DeviceType): BuildingZone[] =>
+export const getBuildings = ({
+  type,
+}: { type?: DeviceType } = {}): BuildingZone[] =>
   BuildingModel.getAll()
-    .filter((building) => hasDevices(building, type))
+    .filter((building) => hasDevices(building, { type }))
     .toSorted(compareNames)
     .map(({ areas, floors, id, name }) => ({
       areas: filterAndMapAreas(
         areas.filter(({ floorId }) => floorId === null),
-        type,
+        { type },
       ),
-      floors: filterAndMapFloors(floors, type),
+      floors: filterAndMapFloors(floors, { type }),
       id,
       name,
     }))

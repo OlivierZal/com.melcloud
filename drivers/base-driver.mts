@@ -35,11 +35,11 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   // eslint-disable-next-line import/no-named-as-default-member
   extends Homey.Driver
 {
-  public declare readonly getDevices: () => MELCloudDevice[]
+  declare public readonly getDevices: () => MELCloudDevice[]
 
-  public declare readonly homey: Homey.Homey
+  declare public readonly homey: Homey.Homey
 
-  public declare readonly manifest: ManifestDriver
+  declare public readonly manifest: ManifestDriver
 
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}

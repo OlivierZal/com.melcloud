@@ -579,19 +579,19 @@ const setDeviceSettings = async (
     })
     return
   }
-  let endPoint = '/settings/devices'
-  if (driverId !== undefined) {
-    endPoint += `?${new URLSearchParams({ driverId } satisfies {
-      driverId: string
-    })}`
-  }
   await withDisablingButtons(
     `settings_${driverId ?? 'common'}`,
     async () =>
       new Promise((resolve) => {
         homey.api(
           'PUT',
-          endPoint,
+          `/settings/devices${
+            driverId === undefined ? '' : (
+              `?${new URLSearchParams({ driverId } satisfies {
+                driverId: string
+              })}`
+            )
+          }`,
           body satisfies Settings,
           async (error: Error | null) => {
             if (!error) {

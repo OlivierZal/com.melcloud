@@ -38,7 +38,7 @@ const api = {
   }: {
     query?: { type: `${DeviceType}` }
   }): BuildingZone[] {
-    return getBuildings(query ? Number(query.type) : undefined)
+    return getBuildings({ type: query ? Number(query.type) : undefined })
   },
   async setAtaValues({
     body,

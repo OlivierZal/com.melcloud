@@ -81,7 +81,7 @@ const api = {
     homey: Homey
     query?: { driverId: string }
   }): Promise<void> {
-    return homey.app.setDeviceSettings(body, query?.driverId)
+    return homey.app.setDeviceSettings(body, { driverId: query?.driverId })
   },
   async setFrostProtectionSettings({
     body,

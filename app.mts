@@ -150,7 +150,7 @@ const getLocalizedCapabilitiesOptions = (
 
 // eslint-disable-next-line import/no-named-as-default-member
 export default class MELCloudApp extends Homey.App {
-  public declare readonly homey: Homey.Homey
+  declare public readonly homey: Homey.Homey
 
   #api!: MELCloudAPI
 
@@ -346,7 +346,7 @@ export default class MELCloudApp extends Homey.App {
 
   public async setDeviceSettings(
     settings: Settings,
-    driverId?: string,
+    { driverId }: { driverId?: string } = {},
   ): Promise<void> {
     await Promise.all(
       this.#getDevices({ driverId }).map(async (device) => {

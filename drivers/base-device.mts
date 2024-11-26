@@ -42,45 +42,45 @@ export abstract class BaseMELCloudDevice<
   T extends DeviceType,
   // eslint-disable-next-line import/no-named-as-default-member
 > extends withTimers(Homey.Device) {
-  public declare readonly driver: BaseMELCloudDriver<T>
+  declare public readonly driver: BaseMELCloudDriver<T>
 
-  public declare readonly getCapabilityOptions: <
+  declare public readonly getCapabilityOptions: <
     K extends string & keyof CapabilitiesOptions<T>,
   >(
     capability: K,
   ) => CapabilitiesOptions<T>[K]
 
-  public declare readonly getCapabilityValue: <
+  declare public readonly getCapabilityValue: <
     K extends string & keyof Capabilities<T>,
   >(
     capability: K,
   ) => Capabilities<T>[K]
 
-  public declare readonly getData: () => DeviceDetails<T>['data']
+  declare public readonly getData: () => DeviceDetails<T>['data']
 
-  public declare readonly getSetting: <K extends keyof Settings>(
+  declare public readonly getSetting: <K extends keyof Settings>(
     setting: K,
   ) => NonNullable<Settings[K]>
 
-  public declare readonly getSettings: () => Settings
+  declare public readonly getSettings: () => Settings
 
-  public declare readonly homey: Homey.Homey
+  declare public readonly homey: Homey.Homey
 
-  public declare readonly setCapabilityOptions: <
+  declare public readonly setCapabilityOptions: <
     K extends string & keyof CapabilitiesOptions<T>,
   >(
     capability: K,
     options: CapabilitiesOptions<T>[K] & Record<string, unknown>,
   ) => Promise<void>
 
-  public declare readonly setCapabilityValue: <
+  declare public readonly setCapabilityValue: <
     K extends string & keyof Capabilities<T>,
   >(
     capability: K,
     value: Capabilities<T>[K],
   ) => Promise<void>
 
-  public declare readonly setSettings: (settings: Settings) => Promise<void>
+  declare public readonly setSettings: (settings: Settings) => Promise<void>
 
   readonly #reports: {
     regular?: EnergyReportRegular<T>
