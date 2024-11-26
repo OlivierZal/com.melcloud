@@ -6,6 +6,7 @@ import type {
 import type Homey from 'homey/lib/HomeyWidget'
 
 import type {
+  BaseZone,
   BuildingZone,
   DriverCapabilitiesOptions,
   GetAtaOptions,
@@ -17,7 +18,7 @@ import type {
 
 interface HomeySettings extends Record<string, unknown> {
   animations: boolean
-  default_zone?: number
+  default_zone?: BaseZone
 }
 
 interface ResetParams {
@@ -1015,20 +1016,19 @@ const generateAtaValues = (homey: Homey): void => {
 
 const generateZones = async (
   zones: Zone[],
-  zoneType = 'buildings',
   level = FIRST_LEVEL,
 ): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
     createOptionElement(zoneElement, {
-      id: `${zoneType}_${String(zone.id)}`,
+      id: zone.id,
       label: `${'···'.repeat(level)} ${zone.name}`,
     })
     if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas, 'areas', level + INCREMENT)
+      await generateZones(zone.areas, level + INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
-      await generateZones(zone.floors, 'floors', SECOND_LEVEL)
+      await generateZones(zone.floors, SECOND_LEVEL)
     }
   }, Promise.resolve())
 
@@ -1044,7 +1044,9 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
       generateAtaValues(homey)
       await generateZones(buildings)
       if (settings.default_zone !== undefined) {
-        zoneElement.value = String(settings.default_zone)
+        ;({
+          default_zone: { id: zoneElement.value },
+        } = settings)
       }
       await fetchAtaValues(homey)
     }

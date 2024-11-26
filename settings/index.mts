@@ -924,20 +924,19 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
 
 const generateZones = async (
   zones: Zone[],
-  zoneType = 'buildings',
   level = FIRST_LEVEL,
 ): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
     createOptionElement(zoneElement, {
-      id: `${zoneType}_${String(zone.id)}`,
+      id: zone.id,
       label: `${'···'.repeat(level)} ${zone.name}`,
     })
     if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas, 'areas', level + LEVEL_INCREMENT)
+      await generateZones(zone.areas, level + LEVEL_INCREMENT)
     }
     if ('floors' in zone && zone.floors) {
-      await generateZones(zone.floors, 'floors', SECOND_LEVEL)
+      await generateZones(zone.floors, SECOND_LEVEL)
     }
   }, Promise.resolve())
 

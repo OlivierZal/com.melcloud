@@ -4,10 +4,9 @@ import {
   type IAreaModel,
   type IDeviceModelAny,
   type IFloorModel,
-  type IModel,
 } from '@olivierzal/melcloud-api'
 
-import type { AreaZone, BuildingZone, FloorZone } from '../types/common.mts'
+import type { BaseZone, BuildingZone, FloorZone } from '../types/common.mts'
 
 const hasDevices = (
   zone: { devices: IDeviceModelAny[] },
@@ -25,11 +24,11 @@ const compareNames = (
 const filterAndMapAreas = (
   areas: IAreaModel[],
   { type }: { type?: DeviceType } = {},
-): AreaZone[] =>
+): BaseZone[] =>
   areas
     .filter((area) => hasDevices(area, { type }))
     .toSorted(compareNames)
-    .map(({ id, name }) => ({ id, name }))
+    .map(({ id, name }) => ({ id: `areas_${String(id)}`, name }))
 
 const filterAndMapFloors = (
   floors: IFloorModel[],
@@ -40,7 +39,7 @@ const filterAndMapFloors = (
     .toSorted(compareNames)
     .map(({ areas, id, name }) => ({
       areas: filterAndMapAreas(areas, { type }),
-      id,
+      id: `floors_${String(id)}`,
       name,
     }))
 
@@ -56,11 +55,11 @@ export const getBuildings = ({
         { type },
       ),
       floors: filterAndMapFloors(floors, { type }),
-      id,
+      id: `buildings_${String(id)}`,
       name,
     }))
 
-export const getZones = ({ type }: { type?: DeviceType } = {}): IModel[] =>
+export const getZones = ({ type }: { type?: DeviceType } = {}): BaseZone[] =>
   getBuildings({ type }).flatMap(({ areas, floors, id, name }) => [
     { id, name },
     ...(areas ?? []),

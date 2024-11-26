@@ -8,7 +8,6 @@ import {
   type FanSpeed,
   type GetDeviceData,
   type Horizontal,
-  type IModel,
   type ListDeviceData,
   type ListDeviceDataAta,
   type ListDeviceDataErv,
@@ -173,8 +172,13 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ] as const
 
-export interface BuildingZone extends IModel {
-  areas?: AreaZone[]
+export interface BaseZone {
+  id: string
+  name: string
+}
+
+export interface BuildingZone extends BaseZone {
+  areas?: BaseZone[]
   floors?: FloorZone[]
 }
 
@@ -209,8 +213,8 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
-export interface FloorZone extends IModel {
-  areas?: AreaZone[]
+export interface FloorZone extends BaseZone {
+  areas?: BaseZone[]
 }
 
 export interface GetAtaOptions {
@@ -325,8 +329,6 @@ type ListCapabilities<T extends DeviceType> =
   : T extends DeviceType.Erv ? ListCapabilitiesErv
   : never
 
-export type AreaZone = IModel
-
 export type Capabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? CapabilitiesAta
   : T extends DeviceType.Atw ? CapabilitiesAtw
@@ -422,4 +424,4 @@ export type SetCapabilityTagMapping<T extends DeviceType> = Record<
 
 export type ValueOf<T> = T[keyof T]
 
-export type Zone = AreaZone | BuildingZone | FloorZone
+export type Zone = BaseZone | BuildingZone | FloorZone
