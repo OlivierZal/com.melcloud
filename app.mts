@@ -37,6 +37,7 @@ import {
   thermostatMode,
   vertical,
 } from './json-files.mts'
+import { getZones } from './lib/get-zones.mts'
 import {
   fanSpeedValues,
   zoneModel,
@@ -181,6 +182,7 @@ export default class MELCloudApp extends Homey.App {
     })
     this.#facadeManager = new FacadeManager(this.#api)
     this.#createNotification()
+    this.#registerWidgetListeners()
   }
 
   public override async onUninit(): Promise<void> {
@@ -427,6 +429,16 @@ export default class MELCloudApp extends Homey.App {
           devices.filter(({ id }) => ids.includes(id))
         )
     })
+  }
+
+  #registerWidgetListeners(): void {
+    this.homey.dashboards
+      .getWidget('ata-group-setting')
+      .registerSettingAutocompleteListener('default_zone', (query) =>
+        getZones({ type: DeviceType.Ata }).filter(({ name }) =>
+          name.toLowerCase().includes(query.toLowerCase()),
+        ),
+      )
   }
 
   async #syncFromDevices({

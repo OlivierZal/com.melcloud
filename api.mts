@@ -1,4 +1,4 @@
-import { getBuildings } from './lib/get-buildings.mts'
+import { getBuildings } from './lib/get-zones.mts'
 
 import type {
   ErrorLog,

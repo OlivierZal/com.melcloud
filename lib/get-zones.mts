@@ -4,6 +4,7 @@ import {
   type IAreaModel,
   type IDeviceModelAny,
   type IFloorModel,
+  type IModel,
 } from '@olivierzal/melcloud-api'
 
 import type { AreaZone, BuildingZone, FloorZone } from '../types/common.mts'
@@ -58,3 +59,15 @@ export const getBuildings = ({
       id,
       name,
     }))
+
+export const getZones = ({ type }: { type?: DeviceType } = {}): IModel[] =>
+  getBuildings({ type }).flatMap(({ areas, floors, id, name }) => [
+    { id, name },
+    ...(areas ?? []),
+    ...(floors?.flatMap(
+      ({ areas: floorAreas, id: floorId, name: floorName }) => [
+        { id: floorId, name: floorName },
+        ...(floorAreas ?? []),
+      ],
+    ) ?? []),
+  ])

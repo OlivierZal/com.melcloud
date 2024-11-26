@@ -5154,7 +5154,19 @@
       },
       "settings": [
         {
-          "id": "animations",
+          "id": "default_zone",
+          "title": {
+            "da": "Standardzone",
+            "en": "Default zone",
+            "es": "Zona predeterminada",
+            "fr": "Zone par défaut",
+            "nl": "Standaardzone",
+            "no": "Standardsone",
+            "sv": "Standardzon"
+          },
+          "type": "autocomplete"
+        },
+        {
           "hint": {
             "da": "Animationer kan få widgeten til at fryse på visse enheder.",
             "en": "Animations may cause the widget to freeze on some devices.",
@@ -5173,6 +5185,7 @@
             "no": "Animasjoner",
             "sv": "Animationer"
           },
+          "id": "animations",
           "type": "checkbox",
           "value": true
         }

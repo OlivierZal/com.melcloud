@@ -17,6 +17,7 @@ import type {
 
 interface HomeySettings extends Record<string, unknown> {
   animations: boolean
+  default_zone?: number
 }
 
 interface ResetParams {
@@ -194,7 +195,7 @@ const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
   shine: null,
 }
 
-let settings = { animations: true }
+let settings: HomeySettings = { animations: true }
 
 let debounceTimeout: NodeJS.Timeout | null = null
 
@@ -1042,6 +1043,9 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
     if (buildings.length) {
       generateAtaValues(homey)
       await generateZones(buildings)
+      if (settings.default_zone !== undefined) {
+        zoneElement.value = String(settings.default_zone)
+      }
       await fetchAtaValues(homey)
     }
   } catch {}
