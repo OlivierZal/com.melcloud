@@ -8,6 +8,8 @@ import {
 
 import type { BaseZone, BuildingZone, FloorZone } from '../types/common.mts'
 
+const LEVEL_PREFIX = '···'
+
 const hasDevices = (
   zone: { devices: IDeviceModelAny[] },
   { type }: { type?: DeviceType } = {},
@@ -28,7 +30,10 @@ const filterAndMapAreas = (
   areas
     .filter((area) => hasDevices(area, { type }))
     .toSorted(compareNames)
-    .map(({ id, name }) => ({ id: `areas_${String(id)}`, name }))
+    .map(({ floor, id, name }) => ({
+      id: `areas_${String(id)}`,
+      name: `${LEVEL_PREFIX}${floor ? LEVEL_PREFIX : ''} ${name}`,
+    }))
 
 const filterAndMapFloors = (
   floors: IFloorModel[],
@@ -40,7 +45,7 @@ const filterAndMapFloors = (
     .map(({ areas, id, name }) => ({
       areas: filterAndMapAreas(areas, { type }),
       id: `floors_${String(id)}`,
-      name,
+      name: `${LEVEL_PREFIX} ${name}`,
     }))
 
 export const getBuildings = ({

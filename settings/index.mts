@@ -33,10 +33,6 @@ class NoDeviceError extends Error {
 
 const SIZE_ONE = 1
 
-const FIRST_LEVEL = 0
-const SECOND_LEVEL = 1
-const LEVEL_INCREMENT = 1
-
 const MODULUS_DECIMAL = 10
 const MODULUS_HUNDRED = 100
 const NUMBER_END_2 = 2
@@ -922,21 +918,16 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
       }),
   )
 
-const generateZones = async (
-  zones: Zone[],
-  level = FIRST_LEVEL,
-): Promise<void> =>
+const generateZones = async (zones: Zone[]): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
-    createOptionElement(zoneElement, {
-      id: zone.id,
-      label: `${'···'.repeat(level)} ${zone.name}`,
-    })
+    const { id, name: label } = zone
+    createOptionElement(zoneElement, { id, label })
     if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas, level + LEVEL_INCREMENT)
+      await generateZones(zone.areas)
     }
     if ('floors' in zone && zone.floors) {
-      await generateZones(zone.floors, SECOND_LEVEL)
+      await generateZones(zone.floors)
     }
   }, Promise.resolve())
 

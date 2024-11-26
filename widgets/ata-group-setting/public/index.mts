@@ -105,9 +105,6 @@ const FACTOR_TWO = 2
 const FACTOR_FIVE = 5
 const INCREMENT = 1
 
-const FIRST_LEVEL = 0
-const SECOND_LEVEL = 1
-
 const MIN_SET_TEMPERATURE = 10
 const MAX_SET_TEMPERATURE = 31
 const MIN_SET_TEMPERATURE_COOLING = 16
@@ -1014,21 +1011,16 @@ const generateAtaValues = (homey: Homey): void => {
   })
 }
 
-const generateZones = async (
-  zones: Zone[],
-  level = FIRST_LEVEL,
-): Promise<void> =>
+const generateZones = async (zones: Zone[]): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
-    createOptionElement(zoneElement, {
-      id: zone.id,
-      label: `${'···'.repeat(level)} ${zone.name}`,
-    })
+    const { id, name: label } = zone
+    createOptionElement(zoneElement, { id, label })
     if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas, level + INCREMENT)
+      await generateZones(zone.areas)
     }
     if ('floors' in zone && zone.floors) {
-      await generateZones(zone.floors, SECOND_LEVEL)
+      await generateZones(zone.floors)
     }
   }, Promise.resolve())
 
