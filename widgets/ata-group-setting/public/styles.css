@@ -21,7 +21,3 @@ input {
 select:not(#zones) {
   text-align-last: right;
 }
-
-.hidden {
-  display: none;
-}

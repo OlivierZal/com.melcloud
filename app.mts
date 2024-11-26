@@ -233,7 +233,7 @@ export default class MELCloudApp extends Homey.App {
 
   public getAtaDetailedValues(
     { zoneId, zoneType }: ZoneData,
-    status?: GetAtaOptions['status'],
+    { status }: { status?: GetAtaOptions['status'] } = {},
   ): GroupAtaStates {
     const { devices } = zoneModel[zoneType].getById(Number(zoneId)) ?? {}
     if (!devices) {

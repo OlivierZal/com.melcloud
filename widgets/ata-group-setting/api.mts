@@ -26,19 +26,20 @@ const api = {
   }: {
     homey: Homey
     params: ZoneData
-    query?: GetAtaOptions
+    query: GetAtaOptions
   }): Promise<GroupAtaStates | GroupState> {
-    const { mode, status } = query ?? {}
+    const { mode, status } = query
     return mode === 'detailed' ?
-        homey.app.getAtaDetailedValues(params, status)
+        homey.app.getAtaDetailedValues(params, { status })
       : homey.app.getAtaValues(params)
   },
   getBuildings({
     query,
   }: {
-    query?: { type: `${DeviceType}` }
+    query: { type?: `${DeviceType}` }
   }): BuildingZone[] {
-    return getBuildings({ type: query ? Number(query.type) : undefined })
+    const { type } = query
+    return getBuildings({ type: type ? Number(type) : undefined })
   },
   async setAtaValues({
     body,

@@ -184,7 +184,6 @@ const canvasCtx = canvas.getContext('2d')
 
 const animationElement = getDivElement('animation')
 const ataValuesElement = getDivElement('values_melcloud')
-const hasZoneAtaDevicesElement = getDivElement('has_zone_ata_devices')
 
 const zoneElement = getSelectElement('zones')
 
@@ -237,14 +236,6 @@ const generateDelay = (delay: number, speed: number): number =>
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
       ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
     DEFAULT_DIVISOR)
-
-const hide = (element: HTMLDivElement, value = true): void => {
-  element.classList.toggle('hidden', value)
-}
-
-const unhide = (element: HTMLDivElement, value = true): void => {
-  hide(element, !value)
-}
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   try {
@@ -980,13 +971,9 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
     const values = await getAtaValues(homey)
     updateZoneMapping({ ...defaultAtaValues, ...values })
     refreshAtaValues()
-    unhide(hasZoneAtaDevicesElement)
     await handleAnimation(homey, values)
   } catch {
-    await resetAnimation(homey)
-    hide(hasZoneAtaDevicesElement)
-  } finally {
-    await homey.setHeight(document.body.scrollHeight)
+    //
   }
 }
 
