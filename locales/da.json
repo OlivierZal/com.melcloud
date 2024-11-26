@@ -47,7 +47,7 @@
         "234": "fejl",
         "plural": "fejl"
       },
-      "legend": "Fejllog",
+      "legend": "Fejlhistorik",
       "period": "Siden __from__:",
       "see": "Se alle fejl",
       "since": "siden den"

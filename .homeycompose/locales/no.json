@@ -47,7 +47,7 @@
         "234": "feil",
         "plural": "feil"
       },
-      "legend": "Feillogg",
+      "legend": "Feilhistorikk",
       "period": "Siden __from__:",
       "see": "Se alle feil",
       "since": "siden"

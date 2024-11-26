@@ -1,9 +1,3 @@
-import {
-  DeviceType,
-  type IDeviceFacade,
-  type ListDeviceData,
-  type UpdateDeviceData,
-} from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import/default, import/no-extraneous-dependencies
 import Homey from 'homey'
 
@@ -11,6 +5,13 @@ import { addToLogs } from '../decorators/add-to-logs.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withTimers } from '../mixins/with-timers.mts'
+
+import type {
+  DeviceType,
+  IDeviceFacade,
+  ListDeviceData,
+  UpdateDeviceData,
+} from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -101,13 +102,15 @@ export abstract class BaseMELCloudDevice<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
-  protected abstract EnergyReportRegular?: new (
+  protected abstract readonly EnergyReportRegular?: new (
     device: BaseMELCloudDevice<T>,
   ) => EnergyReportRegular<T>
 
-  protected abstract EnergyReportTotal?: new (
+  protected abstract readonly EnergyReportTotal?: new (
     device: BaseMELCloudDevice<T>,
   ) => EnergyReportTotal<T>
+
+  protected abstract readonly thermostatMode?: object
 
   public get id(): number {
     return this.getData().id
@@ -327,13 +330,17 @@ export abstract class BaseMELCloudDevice<
     return setting in this.driver.energyCapabilityTagMapping
   }
 
+  #isThermostatModeSupportingOff(): boolean {
+    return this.thermostatMode !== undefined && 'off' in this.thermostatMode
+  }
+
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
       Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
         if (
-          this.driver.type !== DeviceType.Atw &&
-          'thermostat_mode' in values
+          'thermostat_mode' in values &&
+          this.#isThermostatModeSupportingOff()
         ) {
           const isOn = values.thermostat_mode !== 'off'
           values.onoff = isOn

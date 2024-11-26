@@ -15,7 +15,7 @@
     },
     "getErrors": {
       "method": "GET",
-      "path": "/errors"
+      "path": "/logs/errors"
     },
     "getFrostProtectionSettings": {
       "method": "GET",
@@ -5138,6 +5138,10 @@
           "method": "GET",
           "path": "/buildings"
         },
+        "getLanguage": {
+          "method": "GET",
+          "path": "/language"
+        },
         "setAtaValues": {
           "method": "PUT",
           "path": "/values/ata/:zoneType/:zoneId"
@@ -5176,6 +5180,7 @@
             "no": "Animasjoner kan få widgeten til å fryse på enkelte enheter.",
             "sv": "Animationer kan få widgeten att frysa på vissa enheter."
           },
+          "id": "animations",
           "title": {
             "da": "Animationer",
             "en": "Animations",
@@ -5185,51 +5190,71 @@
             "no": "Animasjoner",
             "sv": "Animationer"
           },
-          "id": "animations",
           "type": "checkbox",
           "value": true
         }
       ],
       "transparent": true,
       "id": "ata-group-setting"
+    },
+    "temperatures": {
+      "api": {
+        "getDevices": {
+          "method": "GET",
+          "path": "/devices"
+        },
+        "getLanguage": {
+          "method": "GET",
+          "path": "/language"
+        },
+        "getTemperatures": {
+          "method": "GET",
+          "path": "/logs/temperatures/devices/:deviceId"
+        }
+      },
+      "name": {
+        "da": "Temperaturhistorik",
+        "en": "Temperature history",
+        "es": "Historial de temperaturas",
+        "fr": "Historique des températures",
+        "nl": "Temperatuuroverzicht",
+        "no": "Temperaturhistorikk",
+        "sv": "Temperaturhistorik"
+      },
+      "settings": [
+        {
+          "id": "default_zone",
+          "title": {
+            "da": "Standardzone",
+            "en": "Default zone",
+            "es": "Zona predeterminada",
+            "fr": "Zone par défaut",
+            "nl": "Standaardzone",
+            "no": "Standardsone",
+            "sv": "Standardzon"
+          },
+          "type": "autocomplete"
+        },
+        {
+          "id": "days",
+          "min": 1,
+          "title": {
+            "da": "Antal dage",
+            "en": "Number of days",
+            "es": "Número de días",
+            "fr": "Nombre de jours",
+            "nl": "Aantal dagen",
+            "no": "Antall dager",
+            "sv": "Antal dagar"
+          },
+          "type": "number",
+          "value": 1
+        }
+      ],
+      "id": "temperatures"
     }
   },
   "capabilities": {
-    "fan_power": {
-      "getable": true,
-      "insights": true,
-      "max": 5,
-      "min": 0,
-      "setable": true,
-      "step": 1,
-      "title": {
-        "da": "Blæserhastighed",
-        "en": "Fan speed",
-        "es": "Velocidad del ventilador",
-        "fr": "Vitesse du ventilateur",
-        "nl": "Ventilatiesnelheid",
-        "no": "Viftehastighet",
-        "sv": "Fläkthastighet"
-      },
-      "type": "number",
-      "uiComponent": "slider"
-    },
-    "fan_power_state": {
-      "getable": true,
-      "insights": true,
-      "setable": false,
-      "title": {
-        "da": "Aktuel blæserhastighed",
-        "en": "Actual fan speed",
-        "es": "Velocidad actual del ventilador",
-        "fr": "Vitesse actuelle du ventilateur",
-        "nl": "Huidige ventilatiesnelheid",
-        "no": "Aktuell viftehastighet",
-        "sv": "Aktuell fläkthastighet"
-      },
-      "type": "number",
-      "uiComponent": "sensor"
-    },
     "horizontal": {
       "getable": true,
       "setable": true,
@@ -5358,107 +5383,6 @@
       },
       "type": "string",
       "uiComponent": "sensor"
-    },
-    "operation_mode_state": {
-      "getable": true,
-      "setable": false,
-      "title": {
-        "da": "Aktuel drift",
-        "en": "Current operation",
-        "es": "Operación actual",
-        "fr": "Opération actuelle",
-        "nl": "Huidige bedrijf",
-        "no": "Aktuell drift",
-        "sv": "Aktuell drift"
-      },
-      "type": "enum",
-      "uiComponent": "sensor",
-      "values": [
-        {
-          "id": "idle",
-          "title": {
-            "da": "Inaktiv",
-            "en": "Idle",
-            "es": "Inactivo",
-            "fr": "Inactif",
-            "nl": "Inactief",
-            "no": "Inaktiv",
-            "sv": "Inaktiv"
-          }
-        },
-        {
-          "id": "dhw",
-          "title": {
-            "da": "Varmtvandsindlæsning",
-            "en": "Domestic hot water",
-            "es": "Agua caliente sanitaria",
-            "fr": "Eau chaude sanitaire",
-            "nl": "Sanitair warm water",
-            "no": "Varmvannslastning",
-            "sv": "Varmvattenladdning"
-          }
-        },
-        {
-          "id": "heating",
-          "title": {
-            "da": "Opvarmning",
-            "en": "Heating",
-            "es": "Calefacción",
-            "fr": "Chauffage",
-            "nl": "Verwarming",
-            "no": "Oppvarming",
-            "sv": "Uppvärmning"
-          }
-        },
-        {
-          "id": "cooling",
-          "title": {
-            "da": "Køling",
-            "en": "Cooling",
-            "es": "Enfriamiento",
-            "fr": "Refroidissement",
-            "nl": "Koeling",
-            "no": "Kjøling",
-            "sv": "Kylning"
-          }
-        },
-        {
-          "id": "defrost",
-          "title": {
-            "da": "Afrimning",
-            "en": "Defrost",
-            "es": "Descongelación",
-            "fr": "Dégivrage",
-            "nl": "Ontdooien",
-            "no": "Avfrosting",
-            "sv": "Avfrostning"
-          }
-        },
-        {
-          "id": "legionella",
-          "title": {
-            "da": "Anti-legionella",
-            "en": "Anti-legionella",
-            "es": "Anti-legionela",
-            "fr": "Antilégionelle",
-            "nl": "Anti-legionella",
-            "no": "Anti-legionella",
-            "sv": "Anti-legionella"
-          }
-        },
-        {
-          "id": "prohibited",
-          "title": {
-            "da": "Forbudt",
-            "en": "Prohibited",
-            "es": "Prohibido",
-            "fr": "Interdit",
-            "nl": "Verboden",
-            "no": "Forbudt",
-            "sv": "Förbjuden"
-          }
-        }
-      ]
     },
     "vertical": {
       "getable": true,

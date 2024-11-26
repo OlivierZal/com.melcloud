@@ -23,10 +23,11 @@ import {
   type ISuperDeviceFacade,
   type ListDeviceDataAta,
   type LoginCredentials,
+  type TemperatureLog,
 } from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import/default, import/no-extraneous-dependencies
 import Homey from 'homey'
-import { Settings as LuxonSettings } from 'luxon'
+import { DateTime, Settings as LuxonSettings } from 'luxon'
 
 import {
   changelog,
@@ -37,7 +38,7 @@ import {
   thermostatMode,
   vertical,
 } from './json-files.mts'
-import { getZones } from './lib/get-zones.mts'
+import { getDevices, getZones } from './lib/get-zones.mts'
 import {
   fanSpeedValues,
   zoneModel,
@@ -333,6 +334,17 @@ export default class MELCloudApp extends Homey.App {
     return this.homey.i18n.getLanguage()
   }
 
+  public async getTemperatures(
+    deviceId: string,
+    days: number,
+  ): Promise<TemperatureLog> {
+    const now = DateTime.now().set({ millisecond: 0 })
+    return this.getFacade('devices', deviceId).temperatures({
+      from: now.minus({ days }).toISO({ includeOffset: false }),
+      to: now.toISO({ includeOffset: false }),
+    })
+  }
+
   public async login(data: LoginCredentials): Promise<boolean> {
     return this.api.authenticate(data)
   }
@@ -439,6 +451,15 @@ export default class MELCloudApp extends Homey.App {
           name.toLowerCase().includes(query.toLowerCase()),
         ),
       )
+    ;['temperatures'].forEach((widget) =>
+      this.homey.dashboards
+        .getWidget(widget)
+        .registerSettingAutocompleteListener('default_zone', (query) =>
+          getDevices().filter(({ name }) =>
+            name.toLowerCase().includes(query.toLowerCase()),
+          ),
+        ),
+    )
   }
 
   async #syncFromDevices({

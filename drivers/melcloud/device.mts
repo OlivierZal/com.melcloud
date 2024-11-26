@@ -21,6 +21,10 @@ import type {
 } from '../../types/common.mts'
 
 export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata> {
+  protected readonly EnergyReportRegular = EnergyReportRegularAta
+
+  protected readonly EnergyReportTotal = EnergyReportTotalAta
+
   protected readonly fromDevice: Partial<
     Record<
       keyof OpCapabilities<DeviceType.Ata>,
@@ -46,6 +50,8 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata
       Vertical[value]) as ConvertFromDevice<DeviceType.Ata>,
   } as const
 
+  protected readonly thermostatMode = ThermostatModeAta
+
   protected readonly toDevice: Partial<
     Record<
       keyof SetCapabilities<DeviceType.Ata>,
@@ -59,8 +65,4 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<DeviceType.Ata>,
   } as const
-
-  protected EnergyReportRegular = EnergyReportRegularAta
-
-  protected EnergyReportTotal = EnergyReportTotalAta
 }

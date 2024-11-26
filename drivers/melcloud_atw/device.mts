@@ -70,6 +70,10 @@ const getOperationModeStateZoneValue = (
 }
 
 export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw> {
+  protected readonly EnergyReportRegular = EnergyReportRegularAtw
+
+  protected readonly EnergyReportTotal = EnergyReportTotalAtw
+
   protected readonly fromDevice: Partial<
     Record<
       keyof OpCapabilities<DeviceType.Atw>,
@@ -112,6 +116,8 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
   } as const
 
+  protected readonly thermostatMode = undefined
+
   protected readonly toDevice: Partial<
     Record<
       keyof SetCapabilities<DeviceType.Atw>,
@@ -125,10 +131,6 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
   } as const
-
-  protected EnergyReportRegular = EnergyReportRegularAtw
-
-  protected EnergyReportTotal = EnergyReportTotalAtw
 
   protected override async setCapabilityValues(
     data: ListDeviceData<DeviceType.Atw>,

@@ -3,22 +3,21 @@ import type {
   GroupState,
   OperationMode,
 } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/HomeyWidget'
+import type HomeyWidget from 'homey/lib/HomeyWidget'
 
 import type {
-  BaseZone,
   BuildingZone,
   DriverCapabilitiesOptions,
   GetAtaOptions,
   GroupAtaStates,
+  HomeyWidgetSettingsAtaGroupSetting,
   Settings,
   ValueOf,
   Zone,
 } from '../../../types/common.mts'
 
-interface HomeySettings extends Record<string, unknown> {
-  animations: boolean
-  default_zone?: BaseZone
+declare interface Homey extends HomeyWidget {
+  getSettings: () => HomeyWidgetSettingsAtaGroupSetting
 }
 
 interface ResetParams {
@@ -193,7 +192,10 @@ const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
   shine: null,
 }
 
-let settings: HomeySettings = { animations: true }
+let settings: HomeyWidgetSettingsAtaGroupSetting = {
+  animations: true,
+  default_zone: null,
+}
 
 let debounceTimeout: NodeJS.Timeout | null = null
 
@@ -971,9 +973,7 @@ const fetchAtaValues = async (homey: Homey): Promise<void> => {
     updateZoneMapping({ ...defaultAtaValues, ...values })
     refreshAtaValues()
     await handleAnimation(homey, values)
-  } catch {
-    //
-  }
+  } catch {}
 }
 
 const generateAtaValue = (
@@ -1035,7 +1035,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
     if (buildings.length) {
       generateAtaValues(homey)
       await generateZones(buildings)
-      if (settings.default_zone !== undefined) {
+      if (settings.default_zone) {
         ;({
           default_zone: { id: zoneElement.value },
         } = settings)
@@ -1100,7 +1100,7 @@ const addEventListeners = (homey: Homey): void => {
 
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  settings = homey.getSettings() as HomeySettings
+  settings = homey.getSettings()
   await setDocumentLanguage(homey)
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
