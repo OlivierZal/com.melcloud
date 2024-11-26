@@ -1,6 +1,6 @@
 .sun {
   position: absolute;
   font-size: 225px;
-  bottom: 100vh;
-  left: 100vw;
+  right: -100vw;
+  top: -100vh;
 }

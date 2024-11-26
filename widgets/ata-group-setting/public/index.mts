@@ -664,16 +664,16 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   )
   sunAnimation.enter?.pause()
   sunAnimation.enter = null
-  const { bottom, left } = getComputedStyle(sun)
+  const { right, top } = getComputedStyle(sun)
   const animation = sun.animate(
     [
       {
-        bottom: `${String(parseFloat(bottom))}px`,
-        left: `${String(parseFloat(left))}px`,
+        right: `${String(parseFloat(right))}px`,
+        top: `${String(parseFloat(top))}px`,
       },
       {
-        bottom: `${String(window.innerHeight)}px`,
-        left: `${String(window.innerWidth)}px`,
+        right: `${String(-window.innerWidth)}px`,
+        top: `${String(-window.innerHeight)}px`,
       },
     ],
     { duration, easing: 'ease-in-out', fill: 'forwards' },
@@ -693,19 +693,19 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   )
   sunAnimation.exit?.pause()
   sunAnimation.exit = null
-  const { bottom, height, left, width } = getComputedStyle(sun)
+  const { height, right, top, width } = getComputedStyle(sun)
   const animation = sun.animate(
     [
       {
-        bottom: `${String(parseFloat(bottom))}px`,
-        left: `${String(parseFloat(left))}px`,
+        right: `${String(parseFloat(right))}px`,
+        top: `${String(parseFloat(top))}px`,
       },
       {
-        bottom: `${String(
-          (window.innerHeight - parseFloat(height)) / FACTOR_TWO,
-        )}px`,
-        left: `${String(
+        right: `${String(
           (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
+        )}px`,
+        top: `${String(
+          (window.innerHeight - parseFloat(height)) / FACTOR_TWO,
         )}px`,
       },
     ],
