@@ -828,7 +828,7 @@ const fetchErrorLog = async (homey: Homey): Promise<void> =>
       new Promise((resolve) => {
         homey.api(
           'GET',
-          `/errors?${new URLSearchParams({
+          `/logs/errors?${new URLSearchParams({
             from: sinceElement.value,
             limit: '29',
             offset: '0',

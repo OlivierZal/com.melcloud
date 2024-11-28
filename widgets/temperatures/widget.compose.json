@@ -1,0 +1,55 @@
+{
+  "api": {
+    "getDevices": {
+      "method": "GET",
+      "path": "/devices"
+    },
+    "getLanguage": {
+      "method": "GET",
+      "path": "/language"
+    },
+    "getTemperatures": {
+      "method": "GET",
+      "path": "/logs/temperatures/devices/:deviceId"
+    }
+  },
+  "name": {
+    "da": "Temperaturhistorik",
+    "en": "Temperature history",
+    "es": "Historial de temperaturas",
+    "fr": "Historique des températures",
+    "nl": "Temperatuuroverzicht",
+    "no": "Temperaturhistorikk",
+    "sv": "Temperaturhistorik"
+  },
+  "settings": [
+    {
+      "id": "default_zone",
+      "title": {
+        "da": "Standardzone",
+        "en": "Default zone",
+        "es": "Zona predeterminada",
+        "fr": "Zone par défaut",
+        "nl": "Standaardzone",
+        "no": "Standardsone",
+        "sv": "Standardzon"
+      },
+      "type": "autocomplete"
+    },
+    {
+      "id": "days",
+      "min": 1,
+      "title": {
+        "da": "Antal dage",
+        "en": "Number of days",
+        "es": "Número de días",
+        "fr": "Nombre de jours",
+        "nl": "Aantal dagen",
+        "no": "Antall dager",
+        "sv": "Antal dagar"
+      },
+      "type": "number",
+      "value": 1
+    }
+  ]
+}

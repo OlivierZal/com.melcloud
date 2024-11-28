@@ -41,6 +41,9 @@ const api = {
     const { type } = query
     return getBuildings({ type: type ? Number(type) : undefined })
   },
+  getLanguage({ homey }: { homey: Homey }): string {
+    return homey.i18n.getLanguage()
+  },
   async setAtaValues({
     body,
     homey,

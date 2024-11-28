@@ -47,7 +47,7 @@
         "234": "erreurs",
         "plural": "erreurs"
       },
-      "legend": "Journal des erreurs",
+      "legend": "Historique des erreurs",
       "period": "Depuis le __from__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"

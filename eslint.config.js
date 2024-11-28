@@ -91,14 +91,14 @@ const valuesFirst = {
 
 const config = [
   {
-    ignores: ['.homeybuild/'],
+    ignores: ['.homeybuild/', '**/*.min.js'],
   },
   ...ts.config(
     {
       extends: [
         js.configs.all,
-        ...tsConfigs.all,
-        ...tsConfigs.strictTypeChecked,
+        tsConfigs.all,
+        tsConfigs.strictTypeChecked,
         importPlugin.flatConfigs.errors,
         importPlugin.flatConfigs.typescript,
         prettier,

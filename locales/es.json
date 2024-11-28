@@ -47,7 +47,7 @@
         "234": "errores",
         "plural": "errores"
       },
-      "legend": "Registro de errores",
+      "legend": "Historial de errores",
       "period": "Desde __from__:",
       "see": "Ver los errores",
       "since": "desde el"

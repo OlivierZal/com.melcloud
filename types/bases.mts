@@ -25,3 +25,5 @@ export interface RangeOptions {
   readonly step?: number
   readonly units?: string
 }
+
+export type BaseSettings = Partial<Record<string, unknown>>

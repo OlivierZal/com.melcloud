@@ -45,6 +45,7 @@ import type {
   SetCapabilitiesAtw,
 } from './atw.mts'
 import type {
+  BaseSettings,
   CapabilitiesOptionsValues,
   LocalizedStrings,
   RangeOptions,
@@ -186,6 +187,10 @@ export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
+export interface DaysQuery {
+  readonly days: string
+}
+
 export interface DeviceDetails<T extends DeviceType> {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions: Partial<CapabilitiesOptions<T>>
@@ -239,6 +244,16 @@ export interface HomeySettings {
   readonly notifiedVersion?: string | null
   readonly password?: string | null
   readonly username?: string | null
+}
+
+export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
+  animations: boolean
+  default_zone: BaseZone | null
+}
+
+export interface HomeyWidgetSettingsTemperatures extends BaseSettings {
+  days: number
+  default_zone: BaseZone | null
 }
 
 export interface LoginDriverSetting extends DriverSetting {
@@ -307,8 +322,7 @@ export interface ReportPlanParameters {
   readonly values: DateObjectUnits
 }
 
-export interface Settings
-  extends Record<string, boolean | number | string | null | undefined> {
+export interface Settings extends BaseSettings {
   readonly always_on?: boolean
 }
 

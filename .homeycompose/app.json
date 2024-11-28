@@ -14,7 +14,7 @@
     },
     "getErrors": {
       "method": "GET",
-      "path": "/errors"
+      "path": "/logs/errors"
     },
     "getFrostProtectionSettings": {
       "method": "GET",

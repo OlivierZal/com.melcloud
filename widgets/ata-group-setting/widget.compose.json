@@ -12,6 +12,10 @@
       "method": "GET",
       "path": "/buildings"
     },
+    "getLanguage": {
+      "method": "GET",
+      "path": "/language"
+    },
     "setAtaValues": {
       "method": "PUT",
       "path": "/values/ata/:zoneType/:zoneId"
@@ -50,6 +54,7 @@
         "no": "Animasjoner kan få widgeten til å fryse på enkelte enheter.",
         "sv": "Animationer kan få widgeten att frysa på vissa enheter."
       },
+      "id": "animations",
       "title": {
         "da": "Animationer",
         "en": "Animations",
@@ -59,7 +64,6 @@
         "no": "Animasjoner",
         "sv": "Animationer"
       },
-      "id": "animations",
       "type": "checkbox",
       "value": true
     }

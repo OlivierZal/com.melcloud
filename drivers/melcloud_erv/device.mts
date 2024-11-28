@@ -15,6 +15,10 @@ import type {
 } from '../../types/common.mts'
 
 export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv> {
+  protected readonly EnergyReportRegular = undefined
+
+  protected readonly EnergyReportTotal = undefined
+
   protected readonly fromDevice: Partial<
     Record<
       keyof OpCapabilities<DeviceType.Erv>,
@@ -30,6 +34,8 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv
       : ThermostatModeErv.off) as ConvertFromDevice<DeviceType.Erv>,
   } as const
 
+  protected readonly thermostatMode = ThermostatModeErv
+
   protected readonly toDevice: Partial<
     Record<
       keyof SetCapabilities<DeviceType.Erv>,
@@ -39,8 +45,4 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv
     thermostat_mode: ((value: keyof typeof VentilationMode) =>
       VentilationMode[value]) as ConvertToDevice<DeviceType.Erv>,
   } as const
-
-  protected EnergyReportRegular = undefined
-
-  protected EnergyReportTotal = undefined
 }

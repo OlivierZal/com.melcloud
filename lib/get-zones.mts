@@ -1,5 +1,6 @@
 import {
   BuildingModel,
+  DeviceModel,
   type DeviceType,
   type IAreaModel,
   type IDeviceModelAny,
@@ -75,3 +76,11 @@ export const getZones = ({ type }: { type?: DeviceType } = {}): BaseZone[] =>
       ],
     ) ?? []),
   ])
+
+export const getDevices = ({ type }: { type?: DeviceType } = {}): BaseZone[] =>
+  (type === undefined ?
+    DeviceModel.getAll()
+  : DeviceModel.getAll().filter(({ type: deviceType }) => deviceType === type)
+  )
+    .toSorted(compareNames)
+    .map(({ id, name }) => ({ id: `devices_${String(id)}`, name }))

@@ -3,7 +3,7 @@
   "version": "40.1.0",
   "type": "module",
   "scripts": {
-    "build:css": "tailwindcss -i widgets/ata-group-setting/public/input.css -o widgets/ata-group-setting/public/output.css",
+    "build:css": "tailwindcss -i styles/input.css -o widgets/ata-group-setting/public/output.css && tailwindcss -i styles/input.css -o widgets/temperatures/public/output.css",
     "format": "prettier . --check",
     "format:css": "prettier widgets/ata-group-setting/public/output.css --ignore-path --write",
     "format:docs": "prettier README.md --ignore-path --write",
@@ -14,7 +14,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^17.1.0",
+    "@olivierzal/melcloud-api": "^17.2.4",
     "core-js": "^3.39.0",
     "homey-lib": "^2.32.11",
     "luxon": "^3.5.0",
@@ -30,8 +30,9 @@
     "@stylistic/eslint-plugin": "^2.11.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.1",
     "daisyui": "^4.12.14",
+    "echarts": "^5.5.1",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
