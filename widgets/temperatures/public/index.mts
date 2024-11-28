@@ -51,10 +51,11 @@ const draw = async (homey: Homey): Promise<void> => {
   myChart.clear()
   const { legend, series, xAxis } = await getTemperatures(homey)
   const option = {
-    legend: { data: legend, type: 'scroll' },
+    legend: { bottom: 0, data: legend, type: 'scroll' },
     series: series.map((serie, index) => ({
       data: serie,
       name: legend[index],
+      symbol: 'none',
       type: 'line',
     })),
     xAxis: { data: xAxis },
