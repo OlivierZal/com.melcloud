@@ -1,4 +1,4 @@
-import type { TemperatureLog } from '@olivierzal/melcloud-api'
+import type { ReportChartLineOptions } from '@olivierzal/melcloud-api'
 import type ApexCharts from 'apexcharts'
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 
@@ -36,21 +36,24 @@ let chart: ApexCharts | null = null
 
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const getTemperatures = async (homey: Homey): Promise<TemperatureLog> =>
+const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
   (await homey.api(
     'GET',
     `/logs/temperatures/${getZonePath()}?${new URLSearchParams({
       days: String(settings.days),
     } satisfies DaysQuery)}`,
-  )) as TemperatureLog
+  )) as ReportChartLineOptions
 
 const draw = async (homey: Homey): Promise<void> => {
-  const { labels: categories, series } = await getTemperatures(homey)
+  const { labels: categories, series, unit } = await getTemperatures(homey)
   const options = {
     chart: { height: 400, toolbar: { show: false }, type: 'line' },
     series,
     xaxis: { categories },
-    yaxis: { labels: { formatter: (value): string => value.toFixed() } },
+    yaxis: {
+      labels: { formatter: (value): string => value.toFixed() },
+      title: { text: unit },
+    },
   } satisfies ApexCharts.ApexOptions
   if (!chart) {
     // @ts-expect-error: imported by another script in `./index.html`

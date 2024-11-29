@@ -23,7 +23,7 @@ import {
   type ISuperDeviceFacade,
   type ListDeviceDataAta,
   type LoginCredentials,
-  type TemperatureLog,
+  type ReportChartLineOptions,
 } from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import/default, import/no-extraneous-dependencies
 import Homey from 'homey'
@@ -337,7 +337,7 @@ export default class MELCloudApp extends Homey.App {
   public async getTemperatures(
     deviceId: string,
     days: number,
-  ): Promise<TemperatureLog> {
+  ): Promise<ReportChartLineOptions> {
     const now = DateTime.now().set({ millisecond: 0 })
     return this.getFacade('devices', deviceId).temperatures({
       from: now.minus({ days }).toISO({ includeOffset: false }),
