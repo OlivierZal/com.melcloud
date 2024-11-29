@@ -65,11 +65,10 @@ const draw = async (homey: Homey): Promise<void> => {
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  try {
-    const language = await homey.api('GET', '/language')
-    document.documentElement.lang =
-      typeof language === 'string' ? language : 'en'
-  } catch {}
+  document.documentElement.lang = (await homey.api(
+    'GET',
+    '/language',
+  )) as string
 }
 
 const createOptionElement = (
@@ -90,18 +89,16 @@ const generateZones = (zones: BaseZone[]): void => {
 }
 
 const fetchDevices = async (homey: Homey): Promise<void> => {
-  try {
-    const devices = (await homey.api('GET', '/devices')) as BaseZone[]
-    if (devices.length) {
-      generateZones(devices)
-      if (settings.default_zone) {
-        ;({
-          default_zone: { id: zoneElement.value },
-        } = settings)
-      }
-      await draw(homey)
+  const devices = (await homey.api('GET', '/devices')) as BaseZone[]
+  if (devices.length) {
+    generateZones(devices)
+    if (settings.default_zone) {
+      ;({
+        default_zone: { id: zoneElement.value },
+      } = settings)
     }
-  } catch {}
+    await draw(homey)
+  }
 }
 
 const addEventListeners = (homey: Homey): void => {

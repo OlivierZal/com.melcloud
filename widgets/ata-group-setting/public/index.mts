@@ -239,11 +239,10 @@ const generateDelay = (delay: number, speed: number): number =>
     DEFAULT_DIVISOR)
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  try {
-    const language = await homey.api('GET', '/language')
-    document.documentElement.lang =
-      typeof language === 'string' ? language : 'en'
-  } catch {}
+  document.documentElement.lang = (await homey.api(
+    'GET',
+    '/language',
+  )) as string
 }
 
 const createLabelElement = (
@@ -842,13 +841,8 @@ const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
     } satisfies Required<GetAtaOptions>)}`,
   )) as GroupAtaStates
 
-const getModes = async (homey: Homey): Promise<OperationMode[]> => {
-  try {
-    return (await getDetailedAtaValues(homey)).OperationMode
-  } catch {
-    return []
-  }
-}
+const getModes = async (homey: Homey): Promise<OperationMode[]> =>
+  (await getDetailedAtaValues(homey)).OperationMode
 
 const resetFireAnimation = async (
   homey: Homey,
@@ -968,12 +962,10 @@ const handleAnimation = async (
 }
 
 const fetchAtaValues = async (homey: Homey): Promise<void> => {
-  try {
-    const values = await getAtaValues(homey)
-    updateZoneMapping({ ...defaultAtaValues, ...values })
-    refreshAtaValues()
-    await handleAnimation(homey, values)
-  } catch {}
+  const values = await getAtaValues(homey)
+  updateZoneMapping({ ...defaultAtaValues, ...values })
+  refreshAtaValues()
+  await handleAnimation(homey, values)
 }
 
 const generateAtaValue = (
@@ -1025,36 +1017,32 @@ const generateZones = async (zones: Zone[]): Promise<void> =>
   }, Promise.resolve())
 
 const fetchBuildings = async (homey: Homey): Promise<void> => {
-  try {
-    const buildings = (await homey.api(
-      'GET',
-      `/buildings?${new URLSearchParams({
-        type: '0',
-      } satisfies { type: `${DeviceType}` })}`,
-    )) as BuildingZone[]
-    if (buildings.length) {
-      generateAtaValues(homey)
-      await generateZones(buildings)
-      if (settings.default_zone) {
-        ;({
-          default_zone: { id: zoneElement.value },
-        } = settings)
-      }
-      await fetchAtaValues(homey)
+  const buildings = (await homey.api(
+    'GET',
+    `/buildings?${new URLSearchParams({
+      type: '0',
+    } satisfies { type: `${DeviceType}` })}`,
+  )) as BuildingZone[]
+  if (buildings.length) {
+    generateAtaValues(homey)
+    await generateZones(buildings)
+    if (settings.default_zone) {
+      ;({
+        default_zone: { id: zoneElement.value },
+      } = settings)
     }
-  } catch {}
+    await fetchAtaValues(homey)
+  }
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  try {
-    ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
-      keyof GroupState,
-      DriverCapabilitiesOptions,
-    ][]
-    defaultAtaValues = Object.fromEntries(
-      ataCapabilities.map(([ataKey]) => [ataKey, null]),
-    )
-  } catch {}
+  ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
+    keyof GroupState,
+    DriverCapabilitiesOptions,
+  ][]
+  defaultAtaValues = Object.fromEntries(
+    ataCapabilities.map(([ataKey]) => [ataKey, null]),
+  )
 }
 
 const setAtaValues = async (homey: Homey): Promise<void> => {
