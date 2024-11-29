@@ -2,7 +2,6 @@
 import Homey from 'homey'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
-import { getErrorMessage } from '../lib/get-error-message.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withTimers } from '../mixins/with-timers.mts'
 
@@ -37,6 +36,13 @@ import type { BaseMELCloudDriver } from './base-driver.mts'
 const DEBOUNCE_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
+
+const getErrorMessage = (error: unknown): string | null => {
+  if (error !== null) {
+    return error instanceof Error ? error.message : String(error)
+  }
+  return null
+}
 
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<

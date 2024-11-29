@@ -3,7 +3,7 @@
   "version": "40.1.0",
   "type": "module",
   "scripts": {
-    "build:css": "tailwindcss -i styles/input.css -o widgets/ata-group-setting/public/output.css && tailwindcss -i styles/input.css -o widgets/temperatures/public/output.css",
+    "build:css": "tailwindcss -i styles/input.css -o widgets/ata-group-setting/public/output.css && tailwindcss -i styles/input.css -o widgets/charts/public/output.css",
     "format": "prettier . --check",
     "format:css": "prettier widgets/ata-group-setting/public/output.css --ignore-path --write",
     "format:docs": "prettier README.md --ignore-path --write",
