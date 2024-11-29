@@ -14,7 +14,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^17.2.4",
+    "@olivierzal/melcloud-api": "^17.3.0",
     "core-js": "^3.39.0",
     "homey-lib": "^2.32.11",
     "luxon": "^3.5.0",
@@ -31,8 +31,8 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.1",
+    "apexcharts": "^4.1.0",
     "daisyui": "^4.12.14",
-    "echarts": "^5.5.1",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",

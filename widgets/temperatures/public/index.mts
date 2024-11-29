@@ -1,6 +1,5 @@
 import type { TemperatureLog } from '@olivierzal/melcloud-api'
-// eslint-disable-next-line import/no-namespace
-import type * as echarts from 'echarts'
+import type ApexCharts from 'apexcharts'
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 
 import type { BaseZone, DaysQuery } from '../../../types/common.mts'
@@ -33,6 +32,7 @@ const getSelectElement = (id: string): HTMLSelectElement => {
 const zoneElement = getSelectElement('zones')
 
 let settings: HomeySettings = { days: 1, default_zone: null }
+let chart: ApexCharts | null = null
 
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
@@ -44,24 +44,21 @@ const getTemperatures = async (homey: Homey): Promise<TemperatureLog> =>
     } satisfies DaysQuery)}`,
   )) as TemperatureLog
 
-// @ts-expect-error: see `./echarts.min.js`
-const myChart = echarts.init(getDivElement('temperatures'))
-
 const draw = async (homey: Homey): Promise<void> => {
-  myChart.clear()
-  const { legend, series, xAxis } = await getTemperatures(homey)
-  const option = {
-    legend: { bottom: 0, data: legend, type: 'scroll' },
-    series: series.map((serie, index) => ({
-      data: serie,
-      name: legend[index],
-      symbol: 'none',
-      type: 'line',
-    })),
-    xAxis: { data: xAxis },
-    yAxis: {},
+  const { labels: categories, series } = await getTemperatures(homey)
+  const options = {
+    chart: { height: 400, toolbar: { show: false }, type: 'line' },
+    series,
+    xaxis: { categories },
+    yaxis: { labels: { formatter: (value): string => value.toFixed() } },
+  } satisfies ApexCharts.ApexOptions
+  if (!chart) {
+    // @ts-expect-error: imported by another script in `./index.html`
+    chart = new ApexCharts(getDivElement('temperatures'), options)
+    await chart.render()
+    return
   }
-  myChart.setOption(option)
+  await chart.updateOptions(options)
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
