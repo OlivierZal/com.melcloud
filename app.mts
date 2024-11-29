@@ -451,15 +451,13 @@ export default class MELCloudApp extends Homey.App {
           name.toLowerCase().includes(query.toLowerCase()),
         ),
       )
-    ;['temperatures'].forEach((widget) =>
-      this.homey.dashboards
-        .getWidget(widget)
-        .registerSettingAutocompleteListener('default_zone', (query) =>
-          getDevices().filter(({ name }) =>
-            name.toLowerCase().includes(query.toLowerCase()),
-          ),
+    this.homey.dashboards
+      .getWidget('charts')
+      .registerSettingAutocompleteListener('default_zone', (query) =>
+        getDevices().filter(({ name }) =>
+          name.toLowerCase().includes(query.toLowerCase()),
         ),
-    )
+      )
   }
 
   async #syncFromDevices({
