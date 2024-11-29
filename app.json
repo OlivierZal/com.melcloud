@@ -5197,7 +5197,7 @@
       "transparent": true,
       "id": "ata-group-setting"
     },
-    "temperatures": {
+    "charts": {
       "api": {
         "getDevices": {
           "method": "GET",
@@ -5251,7 +5251,7 @@
           "value": 1
         }
       ],
-      "id": "temperatures"
+      "id": "charts"
     }
   },
   "capabilities": {
