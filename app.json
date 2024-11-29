@@ -5213,13 +5213,13 @@
         }
       },
       "name": {
-        "da": "Temperaturhistorik",
-        "en": "Temperature history",
-        "es": "Historial de temperaturas",
-        "fr": "Historique des températures",
-        "nl": "Temperatuuroverzicht",
-        "no": "Temperaturhistorikk",
-        "sv": "Temperaturhistorik"
+        "da": "MELCloud-historik",
+        "en": "MELCloud History",
+        "es": "Historial de MELCloud",
+        "fr": "Historique de MELCloud",
+        "nl": "MELCloud-geschiedenis",
+        "no": "MELCloud-historikk",
+        "sv": "MELCloud-historik"
       },
       "settings": [
         {
