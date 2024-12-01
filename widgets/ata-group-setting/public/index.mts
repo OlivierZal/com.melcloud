@@ -1006,8 +1006,11 @@ const generateAtaValues = (homey: Homey): void => {
 const generateZones = async (zones: Zone[]): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
-    const { id, name: label } = zone
-    createOptionElement(zoneElement, { id, label })
+    const { id, level, name } = zone
+    createOptionElement(zoneElement, {
+      id,
+      label: `${'···'.repeat(level)} ${name}`,
+    })
     if ('areas' in zone && zone.areas) {
       await generateZones(zone.areas)
     }

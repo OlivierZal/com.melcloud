@@ -2,7 +2,7 @@ import type { ReportChartLineOptions } from '@olivierzal/melcloud-api'
 import type ApexCharts from 'apexcharts'
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 
-import type { BaseZone, DaysQuery } from '../../../types/common.mts'
+import type { DaysQuery, DeviceZone } from '../../../types/common.mts'
 
 declare interface Homey extends HomeyWidget {
   getSettings: () => HomeySettings
@@ -10,7 +10,7 @@ declare interface Homey extends HomeyWidget {
 
 interface HomeySettings extends Partial<Record<string, unknown>> {
   days: number
-  default_zone: BaseZone | null
+  default_zone: DeviceZone | null
 }
 
 const getDivElement = (id: string): HTMLDivElement => {
@@ -82,14 +82,14 @@ const createOptionElement = (
   }
 }
 
-const generateZones = (zones: BaseZone[]): void => {
+const generateZones = (zones: DeviceZone[]): void => {
   zones.forEach(({ id, name: label }) => {
     createOptionElement(zoneElement, { id, label })
   })
 }
 
 const fetchDevices = async (homey: Homey): Promise<void> => {
-  const devices = (await homey.api('GET', '/devices')) as BaseZone[]
+  const devices = (await homey.api('GET', '/devices')) as DeviceZone[]
   if (devices.length) {
     generateZones(devices)
     if (settings.default_zone) {

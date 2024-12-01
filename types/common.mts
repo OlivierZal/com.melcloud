@@ -173,13 +173,12 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ] as const
 
-export interface BaseZone {
-  id: string
-  name: string
+export interface AreaZone extends DeviceZone {
+  devices?: DeviceZone[]
 }
 
-export interface BuildingZone extends BaseZone {
-  areas?: BaseZone[]
+export interface BuildingZone extends FloorZone {
+  devices?: DeviceZone[]
   floors?: FloorZone[]
 }
 
@@ -196,6 +195,12 @@ export interface DeviceDetails<T extends DeviceType> {
   readonly capabilitiesOptions: Partial<CapabilitiesOptions<T>>
   readonly data: { readonly id: number }
   readonly name: string
+}
+
+export interface DeviceZone {
+  id: string
+  level: number
+  name: string
 }
 
 export interface DriverCapabilitiesOptions {
@@ -218,8 +223,8 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
-export interface FloorZone extends BaseZone {
-  areas?: BaseZone[]
+export interface FloorZone extends AreaZone {
+  areas?: DeviceZone[]
 }
 
 export interface GetAtaOptions {
@@ -248,12 +253,12 @@ export interface HomeySettings {
 
 export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
   animations: boolean
-  default_zone: BaseZone | null
+  default_zone: DeviceZone | null
 }
 
 export interface HomeyWidgetSettingsTemperatures extends BaseSettings {
   days: number
-  default_zone: BaseZone | null
+  default_zone: DeviceZone | null
 }
 
 export interface LoginDriverSetting extends DriverSetting {
@@ -438,4 +443,4 @@ export type SetCapabilityTagMapping<T extends DeviceType> = Record<
 
 export type ValueOf<T> = T[keyof T]
 
-export type Zone = BaseZone | BuildingZone | FloorZone
+export type Zone = AreaZone | BuildingZone | DeviceZone | FloorZone
