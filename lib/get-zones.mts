@@ -52,12 +52,12 @@ const filterAndMapDevices = (
     devices.filter(({ type: deviceType }) => deviceType === type)
   )
   )
-    .toSorted(compareNames)
     .map(({ area, floor, id, name }) => ({
       id: `devices_${String(id)}`,
       level: getDeviceLevel({ area, floor }),
       name,
     }))
+    .toSorted(compareNames)
 
 const filterAndMapAreas = (
   areas: IAreaModel[],
@@ -65,13 +65,13 @@ const filterAndMapAreas = (
 ): AreaZone[] =>
   areas
     .filter((area) => hasDevices(area, { type }))
-    .toSorted(compareNames)
     .map(({ devices, floor, id, name }) => ({
       devices: filterAndMapDevices(devices, { type }),
       id: `areas_${String(id)}`,
       level: floor ? LEVEL_2 : LEVEL_1,
       name,
     }))
+    .toSorted(compareNames)
 
 const filterAndMapFloors = (
   floors: IFloorModel[],
@@ -79,7 +79,6 @@ const filterAndMapFloors = (
 ): FloorZone[] =>
   floors
     .filter((floor) => hasDevices(floor, { type }))
-    .toSorted(compareNames)
     .map(({ areas, devices, id, name }) => ({
       areas: filterAndMapAreas(areas, { type }),
       devices: filterAndMapDevices(
@@ -90,13 +89,13 @@ const filterAndMapFloors = (
       level: 1,
       name,
     }))
+    .toSorted(compareNames)
 
 export const getBuildings = ({
   type,
 }: { type?: DeviceType } = {}): BuildingZone[] =>
   BuildingModel.getAll()
     .filter((building) => hasDevices(building, { type }))
-    .toSorted(compareNames)
     .map(({ areas, devices, floors, id, name }) => ({
       areas: filterAndMapAreas(
         areas.filter(({ floorId }) => floorId === null),
@@ -113,6 +112,7 @@ export const getBuildings = ({
       level: 0,
       name,
     }))
+    .toSorted(compareNames)
 
 export const getZones = ({ type }: { type?: DeviceType } = {}): (
   | AreaZone
@@ -144,5 +144,5 @@ export const getDevices = ({
     DeviceModel.getAll()
   : DeviceModel.getAll().filter(({ type: deviceType }) => deviceType === type)
   )
-    .toSorted(compareNames)
     .map(({ id, name }) => ({ id: `devices_${String(id)}`, level: 0, name }))
+    .toSorted(compareNames)
