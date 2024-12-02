@@ -174,12 +174,11 @@ export const fanSpeedValues = [
 ] as const
 
 export interface AreaZone extends DeviceZone {
-  devices?: DeviceZone[]
+  readonly devices?: DeviceZone[]
 }
 
 export interface BuildingZone extends FloorZone {
-  devices?: DeviceZone[]
-  floors?: FloorZone[]
+  readonly floors?: FloorZone[]
 }
 
 export interface CapabilitiesOptionsAtaErv {
@@ -198,9 +197,9 @@ export interface DeviceDetails<T extends DeviceType> {
 }
 
 export interface DeviceZone {
-  id: string
-  level: number
-  name: string
+  readonly id: string
+  readonly level: number
+  readonly name: string
 }
 
 export interface DriverCapabilitiesOptions {
@@ -224,12 +223,12 @@ export interface DriverSetting {
 }
 
 export interface FloorZone extends AreaZone {
-  areas?: DeviceZone[]
+  readonly areas?: AreaZone[]
 }
 
 export interface GetAtaOptions {
-  mode?: 'detailed'
-  status?: 'on'
+  readonly mode?: 'detailed'
+  readonly status?: 'on'
 }
 
 export interface GroupAtaStates {
@@ -252,13 +251,13 @@ export interface HomeySettings {
 }
 
 export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
-  animations: boolean
-  default_zone: DeviceZone | null
+  readonly animations: boolean
+  readonly default_zone: DeviceZone | null
 }
 
 export interface HomeyWidgetSettingsTemperatures extends BaseSettings {
-  days: number
-  default_zone: DeviceZone | null
+  readonly days: number
+  readonly default_zone: DeviceZone | null
 }
 
 export interface LoginDriverSetting extends DriverSetting {
@@ -332,8 +331,8 @@ export interface Settings extends BaseSettings {
 }
 
 export interface ZoneData {
-  zoneId: string
-  zoneType: Exclude<keyof typeof zoneModel, 'devices'>
+  readonly zoneId: string
+  readonly zoneType: Exclude<keyof typeof zoneModel, 'devices'>
 }
 
 type GetCapabilities<T extends DeviceType> =
