@@ -13,10 +13,6 @@
       "false": "Non",
       "true": "Oui"
     },
-    "buildings": {
-      "legend": "Paramètres des bâtiments",
-      "update": "Mettre à jour"
-    },
     "devices": {
       "apply": {
         "button": "Appliquer à tous les appareils",
@@ -66,7 +62,11 @@
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
-    "title": "Paramètres de MELCloud"
+    "title": "Paramètres de MELCloud",
+    "zones": {
+      "legend": "Paramètres des zones",
+      "update": "Mettre à jour"
+    }
   },
   "warnings": {
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."

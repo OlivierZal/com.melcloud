@@ -57,7 +57,7 @@ const draw = async (homey: Homey): Promise<void> => {
   } satisfies ApexCharts.ApexOptions
   if (!chart) {
     // @ts-expect-error: imported by another script in `./index.html`
-    chart = new ApexCharts(getDivElement('temperatures'), options)
+    chart = new ApexCharts(getDivElement('chart'), options)
     await chart.render()
     return
   }

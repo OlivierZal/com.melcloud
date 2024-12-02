@@ -13,10 +13,6 @@
       "false": "No",
       "true": "Sí"
     },
-    "buildings": {
-      "legend": "Configuración de los edificios",
-      "update": "Actualizar"
-    },
     "devices": {
       "apply": {
         "button": "Aplicar a todos los dispositivos",
@@ -66,7 +62,11 @@
     "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
     "success": "La actualización fue exitosa.",
-    "title": "Configuración de MELCloud"
+    "title": "Configuración de MELCloud",
+    "zones": {
+      "legend": "Configuración de las zonas",
+      "update": "Actualizar"
+    }
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."

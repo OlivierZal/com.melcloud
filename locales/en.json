@@ -13,10 +13,6 @@
       "false": "No",
       "true": "Yes"
     },
-    "buildings": {
-      "legend": "Building settings",
-      "update": "Update"
-    },
     "devices": {
       "apply": {
         "button": "Apply to all devices",
@@ -66,7 +62,11 @@
     "intError": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
     "success": "Update succeeded.",
-    "title": "MELCloud settings"
+    "title": "MELCloud settings",
+    "zones": {
+      "legend": "Zone settings",
+      "update": "Update"
+    }
   },
   "warnings": {
     "dashboard": "Exit the device and return to update your dashboard."

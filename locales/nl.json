@@ -13,10 +13,6 @@
       "false": "Nee",
       "true": "Ja"
     },
-    "buildings": {
-      "legend": "Gebouwinstellingen",
-      "update": "Updaten"
-    },
     "devices": {
       "apply": {
         "button": "Toepassen op alle apparaten",
@@ -66,7 +62,11 @@
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "refresh": "Herladen",
     "success": "Update geslaagd.",
-    "title": "MELCloud-instellingen"
+    "title": "MELCloud-instellingen",
+    "zones": {
+      "legend": "Zonesinstellingen",
+      "update": "Updaten"
+    }
   },
   "warnings": {
     "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten."

@@ -13,10 +13,6 @@
       "false": "Nei",
       "true": "Ja"
     },
-    "buildings": {
-      "legend": "Bygningsinnstillinger",
-      "update": "Oppdater"
-    },
     "devices": {
       "apply": {
         "button": "Bruk på alle enheter",
@@ -66,7 +62,11 @@
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",
     "success": "Oppdatering lyktes.",
-    "title": "MELCloud-innstillinger"
+    "title": "MELCloud-innstillinger",
+    "zones": {
+      "legend": "Sonesinnstillinger",
+      "update": "Oppdater"
+    }
   },
   "warnings": {
     "dashboard": "Avslutt enheten og gå tilbake for å oppdatere dashbordet ditt."

@@ -13,10 +13,6 @@
       "false": "Nej",
       "true": "Ja"
     },
-    "buildings": {
-      "legend": "Byggnadsinställningar",
-      "update": "Uppdatera"
-    },
     "devices": {
       "apply": {
         "button": "Tillämpa på alla enheter",
@@ -66,7 +62,11 @@
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
-    "title": "MELCloud-inställningar"
+    "title": "MELCloud-inställningar",
+    "zones": {
+      "legend": "Zonsinställningar",
+      "update": "Uppdatera"
+    }
   },
   "warnings": {
     "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel."
