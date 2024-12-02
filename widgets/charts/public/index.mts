@@ -34,6 +34,8 @@ const zoneElement = getSelectElement('zones')
 let settings: HomeySettings = { days: 1, default_zone: null }
 let chart: ApexCharts | null = null
 
+const getZoneId = (id: number, model: string): string =>
+  `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
@@ -83,8 +85,8 @@ const createOptionElement = (
 }
 
 const generateZones = (zones: DeviceZone[]): void => {
-  zones.forEach(({ id, name: label }) => {
-    createOptionElement(zoneElement, { id, label })
+  zones.forEach(({ id, model, name: label }) => {
+    createOptionElement(zoneElement, { id: getZoneId(id, model), label })
   })
 }
 
@@ -93,9 +95,13 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   if (devices.length) {
     generateZones(devices)
     if (settings.default_zone) {
-      ;({
-        default_zone: { id: zoneElement.value },
-      } = settings)
+      const {
+        default_zone: { id, model },
+      } = settings
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        zoneElement.value = value
+      }
     }
     await draw(homey)
   }

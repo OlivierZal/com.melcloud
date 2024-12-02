@@ -179,7 +179,7 @@ export interface AreaZone extends Omit<DeviceZone, 'model'> {
 }
 
 export interface BaseZone {
-  readonly id: string
+  readonly id: number
   readonly level: number
   readonly model: 'areas' | 'buildings' | 'devices' | 'floors'
   readonly name: string
@@ -260,7 +260,7 @@ export interface HomeySettings {
 
 export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
   readonly animations: boolean
-  readonly default_zone: DeviceZone | null
+  readonly default_zone: Zone | null
 }
 
 export interface HomeyWidgetSettingsTemperatures extends BaseSettings {

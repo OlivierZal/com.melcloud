@@ -143,6 +143,10 @@ let errorCount = 0
 let from = ''
 let to = ''
 
+const getZoneId = (id: number, model: string): string =>
+  `${model}_${String(id)}`
+const getZoneName = (name: string, level: number): string =>
+  `${'···'.repeat(level)} ${name}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const getErrorMessage = (error: unknown): string =>
@@ -921,10 +925,10 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
 const generateZones = async (zones: Zone[]): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
-    const { id, level, name } = zone
+    const { id, level, model, name } = zone
     createOptionElement(zoneElement, {
-      id,
-      label: `${'··'.repeat(level)} ${name}`,
+      id: getZoneId(id, model),
+      label: getZoneName(name, level),
     })
     if ('devices' in zone && zone.devices) {
       await generateZones(zone.devices)

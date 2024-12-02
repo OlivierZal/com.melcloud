@@ -1,6 +1,5 @@
 import {
   BuildingModel,
-  DeviceModel,
   type DeviceType,
   type IAreaModel,
   type IDeviceModelAny,
@@ -54,7 +53,7 @@ const filterAndMapDevices = (
   )
   )
     .map(({ area, floor, id, name }) => ({
-      id: `devices_${String(id)}`,
+      id,
       level: getDeviceLevel({ area, floor }),
       model: 'devices' as const,
       name,
@@ -69,7 +68,7 @@ const filterAndMapAreas = (
     .filter((area) => hasDevices(area, { type }))
     .map(({ devices, floor, id, name }) => ({
       devices: filterAndMapDevices(devices, { type }),
-      id: `areas_${String(id)}`,
+      id,
       level: floor ? LEVEL_2 : LEVEL_1,
       model: 'areas' as const,
       name,
@@ -88,7 +87,7 @@ const filterAndMapFloors = (
         devices.filter(({ areaId }) => areaId === null),
         { type },
       ),
-      id: `floors_${String(id)}`,
+      id,
       level: 1,
       model: 'floors' as const,
       name,
@@ -112,7 +111,7 @@ export const getBuildings = ({
         { type },
       ),
       floors: filterAndMapFloors(floors, { type }),
-      id: `buildings_${String(id)}`,
+      id,
       level: 0,
       model: 'buildings' as const,
       name,

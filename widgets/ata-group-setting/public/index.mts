@@ -224,6 +224,10 @@ const createAnimationMapping = (): Record<
 }
 const animationMapping = createAnimationMapping()
 
+const getZoneId = (id: number, model: string): string =>
+  `${model}_${String(id)}`
+const getZoneName = (name: string, level: number): string =>
+  `${'···'.repeat(level)} ${name}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const generateStyleString = (
@@ -1006,10 +1010,10 @@ const generateAtaValues = (homey: Homey): void => {
 const generateZones = async (zones: Zone[]): Promise<void> =>
   zones.reduce(async (acc, zone) => {
     await acc
-    const { id, level, name } = zone
+    const { id, level, model, name } = zone
     createOptionElement(zoneElement, {
-      id,
-      label: `${'···'.repeat(level)} ${name}`,
+      id: getZoneId(id, model),
+      label: getZoneName(name, level),
     })
     if ('areas' in zone && zone.areas) {
       await generateZones(zone.areas)
@@ -1030,9 +1034,13 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
     generateAtaValues(homey)
     await generateZones(buildings)
     if (settings.default_zone) {
-      ;({
-        default_zone: { id: zoneElement.value },
-      } = settings)
+      const {
+        default_zone: { id, model },
+      } = settings
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        zoneElement.value = value
+      }
     }
     await fetchAtaValues(homey)
   }
