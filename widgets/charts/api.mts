@@ -1,4 +1,4 @@
-import { getDevices } from '../../lib/get-zones.mts'
+import { getZones } from '../../lib/get-zones.mts'
 
 import type { ReportChartLineOptions } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
@@ -7,7 +7,9 @@ import type { DaysQuery, DeviceZone } from '../../types/common.mts'
 
 const api = {
   getDevices(): DeviceZone[] {
-    return getDevices()
+    return getZones().filter(
+      (zone): zone is DeviceZone => zone.model === 'devices',
+    )
   },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()

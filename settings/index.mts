@@ -924,7 +924,7 @@ const generateZones = async (zones: Zone[]): Promise<void> =>
     const { id, level, name } = zone
     createOptionElement(zoneElement, {
       id,
-      label: `${'···'.repeat(level)} ${name}`,
+      label: `${'··'.repeat(level)} ${name}`,
     })
     if ('devices' in zone && zone.devices) {
       await generateZones(zone.devices)

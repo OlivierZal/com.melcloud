@@ -12,6 +12,7 @@ import type {
   BuildingZone,
   DeviceZone,
   FloorZone,
+  Zone,
 } from '../types/common.mts'
 
 const LEVEL_1 = 1
@@ -55,6 +56,7 @@ const filterAndMapDevices = (
     .map(({ area, floor, id, name }) => ({
       id: `devices_${String(id)}`,
       level: getDeviceLevel({ area, floor }),
+      model: 'devices' as const,
       name,
     }))
     .toSorted(compareNames)
@@ -69,6 +71,7 @@ const filterAndMapAreas = (
       devices: filterAndMapDevices(devices, { type }),
       id: `areas_${String(id)}`,
       level: floor ? LEVEL_2 : LEVEL_1,
+      model: 'areas' as const,
       name,
     }))
     .toSorted(compareNames)
@@ -87,6 +90,7 @@ const filterAndMapFloors = (
       ),
       id: `floors_${String(id)}`,
       level: 1,
+      model: 'floors' as const,
       name,
     }))
     .toSorted(compareNames)
@@ -110,15 +114,12 @@ export const getBuildings = ({
       floors: filterAndMapFloors(floors, { type }),
       id: `buildings_${String(id)}`,
       level: 0,
+      model: 'buildings' as const,
       name,
     }))
     .toSorted(compareNames)
 
-export const getZones = ({ type }: { type?: DeviceType } = {}): (
-  | AreaZone
-  | BuildingZone
-  | FloorZone
-)[] =>
+export const getZones = ({ type }: { type?: DeviceType } = {}): Zone[] =>
   getBuildings({ type })
     .flatMap(({ areas, devices, floors, ...building }) => [
       building,
@@ -137,14 +138,4 @@ export const getZones = ({ type }: { type?: DeviceType } = {}): (
         ],
       ) ?? []),
     ])
-    .toSorted(compareNames)
-
-export const getDevices = ({
-  type,
-}: { type?: DeviceType } = {}): DeviceZone[] =>
-  (type === undefined ?
-    DeviceModel.getAll()
-  : DeviceModel.getAll().filter(({ type: deviceType }) => deviceType === type)
-  )
-    .map(({ id, name }) => ({ id: `devices_${String(id)}`, level: 0, name }))
     .toSorted(compareNames)

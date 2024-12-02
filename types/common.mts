@@ -173,11 +173,20 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ] as const
 
-export interface AreaZone extends DeviceZone {
+export interface AreaZone extends Omit<DeviceZone, 'model'> {
+  readonly model: 'areas'
   readonly devices?: DeviceZone[]
 }
 
-export interface BuildingZone extends FloorZone {
+export interface BaseZone {
+  readonly id: string
+  readonly level: number
+  readonly model: 'areas' | 'buildings' | 'devices' | 'floors'
+  readonly name: string
+}
+
+export interface BuildingZone extends Omit<FloorZone, 'model'> {
+  readonly model: 'buildings'
   readonly floors?: FloorZone[]
 }
 
@@ -196,10 +205,8 @@ export interface DeviceDetails<T extends DeviceType> {
   readonly name: string
 }
 
-export interface DeviceZone {
-  readonly id: string
-  readonly level: number
-  readonly name: string
+export interface DeviceZone extends BaseZone {
+  readonly model: 'devices'
 }
 
 export interface DriverCapabilitiesOptions {
@@ -222,7 +229,8 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
-export interface FloorZone extends AreaZone {
+export interface FloorZone extends Omit<AreaZone, 'model'> {
+  readonly model: 'floors'
   readonly areas?: AreaZone[]
 }
 

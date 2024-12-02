@@ -38,7 +38,7 @@ import {
   thermostatMode,
   vertical,
 } from './json-files.mts'
-import { getDevices, getZones } from './lib/get-zones.mts'
+import { getZones } from './lib/get-zones.mts'
 import {
   fanSpeedValues,
   zoneModel,
@@ -447,16 +447,20 @@ export default class MELCloudApp extends Homey.App {
     this.homey.dashboards
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        getZones({ type: DeviceType.Ata }).filter(({ name }) =>
-          name.toLowerCase().includes(query.toLowerCase()),
-        ),
+        getZones({ type: DeviceType.Ata })
+          .filter(({ model }) => model !== 'devices')
+          .filter(({ name }) =>
+            name.toLowerCase().includes(query.toLowerCase()),
+          ),
       )
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        getDevices().filter(({ name }) =>
-          name.toLowerCase().includes(query.toLowerCase()),
-        ),
+        getZones()
+          .filter(({ model }) => model === 'devices')
+          .filter(({ name }) =>
+            name.toLowerCase().includes(query.toLowerCase()),
+          ),
       )
   }
 
