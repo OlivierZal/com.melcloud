@@ -120,18 +120,20 @@ export const getZones = ({ type }: { type?: DeviceType } = {}): (
   | FloorZone
 )[] =>
   getBuildings({ type })
-    .flatMap(({ areas, floors, id, level, name }) => [
-      { id, level, name },
+    .flatMap(({ areas, devices, floors, ...building }) => [
+      building,
+      ...(devices ?? []),
       ...(areas ?? []),
       ...(floors?.flatMap(
-        ({
-          areas: floorAreas,
-          id: floorId,
-          level: floorLevel,
-          name: floorName,
-        }) => [
-          { id: floorId, level: floorLevel, name: floorName },
-          ...(floorAreas ?? []),
+        ({ areas: floorAreas, devices: floorDevices, ...floor }) => [
+          floor,
+          ...(floorDevices ?? []),
+          ...(floorAreas?.flatMap(
+            ({ devices: floorAreaDevices, ...floorArea }) => [
+              floorArea,
+              ...(floorAreaDevices ?? []),
+            ],
+          ) ?? []),
         ],
       ) ?? []),
     ])

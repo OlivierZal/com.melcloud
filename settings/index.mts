@@ -926,14 +926,14 @@ const generateZones = async (zones: Zone[]): Promise<void> =>
       id,
       label: `${'···'.repeat(level)} ${name}`,
     })
+    if ('devices' in zone && zone.devices) {
+      await generateZones(zone.devices)
+    }
     if ('areas' in zone && zone.areas) {
       await generateZones(zone.areas)
     }
     if ('floors' in zone && zone.floors) {
       await generateZones(zone.floors)
-    }
-    if ('devices' in zone && zone.devices) {
-      await generateZones(zone.devices)
     }
   }, Promise.resolve())
 
