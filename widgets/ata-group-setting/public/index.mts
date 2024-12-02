@@ -331,9 +331,7 @@ const createOptionElement = (
   selectElement: HTMLSelectElement,
   { id, label }: { id: string; label: string },
 ): void => {
-  if (
-    !selectElement.querySelector<HTMLOptionElement>(`option[value="${id}"]`)
-  ) {
+  if (!selectElement.querySelector(`option[value="${id}"]`)) {
     selectElement.append(new Option(label, id))
   }
 }
