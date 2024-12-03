@@ -63,6 +63,17 @@ const moduleGroups = {
   ],
 }
 
+const objectLikeGroups = {
+  groups: [
+    'required-index-signature',
+    'optional-index-signature',
+    'required-property',
+    'optional-property',
+    'required-method',
+    'optional-method',
+  ],
+}
+
 const typeGroups = {
   groups: [
     'import',
@@ -78,17 +89,6 @@ const typeGroups = {
     'operator',
     'unknown',
     'nullish',
-  ],
-}
-
-const objectLikeGroups = {
-  groups: [
-    'index-signature',
-    'optional-index-signature',
-    'property',
-    'optional-property',
-    'method',
-    'optional-method',
   ],
 }
 
