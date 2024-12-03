@@ -29,7 +29,7 @@ const config = {
       fontWeight: {
         bold: 'var(--homey-font-weight-bold)',
         medium: 'var(--homey-font-weight-medium)',
-        normal: 'var(--homey-font-weight-normal)',
+        normal: 'var(--homey-font-weight-regular)',
       },
     },
   },

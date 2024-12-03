@@ -1472,12 +1472,16 @@ html{
   display: flex;
 }
 
+.grid{
+  display: grid;
+}
+
 .w-1\/2{
   width: 50%;
 }
 
-.w-full{
-  width: 100%;
+.max-w-xs{
+  max-width: 20rem;
 }
 
 .transform{
@@ -1502,7 +1506,7 @@ html{
 }
 
 .font-normal{
-  font-weight: var(--homey-font-weight-normal);
+  font-weight: var(--homey-font-weight-regular);
 }
 
 .text-blue{

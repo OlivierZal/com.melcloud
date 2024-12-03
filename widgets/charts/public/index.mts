@@ -13,6 +13,13 @@ interface HomeySettings extends Partial<Record<string, unknown>> {
   default_zone: DeviceZone | null
 }
 
+const FONT_SIZE_SMALL = '12px'
+const COLOR_GREY = '#E4E4E4'
+
+const INCREMENT = 1
+const TIME_ZERO = 0
+const TIME_FIVE = 5
+
 const getDivElement = (id: string): HTMLDivElement => {
   const element = document.getElementById(id)
   if (!(element instanceof HTMLDivElement)) {
@@ -49,54 +56,69 @@ const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
 const getStyle = (value: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(value).trim()
 
-const FONT_FAMILY = 'Roboto, sans-serif'
-
-const draw = async (homey: Homey): Promise<void> => {
-  const colorLight = getStyle('--homey-text-color-light')
+const getOptions = async (homey: Homey): Promise<ApexCharts.ApexOptions> => {
   const { labels, series, unit } = await getTemperatures(homey)
-  const options = {
+  const colorLight = getStyle('--homey-text-color-light')
+  const fontStyle = {
+    fontSize: FONT_SIZE_SMALL,
+    fontWeight: getStyle('--homey-font-weight-regular'),
+  }
+  return {
     chart: { height: 400, toolbar: { show: false }, type: 'line' },
     grid: {
-      borderColor: colorLight,
-      strokeDashArray: 4,
+      borderColor: COLOR_GREY,
+      strokeDashArray: 3,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
     },
-    legend: { fontFamily: FONT_FAMILY, labels: { colors: colorLight } },
+    legend: { ...fontStyle, labels: { colors: colorLight } },
     series,
-    stroke: { curve: 'smooth', width: 1 },
+    stroke: { curve: 'smooth', width: 2 },
     title: {
       align: 'left',
-      style: { color: colorLight, fontFamily: FONT_FAMILY },
+      offsetX: 5,
+      style: { ...fontStyle, color: colorLight },
       text: unit,
     },
     xaxis: {
-      axisBorder: { color: colorLight, show: true },
+      axisBorder: { color: COLOR_GREY, show: true },
       axisTicks: { show: true },
       categories: labels,
       labels: {
         rotate: 0,
         rotateAlways: false,
-        style: { colors: colorLight, fontFamily: FONT_FAMILY },
+        style: { ...fontStyle, colors: colorLight },
       },
       tickAmount: 4,
     },
     yaxis: {
-      axisBorder: { color: colorLight, show: true },
+      axisBorder: { color: COLOR_GREY, show: true },
       axisTicks: { show: true },
       labels: {
         formatter: (value): string => value.toFixed(),
-        style: { colors: colorLight, fontFamily: FONT_FAMILY },
+        style: { ...fontStyle, colors: colorLight },
       },
     },
-  } satisfies ApexCharts.ApexOptions
-  if (!chart) {
+  }
+}
+
+const draw = async (homey: Homey): Promise<void> => {
+  const options = await getOptions(homey)
+  if (chart) {
+    await chart.updateOptions(options)
+  } else {
     // @ts-expect-error: imported by another script in `./index.html`
     chart = new ApexCharts(getDivElement('chart'), options)
     await chart.render()
-    return
   }
-  await chart.updateOptions(options)
+  const now = new Date()
+  const next = new Date(now)
+  next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
+  setTimeout(() => {
+    draw(homey).catch(() => {
+      //
+    })
+  }, next.getTime() - now.getTime())
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {

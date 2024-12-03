@@ -13,14 +13,14 @@
         <link href="sun.css" rel="stylesheet">
         <script defer src="index.mjs"></script>
     </head>
-    <body class="homey-widget-full">
-        <canvas id="smoke_canvas"></canvas>
-        <div id="animation"></div>
+    <body class="homey-widget-full homey-text-align-center">
         <select
             id="zones"
-            class="select select-ghost text-default text-color font-bold mb-2 w-full"
+            class="select select-ghost text-default text-color font-bold mb-2 max-w-xs"
             aria-label="Buildings"
         ></select>
+        <div id="animation"></div>
+        <canvas id="smoke_canvas"></canvas>
         <div id="values_melcloud"></div>
         <div class="flex justify-between">
             <button
