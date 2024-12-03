@@ -14,7 +14,6 @@ interface HomeySettings extends Partial<Record<string, unknown>> {
 }
 
 const FONT_SIZE_SMALL = '12px'
-const COLOR_GREY = '#E4E4E4'
 
 const INCREMENT = 1
 const TIME_ZERO = 0
@@ -56,44 +55,54 @@ const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
 const getStyle = (value: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(value).trim()
 
-const getOptions = async (homey: Homey): Promise<ApexCharts.ApexOptions> => {
-  const { labels, series, unit } = await getTemperatures(homey)
+// eslint-disable-next-line max-lines-per-function
+const getOptions = ({
+  labels,
+  series,
+  unit,
+}: ReportChartLineOptions): ApexCharts.ApexOptions => {
   const colorLight = getStyle('--homey-text-color-light')
+  const axisStyle = {
+    axisBorder: { color: colorLight, show: true },
+    axisTicks: { color: colorLight, show: true },
+  }
   const fontStyle = {
     fontSize: FONT_SIZE_SMALL,
     fontWeight: getStyle('--homey-font-weight-regular'),
   }
   return {
-    chart: { height: 400, toolbar: { show: false }, type: 'line' },
+    chart: { height: 300, toolbar: { show: false }, type: 'line' },
     grid: {
-      borderColor: COLOR_GREY,
+      borderColor: colorLight,
+      padding: { right: 5 },
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
-      yaxis: { lines: { show: true } },
     },
-    legend: { ...fontStyle, labels: { colors: colorLight } },
-    series,
+    legend: {
+      ...fontStyle,
+      horizontalAlign: 'left',
+      itemMargin: { horizontal: 10, vertical: 0 },
+      labels: { colors: colorLight },
+      markers: { shape: 'square' },
+    },
+    series: series.map(({ data, name }) => ({
+      data,
+      name: name.replace('Temperature', ''),
+    })),
     stroke: { curve: 'smooth', width: 2 },
     title: {
-      align: 'left',
       offsetX: 5,
       style: { ...fontStyle, color: colorLight },
       text: unit,
     },
     xaxis: {
-      axisBorder: { color: COLOR_GREY, show: true },
-      axisTicks: { show: true },
+      ...axisStyle,
       categories: labels,
-      labels: {
-        rotate: 0,
-        rotateAlways: false,
-        style: { ...fontStyle, colors: colorLight },
-      },
+      labels: { rotate: 0, style: { ...fontStyle, colors: colorLight } },
       tickAmount: 4,
     },
     yaxis: {
-      axisBorder: { color: COLOR_GREY, show: true },
-      axisTicks: { show: true },
+      ...axisStyle,
       labels: {
         formatter: (value): string => value.toFixed(),
         style: { ...fontStyle, colors: colorLight },
@@ -103,7 +112,8 @@ const getOptions = async (homey: Homey): Promise<ApexCharts.ApexOptions> => {
 }
 
 const draw = async (homey: Homey): Promise<void> => {
-  const options = await getOptions(homey)
+  const data = await getTemperatures(homey)
+  const options = getOptions(data)
   if (chart) {
     await chart.updateOptions(options)
   } else {
