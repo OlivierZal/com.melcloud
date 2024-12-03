@@ -1,4 +1,5 @@
 import type {
+  DeviceType,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
@@ -166,7 +167,7 @@ const draw = async (homey: Homey): Promise<void> => {
         //
       })
     },
-    ['hourly_temperature', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
+    ['hourly_temperatures', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
       next.getTime() - now.getTime()
     ),
   )
@@ -195,7 +196,16 @@ const generateZones = (zones: DeviceZone[]): void => {
 }
 
 const fetchDevices = async (homey: Homey): Promise<void> => {
-  const devices = (await homey.api('GET', '/devices')) as DeviceZone[]
+  const devices = (await homey.api(
+    'GET',
+    `/devices${
+      settings.chart === 'hourly_temperatures' ?
+        `?${new URLSearchParams({
+          type: '1',
+        } satisfies { type: `${DeviceType}` })}`
+      : ''
+    }`,
+  )) as DeviceZone[]
   if (devices.length) {
     generateZones(devices)
     if (settings.default_zone) {

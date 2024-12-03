@@ -1,6 +1,7 @@
 import { getZones } from '../../lib/get-zones.mts'
 
 import type {
+  DeviceType,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
@@ -10,8 +11,9 @@ import type { HourNumbers } from 'luxon'
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/common.mts'
 
 const api = {
-  getDevices(): DeviceZone[] {
-    return getZones().filter(
+  getDevices({ query }: { query: { type?: `${DeviceType}` } }): DeviceZone[] {
+    const { type } = query
+    return getZones({ type: type ? Number(type) : undefined }).filter(
       (zone): zone is DeviceZone => zone.model === 'devices',
     )
   },
