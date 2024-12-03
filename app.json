@@ -5237,13 +5237,13 @@
         {
           "id": "chart",
           "title": {
-            "da": "Standardzone",
-            "en": "Default zone",
-            "es": "Zona predeterminada",
-            "fr": "Zone par défaut",
-            "nl": "Standaardzone",
-            "no": "Standardsone",
-            "sv": "Standardzon"
+            "da": "Diagram",
+            "en": "Chart",
+            "es": "Gráfico",
+            "fr": "Graphique",
+            "nl": "Grafiek",
+            "no": "Diagram",
+            "sv": "Diagram"
           },
           "type": "dropdown",
           "value": "operation_modes",
