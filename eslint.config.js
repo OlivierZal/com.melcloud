@@ -81,8 +81,15 @@ const typeGroups = {
   ],
 }
 
-const requiredFirst = {
-  groupKind: 'required-first',
+const objectLikeGroups = {
+  groups: [
+    'index-signature',
+    'optional-index-signature',
+    'property',
+    'optional-property',
+    'method',
+    'optional-method',
+  ],
 }
 
 const valuesFirst = {
@@ -306,13 +313,13 @@ const config = [
         'perfectionist/sort-exports': ['error', valuesFirst],
         'perfectionist/sort-heritage-clauses': 'error',
         'perfectionist/sort-imports': ['error', importGroups],
-        'perfectionist/sort-interfaces': ['error', requiredFirst],
+        'perfectionist/sort-interfaces': ['error', objectLikeGroups],
         'perfectionist/sort-intersection-types': ['error', typeGroups],
         'perfectionist/sort-maps': 'error',
         'perfectionist/sort-modules': ['error', moduleGroups],
         'perfectionist/sort-named-exports': ['error', valuesFirst],
         'perfectionist/sort-named-imports': ['error', valuesFirst],
-        'perfectionist/sort-object-types': ['error', requiredFirst],
+        'perfectionist/sort-object-types': ['error', objectLikeGroups],
         'perfectionist/sort-objects': 'error',
         'perfectionist/sort-sets': 'error',
         'perfectionist/sort-switch-case': 'error',

@@ -207,7 +207,7 @@ let smokeParticles: SmokeParticle[] = []
 
 const createAnimationMapping = (): Record<
   AnimatedElement,
-  { readonly getIndex: () => number; readonly innerHTML: string }
+  { readonly innerHTML: string; readonly getIndex: () => number }
 > => {
   let flameIndex = 0
   let leafIndex = 0
