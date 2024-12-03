@@ -5203,9 +5203,21 @@
           "method": "GET",
           "path": "/devices"
         },
+        "getHourlyTemperatures": {
+          "method": "GET",
+          "path": "/logs/hourly_temperatures/devices/:deviceId"
+        },
         "getLanguage": {
           "method": "GET",
           "path": "/language"
+        },
+        "getOperationModes": {
+          "method": "GET",
+          "path": "/logs/operation_modes/devices/:deviceId"
+        },
+        "getSignal": {
+          "method": "GET",
+          "path": "/logs/signal/devices/:deviceId"
         },
         "getTemperatures": {
           "method": "GET",

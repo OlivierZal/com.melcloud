@@ -1,9 +1,13 @@
 import { getZones } from '../../lib/get-zones.mts'
 
-import type { ReportChartLineOptions } from '@olivierzal/melcloud-api'
+import type {
+  ReportChartLineOptions,
+  ReportChartPieOptions,
+} from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
+import type { HourNumbers } from 'luxon'
 
-import type { DaysQuery, DeviceZone } from '../../types/common.mts'
+import type { DaysQuery, DeviceZone, HourQuery } from '../../types/common.mts'
 
 const api = {
   getDevices(): DeviceZone[] {
@@ -11,8 +15,47 @@ const api = {
       (zone): zone is DeviceZone => zone.model === 'devices',
     )
   },
+  async getHourlyTemperatures({
+    homey,
+    params,
+    query,
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+    query: HourQuery
+  }): Promise<ReportChartLineOptions> {
+    return homey.app.getHourlyTemperatures(
+      params.deviceId,
+      Number(query.hour) as HourNumbers,
+    )
+  },
   getLanguage({ homey }: { homey: Homey }): string {
     return homey.i18n.getLanguage()
+  },
+  async getOperationModes({
+    homey,
+    params,
+    query,
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+    query: DaysQuery
+  }): Promise<ReportChartPieOptions> {
+    return homey.app.getOperationModes(params.deviceId, Number(query.days))
+  },
+  async getSignal({
+    homey,
+    params,
+    query,
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+    query: HourQuery
+  }): Promise<ReportChartLineOptions> {
+    return homey.app.getSignal(
+      params.deviceId,
+      Number(query.hour) as HourNumbers,
+    )
   },
   async getTemperatures({
     homey,

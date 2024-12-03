@@ -268,6 +268,10 @@ export interface HomeyWidgetSettingsTemperatures extends BaseSettings {
   readonly default_zone: DeviceZone | null
 }
 
+export interface HourQuery {
+  readonly hour: string
+}
+
 export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
 }

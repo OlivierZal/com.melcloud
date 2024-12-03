@@ -24,10 +24,11 @@ import {
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
+  type ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import/default, import/no-extraneous-dependencies
 import Homey from 'homey'
-import { DateTime, Settings as LuxonSettings } from 'luxon'
+import { DateTime, Settings as LuxonSettings, type HourNumbers } from 'luxon'
 
 import {
   changelog,
@@ -330,15 +331,40 @@ export default class MELCloudApp extends Homey.App {
     return this.getFacade(zoneType, zoneId).holidayMode()
   }
 
+  public async getHourlyTemperatures(
+    deviceId: string,
+    hour: HourNumbers,
+  ): Promise<ReportChartLineOptions> {
+    return this.getFacade('devices', deviceId).hourlyTemperature(hour)
+  }
+
   public getLanguage(): string {
     return this.homey.i18n.getLanguage()
+  }
+
+  public async getOperationModes(
+    deviceId: string,
+    days: number,
+  ): Promise<ReportChartPieOptions> {
+    const now = DateTime.now()
+    return this.getFacade('devices', deviceId).operationModes({
+      from: now.minus({ days }).toISO({ includeOffset: false }),
+      to: now.toISO({ includeOffset: false }),
+    })
+  }
+
+  public async getSignal(
+    deviceId: string,
+    hour: HourNumbers,
+  ): Promise<ReportChartLineOptions> {
+    return this.getFacade('devices', deviceId).signal(hour)
   }
 
   public async getTemperatures(
     deviceId: string,
     days: number,
   ): Promise<ReportChartLineOptions> {
-    const now = DateTime.now().set({ millisecond: 0 })
+    const now = DateTime.now()
     return this.getFacade('devices', deviceId).temperatures({
       from: now.minus({ days }).toISO({ includeOffset: false }),
       to: now.toISO({ includeOffset: false }),

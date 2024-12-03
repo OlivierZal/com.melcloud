@@ -56,7 +56,7 @@ const getStyle = (value: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(value).trim()
 
 // eslint-disable-next-line max-lines-per-function
-const getOptions = ({
+const getChartLineOptions = ({
   labels,
   series,
   unit,
@@ -111,9 +111,14 @@ const getOptions = ({
   }
 }
 
+const getOptions = async (
+  homey: Homey,
+  chartFunction: (homey: Homey) => Promise<ReportChartLineOptions>,
+): Promise<ApexCharts.ApexOptions> =>
+  getChartLineOptions(await chartFunction(homey))
+
 const draw = async (homey: Homey): Promise<void> => {
-  const data = await getTemperatures(homey)
-  const options = getOptions(data)
+  const options = await getOptions(homey, getTemperatures)
   if (chart) {
     await chart.updateOptions(options)
   } else {
