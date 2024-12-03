@@ -144,7 +144,6 @@ const getChartPieOptions = (
     chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
     legend: {
       ...fontStyle,
-      itemMargin: { horizontal: 10, vertical: 0 },
       labels: { colors: colorLight },
       markers: { shape: 'square' },
     },
@@ -162,10 +161,13 @@ const getChartOptions = async (
 }
 
 const draw = async (homey: Homey): Promise<void> => {
-  const { chart } = settings
-  const options = await getChartOptions(homey, getReportChartOptions(chart))
+  const options = await getChartOptions(
+    homey,
+    getReportChartOptions(settings.chart),
+  )
   if (myChart) {
     await myChart.updateOptions(options)
+    await homey.setHeight(document.body.scrollHeight)
   } else {
     // @ts-expect-error: imported by another script in `./index.html`
     myChart = new ApexCharts(getDivElement('chart'), options)
@@ -180,9 +182,8 @@ const draw = async (homey: Homey): Promise<void> => {
         //
       })
     },
-    ['hourly_temperatures', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
-      next.getTime() - now.getTime()
-    ),
+    ['hourly_temperatures', 'signal'].includes(settings.chart) ? NEXT_TIMEOUT
+    : next.getTime() - now.getTime(),
   )
 }
 
