@@ -46,15 +46,48 @@ const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
     } satisfies DaysQuery)}`,
   )) as ReportChartLineOptions
 
+const getStyle = (value: string): string =>
+  getComputedStyle(document.documentElement).getPropertyValue(value).trim()
+
+const FONT_FAMILY = 'Roboto, sans-serif'
+
 const draw = async (homey: Homey): Promise<void> => {
-  const { labels: categories, series, unit } = await getTemperatures(homey)
+  const colorLight = getStyle('--homey-text-color-light')
+  const { labels, series, unit } = await getTemperatures(homey)
   const options = {
     chart: { height: 400, toolbar: { show: false }, type: 'line' },
+    grid: {
+      borderColor: colorLight,
+      strokeDashArray: 4,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+    },
+    legend: { fontFamily: FONT_FAMILY, labels: { colors: colorLight } },
     series,
-    xaxis: { categories },
+    stroke: { curve: 'smooth', width: 1 },
+    title: {
+      align: 'left',
+      style: { color: colorLight, fontFamily: FONT_FAMILY },
+      text: unit,
+    },
+    xaxis: {
+      axisBorder: { color: colorLight, show: true },
+      axisTicks: { show: true },
+      categories: labels,
+      labels: {
+        rotate: 0,
+        rotateAlways: false,
+        style: { colors: colorLight, fontFamily: FONT_FAMILY },
+      },
+      tickAmount: 4,
+    },
     yaxis: {
-      labels: { formatter: (value): string => value.toFixed() },
-      title: { text: unit },
+      axisBorder: { color: colorLight, show: true },
+      axisTicks: { show: true },
+      labels: {
+        formatter: (value): string => value.toFixed(),
+        style: { colors: colorLight, fontFamily: FONT_FAMILY },
+      },
     },
   } satisfies ApexCharts.ApexOptions
   if (!chart) {
