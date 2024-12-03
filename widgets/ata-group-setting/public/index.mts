@@ -10,14 +10,14 @@ import type {
   DriverCapabilitiesOptions,
   GetAtaOptions,
   GroupAtaStates,
-  HomeyWidgetSettingsAtaGroupSetting,
+  HomeyWidgetSettingsAtaGroupSetting as HomeySettings,
   Settings,
   ValueOf,
   Zone,
 } from '../../../types/common.mts'
 
 declare interface Homey extends HomeyWidget {
-  getSettings: () => HomeyWidgetSettingsAtaGroupSetting
+  getSettings: () => HomeySettings
 }
 
 interface ResetParams {
@@ -192,7 +192,7 @@ const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
   shine: null,
 }
 
-let settings: HomeyWidgetSettingsAtaGroupSetting = {
+let settings: HomeySettings = {
   animations: true,
   default_zone: null,
 }

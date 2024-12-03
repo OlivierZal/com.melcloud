@@ -24,9 +24,10 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
+    const { hour } = query
     return homey.app.getHourlyTemperatures(
       params.deviceId,
-      Number(query.hour) as HourNumbers,
+      hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
   getLanguage({ homey }: { homey: Homey }): string {
@@ -52,9 +53,10 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
+    const { hour } = query
     return homey.app.getSignal(
       params.deviceId,
-      Number(query.hour) as HourNumbers,
+      hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
   async getTemperatures({

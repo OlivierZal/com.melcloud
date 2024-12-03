@@ -263,13 +263,18 @@ export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
   readonly default_zone: Zone | null
 }
 
-export interface HomeyWidgetSettingsTemperatures extends BaseSettings {
+export interface HomeyWidgetSettingsCharts extends BaseSettings {
+  readonly chart:
+    | 'hourly_temperatures'
+    | 'operation_modes'
+    | 'signal'
+    | 'temperatures'
   readonly days: number
   readonly default_zone: DeviceZone | null
 }
 
 export interface HourQuery {
-  readonly hour: string
+  readonly hour?: string
 }
 
 export interface LoginDriverSetting extends DriverSetting {

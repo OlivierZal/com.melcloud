@@ -1,21 +1,24 @@
-import type { ReportChartLineOptions } from '@olivierzal/melcloud-api'
+import type {
+  ReportChartLineOptions,
+  ReportChartPieOptions,
+} from '@olivierzal/melcloud-api'
 import type ApexCharts from 'apexcharts'
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 
-import type { DaysQuery, DeviceZone } from '../../../types/common.mts'
+import type {
+  DaysQuery,
+  DeviceZone,
+  HomeyWidgetSettingsCharts as HomeySettings,
+} from '../../../types/common.mts'
 
 declare interface Homey extends HomeyWidget {
   getSettings: () => HomeySettings
 }
 
-interface HomeySettings extends Partial<Record<string, unknown>> {
-  days: number
-  default_zone: DeviceZone | null
-}
-
 const FONT_SIZE_SMALL = '12px'
-
+const HEIGHT = 400
 const INCREMENT = 1
+const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
 const TIME_FIVE = 5
 
@@ -37,20 +40,36 @@ const getSelectElement = (id: string): HTMLSelectElement => {
 
 const zoneElement = getSelectElement('zones')
 
-let settings: HomeySettings = { days: 1, default_zone: null }
-let chart: ApexCharts | null = null
+let timeout: NodeJS.Timeout | null = null
+
+let settings: HomeySettings = {
+  chart: 'operation_modes',
+  days: 1,
+  default_zone: null,
+}
+let myChart: ApexCharts | null = null
 
 const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const getTemperatures = async (homey: Homey): Promise<ReportChartLineOptions> =>
-  (await homey.api(
-    'GET',
-    `/logs/temperatures/${getZonePath()}?${new URLSearchParams({
-      days: String(settings.days),
-    } satisfies DaysQuery)}`,
-  )) as ReportChartLineOptions
+const getReportChartOptions =
+  (
+    chart: HomeySettings['chart'],
+  ): ((
+    homey: Homey,
+  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
+  async (homey: Homey) =>
+    (await homey.api(
+      'GET',
+      `/logs/${String(chart)}/${getZonePath()}${
+        ['operation_modes', 'temperatures'].includes(chart) ?
+          `?${new URLSearchParams({
+            days: String(settings.days),
+          } satisfies DaysQuery)}`
+        : ''
+      }`,
+    )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
 
 const getStyle = (value: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(value).trim()
@@ -71,7 +90,7 @@ const getChartLineOptions = ({
     fontWeight: getStyle('--homey-font-weight-regular'),
   }
   return {
-    chart: { height: 300, toolbar: { show: false }, type: 'line' },
+    chart: { height: HEIGHT, toolbar: { show: false }, type: 'line' },
     grid: {
       borderColor: colorLight,
       padding: { right: 5 },
@@ -111,29 +130,46 @@ const getChartLineOptions = ({
   }
 }
 
-const getOptions = async (
+const getChartPieOptions = (
+  data: ReportChartPieOptions,
+): ApexCharts.ApexOptions => ({
+  ...data,
+  chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
+})
+
+const getChartOptions = async (
   homey: Homey,
-  chartFunction: (homey: Homey) => Promise<ReportChartLineOptions>,
-): Promise<ApexCharts.ApexOptions> =>
-  getChartLineOptions(await chartFunction(homey))
+  chartFunction: (
+    homey: Homey,
+  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>,
+): Promise<ApexCharts.ApexOptions> => {
+  const data = await chartFunction(homey)
+  return 'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
+}
 
 const draw = async (homey: Homey): Promise<void> => {
-  const options = await getOptions(homey, getTemperatures)
-  if (chart) {
-    await chart.updateOptions(options)
+  const { chart } = settings
+  const options = await getChartOptions(homey, getReportChartOptions(chart))
+  if (myChart) {
+    await myChart.updateOptions(options)
   } else {
     // @ts-expect-error: imported by another script in `./index.html`
-    chart = new ApexCharts(getDivElement('chart'), options)
-    await chart.render()
+    myChart = new ApexCharts(getDivElement('chart'), options)
+    await myChart.render()
   }
   const now = new Date()
   const next = new Date(now)
   next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
-  setTimeout(() => {
-    draw(homey).catch(() => {
-      //
-    })
-  }, next.getTime() - now.getTime())
+  timeout = setTimeout(
+    () => {
+      draw(homey).catch(() => {
+        //
+      })
+    },
+    ['hourly_temperature', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
+      next.getTime() - now.getTime()
+    ),
+  )
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
@@ -177,6 +213,9 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
 
 const addEventListeners = (homey: Homey): void => {
   zoneElement.addEventListener('change', () => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
     draw(homey).catch(() => {
       //
     })

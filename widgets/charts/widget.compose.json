@@ -36,17 +36,68 @@
   },
   "settings": [
     {
-      "id": "default_zone",
+      "id": "chart",
       "title": {
-        "da": "Standardzone",
-        "en": "Default zone",
-        "es": "Zona predeterminada",
-        "fr": "Zone par défaut",
-        "nl": "Standaardzone",
-        "no": "Standardsone",
-        "sv": "Standardzon"
+        "da": "Diagram",
+        "en": "Chart",
+        "es": "Gráfico",
+        "fr": "Graphique",
+        "nl": "Grafiek",
+        "no": "Diagram",
+        "sv": "Diagram"
       },
-      "type": "autocomplete"
+      "type": "dropdown",
+      "value": "operation_modes",
+      "values": [
+        {
+          "id": "operation_modes",
+          "title": {
+            "da": "Driftstilstand",
+            "en": "Operational state",
+            "es": "Estado operativo",
+            "fr": "État opérationnel",
+            "nl": "Operationele staat",
+            "no": "Driftstilstand",
+            "sv": "Drifttillstånd"
+          }
+        },
+        {
+          "id": "temperatures",
+          "title": {
+            "da": "Temperaturer",
+            "en": "Temperatures",
+            "es": "Temperaturas",
+            "fr": "Températures",
+            "nl": "Temperaturen",
+            "no": "Temperaturer",
+            "sv": "Temperaturer"
+          }
+        },
+        {
+          "id": "hourly_temperatures",
+          "title": {
+            "da": "Seneste temperaturer",
+            "en": "Latest Temperatures",
+            "es": "Últimas temperaturas",
+            "fr": "Dernières températures",
+            "nl": "Laatste temperaturen",
+            "no": "Siste temperaturer",
+            "sv": "Senaste temperaturer"
+          }
+        },
+        {
+          "id": "signal",
+          "title": {
+            "da": "Signalstyrke",
+            "en": "Signal Strength",
+            "es": "Intensidad de la señal",
+            "fr": "Intensité du signal",
+            "nl": "Signaalsterkte",
+            "no": "Signalstyrke",
+            "sv": "Signalstyrka"
+          }
+        }
+      ]
     },
     {
       "id": "days",
@@ -62,6 +113,19 @@
       },
       "type": "number",
       "value": 1
+    },
+    {
+      "id": "default_zone",
+      "title": {
+        "da": "Standardzone",
+        "en": "Default zone",
+        "es": "Zona predeterminada",
+        "fr": "Zone par défaut",
+        "nl": "Standaardzone",
+        "no": "Standardsone",
+        "sv": "Standardzon"
+      },
+      "type": "autocomplete"
     }
   ]
 }

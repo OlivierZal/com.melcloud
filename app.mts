@@ -333,7 +333,7 @@ export default class MELCloudApp extends Homey.App {
 
   public async getHourlyTemperatures(
     deviceId: string,
-    hour: HourNumbers,
+    hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).hourlyTemperature(hour)
   }
@@ -355,7 +355,7 @@ export default class MELCloudApp extends Homey.App {
 
   public async getSignal(
     deviceId: string,
-    hour: HourNumbers,
+    hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).signal(hour)
   }
