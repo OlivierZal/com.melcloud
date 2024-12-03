@@ -260,7 +260,7 @@ export interface HomeySettings {
 
 export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
   readonly animations: boolean
-  readonly default_zone: Zone | null
+  readonly default_zone: DeviceZone | null
 }
 
 export interface HomeyWidgetSettingsCharts extends BaseSettings {

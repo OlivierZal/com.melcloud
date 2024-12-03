@@ -41,14 +41,8 @@ const getSelectElement = (id: string): HTMLSelectElement => {
 
 const zoneElement = getSelectElement('zones')
 
-let timeout: NodeJS.Timeout | null = null
-
-let settings: HomeySettings = {
-  chart: 'operation_modes',
-  days: 1,
-  default_zone: null,
-}
 let myChart: ApexCharts | null = null
+let timeout: NodeJS.Timeout | null = null
 
 const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
@@ -57,6 +51,7 @@ const getZonePath = (): string => zoneElement.value.replace('_', '/')
 const getReportChartOptions =
   (
     chart: HomeySettings['chart'],
+    days: number,
   ): ((
     homey: Homey,
   ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
@@ -66,7 +61,7 @@ const getReportChartOptions =
       `/logs/${String(chart)}/${getZonePath()}${
         ['operation_modes', 'temperatures'].includes(chart) ?
           `?${new URLSearchParams({
-            days: String(settings.days),
+            days: String(days),
           } satisfies DaysQuery)}`
         : ''
       }`,
@@ -160,10 +155,14 @@ const getChartOptions = async (
   return 'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
 }
 
-const draw = async (homey: Homey): Promise<void> => {
+const draw = async (
+  homey: Homey,
+  chart: HomeySettings['chart'],
+  days: number,
+): Promise<void> => {
   const options = await getChartOptions(
     homey,
-    getReportChartOptions(settings.chart),
+    getReportChartOptions(chart, days),
   )
   if (myChart) {
     await myChart.updateOptions(options)
@@ -178,12 +177,13 @@ const draw = async (homey: Homey): Promise<void> => {
   next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
   timeout = setTimeout(
     () => {
-      draw(homey).catch(() => {
+      draw(homey, chart, days).catch(() => {
         //
       })
     },
-    ['hourly_temperatures', 'signal'].includes(settings.chart) ? NEXT_TIMEOUT
-    : next.getTime() - now.getTime(),
+    ['hourly_temperatures', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
+      next.getTime() - now.getTime()
+    ),
   )
 }
 
@@ -209,11 +209,37 @@ const generateZones = (zones: DeviceZone[]): void => {
   })
 }
 
+const addEventListeners = (
+  homey: Homey,
+  chart: HomeySettings['chart'],
+  days: number,
+): void => {
+  zoneElement.addEventListener('change', () => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    draw(homey, chart, days).catch(() => {
+      //
+    })
+  })
+}
+
+const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
+  if (defaultZone) {
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (document.querySelector(`#zones option[value="${value}"]`)) {
+      zoneElement.value = value
+    }
+  }
+}
+
 const fetchDevices = async (homey: Homey): Promise<void> => {
+  const { chart, days, default_zone: defaultZone } = homey.getSettings()
   const devices = (await homey.api(
     'GET',
     `/devices${
-      settings.chart === 'hourly_temperatures' ?
+      chart === 'hourly_temperatures' ?
         `?${new URLSearchParams({
           type: '1',
         } satisfies { type: `${DeviceType}` })}`
@@ -221,36 +247,16 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
     }`,
   )) as DeviceZone[]
   if (devices.length) {
+    addEventListeners(homey, chart, days)
     generateZones(devices)
-    if (settings.default_zone) {
-      const {
-        default_zone: { id, model },
-      } = settings
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        zoneElement.value = value
-      }
-    }
-    await draw(homey)
+    handleDefaultZone(defaultZone)
+    await draw(homey, chart, days)
   }
-}
-
-const addEventListeners = (homey: Homey): void => {
-  zoneElement.addEventListener('change', () => {
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    draw(homey).catch(() => {
-      //
-    })
-  })
 }
 
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  settings = homey.getSettings()
   await setDocumentLanguage(homey)
   await fetchDevices(homey)
-  addEventListeners(homey)
   homey.ready({ height: document.body.scrollHeight })
 }

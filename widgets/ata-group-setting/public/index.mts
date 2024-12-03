@@ -192,11 +192,6 @@ const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
   shine: null,
 }
 
-let settings: HomeySettings = {
-  animations: true,
-  default_zone: null,
-}
-
 let debounceTimeout: NodeJS.Timeout | null = null
 
 let ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
@@ -929,8 +924,9 @@ const handleMixedAnimation = async (
 const handleAnimation = async (
   homey: Homey,
   state: GroupState,
+  isAnimations: boolean,
 ): Promise<void> => {
-  if (settings.animations) {
+  if (isAnimations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
     const isSomethingOn = isOn !== false
     const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
@@ -963,11 +959,14 @@ const handleAnimation = async (
   }
 }
 
-const fetchAtaValues = async (homey: Homey): Promise<void> => {
+const fetchAtaValues = async (
+  homey: Homey,
+  isAnimations: boolean,
+): Promise<void> => {
   const values = await getAtaValues(homey)
   updateZoneMapping({ ...defaultAtaValues, ...values })
   refreshAtaValues()
-  await handleAnimation(homey, values)
+  await handleAnimation(homey, values, isAnimations)
 }
 
 const generateAtaValue = (
@@ -1021,29 +1020,6 @@ const generateZones = async (zones: Zone[]): Promise<void> =>
     }
   }, Promise.resolve())
 
-const fetchBuildings = async (homey: Homey): Promise<void> => {
-  const buildings = (await homey.api(
-    'GET',
-    `/buildings?${new URLSearchParams({
-      type: '0',
-    } satisfies { type: `${DeviceType}` })}`,
-  )) as BuildingZone[]
-  if (buildings.length) {
-    generateAtaValues(homey)
-    await generateZones(buildings)
-    if (settings.default_zone) {
-      const {
-        default_zone: { id, model },
-      } = settings
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        zoneElement.value = value
-      }
-    }
-    await fetchAtaValues(homey)
-  }
-}
-
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
   ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
     keyof GroupState,
@@ -1067,9 +1043,9 @@ const setAtaValues = async (homey: Homey): Promise<void> => {
   } catch {}
 }
 
-const addEventListeners = (homey: Homey): void => {
+const addEventListeners = (homey: Homey, isAnimations: boolean): void => {
   zoneElement.addEventListener('change', () => {
-    fetchAtaValues(homey).catch(() => {
+    fetchAtaValues(homey, isAnimations).catch(() => {
       //
     })
   })
@@ -1088,19 +1064,45 @@ const addEventListeners = (homey: Homey): void => {
       clearTimeout(debounceTimeout)
     }
     debounceTimeout = setTimeout(() => {
-      fetchAtaValues(homey).catch(() => {
+      fetchAtaValues(homey, isAnimations).catch(() => {
         //
       })
     }, DEBOUNCE_DELAY)
   })
 }
 
+const handleDefaultZone = (defaultZone: Zone | null): void => {
+  if (defaultZone) {
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (document.querySelector(`#zones option[value="${value}"]`)) {
+      zoneElement.value = value
+    }
+  }
+}
+
+const fetchBuildings = async (homey: Homey): Promise<void> => {
+  const buildings = (await homey.api(
+    'GET',
+    `/buildings?${new URLSearchParams({
+      type: '0',
+    } satisfies { type: `${DeviceType}` })}`,
+  )) as BuildingZone[]
+  if (buildings.length) {
+    const { animations: isAnimations, default_zone: defaultZone } =
+      homey.getSettings()
+    addEventListeners(homey, isAnimations)
+    generateAtaValues(homey)
+    await generateZones(buildings)
+    handleDefaultZone(defaultZone)
+    await fetchAtaValues(homey, isAnimations)
+  }
+}
+
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  settings = homey.getSettings()
   await setDocumentLanguage(homey)
   await fetchAtaCapabilities(homey)
   await fetchBuildings(homey)
-  addEventListeners(homey)
   homey.ready({ height: document.body.scrollHeight })
 }
