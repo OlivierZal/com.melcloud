@@ -14,7 +14,7 @@
     "publish": "homey app publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^17.6.0",
+    "@olivierzal/melcloud-api": "^17.6.1",
     "core-js": "^3.39.0",
     "homey-lib": "^2.32.11",
     "luxon": "^3.5.0",
@@ -24,7 +24,7 @@
     "@eslint/js": "^9.16.0",
     "@eslint/json": "^0.8.0",
     "@eslint/markdown": "^6.2.1",
-    "@helljs/eslint-import-resolver-x": "^1.0.3",
+    "@helljs/eslint-import-resolver-x": "^1.0.5",
     "@html-eslint/eslint-plugin": "^0.30.0",
     "@html-eslint/parser": "^0.30.0",
     "@stylistic/eslint-plugin": "^2.11.0",
