@@ -16,7 +16,8 @@ declare interface Homey extends HomeyWidget {
   getSettings: () => HomeySettings
 }
 
-const FONT_SIZE_SMALL = '12px'
+const FONT_SIZE_SMALL = '14px'
+const FONT_SIZE_VERY_SMALL = '12px'
 const HEIGHT = 400
 const INCREMENT = 1
 const NEXT_TIMEOUT = 60000
@@ -82,7 +83,7 @@ const getChartLineOptions = ({
     axisTicks: { color: colorLight, show: true },
   }
   const fontStyle = {
-    fontSize: FONT_SIZE_SMALL,
+    fontSize: FONT_SIZE_VERY_SMALL,
     fontWeight: getStyle('--homey-font-weight-regular'),
   }
   return {
@@ -114,7 +115,7 @@ const getChartLineOptions = ({
       ...axisStyle,
       categories: labels,
       labels: { rotate: 0, style: { ...fontStyle, colors: colorLight } },
-      tickAmount: 4,
+      tickAmount: 3,
     },
     yaxis: {
       ...axisStyle,
@@ -128,29 +129,26 @@ const getChartLineOptions = ({
 
 const getChartPieOptions = (
   data: ReportChartPieOptions,
-): ApexCharts.ApexOptions => {
-  const color = getStyle('--homey-text-color')
-  const colorLight = getStyle('--homey-text-color-light')
-  const fontStyle = {
-    fontSize: FONT_SIZE_SMALL,
+): ApexCharts.ApexOptions => ({
+  ...data,
+  chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
+  dataLabels: {
+    dropShadow: { enabled: false },
+    style: {
+      colors: ['#000000'],
+      fontSize: FONT_SIZE_SMALL,
+      fontWeight: getStyle('--homey-font-weight-bold'),
+    },
+  },
+  legend: {
+    fontSize: FONT_SIZE_VERY_SMALL,
     fontWeight: getStyle('--homey-font-weight-regular'),
-  }
-  return {
-    ...data,
-    chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
-    dataLabels: {
-      dropShadow: { enabled: false },
-      style: { ...fontStyle, colors: [color] },
-    },
-    legend: {
-      ...fontStyle,
-      labels: { colors: colorLight },
-      markers: { shape: 'square' },
-      position: 'bottom',
-    },
-    stroke: { show: false },
-  }
-}
+    labels: { colors: getStyle('--homey-text-color-light') },
+    markers: { shape: 'square' },
+    position: 'bottom',
+  },
+  stroke: { show: false },
+})
 
 const getChartOptions = async (
   homey: Homey,
