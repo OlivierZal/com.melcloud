@@ -129,6 +129,7 @@ const getChartLineOptions = ({
 const getChartPieOptions = (
   data: ReportChartPieOptions,
 ): ApexCharts.ApexOptions => {
+  const color = getStyle('--homey-text-color')
   const colorLight = getStyle('--homey-text-color-light')
   const fontStyle = {
     fontSize: FONT_SIZE_SMALL,
@@ -137,11 +138,17 @@ const getChartPieOptions = (
   return {
     ...data,
     chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
+    dataLabels: {
+      dropShadow: { enabled: false },
+      style: { ...fontStyle, colors: [color] },
+    },
     legend: {
       ...fontStyle,
       labels: { colors: colorLight },
       markers: { shape: 'square' },
+      position: 'bottom',
     },
+    stroke: { show: false },
   }
 }
 
