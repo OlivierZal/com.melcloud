@@ -335,7 +335,7 @@ export default class MELCloudApp extends Homey.App {
     deviceId: string,
     hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).hourlyTemperature(hour)
+    return this.getFacade('devices', deviceId).hourlyTemperatures(hour)
   }
 
   public getLanguage(): string {
