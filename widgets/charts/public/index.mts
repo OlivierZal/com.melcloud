@@ -96,8 +96,6 @@ const getChartLineOptions = ({
     },
     legend: {
       ...fontStyle,
-      horizontalAlign: 'left',
-      itemMargin: { horizontal: 10, vertical: 0 },
       labels: { colors: colorLight },
       markers: { shape: 'square' },
     },
