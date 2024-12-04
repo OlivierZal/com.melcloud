@@ -17,7 +17,7 @@ import {
   type Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type { DateObjectUnits, DurationLike } from 'luxon'
+import type { DateObjectUnits, DurationLike, HourNumbers } from 'luxon'
 
 import type MELCloudDeviceAta from '../drivers/melcloud/device.mts'
 import type { EnergyReportRegularAta } from '../drivers/melcloud/reports/regular.mts'
@@ -195,7 +195,7 @@ export interface CapabilitiesOptionsAtaErv {
 }
 
 export interface DaysQuery {
-  readonly days: string
+  readonly days?: string
 }
 
 export interface DeviceDetails<T extends DeviceType> {
@@ -274,7 +274,7 @@ export interface HomeyWidgetSettingsCharts extends BaseSettings {
 }
 
 export interface HourQuery {
-  readonly hour?: string
+  readonly hour?: `${HourNumbers}`
 }
 
 export interface LoginDriverSetting extends DriverSetting {
