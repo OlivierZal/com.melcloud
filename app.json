@@ -5287,13 +5287,13 @@
             {
               "id": "signal",
               "title": {
-                "da": "Signalstyrke",
-                "en": "Signal Strength",
-                "es": "Intensidad de la señal",
-                "fr": "Intensité du signal",
-                "nl": "Signaalsterkte",
-                "no": "Signalstyrke",
-                "sv": "Signalstyrka"
+                "da": "Signalstyrke siden sidste time",
+                "en": "Signal Strength since the last hour",
+                "es": "Intensidad de la señal desde la última hora",
+                "fr": "Intensité du signal depuis la dernière heure",
+                "nl": "Signaalsterkte sinds het afgelopen uur",
+                "no": "Signalstyrke siden siste time",
+                "sv": "Signalstyrka sedan den senaste timmen"
               }
             }
           ]
