@@ -24,6 +24,19 @@ const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
 const TIME_FIVE = 5
 
+const colors = [
+  '#1F77B4',
+  '#D62728',
+  '#2CA02C',
+  '#FF7F0E',
+  '#9467BD',
+  '#FFDB58',
+  '#17BECF',
+  '#E377C2',
+  '#7F7F7F',
+  '#393B79',
+  '#E7BA52',
+]
 const defaultHiddenSeries = [
   'FlowBoiler',
   'FlowZone1',
@@ -90,6 +103,7 @@ const getChartLineOptions = ({
   }
   return {
     chart: { height: HEIGHT, toolbar: { show: false }, type: 'line' },
+    colors,
     grid: {
       borderColor: colorLight,
       strokeDashArray: 3,
@@ -136,6 +150,7 @@ const getChartPieOptions = ({
   series,
 }: ReportChartPieOptions): ApexCharts.ApexOptions => ({
   chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
+  colors,
   dataLabels: {
     dropShadow: { enabled: false },
     style: {
