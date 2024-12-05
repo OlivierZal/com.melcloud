@@ -18,7 +18,7 @@ declare interface Homey extends HomeyWidget {
 
 const FONT_SIZE_SMALL = '14px'
 const FONT_SIZE_VERY_SMALL = '12px'
-const HEIGHT = 400
+const HEIGHT = 300
 const INCREMENT = 1
 const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
@@ -138,13 +138,20 @@ const getChartPieOptions = ({
   dataLabels: {
     dropShadow: { enabled: false },
     style: {
-      colors: ['#000000'],
+      colors: [getStyle('--homey-text-color')],
       fontSize: FONT_SIZE_SMALL,
       fontWeight: getStyle('--homey-font-weight-bold'),
     },
   },
   labels: labels.map((label) =>
-    label.replace('Mode', '').replace('Operation', ''),
+    label
+      .replace('Actual', '')
+      .replace('FansStopped', 'Stop')
+      .replace('Mode', '')
+      .replace('Operation', '')
+      .replace('PowerOff', 'Off')
+      .replace('Power', 'Off')
+      .replace(/(?<mode>.+)Ventilation$/u, '$<mode>'),
   ),
   legend: {
     fontSize: FONT_SIZE_VERY_SMALL,
