@@ -1476,6 +1476,10 @@ html{
   display: grid;
 }
 
+.hidden{
+  display: none;
+}
+
 .w-1\/2{
   width: 50%;
 }
