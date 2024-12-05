@@ -49,25 +49,6 @@ const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const getReportChartOptions =
-  (
-    chart: HomeySettings['chart'],
-    days: number,
-  ): ((
-    homey: Homey,
-  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
-  async (homey: Homey) =>
-    (await homey.api(
-      'GET',
-      `/logs/${String(chart)}/${getZonePath()}${
-        ['operation_modes', 'temperatures'].includes(chart) ?
-          `?${new URLSearchParams({
-            days: String(days),
-          } satisfies DaysQuery)}`
-        : ''
-      }`,
-    )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
-
 const getStyle = (value: string): string =>
   getComputedStyle(document.documentElement).getPropertyValue(value).trim()
 
@@ -90,7 +71,6 @@ const getChartLineOptions = ({
     chart: { height: HEIGHT, toolbar: { show: false }, type: 'line' },
     grid: {
       borderColor: colorLight,
-      padding: { bottom: 5, left: 5, right: 5, top: 5 },
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
     },
@@ -122,6 +102,7 @@ const getChartLineOptions = ({
     },
     yaxis: {
       ...axisStyle,
+      ...{ max: 0, min: -100 },
       labels: {
         formatter: (value): string => value.toFixed(),
         style: { ...fontStyle, colors: colorLight },
@@ -174,15 +155,31 @@ const getChartOptions = async (
   return 'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
 }
 
+const getChartFunction =
+  (
+    chart: HomeySettings['chart'],
+    days: number,
+  ): ((
+    homey: Homey,
+  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
+  async (homey: Homey) =>
+    (await homey.api(
+      'GET',
+      `/logs/${String(chart)}/${getZonePath()}${
+        ['operation_modes', 'temperatures'].includes(chart) ?
+          `?${new URLSearchParams({
+            days: String(days),
+          } satisfies DaysQuery)}`
+        : ''
+      }`,
+    )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
+
 const draw = async (
   homey: Homey,
   chart: HomeySettings['chart'],
   days: number,
 ): Promise<void> => {
-  const options = await getChartOptions(
-    homey,
-    getReportChartOptions(chart, days),
-  )
+  const options = await getChartOptions(homey, getChartFunction(chart, days))
   if (myChart) {
     await myChart.updateOptions(options)
     await homey.setHeight(document.body.scrollHeight)
