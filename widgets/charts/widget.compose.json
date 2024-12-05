@@ -100,6 +100,15 @@
       ]
     },
     {
+      "hint": {
+        "da": "Kun for diagrammer hvor dette gælder.",
+        "en": "Only for charts where this applies.",
+        "es": "Solo para gráficos donde esto aplica.",
+        "fr": "Uniquement pour les graphiques où cela s'applique.",
+        "nl": "Alleen voor grafieken waar dit van toepassing is.",
+        "no": "Kun for diagrammer der dette gjelder.",
+        "sv": "Endast för diagram där detta gäller."
+      },
       "id": "days",
       "min": 1,
       "title": {

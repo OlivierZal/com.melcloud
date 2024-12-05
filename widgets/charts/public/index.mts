@@ -102,11 +102,11 @@ const getChartLineOptions = ({
     },
     yaxis: {
       ...axisStyle,
-      ...{ max: 0, min: -100 },
       labels: {
         formatter: (value): string => value.toFixed(),
         style: { ...fontStyle, colors: colorLight },
       },
+      ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },
   }
 }
@@ -145,28 +145,26 @@ const getChartPieOptions = ({
   stroke: { show: false },
 })
 
-const getChartOptions = async (
-  homey: Homey,
-  chartFunction: (
-    homey: Homey,
-  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>,
-): Promise<ApexCharts.ApexOptions> => {
-  const data = await chartFunction(homey)
-  return 'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
-}
+const getChartOptions = (
+  data: ReportChartLineOptions | ReportChartPieOptions,
+): ApexCharts.ApexOptions =>
+  'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
 
 const getChartFunction =
   (
-    chart: HomeySettings['chart'],
-    days: number,
-  ): ((
     homey: Homey,
+    chart: HomeySettings['chart'],
+  ): ((
+    days?: number,
   ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
-  async (homey: Homey) =>
+  async (days?: number) =>
     (await homey.api(
       'GET',
-      `/logs/${String(chart)}/${getZonePath()}${
-        ['operation_modes', 'temperatures'].includes(chart) ?
+      `/logs/${chart}/${getZonePath()}${
+        (
+          ['operation_modes', 'temperatures'].includes(chart) &&
+          days !== undefined
+        ) ?
           `?${new URLSearchParams({
             days: String(days),
           } satisfies DaysQuery)}`
@@ -177,9 +175,9 @@ const getChartFunction =
 const draw = async (
   homey: Homey,
   chart: HomeySettings['chart'],
-  days: number,
+  days?: number,
 ): Promise<void> => {
-  const options = await getChartOptions(homey, getChartFunction(chart, days))
+  const options = getChartOptions(await getChartFunction(homey, chart)(days))
   if (myChart) {
     await myChart.updateOptions(options)
     await homey.setHeight(document.body.scrollHeight)
@@ -228,7 +226,7 @@ const generateZones = (zones: DeviceZone[]): void => {
 const addEventListeners = (
   homey: Homey,
   chart: HomeySettings['chart'],
-  days: number,
+  days?: number,
 ): void => {
   zoneElement.addEventListener('change', () => {
     if (timeout) {
