@@ -24,7 +24,20 @@ const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
 const TIME_FIVE = 5
 
+const defaultHiddenSeries = [
+  'FlowBoiler',
+  'FlowZone1',
+  'FlowZone2',
+  'MixingTankWater',
+  'ReturnBoiler',
+  'ReturnZone1',
+  'ReturnZone2',
+]
 const styleCache: Record<string, string> = {}
+
+let myChart: ApexCharts | null = null
+let options: ApexCharts.ApexOptions = {}
+let timeout: NodeJS.Timeout | null = null
 
 const getDivElement = (id: string): HTMLDivElement => {
   const element = document.getElementById(id)
@@ -44,9 +57,6 @@ const getSelectElement = (id: string): HTMLSelectElement => {
 
 const zoneElement = getSelectElement('zones')
 
-let myChart: ApexCharts | null = null
-let timeout: NodeJS.Timeout | null = null
-
 const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
@@ -59,6 +69,9 @@ const getStyle = (property: string): string => {
   }
   return styleCache[property]
 }
+
+const normalizeSeriesName = (name: string): string =>
+  name.replace('Temperature', '')
 
 // eslint-disable-next-line max-lines-per-function
 const getChartLineOptions = ({
@@ -87,15 +100,14 @@ const getChartLineOptions = ({
       labels: { colors: colorLight },
       markers: { shape: 'square', strokeWidth: 0 },
     },
-    series: series.map(({ data, name }) => ({
-      data,
-      hidden:
-        name.startsWith('Mixing') ||
-        name.startsWith('FlowTemperatureZone') ||
-        name.startsWith('ReturnTemperatureZone') ||
-        name.endsWith('Boiler'),
-      name: name.replace('Temperature', ''),
-    })),
+    series: series.map(({ data, name }) => {
+      const newName = normalizeSeriesName(name)
+      return {
+        data,
+        hidden: defaultHiddenSeries.includes(newName),
+        name: newName,
+      }
+    }),
     stroke: { curve: 'smooth' },
     title: {
       offsetX: 5,
@@ -180,12 +192,36 @@ const getChartFunction =
       }`,
     )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
 
+const unhideChartSeries = (): void => {
+  options.series
+    ?.map((serie) =>
+      typeof serie === 'number' || serie.hidden !== true ?
+        undefined
+      : serie.name,
+    )
+    .filter((serie) => serie !== undefined)
+    .forEach((hiddenSerie) => {
+      myChart?.showSeries(hiddenSerie)
+    })
+}
+
+const getNextTimeout = (chart: HomeySettings['chart']): number => {
+  if (['hourly_temperatures', 'signal'].includes(chart)) {
+    return NEXT_TIMEOUT
+  }
+  const now = new Date()
+  const next = new Date(now)
+  next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
+  return next.getTime() - now.getTime()
+}
+
 const draw = async (
   homey: Homey,
   chart: HomeySettings['chart'],
   days?: number,
 ): Promise<void> => {
-  const options = getChartOptions(await getChartFunction(homey, chart)(days))
+  unhideChartSeries()
+  options = getChartOptions(await getChartFunction(homey, chart)(days))
   if (myChart) {
     await myChart.updateOptions(options)
     await homey.setHeight(document.body.scrollHeight)
@@ -194,19 +230,11 @@ const draw = async (
     myChart = new ApexCharts(getDivElement('chart'), options)
     await myChart.render()
   }
-  const now = new Date()
-  const next = new Date(now)
-  next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
-  timeout = setTimeout(
-    () => {
-      draw(homey, chart, days).catch(() => {
-        //
-      })
-    },
-    ['hourly_temperatures', 'signal'].includes(chart) ? NEXT_TIMEOUT : (
-      next.getTime() - now.getTime()
-    ),
-  )
+  timeout = setTimeout(() => {
+    draw(homey, chart, days).catch(() => {
+      //
+    })
+  }, getNextTimeout(chart))
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
