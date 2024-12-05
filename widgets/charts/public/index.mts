@@ -276,22 +276,8 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   }
 }
 
-const initStyles = (): void => {
-  ;[
-    '--homey-font-weight-bold',
-    '--homey-font-weight-regular',
-    '--homey-text-color',
-    '--homey-text-color-light',
-  ].forEach((style) => {
-    styleCache[style] = getComputedStyle(document.documentElement)
-      .getPropertyValue(style)
-      .trim()
-  })
-}
-
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  initStyles()
   await setDocumentLanguage(homey)
   await fetchDevices(homey)
   homey.ready({ height: document.body.scrollHeight })
