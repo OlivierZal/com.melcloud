@@ -96,7 +96,7 @@ const getChartLineOptions = ({
         name.endsWith('Boiler'),
       name: name.replace('Temperature', ''),
     })),
-    stroke: { curve: 'smooth', width: 2 },
+    stroke: { curve: 'smooth' },
     title: {
       offsetX: 5,
       style: { ...fontStyle, color: colorLight },
