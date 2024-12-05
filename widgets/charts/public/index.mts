@@ -90,17 +90,22 @@ const getChartLineOptions = ({
     chart: { height: HEIGHT, toolbar: { show: false }, type: 'line' },
     grid: {
       borderColor: colorLight,
-      padding: { right: 5 },
+      padding: { bottom: 5, left: 5, right: 5, top: 5 },
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
     },
     legend: {
       ...fontStyle,
       labels: { colors: colorLight },
-      markers: { shape: 'square' },
+      markers: { shape: 'square', strokeWidth: 0 },
     },
     series: series.map(({ data, name }) => ({
       data,
+      hidden:
+        name.startsWith('Mixing') ||
+        name.startsWith('FlowTemperatureZone') ||
+        name.startsWith('ReturnTemperatureZone') ||
+        name.endsWith('Boiler'),
       name: name.replace('Temperature', ''),
     })),
     stroke: { curve: 'smooth', width: 2 },
@@ -125,10 +130,10 @@ const getChartLineOptions = ({
   }
 }
 
-const getChartPieOptions = (
-  data: ReportChartPieOptions,
-): ApexCharts.ApexOptions => ({
-  ...data,
+const getChartPieOptions = ({
+  labels,
+  series,
+}: ReportChartPieOptions): ApexCharts.ApexOptions => ({
   chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
   dataLabels: {
     dropShadow: { enabled: false },
@@ -138,13 +143,17 @@ const getChartPieOptions = (
       fontWeight: getStyle('--homey-font-weight-bold'),
     },
   },
+  labels: labels.map((label) =>
+    label.replace('Mode', '').replace('Operation', ''),
+  ),
   legend: {
     fontSize: FONT_SIZE_VERY_SMALL,
     fontWeight: getStyle('--homey-font-weight-regular'),
     labels: { colors: getStyle('--homey-text-color-light') },
-    markers: { shape: 'square' },
+    markers: { shape: 'square', strokeWidth: 0 },
     position: 'bottom',
   },
+  series,
   stroke: { show: false },
 })
 

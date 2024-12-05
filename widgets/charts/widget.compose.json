@@ -52,12 +52,12 @@
         {
           "id": "operation_modes",
           "title": {
-            "da": "Driftstilstand",
-            "en": "Operational state",
-            "es": "Estado operativo",
-            "fr": "État opérationnel",
-            "nl": "Operationele staat",
-            "no": "Driftstilstand",
+            "da": "Driftstilstande",
+            "en": "Operational states",
+            "es": "Estados operativos",
+            "fr": "États opérationnels",
+            "nl": "Operationele staten",
+            "no": "Driftstilstander",
             "sv": "Drifttillstånd"
           }
         },
@@ -76,13 +76,13 @@
         {
           "id": "hourly_temperatures",
           "title": {
-            "da": "Seneste temperaturer",
-            "en": "Latest Temperatures",
-            "es": "Últimas temperaturas",
-            "fr": "Dernières températures",
-            "nl": "Laatste temperaturen",
-            "no": "Siste temperaturer",
-            "sv": "Senaste temperaturer"
+            "da": "Temperaturer siden sidste time",
+            "en": "Temperatures since the last hour",
+            "es": "Temperaturas desde la última hora",
+            "fr": "Températures depuis la dernière heure",
+            "nl": "Temperaturen sinds het afgelopen uur",
+            "no": "Temperaturer siden siste time",
+            "sv": "Temperaturer sedan den senaste timmen"
           }
         },
         {
