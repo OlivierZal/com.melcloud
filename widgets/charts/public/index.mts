@@ -24,6 +24,8 @@ const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
 const TIME_FIVE = 5
 
+const styleCache: Record<string, string> = {}
+
 const getDivElement = (id: string): HTMLDivElement => {
   const element = document.getElementById(id)
   if (!(element instanceof HTMLDivElement)) {
@@ -49,8 +51,14 @@ const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const getStyle = (value: string): string =>
-  getComputedStyle(document.documentElement).getPropertyValue(value).trim()
+const getStyle = (property: string): string => {
+  if (!styleCache[property]) {
+    styleCache[property] = getComputedStyle(document.documentElement)
+      .getPropertyValue(property)
+      .trim()
+  }
+  return styleCache[property]
+}
 
 // eslint-disable-next-line max-lines-per-function
 const getChartLineOptions = ({
@@ -268,8 +276,22 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   }
 }
 
+const initStyles = (): void => {
+  ;[
+    '--homey-font-weight-bold',
+    '--homey-font-weight-regular',
+    '--homey-text-color',
+    '--homey-text-color-light',
+  ].forEach((style) => {
+    styleCache[style] = getComputedStyle(document.documentElement)
+      .getPropertyValue(style)
+      .trim()
+  })
+}
+
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
+  initStyles()
   await setDocumentLanguage(homey)
   await fetchDevices(homey)
   homey.ready({ height: document.body.scrollHeight })
