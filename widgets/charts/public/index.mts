@@ -165,6 +165,7 @@ const getChartPieOptions = (
       .replace('Operation', '')
       .replace('PowerOff', 'Off')
       .replace('Power', 'Off')
+      .replace('Prevention', '')
       .replace(/(?<mode>.+)Ventilation$/u, '$<mode>'),
   ),
   legend: {
@@ -172,7 +173,6 @@ const getChartPieOptions = (
     fontWeight: getStyle('--homey-font-weight-regular'),
     labels: { colors: getStyle('--homey-text-color-light') },
     markers: { shape: 'square', strokeWidth: 0 },
-    position: 'bottom',
   },
   series,
   stroke: { show: false },
