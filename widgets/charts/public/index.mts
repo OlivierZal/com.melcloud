@@ -18,7 +18,6 @@ declare interface Homey extends HomeyWidget {
 
 const FONT_SIZE_SMALL = '14px'
 const FONT_SIZE_VERY_SMALL = '12px'
-const HEIGHT = 300
 const INCREMENT = 1
 const NEXT_TIMEOUT = 60000
 const TIME_ZERO = 0
@@ -87,11 +86,10 @@ const normalizeSeriesName = (name: string): string =>
   name.replace('Temperature', '')
 
 // eslint-disable-next-line max-lines-per-function
-const getChartLineOptions = ({
-  labels,
-  series,
-  unit,
-}: ReportChartLineOptions): ApexCharts.ApexOptions => {
+const getChartLineOptions = (
+  { labels, series, unit }: ReportChartLineOptions,
+  height: number,
+): ApexCharts.ApexOptions => {
   const colorLight = getStyle('--homey-text-color-light')
   const axisStyle = {
     axisBorder: { color: colorLight, show: true },
@@ -102,7 +100,7 @@ const getChartLineOptions = ({
     fontWeight: getStyle('--homey-font-weight-regular'),
   }
   return {
-    chart: { height: HEIGHT, toolbar: { show: false }, type: 'line' },
+    chart: { height, toolbar: { show: false }, type: 'line' },
     colors,
     grid: {
       borderColor: colorLight,
@@ -145,11 +143,11 @@ const getChartLineOptions = ({
   }
 }
 
-const getChartPieOptions = ({
-  labels,
-  series,
-}: ReportChartPieOptions): ApexCharts.ApexOptions => ({
-  chart: { height: HEIGHT, toolbar: { show: false }, type: 'pie' },
+const getChartPieOptions = (
+  { labels, series }: ReportChartPieOptions,
+  height: number,
+): ApexCharts.ApexOptions => ({
+  chart: { height, toolbar: { show: false }, type: 'pie' },
   colors,
   dataLabels: {
     dropShadow: { enabled: false },
@@ -182,8 +180,11 @@ const getChartPieOptions = ({
 
 const getChartOptions = (
   data: ReportChartLineOptions | ReportChartPieOptions,
+  height: number,
 ): ApexCharts.ApexOptions =>
-  'unit' in data ? getChartLineOptions(data) : getChartPieOptions(data)
+  'unit' in data ?
+    getChartLineOptions(data, height)
+  : getChartPieOptions(data, height)
 
 const getChartFunction =
   (
@@ -209,13 +210,19 @@ const getChartFunction =
 
 const handleChartAndOptions = async (
   homey: Homey,
-  chart: HomeySettings['chart'],
-  days?: number,
+  {
+    chart,
+    days,
+    height,
+  }: { chart: HomeySettings['chart']; height: number; days?: number },
 ): Promise<ApexCharts.ApexOptions> => {
   const hiddenSeries = (options.series ?? []).map((serie) =>
     typeof serie === 'number' || serie.hidden !== true ? undefined : serie.name,
   )
-  const newOptions = getChartOptions(await getChartFunction(homey, chart)(days))
+  const newOptions = getChartOptions(
+    await getChartFunction(homey, chart)(days),
+    height,
+  )
   if (
     hiddenSeries.some(
       (name) =>
@@ -231,7 +238,7 @@ const handleChartAndOptions = async (
   return newOptions
 }
 
-const getNextTimeout = (chart: HomeySettings['chart']): number => {
+const getTimeout = (chart: HomeySettings['chart']): number => {
   if (['hourly_temperatures', 'signal'].includes(chart)) {
     return NEXT_TIMEOUT
   }
@@ -243,23 +250,26 @@ const getNextTimeout = (chart: HomeySettings['chart']): number => {
 
 const draw = async (
   homey: Homey,
-  chart: HomeySettings['chart'],
-  days?: number,
+  {
+    chart,
+    days,
+    height,
+  }: { chart: HomeySettings['chart']; height: number; days?: number },
 ): Promise<void> => {
-  options = await handleChartAndOptions(homey, chart, days)
+  options = await handleChartAndOptions(homey, { chart, days, height })
   if (myChart) {
     await myChart.updateOptions(options)
-    await homey.setHeight(document.body.scrollHeight)
   } else {
     // @ts-expect-error: imported by another script in `./index.html`
     myChart = new ApexCharts(getDivElement('chart'), options)
     await myChart.render()
   }
+  await homey.setHeight(document.body.scrollHeight)
   timeout = setTimeout(() => {
-    draw(homey, chart, days).catch(() => {
+    draw(homey, { chart, days, height }).catch(() => {
       //
     })
-  }, getNextTimeout(chart))
+  }, getTimeout(chart))
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
@@ -286,14 +296,13 @@ const generateZones = (zones: DeviceZone[]): void => {
 
 const addEventListeners = (
   homey: Homey,
-  chart: HomeySettings['chart'],
-  days?: number,
+  config: { chart: HomeySettings['chart']; height: number; days?: number },
 ): void => {
   zoneElement.addEventListener('change', () => {
     if (timeout) {
       clearTimeout(timeout)
     }
-    draw(homey, chart, days).catch(() => {
+    draw(homey, config).catch(() => {
       //
     })
   })
@@ -310,7 +319,7 @@ const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
 }
 
 const fetchDevices = async (homey: Homey): Promise<void> => {
-  const { chart, days, default_zone: defaultZone } = homey.getSettings()
+  const { chart, days, default_zone: defaultZone, height } = homey.getSettings()
   const devices = (await homey.api(
     'GET',
     `/devices${
@@ -322,10 +331,10 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
     }`,
   )) as DeviceZone[]
   if (devices.length) {
-    addEventListeners(homey, chart, days)
+    addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)
     handleDefaultZone(defaultZone)
-    await draw(homey, chart, days)
+    await draw(homey, { chart, days, height: Number(height) })
   }
 }
 

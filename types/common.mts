@@ -271,6 +271,7 @@ export interface HomeyWidgetSettingsCharts extends BaseSettings {
     | 'temperatures'
   readonly days: number
   readonly default_zone: DeviceZone | null
+  readonly height: `${number}`
 }
 
 export interface HourQuery {

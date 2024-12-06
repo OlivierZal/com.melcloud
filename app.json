@@ -5334,6 +5334,58 @@
             "sv": "Standardzon"
           },
           "type": "autocomplete"
+        },
+        {
+          "id": "height",
+          "title": {
+            "da": "Widgetstørrelse",
+            "en": "Widget size",
+            "es": "Tamaño del widget",
+            "fr": "Taille du widget",
+            "nl": "Widgetgrootte",
+            "no": "Widgetstørrelse",
+            "sv": "Widgetstorlek"
+          },
+          "type": "dropdown",
+          "value": "300",
+          "values": [
+            {
+              "id": "300",
+              "title": {
+                "da": "Lille",
+                "en": "Small",
+                "es": "Pequeño",
+                "fr": "Petite",
+                "nl": "Klein",
+                "no": "Liten",
+                "sv": "Liten"
+              }
+            },
+            {
+              "id": "400",
+              "title": {
+                "da": "Mellem",
+                "en": "Medium",
+                "es": "Mediano",
+                "fr": "Moyenne",
+                "nl": "Middel",
+                "no": "Middels",
+                "sv": "Medel"
+              }
+            },
+            {
+              "id": "500",
+              "title": {
+                "da": "Stor",
+                "en": "Large",
+                "es": "Grande",
+                "fr": "Grande",
+                "nl": "Groot",
+                "no": "Stor",
+                "sv": "Stor"
+              }
+            }
+          ]
         }
       ],
       "id": "charts"
