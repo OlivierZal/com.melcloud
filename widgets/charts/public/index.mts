@@ -207,17 +207,28 @@ const getChartFunction =
       }`,
     )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
 
-const unhideChartSeries = (): void => {
-  options.series
-    ?.map((serie) =>
-      typeof serie === 'number' || serie.hidden !== true ?
-        undefined
-      : serie.name,
+const handleChartAndOptions = async (
+  homey: Homey,
+  chart: HomeySettings['chart'],
+  days?: number,
+): Promise<ApexCharts.ApexOptions> => {
+  const hiddenSeries = (options.series ?? []).map((serie) =>
+    typeof serie === 'number' || serie.hidden !== true ? undefined : serie.name,
+  )
+  const newOptions = getChartOptions(await getChartFunction(homey, chart)(days))
+  if (
+    hiddenSeries.some(
+      (name) =>
+        name !== undefined &&
+        !(newOptions.series ?? [])
+          .map((serie) => (typeof serie === 'number' ? undefined : serie.name))
+          .includes(name),
     )
-    .filter((serie) => serie !== undefined)
-    .forEach((hiddenSerie) => {
-      myChart?.showSeries(hiddenSerie)
-    })
+  ) {
+    myChart?.destroy()
+    myChart = null
+  }
+  return newOptions
 }
 
 const getNextTimeout = (chart: HomeySettings['chart']): number => {
@@ -235,8 +246,7 @@ const draw = async (
   chart: HomeySettings['chart'],
   days?: number,
 ): Promise<void> => {
-  unhideChartSeries()
-  options = getChartOptions(await getChartFunction(homey, chart)(days))
+  options = await handleChartAndOptions(homey, chart, days)
   if (myChart) {
     await myChart.updateOptions(options)
     await homey.setHeight(document.body.scrollHeight)
