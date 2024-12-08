@@ -15,9 +15,9 @@ import type {
 } from '../../types/common.mts'
 
 export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv> {
-  protected readonly EnergyReportRegular = undefined
+  protected readonly EnergyReportRegular = null
 
-  protected readonly EnergyReportTotal = undefined
+  protected readonly EnergyReportTotal = null
 
   protected readonly fromDevice: Partial<
     Record<

@@ -116,7 +116,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
   } as const
 
-  protected readonly thermostatMode = undefined
+  protected readonly thermostatMode = null
 
   protected readonly toDevice: Partial<
     Record<

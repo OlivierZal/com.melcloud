@@ -100,23 +100,23 @@ export abstract class BaseMELCloudDevice<
 
   #device?: IDeviceFacade<T>
 
+  protected abstract readonly EnergyReportRegular:
+    | (new (device: BaseMELCloudDevice<T>) => EnergyReportRegular<T>)
+    | null
+
+  protected abstract readonly EnergyReportTotal:
+    | (new (device: BaseMELCloudDevice<T>) => EnergyReportTotal<T>)
+    | null
+
   protected abstract readonly fromDevice: Partial<
     Record<keyof OpCapabilities<T>, ConvertFromDevice<T>>
   >
 
+  protected abstract readonly thermostatMode: object | null
+
   protected abstract toDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
-
-  protected abstract readonly EnergyReportRegular?: new (
-    device: BaseMELCloudDevice<T>,
-  ) => EnergyReportRegular<T>
-
-  protected abstract readonly EnergyReportTotal?: new (
-    device: BaseMELCloudDevice<T>,
-  ) => EnergyReportTotal<T>
-
-  protected abstract readonly thermostatMode?: object
 
   public get id(): number {
     return this.getData().id
@@ -337,7 +337,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   #isThermostatModeSupportingOff(): boolean {
-    return this.thermostatMode !== undefined && 'off' in this.thermostatMode
+    return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
   #registerCapabilityListeners(): void {

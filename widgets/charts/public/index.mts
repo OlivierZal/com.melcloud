@@ -217,7 +217,7 @@ const handleChartAndOptions = async (
   }: { chart: HomeySettings['chart']; height: number; days?: number },
 ): Promise<ApexCharts.ApexOptions> => {
   const hiddenSeries = (options.series ?? []).map((serie) =>
-    typeof serie === 'number' || serie.hidden !== true ? undefined : serie.name,
+    typeof serie === 'number' || serie.hidden !== true ? null : serie.name,
   )
   const newOptions = getChartOptions(
     await getChartFunction(homey, chart)(days),
@@ -226,9 +226,9 @@ const handleChartAndOptions = async (
   if (
     hiddenSeries.some(
       (name) =>
-        name !== undefined &&
+        name !== null &&
         !(newOptions.series ?? [])
-          .map((serie) => (typeof serie === 'number' ? undefined : serie.name))
+          .map((serie) => (typeof serie === 'number' ? null : serie.name))
           .includes(name),
     )
   ) {
