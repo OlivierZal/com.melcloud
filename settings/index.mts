@@ -1239,14 +1239,11 @@ const load = async (
 
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  const homeySettings = await fetchHomeySettings(homey)
+  const { contextKey, password, username } = await fetchHomeySettings(homey)
   await setDocumentLanguage(homey)
   await fetchDeviceSettings(homey)
-  await fetchDriverSettings(homey, {
-    password: homeySettings.password,
-    username: homeySettings.username,
-  })
+  await fetchDriverSettings(homey, { password, username })
   addEventListeners(homey)
-  await load(homey, homeySettings.contextKey)
+  await load(homey, contextKey)
   homey.ready()
 }
