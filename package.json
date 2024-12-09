@@ -32,7 +32,7 @@
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.1",
     "apexcharts": "^4.1.0",
-    "daisyui": "^4.12.14",
+    "daisyui": "^4.12.20",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
