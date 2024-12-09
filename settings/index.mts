@@ -131,7 +131,6 @@ const frostProtectionEnabledElement = getSelectElement(
 )
 const holidayModeEnabledElement = getSelectElement('enabled_holiday_mode')
 
-let homeySettings: HomeySettings = {}
 let deviceSettings: Partial<DeviceSettings> = {}
 let flatDeviceSettings: Partial<DeviceSetting> = {}
 
@@ -224,15 +223,15 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> =>
     })
   })
 
-const fetchHomeySettings = async (homey: Homey): Promise<void> =>
+const fetchHomeySettings = async (homey: Homey): Promise<HomeySettings> =>
   new Promise((resolve) => {
     homey.get(async (error: Error | null, settings: HomeySettings) => {
       if (error) {
         await homey.alert(error.message)
-      } else {
-        homeySettings = settings
+        resolve({})
+        return
       }
-      resolve()
+      resolve(settings)
     })
   })
 
@@ -715,6 +714,7 @@ const generateSettings = (
 const generateCredential = (
   credentialKey: keyof LoginCredentials,
   driverSettings: Partial<Record<string, DriverSetting[]>>,
+  value?: string | null,
 ): HTMLInputElement | null => {
   const loginSetting = driverSettings.login?.find(
     (setting): setting is LoginDriverSetting => setting.id === credentialKey,
@@ -725,7 +725,7 @@ const generateCredential = (
       id,
       placeholder,
       type,
-      value: homeySettings[id],
+      value,
     })
     createValueElement(loginElement, { title, valueElement })
     return valueElement
@@ -735,13 +735,18 @@ const generateCredential = (
 
 const generateCredentials = (
   driverSettings: Partial<Record<string, DriverSetting[]>>,
+  credentials: { password?: string | null; username?: string | null },
 ): void => {
   ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
-    (element) => generateCredential(element, driverSettings),
+    (element) =>
+      generateCredential(element, driverSettings, credentials[element]),
   )
 }
 
-const fetchDriverSettings = async (homey: Homey): Promise<void> =>
+const fetchDriverSettings = async (
+  homey: Homey,
+  credentials: { password?: string | null; username?: string | null },
+): Promise<void> =>
   new Promise((resolve) => {
     homey.api(
       'GET',
@@ -754,7 +759,7 @@ const fetchDriverSettings = async (homey: Homey): Promise<void> =>
           await homey.alert(error.message)
         } else {
           generateSettings(homey, settings)
-          generateCredentials(settings)
+          generateCredentials(settings, credentials)
         }
         resolve()
       },
@@ -1224,8 +1229,11 @@ const addEventListeners = (homey: Homey): void => {
   addFrostProtectionEventListeners(homey)
 }
 
-const load = async (homey: Homey): Promise<void> => {
-  if (homeySettings.contextKey !== undefined) {
+const load = async (
+  homey: Homey,
+  contextKey?: string | null,
+): Promise<void> => {
+  if (contextKey !== undefined) {
     try {
       await fetchBuildings(homey)
       return
@@ -1236,11 +1244,14 @@ const load = async (homey: Homey): Promise<void> => {
 
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
+  const homeySettings = await fetchHomeySettings(homey)
   await setDocumentLanguage(homey)
-  await fetchHomeySettings(homey)
   await fetchDeviceSettings(homey)
-  await fetchDriverSettings(homey)
+  await fetchDriverSettings(homey, {
+    password: homeySettings.password,
+    username: homeySettings.username,
+  })
   addEventListeners(homey)
-  await load(homey)
+  await load(homey, homeySettings.contextKey)
   homey.ready()
 }
