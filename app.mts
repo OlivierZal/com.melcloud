@@ -183,7 +183,7 @@ export default class MELCloudApp extends Homey.App {
       timezone,
     })
     this.#facadeManager = new FacadeManager(this.#api)
-    this.#createNotification()
+    this.#createNotification(language)
     this.#registerWidgetListeners()
   }
 
@@ -427,7 +427,7 @@ export default class MELCloudApp extends Homey.App {
     )
   }
 
-  #createNotification(): void {
+  #createNotification(language: string): void {
     const {
       homey: {
         manifest: { version },
@@ -435,7 +435,6 @@ export default class MELCloudApp extends Homey.App {
     } = this
     if (this.homey.settings.get('notifiedVersion') !== version) {
       const { [version]: versionChangelog } = changelog
-      const language = this.homey.i18n.getLanguage()
       if (language in versionChangelog) {
         this.homey.setTimeout(async () => {
           try {
