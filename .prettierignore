@@ -1,5 +1,4 @@
 *.html
-*.min.js
 /.homeycompose/app.json
 /app.json
 /locales/
