@@ -49,7 +49,6 @@ import {
   type GetAtaOptions,
   type GroupAtaStates,
   type LoginSetting,
-  type Manifest,
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
   type MELCloudDevice,
@@ -131,22 +130,20 @@ const getDriverLoginSetting = (
     }, {}),
   )
 
+const isKeyofEnum = (
+  enumType: object,
+  key: string,
+): key is keyof typeof enumType => key in enumType
+
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
   language: string,
-  enumType?:
-    | typeof FanSpeed
-    | typeof Horizontal
-    | typeof OperationMode
-    | typeof Vertical,
+  enumType?: object,
 ): DriverCapabilitiesOptions => ({
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
-    id:
-      enumType && id in enumType ?
-        String(enumType[id as keyof typeof enumType])
-      : id,
+    id: enumType && isKeyofEnum(enumType, id) ? enumType[id] : id,
     label: title[language] ?? title.en,
   })),
 })
@@ -215,7 +212,7 @@ export default class MELCloudApp extends Homey.App {
         key: 'OperationMode',
         options: {
           ...thermostatMode,
-          values: (this.homey.manifest as Manifest).drivers
+          values: this.homey.manifest.drivers
             .find(({ id }) => id === 'melcloud')
             ?.capabilitiesOptions?.thermostat_mode.values?.filter(
               ({ id }) => id !== 'off',
@@ -282,7 +279,7 @@ export default class MELCloudApp extends Homey.App {
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
     const language = this.homey.i18n.getLanguage()
     return Object.groupBy(
-      (this.homey.manifest as Manifest).drivers.flatMap((driver) => [
+      this.homey.manifest.drivers.flatMap((driver) => [
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),

@@ -3,13 +3,14 @@ import type HomeyLib from 'homey/lib/Homey'
 
 import type MELCloudApp from './app.mts'
 import type { BaseMELCloudDriver } from './drivers/base-driver.mts'
+import type { Manifest } from './types/common.mts'
 import type { HomeySettings } from './types/index.mts'
 
 declare module 'homey' {
   interface Homey extends HomeyLib {
     app: MELCloudApp
     drivers: ManagerDrivers
-    manifest: { version: string }
+    manifest: Manifest
     settings: ManagerSettings
   }
 
