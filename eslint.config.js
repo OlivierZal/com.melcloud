@@ -98,7 +98,7 @@ const valuesFirst = {
 
 const config = [
   {
-    ignores: ['.homeybuild/', '**/*.min.js'],
+    ignores: ['.homeybuild/'],
   },
   ...ts.config(
     {
