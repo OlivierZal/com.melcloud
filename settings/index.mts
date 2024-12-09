@@ -721,12 +721,7 @@ const generateCredential = (
   )
   if (loginSetting) {
     const { id, placeholder, title, type } = loginSetting
-    const valueElement = createInputElement({
-      id,
-      placeholder,
-      type,
-      value,
-    })
+    const valueElement = createInputElement({ id, placeholder, type, value })
     createValueElement(loginElement, { title, valueElement })
     return valueElement
   }
