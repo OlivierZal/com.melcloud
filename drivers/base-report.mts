@@ -5,18 +5,17 @@ import {
   type HourNumbers,
 } from 'luxon'
 
-import { K_MULTIPLIER } from '../constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import {
+  K_MULTIPLIER,
+  type Capabilities,
+  type EnergyCapabilities,
+  type EnergyCapabilityTagEntry,
+  type EnergyReportMode,
+} from '../types/common.mts'
 
 import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
-
-import type {
-  Capabilities,
-  EnergyCapabilities,
-  EnergyCapabilityTagEntry,
-  EnergyReportMode,
-} from '../types/common.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'

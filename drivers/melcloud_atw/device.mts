@@ -7,24 +7,23 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { K_MULTIPLIER } from '../../constants.mts'
 import {
   HotWaterMode,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
   type TargetTemperatureFlowCapabilities,
 } from '../../types/atw.mts'
+import {
+  K_MULTIPLIER,
+  type ConvertFromDevice,
+  type ConvertToDevice,
+  type OpCapabilities,
+  type SetCapabilities,
+} from '../../types/common.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import { EnergyReportRegularAtw } from './reports/regular.mts'
 import { EnergyReportTotalAtw } from './reports/total.mts'
-
-import type {
-  ConvertFromDevice,
-  ConvertToDevice,
-  OpCapabilities,
-  SetCapabilities,
-} from '../../types/common.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
