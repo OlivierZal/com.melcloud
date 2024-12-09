@@ -335,10 +335,6 @@ export default class MELCloudApp extends Homey.App {
     return this.getFacade('devices', deviceId).hourlyTemperatures(hour)
   }
 
-  public getLanguage(): string {
-    return this.homey.i18n.getLanguage()
-  }
-
   public async getOperationModes(
     deviceId: string,
     days: number,
