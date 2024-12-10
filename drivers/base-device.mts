@@ -39,7 +39,12 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 
 const getErrorMessage = (error: unknown): string | null => {
   if (error !== null) {
-    return error instanceof Error ? error.message : String(error)
+    if (error instanceof Error) {
+      return error.message
+    }
+    if (typeof error === 'string') {
+      return error
+    }
   }
   return null
 }
