@@ -31,7 +31,7 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.10.1",
-    "apexcharts": "^4.1.0",
+    "apexcharts": "^4.2.0",
     "daisyui": "^4.12.20",
     "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
