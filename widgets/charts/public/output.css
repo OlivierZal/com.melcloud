@@ -1340,8 +1340,7 @@ html {
 
 .progress::-moz-progress-bar {
   border-radius: var(--rounded-box, 1rem);
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-bg-opacity)));
+  background-color: currentColor;
 }
 
 .progress:indeterminate {
@@ -1365,8 +1364,7 @@ html {
 
 .progress::-webkit-progress-value {
   border-radius: var(--rounded-box, 1rem);
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-bg-opacity)));
+  background-color: currentColor;
 }
 
 .progress:indeterminate::-moz-progress-bar {
