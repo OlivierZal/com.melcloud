@@ -115,17 +115,14 @@ export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
   HasZone2: hasZone2,
 }: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
-  const thermostatModeValues =
+  const values =
     canCool ?
       thermostatModeValuesAtw
     : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
   return {
-    thermostat_mode: { values: thermostatModeValues },
+    thermostat_mode: { values },
     ...(hasZone2 && {
-      'thermostat_mode.zone2': {
-        title: thermostatModeTitleAtw,
-        values: thermostatModeValues,
-      },
+      'thermostat_mode.zone2': { title: thermostatModeTitleAtw, values },
     }),
   }
 }

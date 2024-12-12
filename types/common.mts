@@ -70,16 +70,11 @@ export const zoneModel = {
 
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
-  NumberOfFanSpeeds: numberOfFanSpeeds,
+  NumberOfFanSpeeds: max,
 }:
   | ListDeviceDataAta
   | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
-  fan_speed: {
-    max: numberOfFanSpeeds,
-    min: Number(!hasAutomaticFanSpeed),
-    step: 1,
-    units: '',
-  },
+  fan_speed: { max, min: Number(!hasAutomaticFanSpeed), step: 1, units: '' },
 })
 
 const addPrefixToTitle = (
