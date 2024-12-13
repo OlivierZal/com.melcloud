@@ -411,20 +411,21 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
-    await Promise.all(
-      Object.entries(this.driver.getCapabilitiesOptions(data)).map(
-        async (capabilityOptions) =>
-          this.setCapabilityOptions(
-            ...(capabilityOptions as [
-              string & keyof CapabilitiesOptions<T>,
-              CapabilitiesOptions<T>[Extract<
-                keyof CapabilitiesOptions<T>,
-                string
-              >] &
-                Record<string, unknown>,
-            ]),
-          ),
-      ),
+    await Object.entries(this.driver.getCapabilitiesOptions(data)).reduce(
+      async (acc, capabilityOptions) => {
+        await acc
+        await this.setCapabilityOptions(
+          ...(capabilityOptions as [
+            string & keyof CapabilitiesOptions<T>,
+            CapabilitiesOptions<T>[Extract<
+              keyof CapabilitiesOptions<T>,
+              string
+            >] &
+              Record<string, unknown>,
+          ]),
+        )
+      },
+      Promise.resolve(),
     )
   }
 
