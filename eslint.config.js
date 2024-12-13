@@ -168,13 +168,13 @@ const config = [
             filter: {
               match: true,
               regex:
-                '^[a-z]+(?:_[a-z]+)*\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?$',
+                '^[a-z]+(?:_[a-z0-9]+)*(\\.(?:[a-z0-9]+_)*([a-z0-9]+)?)?$',
             },
             format: null,
             selector: ['objectLiteralProperty', 'typeProperty'],
           },
           {
-            format: ['camelCase', 'PascalCase', 'snake_case'],
+            format: ['camelCase', 'PascalCase'],
             selector: ['objectLiteralProperty', 'typeProperty'],
           },
           {
