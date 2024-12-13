@@ -168,7 +168,7 @@ const config = [
             filter: {
               match: true,
               regex:
-                '^[a-z]+(?:_[a-z0-9]+)*\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?$',
+                '^[a-z]+(?:_[a-z]+)*\\.(?:[a-z0-9]+_)*(([a-z0-9]+|zone(1|2)))?$',
             },
             format: null,
             selector: ['objectLiteralProperty', 'typeProperty'],
