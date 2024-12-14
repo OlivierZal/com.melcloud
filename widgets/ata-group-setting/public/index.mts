@@ -412,7 +412,7 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const isKeyofGroupAtaState = (value: string): value is keyof GroupState =>
+const isGroupAtaState = (value: string): value is keyof GroupState =>
   value in defaultAtaValues
 
 const buildAtaValuesBody = (): GroupState =>
@@ -422,7 +422,7 @@ const buildAtaValuesBody = (): GroupState =>
     )
       .filter(
         ({ id, value }) =>
-          isKeyofGroupAtaState(id) &&
+          isGroupAtaState(id) &&
           !['', zoneMapping[zoneElement.value]?.[id]?.toString()].includes(
             value,
           ),
