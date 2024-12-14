@@ -412,8 +412,8 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const isKeyofGroupAtaState = (key: string): key is keyof GroupState =>
-  key in defaultAtaValues
+const isKeyofGroupAtaState = (value: string): value is keyof GroupState =>
+  value in defaultAtaValues
 
 const buildAtaValuesBody = (): GroupState =>
   Object.fromEntries(
