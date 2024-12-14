@@ -14,7 +14,7 @@ const api = {
   getDevices({ query }: { query: { type?: `${DeviceType}` } }): DeviceZone[] {
     const { type } = query
     return getZones({ type: type ? Number(type) : undefined }).filter(
-      (zone): zone is DeviceZone => zone.model === 'devices',
+      (zone) => zone.model === 'devices',
     )
   },
   async getHourlyTemperatures({
