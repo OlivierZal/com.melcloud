@@ -18,7 +18,13 @@
   "tokens": [
     {
       "example": {
-        "en": "idle"
+        "da": "Inaktiv",
+        "en": "Idle",
+        "es": "Inactivo",
+        "fr": "Inactif",
+        "nl": "Inactief",
+        "no": "Inaktiv",
+        "sv": "Inaktiv"
       },
       "name": "operational_state.zone1",
       "title": {

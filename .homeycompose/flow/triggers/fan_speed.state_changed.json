@@ -17,7 +17,6 @@
   },
   "tokens": [
     {
-      "example": 5,
       "name": "fan_speed.state",
       "title": {
         "da": "Aktuel ventilatorhastighed",

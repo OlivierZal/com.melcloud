@@ -464,7 +464,6 @@
         },
         "tokens": [
           {
-            "example": 5,
             "name": "fan_speed.state",
             "title": {
               "da": "Aktuel ventilatorhastighed",
@@ -500,7 +499,13 @@
         "tokens": [
           {
             "example": {
-              "en": "auto"
+              "da": "Automatisk",
+              "en": "Automatic",
+              "es": "Automático",
+              "fr": "Automatique",
+              "nl": "Automatisch",
+              "no": "Automatisk",
+              "sv": "Automatiskt"
             },
             "name": "horizontal",
             "title": {
@@ -537,7 +542,13 @@
         "tokens": [
           {
             "example": {
-              "en": "idle"
+              "da": "Inaktiv",
+              "en": "Idle",
+              "es": "Inactivo",
+              "fr": "Inactif",
+              "nl": "Inactief",
+              "no": "Inaktiv",
+              "sv": "Inaktiv"
             },
             "name": "operational_state.hot_water",
             "title": {
@@ -574,7 +585,13 @@
         "tokens": [
           {
             "example": {
-              "en": "idle"
+              "da": "Inaktiv",
+              "en": "Idle",
+              "es": "Inactivo",
+              "fr": "Inactif",
+              "nl": "Inactief",
+              "no": "Inaktiv",
+              "sv": "Inaktiv"
             },
             "name": "operational_state.zone1",
             "title": {
@@ -611,7 +628,13 @@
         "tokens": [
           {
             "example": {
-              "en": "idle"
+              "da": "Inaktiv",
+              "en": "Idle",
+              "es": "Inactivo",
+              "fr": "Inactif",
+              "nl": "Inactief",
+              "no": "Inaktiv",
+              "sv": "Inaktiv"
             },
             "name": "operational_state.zone2",
             "title": {
@@ -648,7 +671,13 @@
         "tokens": [
           {
             "example": {
-              "en": "curve"
+              "da": "Indendørs føler",
+              "en": "Indoor temperature",
+              "es": "Temperatura interior",
+              "fr": "Température intérieure",
+              "nl": "Binnentemperatuur",
+              "no": "Innendørs føler",
+              "sv": "Inomhusgivare"
             },
             "name": "thermostat_mode.zone2",
             "title": {
@@ -685,7 +714,13 @@
         "tokens": [
           {
             "example": {
-              "en": "auto"
+              "da": "Automatisk",
+              "en": "Automatic",
+              "es": "Automático",
+              "fr": "Automatique",
+              "nl": "Automatisch",
+              "no": "Automatisk",
+              "sv": "Automatiskt"
             },
             "name": "vertical",
             "title": {

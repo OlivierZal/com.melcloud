@@ -18,7 +18,13 @@
   "tokens": [
     {
       "example": {
-        "en": "curve"
+        "da": "Indendørs føler",
+        "en": "Indoor temperature",
+        "es": "Temperatura interior",
+        "fr": "Température intérieure",
+        "nl": "Binnentemperatuur",
+        "no": "Innendørs føler",
+        "sv": "Inomhusgivare"
       },
       "name": "thermostat_mode.zone2",
       "title": {

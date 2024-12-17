@@ -18,7 +18,13 @@
   "tokens": [
     {
       "example": {
-        "en": "auto"
+        "da": "Automatisk",
+        "en": "Automatic",
+        "es": "Automático",
+        "fr": "Automatique",
+        "nl": "Automatisch",
+        "no": "Automatisk",
+        "sv": "Automatiskt"
       },
       "name": "vertical",
       "title": {
