@@ -489,9 +489,9 @@
         ],
         "title": {
           "da": "Den horisontale luftstrømsretningen er blevet ændret",
-          "en": "The horizontal vane has changed",
+          "en": "The horizontal vane changed",
           "es": "La descarga horizontal ha cambiado",
-          "fr": "Le soufflage horizontal a été modifié",
+          "fr": "Le soufflage horizontal a changé",
           "nl": "De uitblaasrichting horizontaal is veranderd",
           "no": "Den horisontale luftstrømretningen ble endret",
           "sv": "Den horisontella luftflödesriktningen ändrades"
@@ -661,9 +661,9 @@
         ],
         "title": {
           "da": "Termostattilstand i zone 2 er blevet ændret",
-          "en": "Thermostat mode in zone 2 has changed",
+          "en": "Thermostat mode in zone 2 changed",
           "es": "El modo del termostato en la zona 2 ha cambiado",
-          "fr": "Mode thermostat dans la zone 2 a été modifié",
+          "fr": "Mode thermostat dans la zone 2 a changé",
           "nl": "Thermostaat modus in zone 2 is veranderd",
           "no": "Termostatmodus i sone 2 ble endret",
           "sv": "Termostatläge i zon 2 ändrades"
@@ -704,9 +704,9 @@
         ],
         "title": {
           "da": "Den vertikale luftstrømsretningen er blevet ændret",
-          "en": "The vertical vane has changed",
+          "en": "The vertical vane changed",
           "es": "La descarga vertical ha cambiado",
-          "fr": "Le soufflage vertical a été modifié",
+          "fr": "Le soufflage vertical a changé",
           "nl": "De uitblaasrichting verticaal is veranderd",
           "no": "Den vertikale luftstrømretningen ble endret",
           "sv": "Den vertikala luftflödesriktningen ändrades"
