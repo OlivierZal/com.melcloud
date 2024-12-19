@@ -11,6 +11,10 @@ import ts, { configs as tsConfigs } from 'typescript-eslint'
 
 import { classGroups } from './eslint-utils/class-groups.js'
 
+const arrayLikeGroups = {
+  groups: ['literal', 'spread'],
+}
+
 const decoratorGroups = {
   groups: ['unknown'],
 }
@@ -305,7 +309,7 @@ const config = [
           },
         ],
         'one-var': ['error', 'never'],
-        'perfectionist/sort-array-includes': 'error',
+        'perfectionist/sort-array-includes': ['error', arrayLikeGroups],
         'perfectionist/sort-classes': ['error', classGroups],
         'perfectionist/sort-decorators': ['error', decoratorGroups],
         'perfectionist/sort-enums': 'error',
@@ -320,7 +324,7 @@ const config = [
         'perfectionist/sort-named-imports': ['error', valuesFirst],
         'perfectionist/sort-object-types': ['error', typeLikeGroups],
         'perfectionist/sort-objects': 'error',
-        'perfectionist/sort-sets': 'error',
+        'perfectionist/sort-sets': ['error', arrayLikeGroups],
         'perfectionist/sort-switch-case': 'error',
         'perfectionist/sort-union-types': ['error', typeGroups],
         'sort-imports': 'off',
