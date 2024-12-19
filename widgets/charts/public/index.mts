@@ -224,6 +224,7 @@ const handleChartAndOptions = async (
     height,
   )
   if (
+    newOptions.chart?.type === 'pie' ||
     hiddenSeries.some(
       (name) =>
         name !== null &&
