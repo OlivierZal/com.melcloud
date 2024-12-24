@@ -16,7 +16,7 @@
   "dependencies": {
     "@olivierzal/melcloud-api": "^17.6.3",
     "core-js": "^3.39.0",
-    "homey-lib": "^2.33.0",
+    "homey-lib": "^2.33.1",
     "luxon": "^3.5.0",
     "source-map-support": "^0.5.21"
   },
