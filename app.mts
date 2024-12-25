@@ -214,9 +214,9 @@ export default class MELCloudApp extends Homey.App {
           ...thermostatMode,
           values: this.homey.manifest.drivers
             .find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.thermostat_mode.values?.filter(
-              ({ id }) => id !== 'off',
-            ),
+            ?.capabilitiesOptions?.[
+              'thermostat_mode'
+            ]?.values?.filter(({ id }) => id !== 'off'),
         },
       },
     ].map(({ enumType, key, options }) => [
@@ -427,7 +427,7 @@ export default class MELCloudApp extends Homey.App {
       },
     } = this
     if (this.homey.settings.get('notifiedVersion') !== version) {
-      const { [version]: versionChangelog } = changelog
+      const { [version]: versionChangelog = {} } = changelog
       if (language in versionChangelog) {
         this.homey.setTimeout(async () => {
           try {

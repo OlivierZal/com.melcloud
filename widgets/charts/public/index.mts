@@ -45,7 +45,7 @@ const defaultHiddenSeries = [
   'ReturnZone1',
   'ReturnZone2',
 ]
-const styleCache: Record<string, string> = {}
+const styleCache: Partial<Record<string, string>> = {}
 
 let myChart: ApexCharts | null = null
 let options: ApexCharts.ApexOptions = {}
@@ -74,11 +74,9 @@ const getZoneId = (id: number, model: string): string =>
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 const getStyle = (property: string): string => {
-  if (!styleCache[property]) {
-    styleCache[property] = getComputedStyle(document.documentElement)
-      .getPropertyValue(property)
-      .trim()
-  }
+  styleCache[property] ??= getComputedStyle(document.documentElement)
+    .getPropertyValue(property)
+    .trim()
   return styleCache[property]
 }
 
@@ -339,6 +337,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   }
 }
 
+// @ts-expect-error: read by another script in `./index.html`
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)

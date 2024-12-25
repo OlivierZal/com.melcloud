@@ -20,9 +20,9 @@ import type Homey from 'homey/lib/Homey'
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
-const INITIAL_SUM = 0
 const DEFAULT_DEVICE_COUNT = 1
 const DEFAULT_DIVISOR = 1
+const ZERO = 0
 
 export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
@@ -94,11 +94,9 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
       },
     } = this
     return (
-      producedTags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /
-        consumedTags.reduce(
-          (acc, tag) => acc + Number(data[tag]),
-          INITIAL_SUM,
-        ) || DEFAULT_DIVISOR
+      producedTags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) /
+        consumedTags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) ||
+      DEFAULT_DIVISOR
     )
   }
 
@@ -107,7 +105,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     tags: (keyof EnergyData<T>)[],
   ): number {
     return (
-      tags.reduce((acc, tag) => acc + Number(data[tag]), INITIAL_SUM) /
+      tags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) /
       this.#linkedDeviceCount
     )
   }
@@ -119,8 +117,9 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
   ): number {
     return (
       tags.reduce(
-        (acc, tag) => acc + (data[tag] as number[])[hour] * K_MULTIPLIER,
-        INITIAL_SUM,
+        (acc, tag) =>
+          acc + ((data[tag] as number[])[hour] ?? ZERO) * K_MULTIPLIER,
+        ZERO,
       ) / this.#linkedDeviceCount
     )
   }

@@ -219,15 +219,14 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
-  public async fetchDevice(): Promise<IDeviceFacade<T> | undefined> {
+  public async fetchDevice(): Promise<IDeviceFacade<T> | null> {
     try {
-      if (!this.#device) {
-        this.#device = this.homey.app.getFacade('devices', this.id)
-        await this.#init(this.#device.data)
-      }
+      this.#device ??= this.homey.app.getFacade('devices', this.id)
+      await this.#init(this.#device.data)
       return this.#device
     } catch (error) {
       await this.setWarning(error)
+      return null
     }
   }
 
@@ -291,13 +290,14 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  async #fetchData(): Promise<ListDeviceData<T> | undefined> {
+  async #fetchData(): Promise<ListDeviceData<T> | null> {
     try {
-      return (await this.fetchDevice())?.data
+      return (await this.fetchDevice())?.data ?? null
     } catch {
       await this.setWarning(
         this.homey.__(this.homey.__('errors.deviceNotFound')),
       )
+      return null
     }
   }
 
@@ -353,10 +353,10 @@ export abstract class BaseMELCloudDevice<
           'thermostat_mode' in values &&
           this.#isThermostatModeSupportingOff()
         ) {
-          const isOn = values.thermostat_mode !== 'off'
-          values.onoff = isOn
+          const isOn = values['thermostat_mode'] !== 'off'
+          values['onoff'] = isOn
           if (!isOn) {
-            delete values.thermostat_mode
+            delete values['thermostat_mode']
           }
         }
         await this.#set(values as Partial<SetCapabilities<T>>)

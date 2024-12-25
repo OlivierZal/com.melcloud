@@ -533,26 +533,28 @@ const generateFlameAnimation = (
 const createFlame = (speed: number): void => {
   const flame = createAnimatedElement('flame')
   const [name, index] = flame.id.split('-')
-  const previousElement = document.getElementById(
-    `${name}-${String(Number(index) - INCREMENT)}`,
-  )
-  const previousLeft =
-    previousElement ?
-      parseFloat(previousElement.style.left)
-    : -FLAME_GAP * FACTOR_TWO
-  flame.style.left = generateStyleString(
-    {
-      gap: FLAME_GAP,
-      min:
-        previousLeft > window.innerWidth ?
-          -FLAME_GAP
-        : previousLeft + FLAME_GAP,
-    },
-    'px',
-  )
-  flame.style.fontSize = generateStyleString({ gap: 10, min: 50 }, 'px')
-  animationElement.append(flame)
-  generateFlameAnimation(flame, speed)
+  if (name !== undefined) {
+    const previousElement = document.getElementById(
+      `${name}-${String(Number(index) - INCREMENT)}`,
+    )
+    const previousLeft =
+      previousElement ?
+        parseFloat(previousElement.style.left)
+      : -FLAME_GAP * FACTOR_TWO
+    flame.style.left = generateStyleString(
+      {
+        gap: FLAME_GAP,
+        min:
+          previousLeft > window.innerWidth ?
+            -FLAME_GAP
+          : previousLeft + FLAME_GAP,
+      },
+      'px',
+    )
+    flame.style.fontSize = generateStyleString({ gap: 10, min: 50 }, 'px')
+    animationElement.append(flame)
+    generateFlameAnimation(flame, speed)
+  }
 }
 
 const generateFlames = (speed: number): void => {
@@ -601,33 +603,35 @@ const generateSnowflakeAnimation = (
 const createSnowflake = (speed: number): void => {
   const snowflake = createAnimatedElement('snowflake')
   const [name, index] = snowflake.id.split('-')
-  const previousElement = document.getElementById(
-    `${name}-${String(Number(index) - INCREMENT)}`,
-  )
-  const previousLeft =
-    previousElement ?
-      parseFloat(previousElement.style.left)
-    : -SNOWFLAKE_GAP * FACTOR_TWO
-  snowflake.style.left = generateStyleString(
-    {
-      gap: SNOWFLAKE_GAP,
-      min:
-        previousLeft > window.innerWidth ?
-          -SNOWFLAKE_GAP
-        : previousLeft + SNOWFLAKE_GAP,
-    },
-    'px',
-  )
-  snowflake.style.fontSize = generateStyleString(
-    { divisor: speed, gap: 10, min: 30 },
-    'px',
-  )
-  snowflake.style.filter = `brightness(${generateStyleString(
-    { gap: 20, min: 100 },
-    '%',
-  )})`
-  animationElement.append(snowflake)
-  generateSnowflakeAnimation(snowflake, speed)
+  if (name !== undefined) {
+    const previousElement = document.getElementById(
+      `${name}-${String(Number(index) - INCREMENT)}`,
+    )
+    const previousLeft =
+      previousElement ?
+        parseFloat(previousElement.style.left)
+      : -SNOWFLAKE_GAP * FACTOR_TWO
+    snowflake.style.left = generateStyleString(
+      {
+        gap: SNOWFLAKE_GAP,
+        min:
+          previousLeft > window.innerWidth ?
+            -SNOWFLAKE_GAP
+          : previousLeft + SNOWFLAKE_GAP,
+      },
+      'px',
+    )
+    snowflake.style.fontSize = generateStyleString(
+      { divisor: speed, gap: 10, min: 30 },
+      'px',
+    )
+    snowflake.style.filter = `brightness(${generateStyleString(
+      { gap: 20, min: 100 },
+      '%',
+    )})`
+    animationElement.append(snowflake)
+    generateSnowflakeAnimation(snowflake, speed)
+  }
 }
 
 const generateSnowflakes = (speed: number): void => {
@@ -786,28 +790,30 @@ const generateLeafAnimation = (
 const createLeaf = (speed: number): void => {
   const leaf = createAnimatedElement('leaf')
   const [name, index] = leaf.id.split('-')
-  const previousElement = document.getElementById(
-    `${name}-${String(Number(index) - INCREMENT)}`,
-  )
-  const previousTop =
-    previousElement ?
-      parseFloat(previousElement.style.top)
-    : -LEAF_GAP * FACTOR_TWO
-  leaf.style.top = generateStyleString(
-    {
-      gap: LEAF_GAP,
-      min:
-        previousTop > window.innerHeight ? -LEAF_GAP : previousTop + LEAF_GAP,
-    },
-    'px',
-  )
-  leaf.style.fontSize = generateStyleString({ gap: 10, min: 30 }, 'px')
-  leaf.style.filter = `brightness(${generateStyleString(
-    { gap: 50, min: 100 },
-    '%',
-  )})`
-  animationElement.append(leaf)
-  generateLeafAnimation(leaf, speed)
+  if (name !== undefined) {
+    const previousElement = document.getElementById(
+      `${name}-${String(Number(index) - INCREMENT)}`,
+    )
+    const previousTop =
+      previousElement ?
+        parseFloat(previousElement.style.top)
+      : -LEAF_GAP * FACTOR_TWO
+    leaf.style.top = generateStyleString(
+      {
+        gap: LEAF_GAP,
+        min:
+          previousTop > window.innerHeight ? -LEAF_GAP : previousTop + LEAF_GAP,
+      },
+      'px',
+    )
+    leaf.style.fontSize = generateStyleString({ gap: 10, min: 30 }, 'px')
+    leaf.style.filter = `brightness(${generateStyleString(
+      { gap: 50, min: 100 },
+      '%',
+    )})`
+    animationElement.append(leaf)
+    generateLeafAnimation(leaf, speed)
+  }
 }
 
 const generateLeaves = (speed: number): void => {
@@ -1099,6 +1105,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
   }
 }
 
+// @ts-expect-error: read by another script in `./index.html`
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
   await setDocumentLanguage(homey)

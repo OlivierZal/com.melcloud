@@ -423,9 +423,13 @@ const createSelectElement = (
 
 const updateCommonSetting = (element: HTMLSelectElement): void => {
   const [id] = element.id.split('__')
-  const { [id]: value } = flatDeviceSettings
-  element.value =
-    ['boolean', 'number', 'string'].includes(typeof value) ? String(value) : ''
+  if (id !== undefined) {
+    const { [id]: value } = flatDeviceSettings
+    element.value =
+      ['boolean', 'number', 'string'].includes(typeof value) ?
+        String(value)
+      : ''
+  }
 }
 
 const refreshCommonSettings = (elements: HTMLSelectElement[]): void => {
@@ -437,17 +441,19 @@ const updateDriverSetting = (
   driverId: string,
 ): void => {
   const [id] = element.id.split('__')
-  const isChecked = deviceSettings[driverId]?.[id]
-  if (typeof isChecked === 'boolean') {
-    element.checked = isChecked
-    return
-  }
-  element.indeterminate = true
-  element.addEventListener('change', () => {
-    if (element.indeterminate) {
-      element.indeterminate = false
+  if (id !== undefined) {
+    const isChecked = deviceSettings[driverId]?.[id]
+    if (typeof isChecked === 'boolean') {
+      element.checked = isChecked
+      return
     }
-  })
+    element.indeterminate = true
+    element.addEventListener('change', () => {
+      if (element.indeterminate) {
+        element.indeterminate = false
+      }
+    })
+  }
 }
 
 const refreshDriverSettings = (
@@ -528,9 +534,11 @@ const buildSettingsBody = (
   elements.forEach((element) => {
     try {
       const [id] = element.id.split('__')
-      const value = processValue(homey, element)
-      if (shouldUpdate(id, value, driverId)) {
-        settings[id] = value
+      if (id !== undefined) {
+        const value = processValue(homey, element)
+        if (shouldUpdate(id, value, driverId)) {
+          settings[id] = value
+        }
       }
     } catch (error) {
       errors.push(getErrorMessage(error))
@@ -652,7 +660,7 @@ const generateCommonSettings = (
   homey: Homey,
   driverSettings: Partial<Record<string, DriverSetting[]>>,
 ): void => {
-  ;(driverSettings.options ?? []).forEach(({ id, title, type, values }) => {
+  ;(driverSettings['options'] ?? []).forEach(({ id, title, type, values }) => {
     const settingId = `${id}__setting`
     if (
       !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
@@ -717,7 +725,7 @@ const generateCredential = (
   driverSettings: Partial<Record<string, DriverSetting[]>>,
   value?: string | null,
 ): HTMLInputElement | null => {
-  const loginSetting = driverSettings.login?.find(
+  const loginSetting = driverSettings['login']?.find(
     (setting): setting is LoginDriverSetting => setting.id === credentialKey,
   )
   if (loginSetting) {
@@ -731,12 +739,13 @@ const generateCredential = (
 
 const generateCredentials = (
   driverSettings: Partial<Record<string, DriverSetting[]>>,
-  credentials: { password?: string | null; username?: string | null },
+  {
+    password,
+    username,
+  }: { password?: string | null; username?: string | null },
 ): void => {
-  ;[usernameElement, passwordElement] = (['username', 'password'] as const).map(
-    (element) =>
-      generateCredential(element, driverSettings, credentials[element]),
-  )
+  usernameElement = generateCredential('username', driverSettings, username)
+  passwordElement = generateCredential('password', driverSettings, password)
 }
 
 const fetchDriverSettings = async (
@@ -1114,10 +1123,10 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
       return int(homey, element)
     } catch (error) {
       errors.push(getErrorMessage(error))
-      return Number(element.value)
+      return undefined
     }
   })
-  if (errors.length) {
+  if (errors.length || min === undefined || max === undefined) {
     throw new Error(errors.join('\n'))
   }
   if (max < min) {
@@ -1238,6 +1247,7 @@ const load = async (
   needsAuthentication()
 }
 
+// @ts-expect-error: read by another script in `./index.html`
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
   const { contextKey, password, username } = await fetchHomeySettings(homey)
