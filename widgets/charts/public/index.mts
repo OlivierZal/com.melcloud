@@ -45,7 +45,7 @@ const defaultHiddenSeries = [
   'ReturnZone1',
   'ReturnZone2',
 ]
-const styleCache: Partial<Record<string, string>> = {}
+const styleCache: Record<string, string> = {}
 
 let myChart: ApexCharts | null = null
 let options: ApexCharts.ApexOptions = {}
