@@ -221,8 +221,10 @@ export abstract class BaseMELCloudDevice<
 
   public async fetchDevice(): Promise<IDeviceFacade<T> | null> {
     try {
-      this.#device ??= this.homey.app.getFacade('devices', this.id)
-      await this.#init(this.#device.data)
+      if (!this.#device) {
+        this.#device = this.homey.app.getFacade('devices', this.id)
+        await this.#init(this.#device.data)
+      }
       return this.#device
     } catch (error) {
       await this.setWarning(error)
