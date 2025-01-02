@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "40.1.0",
+  "version": "41.0.0",
   "type": "module",
   "scripts": {
     "build:css": "tailwindcss -i styles/input.css -o widgets/ata-group-setting/public/output.css && tailwindcss -i styles/input.css -o widgets/charts/public/output.css",
