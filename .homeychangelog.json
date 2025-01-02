@@ -232,5 +232,14 @@
     "nl": "Het is nu mogelijk om widget-animaties uit te schakelen, wat kan voorkomen dat de widget op sommige apparaten vastloopt.",
     "no": "Det er nå mulig å deaktivere widget-animasjoner, noe som kan forhindre at widgeten fryser på enkelte enheter.",
     "sv": "Det är nu möjligt att inaktivera widget-animationer, vilket kan förhindra att widgeten fryser på vissa enheter."
+  },
+  "41.0.0": {
+    "da": "✨ **Nye funktioner** ✨\n\n• MELCloud-dashboards er nu tilgængelige som widgets!\n• Du kan nu konfigurere et standardområde for hver widget.",
+    "en": "✨ **New features** ✨\n\n• MELCloud dashboards are now available as widgets!\n• You can now set a default zone for each widget.",
+    "es": "✨ **Nuevas funciones** ✨\n\n• ¡Los paneles de MELCloud ya están disponibles como widgets!\n• Ahora puedes configurar una zona predeterminada para cada widget.",
+    "fr": "✨ **Nouvelles fonctionnalités** ✨\n\n• Les tableaux de bord MELCloud sont désormais disponibles en tant que widgets !\n• Vous pouvez désormais définir une zone par défaut pour chaque widget.",
+    "nl": "✨ **Nieuwe functies** ✨\n\n• MELCloud-dashboards zijn nu beschikbaar als widgets!\n• Je kunt nu een standaardzone instellen voor elke widget.",
+    "no": "✨ **Nye funksjoner** ✨\n\n• MELCloud-dashbords er nå tilgjengelige som widgets!\n• Du kan nå konfigurere en standard sone for hver widget.",
+    "sv": "✨ **Nya funktioner** ✨\n\n• MELCloud-instrumentpaneler är nu tillgängliga som widgets!\n• Du kan nu konfigurera en standardzon för varje widget."
   }
 }

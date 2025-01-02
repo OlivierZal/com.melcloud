@@ -69,6 +69,6 @@
     }
   },
   "warnings": {
-    "dashboard": "Avsluta enheten och återvänd för att uppdatera din instrumentpanel."
+    "dashboard": "Lämna enheten och gå tillbaka för att uppdatera din instrumentpanel."
   }
 }
