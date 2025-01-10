@@ -241,5 +241,8 @@
     "nl": "✨ **Nieuwe functies** ✨\n• MELCloud-dashboards zijn nu beschikbaar als widgets!\n• Je kunt nu een standaardzone instellen voor elke widget.",
     "no": "✨ **Nye funksjoner** ✨\n• MELCloud-dashbords er nå tilgjengelige som widgets!\n• Du kan nå konfigurere en standard sone for hver widget.",
     "sv": "✨ **Nya funktioner** ✨\n• MELCloud-instrumentpaneler är nu tillgängliga som widgets!\n• Du kan nu konfigurera en standardzon för varje widget."
+  },
+  "41.0.1": {
+    "en": "Fixed current fan speed"
   }
 }
