@@ -2236,6 +2236,7 @@
         },
         "fan_speed.state": {
           "icon": "/assets/fan_speed.svg",
+          "max": 6,
           "setable": false,
           "title": {
             "da": "Aktuel ventilatorhastighed",
