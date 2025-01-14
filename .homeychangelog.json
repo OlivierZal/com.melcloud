@@ -244,5 +244,8 @@
   },
   "41.0.1": {
     "en": "Fixed current fan speed"
+  },
+  "41.0.2": {
+    "en": "Fixed daily CoP"
   }
 }
