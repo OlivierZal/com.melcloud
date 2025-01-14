@@ -95,8 +95,8 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     } = this
     return (
       producedTags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) /
-        consumedTags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) ||
-      DEFAULT_DIVISOR
+      (consumedTags.reduce((acc, tag) => acc + Number(data[tag]), ZERO) ||
+        DEFAULT_DIVISOR)
     )
   }
 
