@@ -42,11 +42,11 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'measure_frequency',
     'measure_power',
     'measure_power.produced',
-  ] as const
+  ]
 
   readonly #zone1CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'target_temperature.flow_cool',
-  ] as const
+  ]
 
   readonly #zone2Capabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'measure_temperature.zone2',
@@ -54,11 +54,11 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'target_temperature.flow_heat_zone2',
     'thermostat_mode.zone2',
     'operational_state.zone2',
-  ] as const
+  ]
 
   readonly #zone2CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
     'target_temperature.flow_cool_zone2',
-  ] as const
+  ]
 
   public getRequiredCapabilities({
     CanCool: canCool,

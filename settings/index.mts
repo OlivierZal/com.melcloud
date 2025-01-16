@@ -43,7 +43,7 @@ const PLURAL_EXCEPTION_13 = 13
 const PLURAL_EXCEPTION_14 = 14
 const PLURAL_THRESHOLD = 2
 
-const frostProtectionTemperatureRange = { max: 16, min: 4 } as const
+const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}

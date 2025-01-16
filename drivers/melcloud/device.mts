@@ -48,7 +48,7 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata
       : ThermostatModeAta.off) as ConvertFromDevice<DeviceType.Ata>,
     vertical: ((value: Vertical) =>
       Vertical[value]) as ConvertFromDevice<DeviceType.Ata>,
-  } as const
+  }
 
   protected readonly thermostatMode = ThermostatModeAta
 
@@ -64,5 +64,5 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata
       OperationMode[value]) as ConvertToDevice<DeviceType.Ata>,
     vertical: ((value: keyof typeof Vertical) =>
       Vertical[value]) as ConvertToDevice<DeviceType.Ata>,
-  } as const
+  }
 }

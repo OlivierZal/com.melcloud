@@ -87,7 +87,7 @@ export const setCapabilityTagMappingAta: Record<
   target_temperature: 'SetTemperature',
   thermostat_mode: 'OperationMode',
   vertical: 'VaneVertical',
-} as const
+}
 
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
@@ -95,7 +95,7 @@ export const getCapabilityTagMappingAta: Record<
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
-} as const
+}
 
 export const listCapabilityTagMappingAta: Record<
   keyof ListCapabilitiesAta,
@@ -108,7 +108,7 @@ export const listCapabilityTagMappingAta: Record<
   measure_signal_strength: 'WifiSignalStrength',
   'measure_temperature.outdoor': 'OutdoorTemperature',
   vertical: 'VaneVerticalDirection',
-} as const
+}
 
 export const energyCapabilityTagMappingAta: Record<
   keyof EnergyCapabilitiesAta,
@@ -149,7 +149,7 @@ export const energyCapabilityTagMappingAta: Record<
   'meter_power.fan': ['TotalFanConsumed'],
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
-} as const
+}
 
 export interface FlowArgsAta extends SetCapabilitiesAta {
   readonly device: MELCloudDeviceAta

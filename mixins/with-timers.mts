@@ -6,7 +6,10 @@ import type Homey from 'homey/lib/Homey'
 interface TimerOptions {
   readonly actionType: string
   readonly timerType: 'setInterval' | 'setTimeout'
-  readonly timerWords: { dateSpecifier: string; timeSpecifier: string }
+  readonly timerWords: {
+    readonly dateSpecifier: string
+    readonly timeSpecifier: string
+  }
 }
 
 type HomeyClass = new (
@@ -20,8 +23,8 @@ type Timer = (
 ) => NodeJS.Timeout
 
 type TimerClass = new (...args: any[]) => {
-  setInterval: Timer
-  setTimeout: Timer
+  readonly setInterval: Timer
+  readonly setTimeout: Timer
 }
 
 const FIRST_CHAR = 0

@@ -49,7 +49,7 @@ export const setCapabilityTagMappingErv: Record<
   fan_speed: 'SetFanSpeed',
   onoff: 'Power',
   thermostat_mode: 'VentilationMode',
-} as const
+}
 
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
@@ -58,7 +58,7 @@ export const getCapabilityTagMappingErv: Record<
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
   'measure_temperature.outdoor': 'OutdoorTemperature',
-} as const
+}
 
 export const listCapabilityTagMappingErv: Record<
   keyof ListCapabilitiesErv,
@@ -66,9 +66,9 @@ export const listCapabilityTagMappingErv: Record<
 > = {
   measure_pm25: 'PM25Level',
   measure_signal_strength: 'WifiSignalStrength',
-} as const
+}
 
-export const energyCapabilityTagMappingErv: Record<string, never> = {} as const
+export const energyCapabilityTagMappingErv: Record<string, never> = {}
 
 export interface FlowArgsErv extends SetCapabilitiesErv {
   readonly device: MELCloudDeviceErv

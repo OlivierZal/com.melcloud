@@ -66,7 +66,7 @@ export const zoneModel = {
   buildings: BuildingModel,
   devices: DeviceModel,
   floors: FloorModel,
-} as const
+}
 
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
@@ -99,7 +99,7 @@ const auto: CapabilitiesOptionsValues<'auto'> = {
     no: 'Automatisk',
     sv: 'Automatiskt',
   },
-} as const
+}
 
 const fast: CapabilitiesOptionsValues<'fast'> = {
   id: 'fast',
@@ -112,7 +112,7 @@ const fast: CapabilitiesOptionsValues<'fast'> = {
     no: 'Rask',
     sv: 'Snabb',
   },
-} as const
+}
 
 const moderate: CapabilitiesOptionsValues<'moderate'> = {
   id: 'moderate',
@@ -125,7 +125,7 @@ const moderate: CapabilitiesOptionsValues<'moderate'> = {
     no: 'Moderat',
     sv: 'Måttlig',
   },
-} as const
+}
 
 const slow: CapabilitiesOptionsValues<'slow'> = {
   id: 'slow',
@@ -138,7 +138,7 @@ const slow: CapabilitiesOptionsValues<'slow'> = {
     no: 'Sakte',
     sv: 'Långsam',
   },
-} as const
+}
 
 const createVeryObject = ({
   id,
@@ -166,7 +166,7 @@ export const fanSpeedValues = [
   moderate,
   slow,
   createVeryObject(slow),
-] as const
+]
 
 export interface AreaZone extends Omit<DeviceZone, 'model'> {
   readonly model: 'areas'
@@ -213,13 +213,13 @@ export interface DriverCapabilitiesOptions {
 export interface DriverSetting {
   readonly driverId: string
   readonly id: string
-  title: string
+  readonly title: string
   readonly type: string
   readonly groupId?: string
   readonly groupLabel?: string
   readonly max?: number
   readonly min?: number
-  placeholder?: string
+  readonly placeholder?: string
   readonly units?: string
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }

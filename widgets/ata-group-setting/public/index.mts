@@ -17,12 +17,12 @@ import type {
 } from '../../../types/common.mts'
 
 declare interface Homey extends HomeyWidget {
-  getSettings: () => HomeySettings
+  readonly getSettings: () => HomeySettings
 }
 
 interface ResetParams {
-  isSomethingOn: boolean
-  mode: number
+  readonly isSomethingOn: boolean
+  readonly mode: number
 }
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'

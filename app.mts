@@ -62,7 +62,7 @@ const drivers: Record<DeviceType, string> = {
   [DeviceType.Ata]: 'melcloud',
   [DeviceType.Atw]: 'melcloud_atw',
   [DeviceType.Erv]: 'melcloud_erv',
-} as const
+}
 
 const hasChangelogLanguage = (
   versionChangelog: object,
@@ -124,8 +124,11 @@ const getDriverLoginSetting = (
         title: '',
         type: isPassword ? 'password' : 'text',
       }
-      acc[key][option.endsWith('Placeholder') ? 'placeholder' : 'title'] =
-        label[language] ?? label.en
+      acc[key] = {
+        ...acc[key],
+        [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
+          label[language] ?? label.en,
+      }
       return acc
     }, {}),
   )

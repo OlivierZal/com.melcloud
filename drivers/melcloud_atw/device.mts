@@ -113,7 +113,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
       ),
     thermostat_mode: convertFromDeviceOperationZone,
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
-  } as const
+  }
 
   protected readonly thermostatMode = null
 
@@ -129,7 +129,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
       OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
-  } as const
+  }
 
   protected override async setCapabilityValues(
     data: ListDeviceData<DeviceType.Atw>,

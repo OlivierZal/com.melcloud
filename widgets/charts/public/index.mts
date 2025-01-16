@@ -13,7 +13,7 @@ import type {
 } from '../../../types/common.mts'
 
 declare interface Homey extends HomeyWidget {
-  getSettings: () => HomeySettings
+  readonly getSettings: () => HomeySettings
 }
 
 const FONT_SIZE_SMALL = '14px'

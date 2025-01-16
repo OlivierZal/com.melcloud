@@ -44,7 +44,7 @@ const curve: CapabilitiesOptionsValues<'curve'> = {
     no: 'Varmekurve',
     sv: 'Värmekurva',
   },
-} as const
+}
 
 const flow: CapabilitiesOptionsValues<'flow'> = {
   id: 'flow',
@@ -57,7 +57,7 @@ const flow: CapabilitiesOptionsValues<'flow'> = {
     no: 'Fast fremløpstemperatur',
     sv: 'Fast framledningstemperatur',
   },
-} as const
+}
 
 const room: CapabilitiesOptionsValues<'room'> = {
   id: 'room',
@@ -70,7 +70,7 @@ const room: CapabilitiesOptionsValues<'room'> = {
     no: 'Innendørs føler',
     sv: 'Inomhusgivare',
   },
-} as const
+}
 
 const COOL_SUFFIX = 'cool'
 
@@ -109,7 +109,7 @@ const thermostatModeValuesAtw = [
   curve,
   createCoolObject(room),
   createCoolObject(flow),
-] as const
+]
 
 export const getCapabilitiesOptionsAtw = ({
   CanCool: canCool,
@@ -245,7 +245,7 @@ export const setCapabilityTagMappingAtw: Record<
   'target_temperature.zone2': 'SetTemperatureZone2',
   thermostat_mode: 'OperationModeZone1',
   'thermostat_mode.zone2': 'OperationModeZone2',
-} as const
+}
 
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
@@ -256,7 +256,7 @@ export const getCapabilityTagMappingAtw: Record<
   'measure_temperature.tank_water': 'TankWaterTemperature',
   'measure_temperature.zone2': 'RoomTemperatureZone2',
   operational_state: 'OperationMode',
-} as const
+}
 
 export const listCapabilityTagMappingAtw: Record<
   keyof ListCapabilitiesAtw,
@@ -283,7 +283,7 @@ export const listCapabilityTagMappingAtw: Record<
   'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
   'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
-} as const
+}
 
 export const energyCapabilityTagMappingAtw: Record<
   keyof EnergyCapabilitiesAtw,
@@ -348,7 +348,7 @@ export const energyCapabilityTagMappingAtw: Record<
   'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
   'meter_power.produced_heating': ['TotalHeatingProduced'],
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
-} as const
+}
 
 export interface CapabilitiesOptionsAtw {
   readonly 'target_temperature.flow_cool': RangeOptions

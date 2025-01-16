@@ -32,7 +32,7 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv
       data.Power ?
         VentilationMode[value]
       : ThermostatModeErv.off) as ConvertFromDevice<DeviceType.Erv>,
-  } as const
+  }
 
   protected readonly thermostatMode = ThermostatModeErv
 
@@ -44,5 +44,5 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<DeviceType.Erv
   > = {
     thermostat_mode: ((value: keyof typeof VentilationMode) =>
       VentilationMode[value]) as ConvertToDevice<DeviceType.Erv>,
-  } as const
+  }
 }
