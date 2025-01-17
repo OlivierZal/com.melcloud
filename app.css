@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme' layer(theme);
+@import 'tailwindcss/utilities';
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+@theme {
+  --color-blue: var(--homey-text-color-blue);
+  --color-color: var(--homey-text-color);
+  --color-danger: var(--homey-text-color-danger);
+  --color-light: var(--homey-text-color-light);
+
+  --font-sans: 'Roboto', 'sans-serif';
+
+  --font-weight-bold: var(--homey-font-weight-bold);
+  --font-weight-medium: var(--homey-font-weight-medium);
+  --font-weight-normal: var(--homey-font-weight-regular);
+
+  --text-default: var(--homey-font-size-default);
+  --text-default--line-height: var(--homey-line-height-default);
+}

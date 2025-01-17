@@ -254,7 +254,6 @@ const createLabelElement = (
     'text-default',
     'text-color',
     'font-normal',
-    '-mt-5',
   )
   ;({ id: labelElement.htmlFor } = valueElement)
   labelElement.innerText = text
