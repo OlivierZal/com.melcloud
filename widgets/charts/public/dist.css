@@ -3,7 +3,8 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root {
-    --font-sans: 'Roboto', 'sans-serif';
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       'Liberation Mono', 'Courier New', monospace;
@@ -381,6 +382,7 @@
     --color-color: var(--homey-text-color);
     --color-danger: var(--homey-text-color-danger);
     --color-light: var(--homey-text-color-light);
+    --font-display: 'Roboto', 'sans-serif';
     --text-default: var(--homey-font-size-default);
     --text-default--line-height: var(--homey-line-height-default);
   }

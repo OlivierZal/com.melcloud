@@ -14,7 +14,7 @@
   --color-danger: var(--homey-text-color-danger);
   --color-light: var(--homey-text-color-light);
 
-  --font-sans: 'Roboto', 'sans-serif';
+  --font-display: 'Roboto', 'sans-serif';
 
   --font-weight-bold: var(--homey-font-weight-bold);
   --font-weight-medium: var(--homey-font-weight-medium);
