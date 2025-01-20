@@ -1728,6 +1728,10 @@
 .justify-between {
   justify-content: space-between;
 }
+.border-0 {
+  border-style: var(--tw-border-style);
+  border-width: 0px;
+}
 .input-ghost {
   background-color: transparent;
   box-shadow: none;
@@ -2025,6 +2029,7 @@
       --tw-rotate-z: rotateZ(0);
       --tw-skew-x: skewX(0);
       --tw-skew-y: skewY(0);
+      --tw-border-style: solid;
       --tw-font-weight: initial;
       --tw-blur: initial;
       --tw-brightness: initial;
@@ -2091,6 +2096,11 @@
   syntax: '*';
   inherits: false;
   initial-value: skewY(0);
+}
+@property --tw-border-style {
+  syntax: '*';
+  inherits: false;
+  initial-value: solid;
 }
 @property --tw-font-weight {
   syntax: '*';
