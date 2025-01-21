@@ -133,8 +133,8 @@ const getChartLineOptions = (
     yaxis: {
       ...axisStyle,
       labels: {
-        formatter: (value): string => value.toFixed(),
         style: { ...fontStyle, colors: colorLight },
+        formatter: (value): string => value.toFixed(),
       },
       ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },

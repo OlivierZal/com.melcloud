@@ -208,13 +208,13 @@ const createAnimationMapping = (): Record<
   let leafIndex = 0
   let snowflakeIndex = 0
   return {
-    flame: { getIndex: () => (flameIndex += INCREMENT), innerHTML: '🔥' },
-    leaf: { getIndex: () => (leafIndex += INCREMENT), innerHTML: '🍁' },
+    flame: { innerHTML: '🔥', getIndex: () => (flameIndex += INCREMENT) },
+    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT) },
     snowflake: {
-      getIndex: () => (snowflakeIndex += INCREMENT),
       innerHTML: '❄',
+      getIndex: () => (snowflakeIndex += INCREMENT),
     },
-    sun: { getIndex: () => INCREMENT, innerHTML: '☀' },
+    sun: { innerHTML: '☀', getIndex: () => INCREMENT },
   }
 }
 const animationMapping = createAnimationMapping()
