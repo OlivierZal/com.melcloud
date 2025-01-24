@@ -1,0 +1,73 @@
+{
+  "errors": {
+    "deviceNotFound": "Device not found.",
+    "zoneNotFound": "Zone not found."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Log in",
+      "failure": "Authentication failed.",
+      "legend": "Credentials"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Yes"
+    },
+    "devices": {
+      "apply": {
+        "button": "Apply to all devices",
+        "nothing": "No change to apply."
+      },
+      "legend": "Device settings",
+      "none": "Add a device to unlock all the app's settings!"
+    },
+    "devicesAta": {
+      "autoAdjust": "Auto-adjust air conditioning temperature",
+      "configure": "Configure",
+      "legend": "Air-to-air device settings"
+    },
+    "devicesAtw": {
+      "legend": "Air-to-water device settings"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Date",
+        "device": "Device",
+        "error": "Error"
+      },
+      "error": "Choose a date before\n__from__.",
+      "errorCount": {
+        "0": "error",
+        "1": "error",
+        "234": "errors",
+        "plural": "errors"
+      },
+      "legend": "Error history",
+      "period": "Since __from__:",
+      "see": "See all errors",
+      "since": "since"
+    },
+    "frostProtection": {
+      "enabled": "Enable <strong>frost protection</strong>",
+      "max": "Maximum temperature",
+      "min": "Minimum temperature"
+    },
+    "holidayMode": {
+      "enabled": "Enable <strong>holiday mode</strong>",
+      "endDate": "End date",
+      "endDateMissing": "End date is missing.",
+      "startDate": "Start date"
+    },
+    "intError": "__name__: must be an integer between __min__ and __max__.",
+    "refresh": "Refresh",
+    "success": "Update succeeded.",
+    "title": "MELCloud settings",
+    "zones": {
+      "legend": "Zone settings",
+      "update": "Update"
+    }
+  },
+  "warnings": {
+    "dashboard": "Exit the device and return to update your dashboard."
+  }
+}

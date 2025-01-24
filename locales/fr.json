@@ -1,0 +1,73 @@
+{
+  "errors": {
+    "deviceNotFound": "Appareil introuvable.",
+    "zoneNotFound": "Zone introuvable."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Se connecter",
+      "failure": "L'authentification a échoué.",
+      "legend": "Identifiants"
+    },
+    "boolean": {
+      "false": "Non",
+      "true": "Oui"
+    },
+    "devices": {
+      "apply": {
+        "button": "Appliquer à tous les appareils",
+        "nothing": "Aucun changement à appliquer."
+      },
+      "legend": "Paramètres des appareils",
+      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
+    },
+    "devicesAta": {
+      "autoAdjust": "Auto-ajuster la température de la climatisation",
+      "configure": "Configurer",
+      "legend": "Paramètres des appareils air-air"
+    },
+    "devicesAtw": {
+      "legend": "Paramètres des appareils air-eau"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Date",
+        "device": "Appareil",
+        "error": "Erreur"
+      },
+      "error": "Choisissez une date antérieure au\n__from__.",
+      "errorCount": {
+        "0": "erreur",
+        "1": "erreur",
+        "234": "erreurs",
+        "plural": "erreurs"
+      },
+      "legend": "Historique des erreurs",
+      "period": "Depuis le __from__ :",
+      "see": "Voir les erreurs",
+      "since": "depuis le"
+    },
+    "frostProtection": {
+      "enabled": "Activer la <strong>protection contre le gel</strong>",
+      "max": "Température maximale",
+      "min": "Température minimale"
+    },
+    "holidayMode": {
+      "enabled": "Activer le <strong>mode vacances</strong>",
+      "endDate": "Date de fin",
+      "endDateMissing": "La date de fin est manquante.",
+      "startDate": "Date de début"
+    },
+    "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "refresh": "Rafraîchir",
+    "success": "La mise à jour a réussi.",
+    "title": "Paramètres de MELCloud",
+    "zones": {
+      "legend": "Paramètres des zones",
+      "update": "Mettre à jour"
+    }
+  },
+  "warnings": {
+    "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
+  }
+}

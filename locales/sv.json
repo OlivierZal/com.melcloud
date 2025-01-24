@@ -1,0 +1,73 @@
+{
+  "errors": {
+    "deviceNotFound": "Enhet ej hittad.",
+    "zoneNotFound": "Zon ej hittad."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Logga in",
+      "failure": "Autentisering misslyckades.",
+      "legend": "Inloggningsuppgifter"
+    },
+    "boolean": {
+      "false": "Nej",
+      "true": "Ja"
+    },
+    "devices": {
+      "apply": {
+        "button": "Tillämpa på alla enheter",
+        "nothing": "Ingen ändring att tillämpa."
+      },
+      "legend": "Enhetsinställningar",
+      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
+    },
+    "devicesAta": {
+      "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
+      "configure": "Konfigurera",
+      "legend": "Luft-til-luft enhetsinställningar"
+    },
+    "devicesAtw": {
+      "legend": "Luft-til-vatten enhetsinställningar"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Datum",
+        "device": "Enhet",
+        "error": "Fel"
+      },
+      "error": "Välj ett datum före\n__from__.",
+      "errorCount": {
+        "0": "fel",
+        "1": "fel",
+        "234": "fel",
+        "plural": "fel"
+      },
+      "legend": "Felhistorik",
+      "period": "Sedan __from__:",
+      "see": "Se alla fel",
+      "since": "sedan"
+    },
+    "frostProtection": {
+      "enabled": "Aktivera <strong>frostskydd</strong>",
+      "max": "Maximal temperatur",
+      "min": "Minimal temperatur"
+    },
+    "holidayMode": {
+      "enabled": "Aktivera <strong>semesterläge</strong>",
+      "endDate": "Slutdatum",
+      "endDateMissing": "Slutdatum saknas.",
+      "startDate": "Startdatum"
+    },
+    "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "refresh": "Ladda om",
+    "success": "Uppdatering lyckades.",
+    "title": "MELCloud-inställningar",
+    "zones": {
+      "legend": "Zonsinställningar",
+      "update": "Uppdatera"
+    }
+  },
+  "warnings": {
+    "dashboard": "Lämna enheten och gå tillbaka för att uppdatera din instrumentpanel."
+  }
+}
