@@ -16,7 +16,6 @@
     "devices": {
       "apply": {
         "button": "Apply to all devices",
-        "confirm": "Are you sure you want to apply these settings to all devices?",
         "nothing": "No change to apply."
       },
       "legend": "Device settings",

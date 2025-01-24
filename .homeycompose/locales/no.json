@@ -16,7 +16,6 @@
     "devices": {
       "apply": {
         "button": "Bruk på alle enheter",
-        "confirm": "Er du sikker på at du vil bruke disse innstillingene på alle enheter?",
         "nothing": "Ingen endring å bruke."
       },
       "legend": "Enhetsinnstillinger",

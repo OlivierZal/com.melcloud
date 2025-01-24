@@ -16,7 +16,6 @@
     "devices": {
       "apply": {
         "button": "Toepassen op alle apparaten",
-        "confirm": "Weet u zeker dat u deze instellingen op alle apparaten wilt toepassen?",
         "nothing": "Geen wijziging om toe te passen."
       },
       "legend": "Apparaatinstellingen",
