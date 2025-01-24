@@ -428,7 +428,6 @@ const config = [
         'error',
         'asc',
         {
-          caseSensitive: true,
           natural: true,
         },
       ],
