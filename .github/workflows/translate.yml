@@ -1,6 +1,5 @@
 name: Translate app
-on:
-  workflow_dispatch:
+on: workflow_dispatch
 jobs:
   translate:
     name: Translate app
