@@ -227,12 +227,6 @@ const config = [
           },
         ],
         '@typescript-eslint/no-invalid-this': 'off',
-        '@typescript-eslint/no-magic-numbers': [
-          'error',
-          {
-            ignoreEnums: true,
-          },
-        ],
         '@typescript-eslint/no-redeclare': 'off',
         '@typescript-eslint/no-unnecessary-condition': [
           'error',
