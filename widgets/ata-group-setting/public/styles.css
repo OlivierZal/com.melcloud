@@ -16,7 +16,7 @@
 
 label {
   display: flex;
-  white-space: nowrap;
+  justify-content: space-between;
   width: 100%;
 }
 
