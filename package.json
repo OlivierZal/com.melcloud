@@ -27,7 +27,7 @@
     "@helljs/eslint-import-resolver-x": "^1.1.0",
     "@html-eslint/eslint-plugin": "^0.33.1",
     "@html-eslint/parser": "^0.33.0",
-    "@stylistic/eslint-plugin": "^3.0.0",
+    "@stylistic/eslint-plugin": "^3.0.1",
     "@tailwindcss/cli": "^4.0.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
