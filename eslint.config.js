@@ -1,3 +1,4 @@
+import css from '@eslint/css'
 import js from '@eslint/js'
 import json from '@eslint/json'
 import markdown from '@eslint/markdown'
@@ -391,16 +392,23 @@ const config = [
       '@html-eslint/no-accesskey-attrs': 'error',
       '@html-eslint/no-aria-hidden-body': 'error',
       '@html-eslint/no-extra-spacing-text': 'error',
+      '@html-eslint/no-heading-inside-button': 'error',
       '@html-eslint/no-inline-styles': 'error',
+      '@html-eslint/no-invalid-role': 'error',
       '@html-eslint/no-multiple-empty-lines': 'error',
+      '@html-eslint/no-nested-interactive': 'error',
       '@html-eslint/no-non-scalable-viewport': 'error',
       '@html-eslint/no-positive-tabindex': 'error',
       '@html-eslint/no-script-style-type': 'error',
       '@html-eslint/no-skip-heading-levels': 'error',
       '@html-eslint/no-target-blank': 'error',
       '@html-eslint/no-trailing-spaces': 'error',
+      '@html-eslint/prefer-https': 'error',
       '@html-eslint/require-button-type': 'error',
+      '@html-eslint/require-explicit-size': 'error',
+      '@html-eslint/require-form-method': 'error',
       '@html-eslint/require-frame-title': 'error',
+      '@html-eslint/require-input-label': 'error',
       '@html-eslint/require-meta-charset': 'error',
       '@html-eslint/require-meta-description': 'error',
       '@html-eslint/require-meta-viewport': 'error',
@@ -427,6 +435,12 @@ const config = [
         },
       ],
     },
+  },
+  {
+    files: ['**/*.css'],
+    ignores: ['**/dist.css'],
+    language: 'css/css',
+    ...css.configs.recommended,
   },
   {
     files: ['**/*.md'],

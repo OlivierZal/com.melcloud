@@ -4,6 +4,7 @@
 @import 'tailwindcss/theme' layer(theme);
 @import 'tailwindcss/utilities';
 
+/* eslint-disable css/no-invalid-at-rules */
 @plugin 'daisyui' {
   themes: false;
 }
