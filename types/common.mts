@@ -168,6 +168,18 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ]
 
+type GetCapabilities<T extends DeviceType> =
+  T extends DeviceType.Ata ? GetCapabilitiesAta
+  : T extends DeviceType.Atw ? GetCapabilitiesAtw
+  : T extends DeviceType.Erv ? GetCapabilitiesErv
+  : never
+
+type ListCapabilities<T extends DeviceType> =
+  T extends DeviceType.Ata ? ListCapabilitiesAta
+  : T extends DeviceType.Atw ? ListCapabilitiesAtw
+  : T extends DeviceType.Erv ? ListCapabilitiesErv
+  : never
+
 export interface AreaZone extends Omit<DeviceZone, 'model'> {
   readonly model: 'areas'
   readonly devices?: DeviceZone[]
@@ -347,18 +359,6 @@ export interface ZoneData {
   readonly zoneId: string
   readonly zoneType: Exclude<keyof typeof zoneModel, 'devices'>
 }
-
-type GetCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? GetCapabilitiesAta
-  : T extends DeviceType.Atw ? GetCapabilitiesAtw
-  : T extends DeviceType.Erv ? GetCapabilitiesErv
-  : never
-
-type ListCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? ListCapabilitiesAta
-  : T extends DeviceType.Atw ? ListCapabilitiesAtw
-  : T extends DeviceType.Erv ? ListCapabilitiesErv
-  : never
 
 export type Capabilities<T extends DeviceType> =
   T extends DeviceType.Ata ? CapabilitiesAta

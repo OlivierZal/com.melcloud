@@ -61,12 +61,8 @@ export interface GetCapabilitiesAta extends BaseGetCapabilities {
 
 export interface ListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
-  readonly fan_speed: FanSpeed
   readonly 'fan_speed.state': number
-  readonly horizontal: keyof typeof Horizontal
   readonly 'measure_temperature.outdoor': number
-
-  readonly vertical: keyof typeof Vertical
 }
 
 export interface SetCapabilitiesAta extends BaseSetCapabilities {
@@ -98,7 +94,7 @@ export const getCapabilityTagMappingAta: Record<
 }
 
 export const listCapabilityTagMappingAta: Record<
-  keyof ListCapabilitiesAta,
+  'fan_speed' | 'horizontal' | 'vertical' | keyof ListCapabilitiesAta,
   keyof ListDeviceDataAta
 > = {
   'alarm_generic.silent': 'FanSpeed',
