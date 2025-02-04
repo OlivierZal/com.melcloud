@@ -39,7 +39,7 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.22.0",
-    "eslint-plugin-perfectionist": "^4.7.0",
+    "eslint-plugin-perfectionist": "^4.8.0",
     "eslint-plugin-yml": "^1.16.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.4.2",
