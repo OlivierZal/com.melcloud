@@ -36,7 +36,7 @@ const colors = [
   '#393B79',
   '#E7BA52',
 ]
-const defaultHiddenSeries = [
+const hidden = [
   'FlowBoiler',
   'FlowZone1',
   'FlowZone2',
@@ -83,20 +83,18 @@ const getStyle = (property: string): string => {
 const normalizeSeriesName = (name: string): string =>
   name.replace('Temperature', '')
 
-// eslint-disable-next-line max-lines-per-function
 const getChartLineOptions = (
-  { labels, series, unit }: ReportChartLineOptions,
+  { labels: categories, series, unit }: ReportChartLineOptions,
   height: number,
 ): ApexCharts.ApexOptions => {
   const colorLight = getStyle('--homey-text-color-light')
-  const axisStyle = {
-    axisBorder: { color: colorLight, show: true },
-    axisTicks: { color: colorLight, show: true },
-  }
+  const axisColor = { color: colorLight, show: true }
+  const axisStyle = { axisBorder: axisColor, axisTicks: axisColor }
   const fontStyle = {
     fontSize: FONT_SIZE_VERY_SMALL,
     fontWeight: getStyle('--homey-font-weight-regular'),
   }
+  const style = { ...fontStyle, colors: colorLight }
   return {
     chart: { height, toolbar: { show: false }, type: 'line' },
     colors,
@@ -110,13 +108,9 @@ const getChartLineOptions = (
       labels: { colors: colorLight },
       markers: { shape: 'square', strokeWidth: 0 },
     },
-    series: series.map(({ data, name }) => {
-      const newName = normalizeSeriesName(name)
-      return {
-        data,
-        hidden: defaultHiddenSeries.includes(newName),
-        name: newName,
-      }
+    series: series.map(({ data, name: seriesName }) => {
+      const name = normalizeSeriesName(seriesName)
+      return { data, hidden: hidden.includes(name), name }
     }),
     stroke: { curve: 'smooth' },
     title: {
@@ -126,16 +120,13 @@ const getChartLineOptions = (
     },
     xaxis: {
       ...axisStyle,
-      categories: labels,
-      labels: { rotate: 0, style: { ...fontStyle, colors: colorLight } },
+      categories,
+      labels: { rotate: 0, style },
       tickAmount: 3,
     },
     yaxis: {
       ...axisStyle,
-      labels: {
-        style: { ...fontStyle, colors: colorLight },
-        formatter: (value): string => value.toFixed(),
-      },
+      labels: { style, formatter: (value): string => value.toFixed() },
       ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },
   }
