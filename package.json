@@ -5,12 +5,11 @@
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
     "format": "prettier . --check",
-    "format:css": "prettier widgets/*/public/dist.css --ignore-path --write",
     "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build:css && npm run format:css && npm run format:docs && npm run lint:fix && npm run format:fix",
+    "prepare": "npm run build:css && npm run format:docs && npm run lint:fix && npm run format:fix",
     "publish": "homey app publish"
   },
   "dependencies": {
