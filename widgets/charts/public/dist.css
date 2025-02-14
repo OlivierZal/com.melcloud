@@ -1,13 +1,13 @@
-/*! tailwindcss v4.0.3 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.0.6 | MIT License | https://tailwindcss.com */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
     --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
     --color-red-50: oklch(0.971 0.013 17.38);
     --color-red-100: oklch(0.936 0.032 17.717);
     --color-red-200: oklch(0.885 0.062 18.334);
@@ -471,8 +471,10 @@
   --btn-shadow: 0 3px 2px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000),
     0 4px 3px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000);
   --btn-noise: var(--fx-noise);
-  &:hover {
-    --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-200)), #000 7%);
+  @media (hover: hover) {
+    &:hover {
+      --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-200)), #000 7%);
+    }
   }
   &.btn-active {
     --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-200)), #000 7%);
@@ -498,11 +500,13 @@
     --btn-border: #0000;
     --btn-noise: none;
     --btn-fg: color-mix(in oklch, var(--color-base-content) 20%, #0000);
-    &:hover {
-      pointer-events: none;
-      background-color: color-mix(in oklab, var(--color-neutral) 20%, transparent);
-      --btn-border: #0000;
-      --btn-fg: color-mix(in oklch, var(--color-base-content) 20%, #0000);
+    @media (hover: hover) {
+      &:hover {
+        pointer-events: none;
+        background-color: color-mix(in oklab, var(--color-neutral) 20%, transparent);
+        --btn-border: #0000;
+        --btn-fg: color-mix(in oklch, var(--color-base-content) 20%, #0000);
+      }
     }
   }
   &:is(input[type="checkbox"], input[type="radio"]) {
@@ -518,9 +522,11 @@
       &:focus-visible {
         outline-color: var(--color-primary);
       }
-      &:hover {
-        --btn-bg: color-mix(in oklab, var(--color-primary) 90%, #000);
-        --btn-border: color-mix(in oklab, var(--color-primary) 90%, #000);
+      @media (hover: hover) {
+        &:hover {
+          --btn-bg: color-mix(in oklab, var(--color-primary) 90%, #000);
+          --btn-border: color-mix(in oklab, var(--color-primary) 90%, #000);
+        }
       }
     }
   }
@@ -562,7 +568,7 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
   &.dropdown-open, &:not(.dropdown-hover):focus, &:focus-within {
-    [tabindex]:first-child {
+    > [tabindex]:first-child {
       pointer-events: none;
     }
     .dropdown-content {
@@ -1004,7 +1010,10 @@
   background-color: transparent;
   vertical-align: middle;
   width: clamp(3rem, 20rem, 100%);
-  border-radius: calc( var(--radius-selector) + min( var(--range-p), calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector)) ) );
+  --radius-selector-max: calc(
+    var(--radius-selector) + var(--radius-selector) + var(--radius-selector)
+  );
+  border-radius: calc(var(--radius-selector) + min(var(--range-p), var(--radius-selector-max)));
   border: none;
   height: var(--range-thumb-size);
   [dir="rtl"] & {
@@ -1029,7 +1038,7 @@
   &::-webkit-slider-thumb {
     position: relative;
     box-sizing: border-box;
-    border-radius: calc( var(--radius-selector) + min( var(--range-p), calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector)) ) );
+    border-radius: calc(var(--radius-selector) + min(var(--range-p), var(--radius-selector-max)));
     background-color: currentColor;
     height: var(--range-thumb-size);
     width: var(--range-thumb-size);
@@ -1053,7 +1062,7 @@
   &::-moz-range-thumb {
     position: relative;
     box-sizing: border-box;
-    border-radius: calc( var(--radius-selector) + min( var(--range-p), calc(var(--radius-selector) + var(--radius-selector) + var(--radius-selector)) ) );
+    border-radius: calc(var(--radius-selector) + min(var(--range-p), var(--radius-selector-max)));
     background-color: currentColor;
     height: var(--range-thumb-size);
     width: var(--range-thumb-size);
@@ -1270,7 +1279,7 @@
     overflow: hidden;
     opacity: 100%;
     scale: 1;
-    transition: margin 0.1s, opacity 0.3s, padding 0.3s, border-width 0.1s, width 0.1s allow-discrete;
+    transition: margin 0.1s, opacity 0.3s, padding 0.3s, border-width 0.1s;
     &:not(:last-child) {
       margin-inline-end: calc(0.25rem * 1);
     }

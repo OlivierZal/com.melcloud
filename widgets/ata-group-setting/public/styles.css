@@ -6,12 +6,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  user-select: none;
   z-index: -1;
-}
-
-#zones {
-  text-align-last: center;
 }
 
 label {
@@ -25,5 +20,6 @@ input {
 }
 
 select:not(#zones) {
+  /* eslint-disable-next-line css/require-baseline */
   text-align-last: right;
 }

@@ -1,5 +1,6 @@
 #zones {
   font-weight: bold;
+  /* eslint-disable-next-line css/require-baseline */
   text-align-last: center;
 }
 
@@ -89,5 +90,6 @@ input.homey-form-checkbox-input:indeterminate
   background-color: var(--homey-icon-color-white);
   opacity: 1;
   -webkit-mask-image: none;
+  /* eslint-disable-next-line css/require-baseline */
   mask-image: none;
 }

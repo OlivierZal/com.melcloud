@@ -20,12 +20,12 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "@eslint/css": "^0.2.0",
+    "@eslint/css": "^0.3.0",
     "@eslint/js": "^9.20.0",
     "@eslint/json": "^0.10.0",
     "@eslint/markdown": "^6.2.2",
-    "@html-eslint/eslint-plugin": "^0.34.0",
-    "@html-eslint/parser": "^0.34.0",
+    "@html-eslint/eslint-plugin": "^0.35.0",
+    "@html-eslint/parser": "^0.35.0",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@tailwindcss/cli": "^4.0.6",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
@@ -35,7 +35,7 @@
     "daisyui": "^5.0.0-beta.8",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-import-resolver-typescript": "^3.8.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.26.0",
     "eslint-plugin-perfectionist": "^4.9.0",
@@ -43,7 +43,7 @@
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.5.1",
     "prettier-plugin-packagejson": "^2.5.8",
-    "tailwindcss": "^4.0.5",
+    "tailwindcss": "^4.0.6",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.24.0"
   }

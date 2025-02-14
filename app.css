@@ -23,3 +23,8 @@
   --text-default: var(--homey-font-size-default);
   --text-default--line-height: var(--homey-line-height-default);
 }
+
+#zones {
+  /* eslint-disable-next-line css/require-baseline */
+  text-align-last: center;
+}
