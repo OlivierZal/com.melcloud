@@ -1,8 +1,6 @@
-/* eslint-disable-next-line css/use-layers */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-@import 'tailwindcss/theme' layer(theme);
-/* eslint-disable-next-line css/use-layers */
+@import 'tailwindcss/theme';
 @import 'tailwindcss/utilities';
 
 @plugin 'daisyui' {
@@ -25,8 +23,6 @@
   --text-default--line-height: var(--homey-line-height-default);
 }
 
-@layer components {
-  #zones {
-    text-align-last: center;
-  }
+#zones {
+  text-align-last: center;
 }

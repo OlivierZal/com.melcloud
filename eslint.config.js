@@ -481,12 +481,6 @@ const config = [
     files: ['app.css'],
     rules: {
       'css/no-invalid-at-rules': 'off',
-      'css/use-layers': [
-        'error',
-        {
-          layerNamePattern: '^(theme|components)$',
-        },
-      ],
     },
   },
   {
