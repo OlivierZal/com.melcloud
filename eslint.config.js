@@ -478,6 +478,12 @@ const config = [
     },
   },
   {
+    files: ['app.css'],
+    rules: {
+      'css/no-invalid-at-rules': 'off',
+    },
+  },
+  {
     files: ['**/*.md'],
     language: 'markdown/gfm',
     plugins: {
