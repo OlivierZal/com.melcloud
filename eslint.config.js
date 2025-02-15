@@ -1,4 +1,5 @@
 import css from '@eslint/css'
+import { tailwindSyntax } from '@eslint/css/syntax'
 import js from '@eslint/js'
 import json from '@eslint/json'
 import markdown from '@eslint/markdown'
@@ -466,6 +467,19 @@ const config = [
     files: ['**/*.css'],
     ignores: ['**/dist.css'],
     language: 'css/css',
+    languageOptions: {
+      customSyntax: {
+        atrules: {
+          ...tailwindSyntax.atrules,
+          plugin: {
+            prelude: '<string>',
+          },
+          theme: {
+            prelude: '',
+          },
+        },
+      },
+    },
     ...css.configs.recommended,
     rules: {
       ...css.configs.recommended.rules,
@@ -475,12 +489,6 @@ const config = [
           available: 'newly',
         },
       ],
-    },
-  },
-  {
-    files: ['app.css'],
-    rules: {
-      'css/no-invalid-at-rules': 'off',
     },
   },
   {
