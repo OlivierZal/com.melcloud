@@ -1,5 +1,4 @@
 import css from '@eslint/css'
-import { tailwindSyntax } from '@eslint/css/syntax'
 import js from '@eslint/js'
 import json from '@eslint/json'
 import markdown from '@eslint/markdown'
@@ -470,7 +469,6 @@ const config = [
     languageOptions: {
       customSyntax: {
         atrules: {
-          ...tailwindSyntax.atrules,
           plugin: {
             prelude: '<string>',
           },
