@@ -35,7 +35,7 @@
     "daisyui": "^5.0.0-beta.8",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-import-resolver-typescript": "^3.8.0",
+    "eslint-import-resolver-typescript": "^3.8.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.26.0",
     "eslint-plugin-perfectionist": "^4.9.0",
