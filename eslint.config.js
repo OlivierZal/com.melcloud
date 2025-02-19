@@ -477,7 +477,7 @@ const config = [
           },
           theme: {
             descriptors: {
-              '--font-display': '[ <family-name> | <generic-family> ]#',
+              '--font-display': '[<family-name>]#',
             },
             prelude: '',
           },
