@@ -470,9 +470,15 @@ const config = [
       customSyntax: {
         atrules: {
           plugin: {
+            descriptors: {
+              themes: 'false',
+            },
             prelude: '<string>',
           },
           theme: {
+            descriptors: {
+              '--font-display': '[ <family-name> | <generic-family> ]#',
+            },
             prelude: '',
           },
         },

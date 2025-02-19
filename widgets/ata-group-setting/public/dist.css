@@ -1190,11 +1190,11 @@
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
 }
 :root, :host {
+  --font-display: Roboto, sans-serif;
   --color-blue: var(--homey-text-color-blue);
   --color-color: var(--homey-text-color);
   --color-danger: var(--homey-text-color-danger);
   --color-light: var(--homey-text-color-light);
-  --font-display: 'Roboto', 'sans-serif';
   --font-weight-bold: var(--homey-font-weight-bold);
   --font-weight-medium: var(--homey-font-weight-medium);
   --font-weight-normal: var(--homey-font-weight-regular);

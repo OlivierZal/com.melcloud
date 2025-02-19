@@ -3,23 +3,19 @@
 @import 'tailwindcss/utilities';
 
 @plugin 'daisyui' {
-  /* eslint-disable-next-line css/no-invalid-at-rules */
   themes: false;
 }
 
 @theme {
+  --font-display: Roboto, sans-serif;
   /* eslint-disable css/no-invalid-at-rules */
   --color-blue: var(--homey-text-color-blue);
   --color-color: var(--homey-text-color);
   --color-danger: var(--homey-text-color-danger);
   --color-light: var(--homey-text-color-light);
-
-  --font-display: 'Roboto', 'sans-serif';
-
   --font-weight-bold: var(--homey-font-weight-bold);
   --font-weight-medium: var(--homey-font-weight-medium);
   --font-weight-normal: var(--homey-font-weight-regular);
-
   --text-default: var(--homey-font-size-default);
   --text-default--line-height: var(--homey-line-height-default);
   /* eslint-enable css/no-invalid-at-rules */
