@@ -20,7 +20,7 @@
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "@eslint/css": "^0.3.0",
+    "@eslint/css": "^0.4.0",
     "@eslint/js": "^9.21.0",
     "@eslint/json": "^0.10.0",
     "@eslint/markdown": "^6.2.2",
@@ -30,9 +30,9 @@
     "@tailwindcss/cli": "^4.0.9",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^22.13.5",
+    "@types/node": "^22.13.7",
     "apexcharts": "^4.5.0",
-    "daisyui": "^5.0.0-beta.9",
+    "daisyui": "^5.0.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.2",
     "eslint-import-resolver-typescript": "^3.8.3",
@@ -42,7 +42,7 @@
     "eslint-plugin-yml": "^1.17.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.5.2",
-    "prettier-plugin-packagejson": "^2.5.8",
+    "prettier-plugin-packagejson": "^2.5.9",
     "tailwindcss": "^4.0.9",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.25.0"
