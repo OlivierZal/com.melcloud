@@ -1,7 +1,7 @@
 import { DateTime, Duration, type DurationLike } from 'luxon'
 
 import type { SimpleClass } from 'homey'
-import type Homey from 'homey/lib/Homey'
+import type Homey from 'homey/lib/Homey.js'
 
 interface TimerOptions {
   readonly actionType: string

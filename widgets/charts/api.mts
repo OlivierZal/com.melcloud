@@ -5,7 +5,7 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey/lib/Homey.js'
 import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/common.mts'

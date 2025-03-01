@@ -1,5 +1,5 @@
 import type { DeviceType } from '@olivierzal/melcloud-api'
-import type HomeyLib from 'homey/lib/Homey'
+import type HomeyLib from 'homey/lib/Homey.js'
 
 import type MELCloudApp from './app.mts'
 import type { BaseMELCloudDriver } from './drivers/base-driver.mts'
@@ -31,7 +31,7 @@ declare module 'homey' {
   }
 }
 
-declare module 'homey/lib/Homey' {
+declare module 'homey/lib/Homey.js' {
   interface Homey extends HomeyLib {
     app: MELCloudApp
   }

@@ -7,7 +7,7 @@ import {
 // eslint-disable-next-line import/default, import/no-extraneous-dependencies
 import Homey from 'homey'
 
-import type PairSession from 'homey/lib/PairSession'
+import type PairSession from 'homey/lib/PairSession.js'
 
 import type {
   Capabilities,

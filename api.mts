@@ -9,7 +9,7 @@ import type {
   HolidayModeQuery,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey/lib/Homey.js'
 
 import type {
   BuildingZone,

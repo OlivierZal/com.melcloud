@@ -15,7 +15,7 @@ import {
 } from '../types/common.mts'
 
 import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey'
+import type Homey from 'homey/lib/Homey.js'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
