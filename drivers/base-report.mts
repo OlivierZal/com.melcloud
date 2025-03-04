@@ -166,27 +166,35 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     }
     await Promise.all(
       this.#energyCapabilityTagEntries.map(
-        async <
-          K extends string & keyof EnergyCapabilities<T>,
-          L extends keyof EnergyData<T>,
-        >([capability, tags]: [K, L[]]) => {
+        async ([capability, tags]: [
+          string & keyof EnergyCapabilities<T>,
+          (keyof EnergyData<T>)[],
+        ]) => {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(
               capability,
-              this.#calculateCopValue(data, capability) as Capabilities<T>[K],
+              this.#calculateCopValue(
+                data,
+                capability,
+              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
             )
             return
           }
           if (capability.startsWith('measure_power')) {
             await this.#device.setCapabilityValue(
               capability,
-              this.#calculatePowerValue(data, tags, hour) as Capabilities<T>[K],
+              this.#calculatePowerValue(
+                data,
+                tags,
+                hour,
+              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
             )
             return
           }
           await this.#device.setCapabilityValue(
             capability,
-            this.#calculateEnergyValue(data, tags) as Capabilities<T>[K],
+            this.#calculateEnergyValue(data, tags) as Capabilities<T>[string &
+              keyof EnergyCapabilities<T>],
           )
         },
       ),
