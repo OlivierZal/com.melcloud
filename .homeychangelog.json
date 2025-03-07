@@ -247,5 +247,8 @@
   },
   "41.0.2": {
     "en": "Fixed daily CoP"
+  },
+  "42.0.0": {
+    "en": "Major upgrade of Tailwind CSS & daisy UI"
   }
 }
