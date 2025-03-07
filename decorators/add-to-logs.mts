@@ -3,6 +3,9 @@ import type { SimpleClass } from 'homey'
 const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
+const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
+  typeof value === 'function'
+
 export const addToLogs =
   <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, _context: ClassDecoratorContext): T => {
@@ -18,27 +21,27 @@ export const addToLogs =
       #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
           ...logs.flatMap((log) => {
-            if (log in this) {
-              return [this[log as keyof this], '-']
+            if (this.#isKeyOfThis(log)) {
+              return [this[log], '-']
             }
             if (log.endsWith(PARENTHESES)) {
               const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
               if (
-                funcName in this &&
-                typeof this[funcName as keyof this] === 'function'
+                this.#isKeyOfThis(funcName) &&
+                isFunction(this[funcName]) &&
+                !this[funcName].length
               ) {
-                const func = this[funcName as keyof this] as (
-                  ...funcArgs: unknown[]
-                ) => unknown
-                if (!func.length) {
-                  return [func.call(this), '-']
-                }
+                return [this[funcName].apply(this), '-']
               }
             }
             return [log, '-']
           }),
           ...args,
         )
+      }
+
+      #isKeyOfThis(value: string): value is string & keyof this {
+        return value in this
       }
     }
     return LogDecorator
