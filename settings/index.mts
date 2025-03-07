@@ -790,7 +790,7 @@ const generateErrorLogTable = (
 
 const generateErrorLogTableData = (
   homey: Homey,
-  errors: ErrorDetails[],
+  errors: readonly ErrorDetails[],
 ): void => {
   errors.forEach((error) => {
     if (!errorLogTBodyElement) {
