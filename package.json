@@ -38,7 +38,7 @@
     "eslint-import-resolver-typescript": "^3.8.3",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-package-json": "^0.26.3",
-    "eslint-plugin-perfectionist": "^4.9.0",
+    "eslint-plugin-perfectionist": "^4.10.1",
     "eslint-plugin-yml": "^1.17.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.5.3",
