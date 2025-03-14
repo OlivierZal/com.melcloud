@@ -460,7 +460,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
         new SmokeParticle(
           canvasCtx,
           left + width / FACTOR_TWO,
-          top - parseFloat(getComputedStyle(flame).bottom),
+          top - parseFloat(getComputedStyle(flame).insetBlockEnd),
         ),
       )
     })
@@ -538,9 +538,9 @@ const createFlame = (speed: number): void => {
     )
     const previousLeft =
       previousElement ?
-        parseFloat(previousElement.style.left)
+        parseFloat(previousElement.style.insetInlineStart)
       : -FLAME_GAP * FACTOR_TWO
-    flame.style.left = generateStyleString(
+    flame.style.insetInlineStart = generateStyleString(
       {
         gap: FLAME_GAP,
         min:
@@ -580,7 +580,7 @@ const generateSnowflakeAnimation = (
   const animation = snowflake.animate(
     [
       { transform: 'translateY(0) rotate(0deg)' },
-      { transform: 'translateY(100vh) rotate(360deg)' },
+      { transform: 'translateY(100vb) rotate(360deg)' },
     ],
     {
       duration: generateStyleNumber({
@@ -608,9 +608,9 @@ const createSnowflake = (speed: number): void => {
     )
     const previousLeft =
       previousElement ?
-        parseFloat(previousElement.style.left)
+        parseFloat(previousElement.style.insetInlineStart)
       : -SNOWFLAKE_GAP * FACTOR_TWO
-    snowflake.style.left = generateStyleString(
+    snowflake.style.insetInlineStart = generateStyleString(
       {
         gap: SNOWFLAKE_GAP,
         min:
@@ -655,16 +655,16 @@ const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   )
   sunAnimation.enter?.pause()
   sunAnimation.enter = null
-  const { right, top } = getComputedStyle(sun)
+  const { insetBlockStart, insetInlineEnd } = getComputedStyle(sun)
   const animation = sun.animate(
     [
       {
-        right: `${String(parseFloat(right))}px`,
-        top: `${String(parseFloat(top))}px`,
+        insetBlockStart: `${String(parseFloat(insetBlockStart))}px`,
+        insetInlineEnd: `${String(parseFloat(insetInlineEnd))}px`,
       },
       {
-        right: `${String(-window.innerWidth)}px`,
-        top: `${String(-window.innerHeight)}px`,
+        insetBlockStart: `${String(-window.innerHeight)}px`,
+        insetInlineEnd: `${String(-window.innerWidth)}px`,
       },
     ],
     { duration, easing: 'ease-in-out', fill: 'forwards' },
@@ -684,19 +684,20 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   )
   sunAnimation.exit?.pause()
   sunAnimation.exit = null
-  const { height, right, top, width } = getComputedStyle(sun)
+  const { blockSize, inlineSize, insetBlockStart, insetInlineEnd } =
+    getComputedStyle(sun)
   const animation = sun.animate(
     [
       {
-        right: `${String(parseFloat(right))}px`,
-        top: `${String(parseFloat(top))}px`,
+        insetBlockStart: `${String(parseFloat(insetBlockStart))}px`,
+        insetInlineEnd: `${String(parseFloat(insetInlineEnd))}px`,
       },
       {
-        right: `${String(
-          (window.innerWidth - parseFloat(width)) / FACTOR_TWO,
+        insetBlockStart: `${String(
+          (window.innerHeight - parseFloat(blockSize)) / FACTOR_TWO,
         )}px`,
-        top: `${String(
-          (window.innerHeight - parseFloat(height)) / FACTOR_TWO,
+        insetInlineEnd: `${String(
+          (window.innerWidth - parseFloat(inlineSize)) / FACTOR_TWO,
         )}px`,
       },
     ],
@@ -795,9 +796,9 @@ const createLeaf = (speed: number): void => {
     )
     const previousTop =
       previousElement ?
-        parseFloat(previousElement.style.top)
+        parseFloat(previousElement.style.insetBlockStart)
       : -LEAF_GAP * FACTOR_TWO
-    leaf.style.top = generateStyleString(
+    leaf.style.insetBlockStart = generateStyleString(
       {
         gap: LEAF_GAP,
         min:

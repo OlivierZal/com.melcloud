@@ -1,22 +1,22 @@
 #animation,
 #smoke_canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
   pointer-events: none;
+  position: fixed;
   z-index: -1;
 }
 
 label {
   display: flex;
+  inline-size: 100%;
   justify-content: space-between;
-  width: 100%;
 }
 
 input {
-  text-align: right;
+  text-align: end;
 }
 
 select:not(#zones) {

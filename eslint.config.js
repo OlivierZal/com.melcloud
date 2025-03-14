@@ -488,6 +488,7 @@ const config = defineConfig([
       },
     },
     rules: {
+      'css/prefer-logical-properties': 'error',
       'css/require-baseline': [
         'error',
         {
