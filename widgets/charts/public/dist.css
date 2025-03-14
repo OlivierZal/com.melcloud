@@ -1,4 +1,4 @@
-/*! tailwindcss v4.0.12 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.0.14 | MIT License | https://tailwindcss.com */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 .diff {
   position: relative;
@@ -10,7 +10,7 @@
   direction: ltr;
   container-type: inline-size;
   grid-template-columns: auto 1fr;
-  &:focus, &:has(.diff-item-1:focus) {
+  &:focus-visible, &:has(.diff-item-1:focus) {
     outline-style: var(--tw-outline-style);
     outline-width: 2px;
     outline-offset: 1px;
@@ -55,6 +55,7 @@
   display: inline-block;
   position-area: var(--anchor-v, bottom) var(--anchor-h, span-right);
   & > *:not(summary):focus {
+    --tw-outline-style: none;
     outline-style: none;
     @media (forced-colors: active) {
       outline: 2px solid transparent;
@@ -73,18 +74,18 @@
     }
   }
   &[popover], .dropdown-content {
-    @starting-style {
-      scale: 95%;
-    }
-    @starting-style {
-      opacity: 0;
-    }
     z-index: 999;
     animation: dropdown 0.2s;
     transition-property: opacity, scale, display;
     transition-behavior: allow-discrete;
     transition-duration: 0.2s;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @starting-style {
+    &[popover], .dropdown-content {
+      scale: 95%;
+      opacity: 0;
+    }
   }
   &.dropdown-open, &:not(.dropdown-hover):focus, &:focus-within {
     > [tabindex]:first-child {
@@ -148,14 +149,14 @@
   gap: calc(0.25rem * 1.5);
   text-align: center;
   vertical-align: middle;
-  text-decoration-line: none;
   outline-offset: 2px;
   webkit-user-select: none;
   user-select: none;
   padding-inline: var(--btn-p);
   color: var(--btn-fg);
+  --tw-prose-links: var(--btn-fg);
   height: var(--size);
-  font-size: 0.875rem;
+  font-size: var(--fontsize, 0.875rem);
   font-weight: 600;
   outline-color: var(--btn-color, var(--color-base-content));
   transition-property: color, background-color, border-color, box-shadow;
@@ -181,6 +182,9 @@
   --btn-shadow: 0 3px 2px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000),
     0 4px 3px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000);
   --btn-noise: var(--fx-noise);
+  .prose & {
+    text-decoration-line: none;
+  }
   @media (hover: hover) {
     &:hover {
       --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-200)), #000 7%);
@@ -224,13 +228,11 @@
     &::after {
       content: attr(aria-label);
     }
-    &:checked {
-      outline-width: 2px;
-      outline-style: solid;
-      --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-200)), #000 7%);
-      --btn-shadow: 0 0 0 0 oklch(0% 0 0/0), 0 0 0 0 oklch(0% 0 0/0);
-      isolation: isolate;
-    }
+  }
+  &:where(input:checked:not(.filter .btn)) {
+    --btn-color: var(--color-primary);
+    --btn-fg: var(--color-primary-content);
+    isolation: isolate;
   }
 }
 .loading {
@@ -280,6 +282,7 @@
     background-color: transparent;
     border: none;
     &:focus, &:focus-within {
+      --tw-outline-style: none;
       outline-style: none;
       @media (forced-colors: active) {
         outline: 2px solid transparent;
@@ -514,7 +517,14 @@
     background-color: var(--range-bg);
     border-radius: var(--radius-selector);
     height: calc(var(--range-thumb-size) * 0.5);
-    @media (forced-colors: active) {
+  }
+  @media (forced-colors: active) {
+    &::-webkit-slider-runnable-track {
+      border: 1px solid;
+    }
+  }
+  @media (forced-colors: active) {
+    &::-moz-range-track {
       border: 1px solid;
     }
   }
@@ -538,9 +548,6 @@
     background-color: var(--range-bg);
     border-radius: var(--radius-selector);
     height: calc(var(--range-thumb-size) * 0.5);
-    @media (forced-colors: active) {
-      border: 1px solid;
-    }
   }
   &::-moz-range-thumb {
     position: relative;
@@ -601,7 +608,9 @@
     background: inherit;
     border-radius: inherit;
     border-style: none;
+    background-image: none;
     &:focus, &:focus-within {
+      --tw-outline-style: none;
       outline-style: none;
       @media (forced-colors: active) {
         outline: 2px solid transparent;
@@ -671,19 +680,17 @@
     &:before {
       clip-path: polygon(20% 100%, 20% 80%, 50% 80%, 50% 0%, 70% 0%, 70% 100%);
       opacity: 100%;
-      @media print {
+    }
+    @media (forced-colors: active) {
+      &:before {
         rotate: 0deg;
-      }
-      @media print {
         background-color: transparent;
-      }
-      @media print {
         --tw-content: "✔︎";
-      }
-      @media print {
         clip-path: none;
       }
-      @media (forced-colors: active) {
+    }
+    @media print {
+      &:before {
         rotate: 0deg;
         background-color: transparent;
         --tw-content: "✔︎";
@@ -959,11 +966,20 @@
   text-align-last: center;
 }
 @layer base {
-  :root {
-    --fx-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.34' numOctaves='4' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='0.2'%3E%3C/rect%3E%3C/svg%3E");
+  @property --radialprogress {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 0%;
   }
-  .chat {
-    --mask-chat: url("data:image/svg+xml,%3csvg width='13' height='13' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='black' d='M0 11.5004C0 13.0004 2 13.0004 2 13.0004H12H13V0.00036329L12.5 0C12.5 0 11.977 2.09572 11.8581 2.50033C11.6075 3.35237 10.9149 4.22374 9 5.50036C6 7.50036 0 10.0004 0 11.5004Z'/%3e%3c/svg%3e");
+}
+@layer base {
+  :root {
+    scrollbar-color: color-mix(in oklch, currentColor 35%, #0000) #0000;
+  }
+}
+@layer base {
+  :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not([class*="drawer-open"]) > .drawer-toggle:checked ) {
+    overflow: hidden;
   }
 }
 @layer base {
@@ -971,6 +987,14 @@
 [data-theme] {
     background-color: var(--root-bg, var(--color-base-100));
     color: var(--color-base-content);
+  }
+}
+@layer base {
+  :root {
+    --fx-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.34' numOctaves='4' stitchTiles='stitch'%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)' opacity='0.2'%3E%3C/rect%3E%3C/svg%3E");
+  }
+  .chat {
+    --mask-chat: url("data:image/svg+xml,%3csvg width='13' height='13' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='black' d='M0 11.5004C0 13.0004 2 13.0004 2 13.0004H12H13V0.00036329L12.5 0C12.5 0 11.977 2.09572 11.8581 2.50033C11.6075 3.35237 10.9149 4.22374 9 5.50036C6 7.50036 0 10.0004 0 11.5004Z'/%3e%3c/svg%3e");
   }
 }
 @layer base {
@@ -988,21 +1012,25 @@
     --root-bg: color-mix(in srgb, var(--color-base-100), oklch(0% 0 0) 40%);
   }
 }
-@layer base {
-  @property --radialprogress {
-    syntax: "<percentage>";
-    inherits: true;
-    initial-value: 0%;
+@keyframes skeleton {
+  0% {
+    background-position: 150%;
+  }
+  100% {
+    background-position: -50%;
   }
 }
-@layer base {
-  :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not([class*="drawer-open"]) > .drawer-toggle:checked ) {
-    overflow: hidden;
+@keyframes progress {
+  50% {
+    background-position-x: -115%;
   }
 }
-@layer base {
-  :root {
-    scrollbar-color: color-mix(in oklch, currentColor 35%, #0000) #0000;
+@keyframes radio {
+  0% {
+    padding: 5px;
+  }
+  50% {
+    padding: 3px;
   }
 }
 @keyframes dropdown {
@@ -1014,27 +1042,6 @@
   0%, 40% {
     scale: 1.1;
     filter: brightness(1.05) contrast(1.05);
-  }
-}
-@keyframes radio {
-  0% {
-    padding: 5px;
-  }
-  50% {
-    padding: 3px;
-  }
-}
-@keyframes progress {
-  50% {
-    background-position-x: -115%;
-  }
-}
-@keyframes skeleton {
-  0% {
-    background-position: 150%;
-  }
-  100% {
-    background-position: -50%;
   }
 }
 @keyframes toast {
