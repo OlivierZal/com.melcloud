@@ -482,7 +482,6 @@ const config = defineConfig([
             descriptors: {
               '--font-display': '[<family-name>]#',
             },
-            prelude: '',
           },
         },
       },
