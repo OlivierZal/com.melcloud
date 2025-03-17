@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
@@ -52,7 +52,7 @@ const getErrorMessage = (error: unknown): string | null => {
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
-  // eslint-disable-next-line import/no-named-as-default-member
+  // eslint-disable-next-line import-x/no-named-as-default-member
 > extends withTimers(Homey.Device) {
   declare public readonly driver: BaseMELCloudDriver<T>
 

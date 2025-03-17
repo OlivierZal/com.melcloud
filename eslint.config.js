@@ -5,7 +5,7 @@ import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
-import importPlugin from 'eslint-plugin-import'
+import importX from 'eslint-plugin-import-x'
 import packageJson from 'eslint-plugin-package-json/configs/recommended'
 import perfectionist from 'eslint-plugin-perfectionist'
 import yml from 'eslint-plugin-yml'
@@ -140,8 +140,8 @@ const config = defineConfig([
       js.configs.all,
       tsConfigs.all,
       tsConfigs.strictTypeChecked,
-      importPlugin.flatConfigs.errors,
-      importPlugin.flatConfigs.typescript,
+      importX.flatConfigs.errors,
+      importX.flatConfigs.typescript,
       prettier,
     ],
     files: ['**/*.{ts,mts,js}'],
@@ -283,41 +283,40 @@ const config = defineConfig([
       '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
       curly: 'error',
-      'import/first': 'error',
-      'import/max-dependencies': [
+      'import-x/first': 'error',
+      'import-x/max-dependencies': [
         'error',
         {
           ignoreTypeImports: true,
         },
       ],
-      'import/newline-after-import': 'error',
-      'import/no-absolute-path': 'error',
-      'import/no-anonymous-default-export': 'error',
-      'import/no-cycle': 'error',
-      'import/no-default-export': 'error',
-      'import/no-deprecated': 'error',
-      'import/no-duplicates': 'error',
-      'import/no-dynamic-require': 'error',
-      'import/no-empty-named-blocks': 'error',
-      'import/no-extraneous-dependencies': 'error',
-      'import/no-import-module-exports': 'error',
-      'import/no-mutable-exports': 'error',
-      'import/no-named-as-default': 'error',
-      'import/no-named-as-default-member': 'error',
-      'import/no-named-default': 'error',
-      'import/no-namespace': 'error',
-      'import/no-relative-packages': 'error',
-      'import/no-self-import': 'error',
-      'import/no-unassigned-import': [
+      'import-x/newline-after-import': 'error',
+      'import-x/no-absolute-path': 'error',
+      'import-x/no-anonymous-default-export': 'error',
+      'import-x/no-cycle': 'error',
+      'import-x/no-default-export': 'error',
+      'import-x/no-deprecated': 'error',
+      'import-x/no-duplicates': 'error',
+      'import-x/no-dynamic-require': 'error',
+      'import-x/no-empty-named-blocks': 'error',
+      'import-x/no-extraneous-dependencies': 'error',
+      'import-x/no-import-module-exports': 'error',
+      'import-x/no-mutable-exports': 'error',
+      'import-x/no-named-as-default': 'error',
+      'import-x/no-named-as-default-member': 'error',
+      'import-x/no-named-default': 'error',
+      'import-x/no-relative-packages': 'error',
+      'import-x/no-self-import': 'error',
+      'import-x/no-unassigned-import': [
         'error',
         {
           allow: ['source-map-support/register.js', 'core-js/actual/**'],
         },
       ],
-      'import/no-unused-modules': 'error',
-      'import/no-useless-path-segments': 'error',
-      'import/no-webpack-loader-syntax': 'error',
-      'import/unambiguous': 'error',
+      'import-x/no-unused-modules': 'error',
+      'import-x/no-useless-path-segments': 'error',
+      'import-x/no-webpack-loader-syntax': 'error',
+      'import-x/unambiguous': 'error',
       'max-lines': 'off',
       'no-bitwise': 'off',
       'no-else-return': [
@@ -371,13 +370,6 @@ const config = defineConfig([
         partitionByNewLine: false,
         type: 'natural',
       },
-      ...importPlugin.flatConfigs.typescript.settings,
-      'import/resolver': {
-        ...importPlugin.flatConfigs.typescript.settings['import/resolver'],
-        typescript: {
-          alwaysTryTypes: true,
-        },
-      },
     },
   },
   {
@@ -386,6 +378,7 @@ const config = defineConfig([
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      'import-x/named': 'error',
     },
   },
   {
@@ -396,8 +389,9 @@ const config = defineConfig([
       'drivers/*/{device,driver}.mts',
     ],
     rules: {
-      'import/no-default-export': 'off',
-      'import/prefer-default-export': [
+      'import-x/max-dependencies': 'off',
+      'import-x/no-default-export': 'off',
+      'import-x/prefer-default-export': [
         'error',
         {
           target: 'any',

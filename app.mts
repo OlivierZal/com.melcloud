@@ -26,7 +26,7 @@ import {
   type ReportChartLineOptions,
   type ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
 import { DateTime, Settings as LuxonSettings, type HourNumbers } from 'luxon'
 
@@ -151,7 +151,7 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// eslint-disable-next-line import/no-named-as-default-member
+// eslint-disable-next-line import-x/no-named-as-default-member
 export default class MELCloudApp extends Homey.App {
   declare public readonly homey: Homey.Homey
 

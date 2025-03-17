@@ -4,7 +4,7 @@ import {
   type ListDeviceData,
   type LoginCredentials,
 } from '@olivierzal/melcloud-api'
-// eslint-disable-next-line import/default, import/no-extraneous-dependencies
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
 
 import type PairSession from 'homey/lib/PairSession.js'
@@ -32,7 +32,7 @@ const getArg = <T extends DeviceType>(
 }
 
 export abstract class BaseMELCloudDriver<T extends DeviceType>
-  // eslint-disable-next-line import/no-named-as-default-member
+  // eslint-disable-next-line import-x/no-named-as-default-member
   extends Homey.Driver
 {
   declare public readonly getDevices: () => MELCloudDevice[]
