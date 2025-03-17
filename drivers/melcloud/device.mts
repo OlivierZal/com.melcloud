@@ -10,8 +10,10 @@ import {
 import { ThermostatModeAta } from '../../types/ata.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-import { EnergyReportRegularAta } from './reports/regular.mts'
-import { EnergyReportTotalAta } from './reports/total.mts'
+import {
+  EnergyReportRegularAta,
+  EnergyReportTotalAta,
+} from './reports/index.mts'
 
 import type {
   ConvertFromDevice,

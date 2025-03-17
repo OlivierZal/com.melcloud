@@ -22,8 +22,10 @@ import {
 } from '../../types/common.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-import { EnergyReportRegularAtw } from './reports/regular.mts'
-import { EnergyReportTotalAtw } from './reports/total.mts'
+import {
+  EnergyReportRegularAtw,
+  EnergyReportTotalAtw,
+} from './reports/index.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>

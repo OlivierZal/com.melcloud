@@ -6,7 +6,7 @@ import type {
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import type MELCloudDeviceErv from '../drivers/melcloud_erv/device.mts'
+import type { MELCloudDeviceErv } from '../drivers/index.mts'
 
 import type {
   BaseGetCapabilities,
