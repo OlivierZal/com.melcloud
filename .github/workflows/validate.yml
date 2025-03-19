@@ -1,11 +1,5 @@
 name: Validate app
-on:
-  # eslint-disable yml/no-empty-mapping-value
-  pull_request:
-  workflow_dispatch:
-  # eslint-enable yml/no-empty-mapping-value
-  push:
-    branches: main
+on: [pull_request, push, workflow_dispatch]
 permissions:
   contents: write
   packages: read
