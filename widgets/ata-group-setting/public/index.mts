@@ -732,13 +732,9 @@ const getSunElement = (): HTMLDivElement => {
 
 const handleSunAnimation = (speed: number): void => {
   const sun = getSunElement()
-  if (!sunAnimation.shine) {
-    sunAnimation.shine = generateSunShineAnimation(sun)
-  }
+  sunAnimation.shine ??= generateSunShineAnimation(sun)
   sunAnimation.shine.playbackRate = speed
-  if (!sunAnimation.enter) {
-    sunAnimation.enter = generateSunEnterAnimation(sun)
-  }
+  sunAnimation.enter ??= generateSunEnterAnimation(sun)
 }
 
 const generateLeafAnimation = (

@@ -793,9 +793,7 @@ const generateErrorLogTableData = (
   errors: readonly ErrorDetails[],
 ): void => {
   errors.forEach((error) => {
-    if (!errorLogTBodyElement) {
-      errorLogTBodyElement = generateErrorLogTable(homey, Object.keys(error))
-    }
+    errorLogTBodyElement ??= generateErrorLogTable(homey, Object.keys(error))
     const rowElement = errorLogTBodyElement.insertRow()
     Object.values(error).forEach((value: string) => {
       const cellElement = rowElement.insertCell()

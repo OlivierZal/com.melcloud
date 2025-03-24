@@ -1,4 +1,4 @@
-/*! tailwindcss v4.0.14 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.0.15 | MIT License | https://tailwindcss.com */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 .diff {
   position: relative;
@@ -140,6 +140,9 @@
   }
 }
 .btn {
+  :where(&) {
+    width: unset;
+  }
   display: inline-flex;
   flex-shrink: 0;
   cursor: pointer;
@@ -981,8 +984,7 @@
   }
 }
 @layer base {
-  :root,
-[data-theme] {
+  :root, [data-theme] {
     background-color: var(--root-bg, var(--color-base-100));
     color: var(--color-base-content);
   }
@@ -996,15 +998,7 @@
   }
 }
 @layer base {
-  :where(
-  :root:has(
-      .modal-open,
-      .modal[open],
-      .modal:target,
-      .modal-toggle:checked,
-      .drawer:not(.drawer-open) > .drawer-toggle:checked
-    )
-) {
+  :where( :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked ) ) {
     scrollbar-gutter: stable;
     background-image: linear-gradient(var(--color-base-100), var(--color-base-100));
     --root-bg: color-mix(in srgb, var(--color-base-100), oklch(0% 0 0) 40%);
