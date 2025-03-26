@@ -24,7 +24,7 @@
     "@eslint/js": "^9.23.0",
     "@eslint/json": "^0.11.0",
     "@eslint/markdown": "^6.3.0",
-    "@html-eslint/eslint-plugin": "^0.36.0",
+    "@html-eslint/eslint-plugin": "^0.37.0",
     "@html-eslint/parser": "^0.36.0",
     "@stylistic/eslint-plugin": "^4.2.0",
     "@tailwindcss/cli": "^4.0.15",
