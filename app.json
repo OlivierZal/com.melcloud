@@ -5227,7 +5227,7 @@
             "sv": "Animationer"
           },
           "type": "checkbox",
-          "value": true
+          "value": false
         }
       ],
       "transparent": true,
