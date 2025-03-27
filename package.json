@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "42.0.0",
+  "version": "42.1.0",
   "type": "module",
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",

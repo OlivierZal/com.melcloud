@@ -250,5 +250,8 @@
   },
   "42.0.0": {
     "en": "Major upgrade of Tailwind CSS & daisy UI"
+  },
+  "42.1.0": {
+    "en": "Widget animations are no longer enabled by default."
   }
 }
