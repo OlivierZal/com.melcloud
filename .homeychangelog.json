@@ -242,14 +242,8 @@
     "no": "✨ **Nye funksjoner** ✨\n• MELCloud-dashbords er nå tilgjengelige som widgets!\n• Du kan nå konfigurere en standard sone for hver widget.",
     "sv": "✨ **Nya funktioner** ✨\n• MELCloud-instrumentpaneler är nu tillgängliga som widgets!\n• Du kan nu konfigurera en standardzon för varje widget."
   },
-  "41.0.1": {
-    "en": "Fixed current fan speed"
-  },
-  "41.0.2": {
-    "en": "Fixed daily CoP"
-  },
   "42.0.0": {
-    "en": "Major upgrade of Tailwind CSS & daisy UI"
+    "en": "Major upgrade of Tailwind CSS & daisy UI."
   },
   "42.1.0": {
     "en": "Widget animations are no longer enabled by default."
