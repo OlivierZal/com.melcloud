@@ -16,7 +16,7 @@
     "@olivierzal/melcloud-api": "^17.9.0",
     "core-js": "^3.41.0",
     "homey-lib": "^2.34.0",
-    "luxon": "^3.6.0",
+    "luxon": "^3.6.1",
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "@stylistic/eslint-plugin": "^4.2.0",
     "@tailwindcss/cli": "^4.0.17",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.11",
-    "@types/luxon": "^3.4.2",
+    "@types/luxon": "^3.6.0",
     "@types/node": "^22.13.14",
     "apexcharts": "^4.5.0",
     "daisyui": "^5.0.9",
