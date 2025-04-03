@@ -5,7 +5,7 @@ import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
-import importX from 'eslint-plugin-import-x'
+import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import perfectionist from 'eslint-plugin-perfectionist'
 import yml from 'eslint-plugin-yml'
@@ -33,8 +33,8 @@ const enumSortOptions = {
   newlinesBetween: 'never',
 }
 
-const exportGroupKind = {
-  groupKind: 'values-first',
+const exportSortOptions = {
+  groups: ['value-export', 'type-export'],
 }
 
 const importSortOptions = {
@@ -91,7 +91,7 @@ const moduleSortOptions = {
 }
 
 const namedSortOptions = {
-  ...exportGroupKind,
+  groupKind: 'values-first',
   ignoreAlias: true,
 }
 
@@ -140,8 +140,8 @@ const config = defineConfig([
       js.configs.all,
       tsConfigs.all,
       tsConfigs.strictTypeChecked,
-      importX.flatConfigs.errors,
-      importX.flatConfigs.typescript,
+      importXConfigs.errors,
+      importXConfigs.typescript,
       prettier,
     ],
     files: ['**/*.{ts,mts,js}'],
@@ -344,7 +344,7 @@ const config = defineConfig([
       'perfectionist/sort-classes': ['error', classSortOptions],
       'perfectionist/sort-decorators': ['error', decoratorSortOptions],
       'perfectionist/sort-enums': ['error', enumSortOptions],
-      'perfectionist/sort-exports': ['error', exportGroupKind],
+      'perfectionist/sort-exports': ['error', exportSortOptions],
       'perfectionist/sort-heritage-clauses': 'error',
       'perfectionist/sort-imports': ['error', importSortOptions],
       'perfectionist/sort-interfaces': ['error', typeLikeSortOptions],
