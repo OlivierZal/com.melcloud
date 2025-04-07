@@ -429,6 +429,12 @@ const config = defineConfig([
       '@html-eslint/require-meta-description': 'error',
       '@html-eslint/require-meta-viewport': 'error',
       '@html-eslint/sort-attrs': 'error',
+      '@html-eslint/use-baseline': [
+        'error',
+        {
+          available: 'newly',
+        },
+      ],
     },
   },
   {
