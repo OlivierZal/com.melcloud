@@ -512,6 +512,26 @@ const config = defineConfig([
       'yml/no-multiple-empty-lines': 'error',
       'yml/no-trailing-zeros': 'error',
       'yml/require-string-key': 'error',
+      'yml/sort-keys': [
+        'error',
+        {
+          order: {
+            natural: true,
+            type: 'asc',
+          },
+          pathPattern: '^.*$',
+        },
+      ],
+      'yml/sort-sequence-values': [
+        'error',
+        {
+          order: {
+            natural: true,
+            type: 'asc',
+          },
+          pathPattern: '^.*$',
+        },
+      ],
     },
   },
   packageJsonConfigs.recommended,

@@ -1,21 +1,21 @@
+jobs:
+  dependabot:
+    if: github.actor == 'dependabot[bot]'
+    name: Dependabot
+    runs-on: ubuntu-latest
+    steps:
+      - id: metadata
+        name: Dependabot metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        name: Enable auto-merge for Dependabot PRs
+        run: gh pr merge --auto --merge --delete-branch "$PR_URL"
 name: Dependabot
 on: pull_request
 permissions:
   contents: write
   pull-requests: write
-jobs:
-  dependabot:
-    name: Dependabot
-    runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
-    steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --merge --delete-branch "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

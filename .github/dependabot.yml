@@ -1,20 +1,20 @@
-version: 2
 registries:
   npm-github:
+    replaces-base: true
+    token: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
     type: npm-registry
     url: https://npm.pkg.github.com
-    token: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
-    replaces-base: true
 updates:
-  - package-ecosystem: github-actions
-    directory: /
+  - directory: /
+    package-ecosystem: github-actions
     schedule:
       interval: daily
       time: '05:00'
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: daily
-      time: '05:00'
+  - directory: /
+    package-ecosystem: npm
     registries:
       - npm-github
+    schedule:
+      interval: daily
+      time: '05:00'
+version: 2

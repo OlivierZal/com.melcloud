@@ -1,5 +1,3 @@
-name: Translate app
-on: workflow_dispatch
 jobs:
   translate:
     name: Translate app
@@ -10,9 +8,9 @@ jobs:
         uses: athombv/github-action-homey-app-translate@master
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-      - name: Commit, push & create PR
-        env:
+      - env:
           GH_TOKEN: ${{ github.token }}
+        name: Commit, push & create PR
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -21,3 +19,5 @@ jobs:
           git commit -m "Automatic translations with OpenAI"
           git push --set-upstream origin feature/openai-translations
           gh pr create --fill
+name: Translate app
+on: workflow_dispatch

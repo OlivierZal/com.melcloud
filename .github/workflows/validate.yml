@@ -1,33 +1,29 @@
-name: Validate app
-on: [pull_request, push, workflow_dispatch]
-permissions:
-  contents: write
-  packages: read
-  pull-requests: write
 jobs:
   validate:
+    if: github.actor != 'dependabot[bot]'
     name: Validate app
     runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
       - uses: actions/setup-node@v4
         with:
+          cache: npm
           node-version: latest
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
-          cache: npm
-      - name: Lint & format code
-        run: npm ci
-        env:
+      - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Lint & format code
+        run: npm ci
       - name: Build code & validate app
         uses: athombv/github-action-homey-app-validate@master
         with:
           level: publish
-      - name: Commit & push changes
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Commit & push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -46,5 +42,9 @@ jobs:
               git push origin HEAD:${{ github.head_ref }}
             fi
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+name: Validate app
+on: [pull_request, push, workflow_dispatch]
+permissions:
+  contents: write
+  packages: read
+  pull-requests: write

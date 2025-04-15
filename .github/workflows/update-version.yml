@@ -1,35 +1,19 @@
-name: Update app version
-on:
-  workflow_dispatch:
-    inputs:
-      version:
-        type: choice
-        description: Version
-        required: true
-        default: patch
-        options:
-          - major
-          - minor
-          - patch
-      changelog:
-        type: string
-        description: Changelog
-        required: false
-permissions:
-  contents: write
 jobs:
   update-version:
     name: Update app version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Update app version
+      - id: update_app_version
+        name: Update app version
         uses: athombv/github-action-homey-app-version@master
-        id: update_app_version
         with:
-          version: ${{ inputs.version }}
           changelog: ${{ inputs.changelog }}
-      - name: Commit & push changes
+          version: ${{ inputs.version }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Commit & push changes
         run: |
           VERSION=${{ steps.update_app_version.outputs.version }}
           npm version $VERSION --no-git-tag-version --allow-same-version
@@ -40,6 +24,22 @@ jobs:
           git tag "v$VERSION"
           git push origin HEAD --tags
           gh release create "v$VERSION" -t "v$VERSION" --notes "" --generate-notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ github.token }}
+name: Update app version
+on:
+  workflow_dispatch:
+    inputs:
+      changelog:
+        description: Changelog
+        required: false
+        type: string
+      version:
+        default: patch
+        description: Version
+        options:
+          - major
+          - minor
+          - patch
+        required: true
+        type: choice
+permissions:
+  contents: write
