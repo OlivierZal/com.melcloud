@@ -516,6 +516,7 @@ const config = defineConfig([
         'error',
         {
           order: {
+            caseSensitive: true,
             natural: true,
             type: 'asc',
           },
@@ -526,6 +527,7 @@ const config = defineConfig([
         'error',
         {
           order: {
+            caseSensitive: true,
             natural: true,
             type: 'asc',
           },
