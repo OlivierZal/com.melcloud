@@ -64,6 +64,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
+    this.#registerHolidayModeFlowActions()
     return Promise.resolve()
   }
 
@@ -173,6 +174,40 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
         ] = produced
       },
     )
+  }
+
+  #registerHolidayModeFlowActions(): void {
+    try {
+      this.homey.flow
+        .getActionCard('holiday_mode_on_action')
+        .registerRunListener(async (args: any) => {
+          const { device, end_date, start_date } = args
+          await this.homey.app.setHolidayModeSettings(
+            {
+              from: start_date || undefined,
+              to: end_date,
+            },
+            { zoneId: device.id, zoneType: 'devices' },
+          )
+          return true
+        })
+      
+      this.homey.flow
+        .getActionCard('holiday_mode_off_action')
+        .registerRunListener(async (args: any) => {
+          const { device } = args
+          await this.homey.app.setHolidayModeSettings(
+            {
+              from: undefined,
+              to: undefined,
+            },
+            { zoneId: device.id, zoneType: 'devices' },
+          )
+          return true
+        })
+    } catch {
+      // Silently catch errors during registration (similar to other methods)
+    }
   }
 
   public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]

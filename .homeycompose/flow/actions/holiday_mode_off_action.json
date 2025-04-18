@@ -1,0 +1,27 @@
+{
+  "args": [
+    {
+      "filter": "driver_id=melcloud|driver_id=melcloud_atw|driver_id=melcloud_erv",
+      "name": "device",
+      "type": "device"
+    }
+  ],
+  "title": {
+    "da": "Deaktivér feriefunktion",
+    "en": "Disable holiday mode",
+    "es": "Desactivar modo vacaciones",
+    "fr": "Désactiver le mode vacances",
+    "nl": "Vakantiemodus uitschakelen",
+    "no": "Deaktiver feriemodus",
+    "sv": "Inaktivera semesterläge"
+  },
+  "titleFormatted": {
+    "da": "Deaktivér feriefunktion",
+    "en": "Disable holiday mode",
+    "es": "Desactivar modo vacaciones",
+    "fr": "Désactiver le mode vacances",
+    "nl": "Vakantiemodus uitschakelen",
+    "no": "Deaktiver feriemodus",
+    "sv": "Inaktivera semesterläge"
+  }
+}
