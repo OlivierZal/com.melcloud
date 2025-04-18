@@ -184,7 +184,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
           const { device, end_date, start_date } = args
           await this.homey.app.setHolidayModeSettings(
             {
-              from: start_date || undefined,
+              from: start_date ?? undefined,
               to: end_date,
             },
             { zoneId: device.id, zoneType: 'devices' },
