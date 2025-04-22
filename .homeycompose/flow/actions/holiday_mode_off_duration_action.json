@@ -1,0 +1,36 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "type": "autocomplete",
+      "placeholder": {
+        "en": "Select zone or device",
+        "nl": "Selecteer zone of apparaat",
+        "da": "Vælg zone eller enhed",
+        "es": "Seleccionar zona o dispositivo",
+        "fr": "Sélectionner une zone ou un appareil",
+        "no": "Velg sone eller enhet",
+        "sv": "Välj zon eller enhet"
+      },
+      "title": {
+        "en": "Zone",
+        "nl": "Zone",
+        "da": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "no": "Sone",
+        "sv": "Zon"
+      }
+    }
+  ],
+  "id": "holiday_mode_off_duration_action",
+  "title": {
+    "en": "Disable holiday mode",
+    "nl": "Vakantiemodus uitschakelen",
+    "da": "Deaktivér feriefunktion",
+    "es": "Desactivar modo vacaciones",
+    "fr": "Désactiver le mode vacances",
+    "no": "Deaktiver feriemodus",
+    "sv": "Inaktivera semesterläge"
+  }
+}
