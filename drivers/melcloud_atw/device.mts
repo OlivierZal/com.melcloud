@@ -1,24 +1,24 @@
 import {
-  OperationModeState,
-  OperationModeZone,
   type DeviceType,
   type ListDeviceData,
   type ZoneAtw,
+  OperationModeState,
+  OperationModeZone,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 import {
+  type TargetTemperatureFlowCapabilities,
   HotWaterMode,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
-  type TargetTemperatureFlowCapabilities,
 } from '../../types/atw.mts'
 import {
-  K_MULTIPLIER,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OpCapabilities,
   type SetCapabilities,
+  K_MULTIPLIER,
 } from '../../types/common.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 

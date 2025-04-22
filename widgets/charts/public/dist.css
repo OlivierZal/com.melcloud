@@ -207,6 +207,7 @@
   &:focus-visible {
     outline-width: 2px;
     outline-style: solid;
+    isolation: isolate;
   }
   &:active:not(.btn-active) {
     translate: 0 0.5px;
@@ -391,6 +392,7 @@
     outline: 2px solid var(--input-color);
     outline-offset: 2px;
     isolation: isolate;
+    z-index: 1;
   }
   &:has(> input[disabled]), &:is(:disabled, [disabled]) {
     cursor: not-allowed;
@@ -754,6 +756,8 @@
     }
     outline: 2px solid var(--input-color);
     outline-offset: 2px;
+    isolation: isolate;
+    z-index: 1;
   }
   &:has(> select[disabled]), &:is(:disabled, [disabled]) {
     cursor: not-allowed;
@@ -1194,8 +1198,8 @@
       --root-bg: color-mix(in srgb, var(--color-base-100), oklch(0% 0 0) 40%);
     }
   }
-  :where(.modal-top, .modal-bottom) {
-    scrollbar-gutter: stable both-edges;
+  :where(.modal[open], .modal-open, .modal-toggle:checked + .modal):not(.modal-start, .modal-end) {
+    scrollbar-gutter: stable;
   }
 }
 @keyframes skeleton {

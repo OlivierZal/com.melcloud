@@ -1,16 +1,12 @@
-// eslint-disable-next-line import-x/no-extraneous-dependencies
-import Homey from 'homey'
-
-import { addToLogs } from '../decorators/add-to-logs.mts'
-import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
-import { withTimers } from '../mixins/with-timers.mts'
-
 import type {
   DeviceType,
   IDeviceFacade,
   ListDeviceData,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
+
+// eslint-disable-next-line import-x/no-extraneous-dependencies
+import Homey from 'homey'
 
 import type {
   Capabilities,
@@ -30,6 +26,10 @@ import type {
   SetCapabilityTagMapping,
   Settings,
 } from '../types/common.mts'
+
+import { addToLogs } from '../decorators/add-to-logs.mts'
+import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { withTimers } from '../mixins/with-timers.mts'
 
 import type { BaseMELCloudDriver } from './base-driver.mts'
 

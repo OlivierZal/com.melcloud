@@ -1,14 +1,14 @@
-import { getZones } from '../../lib/get-zones.mts'
-
 import type {
   DeviceType,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey.js'
+import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/common.mts'
+
+import { getZones } from '../../lib/get-zones.mts'
 
 const api = {
   getDevices({ query }: { query: { type?: `${DeviceType}` } }): DeviceZone[] {

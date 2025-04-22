@@ -3,13 +3,6 @@ import 'core-js/actual/array/to-sorted.js'
 import 'core-js/actual/object/group-by.js'
 
 import {
-  DeviceType,
-  FacadeManager,
-  FanSpeed,
-  Horizontal,
-  MELCloudAPI,
-  OperationMode,
-  Vertical,
   type ErrorLog,
   type ErrorLogQuery,
   type FrostProtectionData,
@@ -25,10 +18,17 @@ import {
   type LoginCredentials,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
+  DeviceType,
+  FacadeManager,
+  FanSpeed,
+  Horizontal,
+  MELCloudAPI,
+  OperationMode,
+  Vertical,
 } from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
-import { DateTime, Settings as LuxonSettings, type HourNumbers } from 'luxon'
+import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
 import {
   changelog,
@@ -41,8 +41,6 @@ import {
 } from './json-files.mts'
 import { getZones } from './lib/get-zones.mts'
 import {
-  fanSpeedValues,
-  zoneModel,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -54,6 +52,8 @@ import {
   type MELCloudDevice,
   type Settings,
   type ZoneData,
+  fanSpeedValues,
+  zoneModel,
 } from './types/common.mts'
 
 const NOTIFICATION_DELAY = 10000

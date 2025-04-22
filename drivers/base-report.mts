@@ -1,21 +1,21 @@
+import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
+import type Homey from 'homey/lib/Homey'
+
 import {
-  DateTime,
   type DateObjectUnits,
   type DurationLike,
   type HourNumbers,
+  DateTime,
 } from 'luxon'
 
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import {
-  K_MULTIPLIER,
   type Capabilities,
   type EnergyCapabilities,
   type EnergyCapabilityTagEntry,
   type EnergyReportMode,
+  K_MULTIPLIER,
 } from '../types/common.mts'
-
-import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/Homey.js'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'

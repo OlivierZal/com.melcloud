@@ -9,7 +9,7 @@ import type {
   LoginCredentials,
   ZoneSettings,
 } from '@olivierzal/melcloud-api'
-import type Homey from 'homey/lib/HomeySettings.js'
+import type Homey from 'homey/lib/HomeySettings'
 
 import type {
   BuildingZone,

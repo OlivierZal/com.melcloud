@@ -1,5 +1,3 @@
-import { thermostatMode } from '../json-files.mts'
-
 import type {
   DeviceType,
   EnergyDataAtw,
@@ -11,6 +9,8 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
+
+import { thermostatMode } from '../json-files.mts'
 
 import type {
   BaseGetCapabilities,

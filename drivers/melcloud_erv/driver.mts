@@ -1,4 +1,4 @@
-import { DeviceType, type ListDeviceData } from '@olivierzal/melcloud-api'
+import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
 
 import { getCapabilitiesOptionsAtaErv } from '../../types/common.mts'
 import {

@@ -4,7 +4,7 @@ import type {
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type ApexCharts from 'apexcharts'
-import type HomeyWidget from 'homey/lib/HomeyWidget.js'
+import type HomeyWidget from 'homey/lib/HomeyWidget'
 
 import type {
   DaysQuery,

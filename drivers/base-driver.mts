@@ -1,13 +1,13 @@
+import type PairSession from 'homey/lib/PairSession'
+
 import {
-  DeviceModel,
   type DeviceType,
   type ListDeviceData,
   type LoginCredentials,
+  DeviceModel,
 } from '@olivierzal/melcloud-api'
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
-
-import type PairSession from 'homey/lib/PairSession.js'
 
 import type {
   Capabilities,

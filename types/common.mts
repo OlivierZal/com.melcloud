@@ -1,8 +1,6 @@
+import type { DateObjectUnits, DurationLike, HourNumbers } from 'luxon'
+
 import {
-  AreaModel,
-  BuildingModel,
-  DeviceModel,
-  FloorModel,
   type DeviceType,
   type EnergyData,
   type FanSpeed,
@@ -15,9 +13,11 @@ import {
   type OperationMode,
   type UpdateDeviceData,
   type Vertical,
+  AreaModel,
+  BuildingModel,
+  DeviceModel,
+  FloorModel,
 } from '@olivierzal/melcloud-api'
-
-import type { DateObjectUnits, DurationLike, HourNumbers } from 'luxon'
 
 import type {
   EnergyReportRegularAta,

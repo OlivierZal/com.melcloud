@@ -1,7 +1,5 @@
-import { getBuildings } from '../../lib/get-zones.mts'
-
 import type { DeviceType, GroupState } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey.js'
+import type { Homey } from 'homey/lib/Homey'
 
 import type {
   BuildingZone,
@@ -10,6 +8,8 @@ import type {
   GroupAtaStates,
   ZoneData,
 } from '../../types/common.mts'
+
+import { getBuildings } from '../../lib/get-zones.mts'
 
 const api = {
   getAtaCapabilities({

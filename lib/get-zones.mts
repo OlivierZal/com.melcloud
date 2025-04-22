@@ -1,9 +1,9 @@
 import {
-  BuildingModel,
   type DeviceType,
   type IAreaModel,
   type IDeviceModelAny,
   type IFloorModel,
+  BuildingModel,
 } from '@olivierzal/melcloud-api'
 
 import type {

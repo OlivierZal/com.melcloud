@@ -1,5 +1,3 @@
-import { getBuildings } from './lib/get-zones.mts'
-
 import type {
   ErrorLog,
   ErrorLogQuery,
@@ -9,7 +7,7 @@ import type {
   HolidayModeQuery,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey.js'
+import type { Homey } from 'homey/lib/Homey'
 
 import type {
   BuildingZone,
@@ -18,6 +16,8 @@ import type {
   Settings,
   ZoneData,
 } from './types/common.mts'
+
+import { getBuildings } from './lib/get-zones.mts'
 
 const api = {
   getBuildings(): BuildingZone[] {
