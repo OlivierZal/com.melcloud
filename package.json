@@ -1,6 +1,7 @@
 {
   "name": "com.melcloud",
   "version": "42.1.0",
+  "description": "MELCloud for Homey",
   "type": "module",
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
@@ -30,13 +31,13 @@
     "@tailwindcss/cli": "^4.1.4",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.11",
     "@types/luxon": "^3.6.2",
-    "@types/node": "^22.15.2",
+    "@types/node": "^22.15.3",
     "apexcharts": "^4.7.0",
     "daisyui": "^5.0.28",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-import-resolver-typescript": "^4.3.4",
-    "eslint-plugin-import-x": "^4.10.6",
+    "eslint-plugin-import-x": "^4.11.0",
     "eslint-plugin-package-json": "^0.31.0",
     "eslint-plugin-perfectionist": "^4.12.3",
     "eslint-plugin-yml": "^1.18.0",
