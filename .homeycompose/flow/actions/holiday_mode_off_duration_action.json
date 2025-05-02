@@ -4,20 +4,20 @@
       "name": "zone",
       "type": "autocomplete",
       "placeholder": {
-        "en": "Select zone or device",
-        "nl": "Selecteer zone of apparaat",
         "da": "Vælg zone eller enhed",
+        "en": "Select zone or device",
         "es": "Seleccionar zona o dispositivo",
         "fr": "Sélectionner une zone ou un appareil",
+        "nl": "Selecteer zone of apparaat",
         "no": "Velg sone eller enhet",
         "sv": "Välj zon eller enhet"
       },
       "title": {
-        "en": "Zone",
-        "nl": "Zone",
         "da": "Zone",
+        "en": "Zone",
         "es": "Zona",
         "fr": "Zone",
+        "nl": "Zone",
         "no": "Sone",
         "sv": "Zon"
       }
@@ -25,11 +25,11 @@
   ],
   "id": "holiday_mode_off_duration_action",
   "title": {
-    "en": "Disable holiday mode",
-    "nl": "Vakantiemodus uitschakelen",
     "da": "Deaktivér feriefunktion",
+    "en": "Disable holiday mode",
     "es": "Desactivar modo vacaciones",
     "fr": "Désactiver le mode vacances",
+    "nl": "Vakantiemodus uitschakelen",
     "no": "Deaktiver feriemodus",
     "sv": "Inaktivera semesterläge"
   }

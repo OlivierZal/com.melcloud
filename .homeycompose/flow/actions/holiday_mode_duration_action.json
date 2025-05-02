@@ -4,35 +4,35 @@
       "name": "zone",
       "type": "autocomplete",
       "placeholder": {
-        "en": "Select zone or device",
-        "nl": "Selecteer zone of apparaat",
         "da": "Vælg zone eller enhed",
+        "en": "Select zone or device",
         "es": "Seleccionar zona o dispositivo",
         "fr": "Sélectionner une zone ou un appareil",
+        "nl": "Selecteer zone of apparaat",
         "no": "Velg sone eller enhet",
         "sv": "Välj zon eller enhet"
       },
       "title": {
-        "en": "Zone",
-        "nl": "Zone",
         "da": "Zone",
+        "en": "Zone",
         "es": "Zona",
         "fr": "Zone",
+        "nl": "Zone",
         "no": "Sone",
         "sv": "Zon"
       }
     },
     {
+      "max": 365,
+      "min": 1,
       "name": "duration",
       "type": "number",
-      "min": 1,
-      "max": 365,
       "title": {
-        "en": "Duration (days)",
-        "nl": "Duur (dagen)",
         "da": "Varighed (dage)",
+        "en": "Duration (days)",
         "es": "Duración (días)",
         "fr": "Durée (jours)",
+        "nl": "Duur (dagen)",
         "no": "Varighet (dager)",
         "sv": "Varaktighet (dagar)"
       }
@@ -40,20 +40,20 @@
   ],
   "id": "holiday_mode_duration_action",
   "title": {
-    "en": "Enable holiday mode for duration",
-    "nl": "Vakantiemodus inschakelen voor duur",
     "da": "Aktivér feriefunktion i varighed",
+    "en": "Enable holiday mode for duration",
     "es": "Activar modo vacaciones por duración",
     "fr": "Activer le mode vacances pour durée",
+    "nl": "Vakantiemodus inschakelen voor duur",
     "no": "Aktiver feriemodus for varighet",
     "sv": "Aktivera semesterläge för varaktighet"
   },
   "titleFormatted": {
-    "en": "Enable holiday mode for [[duration]] days",
-    "nl": "Vakantiemodus inschakelen voor [[duration]] dagen",
     "da": "Aktivér feriefunktion i [[duration]] dage",
+    "en": "Enable holiday mode for [[duration]] days",
     "es": "Activar modo vacaciones por [[duration]] días",
     "fr": "Activer le mode vacances pour [[duration]] jours",
+    "nl": "Vakantiemodus inschakelen voor [[duration]] dagen",
     "no": "Aktiver feriemodus for [[duration]] dager",
     "sv": "Aktivera semesterläge för [[duration]] dagar"
   }

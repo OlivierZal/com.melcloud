@@ -495,9 +495,9 @@ export default class MELCloudApp extends Homey.App {
     try {
       const holidayModeAction = this.homey.flow.getActionCard('holiday_mode_duration_action')
       
-      holidayModeAction.registerArgumentAutocompleteListener('zone', async (query, args) => 
+      holidayModeAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
-          .filter(({ name }) => query ? name.toLowerCase().includes(query.toLowerCase()) : true)
+          .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
             id: `${zone.model}_${zone.id}`,
             name: zone.name,
@@ -505,10 +505,10 @@ export default class MELCloudApp extends Homey.App {
           }))
       )
       
-      holidayModeAction.registerRunListener(async (args) => {
+      holidayModeAction.registerRunListener(async (args: {zone: {id: string}, duration: number}) => {
         const { zone, duration } = args
         
-        const [model, id] = (zone.id as string).split('_')
+        const [model, id] = zone.id.split('_')
         const zoneType = model as keyof typeof zoneModel
         const zoneId = Number(id)
         
@@ -530,9 +530,9 @@ export default class MELCloudApp extends Homey.App {
     try {
       const holidayModeOffAction = this.homey.flow.getActionCard('holiday_mode_off_duration_action')
       
-      holidayModeOffAction.registerArgumentAutocompleteListener('zone', async (query, args) =>
+      holidayModeOffAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
-          .filter(({ name }) => query ? name.toLowerCase().includes(query.toLowerCase()) : true)
+          .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
             id: `${zone.model}_${zone.id}`,
             name: zone.name,
@@ -540,10 +540,10 @@ export default class MELCloudApp extends Homey.App {
           }))
       )
       
-      holidayModeOffAction.registerRunListener(async (args) => {
+      holidayModeOffAction.registerRunListener(async (args: {zone: {id: string}}) => {
         const { zone } = args
         
-        const [model, id] = (zone.id as string).split('_')
+        const [model, id] = zone.id.split('_')
         const zoneType = model as keyof typeof zoneModel
         const zoneId = Number(id)
         
