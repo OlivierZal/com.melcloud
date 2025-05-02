@@ -495,7 +495,7 @@ export default class MELCloudApp extends Homey.App {
     try {
       const holidayModeAction = this.homey.flow.getActionCard('holiday_mode_duration_action')
       
-      holidayModeAction.registerArgumentAutocompleteListener('zone', async (query) => 
+      holidayModeAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
           .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
@@ -530,7 +530,7 @@ export default class MELCloudApp extends Homey.App {
     try {
       const holidayModeOffAction = this.homey.flow.getActionCard('holiday_mode_off_duration_action')
       
-      holidayModeOffAction.registerArgumentAutocompleteListener('zone', async (query) =>
+      holidayModeOffAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
           .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
