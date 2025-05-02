@@ -2,7 +2,6 @@
   "args": [
     {
       "name": "zone",
-      "type": "autocomplete",
       "placeholder": {
         "da": "Vælg zone eller enhed",
         "en": "Select zone or device",
@@ -20,13 +19,13 @@
         "nl": "Zone",
         "no": "Sone",
         "sv": "Zon"
-      }
+      },
+      "type": "autocomplete"
     },
     {
       "max": 365,
       "min": 1,
       "name": "duration",
-      "type": "number",
       "title": {
         "da": "Varighed (dage)",
         "en": "Duration (days)",
@@ -35,7 +34,8 @@
         "nl": "Duur (dagen)",
         "no": "Varighet (dager)",
         "sv": "Varaktighet (dagar)"
-      }
+      },
+      "type": "number"
     }
   ],
   "id": "holiday_mode_duration_action",

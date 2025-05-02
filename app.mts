@@ -194,7 +194,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public getAtaCapabilities(): [
-    keyof GroupState & keyof ListDeviceDataAta,
+    keyof GroupState  ,
     DriverCapabilitiesOptions,
   ][] {
     return [
@@ -231,7 +231,7 @@ export default class MELCloudApp extends Homey.App {
         enumType,
       ),
     ]) as [
-      keyof GroupState & keyof ListDeviceDataAta,
+      keyof GroupState  ,
       DriverCapabilitiesOptions,
     ][]
   }
@@ -465,27 +465,6 @@ export default class MELCloudApp extends Homey.App {
     })
   }
 
-  #registerWidgetListeners(): void {
-    this.homey.dashboards
-      .getWidget('ata-group-setting')
-      .registerSettingAutocompleteListener('default_zone', (query) =>
-        getZones({ type: DeviceType.Ata })
-          .filter(({ model }) => model !== 'devices')
-          .filter(({ name }) =>
-            name.toLowerCase().includes(query.toLowerCase()),
-          ),
-      )
-    this.homey.dashboards
-      .getWidget('charts')
-      .registerSettingAutocompleteListener('default_zone', (query) =>
-        getZones()
-          .filter(({ model }) => model === 'devices')
-          .filter(({ name }) =>
-            name.toLowerCase().includes(query.toLowerCase()),
-          ),
-      )
-  }
-
   #registerFlowListeners(): void {
     this.#registerHolidayModeByDurationAction()
     this.#registerHolidayModeOffAction()
@@ -497,16 +476,16 @@ export default class MELCloudApp extends Homey.App {
       
       holidayModeAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
-          .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
+          .filter(({ name }) => query === '' || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
-            id: `${zone.model}_${zone.id}`,
-            name: zone.name,
-            description: zone.model !== 'devices' ? this.homey.__(`settings.models.${zone.model}`) : ''
+            description: zone.model === 'devices' ? '' : this.homey.__(`settings.models.${zone.model}`),
+            id: `${zone.model}_${String(zone.id)}`,
+            name: zone.name
           }))
       )
       
-      holidayModeAction.registerRunListener(async (args: {zone: {id: string}, duration: number}) => {
-        const { zone, duration } = args
+      holidayModeAction.registerRunListener(async (args: {duration: number; zone: {id: string},}) => {
+        const { duration, zone } = args
         
         const [model, id] = zone.id.split('_')
         const zoneType = model as keyof typeof zoneModel
@@ -532,11 +511,11 @@ export default class MELCloudApp extends Homey.App {
       
       holidayModeOffAction.registerArgumentAutocompleteListener('zone', (query) =>
         getZones()
-          .filter(({ name }) => !query || name.toLowerCase().includes(query.toLowerCase()))
+          .filter(({ name }) => query === '' || name.toLowerCase().includes(query.toLowerCase()))
           .map(zone => ({
-            id: `${zone.model}_${zone.id}`,
-            name: zone.name,
-            description: zone.model !== 'devices' ? this.homey.__(`settings.models.${zone.model}`) : ''
+            description: zone.model === 'devices' ? '' : this.homey.__(`settings.models.${String(zone.model)}`),
+            id: `${zone.model}_${String(zone.id)}`,
+            name: zone.name
           }))
       )
       
@@ -558,6 +537,27 @@ export default class MELCloudApp extends Homey.App {
         return true
       })
     } catch {}
+  }
+
+  #registerWidgetListeners(): void {
+    this.homey.dashboards
+      .getWidget('ata-group-setting')
+      .registerSettingAutocompleteListener('default_zone', (query) =>
+        getZones({ type: DeviceType.Ata })
+          .filter(({ model }) => model !== 'devices')
+          .filter(({ name }) =>
+            name.toLowerCase().includes(query.toLowerCase()),
+          ),
+      )
+    this.homey.dashboards
+      .getWidget('charts')
+      .registerSettingAutocompleteListener('default_zone', (query) =>
+        getZones()
+          .filter(({ model }) => model === 'devices')
+          .filter(({ name }) =>
+            name.toLowerCase().includes(query.toLowerCase()),
+          ),
+      )
   }
 
   async #syncFromDevices({
