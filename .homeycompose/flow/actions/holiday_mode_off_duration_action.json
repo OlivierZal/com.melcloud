@@ -2,7 +2,6 @@
   "args": [
     {
       "name": "zone",
-      "type": "autocomplete",
       "placeholder": {
         "da": "Vælg zone eller enhed",
         "en": "Select zone or device",
@@ -20,7 +19,8 @@
         "nl": "Zone",
         "no": "Sone",
         "sv": "Zon"
-      }
+      },
+      "type": "autocomplete"
     }
   ],
   "id": "holiday_mode_off_duration_action",
