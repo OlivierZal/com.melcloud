@@ -31,7 +31,7 @@
     "@tailwindcss/cli": "^4.1.5",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.11",
     "@types/luxon": "^3.6.2",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.8",
     "apexcharts": "^4.7.0",
     "daisyui": "^5.0.35",
     "eslint": "^9.26.0",
@@ -43,9 +43,9 @@
     "eslint-plugin-yml": "^1.18.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.5.3",
-    "prettier-plugin-packagejson": "^2.5.10",
+    "prettier-plugin-packagejson": "^2.5.11",
     "tailwindcss": "^4.1.5",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.31.1"
+    "typescript-eslint": "^8.32.0"
   }
 }

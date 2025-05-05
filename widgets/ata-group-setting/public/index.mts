@@ -931,7 +931,7 @@ const handleAnimation = async (
   if (isAnimations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
     const isSomethingOn = isOn !== false
-    const newSpeed = Number(speed ?? SPEED_MODERATE) || SPEED_MODERATE
+    const newSpeed = Number(speed) || SPEED_MODERATE
     const newMode = Number(mode ?? null)
     await resetAnimation(homey, { isSomethingOn, mode: newMode })
     if (isSomethingOn) {
