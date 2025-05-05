@@ -27,10 +27,8 @@ type TimerClass = new (...args: any[]) => {
   readonly setTimeout: Timer
 }
 
-const FIRST_CHAR = 0
-const SECOND_CHAR = 1
-const formatActionType = (actionType: string): string =>
-  `${actionType.charAt(FIRST_CHAR).toUpperCase()}${actionType.slice(SECOND_CHAR).toLowerCase()}`
+const capitalize = ([first = '', ...rest] = ''): string =>
+  first.toUpperCase() + rest.join('')
 
 export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
   class extends base {
@@ -65,7 +63,7 @@ export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
     ): NodeJS.Timeout {
       const duration = Duration.fromDurationLike(interval)
       this.log(
-        formatActionType(actionType),
+        capitalize(actionType),
         'will run',
         timerWords.timeSpecifier,
         duration.rescale().toHuman(),
