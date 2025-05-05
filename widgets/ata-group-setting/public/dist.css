@@ -1126,6 +1126,9 @@
 .text-light {
   color: var(--color-light);
 }
+.capitalize {
+  text-transform: capitalize;
+}
 .btn-ghost {
   &:not(.btn-active, :hover, :active:focus, :focus-visible) {
     --btn-shadow: "";
