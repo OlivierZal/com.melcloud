@@ -34,7 +34,7 @@
     "@types/node": "^22.15.27",
     "apexcharts": "^4.7.0",
     "daisyui": "^5.0.42",
-    "eslint": "^9.27.0",
+    "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-typescript": "^4.4.1",
     "eslint-plugin-import-x": "^4.13.3",
