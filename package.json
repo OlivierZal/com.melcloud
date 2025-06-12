@@ -44,7 +44,7 @@
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.5.3",
     "prettier-plugin-packagejson": "^2.5.15",
-    "tailwindcss": "^4.1.8",
+    "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0"
   }
