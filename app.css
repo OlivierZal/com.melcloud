@@ -8,7 +8,6 @@
 
 @theme {
   --font-display: Roboto, sans-serif;
-  /* eslint-disable css/no-invalid-at-rules */
   --color-blue: var(--homey-text-color-blue);
   --color-color: var(--homey-text-color);
   --color-danger: var(--homey-text-color-danger);
@@ -18,7 +17,6 @@
   --font-weight-normal: var(--homey-font-weight-regular);
   --text-default: var(--homey-font-size-default);
   --text-default--line-height: var(--homey-line-height-default);
-  /* eslint-enable css/no-invalid-at-rules */
 }
 
 #zones {
