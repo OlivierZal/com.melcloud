@@ -18,8 +18,8 @@ export const {
   vertical: ManifestDriverCapabilitiesOptions
 }> => {
   try {
-    return await import('./lib/json-files-with-import.mjs')
+    return await import('./lib/json-files-with-import.mts')
   } catch {
-    return import('./lib/json-files-with-require.mjs')
+    return import('./lib/json-files-with-require.mts')
   }
 })()

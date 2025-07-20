@@ -550,7 +550,7 @@ const createFlame = (speed: number): void => {
       },
       'px',
     )
-    flame.style.fontSize = generateStyleString({ gap: 10, min: 50 }, 'px')
+    flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
     animationElement.append(flame)
     generateFlameAnimation(flame, speed)
   }
@@ -621,8 +621,8 @@ const createSnowflake = (speed: number): void => {
       'px',
     )
     snowflake.style.fontSize = generateStyleString(
-      { divisor: speed, gap: 10, min: 30 },
-      'px',
+      { divisor: speed, gap: 1, min: 2 },
+      'rem',
     )
     snowflake.style.filter = `brightness(${generateStyleString(
       { gap: 20, min: 100 },
@@ -802,7 +802,7 @@ const createLeaf = (speed: number): void => {
       },
       'px',
     )
-    leaf.style.fontSize = generateStyleString({ gap: 10, min: 30 }, 'px')
+    leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
     leaf.style.filter = `brightness(${generateStyleString(
       { gap: 50, min: 100 },
       '%',

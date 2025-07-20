@@ -2,6 +2,9 @@ import 'source-map-support/register.js'
 import 'core-js/actual/array/to-sorted.js'
 import 'core-js/actual/object/group-by.js'
 
+// eslint-disable-next-line import-x/no-extraneous-dependencies
+import Homey from 'homey'
+
 import {
   type ErrorLog,
   type ErrorLogQuery,
@@ -26,8 +29,6 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
-// eslint-disable-next-line import-x/no-extraneous-dependencies
-import Homey from 'homey'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
 import {

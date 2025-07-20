@@ -16,7 +16,6 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
-const FONT_SIZE_SMALL = '14px'
 const FONT_SIZE_VERY_SMALL = '12px'
 const INCREMENT = 1
 const NEXT_TIMEOUT = 60000
@@ -142,7 +141,7 @@ const getChartPieOptions = (
     dropShadow: { enabled: false },
     style: {
       colors: [getStyle('--homey-text-color')],
-      fontSize: FONT_SIZE_SMALL,
+      fontSize: getStyle('--homey-font-size-small'),
       fontWeight: getStyle('--homey-font-weight-bold'),
     },
   },
