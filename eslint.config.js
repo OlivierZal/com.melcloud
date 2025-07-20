@@ -184,7 +184,7 @@ const config = defineConfig([
         'error',
         'single',
         {
-          allowTemplateLiterals: 'avoidEscape',
+          allowTemplateLiterals: 'never',
           avoidEscape: true,
         },
       ],
@@ -421,12 +421,6 @@ const config = defineConfig([
     files: ['**/api.mts', 'app.mts', 'drivers/*/{device,driver}.mts'],
     rules: {
       'import-x/no-default-export': 'off',
-      'import-x/no-unresolved': [
-        'error',
-        {
-          ignore: ['homey'],
-        },
-      ],
       'import-x/prefer-default-export': [
         'error',
         {
@@ -440,7 +434,6 @@ const config = defineConfig([
     rules: {
       'import-x/max-dependencies': 'off',
       'import-x/no-default-export': 'off',
-      'import-x/no-unresolved': 'off',
       'import-x/prefer-default-export': [
         'error',
         {
