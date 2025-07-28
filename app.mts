@@ -1,6 +1,7 @@
 import 'source-map-support/register.js'
 import 'core-js/actual/array/to-sorted.js'
 import 'core-js/actual/object/group-by.js'
+import 'core-js/actual/set/symmetric-difference.js'
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
@@ -57,7 +58,7 @@ import {
   zoneModel,
 } from './types/common.mts'
 
-const NOTIFICATION_DELAY = 10000
+const NOTIFICATION_DELAY = 10_000
 
 const drivers: Record<DeviceType, string> = {
   [DeviceType.Ata]: 'melcloud',
@@ -108,31 +109,30 @@ const getDriverSettings = (
 const getDriverLoginSetting = (
   { id: driverId, pair }: ManifestDriver,
   language: string,
-): DriverSetting[] =>
-  Object.values(
-    Object.entries(
-      pair?.find(
-        (pairSetting): pairSetting is LoginSetting =>
-          pairSetting.id === 'login',
-      )?.options ?? [],
-    ).reduce<Record<string, DriverSetting>>((acc, [option, label]) => {
-      const isPassword = option.startsWith('password')
-      const key = isPassword ? 'password' : 'username'
-      acc[key] ??= {
-        driverId,
-        groupId: 'login',
-        id: key,
-        title: '',
-        type: isPassword ? 'password' : 'text',
-      }
-      acc[key] = {
-        ...acc[key],
-        [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
-          label[language] ?? label.en,
-      }
-      return acc
-    }, {}),
-  )
+): DriverSetting[] => {
+  const driverLoginSetting: Record<string, DriverSetting> = {}
+  for (const [option, label] of Object.entries(
+    pair?.find(
+      (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
+    )?.options ?? [],
+  )) {
+    const isPassword = option.startsWith('password')
+    const key = isPassword ? 'password' : 'username'
+    driverLoginSetting[key] ??= {
+      driverId,
+      groupId: 'login',
+      id: key,
+      title: '',
+      type: isPassword ? 'password' : 'text',
+    }
+    driverLoginSetting[key] = {
+      ...driverLoginSetting[key],
+      [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
+        label[language] ?? label.en,
+    }
+  }
+  return Object.values(driverLoginSetting)
+}
 
 const isKeyofEnum = (
   enumType: object,
@@ -188,9 +188,9 @@ export default class MELCloudApp extends Homey.App {
     this.#registerWidgetListeners()
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
-    return Promise.resolve()
   }
 
   public getAtaCapabilities(): [
@@ -263,21 +263,22 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public getDeviceSettings(): DeviceSettings {
-    return this.#getDevices().reduce<DeviceSettings>((acc, device) => {
+    const deviceSettings: DeviceSettings = {}
+    for (const device of this.#getDevices()) {
       const {
         driver: { id: driverId },
       } = device
-      acc[driverId] ??= {}
-      for (const [id, value] of Object.entries(device.getSettings())) {
-        if (!(id in acc[driverId])) {
-          acc[driverId][id] = value
-        } else if (acc[driverId][id] !== value) {
-          acc[driverId][id] = null
+      deviceSettings[driverId] ??= {}
+      for (const [settingId, value] of Object.entries(device.getSettings())) {
+        if (!(settingId in deviceSettings[driverId])) {
+          deviceSettings[driverId][settingId] = value
+        } else if (deviceSettings[driverId][settingId] !== value) {
+          deviceSettings[driverId][settingId] = null
           break
         }
       }
-      return acc
-    }, {})
+    }
+    return deviceSettings
   }
 
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
@@ -376,9 +377,8 @@ export default class MELCloudApp extends Homey.App {
     state: GroupState,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
-    handleResponse(
-      (await this.getFacade(zoneType, zoneId).setGroup(state)).AttributeErrors,
-    )
+    const data = await this.getFacade(zoneType, zoneId).setGroup(state)
+    handleResponse(data.AttributeErrors)
   }
 
   public async setDeviceSettings(
@@ -391,7 +391,7 @@ export default class MELCloudApp extends Homey.App {
           (changedKey) =>
             settings[changedKey] !== device.getSetting(changedKey),
         )
-        if (changedKeys.length) {
+        if (changedKeys.length > 0) {
           await device.setSettings(
             Object.fromEntries(changedKeys.map((key) => [key, settings[key]])),
           )
@@ -408,38 +408,37 @@ export default class MELCloudApp extends Homey.App {
     settings: FrostProtectionQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
-    handleResponse(
-      (await this.getFacade(zoneType, zoneId).setFrostProtection(settings))
-        .AttributeErrors,
+    const data = await this.getFacade(zoneType, zoneId).setFrostProtection(
+      settings,
     )
+    handleResponse(data.AttributeErrors)
   }
 
   public async setHolidayModeSettings(
     settings: HolidayModeQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
-    handleResponse(
-      (await this.getFacade(zoneType, zoneId).setHolidayMode(settings))
-        .AttributeErrors,
-    )
+    const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
+    handleResponse(data.AttributeErrors)
   }
 
   #createNotification(language: string): void {
+    const { homey } = this
     const {
-      homey: {
-        manifest: { version },
-      },
-    } = this
-    if (this.homey.settings.get('notifiedVersion') !== version) {
+      manifest: { version },
+      notifications,
+      settings,
+    } = homey
+    if (settings.get('notifiedVersion') !== version) {
       const { [version]: versionChangelog = {} } = changelog
       if (language in versionChangelog) {
-        this.homey.setTimeout(async () => {
+        homey.setTimeout(async () => {
           try {
             if (hasChangelogLanguage(versionChangelog, language)) {
-              await this.homey.notifications.createNotification({
+              await notifications.createNotification({
                 excerpt: versionChangelog[language],
               })
-              this.homey.settings.set('notifiedVersion', version)
+              settings.set('notifiedVersion', version)
             }
           } catch {}
         }, NOTIFICATION_DELAY)

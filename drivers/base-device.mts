@@ -173,16 +173,16 @@ export abstract class BaseMELCloudDevice<
     const changedEnergyKeys = changedCapabilities.filter((setting) =>
       this.#isEnergyCapability(setting),
     )
-    if (changedEnergyKeys.length) {
+    if (changedEnergyKeys.length > 0) {
       await this.#updateEnergyReportsOnSettings({
         changedKeys: changedEnergyKeys,
       })
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onUninit(): Promise<void> {
     this.onDeleted()
-    return Promise.resolve()
   }
 
   public override async addCapability(capability: string): Promise<void> {
@@ -240,7 +240,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
-    this.homey.api.realtime('deviceupdate', undefined)
+    this.homey.api.realtime('deviceupdate', null)
     await Promise.all(
       this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
         if (tag in data) {
@@ -294,7 +294,8 @@ export abstract class BaseMELCloudDevice<
 
   async #fetchData(): Promise<ListDeviceData<T> | null> {
     try {
-      return (await this.fetchDevice())?.data ?? null
+      const device = await this.fetchDevice()
+      return device?.data ?? null
     } catch {
       await this.setWarning(
         this.homey.__(this.homey.__('errors.deviceNotFound')),
@@ -318,14 +319,12 @@ export abstract class BaseMELCloudDevice<
     newSettings: Settings,
     changedCapabilities: string[],
   ): Promise<void> {
-    await changedCapabilities.reduce(async (acc, capability) => {
-      await acc
-      if (newSettings[capability] === true) {
-        await this.addCapability(capability)
-        return
-      }
-      await this.removeCapability(capability)
-    }, Promise.resolve())
+    for (const capability of changedCapabilities) {
+      // eslint-disable-next-line no-await-in-loop
+      await (newSettings[capability] === true ?
+        this.addCapability(capability)
+      : this.removeCapability(capability))
+    }
   }
 
   async #init(data: ListDeviceData<T>): Promise<void> {
@@ -371,7 +370,7 @@ export abstract class BaseMELCloudDevice<
     const device = await this.fetchDevice()
     if (device) {
       const updateData = this.#buildUpdateData(values)
-      if (Object.keys(updateData).length) {
+      if (Object.keys(updateData).length > 0) {
         try {
           await device.setValues(updateData)
         } catch (error) {
@@ -385,25 +384,24 @@ export abstract class BaseMELCloudDevice<
 
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings()
-    const capabilities = [
-      ...this.driver.getRequiredCapabilities(data),
+    const currentCapabilities = new Set(this.getCapabilities())
+    const requiredCapabilities = new Set([
       ...Object.keys(settings).filter(
         (setting) =>
           this.#isCapability(setting) &&
           typeof settings[setting] === 'boolean' &&
           settings[setting],
       ),
-    ]
-    await capabilities.reduce(async (acc, capability) => {
-      await acc
-      return this.addCapability(capability)
-    }, Promise.resolve())
-    await this.getCapabilities()
-      .filter((capability) => !capabilities.includes(capability))
-      .reduce(async (acc, capability) => {
-        await acc
-        await this.removeCapability(capability)
-      }, Promise.resolve())
+      ...this.driver.getRequiredCapabilities(data),
+    ])
+    for (const capability of currentCapabilities.symmetricDifference(
+      requiredCapabilities,
+    )) {
+      // eslint-disable-next-line no-await-in-loop
+      await (requiredCapabilities.has(capability) ?
+        this.addCapability(capability)
+      : this.removeCapability(capability))
+    }
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
     )
@@ -413,28 +411,22 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
-    await Object.entries(this.driver.getCapabilitiesOptions(data)).reduce(
-      async (acc, capabilityOptions) => {
-        await acc
-        await this.setCapabilityOptions(
-          ...(capabilityOptions as [
-            string & keyof CapabilitiesOptions<T>,
-            CapabilitiesOptions<T>[Extract<
-              keyof CapabilitiesOptions<T>,
-              string
-            >] &
-              Record<string, unknown>,
-          ]),
-        )
-      },
-      Promise.resolve(),
-    )
+    for (const [capability, options] of Object.entries(
+      this.driver.getCapabilitiesOptions(data),
+    ) as [
+      string & keyof CapabilitiesOptions<T>,
+      CapabilitiesOptions<T>[Extract<keyof CapabilitiesOptions<T>, string>] &
+        Record<string, unknown>,
+    ][]) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.setCapabilityOptions(capability, options)
+    }
   }
 
   #unscheduleReports(): void {
-    modes.forEach((mode) => {
+    for (const mode of modes) {
       this.#reports[mode]?.unschedule()
-    })
+    }
   }
 
   async #updateDeviceOnSettings({
@@ -446,7 +438,7 @@ export abstract class BaseMELCloudDevice<
     changedKeys: string[]
     newSettings: Settings
   }): Promise<void> {
-    if (changedCapabilities.length) {
+    if (changedCapabilities.length > 0) {
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }

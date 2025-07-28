@@ -62,12 +62,13 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
 
   public abstract readonly type: T
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
-    return Promise.resolve()
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
@@ -80,23 +81,21 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
     })
     this.#handleLogin(session)
     session.setHandler('list_devices', async () => this.#discoverDevices())
-    return Promise.resolve()
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onRepair(session: PairSession): Promise<void> {
     this.#handleLogin(session)
-    return Promise.resolve()
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
-    return Promise.resolve(
-      DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
-        capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: this.getCapabilitiesOptions(data),
-        data: { id },
-        name,
-      })),
-    )
+    return DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
+      capabilities: this.getRequiredCapabilities(data),
+      capabilitiesOptions: this.getCapabilitiesOptions(data),
+      data: { id },
+      name,
+    }))
   }
 
   #handleLogin(session: PairSession): void {
@@ -144,36 +143,34 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   }
 
   #registerRunListeners(): void {
-    ;(
-      Object.keys({
-        ...this.setCapabilityTagMapping,
-        ...this.getCapabilityTagMapping,
-        ...this.listCapabilityTagMapping,
-      }) as (string & keyof OpCapabilities<T>)[]
-    ).forEach((capability) => {
+    for (const capability of Object.keys({
+      ...this.setCapabilityTagMapping,
+      ...this.getCapabilityTagMapping,
+      ...this.listCapabilityTagMapping,
+    }) as (string & keyof OpCapabilities<T>)[]) {
       this.#registerConditionRunListener(capability)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
           capability as string & keyof SetCapabilities<T>,
         )
       }
-    })
+    }
   }
 
   #setProducedAndConsumedTagMappings(): void {
-    Object.entries(this.energyCapabilityTagMapping).forEach(
-      ([capability, tags]) => {
-        const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
-          (tag as string).endsWith('Consumed') ? 'consumed' : 'produced',
-        )
-        this.consumedTagMapping[
-          capability as keyof EnergyCapabilityTagMapping<T>
-        ] = consumed
-        this.producedTagMapping[
-          capability as keyof EnergyCapabilityTagMapping<T>
-        ] = produced
-      },
-    )
+    for (const [capability, tags] of Object.entries(
+      this.energyCapabilityTagMapping,
+    )) {
+      const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
+        (tag as string).endsWith('Consumed') ? 'consumed' : 'produced',
+      )
+      this.consumedTagMapping[
+        capability as keyof EnergyCapabilityTagMapping<T>
+      ] = consumed
+      this.producedTagMapping[
+        capability as keyof EnergyCapabilityTagMapping<T>
+      ] = produced
+    }
   }
 
   public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]

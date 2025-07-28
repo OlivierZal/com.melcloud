@@ -1,14 +1,16 @@
-const cartesianProduct = (arrays) =>
-  arrays.reduce(
-    (acc, array) =>
-      acc.flatMap((accItem) =>
-        array.map((item) => [
-          ...(Array.isArray(accItem) ? accItem : [accItem]),
-          item,
-        ]),
-      ),
-    [[]],
-  )
+const cartesianProduct = (arrays) => {
+  let result = [[]]
+  for (const array of arrays) {
+    const temporary = []
+    for (const partial of result) {
+      for (const item of array) {
+        temporary.push([...partial, item])
+      }
+    }
+    result = temporary
+  }
+  return result
+}
 
 const modifierCombos = ({ modifiers }) =>
   cartesianProduct(modifiers).map((combo) => combo.filter(Boolean))
@@ -54,7 +56,7 @@ export const buildGroups = ({
         }),
       )
       const [groupPair] = groupPairs
-      return [...Array(groupPair.length).keys()].map((index) =>
+      return [...Array.from({ length: groupPair.length }).keys()].map((index) =>
         groupPairs.map((group) => group[index]),
       )
     }

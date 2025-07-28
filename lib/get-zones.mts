@@ -23,7 +23,7 @@ const hasDevices = (
   { type }: { type?: DeviceType } = {},
 ): boolean =>
   type === undefined ?
-    Boolean(zone.devices.length)
+    zone.devices.length > 0
   : zone.devices.some(({ type: deviceType }) => deviceType === type)
 
 const compareNames = (
