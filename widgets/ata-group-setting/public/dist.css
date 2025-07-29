@@ -826,7 +826,10 @@
     outline-offset: 2px;
   }
   &:checked, &[aria-checked="true"] {
-    background-color: var(--input-color, #0000);
+    background-color: var(--input-color, var(--color-base-content));
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: var(--input-color, color-mix(in oklab, var(--color-base-content) 20%, #0000));
+    }
     box-shadow: 0 0 #0000 inset, 0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * 0.1)) inset, 0 1px oklch(0% 0 0 / calc(var(--depth) * 0.1));
     &:before {
       clip-path: polygon(20% 100%, 20% 80%, 50% 80%, 50% 0%, 70% 0%, 70% 100%);
@@ -850,6 +853,10 @@
     }
   }
   &:indeterminate {
+    background-color: var(--input-color, var(--color-base-content));
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: var(--input-color, color-mix(in oklab, var(--color-base-content) 20%, #0000));
+    }
     &:before {
       rotate: 0deg;
       opacity: 100%;
