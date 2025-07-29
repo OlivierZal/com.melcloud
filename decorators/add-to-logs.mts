@@ -1,6 +1,5 @@
 import type { SimpleClass } from 'homey'
 
-const FIRST_CHAR = 0
 const PARENTHESES = '()'
 
 const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
@@ -25,13 +24,13 @@ export const addToLogs =
               return [this[log], '-']
             }
             if (log.endsWith(PARENTHESES)) {
-              const funcName = log.slice(FIRST_CHAR, -PARENTHESES.length)
+              const functionName = log.slice(0, -PARENTHESES.length)
               if (
-                this.#isKeyOfThis(funcName) &&
-                isFunction(this[funcName]) &&
-                !this[funcName].length
+                this.#isKeyOfThis(functionName) &&
+                isFunction(this[functionName]) &&
+                this[functionName].length === 0
               ) {
-                return [this[funcName].apply(this), '-']
+                return [this[functionName].apply(this), '-']
               }
             }
             return [log, '-']

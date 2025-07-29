@@ -23,12 +23,10 @@ export default class MELCloudDriverAta extends BaseMELCloudDriver<DeviceType.Ata
   public readonly type = DeviceType.Ata
 
   public getRequiredCapabilities(): string[] {
-    return [
-      ...Object.keys({
-        ...this.setCapabilityTagMapping,
-        ...this.getCapabilityTagMapping,
-        ...this.listCapabilityTagMapping,
-      }).filter((capability) => capability !== 'measure_signal_strength'),
-    ]
+    return Object.keys({
+      ...this.setCapabilityTagMapping,
+      ...this.getCapabilityTagMapping,
+      ...this.listCapabilityTagMapping,
+    }).filter((capability) => capability !== 'measure_signal_strength')
   }
 }

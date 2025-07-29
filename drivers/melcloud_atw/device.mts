@@ -7,19 +7,19 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OpCapabilities,
+  SetCapabilities,
+} from '../../types/common.mts'
+
 import {
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
 } from '../../types/atw.mts'
-import {
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OpCapabilities,
-  type SetCapabilities,
-  K_MULTIPLIER,
-} from '../../types/common.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import {
@@ -28,7 +28,7 @@ import {
 } from './reports/index.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
-  value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
+  value * 1000) as ConvertFromDevice<DeviceType.Atw>
 
 const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
   OperationModeZone[value]) as ConvertFromDevice<DeviceType.Atw>
@@ -81,8 +81,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
       ConvertFromDevice<DeviceType.Atw>
     >
   > = {
-    'alarm_generic.defrost': ((value: number) =>
-      Boolean(value)) as ConvertFromDevice<DeviceType.Atw>,
+    'alarm_generic.defrost': Boolean as ConvertFromDevice<DeviceType.Atw>,
     hot_water_mode: ((value: boolean) =>
       value ?
         HotWaterMode.forced

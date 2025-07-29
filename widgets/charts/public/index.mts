@@ -17,9 +17,7 @@ declare interface Homey extends HomeyWidget {
 }
 
 const FONT_SIZE_VERY_SMALL = '12px'
-const INCREMENT = 1
-const NEXT_TIMEOUT = 60000
-const TIME_ZERO = 0
+const NEXT_TIMEOUT = 60_000
 const TIME_FIVE = 5
 
 const colors = [
@@ -35,7 +33,7 @@ const colors = [
   '#393B79',
   '#E7BA52',
 ]
-const hidden = [
+const hidden = new Set([
   'FlowBoiler',
   'FlowZone1',
   'FlowZone2',
@@ -43,7 +41,7 @@ const hidden = [
   'ReturnBoiler',
   'ReturnZone1',
   'ReturnZone2',
-]
+])
 const styleCache: Record<string, string> = {}
 
 let myChart: ApexCharts | null = null
@@ -51,17 +49,17 @@ let options: ApexCharts.ApexOptions = {}
 let timeout: NodeJS.Timeout | null = null
 
 const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLDivElement)) {
-    throw new Error('Element is not a div')
+    throw new TypeError(`Element with id \`${id}\` is not a div`)
   }
   return element
 }
 
 const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLSelectElement)) {
-    throw new Error('Element is not a select')
+    throw new TypeError(`Element with id \`${id}\` is not a select`)
   }
   return element
 }
@@ -109,7 +107,7 @@ const getChartLineOptions = (
     },
     series: series.map(({ data, name: seriesName }) => {
       const name = normalizeSeriesName(seriesName)
-      return { data, hidden: hidden.includes(name), name }
+      return { data, hidden: hidden.has(name), name }
     }),
     stroke: { curve: 'smooth' },
     title: {
@@ -125,7 +123,7 @@ const getChartLineOptions = (
     },
     yaxis: {
       ...axisStyle,
-      labels: { style, formatter: (value): string => value.toFixed() },
+      labels: { style, formatter: (value): string => value.toFixed(0) },
       ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },
   }
@@ -233,7 +231,7 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   }
   const now = new Date()
   const next = new Date(now)
-  next.setHours(next.getHours() + INCREMENT, TIME_FIVE, TIME_ZERO, TIME_ZERO)
+  next.setHours(next.getHours() + 1, TIME_FIVE, 0, 0)
   return next.getTime() - now.getTime()
 }
 
@@ -278,9 +276,9 @@ const createOptionElement = (
 }
 
 const generateZones = (zones: DeviceZone[]): void => {
-  zones.forEach(({ id, model, name: label }) => {
+  for (const { id, model, name: label } of zones) {
     createOptionElement(zoneElement, { id: getZoneId(id, model), label })
-  })
+  }
 }
 
 const addEventListeners = (
@@ -319,7 +317,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
       : ''
     }`,
   )) as DeviceZone[]
-  if (devices.length) {
+  if (devices.length > 0) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)
     handleDefaultZone(defaultZone)

@@ -61,8 +61,6 @@ import type {
   SetCapabilitiesErv,
 } from './erv.mts'
 
-export const K_MULTIPLIER = 1000
-
 export const zoneModel = {
   areas: AreaModel,
   buildings: BuildingModel,

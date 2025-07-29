@@ -26,22 +26,19 @@ import type {
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 class NoDeviceError extends Error {
+  public override name = 'NoDeviceError'
+
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
   }
 }
 
-const SIZE_ONE = 1
-
-const MODULUS_DECIMAL = 10
-const MODULUS_HUNDRED = 100
 const NUMBER_END_2 = 2
 const NUMBER_END_3 = 3
 const NUMBER_END_4 = 4
 const PLURAL_EXCEPTION_12 = 12
 const PLURAL_EXCEPTION_13 = 13
 const PLURAL_EXCEPTION_14 = 14
-const PLURAL_THRESHOLD = 2
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -49,41 +46,41 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 const zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
 
 const getButtonElement = (id: string): HTMLButtonElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLButtonElement)) {
-    throw new Error('Element is not a button')
+    throw new TypeError(`Element with id \`${id}\` is not a button`)
   }
   return element
 }
 
 const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLDivElement)) {
-    throw new Error('Element is not a div')
+    throw new TypeError(`Element with id \`${id}\` is not a div`)
   }
   return element
 }
 
 const getInputElement = (id: string): HTMLInputElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLInputElement)) {
-    throw new Error('Element is not an input')
+    throw new TypeError(`Element with id \`${id}\` is not an input`)
   }
   return element
 }
 
 const getLabelElement = (id: string): HTMLLabelElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLLabelElement)) {
-    throw new Error('Element is not a label')
+    throw new TypeError(`Element with id \`${id}\` is not a label`)
   }
   return element
 }
 
 const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLSelectElement)) {
-    throw new Error('Element is not a select')
+    throw new TypeError(`Element with id \`${id}\` is not a select`)
   }
   return element
 }
@@ -152,7 +149,7 @@ const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
 const disableButton = (id: string, value = true): void => {
-  const element = document.getElementById(id)
+  const element = document.querySelector(`#${id}`)
   if (value) {
     element?.classList.add('is-disabled')
     return
@@ -166,14 +163,14 @@ const enableButton = (id: string, value = true): void => {
 
 const disableButtons = (id: string, value = true): void => {
   const isCommon = id.endsWith('common')
-  ;['apply', 'refresh'].forEach((action) => {
+  for (const action of ['apply', 'refresh']) {
     disableButton(`${action}_${id}`, value)
     if (isCommon) {
-      Object.keys(deviceSettings).forEach((driverId) => {
+      for (const driverId of Object.keys(deviceSettings)) {
         disableButton(`${action}_${id.replace(/common$/u, driverId)}`, value)
-      })
+      }
     }
-  })
+  }
 }
 
 const enableButtons = (id: string, value = true): void => {
@@ -249,7 +246,7 @@ const fetchFlattenDeviceSettings = (): void => {
       ),
     ).map(([id, groupedValues]) => {
       const set = new Set(groupedValues?.map(({ values }) => values))
-      return [id, set.size === SIZE_ONE ? set.values().next().value : null]
+      return [id, set.size === 1 ? set.values().next().value : null]
     }),
   )
 }
@@ -280,7 +277,7 @@ const addTextToCheckbox = (
   checkmarkSpanElement.classList.add('homey-form-checkbox-checkmark')
   const textSpanElement = document.createElement('span')
   textSpanElement.classList.add('homey-form-checkbox-text')
-  textSpanElement.innerText = text
+  textSpanElement.textContent = text
   labelElement.append(checkboxElement, checkmarkSpanElement, textSpanElement)
 }
 
@@ -297,7 +294,7 @@ const createLabelElement = (
   if (isCheckbox) {
     addTextToCheckbox(labelElement, valueElement, text)
   } else {
-    labelElement.innerText = text
+    labelElement.textContent = text
     labelElement.append(valueElement)
   }
   return labelElement
@@ -375,7 +372,7 @@ const createLegendElement = (
   const legendElement = document.createElement('legend')
   legendElement.classList.add('homey-form-checkbox-set-title')
   if (text !== undefined) {
-    legendElement.innerText = text
+    legendElement.textContent = text
   }
   fieldSetElement.append(legendElement)
 }
@@ -408,21 +405,21 @@ const createSelectElement = (
   const selectElement = document.createElement('select')
   selectElement.classList.add('homey-form-select')
   selectElement.id = id
-  ;[
+  for (const option of [
     { id: '', label: '' },
     ...(values ??
       ['false', 'true'].map((value) => ({
         id: value,
         label: homey.__(`settings.boolean.${value}`),
       }))),
-  ].forEach((option) => {
+  ]) {
     createOptionElement(selectElement, option)
-  })
+  }
   return selectElement
 }
 
 const updateCommonSetting = (element: HTMLSelectElement): void => {
-  const [id] = element.id.split('__')
+  const [id] = element.id.split('__settings_')
   if (id !== undefined) {
     const { [id]: value } = flatDeviceSettings
     element.value =
@@ -433,15 +430,14 @@ const updateCommonSetting = (element: HTMLSelectElement): void => {
 }
 
 const refreshCommonSettings = (elements: HTMLSelectElement[]): void => {
-  elements.forEach(updateCommonSetting)
+  for (const element of elements) {
+    updateCommonSetting(element)
+  }
 }
 
-const updateDriverSetting = (
-  element: HTMLInputElement,
-  driverId: string,
-): void => {
-  const [id] = element.id.split('__')
-  if (id !== undefined) {
+const updateDriverSetting = (element: HTMLInputElement): void => {
+  const [id, driverId] = element.id.split('__settings_')
+  if (id !== undefined && driverId !== undefined) {
     const isChecked = deviceSettings[driverId]?.[id]
     if (typeof isChecked === 'boolean') {
       element.checked = isChecked
@@ -456,13 +452,10 @@ const updateDriverSetting = (
   }
 }
 
-const refreshDriverSettings = (
-  elements: HTMLInputElement[],
-  driverId: string,
-): void => {
-  elements.forEach((element) => {
-    updateDriverSetting(element, driverId)
-  })
+const refreshDriverSettings = (elements: HTMLInputElement[]): void => {
+  for (const element of elements) {
+    updateDriverSetting(element)
+  }
 }
 
 const int = (
@@ -481,7 +474,7 @@ const int = (
         min,
         name: homey.__(
           document.querySelector<HTMLLabelElement>(`label[for="${id}"]`)
-            ?.innerText ?? '',
+            ?.textContent ?? '',
         ),
       }),
     )
@@ -524,48 +517,54 @@ const processValue = (
   return null
 }
 
+const setSetting = (
+  homey: Homey,
+  settings: Settings,
+  element: HTMLValueElement,
+): void => {
+  const [id, driverId] = element.id.split('__settings_')
+  if (id !== undefined) {
+    const value = processValue(homey, element)
+    if (shouldUpdate(id, value, driverId === 'common' ? undefined : driverId)) {
+      settings[id] = value
+    }
+  }
+}
+
 const buildSettingsBody = (
   homey: Homey,
   elements: HTMLValueElement[],
-  driverId?: string,
 ): Settings => {
   const errors: string[] = []
   const settings: Settings = {}
-  elements.forEach((element) => {
+  for (const element of elements) {
     try {
-      const [id] = element.id.split('__')
-      if (id !== undefined) {
-        const value = processValue(homey, element)
-        if (shouldUpdate(id, value, driverId)) {
-          settings[id] = value
-        }
-      }
+      setSetting(homey, settings, element)
     } catch (error) {
       errors.push(getErrorMessage(error))
     }
-  })
-  if (errors.length) {
-    throw new Error(errors.join('\n'))
+  }
+  if (errors.length > 0) {
+    throw new Error(errors.join('\n') || 'Unknown error')
   }
   return settings
 }
 
 const updateDeviceSettings = (body: Settings, driverId?: string): void => {
-  if (driverId !== undefined) {
-    Object.entries(body).forEach(([id, value]) => {
-      deviceSettings[driverId] ??= {}
-      deviceSettings[driverId][id] = value
-    })
-    fetchFlattenDeviceSettings()
-    return
-  }
-  Object.entries(body).forEach(([id, value]) => {
-    Object.keys(deviceSettings).forEach((driver) => {
+  const drivers =
+    driverId === undefined ? Object.keys(deviceSettings) : [driverId]
+  for (const [id, value] of Object.entries(body)) {
+    for (const driver of drivers) {
       deviceSettings[driver] ??= {}
       deviceSettings[driver][id] = value
-    })
-    flatDeviceSettings[id] = value
-  })
+    }
+    if (driverId === undefined) {
+      flatDeviceSettings[id] = value
+    }
+  }
+  if (driverId !== undefined) {
+    fetchFlattenDeviceSettings()
+  }
 }
 
 const setDeviceSettings = async (
@@ -573,8 +572,8 @@ const setDeviceSettings = async (
   elements: HTMLValueElement[],
   driverId?: string,
 ): Promise<void> => {
-  const body = buildSettingsBody(homey, elements, driverId)
-  if (!Object.keys(body).length) {
+  const body = buildSettingsBody(homey, elements)
+  if (Object.keys(body).length === 0) {
     if (driverId === undefined) {
       refreshCommonSettings(
         elements.filter((element) => element instanceof HTMLSelectElement),
@@ -637,7 +636,6 @@ const addRefreshSettingsEventListener = (
     if (driverId !== undefined) {
       refreshDriverSettings(
         elements.filter((element) => element instanceof HTMLInputElement),
-        driverId,
       )
       return
     }
@@ -660,21 +658,40 @@ const generateCommonSettings = (
   homey: Homey,
   driverSettings: Partial<Record<string, DriverSetting[]>>,
 ): void => {
-  ;(driverSettings['options'] ?? []).forEach(({ id, title, type, values }) => {
-    const settingId = `${id}__setting`
+  for (const { id, title, type, values } of driverSettings['options'] ?? []) {
+    const settingId = `${id}__settings_common`
     if (
-      !settingsCommonElement.querySelector(`select[id="${settingId}"]`) &&
+      !settingsCommonElement.querySelector(`select#${settingId}`) &&
       ['checkbox', 'dropdown'].includes(type)
     ) {
       const valueElement = createSelectElement(homey, settingId, values)
       createValueElement(settingsCommonElement, { title, valueElement })
       updateCommonSetting(valueElement)
     }
-  })
+  }
   addSettingsEventListeners(
     homey,
+    // eslint-disable-next-line unicorn/prefer-spread
     Array.from(settingsCommonElement.querySelectorAll('select')),
   )
+}
+
+const handleDriverSettings = (
+  driverSetting: DriverSetting[],
+  fieldSetElement: HTMLFieldSetElement,
+): void => {
+  let previousGroupLabel = ''
+  for (const { driverId, groupLabel, id, title, type } of driverSetting) {
+    if (type === 'checkbox') {
+      if (groupLabel !== previousGroupLabel) {
+        previousGroupLabel = groupLabel ?? ''
+        createLegendElement(fieldSetElement, groupLabel)
+      }
+      const valueElement = createCheckboxElement(id, driverId)
+      createValueElement(fieldSetElement, { title, valueElement }, false)
+      updateDriverSetting(valueElement)
+    }
+  }
 }
 
 const generateDriverSettings = (
@@ -682,26 +699,17 @@ const generateDriverSettings = (
   driverSettings: Partial<Record<string, DriverSetting[]>>,
   driverId: string,
 ): void => {
-  if (driverSettings[driverId]) {
-    const settingsElement = document.getElementById(`settings_${driverId}`)
+  const { [driverId]: driverSetting } = driverSettings
+  if (driverSetting) {
+    const settingsElement = document.querySelector(`#settings_${driverId}`)
     if (settingsElement) {
       const fieldSetElement = document.createElement('fieldset')
       fieldSetElement.classList.add('homey-form-checkbox-set')
-      let previousGroupLabel = ''
-      driverSettings[driverId].forEach(({ groupLabel, id, title, type }) => {
-        if (type === 'checkbox') {
-          if (groupLabel !== previousGroupLabel) {
-            previousGroupLabel = groupLabel ?? ''
-            createLegendElement(fieldSetElement, groupLabel)
-          }
-          const valueElement = createCheckboxElement(id, driverId)
-          createValueElement(fieldSetElement, { title, valueElement }, false)
-          updateDriverSetting(valueElement, driverId)
-        }
-      })
+      handleDriverSettings(driverSetting, fieldSetElement)
       settingsElement.append(fieldSetElement)
       addSettingsEventListeners(
         homey,
+        // eslint-disable-next-line unicorn/prefer-spread
         Array.from(fieldSetElement.querySelectorAll('input')),
         driverId,
       )
@@ -715,9 +723,9 @@ const generateSettings = (
   driverSettings: Partial<Record<string, DriverSetting[]>>,
 ): void => {
   generateCommonSettings(homey, driverSettings)
-  Object.keys(deviceSettings).forEach((driverId) => {
+  for (const driverId of Object.keys(deviceSettings)) {
     generateDriverSettings(homey, driverSettings, driverId)
-  })
+  }
 }
 
 const generateCredential = (
@@ -779,11 +787,11 @@ const generateErrorLogTable = (
   tableElement.classList.add('bordered')
   const theadElement = tableElement.createTHead()
   const rowElement = theadElement.insertRow()
-  keys.forEach((key) => {
+  for (const key of keys) {
     const thElement = document.createElement('th')
-    thElement.innerText = homey.__(`settings.errorLog.columns.${key}`)
+    thElement.textContent = homey.__(`settings.errorLog.columns.${key}`)
     rowElement.append(thElement)
-  })
+  }
   errorLogElement.append(tableElement)
   return tableElement.createTBody()
 }
@@ -792,26 +800,24 @@ const generateErrorLogTableData = (
   homey: Homey,
   errors: readonly ErrorDetails[],
 ): void => {
-  errors.forEach((error) => {
+  for (const error of errors) {
     errorLogTBodyElement ??= generateErrorLogTable(homey, Object.keys(error))
     const rowElement = errorLogTBodyElement.insertRow()
-    Object.values(error).forEach((value: string) => {
+    for (const value of Object.values(error) as string[]) {
       const cellElement = rowElement.insertCell()
-      cellElement.innerText = value
-    })
-  })
+      cellElement.textContent = value
+    }
+  }
 }
 
 const getErrorCountText = (homey: Homey, count: number): string => {
-  if (count < PLURAL_THRESHOLD) {
+  if (count <= 1) {
     return homey.__(`settings.errorLog.errorCount.${String(count)}`)
   }
   if (
-    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(
-      count % MODULUS_DECIMAL,
-    ) &&
+    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(count % 10) &&
     ![PLURAL_EXCEPTION_12, PLURAL_EXCEPTION_13, PLURAL_EXCEPTION_14].includes(
-      count % MODULUS_HUNDRED,
+      count % 100,
     )
   ) {
     return homey.__('settings.errorLog.errorCount.234')
@@ -826,8 +832,10 @@ const updateErrorLogElements = (
   errorCount += errors.length
   from = fromDateHuman
   to = nextToDate
-  errorCountLabelElement.innerText = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
-  periodLabelElement.innerText = homey.__('settings.errorLog.period', { from })
+  errorCountLabelElement.textContent = `${String(errorCount)} ${getErrorCountText(homey, errorCount)}`
+  periodLabelElement.textContent = homey.__('settings.errorLog.period', {
+    from,
+  })
   sinceElement.value = nextFromDate
 }
 
@@ -928,24 +936,25 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
       }),
   )
 
-const generateZones = async (zones: Zone[]): Promise<void> =>
-  zones.reduce(async (acc, zone) => {
-    await acc
-    const { id, level, model, name } = zone
-    createOptionElement(zoneElement, {
-      id: getZoneId(id, model),
-      label: getZoneName(name, level),
-    })
-    if ('devices' in zone && zone.devices) {
-      await generateZones(zone.devices)
+const getSubzones = (zone: Zone): Zone[] => [
+  ...('devices' in zone ? (zone.devices ?? []) : []),
+  ...('areas' in zone ? (zone.areas ?? []) : []),
+  ...('floors' in zone ? (zone.floors ?? []) : []),
+]
+
+const generateZones = async (zones: Zone[] = []): Promise<void> => {
+  if (zones.length > 0) {
+    for (const zone of zones) {
+      const { id, level, model, name } = zone
+      createOptionElement(zoneElement, {
+        id: getZoneId(id, model),
+        label: getZoneName(name, level),
+      })
+      // eslint-disable-next-line no-await-in-loop
+      await generateZones(getSubzones(zone))
     }
-    if ('areas' in zone && zone.areas) {
-      await generateZones(zone.areas)
-    }
-    if ('floors' in zone && zone.floors) {
-      await generateZones(zone.floors)
-    }
-  }, Promise.resolve())
+  }
+}
 
 const fetchZoneSettings = async (homey: Homey): Promise<void> => {
   await fetchFrostProtectionData(homey)
@@ -958,7 +967,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
       'GET',
       '/buildings',
       async (error: Error | null, buildings: BuildingZone[]) => {
-        if (error || !buildings.length) {
+        if (error || buildings.length === 0) {
           if (error) {
             await homey.alert(error.message)
           }
@@ -1009,15 +1018,13 @@ const login = async (homey: Homey): Promise<void> => {
           '/sessions',
           { password, username } satisfies LoginCredentials,
           async (error: Error | null, loggedIn: boolean) => {
-            if (error || !loggedIn) {
-              await homey.alert(
+            await (error || !loggedIn ?
+              homey.alert(
                 error ?
                   error.message
                 : homey.__('settings.authenticate.failure'),
               )
-            } else {
-              await loadPostLogin(homey)
-            }
+            : loadPostLogin(homey))
             resolve()
           },
         )
@@ -1113,7 +1120,7 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
 
 const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
   const errors: string[] = []
-  let [min, max] = [
+  let [min = null, max = null] = [
     frostProtectionMinTemperatureElement,
     frostProtectionMaxTemperatureElement,
   ].map((element) => {
@@ -1121,11 +1128,11 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
       return int(homey, element)
     } catch (error) {
       errors.push(getErrorMessage(error))
-      return undefined
+      return null
     }
   })
-  if (errors.length || min === undefined || max === undefined) {
-    throw new Error(errors.join('\n'))
+  if (errors.length > 0 || min === null || max === null) {
+    throw new Error(errors.join('\n') || 'Unknown error')
   }
   if (max < min) {
     ;[min, max] = [max, min]
@@ -1164,16 +1171,16 @@ const setFrostProtectionData = async (
   )
 
 const addFrostProtectionEventListeners = (homey: Homey): void => {
-  ;[
+  for (const element of [
     frostProtectionMinTemperatureElement,
     frostProtectionMaxTemperatureElement,
-  ].forEach((element) => {
+  ]) {
     element.addEventListener('change', () => {
       if (element.value === 'false') {
         element.value = 'true'
       }
     })
-  })
+  }
   refreshFrostProtectionElement.addEventListener('click', () => {
     refreshFrostProtectionData()
   })
