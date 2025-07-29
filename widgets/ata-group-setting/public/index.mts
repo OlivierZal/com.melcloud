@@ -389,15 +389,9 @@ const int = ({ id, max, min, value }: HTMLInputElement): number => {
   const newMin = Number(handleIntMin(id, min))
   const newMax = Number(max)
   if (!Number.isFinite(numberValue)) {
-    throw new TypeError('Error')
+    throw new TypeError('Invalid number')
   }
-  if (numberValue < newMin) {
-    return newMin
-  }
-  if (numberValue > newMax) {
-    return newMax
-  }
-  return numberValue
+  return Math.min(Math.max(numberValue, newMin), newMax)
 }
 
 const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
