@@ -30,7 +30,7 @@
     "@stylistic/eslint-plugin": "^5.2.2",
     "@tailwindcss/cli": "^4.1.11",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
-    "@types/luxon": "^3.7.0",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^24.1.0",
     "apexcharts": "^5.3.2",
     "daisyui": "^5.0.50",
