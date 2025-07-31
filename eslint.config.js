@@ -537,22 +537,7 @@ const config = defineConfig([
     ignores: ['**/dist.css'],
     language: 'css/css',
     languageOptions: {
-      customSyntax: {
-        ...tailwind4,
-        atrules: {
-          plugin: {
-            descriptors: {
-              themes: 'false',
-            },
-            prelude: '<string>',
-          },
-          theme: {
-            descriptors: {
-              '--font-display': '[<family-name>]#',
-            },
-          },
-        },
-      },
+      customSyntax: tailwind4,
     },
     rules: {
       'css/prefer-logical-properties': 'error',
