@@ -1,6 +1,9 @@
 import type { SimpleClass } from 'homey'
 
+import { LENGTH_ZERO } from '../constants.mts'
+
 const PARENTHESES = '()'
+const SLICE_START_ZERO = 0
 
 const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
   typeof value === 'function'
@@ -24,11 +27,14 @@ export const addToLogs =
               return [this[log], '-']
             }
             if (log.endsWith(PARENTHESES)) {
-              const functionName = log.slice(0, -PARENTHESES.length)
+              const functionName = log.slice(
+                SLICE_START_ZERO,
+                -PARENTHESES.length,
+              )
               if (
                 this.#isKeyOfThis(functionName) &&
                 isFunction(this[functionName]) &&
-                this[functionName].length === 0
+                this[functionName].length === LENGTH_ZERO
               ) {
                 return [this[functionName].apply(this), '-']
               }

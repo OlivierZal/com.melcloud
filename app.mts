@@ -32,6 +32,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
+import { LENGTH_ZERO } from './constants.mts'
 import {
   changelog,
   fanSpeed,
@@ -56,6 +57,7 @@ import {
   type ZoneData,
   fanSpeedValues,
   zoneModel,
+  // eslint-disable-next-line import-x/max-dependencies
 } from './types/common.mts'
 
 const NOTIFICATION_DELAY = 10_000
@@ -391,7 +393,7 @@ export default class MELCloudApp extends Homey.App {
           (changedKey) =>
             settings[changedKey] !== device.getSetting(changedKey),
         )
-        if (changedKeys.length > 0) {
+        if (changedKeys.length > LENGTH_ZERO) {
           await device.setSettings(
             Object.fromEntries(changedKeys.map((key) => [key, settings[key]])),
           )

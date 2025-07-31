@@ -15,10 +15,16 @@ import type {
   EnergyReportMode,
 } from '../types/common.mts'
 
+import { K_MULTIPLIER, LENGTH_ZERO } from '../constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
+
+const DEFAULT_ZERO = 0
+const DEFAULT_DIVISOR_ONE = 1
+
+const DEFAULT_DEVICE_COUNT_ONE = 1
 
 export abstract class BaseEnergyReport<T extends DeviceType> {
   readonly #device: BaseMELCloudDevice<T>
@@ -27,7 +33,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
 
   private readonly driver: BaseMELCloudDriver<T>
 
-  #linkedDeviceCount = 1
+  #linkedDeviceCount = DEFAULT_DEVICE_COUNT_ONE
 
   #reportTimeout: NodeJS.Timeout | null = null
 
@@ -60,7 +66,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
   }
 
   public async handle(): Promise<void> {
-    if (this.#energyCapabilityTagEntries.length === 0) {
+    if (this.#energyCapabilityTagEntries.length === LENGTH_ZERO) {
       this.unschedule()
       return
     }
@@ -92,12 +98,12 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     return (
       producedTags.reduce(
         (accumulator, tag) => accumulator + Number(data[tag]),
-        0,
+        DEFAULT_ZERO,
       ) /
       (consumedTags.reduce(
         (accumulator, tag) => accumulator + Number(data[tag]),
-        0,
-      ) || 1)
+        DEFAULT_ZERO,
+      ) || DEFAULT_DIVISOR_ONE)
     )
   }
 
@@ -106,8 +112,10 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     tags: (keyof EnergyData<T>)[],
   ): number {
     return (
-      tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0) /
-      this.#linkedDeviceCount
+      tags.reduce(
+        (accumulator, tag) => accumulator + Number(data[tag]),
+        DEFAULT_ZERO,
+      ) / this.#linkedDeviceCount
     )
   }
 
@@ -119,8 +127,9 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     return (
       tags.reduce(
         (accumulator, tag) =>
-          accumulator + ((data[tag] as number[])[hour] ?? 0) * 1000,
-        0,
+          accumulator +
+          ((data[tag] as number[])[hour] ?? DEFAULT_ZERO) * K_MULTIPLIER,
+        DEFAULT_ZERO,
       ) / this.#linkedDeviceCount
     )
   }

@@ -16,9 +16,15 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
+const LENGTH_ZERO = 0
+const ZERO_DECIMALS = 0
+
 const FONT_SIZE_VERY_SMALL = '12px'
 const NEXT_TIMEOUT = 60_000
-const TIME_FIVE = 5
+
+const HOUR_ONE = 1
+const MINUTE_FIVE = 5
+const TIME_ZERO = 0
 
 const colors = [
   '#1F77B4',
@@ -123,7 +129,7 @@ const getChartLineOptions = (
     },
     yaxis: {
       ...axisStyle,
-      labels: { style, formatter: (value): string => value.toFixed(0) },
+      labels: { style, formatter: (value) => value.toFixed(ZERO_DECIMALS) },
       ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },
   }
@@ -231,7 +237,7 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   }
   const now = new Date()
   const next = new Date(now)
-  next.setHours(next.getHours() + 1, TIME_FIVE, 0, 0)
+  next.setHours(next.getHours() + HOUR_ONE, MINUTE_FIVE, TIME_ZERO, TIME_ZERO)
   return next.getTime() - now.getTime()
 }
 
@@ -317,7 +323,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
       : ''
     }`,
   )) as DeviceZone[]
-  if (devices.length > 0) {
+  if (devices.length > LENGTH_ZERO) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)
     handleDefaultZone(defaultZone)

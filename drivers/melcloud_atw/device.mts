@@ -14,6 +14,7 @@ import type {
   SetCapabilities,
 } from '../../types/common.mts'
 
+import { K_MULTIPLIER } from '../../constants.mts'
 import {
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
@@ -28,7 +29,7 @@ import {
 } from './reports/index.mts'
 
 const convertFromDeviceMeasurePower = ((value: number) =>
-  value * 1000) as ConvertFromDevice<DeviceType.Atw>
+  value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
 
 const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
   OperationModeZone[value]) as ConvertFromDevice<DeviceType.Atw>

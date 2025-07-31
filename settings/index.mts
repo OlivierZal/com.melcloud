@@ -23,6 +23,11 @@ import type {
   Zone,
 } from '../types/common.mts'
 
+enum Modulo {
+  base10 = 10,
+  base100 = 100,
+}
+
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 class NoDeviceError extends Error {
@@ -33,6 +38,10 @@ class NoDeviceError extends Error {
   }
 }
 
+const LENGTH_ZERO = 0
+const SIZE_ONE = 1
+
+const PLURAL_THRESHOLD = 2
 const NUMBER_END_2 = 2
 const NUMBER_END_3 = 3
 const NUMBER_END_4 = 4
@@ -246,7 +255,7 @@ const fetchFlattenDeviceSettings = (): void => {
       ),
     ).map(([id, groupedValues]) => {
       const set = new Set(groupedValues?.map(({ values }) => values))
-      return [id, set.size === 1 ? set.values().next().value : null]
+      return [id, set.size === SIZE_ONE ? set.values().next().value : null]
     }),
   )
 }
@@ -544,7 +553,7 @@ const buildSettingsBody = (
       errors.push(getErrorMessage(error))
     }
   }
-  if (errors.length > 0) {
+  if (errors.length > LENGTH_ZERO) {
     throw new Error(errors.join('\n') || 'Unknown error')
   }
   return settings
@@ -573,7 +582,7 @@ const setDeviceSettings = async (
   driverId?: string,
 ): Promise<void> => {
   const body = buildSettingsBody(homey, elements)
-  if (Object.keys(body).length === 0) {
+  if (Object.keys(body).length === LENGTH_ZERO) {
     if (driverId === undefined) {
       refreshCommonSettings(
         elements.filter((element) => element instanceof HTMLSelectElement),
@@ -811,13 +820,15 @@ const generateErrorLogTableData = (
 }
 
 const getErrorCountText = (homey: Homey, count: number): string => {
-  if (count <= 1) {
+  if (count < PLURAL_THRESHOLD) {
     return homey.__(`settings.errorLog.errorCount.${String(count)}`)
   }
   if (
-    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(count % 10) &&
+    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(
+      count % Modulo.base10,
+    ) &&
     ![PLURAL_EXCEPTION_12, PLURAL_EXCEPTION_13, PLURAL_EXCEPTION_14].includes(
-      count % 100,
+      count % Modulo.base100,
     )
   ) {
     return homey.__('settings.errorLog.errorCount.234')
@@ -943,7 +954,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {
-  if (zones.length > 0) {
+  if (zones.length > LENGTH_ZERO) {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOptionElement(zoneElement, {
@@ -967,7 +978,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
       'GET',
       '/buildings',
       async (error: Error | null, buildings: BuildingZone[]) => {
-        if (error || buildings.length === 0) {
+        if (error || buildings.length === LENGTH_ZERO) {
           if (error) {
             await homey.alert(error.message)
           }
@@ -1131,7 +1142,7 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
       return null
     }
   })
-  if (errors.length > 0 || min === null || max === null) {
+  if (errors.length > LENGTH_ZERO || min === null || max === null) {
     throw new Error(errors.join('\n') || 'Unknown error')
   }
   if (max < min) {

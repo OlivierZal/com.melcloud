@@ -29,12 +29,14 @@ type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const DEFAULT_DIVISOR = 1
-const DEFAULT_MULTIPLIER = 1
+const DEFAULT_DIVISOR_ONE = 1
+const DEFAULT_MULTIPLIER_ONE = 1
+
+const FACTOR_TWO = 2
+const FACTOR_TEN = 10
 
 const START_ANGLE = 0
-const END_ANGLE_MULTIPLIER = 2
-const SIZE_DIVISOR_FOR_SMOKE_BLUR = 10
+const END_ANGLE = Math.PI * FACTOR_TWO
 
 const generateStyleNumber = ({
   divisor,
@@ -47,8 +49,8 @@ const generateStyleNumber = ({
   divisor?: number
   multiplier?: number
 }): number =>
-  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER)) /
-  ((divisor ?? DEFAULT_DIVISOR) || DEFAULT_DIVISOR)
+  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER_ONE)) /
+  ((divisor ?? DEFAULT_DIVISOR_ONE) || DEFAULT_DIVISOR_ONE)
 
 class SmokeParticle {
   public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
@@ -84,9 +86,9 @@ class SmokeParticle {
       this.positionY,
       this.size,
       START_ANGLE,
-      Math.PI * END_ANGLE_MULTIPLIER,
+      END_ANGLE,
     )
-    this.#context.filter = `blur(${String(this.size / SIZE_DIVISOR_FOR_SMOKE_BLUR)}px)`
+    this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
     this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
     this.#context.fill()
     this.#context.filter = 'none'
@@ -100,7 +102,9 @@ class SmokeParticle {
   }
 }
 
-const FACTOR_TWO = 2
+const LENGTH_ZERO = 0
+const INCREMENT_ONE = 1
+
 const FACTOR_FIVE = 5
 
 const MIN_SET_TEMPERATURE = 10
@@ -139,6 +143,7 @@ const DEFAULT_RECT_Y = 0
 const FLAME_GAP = 20
 const LEAF_GAP = 50
 const LEAF_NO_LOOP_RADIUS = 0
+const SMOKE_ITERATIONS = 10
 const SMOKE_PARTICLE_SIZE_MIN = 0.1
 const SMOKE_PARTICLE_OPACITY_MIN = 0
 const SMOKE_PARTICLE_POSITION_Y_MIN = -50
@@ -214,13 +219,13 @@ const createAnimationMapping = (): Record<
   let leafIndex = 0
   let snowflakeIndex = 0
   return {
-    flame: { innerHTML: '🔥', getIndex: () => (flameIndex += 1) },
-    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += 1) },
+    flame: { innerHTML: '🔥', getIndex: () => (flameIndex += INCREMENT_ONE) },
+    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
     snowflake: {
       innerHTML: '❄',
-      getIndex: () => (snowflakeIndex += 1),
+      getIndex: () => (snowflakeIndex += INCREMENT_ONE),
     },
-    sun: { innerHTML: '☀', getIndex: () => 1 },
+    sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
   }
 }
 const animationMapping = createAnimationMapping()
@@ -241,7 +246,7 @@ const generateDelay = (delay: number, speed: number): number =>
   (SPEED_FACTOR_MIN *
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
       ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
-    DEFAULT_DIVISOR)
+    DEFAULT_DIVISOR_ONE)
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   document.documentElement.lang = (await homey.api(
@@ -453,11 +458,16 @@ const refreshAtaValues = (): void => {
   }
 }
 
+const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
+  document.querySelector<HTMLElement>(
+    `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
+  )
+
 const createSmoke = (flame: HTMLDivElement, speed: number): void => {
   if (flame.isConnected && canvasContext) {
     const { left, top, width } = flame.getBoundingClientRect()
-    let increment = 0
-    while (increment <= 10) {
+    let index = 0
+    while (index <= SMOKE_ITERATIONS) {
       smokeParticles.push(
         new SmokeParticle(
           canvasContext,
@@ -465,7 +475,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
           top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
         ),
       )
-      increment += 1
+      index += INCREMENT_ONE
     }
     setTimeout(
       () => {
@@ -536,9 +546,7 @@ const createFlame = (speed: number): void => {
   const flame = createAnimatedElement('flame')
   const [name, index] = flame.id.split('-')
   if (name !== undefined) {
-    const previousElement = document.querySelector<HTMLElement>(
-      `#${name}-${String(Number(index) - 1)}`,
-    )
+    const previousElement = getPreviousElement(name, index)
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
@@ -606,9 +614,7 @@ const createSnowflake = (speed: number): void => {
   const snowflake = createAnimatedElement('snowflake')
   const [name, index] = snowflake.id.split('-')
   if (name !== undefined) {
-    const previousElement = document.querySelector<HTMLElement>(
-      `#${name}-${String(Number(index) - 1)}`,
-    )
+    const previousElement = getPreviousElement(name, index)
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
@@ -790,9 +796,7 @@ const createLeaf = (speed: number): void => {
   const leaf = createAnimatedElement('leaf')
   const [name, index] = leaf.id.split('-')
   if (name !== undefined) {
-    const previousElement = document.querySelector<HTMLElement>(
-      `#${name}-${String(Number(index) - 1)}`,
-    )
+    const previousElement = getPreviousElement(name, index)
     const previousTop =
       previousElement ?
         Number.parseFloat(previousElement.style.insetBlockStart)
@@ -1025,7 +1029,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {
-  if (zones.length > 0) {
+  if (zones.length > LENGTH_ZERO) {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOptionElement(zoneElement, {
@@ -1051,7 +1055,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const body = buildAtaValuesBody()
-    if (Object.keys(body).length > 0) {
+    if (Object.keys(body).length > LENGTH_ZERO) {
       await homey.api(
         'PUT',
         `/values/ata/${getZonePath()}`,
@@ -1106,7 +1110,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
       type: '0',
     } satisfies { type: `${DeviceType}` })}`,
   )) as BuildingZone[]
-  if (buildings.length > 0) {
+  if (buildings.length > LENGTH_ZERO) {
     const { animations: isAnimations, default_zone: defaultZone } =
       homey.getSettings()
     addEventListeners(homey, isAnimations)

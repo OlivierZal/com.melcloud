@@ -268,7 +268,6 @@ const config = defineConfig([
       '@typescript-eslint/no-magic-numbers': [
         'error',
         {
-          ignore: [0, 1, 2, 10, 100, 1000],
           ignoreEnums: true,
         },
       ],
