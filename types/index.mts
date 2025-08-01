@@ -1,3 +1,13 @@
+export type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+  BaseSettings,
+  CapabilitiesOptionsValues,
+  LocalizedStrings,
+  RangeOptions,
+} from './bases.mts'
+
 export {
   type CapabilitiesAta,
   type EnergyCapabilitiesAta,
@@ -29,15 +39,6 @@ export {
   OperationModeStateZoneCapability,
   setCapabilityTagMappingAtw,
 } from './atw.mts'
-export {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  type BaseSettings,
-  type CapabilitiesOptionsValues,
-  type LocalizedStrings,
-  type RangeOptions,
-} from './bases.mts'
 export {
   type CapabilitiesErv,
   type EnergyCapabilitiesErv,
