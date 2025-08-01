@@ -7,20 +7,17 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import type {
-  ConvertFromDevice,
-  ConvertToDevice,
-  OpCapabilities,
-  SetCapabilities,
-} from '../../types/common.mts'
-
-import { K_MULTIPLIER } from '../../constants.mts'
 import {
+  type ConvertFromDevice,
+  type ConvertToDevice,
+  type OpCapabilities,
+  type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
+  K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
-} from '../../types/atw.mts'
+} from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import {

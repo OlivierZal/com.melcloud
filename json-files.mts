@@ -1,4 +1,4 @@
-import type { ManifestDriverCapabilitiesOptions } from './types/common.mts'
+import type { ManifestDriverCapabilitiesOptions } from './types/index.mts'
 
 export const {
   changelog,

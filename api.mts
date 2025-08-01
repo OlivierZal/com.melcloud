@@ -15,7 +15,7 @@ import type {
   DriverSetting,
   Settings,
   ZoneData,
-} from './types/common.mts'
+} from './types/index.mts'
 
 import { getBuildings } from './lib/get-zones.mts'
 

@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 
-import type { ManifestDriverCapabilitiesOptions } from '../types/common.mts'
+import type { ManifestDriverCapabilitiesOptions } from '../types/index.mts'
 
 const LOCAL_CAPABILITIES_PATH = '../.homeycompose/capabilities'
 const MODULE_CAPABILITIES_PATH = 'homey-lib/assets/capability/capabilities'

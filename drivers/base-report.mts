@@ -8,15 +8,15 @@ import {
   DateTime,
 } from 'luxon'
 
-import type {
-  Capabilities,
-  EnergyCapabilities,
-  EnergyCapabilityTagEntry,
-  EnergyReportMode,
-} from '../types/common.mts'
-
-import { K_MULTIPLIER, LENGTH_ZERO } from '../constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import {
+  type Capabilities,
+  type EnergyCapabilities,
+  type EnergyCapabilityTagEntry,
+  type EnergyReportMode,
+  K_MULTIPLIER,
+  LENGTH_ZERO,
+} from '../types/index.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'

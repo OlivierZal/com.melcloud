@@ -32,7 +32,6 @@ import {
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
-import { LENGTH_ZERO } from './constants.mts'
 import {
   changelog,
   fanSpeed,
@@ -56,9 +55,9 @@ import {
   type Settings,
   type ZoneData,
   fanSpeedValues,
+  LENGTH_ZERO,
   zoneModel,
-  // eslint-disable-next-line import-x/max-dependencies
-} from './types/common.mts'
+} from './types/index.mts'
 
 const NOTIFICATION_DELAY = 10_000
 

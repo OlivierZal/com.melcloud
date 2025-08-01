@@ -1,4 +1,4 @@
-import type { EnergyReportMode } from '../../../types/common.mts'
+import type { EnergyReportMode } from '../../../types/index.mts'
 
 import { BaseEnergyReportAta } from './base.mts'
 

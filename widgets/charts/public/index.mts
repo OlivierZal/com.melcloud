@@ -10,7 +10,7 @@ import type {
   DaysQuery,
   DeviceZone,
   HomeyWidgetSettingsCharts as HomeySettings,
-} from '../../../types/common.mts'
+} from '../../../types/index.mts'
 
 declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings

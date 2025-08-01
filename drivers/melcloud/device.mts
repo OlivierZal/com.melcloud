@@ -7,14 +7,13 @@ import {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type {
-  ConvertFromDevice,
-  ConvertToDevice,
-  OpCapabilities,
-  SetCapabilities,
-} from '../../types/common.mts'
-
-import { ThermostatModeAta } from '../../types/ata.mts'
+import {
+  type ConvertFromDevice,
+  type ConvertToDevice,
+  type OpCapabilities,
+  type SetCapabilities,
+  ThermostatModeAta,
+} from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 import {

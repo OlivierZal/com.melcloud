@@ -21,7 +21,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../types/common.mts'
+} from '../types/index.mts'
 
 enum Modulo {
   base10 = 10,

@@ -7,7 +7,7 @@ import type {
   GetAtaOptions,
   GroupAtaStates,
   ZoneData,
-} from '../../types/common.mts'
+} from '../../types/index.mts'
 
 import { getBuildings } from '../../lib/get-zones.mts'
 

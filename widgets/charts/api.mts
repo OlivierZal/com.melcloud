@@ -6,7 +6,7 @@ import type {
 import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
-import type { DaysQuery, DeviceZone, HourQuery } from '../../types/common.mts'
+import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
 
 import { getZones } from '../../lib/get-zones.mts'
 

@@ -14,7 +14,7 @@ import type {
   Settings,
   ValueOf,
   Zone,
-} from '../../../types/common.mts'
+} from '../../../types/index.mts'
 
 declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
