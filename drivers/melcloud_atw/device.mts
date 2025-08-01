@@ -7,6 +7,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
+import { K_MULTIPLIER } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -14,7 +15,6 @@ import {
   type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
-  K_MULTIPLIER,
   OperationModeStateHotWaterCapability,
   OperationModeStateZoneCapability,
 } from '../../types/index.mts'

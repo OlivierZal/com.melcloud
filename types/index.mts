@@ -38,7 +38,6 @@ export {
   type LocalizedStrings,
   type RangeOptions,
 } from './bases.mts'
-export { K_MULTIPLIER, LENGTH_ZERO } from './constants.mts'
 export {
   type CapabilitiesErv,
   type EnergyCapabilitiesErv,

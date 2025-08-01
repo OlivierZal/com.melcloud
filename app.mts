@@ -41,7 +41,7 @@ import {
   thermostatMode,
   vertical,
 } from './json-files.mts'
-import { getZones } from './lib/get-zones.mts'
+import { getZones, LENGTH_ZERO } from './lib/index.mts'
 import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
@@ -55,7 +55,6 @@ import {
   type Settings,
   type ZoneData,
   fanSpeedValues,
-  LENGTH_ZERO,
   zoneModel,
 } from './types/index.mts'
 

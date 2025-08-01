@@ -9,7 +9,7 @@ import type {
   ZoneData,
 } from '../../types/index.mts'
 
-import { getBuildings } from '../../lib/get-zones.mts'
+import { getBuildings } from '../../lib/index.mts'
 
 const api = {
   getAtaCapabilities({

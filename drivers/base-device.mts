@@ -8,28 +8,28 @@ import type {
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
 
-import { addToLogs } from '../decorators/add-to-logs.mts'
-import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
-import { withTimers } from '../mixins/with-timers.mts'
-import {
-  type Capabilities,
-  type CapabilitiesOptions,
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type DeviceDetails,
-  type EnergyCapabilityTagMapping,
-  type EnergyReportMode,
-  type EnergyReportRegular,
-  type EnergyReportTotal,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type OpCapabilities,
-  type OpCapabilityTagEntry,
-  type SetCapabilities,
-  type SetCapabilityTagMapping,
-  type Settings,
-  LENGTH_ZERO,
+import type {
+  Capabilities,
+  CapabilitiesOptions,
+  ConvertFromDevice,
+  ConvertToDevice,
+  DeviceDetails,
+  EnergyCapabilityTagMapping,
+  EnergyReportMode,
+  EnergyReportRegular,
+  EnergyReportTotal,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  OpCapabilities,
+  OpCapabilityTagEntry,
+  SetCapabilities,
+  SetCapabilityTagMapping,
+  Settings,
 } from '../types/index.mts'
+
+import { addToLogs } from '../decorators/add-to-logs.mts'
+import { isTotalEnergyKey, LENGTH_ZERO } from '../lib/index.mts'
+import { withTimers } from '../mixins/with-timers.mts'
 
 import type { BaseMELCloudDriver } from './base-driver.mts'
 

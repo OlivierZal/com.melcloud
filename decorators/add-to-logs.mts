@@ -1,6 +1,6 @@
 import type { SimpleClass } from 'homey'
 
-import { LENGTH_ZERO } from '../types/index.mts'
+import { LENGTH_ZERO } from '../lib/index.mts'
 
 const PARENTHESES = '()'
 const SLICE_START_ZERO = 0

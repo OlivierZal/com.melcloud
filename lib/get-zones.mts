@@ -6,14 +6,15 @@ import {
   BuildingModel,
 } from '@olivierzal/melcloud-api'
 
-import {
-  type AreaZone,
-  type BuildingZone,
-  type DeviceZone,
-  type FloorZone,
-  type Zone,
-  LENGTH_ZERO,
+import type {
+  AreaZone,
+  BuildingZone,
+  DeviceZone,
+  FloorZone,
+  Zone,
 } from '../types/index.mts'
+
+import { LENGTH_ZERO } from './constants.mts'
 
 const LEVEL_1 = 1
 const LEVEL_2 = 2

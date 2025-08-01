@@ -8,7 +8,7 @@ import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
 
-import { getZones } from '../../lib/get-zones.mts'
+import { getZones } from '../../lib/index.mts'
 
 const api = {
   getDevices({ query }: { query: { type?: `${DeviceType}` } }): DeviceZone[] {
