@@ -20,7 +20,7 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
-import type { OpCapabilities } from './common.mts'
+import type { OpCapabilities } from './generic.mts'
 
 const addSuffixToTitle = (
   title: LocalizedStrings,

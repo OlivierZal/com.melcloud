@@ -16,7 +16,7 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
-import type { OpCapabilities } from './common.mts'
+import type { OpCapabilities } from './generic.mts'
 
 export enum ThermostatModeAta {
   auto = 'auto',

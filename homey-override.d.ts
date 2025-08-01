@@ -3,8 +3,7 @@ import type HomeyLib from 'homey/lib/Homey.js'
 
 import type MELCloudApp from './app.mts'
 import type { BaseMELCloudDriver } from './drivers/base-driver.mts'
-import type { Manifest } from './types/common.mts'
-import type { HomeySettings } from './types/index.mts'
+import type { HomeySettings, Manifest } from './types/index.mts'
 
 declare module 'homey' {
   interface Homey extends HomeyLib {
