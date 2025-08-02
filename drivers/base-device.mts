@@ -37,7 +37,7 @@ const DEBOUNCE_DELAY = 1000
 
 const modes: EnergyReportMode[] = ['regular', 'total']
 
-const getErrorMessage = (error: unknown): string | null =>
+const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
 @addToLogs('getName()')
@@ -189,9 +189,8 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override async setWarning(error: unknown): Promise<void> {
-    const warning = getErrorMessage(error)
-    if (warning !== null) {
-      await super.setWarning(warning)
+    if (error !== null) {
+      await super.setWarning(getErrorMessage(error))
     }
     await super.setWarning(null)
   }
