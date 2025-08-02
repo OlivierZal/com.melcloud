@@ -266,10 +266,7 @@ const draw = async (
 }
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  document.documentElement.lang = (await homey.api(
-    'GET',
-    '/language',
-  )) as string
+  document.documentElement.lang = String(await homey.api('GET', '/language'))
 }
 
 const createOptionElement = (

@@ -812,9 +812,9 @@ const generateErrorLogTableData = (
   for (const error of errors) {
     errorLogTBodyElement ??= generateErrorLogTable(homey, Object.keys(error))
     const rowElement = errorLogTBodyElement.insertRow()
-    for (const value of Object.values(error) as string[]) {
+    for (const value of Object.values(error)) {
       const cellElement = rowElement.insertCell()
-      cellElement.textContent = value
+      cellElement.textContent = String(value)
     }
   }
 }

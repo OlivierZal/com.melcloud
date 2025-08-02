@@ -162,7 +162,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
       this.energyCapabilityTagMapping,
     )) {
       const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
-        (tag as string).endsWith('Consumed') ? 'consumed' : 'produced',
+        tag.endsWith('Consumed') ? 'consumed' : 'produced',
       )
       this.consumedTagMapping[
         capability as keyof EnergyCapabilityTagMapping<T>

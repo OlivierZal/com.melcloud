@@ -395,7 +395,7 @@ export type EnergyCapabilityTagEntry<T extends DeviceType> = [
 
 export type EnergyCapabilityTagMapping<T extends DeviceType> = Record<
   keyof EnergyCapabilities<T>,
-  readonly (keyof EnergyData<T>)[]
+  readonly (string & keyof EnergyData<T>)[]
 >
 
 export type EnergyReportMode = 'regular' | 'total'
