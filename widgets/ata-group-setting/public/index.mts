@@ -117,6 +117,7 @@ const MODE_COOL = 3
 const MODE_DRY = 2
 const MODE_FAN = 7
 const MODE_HEAT = 1
+const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
 const heatModes = new Set([MODE_AUTO, MODE_HEAT])
 type Mode =
   | typeof MODE_AUTO
@@ -379,9 +380,7 @@ const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
 const handleIntMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
-    [MODE_AUTO, MODE_COOL, MODE_DRY].includes(
-      Number(getSelectElement('OperationMode').value),
-    )
+    coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
     String(MIN_SET_TEMPERATURE_COOLING)
   : min
