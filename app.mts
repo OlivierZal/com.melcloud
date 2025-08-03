@@ -134,7 +134,7 @@ const getDriverLoginSetting = (
   return Object.values(driverLoginSetting)
 }
 
-const isKeyofEnum = (
+const isKeyOfEnum = (
   enumType: object,
   key: string,
 ): key is keyof typeof enumType => key in enumType
@@ -147,7 +147,7 @@ const getLocalizedCapabilitiesOptions = (
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
-    id: enumType && isKeyofEnum(enumType, id) ? enumType[id] : id,
+    id: enumType && isKeyOfEnum(enumType, id) ? enumType[id] : id,
     label: title[language] ?? title.en,
   })),
 })
