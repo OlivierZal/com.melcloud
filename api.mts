@@ -23,87 +23,87 @@ const api = {
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
-  getDeviceSettings({ homey }: { homey: Homey }): DeviceSettings {
-    return homey.app.getDeviceSettings()
+  getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
+    return app.getDeviceSettings()
   },
   getDriverSettings({
-    homey,
+    homey: { app },
   }: {
     homey: Homey
   }): Partial<Record<string, DriverSetting[]>> {
-    return homey.app.getDriverSettings()
+    return app.getDriverSettings()
   },
   async getErrors({
-    homey,
+    homey: { app },
     query,
   }: {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<ErrorLog> {
-    return homey.app.getErrors(query)
+    return app.getErrors(query)
   },
   async getFrostProtectionSettings({
-    homey,
+    homey: { app },
     params,
   }: {
     homey: Homey
     params: ZoneData
   }): Promise<FrostProtectionData> {
-    return homey.app.getFrostProtectionSettings(params)
+    return app.getFrostProtectionSettings(params)
   },
   async getHolidayModeSettings({
-    homey,
+    homey: { app },
     params,
   }: {
     homey: Homey
     params: ZoneData
   }): Promise<HolidayModeData> {
-    return homey.app.getHolidayModeSettings(params)
+    return app.getHolidayModeSettings(params)
   },
-  getLanguage({ homey }: { homey: Homey }): string {
-    return homey.i18n.getLanguage()
+  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
+    return i18n.getLanguage()
   },
   async login({
     body,
-    homey,
+    homey: { app },
   }: {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return homey.app.login(body)
+    return app.login(body)
   },
   async setDeviceSettings({
     body,
-    homey,
-    query,
+    homey: { app },
+    query: { driverId },
   }: {
     body: Settings
     homey: Homey
     query: { driverId?: string }
   }): Promise<void> {
-    return homey.app.setDeviceSettings(body, { driverId: query.driverId })
+    return app.setDeviceSettings(body, { driverId })
   },
   async setFrostProtectionSettings({
     body,
-    homey,
+    homey: { app },
     params,
   }: {
     body: FrostProtectionQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return homey.app.setFrostProtectionSettings(body, params)
+    return app.setFrostProtectionSettings(body, params)
   },
   async setHolidayModeSettings({
     body,
-    homey,
+    homey: { app },
     params,
   }: {
     body: HolidayModeQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return homey.app.setHolidayModeSettings(body, params)
+    return app.setHolidayModeSettings(body, params)
   },
 }
 

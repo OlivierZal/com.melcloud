@@ -11,66 +11,67 @@ import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
 import { getZones } from '../../lib/index.mts'
 
 const api = {
-  getDevices({ query }: { query: { type?: `${DeviceType}` } }): DeviceZone[] {
-    const { type } = query
+  getDevices({
+    query: { type },
+  }: {
+    query: { type?: `${DeviceType}` }
+  }): DeviceZone[] {
     return getZones({ type: type ? Number(type) : undefined }).filter(
       (zone) => zone.model === 'devices',
     )
   },
   async getHourlyTemperatures({
-    homey,
-    params,
-    query,
+    homey: { app },
+    params: { deviceId },
+    query: { hour },
   }: {
     homey: Homey
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    const { hour } = query
-    return homey.app.getHourlyTemperatures(
-      params.deviceId,
+    return app.getHourlyTemperatures(
+      deviceId,
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
-  getLanguage({ homey }: { homey: Homey }): string {
-    return homey.i18n.getLanguage()
+  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
+    return i18n.getLanguage()
   },
   async getOperationModes({
-    homey,
-    params,
-    query,
+    homey: { app },
+    params: { deviceId },
+    query: { days },
   }: {
     homey: Homey
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartPieOptions> {
-    return homey.app.getOperationModes(params.deviceId, Number(query.days))
+    return app.getOperationModes(deviceId, Number(days))
   },
   async getSignal({
-    homey,
-    params,
-    query,
+    homey: { app },
+    params: { deviceId },
+    query: { hour },
   }: {
     homey: Homey
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    const { hour } = query
-    return homey.app.getSignal(
-      params.deviceId,
+    return app.getSignal(
+      deviceId,
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
   async getTemperatures({
-    homey,
-    params,
-    query,
+    homey: { app },
+    params: { deviceId },
+    query: { days },
   }: {
     homey: Homey
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartLineOptions> {
-    return homey.app.getTemperatures(params.deviceId, Number(query.days))
+    return app.getTemperatures(deviceId, Number(days))
   },
 }
 
