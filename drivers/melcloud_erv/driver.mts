@@ -9,6 +9,12 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
+const measureCapabilities = new Set([
+  'measure_co2',
+  'measure_pm25',
+  'measure_signal_strength',
+])
+
 export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
 
@@ -28,10 +34,7 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv
   }: ListDeviceData<DeviceType.Erv>): string[] {
     return [
       ...(this.manifest.capabilities ?? []).filter(
-        (capability) =>
-          !['measure_co2', 'measure_pm25', 'measure_signal_strength'].includes(
-            capability,
-          ),
+        (capability) => !measureCapabilities.has(capability),
       ),
       ...(hasCO2Sensor ? ['measure_co2'] : []),
       ...(hasPM25Sensor ? ['measure_pm25'] : []),

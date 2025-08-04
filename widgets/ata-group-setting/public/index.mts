@@ -154,6 +154,11 @@ const SUN_SHINE_DURATION = 5000
 
 const zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
 
+const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
+const booleanStringSet = new Set(booleanStrings)
+
+const elementTypes = new Set(['boolean', 'enum'])
+
 const getButtonElement = (id: string): HTMLButtonElement => {
   const element = document.querySelector(`#${id}`)
   if (!(element instanceof HTMLButtonElement)) {
@@ -356,7 +361,7 @@ const createSelectElement = (
   for (const option of [
     { id: '', label: '' },
     ...(values ??
-      ['false', 'true'].map((value) => ({
+      booleanStrings.map((value) => ({
         id: value,
         label: homey.__(`settings.boolean.${value}`),
       }))),
@@ -403,7 +408,7 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
       return int(element)
     }
-    if (['false', 'true'].includes(element.value)) {
+    if (booleanStringSet.has(element.value)) {
       return element.value === 'true'
     }
     const numberValue = Number(element.value)
@@ -916,17 +921,17 @@ const handleMixedAnimation = async (
   homey: Homey,
   speed: number,
 ): Promise<void> => {
-  const modes = await getModes(homey)
-  if (modes.includes(MODE_AUTO) || modes.includes(MODE_COOL)) {
+  const modes = new Set(await getModes(homey))
+  if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
     handleSnowAnimation(speed)
   }
-  if (modes.includes(MODE_AUTO) || modes.includes(MODE_HEAT)) {
+  if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
     handleFireAnimation(speed)
   }
-  if (modes.includes(MODE_DRY)) {
+  if (modes.has(MODE_DRY)) {
     handleSunAnimation(speed)
   }
-  if (modes.includes(MODE_FAN)) {
+  if (modes.has(MODE_FAN)) {
     handleWindAnimation(speed)
   }
 }
@@ -996,7 +1001,7 @@ const generateAtaValue = (
     values?: readonly { id: string; label: string }[]
   },
 ): HTMLValueElement | null => {
-  if (['boolean', 'enum'].includes(type)) {
+  if (elementTypes.has(type)) {
     return createSelectElement(homey, id, values)
   }
   if (type === 'number') {

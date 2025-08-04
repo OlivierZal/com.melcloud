@@ -41,18 +41,35 @@ class NoDeviceError extends Error {
 const LENGTH_ZERO = 0
 const SIZE_ONE = 1
 
+const NUMBER_ENDS_WITH_TWO = 2
+const NUMBER_ENDS_WITH_THREE = 3
+const NUMBER_ENDS_WITH_FOUR = 4
+const numberEndsWithTwoThreeFour = new Set([
+  NUMBER_ENDS_WITH_FOUR,
+  NUMBER_ENDS_WITH_THREE,
+  NUMBER_ENDS_WITH_TWO,
+])
+
 const PLURAL_THRESHOLD = 2
-const NUMBER_END_2 = 2
-const NUMBER_END_3 = 3
-const NUMBER_END_4 = 4
-const PLURAL_EXCEPTION_12 = 12
-const PLURAL_EXCEPTION_13 = 13
-const PLURAL_EXCEPTION_14 = 14
+const PLURAL_EXCEPTION_TWELVE = 12
+const PLURAL_EXCEPTION_THIRTEEN = 13
+const PLURAL_EXCEPTION_FOURTEEN = 14
+const pluralExceptions = new Set([
+  PLURAL_EXCEPTION_FOURTEEN,
+  PLURAL_EXCEPTION_THIRTEEN,
+  PLURAL_EXCEPTION_TWELVE,
+])
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
+
+const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
+const booleanStringSet = new Set(booleanStrings)
+
+const commonElementTypes = new Set(['checkbox', 'dropdown'])
+const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
 const getButtonElement = (id: string): HTMLButtonElement => {
   const element = document.querySelector(`#${id}`)
@@ -417,7 +434,7 @@ const createSelectElement = (
   for (const option of [
     { id: '', label: '' },
     ...(values ??
-      ['false', 'true'].map((value) => ({
+      booleanStrings.map((value) => ({
         id: value,
         label: homey.__(`settings.boolean.${value}`),
       }))),
@@ -432,9 +449,7 @@ const updateCommonSetting = (element: HTMLSelectElement): void => {
   if (id !== undefined) {
     const { [id]: value } = flatDeviceSettings
     element.value =
-      ['boolean', 'number', 'string'].includes(typeof value) ?
-        String(value)
-      : ''
+      commonElementValueTypes.has(typeof value) ? String(value) : ''
   }
 }
 
@@ -517,7 +532,7 @@ const processValue = (
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
       return int(homey, element)
     }
-    if (['false', 'true'].includes(element.value)) {
+    if (booleanStringSet.has(element.value)) {
       return element.value === 'true'
     }
     const numberValue = Number(element.value)
@@ -671,7 +686,7 @@ const generateCommonSettings = (
     const settingId = `${id}__settings_common`
     if (
       !settingsCommonElement.querySelector(`select#${settingId}`) &&
-      ['checkbox', 'dropdown'].includes(type)
+      commonElementTypes.has(type)
     ) {
       const valueElement = createSelectElement(homey, settingId, values)
       createValueElement(settingsCommonElement, { title, valueElement })
@@ -824,12 +839,8 @@ const getErrorCountText = (homey: Homey, count: number): string => {
     return homey.__(`settings.errorLog.errorCount.${String(count)}`)
   }
   if (
-    [NUMBER_END_2, NUMBER_END_3, NUMBER_END_4].includes(
-      count % Modulo.base10,
-    ) &&
-    ![PLURAL_EXCEPTION_12, PLURAL_EXCEPTION_13, PLURAL_EXCEPTION_14].includes(
-      count % Modulo.base100,
-    )
+    numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
+    !pluralExceptions.has(count % Modulo.base100)
   ) {
     return homey.__('settings.errorLog.errorCount.234')
   }

@@ -26,6 +26,15 @@ const HOUR_ONE = 1
 const MINUTE_FIVE = 5
 const TIME_ZERO = 0
 
+const chartsWithDays = new Set<HomeySettings['chart']>([
+  'operation_modes',
+  'temperatures',
+])
+const hourlyCharts = new Set<HomeySettings['chart']>([
+  'hourly_temperatures',
+  'signal',
+])
+
 const colors = [
   '#1F77B4',
   '#D62728',
@@ -189,10 +198,7 @@ const getChartFunction =
     (await homey.api(
       'GET',
       `/logs/${chart}/${getZonePath()}${
-        (
-          ['operation_modes', 'temperatures'].includes(chart) &&
-          days !== undefined
-        ) ?
+        chartsWithDays.has(chart) && days !== undefined ?
           `?${new URLSearchParams({
             days: String(days),
           } satisfies DaysQuery)}`
@@ -232,7 +238,7 @@ const handleChartAndOptions = async (
 }
 
 const getTimeout = (chart: HomeySettings['chart']): number => {
-  if (['hourly_temperatures', 'signal'].includes(chart)) {
+  if (hourlyCharts.has(chart)) {
     return NEXT_TIMEOUT
   }
   const now = new Date()
