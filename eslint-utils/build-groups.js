@@ -16,14 +16,13 @@ const modifierCombos = ({ modifiers }) =>
   cartesianProduct(modifiers).map((combo) => combo.filter(Boolean))
 
 const compatibleModifierCombos = ({ modifierIncompatibilities, modifiers }) =>
-  modifierCombos({ modifiers }).filter((combo) => {
-    const comboSet = new Set(combo)
-    return comboSet.every((modifier) =>
+  modifierCombos({ modifiers }).filter((combo) =>
+    combo.every((modifier) =>
       (modifierIncompatibilities[modifier] ?? []).every(
-        (incompatibleModifier) => !comboSet.has(incompatibleModifier),
+        (incompatibleModifier) => !combo.includes(incompatibleModifier),
       ),
-    )
-  })
+    ),
+  )
 
 const buildGroupsForSelector = ({
   modifierIncompatibilities,
@@ -32,7 +31,7 @@ const buildGroupsForSelector = ({
   selectorIncompatibilities,
 }) => {
   const incompatibilities = new Set(selectorIncompatibilities[selector] ?? [])
-  compatibleModifierCombos({ modifierIncompatibilities, modifiers })
+  return compatibleModifierCombos({ modifierIncompatibilities, modifiers })
     .filter((combo) =>
       combo.every((modifier) => !incompatibilities.has(modifier)),
     )
