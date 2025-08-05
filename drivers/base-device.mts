@@ -236,11 +236,7 @@ export abstract class BaseMELCloudDevice<
         if (tag in data) {
           await this.setCapabilityValue(
             capability,
-            this.#convertFromDevice(
-              capability,
-              data[tag],
-              data,
-            ) as Capabilities<T>[string & keyof OpCapabilities<T>],
+            this.#convertFromDevice(capability, data[tag], data),
           )
         }
       }),
@@ -262,13 +258,13 @@ export abstract class BaseMELCloudDevice<
     ) as UpdateDeviceData<T>
   }
 
-  #convertFromDevice<K extends keyof OpCapabilities<T>>(
+  #convertFromDevice<K extends keyof Capabilities<T>>(
     capability: K,
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
     data?: ListDeviceData<T>,
-  ): OpCapabilities<T>[K] {
+  ): Capabilities<T>[K] {
     return (this.fromDevice[capability]?.(value, data) ??
-      value) as OpCapabilities<T>[K]
+      value) as Capabilities<T>[K]
   }
 
   #convertToDevice(
