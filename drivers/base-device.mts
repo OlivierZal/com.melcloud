@@ -247,9 +247,7 @@ export abstract class BaseMELCloudDevice<
     this.log('Requested data:', values)
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
-        this.#setCapabilityTagMapping[
-          capability as keyof SetCapabilityTagMapping<T>
-        ],
+        this.#setCapabilityTagMapping[capability as keyof SetCapabilities<T>],
         this.#convertToDevice(
           capability as keyof SetCapabilities<T>,
           value as UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
