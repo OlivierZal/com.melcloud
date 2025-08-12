@@ -3,7 +3,7 @@ jobs:
     name: Update app version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: update_app_version
         name: Update app version
         uses: athombv/github-action-homey-app-version@master
