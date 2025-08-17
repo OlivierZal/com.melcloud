@@ -186,6 +186,7 @@ export default class MELCloudApp extends Homey.App {
     this.#facadeManager = new FacadeManager(this.#api)
     this.#createNotification(language)
     this.#registerWidgetListeners()
+    this.#registerFlowListeners()
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -194,7 +195,7 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public getAtaCapabilities(): [
-    keyof GroupState & keyof ListDeviceDataAta,
+    keyof GroupState  ,
     DriverCapabilitiesOptions,
   ][] {
     return [
@@ -231,7 +232,7 @@ export default class MELCloudApp extends Homey.App {
         enumType,
       ),
     ]) as [
-      keyof GroupState & keyof ListDeviceDataAta,
+      keyof GroupState  ,
       DriverCapabilitiesOptions,
     ][]
   }
@@ -462,6 +463,80 @@ export default class MELCloudApp extends Homey.App {
           devices.filter(({ id }) => ids.includes(id))
         )
     })
+  }
+
+  #registerFlowListeners(): void {
+    this.#registerHolidayModeByDurationAction()
+    this.#registerHolidayModeOffAction()
+  }
+
+  #registerHolidayModeByDurationAction(): void {
+    try {
+      const holidayModeAction = this.homey.flow.getActionCard('holiday_mode_duration_action')
+      
+      holidayModeAction.registerArgumentAutocompleteListener('zone', (query) =>
+        getZones()
+          .filter(({ name }) => query === '' || name.toLowerCase().includes(query.toLowerCase()))
+          .map(zone => ({
+            description: zone.model === 'devices' ? '' : this.homey.__(`settings.models.${zone.model}`),
+            id: `${zone.model}_${String(zone.id)}`,
+            name: zone.name
+          }))
+      )
+      
+      holidayModeAction.registerRunListener(async (args: {duration: number; zone: {id: string},}) => {
+        const { duration, zone } = args
+        
+        const [model, id] = zone.id.split('_')
+        const zoneType = model as keyof typeof zoneModel
+        const zoneId = Number(id)
+        
+        const now = DateTime.now()
+        await this.setHolidayModeSettings(
+          {
+            from: now.toISO({ includeOffset: false }),
+            to: now.plus({ days: duration }).toISO({ includeOffset: false })
+          },
+          { zoneId, zoneType }
+        )
+        
+        return true
+      })
+    } catch {}
+  }
+
+  #registerHolidayModeOffAction(): void {
+    try {
+      const holidayModeOffAction = this.homey.flow.getActionCard('holiday_mode_off_duration_action')
+      
+      holidayModeOffAction.registerArgumentAutocompleteListener('zone', (query) =>
+        getZones()
+          .filter(({ name }) => query === '' || name.toLowerCase().includes(query.toLowerCase()))
+          .map(zone => ({
+            description: zone.model === 'devices' ? '' : this.homey.__(`settings.models.${String(zone.model)}`),
+            id: `${zone.model}_${String(zone.id)}`,
+            name: zone.name
+          }))
+      )
+      
+      holidayModeOffAction.registerRunListener(async (args: {zone: {id: string}}) => {
+        const { zone } = args
+        
+        const [model, id] = zone.id.split('_')
+        const zoneType = model as keyof typeof zoneModel
+        const zoneId = Number(id)
+        
+        await this.setHolidayModeSettings(
+          {
+            from: undefined,
+            to: undefined
+          },
+          { zoneId, zoneType }
+        )
+        
+        return true
+      })
+    } catch {}
   }
 
   #registerWidgetListeners(): void {
