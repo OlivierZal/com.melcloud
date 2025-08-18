@@ -480,6 +480,7 @@ const config = defineConfig([
       '@html-eslint/no-duplicate-in-head': 'error',
       '@html-eslint/no-extra-spacing-text': 'error',
       '@html-eslint/no-heading-inside-button': 'error',
+      '@html-eslint/no-ineffective-attrs': 'error',
       '@html-eslint/no-inline-styles': 'error',
       '@html-eslint/no-invalid-entity': 'error',
       '@html-eslint/no-invalid-role': 'error',
