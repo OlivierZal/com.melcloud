@@ -41,29 +41,21 @@ class NoDeviceError extends Error {
 const LENGTH_ZERO = 0
 const SIZE_ONE = 1
 
-const numberEndsWith = {
-  four: 4,
-  three: 3,
-  two: 2,
-}
+const numberEndsWithTwoThreeFour = new Set(
+  Object.values({
+    four: 4,
+    three: 3,
+    two: 2,
+  }),
+)
 
-const numberEndsWithTwoThreeFour = new Set([
-  numberEndsWith.four,
-  numberEndsWith.three,
-  numberEndsWith.two,
-])
-
-const pluralExceptions = {
-  fourteen: 14,
-  thirteen: 13,
-  twelve: 12,
-}
-
-const pluralExceptionsSet = new Set([
-  pluralExceptions.fourteen,
-  pluralExceptions.thirteen,
-  pluralExceptions.twelve,
-])
+const pluralExceptions = new Set(
+  Object.values({
+    fourteen: 14,
+    thirteen: 13,
+    twelve: 12,
+  }),
+)
 
 const PLURAL_THRESHOLD = 2
 
@@ -834,7 +826,7 @@ const getErrorCountText = (homey: Homey, count: number): string => {
   }
   if (
     numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
-    !pluralExceptionsSet.has(count % Modulo.base100)
+    !pluralExceptions.has(count % Modulo.base100)
   ) {
     return homey.__('settings.errorLog.errorCount.234')
   }
