@@ -80,13 +80,21 @@ export const getCapabilitiesOptionsAtaErv = ({
 const addPrefixToTitle = (
   title: LocalizedStrings,
   prefix: LocalizedStrings,
-): LocalizedStrings =>
-  Object.fromEntries(
-    Object.entries(prefix).map(([language, localizedPrefix]) => [
-      language,
-      `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`,
-    ]),
-  ) as LocalizedStrings
+): LocalizedStrings => {
+  const result: Partial<Record<string, string>> = {}
+  
+  for (const [language, localizedPrefix] of Object.entries(prefix)) {
+    result[language] = `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`
+  }
+  
+  // Create the final result ensuring the 'en' property exists
+  const localizedResult: LocalizedStrings = {
+    en: result.en!,  // We know this exists since prefix.en exists
+    ...result,
+  }
+  
+  return localizedResult
+}
 
 const auto: CapabilitiesOptionsValues<'auto'> = {
   id: 'auto',

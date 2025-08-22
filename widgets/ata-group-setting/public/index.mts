@@ -107,25 +107,25 @@ const INCREMENT_ONE = 1
 
 const FACTOR_FIVE = 5
 
-const MIN_SET_TEMPERATURE = 10
-const MAX_SET_TEMPERATURE = 31
-const MIN_SET_TEMPERATURE_COOLING = 16
+const TEMPERATURES = {
+  MIN_SET: 10,
+  MAX_SET: 31,
+  MIN_SET_COOLING: 16,
+} as const
 
-const MODE_MIXED = 0
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-const MODE_FAN = 7
-const MODE_HEAT = 1
-const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
-const heatModes = new Set([MODE_AUTO, MODE_HEAT])
-type Mode =
-  | typeof MODE_AUTO
-  | typeof MODE_COOL
-  | typeof MODE_DRY
-  | typeof MODE_FAN
-  | typeof MODE_HEAT
-  | typeof MODE_MIXED
+const MODES = {
+  MIXED: 0,
+  HEAT: 1,
+  DRY: 2,
+  COOL: 3,
+  FAN: 7,
+  AUTO: 8,
+} as const
+
+const coolModes = new Set([MODES.AUTO, MODES.COOL, MODES.DRY] as const)
+const heatModes = new Set([MODES.AUTO, MODES.HEAT] as const)
+
+type Mode = typeof MODES[keyof typeof MODES]
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -159,37 +159,29 @@ const booleanStringSet = new Set(booleanStrings)
 
 const elementTypes = new Set(['boolean', 'enum'])
 
-const getButtonElement = (id: string): HTMLButtonElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  ElementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLButtonElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a button`)
+  if (!(element instanceof ElementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getCanvasElement = (id: string): HTMLCanvasElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLCanvasElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a canvas`)
-  }
-  return element
-}
+const getButtonElement = (id: string): HTMLButtonElement =>
+  getElement(id, HTMLButtonElement, 'button')
 
-const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
-  }
-  return element
-}
+const getCanvasElement = (id: string): HTMLCanvasElement =>
+  getElement(id, HTMLCanvasElement, 'canvas')
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
 const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
@@ -387,7 +379,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(MIN_SET_TEMPERATURE_COOLING)
+    String(TEMPERATURES.MIN_SET_COOLING)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
@@ -836,17 +828,24 @@ const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
+// Type-safe API helpers
+const apiGet = async <T>(
+  homey: Homey,
+  endpoint: string,
+  params?: Record<string, string>,
+): Promise<T> => {
+  const url = params ? `${endpoint}?${new URLSearchParams(params)}` : endpoint
+  return homey.api('GET', url) as Promise<T>
+}
+
 const getAtaValues = async (homey: Homey): Promise<GroupState> =>
-  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupState
+  apiGet<GroupState>(homey, `/values/ata/${getZonePath()}`)
 
 const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
-  (await homey.api(
-    'GET',
-    `/values/ata/${getZonePath()}?${new URLSearchParams({
-      mode: 'detailed',
-      status: 'on',
-    } satisfies Required<GetAtaOptions>)}`,
-  )) as GroupAtaStates
+  apiGet<GroupAtaStates>(homey, `/values/ata/${getZonePath()}`, {
+    mode: 'detailed',
+    status: 'on',
+  } satisfies Required<GetAtaOptions>)
 
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   const detailedAtaValues = await getDetailedAtaValues(homey)
@@ -863,7 +862,7 @@ const resetFireAnimation = async (
     if (
       isSomethingOn &&
       (heatModes.has(mode) ||
-        (mode === MODE_MIXED &&
+        (mode === MODES.MIXED &&
           modes.some((currentMode) => heatModes.has(currentMode))))
     ) {
       if (smokeAnimationFrameId !== null) {
@@ -897,9 +896,9 @@ const resetSunAnimation = async (
     sun instanceof HTMLDivElement &&
     (!resetParams ||
       !resetParams.isSomethingOn ||
-      (resetParams.mode !== MODE_DRY &&
-        (resetParams.mode !== MODE_MIXED ||
-          modes.every((currentMode: number) => currentMode !== MODE_DRY))))
+      (resetParams.mode !== MODES.DRY &&
+        (resetParams.mode !== MODES.MIXED ||
+          modes.every((currentMode: number) => currentMode !== MODES.DRY))))
   ) {
     sunAnimation.exit = generateSunExitAnimation(sun)
   }
@@ -937,26 +936,26 @@ const handleMixedAnimation = async (
 }
 
 const animationHandling: Record<
-  Mode,
+  Mode, 
   (speed: number, homey: Homey) => Promise<void> | void
 > = {
-  [MODE_AUTO]: (speed) => {
+  [MODES.AUTO]: (speed) => {
     handleFireAnimation(speed)
     handleSnowAnimation(speed)
   },
-  [MODE_COOL]: (speed) => {
+  [MODES.COOL]: (speed) => {
     handleSnowAnimation(speed)
   },
-  [MODE_DRY]: (speed) => {
+  [MODES.DRY]: (speed) => {
     handleSunAnimation(speed)
   },
-  [MODE_FAN]: (speed) => {
+  [MODES.FAN]: (speed) => {
     handleWindAnimation(speed)
   },
-  [MODE_HEAT]: (speed) => {
+  [MODES.HEAT]: (speed) => {
     handleFireAnimation(speed)
   },
-  [MODE_MIXED]: async (speed, homey) => handleMixedAnimation(homey, speed),
+  [MODES.MIXED]: async (speed, homey) => handleMixedAnimation(homey, speed),
 }
 
 const hasModeAnimation = (mode: number): mode is Mode =>
@@ -1007,8 +1006,8 @@ const generateAtaValue = (
   if (type === 'number') {
     return createInputElement({
       id,
-      max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
-      min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
+      max: id === 'SetTemperature' ? TEMPERATURES.MAX_SET : undefined,
+      min: id === 'SetTemperature' ? TEMPERATURES.MIN_SET : undefined,
       type,
     })
   }
@@ -1044,10 +1043,10 @@ const generateZones = async (zones: Zone[] = []): Promise<void> => {
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
-    keyof GroupState,
-    DriverCapabilitiesOptions,
-  ][]
+  ataCapabilities = await apiGet<[keyof GroupState, DriverCapabilitiesOptions][]>(
+    homey, 
+    '/capabilities/ata'
+  )
   defaultAtaValues = Object.fromEntries(
     ataCapabilities.map(([ataKey]) => [ataKey, null]),
   )
@@ -1105,12 +1104,9 @@ const handleDefaultZone = (defaultZone: Zone | null): void => {
 }
 
 const fetchBuildings = async (homey: Homey): Promise<void> => {
-  const buildings = (await homey.api(
-    'GET',
-    `/buildings?${new URLSearchParams({
-      type: '0',
-    } satisfies { type: `${DeviceType}` })}`,
-  )) as BuildingZone[]
+  const buildings = await apiGet<BuildingZone[]>(homey, '/buildings', {
+    type: '0',
+  } satisfies { type: `${DeviceType}` })
   if (buildings.length > LENGTH_ZERO) {
     const { animations: isAnimations, default_zone: defaultZone } =
       homey.getSettings()

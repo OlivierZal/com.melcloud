@@ -41,24 +41,29 @@ class NoDeviceError extends Error {
 const LENGTH_ZERO = 0
 const SIZE_ONE = 1
 
-const NUMBER_ENDS_WITH_TWO = 2
-const NUMBER_ENDS_WITH_THREE = 3
-const NUMBER_ENDS_WITH_FOUR = 4
-const numberEndsWithTwoThreeFour = new Set([
-  NUMBER_ENDS_WITH_FOUR,
-  NUMBER_ENDS_WITH_THREE,
-  NUMBER_ENDS_WITH_TWO,
-])
+const NUMBER_ENDS_WITH = {
+  TWO: 2,
+  THREE: 3, 
+  FOUR: 4,
+} as const
 
-const PLURAL_THRESHOLD = 2
-const PLURAL_EXCEPTION_TWELVE = 12
-const PLURAL_EXCEPTION_THIRTEEN = 13
-const PLURAL_EXCEPTION_FOURTEEN = 14
+const numberEndsWithTwoThreeFour = new Set([
+  NUMBER_ENDS_WITH.FOUR,
+  NUMBER_ENDS_WITH.THREE,
+  NUMBER_ENDS_WITH.TWO,
+] as const)
+
+const PLURAL_EXCEPTIONS = {
+  TWELVE: 12,
+  THIRTEEN: 13,
+  FOURTEEN: 14,
+} as const
+
 const pluralExceptions = new Set([
-  PLURAL_EXCEPTION_FOURTEEN,
-  PLURAL_EXCEPTION_THIRTEEN,
-  PLURAL_EXCEPTION_TWELVE,
-])
+  PLURAL_EXCEPTIONS.FOURTEEN,
+  PLURAL_EXCEPTIONS.THIRTEEN,
+  PLURAL_EXCEPTIONS.TWELVE,
+] as const)
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -71,45 +76,32 @@ const booleanStringSet = new Set(booleanStrings)
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
-const getButtonElement = (id: string): HTMLButtonElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  ElementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLButtonElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a button`)
+  if (!(element instanceof ElementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
-  }
-  return element
-}
+const getButtonElement = (id: string): HTMLButtonElement =>
+  getElement(id, HTMLButtonElement, 'button')
 
-const getInputElement = (id: string): HTMLInputElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLInputElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not an input`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
 
-const getLabelElement = (id: string): HTMLLabelElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLLabelElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a label`)
-  }
-  return element
-}
+const getInputElement = (id: string): HTMLInputElement =>
+  getElement(id, HTMLInputElement, 'input')
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getLabelElement = (id: string): HTMLLabelElement =>
+  getElement(id, HTMLLabelElement, 'label')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const authenticateElement = getButtonElement('authenticate')
 const autoAdjustElement = getButtonElement('auto_adjust')
