@@ -41,29 +41,31 @@ class NoDeviceError extends Error {
 const LENGTH_ZERO = 0
 const SIZE_ONE = 1
 
-const NUMBER_ENDS_WITH = {
-  TWO: 2,
-  THREE: 3, 
-  FOUR: 4,
-} as const
+const numberEndsWith = {
+  four: 4,
+  three: 3,
+  two: 2,
+}
 
 const numberEndsWithTwoThreeFour = new Set([
-  NUMBER_ENDS_WITH.FOUR,
-  NUMBER_ENDS_WITH.THREE,
-  NUMBER_ENDS_WITH.TWO,
-] as const)
+  numberEndsWith.four,
+  numberEndsWith.three,
+  numberEndsWith.two,
+])
 
-const PLURAL_EXCEPTIONS = {
-  TWELVE: 12,
-  THIRTEEN: 13,
-  FOURTEEN: 14,
-} as const
+const pluralExceptions = {
+  fourteen: 14,
+  thirteen: 13,
+  twelve: 12,
+}
 
-const pluralExceptions = new Set([
-  PLURAL_EXCEPTIONS.FOURTEEN,
-  PLURAL_EXCEPTIONS.THIRTEEN,
-  PLURAL_EXCEPTIONS.TWELVE,
-] as const)
+const pluralExceptionsSet = new Set([
+  pluralExceptions.fourteen,
+  pluralExceptions.thirteen,
+  pluralExceptions.twelve,
+])
+
+const PLURAL_THRESHOLD = 2
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -78,11 +80,11 @@ const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
 const getElement = <T extends HTMLElement>(
   id: string,
-  ElementConstructor: new () => T,
+  elementConstructor: new () => T,
   elementType: string,
 ): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof ElementConstructor)) {
+  if (!(element instanceof elementConstructor)) {
     throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
@@ -832,7 +834,7 @@ const getErrorCountText = (homey: Homey, count: number): string => {
   }
   if (
     numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
-    !pluralExceptions.has(count % Modulo.base100)
+    !pluralExceptionsSet.has(count % Modulo.base100)
   ) {
     return homey.__('settings.errorLog.errorCount.234')
   }

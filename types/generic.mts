@@ -82,17 +82,17 @@ const addPrefixToTitle = (
   prefix: LocalizedStrings,
 ): LocalizedStrings => {
   const result: Partial<Record<string, string>> = {}
-  
+
   for (const [language, localizedPrefix] of Object.entries(prefix)) {
-    result[language] = `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`
+    result[language] =
+      `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`
   }
-  
-  // Create the final result ensuring the 'en' property exists
+
   const localizedResult: LocalizedStrings = {
-    en: result.en!,  // We know this exists since prefix.en exists
+    en: result['en'] ?? 'en',
     ...result,
   }
-  
+
   return localizedResult
 }
 

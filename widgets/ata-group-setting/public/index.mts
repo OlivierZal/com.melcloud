@@ -107,25 +107,25 @@ const INCREMENT_ONE = 1
 
 const FACTOR_FIVE = 5
 
-const TEMPERATURES = {
-  MIN_SET: 10,
-  MAX_SET: 31,
-  MIN_SET_COOLING: 16,
-} as const
+const temperatures = {
+  max: 31,
+  min: 10,
+  minCooling: 16,
+}
 
-const MODES = {
-  MIXED: 0,
-  HEAT: 1,
-  DRY: 2,
-  COOL: 3,
-  FAN: 7,
-  AUTO: 8,
-} as const
+const modes = {
+  auto: 8,
+  cool: 3,
+  dry: 2,
+  fan: 7,
+  heat: 1,
+  mixed: 0,
+}
 
-const coolModes = new Set([MODES.AUTO, MODES.COOL, MODES.DRY] as const)
-const heatModes = new Set([MODES.AUTO, MODES.HEAT] as const)
+const coolModes = new Set([modes.auto, modes.cool, modes.dry])
+const heatModes = new Set([modes.auto, modes.heat])
 
-type Mode = typeof MODES[keyof typeof MODES]
+type Mode = (typeof modes)[keyof typeof modes]
 
 const SPEED_VERY_SLOW = 1
 const SPEED_MODERATE = 3
@@ -161,11 +161,11 @@ const elementTypes = new Set(['boolean', 'enum'])
 
 const getElement = <T extends HTMLElement>(
   id: string,
-  ElementConstructor: new () => T,
+  elementConstructor: new () => T,
   elementType: string,
 ): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof ElementConstructor)) {
+  if (!(element instanceof elementConstructor)) {
     throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
@@ -379,7 +379,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(TEMPERATURES.MIN_SET_COOLING)
+    String(temperatures.minCooling)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
@@ -828,8 +828,7 @@ const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
-// Type-safe API helpers
-const apiGet = async <T>(
+const apiGet = async <T,>(
   homey: Homey,
   endpoint: string,
   params?: Record<string, string>,
@@ -858,12 +857,12 @@ const resetFireAnimation = async (
 ): Promise<void> => {
   if (resetParams) {
     const { isSomethingOn, mode } = resetParams
-    const modes = await getModes(homey)
+    const currentModes = await getModes(homey)
     if (
       isSomethingOn &&
       (heatModes.has(mode) ||
-        (mode === MODES.MIXED &&
-          modes.some((currentMode) => heatModes.has(currentMode))))
+        (mode === modes.mixed &&
+          currentModes.some((currentMode) => heatModes.has(currentMode))))
     ) {
       if (smokeAnimationFrameId !== null) {
         cancelAnimationFrame(smokeAnimationFrameId)
@@ -890,15 +889,17 @@ const resetSunAnimation = async (
   resetParams?: ResetParams,
 ): Promise<void> => {
   const sun = document.querySelector('#sun-1')
-  const modes = await getModes(homey)
+  const currentModes = await getModes(homey)
   if (
     sun &&
     sun instanceof HTMLDivElement &&
     (!resetParams ||
       !resetParams.isSomethingOn ||
-      (resetParams.mode !== MODES.DRY &&
-        (resetParams.mode !== MODES.MIXED ||
-          modes.every((currentMode: number) => currentMode !== MODES.DRY))))
+      (resetParams.mode !== modes.dry &&
+        (resetParams.mode !== modes.mixed ||
+          currentModes.every(
+            (currentMode: number) => currentMode !== modes.dry,
+          ))))
   ) {
     sunAnimation.exit = generateSunExitAnimation(sun)
   }
@@ -920,46 +921,43 @@ const handleMixedAnimation = async (
   homey: Homey,
   speed: number,
 ): Promise<void> => {
-  const modes = new Set(await getModes(homey))
-  if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
+  const currentModes = new Set(await getModes(homey))
+  if (currentModes.has(modes.auto) || currentModes.has(modes.cool)) {
     handleSnowAnimation(speed)
   }
-  if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
+  if (currentModes.has(modes.auto) || currentModes.has(modes.heat)) {
     handleFireAnimation(speed)
   }
-  if (modes.has(MODE_DRY)) {
+  if (currentModes.has(modes.dry)) {
     handleSunAnimation(speed)
   }
-  if (modes.has(MODE_FAN)) {
+  if (currentModes.has(modes.fan)) {
     handleWindAnimation(speed)
   }
 }
 
 const animationHandling: Record<
-  Mode, 
+  Mode,
   (speed: number, homey: Homey) => Promise<void> | void
 > = {
-  [MODES.AUTO]: (speed) => {
+  [modes.auto]: (speed) => {
     handleFireAnimation(speed)
     handleSnowAnimation(speed)
   },
-  [MODES.COOL]: (speed) => {
+  [modes.cool]: (speed) => {
     handleSnowAnimation(speed)
   },
-  [MODES.DRY]: (speed) => {
+  [modes.dry]: (speed) => {
     handleSunAnimation(speed)
   },
-  [MODES.FAN]: (speed) => {
+  [modes.fan]: (speed) => {
     handleWindAnimation(speed)
   },
-  [MODES.HEAT]: (speed) => {
+  [modes.heat]: (speed) => {
     handleFireAnimation(speed)
   },
-  [MODES.MIXED]: async (speed, homey) => handleMixedAnimation(homey, speed),
+  [modes.mixed]: async (speed, homey) => handleMixedAnimation(homey, speed),
 }
-
-const hasModeAnimation = (mode: number): mode is Mode =>
-  mode in animationHandling
 
 const handleAnimation = async (
   homey: Homey,
@@ -972,7 +970,7 @@ const handleAnimation = async (
     const newSpeed = Number(speed) || SPEED_MODERATE
     const newMode = Number(mode ?? null)
     await resetAnimation(homey, { isSomethingOn, mode: newMode })
-    if (isSomethingOn && hasModeAnimation(newMode)) {
+    if (isSomethingOn && animationHandling[newMode]) {
       await animationHandling[newMode](newSpeed, homey)
     }
   }
@@ -1006,8 +1004,8 @@ const generateAtaValue = (
   if (type === 'number') {
     return createInputElement({
       id,
-      max: id === 'SetTemperature' ? TEMPERATURES.MAX_SET : undefined,
-      min: id === 'SetTemperature' ? TEMPERATURES.MIN_SET : undefined,
+      max: id === 'SetTemperature' ? temperatures.max : undefined,
+      min: id === 'SetTemperature' ? temperatures.min : undefined,
       type,
     })
   }
@@ -1043,10 +1041,9 @@ const generateZones = async (zones: Zone[] = []): Promise<void> => {
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  ataCapabilities = await apiGet<[keyof GroupState, DriverCapabilitiesOptions][]>(
-    homey, 
-    '/capabilities/ata'
-  )
+  ataCapabilities = await apiGet<
+    [keyof GroupState, DriverCapabilitiesOptions][]
+  >(homey, '/capabilities/ata')
   defaultAtaValues = Object.fromEntries(
     ataCapabilities.map(([ataKey]) => [ataKey, null]),
   )
