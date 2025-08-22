@@ -32,11 +32,9 @@ type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 const DEFAULT_DIVISOR_ONE = 1
 const DEFAULT_MULTIPLIER_ONE = 1
 
-const FACTOR_TWO = 2
-const FACTOR_TEN = 10
+const factors = { five: 5, ten: 10, two: 2 }
 
-const START_ANGLE = 0
-const END_ANGLE = Math.PI * FACTOR_TWO
+const angle = { end: Math.PI * factors.two, start: 0 }
 
 const generateStyleNumber = ({
   divisor,
@@ -85,10 +83,10 @@ class SmokeParticle {
       this.#positionX,
       this.positionY,
       this.size,
-      START_ANGLE,
-      END_ANGLE,
+      angle.start,
+      angle.end,
     )
-    this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
+    this.#context.filter = `blur(${String(this.size / factors.ten)}px)`
     this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
     this.#context.fill()
     this.#context.filter = 'none'
@@ -104,8 +102,6 @@ class SmokeParticle {
 
 const LENGTH_ZERO = 0
 const INCREMENT_ONE = 1
-
-const FACTOR_FIVE = 5
 
 const temperatures = {
   max: 31,
@@ -127,11 +123,15 @@ const heatModes = new Set([modes.auto, modes.heat])
 
 type Mode = (typeof modes)[keyof typeof modes]
 
-const SPEED_VERY_SLOW = 1
-const SPEED_MODERATE = 3
-const SPEED_VERY_FAST = 5
-const SPEED_FACTOR_MIN = 1
-const SPEED_FACTOR_MAX = 50
+const speeds = {
+  moderate: 3,
+  veryFast: 5,
+  verySlow: 1,
+}
+const speedFactors = {
+  max: 50,
+  min: 1,
+}
 
 const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 2000
@@ -241,9 +241,9 @@ const generateStyleString = (
 
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
-  (SPEED_FACTOR_MIN *
-    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
-      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
+  (speedFactors.min *
+    (speedFactors.max / speedFactors.min) **
+      ((speed - speeds.verySlow) / (speeds.veryFast - speeds.verySlow)) ||
     DEFAULT_DIVISOR_ONE)
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
@@ -464,7 +464,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       smokeParticles.push(
         new SmokeParticle(
           canvasContext,
-          left + width / FACTOR_TWO,
+          left + width / factors.two,
           top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
         ),
       )
@@ -474,7 +474,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       () => {
         createSmoke(flame, speed)
       },
-      generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
+      generateDelay(SMOKE_DELAY, speeds.verySlow),
     )
   }
 }
@@ -543,7 +543,7 @@ const createFlame = (speed: number): void => {
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
-      : -FLAME_GAP * FACTOR_TWO
+      : -FLAME_GAP * factors.two
     flame.style.insetInlineStart = generateStyleString(
       {
         gap: FLAME_GAP,
@@ -611,7 +611,7 @@ const createSnowflake = (speed: number): void => {
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
-      : -SNOWFLAKE_GAP * FACTOR_TWO
+      : -SNOWFLAKE_GAP * factors.two
     snowflake.style.insetInlineStart = generateStyleString(
       {
         gap: SNOWFLAKE_GAP,
@@ -696,10 +696,10 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
       },
       {
         insetBlockStart: `${String(
-          (window.innerHeight - Number.parseFloat(blockSize)) / FACTOR_TWO,
+          (window.innerHeight - Number.parseFloat(blockSize)) / factors.two,
         )}px`,
         insetInlineEnd: `${String(
-          (window.innerWidth - Number.parseFloat(inlineSize)) / FACTOR_TWO,
+          (window.innerWidth - Number.parseFloat(inlineSize)) / factors.two,
         )}px`,
       },
     ],
@@ -750,19 +750,19 @@ const generateLeafAnimation = (
   const animation = leaf.animate(
     [...Array.from({ length: 101 }).keys()].map((index: number) => {
       const progress = (index - loopStart) / loopDuration
-      const angle = progress * Math.PI * FACTOR_TWO
+      const currentAngle = progress * Math.PI * factors.two
       const indexLoopRadius =
         index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
       const oscillate =
         indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+          ` translate(${String((indexLoopRadius / factors.five) * Math.sin(currentAngle * factors.five))}px, 0px)`
         : ''
       const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
       const translateX = `${String(
-        index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+        index * factors.five + indexLoopRadius * Math.sin(currentAngle),
       )}px`
       const translateY = `${String(
-        -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+        -(index * factors.two - indexLoopRadius * Math.cos(currentAngle)),
       )}px`
       return {
         transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
@@ -793,7 +793,7 @@ const createLeaf = (speed: number): void => {
     const previousTop =
       previousElement ?
         Number.parseFloat(previousElement.style.insetBlockStart)
-      : -LEAF_GAP * FACTOR_TWO
+      : -LEAF_GAP * factors.two
     leaf.style.insetBlockStart = generateStyleString(
       {
         gap: LEAF_GAP,
@@ -879,7 +879,7 @@ const resetFireAnimation = async (
       () => {
         flame.remove()
       },
-      generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+      generateDelay(FLAME_DELAY, speeds.verySlow),
     )
   }
 }
@@ -967,7 +967,7 @@ const handleAnimation = async (
   if (isAnimations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
     const isSomethingOn = isOn !== false
-    const newSpeed = Number(speed) || SPEED_MODERATE
+    const newSpeed = Number(speed) || speeds.moderate
     const newMode = Number(mode ?? null)
     await resetAnimation(homey, { isSomethingOn, mode: newMode })
     if (isSomethingOn && animationHandling[newMode]) {
