@@ -228,8 +228,16 @@ const config = defineConfig([
           selector: ['objectLiteralProperty', 'typeProperty'],
         },
         {
+          filter: {
+            match: true,
+            regex: String.raw`^(HM|FP)`,
+          },
+          format: null,
+          selector: ['objectLiteralProperty'],
+        },
+        {
           format: ['camelCase', 'PascalCase'],
-          selector: ['objectLiteralProperty', 'typeProperty'],
+          selector: ['typeProperty'],
         },
         {
           format: ['camelCase', 'PascalCase'],
