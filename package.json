@@ -33,7 +33,7 @@
     "@types/luxon": "^3.7.1",
     "@types/node": "^24.3.0",
     "apexcharts": "^5.3.4",
-    "daisyui": "^5.0.51",
+    "daisyui": "^5.0.53",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
