@@ -1,13 +1,9 @@
 const cartesianProduct = (arrays) => {
   let result = [[]]
   for (const array of arrays) {
-    const temporary = []
-    for (const partial of result) {
-      for (const item of array) {
-        temporary.push([...partial, item])
-      }
-    }
-    result = temporary
+    result = result.flatMap((partial) =>
+      array.map((item) => [...partial, item]),
+    )
   }
   return result
 }
