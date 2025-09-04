@@ -32,11 +32,9 @@ type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 const DEFAULT_DIVISOR_ONE = 1
 const DEFAULT_MULTIPLIER_ONE = 1
 
-const FACTOR_TWO = 2
-const FACTOR_TEN = 10
+const factors = { five: 5, ten: 10, two: 2 }
 
-const START_ANGLE = 0
-const END_ANGLE = Math.PI * FACTOR_TWO
+const angle = { end: Math.PI * factors.two, start: 0 }
 
 const generateStyleNumber = ({
   divisor,
@@ -85,10 +83,10 @@ class SmokeParticle {
       this.#positionX,
       this.positionY,
       this.size,
-      START_ANGLE,
-      END_ANGLE,
+      angle.start,
+      angle.end,
     )
-    this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
+    this.#context.filter = `blur(${String(this.size / factors.ten)}px)`
     this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
     this.#context.fill()
     this.#context.filter = 'none'
@@ -105,33 +103,35 @@ class SmokeParticle {
 const LENGTH_ZERO = 0
 const INCREMENT_ONE = 1
 
-const FACTOR_FIVE = 5
+const temperatures = {
+  max: 31,
+  min: 10,
+  minCooling: 16,
+}
 
-const MIN_SET_TEMPERATURE = 10
-const MAX_SET_TEMPERATURE = 31
-const MIN_SET_TEMPERATURE_COOLING = 16
+const modes = {
+  auto: 8,
+  cool: 3,
+  dry: 2,
+  fan: 7,
+  heat: 1,
+  mixed: 0,
+}
 
-const MODE_MIXED = 0
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-const MODE_FAN = 7
-const MODE_HEAT = 1
-const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
-const heatModes = new Set([MODE_AUTO, MODE_HEAT])
-type Mode =
-  | typeof MODE_AUTO
-  | typeof MODE_COOL
-  | typeof MODE_DRY
-  | typeof MODE_FAN
-  | typeof MODE_HEAT
-  | typeof MODE_MIXED
+const coolModes = new Set([modes.auto, modes.cool, modes.dry])
+const heatModes = new Set([modes.auto, modes.heat])
 
-const SPEED_VERY_SLOW = 1
-const SPEED_MODERATE = 3
-const SPEED_VERY_FAST = 5
-const SPEED_FACTOR_MIN = 1
-const SPEED_FACTOR_MAX = 50
+type Mode = (typeof modes)[keyof typeof modes]
+
+const speeds = {
+  moderate: 3,
+  veryFast: 5,
+  verySlow: 1,
+}
+const speedFactors = {
+  max: 50,
+  min: 1,
+}
 
 const DEBOUNCE_DELAY = 1000
 const FLAME_DELAY = 2000
@@ -159,37 +159,29 @@ const booleanStringSet = new Set(booleanStrings)
 
 const elementTypes = new Set(['boolean', 'enum'])
 
-const getButtonElement = (id: string): HTMLButtonElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  elementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLButtonElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a button`)
+  if (!(element instanceof elementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getCanvasElement = (id: string): HTMLCanvasElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLCanvasElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a canvas`)
-  }
-  return element
-}
+const getButtonElement = (id: string): HTMLButtonElement =>
+  getElement(id, HTMLButtonElement, 'button')
 
-const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
-  }
-  return element
-}
+const getCanvasElement = (id: string): HTMLCanvasElement =>
+  getElement(id, HTMLCanvasElement, 'canvas')
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
 const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
@@ -249,9 +241,9 @@ const generateStyleString = (
 
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
-  (SPEED_FACTOR_MIN *
-    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
-      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
+  (speedFactors.min *
+    (speedFactors.max / speedFactors.min) **
+      ((speed - speeds.verySlow) / (speeds.veryFast - speeds.verySlow)) ||
     DEFAULT_DIVISOR_ONE)
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
@@ -387,7 +379,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(MIN_SET_TEMPERATURE_COOLING)
+    String(temperatures.minCooling)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
@@ -472,7 +464,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       smokeParticles.push(
         new SmokeParticle(
           canvasContext,
-          left + width / FACTOR_TWO,
+          left + width / factors.two,
           top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
         ),
       )
@@ -482,7 +474,7 @@ const createSmoke = (flame: HTMLDivElement, speed: number): void => {
       () => {
         createSmoke(flame, speed)
       },
-      generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
+      generateDelay(SMOKE_DELAY, speeds.verySlow),
     )
   }
 }
@@ -551,7 +543,7 @@ const createFlame = (speed: number): void => {
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
-      : -FLAME_GAP * FACTOR_TWO
+      : -FLAME_GAP * factors.two
     flame.style.insetInlineStart = generateStyleString(
       {
         gap: FLAME_GAP,
@@ -619,7 +611,7 @@ const createSnowflake = (speed: number): void => {
     const previousLeft =
       previousElement ?
         Number.parseFloat(previousElement.style.insetInlineStart)
-      : -SNOWFLAKE_GAP * FACTOR_TWO
+      : -SNOWFLAKE_GAP * factors.two
     snowflake.style.insetInlineStart = generateStyleString(
       {
         gap: SNOWFLAKE_GAP,
@@ -704,10 +696,10 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
       },
       {
         insetBlockStart: `${String(
-          (window.innerHeight - Number.parseFloat(blockSize)) / FACTOR_TWO,
+          (window.innerHeight - Number.parseFloat(blockSize)) / factors.two,
         )}px`,
         insetInlineEnd: `${String(
-          (window.innerWidth - Number.parseFloat(inlineSize)) / FACTOR_TWO,
+          (window.innerWidth - Number.parseFloat(inlineSize)) / factors.two,
         )}px`,
       },
     ],
@@ -758,19 +750,19 @@ const generateLeafAnimation = (
   const animation = leaf.animate(
     [...Array.from({ length: 101 }).keys()].map((index: number) => {
       const progress = (index - loopStart) / loopDuration
-      const angle = progress * Math.PI * FACTOR_TWO
+      const currentAngle = progress * Math.PI * factors.two
       const indexLoopRadius =
         index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
       const oscillate =
         indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+          ` translate(${String((indexLoopRadius / factors.five) * Math.sin(currentAngle * factors.five))}px, 0px)`
         : ''
       const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
       const translateX = `${String(
-        index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+        index * factors.five + indexLoopRadius * Math.sin(currentAngle),
       )}px`
       const translateY = `${String(
-        -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+        -(index * factors.two - indexLoopRadius * Math.cos(currentAngle)),
       )}px`
       return {
         transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
@@ -801,7 +793,7 @@ const createLeaf = (speed: number): void => {
     const previousTop =
       previousElement ?
         Number.parseFloat(previousElement.style.insetBlockStart)
-      : -LEAF_GAP * FACTOR_TWO
+      : -LEAF_GAP * factors.two
     leaf.style.insetBlockStart = generateStyleString(
       {
         gap: LEAF_GAP,
@@ -836,17 +828,23 @@ const handleWindAnimation = (speed: number): void => {
   generateLeaves(speed)
 }
 
+const apiGet = async <T,>(
+  homey: Homey,
+  endpoint: string,
+  params?: Record<string, string>,
+): Promise<T> => {
+  const url = params ? `${endpoint}?${new URLSearchParams(params)}` : endpoint
+  return homey.api('GET', url) as Promise<T>
+}
+
 const getAtaValues = async (homey: Homey): Promise<GroupState> =>
-  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupState
+  apiGet<GroupState>(homey, `/values/ata/${getZonePath()}`)
 
 const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
-  (await homey.api(
-    'GET',
-    `/values/ata/${getZonePath()}?${new URLSearchParams({
-      mode: 'detailed',
-      status: 'on',
-    } satisfies Required<GetAtaOptions>)}`,
-  )) as GroupAtaStates
+  apiGet<GroupAtaStates>(homey, `/values/ata/${getZonePath()}`, {
+    mode: 'detailed',
+    status: 'on',
+  } satisfies Required<GetAtaOptions>)
 
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   const detailedAtaValues = await getDetailedAtaValues(homey)
@@ -859,12 +857,12 @@ const resetFireAnimation = async (
 ): Promise<void> => {
   if (resetParams) {
     const { isSomethingOn, mode } = resetParams
-    const modes = await getModes(homey)
+    const currentModes = await getModes(homey)
     if (
       isSomethingOn &&
       (heatModes.has(mode) ||
-        (mode === MODE_MIXED &&
-          modes.some((currentMode) => heatModes.has(currentMode))))
+        (mode === modes.mixed &&
+          currentModes.some((currentMode) => heatModes.has(currentMode))))
     ) {
       if (smokeAnimationFrameId !== null) {
         cancelAnimationFrame(smokeAnimationFrameId)
@@ -881,7 +879,7 @@ const resetFireAnimation = async (
       () => {
         flame.remove()
       },
-      generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+      generateDelay(FLAME_DELAY, speeds.verySlow),
     )
   }
 }
@@ -891,15 +889,17 @@ const resetSunAnimation = async (
   resetParams?: ResetParams,
 ): Promise<void> => {
   const sun = document.querySelector('#sun-1')
-  const modes = await getModes(homey)
+  const currentModes = await getModes(homey)
   if (
     sun &&
     sun instanceof HTMLDivElement &&
     (!resetParams ||
       !resetParams.isSomethingOn ||
-      (resetParams.mode !== MODE_DRY &&
-        (resetParams.mode !== MODE_MIXED ||
-          modes.every((currentMode: number) => currentMode !== MODE_DRY))))
+      (resetParams.mode !== modes.dry &&
+        (resetParams.mode !== modes.mixed ||
+          currentModes.every(
+            (currentMode: number) => currentMode !== modes.dry,
+          ))))
   ) {
     sunAnimation.exit = generateSunExitAnimation(sun)
   }
@@ -921,17 +921,17 @@ const handleMixedAnimation = async (
   homey: Homey,
   speed: number,
 ): Promise<void> => {
-  const modes = new Set(await getModes(homey))
-  if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
+  const currentModes = new Set(await getModes(homey))
+  if (currentModes.has(modes.auto) || currentModes.has(modes.cool)) {
     handleSnowAnimation(speed)
   }
-  if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
+  if (currentModes.has(modes.auto) || currentModes.has(modes.heat)) {
     handleFireAnimation(speed)
   }
-  if (modes.has(MODE_DRY)) {
+  if (currentModes.has(modes.dry)) {
     handleSunAnimation(speed)
   }
-  if (modes.has(MODE_FAN)) {
+  if (currentModes.has(modes.fan)) {
     handleWindAnimation(speed)
   }
 }
@@ -940,27 +940,24 @@ const animationHandling: Record<
   Mode,
   (speed: number, homey: Homey) => Promise<void> | void
 > = {
-  [MODE_AUTO]: (speed) => {
+  [modes.auto]: (speed) => {
     handleFireAnimation(speed)
     handleSnowAnimation(speed)
   },
-  [MODE_COOL]: (speed) => {
+  [modes.cool]: (speed) => {
     handleSnowAnimation(speed)
   },
-  [MODE_DRY]: (speed) => {
+  [modes.dry]: (speed) => {
     handleSunAnimation(speed)
   },
-  [MODE_FAN]: (speed) => {
+  [modes.fan]: (speed) => {
     handleWindAnimation(speed)
   },
-  [MODE_HEAT]: (speed) => {
+  [modes.heat]: (speed) => {
     handleFireAnimation(speed)
   },
-  [MODE_MIXED]: async (speed, homey) => handleMixedAnimation(homey, speed),
+  [modes.mixed]: async (speed, homey) => handleMixedAnimation(homey, speed),
 }
-
-const hasModeAnimation = (mode: number): mode is Mode =>
-  mode in animationHandling
 
 const handleAnimation = async (
   homey: Homey,
@@ -970,10 +967,10 @@ const handleAnimation = async (
   if (isAnimations) {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
     const isSomethingOn = isOn !== false
-    const newSpeed = Number(speed) || SPEED_MODERATE
+    const newSpeed = Number(speed) || speeds.moderate
     const newMode = Number(mode ?? null)
     await resetAnimation(homey, { isSomethingOn, mode: newMode })
-    if (isSomethingOn && hasModeAnimation(newMode)) {
+    if (isSomethingOn && animationHandling[newMode]) {
       await animationHandling[newMode](newSpeed, homey)
     }
   }
@@ -1007,8 +1004,8 @@ const generateAtaValue = (
   if (type === 'number') {
     return createInputElement({
       id,
-      max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
-      min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
+      max: id === 'SetTemperature' ? temperatures.max : undefined,
+      min: id === 'SetTemperature' ? temperatures.min : undefined,
       type,
     })
   }
@@ -1044,10 +1041,9 @@ const generateZones = async (zones: Zone[] = []): Promise<void> => {
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
-    keyof GroupState,
-    DriverCapabilitiesOptions,
-  ][]
+  ataCapabilities = await apiGet<
+    [keyof GroupState, DriverCapabilitiesOptions][]
+  >(homey, '/capabilities/ata')
   defaultAtaValues = Object.fromEntries(
     ataCapabilities.map(([ataKey]) => [ataKey, null]),
   )
@@ -1105,12 +1101,9 @@ const handleDefaultZone = (defaultZone: Zone | null): void => {
 }
 
 const fetchBuildings = async (homey: Homey): Promise<void> => {
-  const buildings = (await homey.api(
-    'GET',
-    `/buildings?${new URLSearchParams({
-      type: '0',
-    } satisfies { type: `${DeviceType}` })}`,
-  )) as BuildingZone[]
+  const buildings = await apiGet<BuildingZone[]>(homey, '/buildings', {
+    type: '0',
+  } satisfies { type: `${DeviceType}` })
   if (buildings.length > LENGTH_ZERO) {
     const { animations: isAnimations, default_zone: defaultZone } =
       homey.getSettings()
