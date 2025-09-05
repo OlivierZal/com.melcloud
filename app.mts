@@ -41,7 +41,7 @@ import {
   thermostatMode,
   vertical,
 } from './json-files.mts'
-import { getZones, LENGTH_ZERO } from './lib/index.mts'
+import { getZones } from './lib/index.mts'
 import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
@@ -391,7 +391,7 @@ export default class MELCloudApp extends Homey.App {
           (changedKey) =>
             settings[changedKey] !== device.getSetting(changedKey),
         )
-        if (changedKeys.length > LENGTH_ZERO) {
+        if (changedKeys.length) {
           await device.setSettings(
             Object.fromEntries(changedKeys.map((key) => [key, settings[key]])),
           )

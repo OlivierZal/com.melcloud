@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.12 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.13 | MIT License | https://tailwindcss.com */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @layer properties;
 .diff {
@@ -76,11 +76,13 @@
   }
   &[popover], .dropdown-content {
     z-index: 999;
-    animation: dropdown 0.2s;
-    transition-property: opacity, scale, display;
-    transition-behavior: allow-discrete;
-    transition-duration: 0.2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    @media (prefers-reduced-motion: no-preference) {
+      animation: dropdown 0.2s;
+      transition-property: opacity, scale, display;
+      transition-behavior: allow-discrete;
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
   }
   @starting-style {
     &[popover], .dropdown-content {
@@ -205,7 +207,7 @@
       }
     }
   }
-  &:focus-visible {
+  &:focus-visible, &:has(:focus-visible) {
     outline-width: 2px;
     outline-style: solid;
     isolation: isolate;
@@ -751,7 +753,8 @@
     appearance: none;
     padding-inline-start: calc(0.25rem * 4);
     padding-inline-end: calc(0.25rem * 7);
-    height: calc(100% - 2px);
+    height: calc(100% - calc(var(--border) * 2));
+    align-items: center;
     background: inherit;
     border-radius: inherit;
     border-style: none;
@@ -797,6 +800,66 @@
   &:has(> select[disabled]) > select[disabled] {
     cursor: not-allowed;
   }
+  &, & select {
+    @supports (appearance: base-select) {
+      appearance: base-select;
+    }
+    @supports (appearance: base-select) {
+      &::picker(select) {
+        appearance: base-select;
+      }
+    }
+    &::picker(select) {
+      color: inherit;
+      max-height: 70dvh;
+      border: var(--border) solid var(--color-base-200);
+      margin-block: calc(0.25rem * 2);
+      border-radius: var(--radius-box);
+      padding: calc(0.25rem * 2);
+      background-color: inherit;
+      box-shadow: 0 2px calc(var(--depth) * 3px) -2px oklch(0% 0 0/0.2);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / calc(var(--depth) * 0.1)), 0 8px 10px -6px rgb(0 0 0 / calc(var(--depth) * 0.1));
+    }
+    &::picker-icon {
+      display: none;
+    }
+    optgroup {
+      padding-top: 0.5em;
+      option {
+        &:nth-child(1) {
+          margin-top: 0.5em;
+        }
+      }
+    }
+    option {
+      border-radius: var(--radius-field);
+      padding-inline: calc(0.25rem * 3);
+      padding-block: calc(0.25rem * 1.5);
+      transition-property: color, background-color;
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+      &:not(:disabled) {
+        &:hover, &:focus-visible {
+          cursor: pointer;
+          background-color: var(--color-base-content);
+          @supports (color: color-mix(in lab, red, red)) {
+            background-color: color-mix(in oklab, var(--color-base-content) 10%, transparent);
+          }
+          --tw-outline-style: none;
+          outline-style: none;
+          @media (forced-colors: active) {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+          }
+        }
+        &:active {
+          background-color: var(--color-neutral);
+          color: var(--color-neutral-content);
+          box-shadow: 0 2px calc(var(--depth) * 3px) -2px var(--color-neutral);
+        }
+      }
+    }
+  }
 }
 .checkbox {
   border: var(--border) solid var(--input-color, var(--color-base-content));
@@ -840,10 +903,7 @@
     outline-offset: 2px;
   }
   &:checked, &[aria-checked="true"] {
-    background-color: var(--input-color, var(--color-base-content));
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: var(--input-color, color-mix(in oklab, var(--color-base-content) 20%, #0000));
-    }
+    background-color: var(--input-color, #0000);
     box-shadow: 0 0 #0000 inset, 0 8px 0 -4px oklch(100% 0 0 / calc(var(--depth) * 0.1)) inset, 0 1px oklch(0% 0 0 / calc(var(--depth) * 0.1));
     &:before {
       clip-path: polygon(20% 100%, 20% 80%, 50% 80%, 50% 0%, 70% 0%, 70% 100%);
@@ -899,14 +959,18 @@
     background-image: repeating-linear-gradient( 90deg, currentColor -1%, currentColor 10%, #0000 10%, #0000 90% );
     background-size: 200%;
     background-position-x: 15%;
-    animation: progress 5s ease-in-out infinite;
+    @media (prefers-reduced-motion: no-preference) {
+      animation: progress 5s ease-in-out infinite;
+    }
     @supports (-moz-appearance: none) {
       &::-moz-progress-bar {
         background-color: transparent;
-        background-image: repeating-linear-gradient( 90deg, currentColor -1%, currentColor 10%, #0000 10%, #0000 90% );
-        background-size: 200%;
-        background-position-x: 15%;
-        animation: progress 5s ease-in-out infinite;
+        @media (prefers-reduced-motion: no-preference) {
+          animation: progress 5s ease-in-out infinite;
+          background-image: repeating-linear-gradient( 90deg, currentColor -1%, currentColor 10%, #0000 10%, #0000 90% );
+          background-size: 200%;
+          background-position-x: 15%;
+        }
       }
     }
   }

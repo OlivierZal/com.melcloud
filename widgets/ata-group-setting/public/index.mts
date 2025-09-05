@@ -102,7 +102,6 @@ class SmokeParticle {
   }
 }
 
-const LENGTH_ZERO = 0
 const INCREMENT_ONE = 1
 
 const FACTOR_FIVE = 5
@@ -1030,7 +1029,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {
-  if (zones.length > LENGTH_ZERO) {
+  if (zones.length) {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOptionElement(zoneElement, {
@@ -1056,7 +1055,7 @@ const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
 const setAtaValues = async (homey: Homey): Promise<void> => {
   try {
     const body = buildAtaValuesBody()
-    if (Object.keys(body).length > LENGTH_ZERO) {
+    if (Object.keys(body).length) {
       await homey.api(
         'PUT',
         `/values/ata/${getZonePath()}`,
@@ -1111,7 +1110,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> => {
       type: '0',
     } satisfies { type: `${DeviceType}` })}`,
   )) as BuildingZone[]
-  if (buildings.length > LENGTH_ZERO) {
+  if (buildings.length) {
     const { animations: isAnimations, default_zone: defaultZone } =
       homey.getSettings()
     addEventListeners(homey, isAnimations)

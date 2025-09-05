@@ -15,7 +15,8 @@ import type {
   EnergyReportMode,
 } from '../types/index.mts'
 
-import { isTotalEnergyKey, K_MULTIPLIER, LENGTH_ZERO } from '../lib/index.mts'
+import { K_MULTIPLIER } from '../constants.mts'
+import { isTotalEnergyKey } from '../lib/index.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
@@ -65,7 +66,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
   }
 
   public async handle(): Promise<void> {
-    if (this.#energyCapabilityTagEntries.length === LENGTH_ZERO) {
+    if (!this.#energyCapabilityTagEntries.length) {
       this.unschedule()
       return
     }

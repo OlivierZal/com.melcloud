@@ -1,7 +1,5 @@
 import type { SimpleClass } from 'homey'
 
-import { LENGTH_ZERO } from '../lib/index.mts'
-
 const PARENTHESES = '()'
 const SLICE_START_ZERO = 0
 
@@ -34,7 +32,7 @@ export const addToLogs =
               if (
                 this.#isKeyOfThis(functionName) &&
                 isFunction(this[functionName]) &&
-                this[functionName].length === LENGTH_ZERO
+                !this[functionName].length
               ) {
                 return [this[functionName].apply(this), '-']
               }

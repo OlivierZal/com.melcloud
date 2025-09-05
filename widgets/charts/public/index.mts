@@ -16,7 +16,6 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
-const LENGTH_ZERO = 0
 const ZERO_DECIMALS = 0
 
 const FONT_SIZE_VERY_SMALL = '12px'
@@ -326,7 +325,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
       : ''
     }`,
   )) as DeviceZone[]
-  if (devices.length > LENGTH_ZERO) {
+  if (devices.length) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)
     handleDefaultZone(defaultZone)

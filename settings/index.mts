@@ -38,7 +38,6 @@ class NoDeviceError extends Error {
   }
 }
 
-const LENGTH_ZERO = 0
 const SIZE_ONE = 1
 
 const NUMBER_ENDS_WITH_TWO = 2
@@ -568,7 +567,7 @@ const buildSettingsBody = (
       errors.push(getErrorMessage(error))
     }
   }
-  if (errors.length > LENGTH_ZERO) {
+  if (errors.length) {
     throw new Error(errors.join('\n') || 'Unknown error')
   }
   return settings
@@ -597,7 +596,7 @@ const setDeviceSettings = async (
   driverId?: string,
 ): Promise<void> => {
   const body = buildSettingsBody(homey, elements)
-  if (Object.keys(body).length === LENGTH_ZERO) {
+  if (!Object.keys(body).length) {
     if (driverId === undefined) {
       refreshCommonSettings(
         elements.filter((element) => element instanceof HTMLSelectElement),
@@ -965,7 +964,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {
-  if (zones.length > LENGTH_ZERO) {
+  if (zones.length) {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOptionElement(zoneElement, {
@@ -989,7 +988,7 @@ const fetchBuildings = async (homey: Homey): Promise<void> =>
       'GET',
       '/buildings',
       async (error: Error | null, buildings: BuildingZone[]) => {
-        if (error || buildings.length === LENGTH_ZERO) {
+        if (error || !buildings.length) {
           if (error) {
             await homey.alert(error.message)
           }
@@ -1153,7 +1152,7 @@ const getFPMinAndMax = (homey: Homey): { max: number; min: number } => {
       return null
     }
   })
-  if (errors.length > LENGTH_ZERO || min === null || max === null) {
+  if (errors.length || min === null || max === null) {
     throw new Error(errors.join('\n') || 'Unknown error')
   }
   if (max < min) {

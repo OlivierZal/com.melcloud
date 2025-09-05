@@ -7,7 +7,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { K_MULTIPLIER } from '../../lib/index.mts'
+import { K_MULTIPLIER } from '../../constants.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,

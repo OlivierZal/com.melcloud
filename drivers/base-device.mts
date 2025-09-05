@@ -28,7 +28,7 @@ import type {
 } from '../types/index.mts'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
-import { isTotalEnergyKey, LENGTH_ZERO } from '../lib/index.mts'
+import { isTotalEnergyKey } from '../lib/index.mts'
 import { withTimers } from '../mixins/with-timers.mts'
 
 import type { BaseMELCloudDriver } from './base-driver.mts'
@@ -164,7 +164,7 @@ export abstract class BaseMELCloudDevice<
     const changedEnergyKeys = changedCapabilities.filter((setting) =>
       this.#isEnergyCapability(setting),
     )
-    if (changedEnergyKeys.length > LENGTH_ZERO) {
+    if (changedEnergyKeys.length) {
       await this.#updateEnergyReportsOnSettings({
         changedKeys: changedEnergyKeys,
       })
@@ -354,7 +354,7 @@ export abstract class BaseMELCloudDevice<
     const device = await this.fetchDevice()
     if (device) {
       const updateData = this.#buildUpdateData(values)
-      if (Object.keys(updateData).length > LENGTH_ZERO) {
+      if (Object.keys(updateData).length) {
         try {
           await device.setValues(updateData)
         } catch (error) {
@@ -422,7 +422,7 @@ export abstract class BaseMELCloudDevice<
     changedKeys: string[]
     newSettings: Settings
   }): Promise<void> {
-    if (changedCapabilities.length > LENGTH_ZERO) {
+    if (changedCapabilities.length) {
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }

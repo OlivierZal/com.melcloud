@@ -14,8 +14,6 @@ import type {
   Zone,
 } from '../types/index.mts'
 
-import { LENGTH_ZERO } from './constants.mts'
-
 const LEVEL_1 = 1
 const LEVEL_2 = 2
 const LEVEL_3 = 3
@@ -25,7 +23,7 @@ const hasDevices = (
   { type }: { type?: DeviceType } = {},
 ): boolean =>
   type === undefined ?
-    zone.devices.length > LENGTH_ZERO
+    Boolean(zone.devices.length)
   : zone.devices.some(({ type: deviceType }) => deviceType === type)
 
 const compareNames = (

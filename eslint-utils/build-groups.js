@@ -50,9 +50,9 @@ export const buildGroups = ({
           selectorIncompatibilities,
         }),
       )
-      const [groupPair] = groupPairs
-      return [...Array.from({ length: groupPair.length }).keys()].map((index) =>
-        groupPairs.map((group) => group[index]),
+      const [{ length }] = groupPairs
+      return [...Array.from({ length }).keys()].map((index) =>
+        groupPairs.map((groupPair) => groupPair[index]),
       )
     }
     return buildGroupsForSelector({
