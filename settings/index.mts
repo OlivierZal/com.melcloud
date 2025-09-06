@@ -65,7 +65,6 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 const zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
 
 const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
-const booleanStringSet = new Set(booleanStrings)
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
@@ -531,7 +530,7 @@ const processValue = (
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
       return int(homey, element)
     }
-    if (booleanStringSet.has(element.value)) {
+    if (booleanStrings.includes(element.value)) {
       return element.value === 'true'
     }
     const numberValue = Number(element.value)

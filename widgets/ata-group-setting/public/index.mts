@@ -154,7 +154,6 @@ const SUN_SHINE_DURATION = 5000
 const zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
 
 const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
-const booleanStringSet = new Set(booleanStrings)
 
 const elementTypes = new Set(['boolean', 'enum'])
 
@@ -407,7 +406,7 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
       return int(element)
     }
-    if (booleanStringSet.has(element.value)) {
+    if (booleanStrings.includes(element.value)) {
       return element.value === 'true'
     }
     const numberValue = Number(element.value)
