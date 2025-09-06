@@ -36,7 +36,7 @@ const FACTOR_TWO = 2
 const FACTOR_TEN = 10
 
 const START_ANGLE = 0
-const END_ANGLE = Math.PI * FACTOR_TWO
+const FULL_CIRCLE = FACTOR_TWO * Math.PI
 
 const generateStyleNumber = ({
   divisor,
@@ -86,7 +86,7 @@ class SmokeParticle {
       this.positionY,
       this.size,
       START_ANGLE,
-      END_ANGLE,
+      FULL_CIRCLE,
     )
     this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
     this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
@@ -755,8 +755,7 @@ const generateLeafAnimation = (
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const animation = leaf.animate(
     [...Array.from({ length: 101 }).keys()].map((index: number) => {
-      const progress = (index - loopStart) / loopDuration
-      const angle = progress * Math.PI * FACTOR_TWO
+      const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
       const indexLoopRadius =
         index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
       const oscillate =

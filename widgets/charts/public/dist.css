@@ -943,54 +943,6 @@
     opacity: 20%;
   }
 }
-.progress {
-  position: relative;
-  height: calc(0.25rem * 2);
-  width: 100%;
-  appearance: none;
-  overflow: hidden;
-  border-radius: var(--radius-box);
-  background-color: currentColor;
-  @supports (color: color-mix(in lab, red, red)) {
-    background-color: color-mix(in oklab, currentColor 20%, transparent);
-  }
-  color: var(--color-base-content);
-  &:indeterminate {
-    background-image: repeating-linear-gradient( 90deg, currentColor -1%, currentColor 10%, #0000 10%, #0000 90% );
-    background-size: 200%;
-    background-position-x: 15%;
-    @media (prefers-reduced-motion: no-preference) {
-      animation: progress 5s ease-in-out infinite;
-    }
-    @supports (-moz-appearance: none) {
-      &::-moz-progress-bar {
-        background-color: transparent;
-        @media (prefers-reduced-motion: no-preference) {
-          animation: progress 5s ease-in-out infinite;
-          background-image: repeating-linear-gradient( 90deg, currentColor -1%, currentColor 10%, #0000 10%, #0000 90% );
-          background-size: 200%;
-          background-position-x: 15%;
-        }
-      }
-    }
-  }
-  @supports (-moz-appearance: none) {
-    &::-moz-progress-bar {
-      border-radius: var(--radius-box);
-      background-color: currentColor;
-    }
-  }
-  @supports (-webkit-appearance: none) {
-    &::-webkit-progress-bar {
-      border-radius: var(--radius-box);
-      background-color: transparent;
-    }
-    &::-webkit-progress-value {
-      border-radius: var(--radius-box);
-      background-color: currentColor;
-    }
-  }
-}
 .absolute {
   position: absolute;
 }
