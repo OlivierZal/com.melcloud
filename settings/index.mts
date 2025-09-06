@@ -69,45 +69,32 @@ const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
-const getButtonElement = (id: string): HTMLButtonElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  elementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLButtonElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a button`)
+  if (!(element instanceof elementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
-  }
-  return element
-}
+const getButtonElement = (id: string): HTMLButtonElement =>
+  getElement(id, HTMLButtonElement, 'button')
 
-const getInputElement = (id: string): HTMLInputElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLInputElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not an input`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
 
-const getLabelElement = (id: string): HTMLLabelElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLLabelElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a label`)
-  }
-  return element
-}
+const getInputElement = (id: string): HTMLInputElement =>
+  getElement(id, HTMLInputElement, 'input')
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getLabelElement = (id: string): HTMLLabelElement =>
+  getElement(id, HTMLLabelElement, 'label')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const authenticateElement = getButtonElement('authenticate')
 const autoAdjustElement = getButtonElement('auto_adjust')

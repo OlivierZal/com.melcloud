@@ -157,37 +157,29 @@ const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
 
 const elementTypes = new Set(['boolean', 'enum'])
 
-const getButtonElement = (id: string): HTMLButtonElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  elementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLButtonElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a button`)
+  if (!(element instanceof elementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getCanvasElement = (id: string): HTMLCanvasElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLCanvasElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a canvas`)
-  }
-  return element
-}
+const getButtonElement = (id: string): HTMLButtonElement =>
+  getElement(id, HTMLButtonElement, 'button')
 
-const getDivElement = (id: string): HTMLDivElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
-  }
-  return element
-}
+const getCanvasElement = (id: string): HTMLCanvasElement =>
+  getElement(id, HTMLCanvasElement, 'canvas')
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
 const updateAtaValuesElement = getButtonElement('apply_values_melcloud')

@@ -62,21 +62,23 @@ let myChart: ApexCharts | null = null
 let options: ApexCharts.ApexOptions = {}
 let timeout: NodeJS.Timeout | null = null
 
-const getDivElement = (id: string): HTMLDivElement => {
+const getElement = <T extends HTMLElement>(
+  id: string,
+  elementConstructor: new () => T,
+  elementType: string,
+): T => {
   const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLDivElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a div`)
+  if (!(element instanceof elementConstructor)) {
+    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
   return element
 }
 
-const getSelectElement = (id: string): HTMLSelectElement => {
-  const element = document.querySelector(`#${id}`)
-  if (!(element instanceof HTMLSelectElement)) {
-    throw new TypeError(`Element with id \`${id}\` is not a select`)
-  }
-  return element
-}
+const getDivElement = (id: string): HTMLDivElement =>
+  getElement(id, HTMLDivElement, 'div')
+
+const getSelectElement = (id: string): HTMLSelectElement =>
+  getElement(id, HTMLSelectElement, 'select')
 
 const zoneElement = getSelectElement('zones')
 
