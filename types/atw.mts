@@ -10,7 +10,7 @@ import type {
 
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
 
-import { thermostatMode } from '../json-files.mts'
+import { thermostatMode } from '../files.mts'
 
 import type {
   BaseGetCapabilities,

@@ -123,7 +123,8 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
     >
   > = {
     hot_water_mode: ((value: keyof typeof HotWaterMode) =>
-      value === HotWaterMode.forced) as ConvertToDevice<DeviceType.Atw>,
+      HotWaterMode[value] ===
+      HotWaterMode.forced) as ConvertToDevice<DeviceType.Atw>,
     thermostat_mode: ((value: keyof typeof OperationModeZone) =>
       OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>

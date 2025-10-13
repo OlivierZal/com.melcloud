@@ -1,7 +1,4 @@
 import 'source-map-support/register.js'
-import 'core-js/actual/array/to-sorted.js'
-import 'core-js/actual/object/group-by.js'
-import 'core-js/actual/set/symmetric-difference.js'
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
@@ -40,7 +37,7 @@ import {
   setTemperature,
   thermostatMode,
   vertical,
-} from './json-files.mts'
+} from './files.mts'
 import { getZones } from './lib/index.mts'
 import {
   type DeviceSettings,
@@ -430,7 +427,10 @@ export default class MELCloudApp extends Homey.App {
       settings,
     } = homey
     if (settings.get('notifiedVersion') !== version) {
-      const { [version]: versionChangelog = {} } = changelog
+      const { [version]: versionChangelog = {} } = changelog as Record<
+        string,
+        object
+      >
       if (language in versionChangelog) {
         homey.setTimeout(async () => {
           try {
