@@ -16,9 +16,11 @@ label {
 }
 
 input {
+  padding-inline-end: 2.5rem;
   text-align: end;
 }
 
 select:not(#zones) {
+  padding-inline-end: 2.5rem;
   text-align-last: right;
 }
