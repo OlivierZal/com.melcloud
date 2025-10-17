@@ -151,6 +151,9 @@
       width: unset;
     }
   }
+  .prose & {
+    text-decoration-line: none;
+  }
   @layer daisyui.component {
     display: inline-flex;
     flex-shrink: 0;
@@ -202,9 +205,6 @@
       0 4px 3px -2px color-mix(in oklab, var(--btn-bg) calc(var(--depth) * 30%), #0000);
     }
     --btn-noise: var(--fx-noise);
-    .prose & {
-      text-decoration-line: none;
-    }
     @media (hover: hover) {
       &:hover {
         --btn-bg: var(--btn-color, var(--color-base-200));
@@ -820,6 +820,7 @@
     }
     &[multiple] {
       height: auto;
+      overflow: auto;
       padding-block: calc(0.25rem * 3);
       padding-inline-end: calc(0.25rem * 3);
       background-image: none;
@@ -1326,34 +1327,110 @@
   }
 }
 @layer base {
-  :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not([class*="drawer-open"]) > .drawer-toggle:checked ) {
+  :root:has(.modal-open, .modal[open], .modal:target, .modal-toggle:checked) {
     overflow: hidden;
+    --page-has-backdrop: 1;
+  }
+  :root:has(.drawer:not([class*="drawer-open"]) > .drawer-toggle:checked) {
+    overflow: hidden;
+    --page-has-backdrop: 1;
+  }
+  :root:has(.sm\:drawer-open > .drawer-toggle:checked) {
+    @media (width < 40rem) {
+      overflow: hidden;
+    }
+    @media (width < 40rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.md\:drawer-open > .drawer-toggle:checked) {
+    @media (width < 48rem) {
+      overflow: hidden;
+    }
+    @media (width < 48rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.lg\:drawer-open > .drawer-toggle:checked) {
+    @media (width < 64rem) {
+      overflow: hidden;
+    }
+    @media (width < 64rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.xl\:drawer-open > .drawer-toggle:checked) {
+    @media (width < 80rem) {
+      overflow: hidden;
+    }
+    @media (width < 80rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.\32xl\:drawer-open > .drawer-toggle:checked) {
+    @media (width < 96rem) {
+      overflow: hidden;
+    }
+    @media (width < 96rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.max-sm\:drawer-open > .drawer-toggle:checked) {
+    @media (width >= 40rem) {
+      overflow: hidden;
+    }
+    @media (width >= 40rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.max-md\:drawer-open > .drawer-toggle:checked) {
+    @media (width >= 48rem) {
+      overflow: hidden;
+    }
+    @media (width >= 48rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.max-lg\:drawer-open > .drawer-toggle:checked) {
+    @media (width >= 64rem) {
+      overflow: hidden;
+    }
+    @media (width >= 64rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.max-xl\:drawer-open > .drawer-toggle:checked) {
+    @media (width >= 80rem) {
+      overflow: hidden;
+    }
+    @media (width >= 80rem) {
+      --page-has-backdrop: 1;
+    }
+  }
+  :root:has(.max-2xl\:drawer-open > .drawer-toggle:checked) {
+    @media (width >= 96rem) {
+      overflow: hidden;
+    }
+    @media (width >= 96rem) {
+      --page-has-backdrop: 1;
+    }
   }
 }
 @layer base {
-  :where( :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked ) ) {
-    scrollbar-gutter: stable;
-    background-image: linear-gradient(var(--color-base-100), var(--color-base-100));
-    --root-bg: var(--color-base-100);
+  :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked ) {
+    background-image: linear-gradient(var(--root-bg), var(--root-bg));
+    background-color: var(--root-bg);
     @supports (color: color-mix(in lab, red, red)) {
-      --root-bg: color-mix(in srgb, var(--color-base-100), oklch(0% 0 0) 40%);
+      background-color: color-mix( in srgb, var(--root-bg), oklch(0% 0 0) calc(var(--page-has-backdrop, 0) * 40%) );
     }
-  }
-  :where(.modal[open], .modal-open, .modal-toggle:checked + .modal):not(.modal-start, .modal-end) {
+    animation: set-page-has-scroll forwards;
+    animation-timeline: scroll();
     scrollbar-gutter: stable;
+    scrollbar-gutter: if(style(--page-has-scroll: 1): stable; else: unset);
   }
-  @supports (width: if(else: 1px)) and (animation-timeline: scroll()) {
-    :root {
-      animation: set-page-has-scroll forwards;
-      animation-timeline: scroll();
-    }
-    @keyframes set-page-has-scroll {
-      0%, to {
-        --page-has-scroll: 1;
-      }
-    }
-    :where( :root:has( .modal-open, .modal[open], .modal:target, .modal-toggle:checked, .drawer:not(.drawer-open) > .drawer-toggle:checked ) ) {
-      scrollbar-gutter: if(style(--page-has-scroll: 1): stable; else: unset);
+  @keyframes set-page-has-scroll {
+    0%, to {
+      --page-has-scroll: 1;
     }
   }
 }
@@ -1361,6 +1438,9 @@
   :root, [data-theme] {
     background-color: var(--root-bg, var(--color-base-100));
     color: var(--color-base-content);
+  }
+  :where(:root, [data-theme]) {
+    --root-bg: var(--color-base-100);
   }
 }
 @keyframes rating {
