@@ -26,7 +26,7 @@ const buildGroupsForSelector = ({
   selector,
   selectorIncompatibilities,
 }) => {
-  const incompatibilities = new Set(selectorIncompatibilities[selector] ?? [])
+  const incompatibilities = new Set(selectorIncompatibilities[selector])
   return compatibleModifierCombos({ modifierIncompatibilities, modifiers })
     .filter((combo) =>
       combo.every((modifier) => !incompatibilities.has(modifier)),
