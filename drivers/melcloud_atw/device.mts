@@ -25,6 +25,16 @@ import {
   EnergyReportTotalAtw,
 } from './reports/index.mts'
 
+const isKeyOfOperationModeStateHotWaterCapability = (
+  key: string,
+): key is keyof typeof OperationModeStateHotWaterCapability =>
+  key in OperationModeStateHotWaterCapability
+
+const isKeyOfOperationModeStateZoneCapability = (
+  key: string,
+): key is keyof typeof OperationModeStateZoneCapability =>
+  key in OperationModeStateZoneCapability
+
 const convertFromDeviceMeasurePower = ((value: number) =>
   value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
 
@@ -35,13 +45,14 @@ const getOperationModeStateHotWaterValue = (
   data: ListDeviceData<DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
 ): OperationModeStateHotWaterCapability => {
+  if (data.ForcedHotWaterMode) {
+    return OperationModeStateHotWaterCapability.dhw
+  }
   if (data.ProhibitHotWater) {
     return OperationModeStateHotWaterCapability.prohibited
   }
-  if (operationModeState in OperationModeStateHotWaterCapability) {
-    return OperationModeStateHotWaterCapability[
-      operationModeState as OperationModeStateHotWaterCapability
-    ]
+  if (isKeyOfOperationModeStateHotWaterCapability(operationModeState)) {
+    return OperationModeStateHotWaterCapability[operationModeState]
   }
   return OperationModeStateHotWaterCapability.idle
 }
@@ -58,12 +69,10 @@ const getOperationModeStateZoneValue = (
     return OperationModeStateZoneCapability.prohibited
   }
   if (
-    operationModeState in OperationModeStateZoneCapability &&
+    isKeyOfOperationModeStateZoneCapability(operationModeState) &&
     !data[`Idle${zone}`]
   ) {
-    return OperationModeStateZoneCapability[
-      operationModeState as OperationModeStateZoneCapability
-    ]
+    return OperationModeStateZoneCapability[operationModeState]
   }
   return OperationModeStateZoneCapability.idle
 }
