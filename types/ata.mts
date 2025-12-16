@@ -28,8 +28,7 @@ export enum ThermostatModeAta {
 }
 
 export interface CapabilitiesAta
-  extends EnergyCapabilitiesAta,
-    OpCapabilities<DeviceType.Ata> {}
+  extends EnergyCapabilitiesAta, OpCapabilities<DeviceType.Ata> {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number

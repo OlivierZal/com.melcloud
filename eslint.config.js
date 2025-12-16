@@ -5,13 +5,15 @@ import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
+import packageJson, {
+  configs as packageJsonConfigs,
+} from 'eslint-plugin-package-json'
 import perfectionist from 'eslint-plugin-perfectionist'
 import unicorn from 'eslint-plugin-unicorn'
 import yml from 'eslint-plugin-yml'
 
 import { defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
-import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
@@ -476,42 +478,15 @@ const config = defineConfig([
     },
   },
   {
-    extends: [html.configs['recommended']],
+    extends: ['html/flat/all'],
     files: ['**/*.html'],
     language: 'html/html',
+    plugins: {
+      html,
+    },
     rules: {
-      'html/id-naming-convention': 'error',
-      'html/lowercase': 'error',
-      'html/no-abstract-roles': 'error',
-      'html/no-accesskey-attrs': 'error',
-      'html/no-aria-hidden-body': 'error',
-      'html/no-aria-hidden-on-focusable': 'error',
-      'html/no-duplicate-class': 'error',
-      'html/no-duplicate-in-head': 'error',
-      'html/no-extra-spacing-text': 'error',
-      'html/no-heading-inside-button': 'error',
-      'html/no-ineffective-attrs': 'error',
-      'html/no-inline-styles': 'error',
-      'html/no-invalid-entity': 'error',
-      'html/no-invalid-role': 'error',
-      'html/no-multiple-empty-lines': 'error',
-      'html/no-nested-interactive': 'error',
-      'html/no-non-scalable-viewport': 'error',
-      'html/no-positive-tabindex': 'error',
-      'html/no-script-style-type': 'error',
-      'html/no-skip-heading-levels': 'error',
-      'html/no-target-blank': 'error',
-      'html/no-trailing-spaces': 'error',
-      'html/prefer-https': 'error',
-      'html/require-button-type': 'error',
-      'html/require-explicit-size': 'error',
-      'html/require-form-method': 'error',
-      'html/require-frame-title': 'error',
-      'html/require-input-label': 'error',
-      'html/require-meta-charset': 'error',
-      'html/require-meta-description': 'error',
-      'html/require-meta-viewport': 'error',
-      'html/sort-attrs': 'error',
+      '@html-eslint/no-empty-headings': 'off',
+      '@html-eslint/require-open-graph-protocol': 'off',
       'html/use-baseline': [
         'error',
         {
@@ -608,11 +583,13 @@ const config = defineConfig([
       ],
     },
   },
+  packageJsonConfigs.recommended,
+  packageJsonConfigs.stylistic,
   {
-    ...packageJsonConfigs.recommended,
+    plugins: {
+      'package-json': packageJson,
+    },
     rules: {
-      ...packageJsonConfigs.recommended.rules,
-      'package-json/exports-subpaths-style': 'error',
       'package-json/restrict-dependency-ranges': [
         'error',
         [
@@ -620,12 +597,6 @@ const config = defineConfig([
             rangeType: 'caret',
           },
         ],
-      ],
-      'package-json/valid-bin': [
-        'error',
-        {
-          enforceCase: true,
-        },
       ],
     },
   },

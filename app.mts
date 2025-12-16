@@ -169,10 +169,10 @@ export default class MELCloudApp extends Homey.App {
     this.#api = await MELCloudAPI.create({
       language,
       logger: {
-        error: (...args) => {
+        error: (...args: unknown[]) => {
           this.error(...args)
         },
-        log: (...args) => {
+        log: (...args: unknown[]) => {
           this.log(...args)
         },
       },

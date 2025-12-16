@@ -56,7 +56,7 @@
   "category": [
     "climate"
   ],
-  "compatibility": ">=12.2.0",
+  "compatibility": ">=12.9.0",
   "contributing": {
     "donate": {
       "paypal": {

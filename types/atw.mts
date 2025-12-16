@@ -148,8 +148,7 @@ export enum OperationModeStateZoneCapability {
 }
 
 export interface CapabilitiesAtw
-  extends EnergyCapabilitiesAtw,
-    OpCapabilities<DeviceType.Atw> {
+  extends EnergyCapabilitiesAtw, OpCapabilities<DeviceType.Atw> {
   readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
   readonly 'operational_state.zone1': OperationModeStateZoneCapability
   readonly 'operational_state.zone2': OperationModeStateZoneCapability
@@ -213,8 +212,7 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
 }
 
 export interface SetCapabilitiesAtw
-  extends BaseSetCapabilities,
-    TargetTemperatureFlowCapabilities {
+  extends BaseSetCapabilities, TargetTemperatureFlowCapabilities {
   readonly hot_water_mode: keyof typeof HotWaterMode
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
