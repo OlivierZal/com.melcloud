@@ -33,7 +33,6 @@
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.0.2",
     "apexcharts": "^5.3.6",
-    "baseline-browser-mapping": "^2.9.8",
     "daisyui": "^5.5.14",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
