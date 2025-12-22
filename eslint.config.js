@@ -5,114 +5,31 @@ import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
-import packageJson, {
-  configs as packageJsonConfigs,
-} from 'eslint-plugin-package-json'
 import perfectionist from 'eslint-plugin-perfectionist'
 import unicorn from 'eslint-plugin-unicorn'
 import yml from 'eslint-plugin-yml'
 
 import { defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
+import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
 
 import { classGroups } from './eslint-utils/class-groups.js'
 
-const buildExportImportGroup = (selector) =>
-  ['type', 'value'].map((group) => `${group}-${selector}`)
-
-const buildImportGroup = (selector) =>
-  ['type', 'default', 'named', 'wildcard', 'require', 'ts-equals'].map(
-    (group) => `${group}-${selector}`,
-  )
-
-const alphabet = Alphabet.generateRecommendedAlphabet()
-  .sortByNaturalSort()
-  .placeCharacterBefore({ characterAfter: '-', characterBefore: '/' })
-  .getCharacters()
-
-const arrayLikeSortOptions = {
-  groups: ['literal', 'spread'],
-  newlinesBetween: 'never',
-}
-
-const classSortOptions = {
-  ...classGroups,
-  newlinesBetween: 'ignore',
-}
-
 const decoratorSortOptions = {
   groups: ['unknown'],
 }
 
-const enumSortOptions = {
-  groups: ['unknown'],
-  newlinesBetween: 'never',
-}
+const buildImportGroup = (selector) =>
+  ['type', 'default', 'named', 'wildcard', 'require', 'ts-equals'].map(
+    (modifier) => `${modifier}-${selector}`,
+  )
 
-const exportSortOptions = {
-  groups: buildExportImportGroup('export'),
-}
-
-const importNamedSortOptions = {
-  groups: buildExportImportGroup('import'),
-}
-
-const importSortOptions = {
-  groups: [
-    ...buildImportGroup('side-effect'),
-    ...buildImportGroup('side-effect-style'),
-    ...buildImportGroup('style'),
-    ...buildImportGroup('builtin'),
-    ...buildImportGroup('external'),
-    ...buildImportGroup('tsconfig-path'),
-    ...buildImportGroup('subpath'),
-    ...buildImportGroup('internal'),
-    ...buildImportGroup('parent'),
-    ...buildImportGroup('sibling'),
-    ...buildImportGroup('index'),
-  ],
-  newlinesBetween: 'always',
-}
-
-const mapSortOptions = {
-  groups: ['unknown'],
-  newlinesBetween: 'never',
-}
-
-const moduleSortOptions = {
-  groups: [
-    'declare-enum',
-    'declare-interface',
-    'declare-type',
-    'declare-class',
-    'declare-function',
-    'enum',
-    'interface',
-    'type',
-    'class',
-    'function',
-    'export-enum',
-    'export-interface',
-    'export-type',
-    'export-class',
-    'export-function',
-    'export-default-interface',
-    'export-default-class',
-    'export-default-function',
-  ],
-  newlinesBetween: 'ignore',
-}
-
-const namedSortOptions = {
-  newlinesBetween: 'never',
-}
-
-const objectSortOptions = {
-  groups: ['property', 'method'],
-  newlinesBetween: 'never',
+const arrayLikeSortOptions = {
+  groups: ['literal', 'spread'],
+  newlinesBetween: 0,
 }
 
 const typeSortOptions = {
@@ -131,7 +48,7 @@ const typeSortOptions = {
     'unknown',
     'nullish',
   ],
-  newlinesBetween: 'never',
+  newlinesBetween: 0,
 }
 
 const typeLikeSortOptions = {
@@ -143,7 +60,7 @@ const typeLikeSortOptions = {
     'required-method',
     'optional-method',
   ],
-  newlinesBetween: 'never',
+  newlinesBetween: 0,
 }
 
 const config = defineConfig([
@@ -377,38 +294,112 @@ const config = defineConfig([
       ],
       'one-var': ['error', 'never'],
       'perfectionist/sort-array-includes': ['error', arrayLikeSortOptions],
-      'perfectionist/sort-classes': ['error', classSortOptions],
+      'perfectionist/sort-classes': [
+        'error',
+        {
+          ...classGroups,
+          newlinesBetween: 'ignore',
+        },
+      ],
       'perfectionist/sort-decorators': ['error', decoratorSortOptions],
-      'perfectionist/sort-enums': ['error', enumSortOptions],
+      'perfectionist/sort-enums': [
+        'error',
+        {
+          groups: ['unknown'],
+          newlinesBetween: 0,
+        },
+      ],
+      'perfectionist/sort-export-attributes': 'error',
       'perfectionist/sort-exports': [
         'error',
         {
-          ...exportSortOptions,
-          newlinesBetween: 'always',
+          groups: [
+            'type-export',
+            'named-export',
+            'wildcard-export',
+            'value-export',
+          ],
+          newlinesBetween: 1,
         },
       ],
       'perfectionist/sort-heritage-clauses': 'error',
-      'perfectionist/sort-imports': ['error', importSortOptions],
+      'perfectionist/sort-import-attributes': 'error',
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          groups: [
+            ...buildImportGroup('side-effect'),
+            ...buildImportGroup('side-effect-style'),
+            ...buildImportGroup('style'),
+            ...buildImportGroup('builtin'),
+            ...buildImportGroup('external'),
+            ...buildImportGroup('tsconfig-path'),
+            ...buildImportGroup('subpath'),
+            ...buildImportGroup('internal'),
+            ...buildImportGroup('parent'),
+            ...buildImportGroup('sibling'),
+            ...buildImportGroup('index'),
+          ],
+          newlinesBetween: 1,
+        },
+      ],
       'perfectionist/sort-interfaces': ['error', typeLikeSortOptions],
       'perfectionist/sort-intersection-types': ['error', typeSortOptions],
-      'perfectionist/sort-maps': ['error', mapSortOptions],
-      'perfectionist/sort-modules': ['error', moduleSortOptions],
+      'perfectionist/sort-maps': [
+        'error',
+        {
+          groups: ['unknown'],
+          newlinesBetween: 0,
+        },
+      ],
+      'perfectionist/sort-modules': [
+        'error',
+        {
+          groups: [
+            'declare-enum',
+            'declare-interface',
+            'declare-type',
+            'declare-class',
+            'declare-function',
+            'enum',
+            'interface',
+            'type',
+            'class',
+            'function',
+            'export-enum',
+            'export-interface',
+            'export-type',
+            'export-class',
+            'export-function',
+            'export-default-interface',
+            'export-default-class',
+            'export-default-function',
+          ],
+          newlinesBetween: 'ignore',
+        },
+      ],
       'perfectionist/sort-named-exports': [
         'error',
         {
-          ...exportSortOptions,
-          ...namedSortOptions,
+          groups: ['type-export', 'value-export'],
+          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-named-imports': [
         'error',
         {
-          ...importNamedSortOptions,
-          ...namedSortOptions,
+          groups: ['type-import', 'value-import'],
+          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-object-types': ['error', typeLikeSortOptions],
-      'perfectionist/sort-objects': ['error', objectSortOptions],
+      'perfectionist/sort-objects': [
+        'error',
+        {
+          groups: ['property', 'method'],
+          newlinesBetween: 0,
+        },
+      ],
       'perfectionist/sort-sets': ['error', arrayLikeSortOptions],
       'perfectionist/sort-switch-case': 'error',
       'perfectionist/sort-union-types': ['error', typeSortOptions],
@@ -433,7 +424,10 @@ const config = defineConfig([
     },
     settings: {
       perfectionist: {
-        alphabet,
+        alphabet: Alphabet.generateRecommendedAlphabet()
+          .sortByNaturalSort()
+          .placeCharacterBefore({ characterAfter: '-', characterBefore: '/' })
+          .getCharacters(),
         ignoreCase: false,
         locales: 'en_US',
         order: 'asc',
@@ -583,12 +577,9 @@ const config = defineConfig([
       ],
     },
   },
-  packageJsonConfigs.recommended,
-  packageJsonConfigs.stylistic,
   {
-    plugins: {
-      'package-json': packageJson,
-    },
+    extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
+    files: ['package.json'],
     rules: {
       'package-json/restrict-dependency-ranges': [
         'error',
