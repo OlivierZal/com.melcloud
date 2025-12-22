@@ -29,7 +29,6 @@ const buildImportGroup = (selector) =>
 
 const arrayLikeSortOptions = {
   groups: ['literal', 'spread'],
-  newlinesBetween: 0,
 }
 
 const typeSortOptions = {
@@ -48,7 +47,6 @@ const typeSortOptions = {
     'unknown',
     'nullish',
   ],
-  newlinesBetween: 0,
 }
 
 const typeLikeSortOptions = {
@@ -60,7 +58,6 @@ const typeLikeSortOptions = {
     'required-method',
     'optional-method',
   ],
-  newlinesBetween: 0,
 }
 
 const config = defineConfig([
@@ -99,7 +96,6 @@ const config = defineConfig([
     rules: {
       '@stylistic/line-comment-position': 'error',
       '@stylistic/lines-around-comment': 'error',
-      '@stylistic/lines-between-class-members': ['error', 'always'],
       '@stylistic/multiline-comment-style': 'error',
       '@stylistic/quotes': [
         'error',
@@ -298,7 +294,8 @@ const config = defineConfig([
         'error',
         {
           ...classGroups,
-          newlinesBetween: 'ignore',
+          newlinesBetween: 1,
+          newlinesInside: 1,
         },
       ],
       'perfectionist/sort-decorators': ['error', decoratorSortOptions],
@@ -306,7 +303,6 @@ const config = defineConfig([
         'error',
         {
           groups: ['unknown'],
-          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-export-attributes': 'error',
@@ -349,7 +345,6 @@ const config = defineConfig([
         'error',
         {
           groups: ['unknown'],
-          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-modules': [
@@ -375,21 +370,20 @@ const config = defineConfig([
             'export-default-class',
             'export-default-function',
           ],
-          newlinesBetween: 'ignore',
+          newlinesBetween: 1,
+          newlinesInside: 1,
         },
       ],
       'perfectionist/sort-named-exports': [
         'error',
         {
           groups: ['type-export', 'value-export'],
-          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-named-imports': [
         'error',
         {
           groups: ['type-import', 'value-import'],
-          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-object-types': ['error', typeLikeSortOptions],
@@ -397,7 +391,6 @@ const config = defineConfig([
         'error',
         {
           groups: ['property', 'method'],
-          newlinesBetween: 0,
         },
       ],
       'perfectionist/sort-sets': ['error', arrayLikeSortOptions],
@@ -430,6 +423,8 @@ const config = defineConfig([
           .getCharacters(),
         ignoreCase: false,
         locales: 'en_US',
+        newlinesBetween: 0,
+        newlinesInside: 0,
         order: 'asc',
         partitionByComment: true,
         partitionByNewLine: false,
