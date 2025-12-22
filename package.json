@@ -5,14 +5,14 @@
   "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
     "format": "prettier . --check",
     "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build:css && npm run format:docs && npm run lint:fix && npm run format:fix",
-    "publish": "homey app publish"
+    "prepare": "npm run build:css && npm run format:docs && npm run lint:fix && npm run format:fix"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^21.0.0",
