@@ -541,6 +541,12 @@ const config = defineConfig([
       customSyntax: tailwind4,
     },
     rules: {
+      'css/no-invalid-properties': [
+        'error',
+        {
+          allowUnknownVariables: true,
+        },
+      ],
       'css/prefer-logical-properties': 'error',
       'css/relative-font-units': 'error',
       'css/selector-complexity': 'error',

@@ -71,17 +71,14 @@
 }
 
 input.homey-form-checkbox-input:indeterminate ~ .homey-form-checkbox-checkmark {
-  /* eslint-disable css/no-invalid-properties */
   background-color: var(--homey-color-highlight);
   border-color: var(--homey-color-highlight);
-  /* eslint-enable css/no-invalid-properties */
   position: relative;
 }
 
 input.homey-form-checkbox-input:indeterminate
   ~ .homey-form-checkbox-checkmark::before {
   -webkit-mask-image: none;
-  /* eslint-disable-next-line css/no-invalid-properties */
   background-color: var(--homey-icon-color-white);
   block-size: 2px;
   content: '';
