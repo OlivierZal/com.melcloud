@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "42.1.0",
+  "version": "43.0.0",
   "description": "MELCloud for Homey",
   "license": "GPL-3.0-only",
   "type": "module",
