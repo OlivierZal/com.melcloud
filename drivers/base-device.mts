@@ -318,12 +318,12 @@ export abstract class BaseMELCloudDevice<
     await this.#handleEnergyReports()
   }
 
-  #isCapability(setting: string): boolean {
-    return (this.driver.manifest.capabilities ?? []).includes(setting)
+  #isCapability(capability: string): boolean {
+    return (this.driver.manifest.capabilities ?? []).includes(capability)
   }
 
-  #isEnergyCapability(setting: string): boolean {
-    return setting in this.driver.energyCapabilityTagMapping
+  #isEnergyCapability(capability: string): boolean {
+    return capability in this.driver.energyCapabilityTagMapping
   }
 
   #isThermostatModeSupportingOff(): boolean {
@@ -369,15 +369,15 @@ export abstract class BaseMELCloudDevice<
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings()
     const currentCapabilities = new Set(this.getCapabilities())
-    const requiredCapabilities = new Set([
-      ...Object.keys(settings).filter(
-        (setting) =>
-          this.#isCapability(setting) &&
-          typeof settings[setting] === 'boolean' &&
-          settings[setting],
-      ),
-      ...this.driver.getRequiredCapabilities(data),
-    ])
+    const requiredCapabilities = new Set(
+      [
+        ...Object.keys(settings).filter(
+          (setting) =>
+            typeof settings[setting] === 'boolean' && settings[setting],
+        ),
+        ...this.driver.getRequiredCapabilities(data),
+      ].filter((capability) => this.#isCapability(capability)),
+    )
     for (const capability of currentCapabilities.symmetricDifference(
       requiredCapabilities,
     )) {
