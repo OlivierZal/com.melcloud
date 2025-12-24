@@ -2059,152 +2059,21 @@
   },
   "drivers": [
     {
-      "class": "heatpump",
-      "icon": "/drivers/melcloud/assets/icon.svg",
-      "images": {
-        "large": "/drivers/melcloud/assets/images/large.png",
-        "small": "/drivers/melcloud/assets/images/small.png"
-      },
-      "pair": [
-        {
-          "id": "loading",
-          "template": "loading"
-        },
-        {
-          "id": "login",
-          "options": {
-            "logo": "logo.png",
-            "passwordLabel": {
-              "da": "Adgangskode",
-              "en": "Password",
-              "es": "Contraseña",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "no": "Passord",
-              "sv": "Lösenord"
-            },
-            "passwordPlaceholder": {
-              "da": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
-            "usernameLabel": {
-              "da": "Brugernavn",
-              "en": "Username",
-              "es": "Nombre de usuario",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "no": "Brukernavn",
-              "sv": "Användarnamn"
-            },
-            "usernamePlaceholder": {
-              "da": "bruger@domain.dk",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "sv": "anvandare@domain.se"
-            }
-          },
-          "template": "login_credentials"
-        },
-        {
-          "id": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          },
-          "template": "list_devices"
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "options": {
-            "logo": "logo.png",
-            "passwordLabel": {
-              "da": "Adgangskode",
-              "en": "Password",
-              "es": "Contraseña",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "no": "Passord",
-              "sv": "Lösenord"
-            },
-            "passwordPlaceholder": {
-              "da": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
-            "usernameLabel": {
-              "da": "Brugernavn",
-              "en": "Username",
-              "es": "Nombre de usuario",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "no": "Brukernavn",
-              "sv": "Användarnamn"
-            },
-            "usernamePlaceholder": {
-              "da": "bruger@domain.dk",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "sv": "anvandare@domain.se"
-            }
-          },
-          "template": "login_credentials"
-        }
-      ],
-      "capabilities": [
-        "onoff",
-        "measure_temperature",
-        "measure_temperature.outdoor",
-        "target_temperature",
-        "thermostat_mode",
-        "fan_speed",
-        "fan_speed.state",
-        "vertical",
-        "horizontal",
-        "alarm_generic.silent",
-        "measure_power",
-        "measure_power.auto",
-        "measure_power.cooling",
-        "measure_power.dry",
-        "measure_power.fan",
-        "measure_power.heating",
-        "measure_power.other",
-        "meter_power",
-        "meter_power.auto",
-        "meter_power.cooling",
-        "meter_power.dry",
-        "meter_power.fan",
-        "meter_power.heating",
-        "meter_power.other",
-        "meter_power.daily",
-        "meter_power.daily_auto",
-        "meter_power.daily_cooling",
-        "meter_power.daily_dry",
-        "meter_power.daily_fan",
-        "meter_power.daily_heating",
-        "meter_power.daily_other",
-        "measure_signal_strength"
-      ],
       "capabilitiesOptions": {
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "da": "Udendørstemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "sv": "Utomhustemperatur"
+          }
+        },
         "alarm_generic.silent": {
           "insightsTitleFalse": {
             "da": "Stille tilstand blev deaktiveret",
@@ -2249,9 +2118,6 @@
           },
           "uiComponent": "sensor",
           "units": ""
-        },
-        "measure_power": {
-          "approximated": true
         },
         "measure_power.auto": {
           "title": {
@@ -2317,17 +2183,6 @@
             "nl": "Vermogen - andere",
             "no": "Effekt - annet",
             "sv": "Effekt - övrigt"
-          }
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
           }
         },
         "meter_power.auto": {
@@ -2554,6 +2409,151 @@
           ]
         }
       },
+      "class": "heatpump",
+      "icon": "/drivers/melcloud/assets/icon.svg",
+      "images": {
+        "large": "/drivers/melcloud/assets/images/large.png",
+        "small": "/drivers/melcloud/assets/images/small.png"
+      },
+      "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        },
+        {
+          "id": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "template": "list_devices"
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        }
+      ],
+      "capabilities": [
+        "onoff",
+        "measure_temperature",
+        "measure_temperature.outdoor",
+        "target_temperature",
+        "thermostat_mode",
+        "fan_speed",
+        "fan_speed.state",
+        "vertical",
+        "horizontal",
+        "alarm_generic.silent",
+        "measure_power",
+        "measure_power.auto",
+        "measure_power.cooling",
+        "measure_power.dry",
+        "measure_power.fan",
+        "measure_power.heating",
+        "measure_power.other",
+        "meter_power",
+        "meter_power.auto",
+        "meter_power.cooling",
+        "meter_power.dry",
+        "meter_power.fan",
+        "meter_power.heating",
+        "meter_power.other",
+        "meter_power.daily",
+        "meter_power.daily_auto",
+        "meter_power.daily_cooling",
+        "meter_power.daily_dry",
+        "meter_power.daily_fan",
+        "meter_power.daily_heating",
+        "meter_power.daily_other",
+        "measure_signal_strength"
+      ],
       "name": {
         "da": "Luft-til-luft varmepumpe",
         "en": "Air-to-air heat pump",
@@ -2956,184 +2956,21 @@
       ]
     },
     {
-      "class": "heatpump",
-      "icon": "/drivers/melcloud_atw/assets/icon.svg",
-      "images": {
-        "large": "/drivers/melcloud_atw/assets/images/large.png",
-        "small": "/drivers/melcloud_atw/assets/images/small.png"
-      },
-      "pair": [
-        {
-          "id": "loading",
-          "template": "loading"
-        },
-        {
-          "id": "login",
-          "options": {
-            "logo": "logo.png",
-            "passwordLabel": {
-              "da": "Adgangskode",
-              "en": "Password",
-              "es": "Contraseña",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "no": "Passord",
-              "sv": "Lösenord"
-            },
-            "passwordPlaceholder": {
-              "da": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
-            "usernameLabel": {
-              "da": "Brugernavn",
-              "en": "Username",
-              "es": "Nombre de usuario",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "no": "Brukernavn",
-              "sv": "Användarnamn"
-            },
-            "usernamePlaceholder": {
-              "da": "bruger@domain.dk",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "sv": "anvandare@domain.se"
-            }
-          },
-          "template": "login_credentials"
-        },
-        {
-          "id": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          },
-          "template": "list_devices"
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "repair": [
-        {
-          "id": "login",
-          "options": {
-            "logo": "logo.png",
-            "passwordLabel": {
-              "da": "Adgangskode",
-              "en": "Password",
-              "es": "Contraseña",
-              "fr": "Mot de passe",
-              "nl": "Wachtwoord",
-              "no": "Passord",
-              "sv": "Lösenord"
-            },
-            "passwordPlaceholder": {
-              "da": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
-            "usernameLabel": {
-              "da": "Brugernavn",
-              "en": "Username",
-              "es": "Nombre de usuario",
-              "fr": "Nom d'utilisateur",
-              "nl": "Gebruikersnaam",
-              "no": "Brukernavn",
-              "sv": "Användarnamn"
-            },
-            "usernamePlaceholder": {
-              "da": "bruger@domain.dk",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "sv": "anvandare@domain.se"
-            }
-          },
-          "template": "login_credentials"
-        }
-      ],
-      "capabilities": [
-        "onoff",
-        "hot_water_mode",
-        "measure_temperature",
-        "measure_temperature.zone2",
-        "measure_temperature.outdoor",
-        "measure_temperature.condensing",
-        "measure_temperature.flow",
-        "measure_temperature.flow_zone1",
-        "measure_temperature.flow_zone2",
-        "measure_temperature.return",
-        "measure_temperature.return_zone1",
-        "measure_temperature.return_zone2",
-        "measure_temperature.tank_water",
-        "measure_temperature.tank_water_mixing",
-        "measure_temperature.target_curve",
-        "measure_temperature.target_curve_zone2",
-        "target_temperature",
-        "target_temperature.zone2",
-        "target_temperature.flow_cool",
-        "target_temperature.flow_cool_zone2",
-        "target_temperature.flow_heat",
-        "target_temperature.flow_heat_zone2",
-        "target_temperature.tank_water",
-        "thermostat_mode",
-        "thermostat_mode.zone2",
-        "operational_state",
-        "operational_state.hot_water",
-        "operational_state.zone1",
-        "operational_state.zone2",
-        "legionella",
-        "alarm_generic.booster_heater1",
-        "alarm_generic.booster_heater2",
-        "alarm_generic.booster_heater2_plus",
-        "alarm_generic.defrost",
-        "alarm_generic.eco_hot_water",
-        "alarm_generic.immersion_heater",
-        "measure_frequency",
-        "measure_power",
-        "measure_power.produced",
-        "meter_power",
-        "meter_power.cooling",
-        "meter_power.heating",
-        "meter_power.hotwater",
-        "meter_power.produced",
-        "meter_power.produced_cooling",
-        "meter_power.produced_heating",
-        "meter_power.produced_hotwater",
-        "meter_power.cop",
-        "meter_power.cop_cooling",
-        "meter_power.cop_heating",
-        "meter_power.cop_hotwater",
-        "meter_power.daily",
-        "meter_power.daily_cooling",
-        "meter_power.daily_heating",
-        "meter_power.daily_hotwater",
-        "meter_power.produced_daily",
-        "meter_power.produced_daily_cooling",
-        "meter_power.produced_daily_heating",
-        "meter_power.produced_daily_hotwater",
-        "meter_power.cop_daily",
-        "meter_power.cop_daily_cooling",
-        "meter_power.cop_daily_heating",
-        "meter_power.cop_daily_hotwater",
-        "measure_signal_strength"
-      ],
       "capabilitiesOptions": {
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "da": "Udendørstemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "sv": "Utomhustemperatur"
+          }
+        },
         "alarm_generic.booster_heater1": {
           "insightsTitleFalse": {
             "da": "Tilkoblingsvarme 1 blev deaktiveret",
@@ -3336,9 +3173,6 @@
             }
           ]
         },
-        "measure_power": {
-          "approximated": true
-        },
         "measure_power.produced": {
           "title": {
             "da": "Produceret effekt",
@@ -3392,17 +3226,6 @@
             "nl": "Aanvoertemperatuur - zone 2 (externe sensor)",
             "no": "Fremløpstemperatur - sone 2 (ekstern sensor)",
             "sv": "Framledningstemperatur - zon 2 (extern sensor)"
-          }
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
           }
         },
         "measure_temperature.return": {
@@ -4137,6 +3960,183 @@
           }
         }
       },
+      "class": "heatpump",
+      "icon": "/drivers/melcloud_atw/assets/icon.svg",
+      "images": {
+        "large": "/drivers/melcloud_atw/assets/images/large.png",
+        "small": "/drivers/melcloud_atw/assets/images/small.png"
+      },
+      "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        },
+        {
+          "id": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "template": "list_devices"
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        }
+      ],
+      "capabilities": [
+        "onoff",
+        "hot_water_mode",
+        "measure_temperature",
+        "measure_temperature.zone2",
+        "measure_temperature.outdoor",
+        "measure_temperature.condensing",
+        "measure_temperature.flow",
+        "measure_temperature.flow_zone1",
+        "measure_temperature.flow_zone2",
+        "measure_temperature.return",
+        "measure_temperature.return_zone1",
+        "measure_temperature.return_zone2",
+        "measure_temperature.tank_water",
+        "measure_temperature.tank_water_mixing",
+        "measure_temperature.target_curve",
+        "measure_temperature.target_curve_zone2",
+        "target_temperature",
+        "target_temperature.zone2",
+        "target_temperature.flow_cool",
+        "target_temperature.flow_cool_zone2",
+        "target_temperature.flow_heat",
+        "target_temperature.flow_heat_zone2",
+        "target_temperature.tank_water",
+        "thermostat_mode",
+        "thermostat_mode.zone2",
+        "operational_state",
+        "operational_state.hot_water",
+        "operational_state.zone1",
+        "operational_state.zone2",
+        "legionella",
+        "alarm_generic.booster_heater1",
+        "alarm_generic.booster_heater2",
+        "alarm_generic.booster_heater2_plus",
+        "alarm_generic.defrost",
+        "alarm_generic.eco_hot_water",
+        "alarm_generic.immersion_heater",
+        "measure_frequency",
+        "measure_power",
+        "measure_power.produced",
+        "meter_power",
+        "meter_power.cooling",
+        "meter_power.heating",
+        "meter_power.hotwater",
+        "meter_power.produced",
+        "meter_power.produced_cooling",
+        "meter_power.produced_heating",
+        "meter_power.produced_hotwater",
+        "meter_power.cop",
+        "meter_power.cop_cooling",
+        "meter_power.cop_heating",
+        "meter_power.cop_hotwater",
+        "meter_power.daily",
+        "meter_power.daily_cooling",
+        "meter_power.daily_heating",
+        "meter_power.daily_hotwater",
+        "meter_power.produced_daily",
+        "meter_power.produced_daily_cooling",
+        "meter_power.produced_daily_heating",
+        "meter_power.produced_daily_hotwater",
+        "meter_power.cop_daily",
+        "meter_power.cop_daily_cooling",
+        "meter_power.cop_daily_heating",
+        "meter_power.cop_daily_hotwater",
+        "measure_signal_strength"
+      ],
       "name": {
         "da": "Luft-til-vand varmepumpe",
         "en": "Air-to-water heat pump",
@@ -4907,6 +4907,74 @@
       ]
     },
     {
+      "capabilitiesOptions": {
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "da": "Udendørstemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "sv": "Utomhustemperatur"
+          }
+        },
+        "thermostat_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "da": "Automatisk",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "bypass",
+              "title": {
+                "da": "Bypass",
+                "en": "Bypass",
+                "es": "Bypass",
+                "fr": "Bypass",
+                "nl": "Bypass",
+                "no": "Bypass",
+                "sv": "Bypass"
+              }
+            },
+            {
+              "id": "recovery",
+              "title": {
+                "da": "Varmegenvinding",
+                "en": "Energy Recovery",
+                "es": "Recuperación de energía",
+                "fr": "Récupération d'énergie",
+                "nl": "Warmteterugwinning",
+                "no": "Varmegjenvinning",
+                "sv": "Värmeåtervinning"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "da": "Deaktiveret",
+                "en": "Off",
+                "es": "Desactivado",
+                "fr": "Désactivé",
+                "nl": "Uit",
+                "no": "Av",
+                "sv": "Av"
+              }
+            }
+          ]
+        }
+      },
       "class": "heatpump",
       "icon": "/drivers/melcloud_erv/assets/icon.svg",
       "images": {
@@ -5028,71 +5096,6 @@
         "measure_pm25",
         "measure_signal_strength"
       ],
-      "capabilitiesOptions": {
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
-        "thermostat_mode": {
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "da": "Automatisk",
-                "en": "Automatic",
-                "es": "Automático",
-                "fr": "Automatique",
-                "nl": "Automatisch",
-                "no": "Automatisk",
-                "sv": "Automatiskt"
-              }
-            },
-            {
-              "id": "bypass",
-              "title": {
-                "da": "Bypass",
-                "en": "Bypass",
-                "es": "Bypass",
-                "fr": "Bypass",
-                "nl": "Bypass",
-                "no": "Bypass",
-                "sv": "Bypass"
-              }
-            },
-            {
-              "id": "recovery",
-              "title": {
-                "da": "Varmegenvinding",
-                "en": "Energy Recovery",
-                "es": "Recuperación de energía",
-                "fr": "Récupération d'énergie",
-                "nl": "Warmteterugwinning",
-                "no": "Varmegjenvinning",
-                "sv": "Värmeåtervinning"
-              }
-            },
-            {
-              "id": "off",
-              "title": {
-                "da": "Deaktiveret",
-                "en": "Off",
-                "es": "Desactivado",
-                "fr": "Désactivé",
-                "nl": "Uit",
-                "no": "Av",
-                "sv": "Av"
-              }
-            }
-          ]
-        }
-      },
       "name": {
         "da": "Ventilator med varmegenvinding (ERV)",
         "en": "Energy recovery ventilator (ERV)",

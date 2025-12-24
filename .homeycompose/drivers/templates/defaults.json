@@ -1,4 +1,20 @@
 {
+  "capabilitiesOptions": {
+    "measure_power": {
+      "approximated": true
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "da": "Udendørstemperatur",
+        "en": "Outdoor temperature",
+        "es": "Temperatura exterior",
+        "fr": "Température extérieure",
+        "nl": "Buitentemperatuur",
+        "no": "Utetemperatur",
+        "sv": "Utomhustemperatur"
+      }
+    }
+  },
   "class": "heatpump",
   "icon": "{{driverAssetsPath}}/icon.svg",
   "images": {
