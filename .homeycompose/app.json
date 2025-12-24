@@ -109,7 +109,7 @@
       "conditioned air",
       "ecodan",
       "erv",
-      "energy recovery ventilator",
+      "energy recovery",
       "heat pump",
       "melcloud",
       "mitsubishi"
@@ -123,7 +123,7 @@
       "erv",
       "melcloud",
       "mitsubishi",
-      "ventilador recuperador de energía"
+      "recuperación de calor"
     ],
     "fr": [
       "air air",
@@ -135,7 +135,7 @@
       "melcloud",
       "mitsubishi",
       "pompe à chaleur",
-      "ventilateur récupérateur d'énergie",
+      "récupération de chaleur",
       "vre"
     ],
     "nl": [
