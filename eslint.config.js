@@ -215,6 +215,9 @@ const config = defineConfig([
         'error',
         {
           argsIgnorePattern: '^_context$',
+          enableAutofixRemoval: {
+            imports: true,
+          },
           varsIgnorePattern: '^onHomeyReady$',
         },
       ],
