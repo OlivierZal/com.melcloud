@@ -5,7 +5,7 @@
   "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
-    "build": "npm run prepare && tsgo",
+    "build": "npm run prepare && tsc",
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
     "format": "prettier . --check",
     "format:docs": "prettier README.md --ignore-path --write",
@@ -49,6 +49,6 @@
     "tailwind-csstree": "^0.1.4",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0"
+    "typescript-eslint": "^8.53.0"
   }
 }
