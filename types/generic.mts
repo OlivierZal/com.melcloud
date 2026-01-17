@@ -355,6 +355,17 @@ export interface Settings extends BaseSettings {
   readonly always_on?: boolean
 }
 
+export interface SmartFanSettings {
+  readonly external_sensor_id?: string | null
+  readonly smart_fan_enabled?: boolean
+  readonly smart_fan_mode?: 'aggressive' | 'economical' | 'moderate'
+}
+
+export interface TemperatureSensorInfo {
+  readonly id: string
+  readonly name: string
+}
+
 export interface ZoneData {
   readonly zoneId: string
   readonly zoneType: Exclude<keyof typeof zoneModel, 'devices'>

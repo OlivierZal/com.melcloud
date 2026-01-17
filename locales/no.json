@@ -65,6 +65,12 @@
     "zones": {
       "legend": "Sonesinnstillinger",
       "update": "Oppdater"
+    },
+    "temperatureSensors": {
+      "legend": "Tilgjengelige temperatursensorer",
+      "noSensors": "Ingen temperatursensorer funnet.",
+      "copyHint": "Kopier ID-en for å bruke i enhetsinnstillinger.",
+      "refresh": "Oppdater sensorer"
     }
   },
   "warnings": {

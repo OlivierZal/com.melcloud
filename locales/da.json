@@ -65,6 +65,12 @@
     "zones": {
       "legend": "Zonesindstillinger",
       "update": "Opdater"
+    },
+    "temperatureSensors": {
+      "legend": "Tilgængelige temperatursensorer",
+      "noSensors": "Ingen temperatursensorer fundet.",
+      "copyHint": "Kopier ID'et til brug i enhedsindstillinger.",
+      "refresh": "Opdater sensorer"
     }
   },
   "warnings": {

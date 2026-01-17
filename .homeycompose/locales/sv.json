@@ -61,6 +61,12 @@
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
+    "temperatureSensors": {
+      "copyHint": "Kopiera ID:t för användning i enhetsinställningar.",
+      "legend": "Tillgängliga temperatursensorer",
+      "noSensors": "Inga temperatursensorer hittades.",
+      "refresh": "Uppdatera sensorer"
+    },
     "title": "MELCloud-inställningar",
     "zones": {
       "legend": "Zonsinställningar",

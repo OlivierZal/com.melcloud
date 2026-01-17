@@ -14,6 +14,7 @@ import type {
   DeviceSettings,
   DriverSetting,
   Settings,
+  TemperatureSensorInfo,
   ZoneData,
 } from './types/index.mts'
 
@@ -62,6 +63,13 @@ const api = {
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
+  },
+  async getTemperatureSensors({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<TemperatureSensorInfo[]> {
+    return app.getTemperatureSensors()
   },
   async login({
     body,

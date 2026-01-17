@@ -65,6 +65,12 @@
     "zones": {
       "legend": "Paramètres des zones",
       "update": "Mettre à jour"
+    },
+    "temperatureSensors": {
+      "legend": "Capteurs de température disponibles",
+      "noSensors": "Aucun capteur de température trouvé.",
+      "copyHint": "Copiez l'ID pour l'utiliser dans les paramètres de l'appareil.",
+      "refresh": "Actualiser les capteurs"
     }
   },
   "warnings": {

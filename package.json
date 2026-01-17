@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "43.0.0",
+  "version": "44.0.0",
   "description": "MELCloud for Homey",
   "license": "GPL-3.0-only",
   "type": "module",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^21.0.0",
+    "homey-api": "^3.16.0",
     "homey-lib": "^2.44.1",
     "luxon": "^3.7.2",
     "source-map-support": "^0.5.21"

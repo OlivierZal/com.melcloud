@@ -61,6 +61,12 @@
     "intError": "__name__: must be an integer between __min__ and __max__.",
     "refresh": "Refresh",
     "success": "Update succeeded.",
+    "temperatureSensors": {
+      "copyHint": "Copy the ID to use in device settings.",
+      "legend": "Available temperature sensors",
+      "noSensors": "No temperature sensors found.",
+      "refresh": "Refresh sensors"
+    },
     "title": "MELCloud settings",
     "zones": {
       "legend": "Zone settings",

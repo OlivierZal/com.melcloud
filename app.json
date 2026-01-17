@@ -29,6 +29,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "getTemperatureSensors": {
+      "method": "GET",
+      "path": "/sensors/temperature"
+    },
     "login": {
       "method": "POST",
       "path": "/sessions"
@@ -83,6 +87,9 @@
     "xlarge": "/assets/images/xlarge.jpg"
   },
   "name": "MELCloud",
+  "permissions": [
+    "homey:manager:api"
+  ],
   "platforms": [
     "local"
   ],
@@ -176,7 +183,7 @@
       "värmepump"
     ]
   },
-  "version": "43.0.0",
+  "version": "44.0.0",
   "flow": {
     "triggers": [
       {
@@ -2060,20 +2067,6 @@
   "drivers": [
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
         "alarm_generic.silent": {
           "insightsTitleFalse": {
             "da": "Stille tilstand blev deaktiveret",
@@ -2620,6 +2613,152 @@
         {
           "children": [
             {
+              "id": "smart_fan_enabled",
+              "label": {
+                "da": "Aktiver smart viftekontrol",
+                "en": "Enable smart fan control",
+                "es": "Activar control inteligente del ventilador",
+                "fr": "Activer le contrôle intelligent du ventilateur",
+                "nl": "Slimme ventilatorregeling inschakelen",
+                "no": "Aktiver smart viftekontroll",
+                "sv": "Aktivera smart fläktstyrning"
+              },
+              "type": "checkbox",
+              "value": false
+            },
+            {
+              "hint": {
+                "da": "Brug MELCloud-appindstillinger for at se tilgængelige sensorer",
+                "en": "Use MELCloud app settings to view available sensors",
+                "es": "Usa la configuración de la aplicación MELCloud para ver los sensores disponibles",
+                "fr": "Utilisez les paramètres de l'application MELCloud pour voir les capteurs disponibles",
+                "nl": "Gebruik MELCloud-appinstellingen om beschikbare sensoren te bekijken",
+                "no": "Bruk MELCloud-appinnstillinger for å se tilgjengelige sensorer",
+                "sv": "Använd MELCloud-appinställningar för att se tillgängliga sensorer"
+              },
+              "id": "external_sensor_id",
+              "label": {
+                "da": "Ekstern temperatursensor (enheds-ID)",
+                "en": "External temperature sensor (device ID)",
+                "es": "Sensor de temperatura externo (ID del dispositivo)",
+                "fr": "Capteur de température externe (ID de l'appareil)",
+                "nl": "Externe temperatuursensor (apparaat-ID)",
+                "no": "Ekstern temperatursensor (enhets-ID)",
+                "sv": "Extern temperatursensor (enhets-ID)"
+              },
+              "type": "text",
+              "value": ""
+            },
+            {
+              "hint": {
+                "da": "Aggressiv: Hurtigst mulig. Moderat: Balanceret. Økonomisk: Langsom og stille.",
+                "en": "Aggressive: Fastest. Moderate: Balanced. Economical: Slow and quiet.",
+                "es": "Agresivo: Lo más rápido. Moderado: Equilibrado. Económico: Lento y silencioso.",
+                "fr": "Agressif: Le plus rapide. Modéré: Équilibré. Économique: Lent et silencieux.",
+                "nl": "Agressief: Snelst. Gematigd: Gebalanceerd. Zuinig: Langzaam en stil.",
+                "no": "Aggressiv: Raskest mulig. Moderat: Balansert. Økonomisk: Sakte og stille.",
+                "sv": "Aggressiv: Snabbast. Måttlig: Balanserad. Ekonomisk: Långsam och tyst."
+              },
+              "id": "smart_fan_mode",
+              "label": {
+                "da": "Styringsmodus",
+                "en": "Control mode",
+                "es": "Modo de control",
+                "fr": "Mode de contrôle",
+                "nl": "Regelmodus",
+                "no": "Styringsmodus",
+                "sv": "Styrläge"
+              },
+              "type": "dropdown",
+              "value": "moderate",
+              "values": [
+                {
+                  "id": "aggressive",
+                  "label": {
+                    "da": "Aggressiv",
+                    "en": "Aggressive",
+                    "es": "Agresivo",
+                    "fr": "Agressif",
+                    "nl": "Agressief",
+                    "no": "Aggressiv",
+                    "sv": "Aggressiv"
+                  }
+                },
+                {
+                  "id": "moderate",
+                  "label": {
+                    "da": "Moderat",
+                    "en": "Moderate",
+                    "es": "Moderado",
+                    "fr": "Modéré",
+                    "nl": "Gematigd",
+                    "no": "Moderat",
+                    "sv": "Måttlig"
+                  }
+                },
+                {
+                  "id": "economical",
+                  "label": {
+                    "da": "Økonomisk",
+                    "en": "Economical",
+                    "es": "Económico",
+                    "fr": "Économique",
+                    "nl": "Zuinig",
+                    "no": "Økonomisk",
+                    "sv": "Ekonomisk"
+                  }
+                }
+              ]
+            },
+            {
+              "hint": {
+                "da": "Når du manuelt ændrer viftehastigheden, sættes smart viftekontrol på pause i denne periode",
+                "en": "When you manually change the fan speed, smart fan control will pause for this duration",
+                "es": "Cuando cambias manualmente la velocidad del ventilador, el control inteligente se pausará durante este tiempo",
+                "fr": "Lorsque vous modifiez manuellement la vitesse du ventilateur, le contrôle intelligent se met en pause pendant cette durée",
+                "nl": "Wanneer je de ventilatorsnelheid handmatig wijzigt, pauzeert de slimme regeling gedurende deze tijd",
+                "no": "Når du manuelt endrer viftehastigheten, settes smart viftekontroll på pause i denne perioden",
+                "sv": "När du manuellt ändrar fläkthastigheten pausas smart fläktstyrning under denna tid"
+              },
+              "id": "smart_fan_manual_pause",
+              "label": {
+                "da": "Pause ved manuel overstyring",
+                "en": "Pause on manual override",
+                "es": "Pausa al anular manualmente",
+                "fr": "Pause lors de la modification manuelle",
+                "nl": "Pauze bij handmatige aanpassing",
+                "no": "Pause ved manuell overstyring",
+                "sv": "Paus vid manuell överstyrning"
+              },
+              "max": 120,
+              "min": 0,
+              "type": "number",
+              "units": {
+                "da": "minutter",
+                "en": "minutes",
+                "es": "minutos",
+                "fr": "minutes",
+                "nl": "minuten",
+                "no": "minutter",
+                "sv": "minuter"
+              },
+              "value": 30
+            }
+          ],
+          "label": {
+            "da": "Smart viftekontrol",
+            "en": "Smart fan control",
+            "es": "Control inteligente del ventilador",
+            "fr": "Contrôle intelligent du ventilateur",
+            "nl": "Slimme ventilatorregeling",
+            "no": "Smart viftekontroll",
+            "sv": "Smart fläktstyrning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
               "id": "measure_power",
               "label": {
                 "da": "Alle tilstande",
@@ -2957,20 +3096,6 @@
     },
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
         "alarm_generic.booster_heater1": {
           "insightsTitleFalse": {
             "da": "Tilkoblingsvarme 1 blev deaktiveret",
@@ -4908,20 +5033,6 @@
     },
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
         "thermostat_mode": {
           "values": [
             {
@@ -5431,6 +5542,24 @@
     }
   },
   "capabilities": {
+    "external_temperature": {
+      "decimals": 1,
+      "getable": true,
+      "insights": true,
+      "setable": false,
+      "title": {
+        "da": "Ekstern temperatur",
+        "en": "External temperature",
+        "es": "Temperatura externa",
+        "fr": "Température externe",
+        "nl": "Externe temperatuur",
+        "no": "Ekstern temperatur",
+        "sv": "Extern temperatur"
+      },
+      "type": "number",
+      "uiComponent": "sensor",
+      "units": "°C"
+    },
     "horizontal": {
       "getable": true,
       "setable": true,
