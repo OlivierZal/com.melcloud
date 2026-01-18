@@ -572,7 +572,7 @@ const config = defineConfig([
     },
   },
   {
-    extends: [yml.configs['flat/standard'], yml.configs['flat/prettier']],
+    extends: [yml.configs.standard, yml.configs.prettier],
     rules: {
       'yml/file-extension': [
         'error',
