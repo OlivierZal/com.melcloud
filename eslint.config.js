@@ -574,15 +574,12 @@ const config = defineConfig([
   {
     extends: [yml.configs['flat/standard'], yml.configs['flat/prettier']],
     rules: {
-      'yml/block-mapping-colon-indicator-newline': 'error',
       'yml/file-extension': [
         'error',
         {
           extension: 'yml',
         },
       ],
-      'yml/no-multiple-empty-lines': 'error',
-      'yml/no-trailing-zeros': 'error',
       'yml/require-string-key': 'error',
       'yml/sort-keys': [
         'error',
