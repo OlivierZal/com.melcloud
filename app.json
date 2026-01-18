@@ -29,6 +29,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "getTemperatureSensors": {
+      "method": "GET",
+      "path": "/sensors/temperature"
+    },
     "login": {
       "method": "POST",
       "path": "/sessions"
@@ -83,6 +87,9 @@
     "xlarge": "/assets/images/xlarge.jpg"
   },
   "name": "MELCloud",
+  "permissions": [
+    "homey:manager:api"
+  ],
   "platforms": [
     "local"
   ],
@@ -176,7 +183,7 @@
       "värmepump"
     ]
   },
-  "version": "43.0.0",
+  "version": "44.0.0",
   "flow": {
     "triggers": [
       {
@@ -368,6 +375,44 @@
           "sv": "Eco-läge för varmvattenladdning är aktiverat"
         },
         "id": "alarm_generic.eco_hot_water_true"
+      },
+      {
+        "args": [
+          {
+            "filter": "driver_id=melcloud",
+            "name": "device",
+            "type": "device"
+          }
+        ],
+        "title": {
+          "da": "Ekstern temperatursensor blev utilgængelig",
+          "en": "External temperature sensor became unavailable",
+          "es": "El sensor de temperatura externo dejó de estar disponible",
+          "fr": "Le capteur de température externe est devenu indisponible",
+          "nl": "Externe temperatuursensor werd onbeschikbaar",
+          "no": "Ekstern temperatursensor ble utilgjengelig",
+          "sv": "Extern temperatursensor blev otillgänglig"
+        },
+        "id": "alarm_generic.external_sensor_false"
+      },
+      {
+        "args": [
+          {
+            "filter": "driver_id=melcloud",
+            "name": "device",
+            "type": "device"
+          }
+        ],
+        "title": {
+          "da": "Ekstern temperatursensor blev tilgængelig",
+          "en": "External temperature sensor became available",
+          "es": "El sensor de temperatura externo está disponible",
+          "fr": "Le capteur de température externe est devenu disponible",
+          "nl": "Externe temperatuursensor werd beschikbaar",
+          "no": "Ekstern temperatursensor ble tilgjengelig",
+          "sv": "Extern temperatursensor blev tillgänglig"
+        },
+        "id": "alarm_generic.external_sensor_true"
       },
       {
         "args": [
@@ -2060,18 +2105,33 @@
   "drivers": [
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
+        "alarm_generic.external_sensor": {
+          "insightsTitleFalse": {
+            "da": "Ekstern sensor blev utilgængelig",
+            "en": "External sensor became unavailable",
+            "es": "El sensor externo dejó de estar disponible",
+            "fr": "Le capteur externe est devenu indisponible",
+            "nl": "Externe sensor werd onbeschikbaar",
+            "no": "Ekstern sensor ble utilgjengelig",
+            "sv": "Extern sensor blev otillgänglig"
+          },
+          "insightsTitleTrue": {
+            "da": "Ekstern sensor blev tilgængelig",
+            "en": "External sensor became available",
+            "es": "El sensor externo está disponible",
+            "fr": "Le capteur externe est devenu disponible",
+            "nl": "Externe sensor werd beschikbaar",
+            "no": "Ekstern sensor ble tilgjengelig",
+            "sv": "Extern sensor blev tillgänglig"
+          },
           "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
+            "da": "Ekstern sensor aktiv",
+            "en": "External sensor active",
+            "es": "Sensor externo activo",
+            "fr": "Capteur externe actif",
+            "nl": "Externe sensor actief",
+            "no": "Ekstern sensor aktiv",
+            "sv": "Extern sensor aktiv"
           }
         },
         "alarm_generic.silent": {
@@ -2531,6 +2591,7 @@
         "vertical",
         "horizontal",
         "alarm_generic.silent",
+        "alarm_generic.external_sensor",
         "measure_power",
         "measure_power.auto",
         "measure_power.cooling",
@@ -2614,6 +2675,186 @@
             "nl": "Opties",
             "no": "Alternativer",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "smart_fan_enabled",
+              "label": {
+                "da": "Aktiver smart viftekontrol",
+                "en": "Enable smart fan control",
+                "es": "Activar control inteligente del ventilador",
+                "fr": "Activer le contrôle intelligent du ventilateur",
+                "nl": "Slimme ventilatorregeling inschakelen",
+                "no": "Aktiver smart viftekontroll",
+                "sv": "Aktivera smart fläktstyrning"
+              },
+              "type": "checkbox",
+              "value": false
+            },
+            {
+              "hint": {
+                "da": "Brug MELCloud-appindstillinger for at se tilgængelige sensorer",
+                "en": "Use MELCloud app settings to view available sensors",
+                "es": "Usa la configuración de la aplicación MELCloud para ver los sensores disponibles",
+                "fr": "Utilisez les paramètres de l'application MELCloud pour voir les capteurs disponibles",
+                "nl": "Gebruik MELCloud-appinstellingen om beschikbare sensoren te bekijken",
+                "no": "Bruk MELCloud-appinnstillinger for å se tilgjengelige sensorer",
+                "sv": "Använd MELCloud-appinställningar för att se tillgängliga sensorer"
+              },
+              "id": "external_sensor_id",
+              "label": {
+                "da": "Ekstern temperatursensor (enheds-ID)",
+                "en": "External temperature sensor (device ID)",
+                "es": "Sensor de temperatura externo (ID del dispositivo)",
+                "fr": "Capteur de température externe (ID de l'appareil)",
+                "nl": "Externe temperatuursensor (apparaat-ID)",
+                "no": "Ekstern temperatursensor (enhets-ID)",
+                "sv": "Extern temperatursensor (enhets-ID)"
+              },
+              "type": "text",
+              "value": ""
+            },
+            {
+              "hint": {
+                "da": "Aggressiv: Hurtigst mulig. Moderat: Balanceret. Økonomisk: Langsom og stille.",
+                "en": "Aggressive: Fastest. Moderate: Balanced. Economical: Slow and quiet.",
+                "es": "Agresivo: Lo más rápido. Moderado: Equilibrado. Económico: Lento y silencioso.",
+                "fr": "Agressif: Le plus rapide. Modéré: Équilibré. Économique: Lent et silencieux.",
+                "nl": "Agressief: Snelst. Gematigd: Gebalanceerd. Zuinig: Langzaam en stil.",
+                "no": "Aggressiv: Raskest mulig. Moderat: Balansert. Økonomisk: Sakte og stille.",
+                "sv": "Aggressiv: Snabbast. Måttlig: Balanserad. Ekonomisk: Långsam och tyst."
+              },
+              "id": "smart_fan_mode",
+              "label": {
+                "da": "Styringsmodus",
+                "en": "Control mode",
+                "es": "Modo de control",
+                "fr": "Mode de contrôle",
+                "nl": "Regelmodus",
+                "no": "Styringsmodus",
+                "sv": "Styrläge"
+              },
+              "type": "dropdown",
+              "value": "moderate",
+              "values": [
+                {
+                  "id": "aggressive",
+                  "label": {
+                    "da": "Aggressiv",
+                    "en": "Aggressive",
+                    "es": "Agresivo",
+                    "fr": "Agressif",
+                    "nl": "Agressief",
+                    "no": "Aggressiv",
+                    "sv": "Aggressiv"
+                  }
+                },
+                {
+                  "id": "moderate",
+                  "label": {
+                    "da": "Moderat",
+                    "en": "Moderate",
+                    "es": "Moderado",
+                    "fr": "Modéré",
+                    "nl": "Gematigd",
+                    "no": "Moderat",
+                    "sv": "Måttlig"
+                  }
+                },
+                {
+                  "id": "economical",
+                  "label": {
+                    "da": "Økonomisk",
+                    "en": "Economical",
+                    "es": "Económico",
+                    "fr": "Économique",
+                    "nl": "Zuinig",
+                    "no": "Økonomisk",
+                    "sv": "Ekonomisk"
+                  }
+                }
+              ]
+            },
+            {
+              "hint": {
+                "da": "Når du manuelt ændrer viftehastigheden, sættes smart viftekontrol på pause i denne periode",
+                "en": "When you manually change the fan speed, smart fan control will pause for this duration",
+                "es": "Cuando cambias manualmente la velocidad del ventilador, el control inteligente se pausará durante este tiempo",
+                "fr": "Lorsque vous modifiez manuellement la vitesse du ventilateur, le contrôle intelligent se met en pause pendant cette durée",
+                "nl": "Wanneer je de ventilatorsnelheid handmatig wijzigt, pauzeert de slimme regeling gedurende deze tijd",
+                "no": "Når du manuelt endrer viftehastigheten, settes smart viftekontroll på pause i denne perioden",
+                "sv": "När du manuellt ändrar fläkthastigheten pausas smart fläktstyrning under denna tid"
+              },
+              "id": "smart_fan_manual_pause",
+              "label": {
+                "da": "Pause ved manuel overstyring",
+                "en": "Pause on manual override",
+                "es": "Pausa al anular manualmente",
+                "fr": "Pause lors de la modification manuelle",
+                "nl": "Pauze bij handmatige aanpassing",
+                "no": "Pause ved manuell overstyring",
+                "sv": "Paus vid manuell överstyrning"
+              },
+              "max": 120,
+              "min": 0,
+              "type": "number",
+              "units": {
+                "da": "minutter",
+                "en": "minutes",
+                "es": "minutos",
+                "fr": "minutes",
+                "nl": "minuten",
+                "no": "minutter",
+                "sv": "minuter"
+              },
+              "value": 30
+            },
+            {
+              "hint": {
+                "da": "Hvis ingen opdatering modtages fra sensoren inden for denne tid, bruges den interne sensor",
+                "en": "If no update is received from the sensor within this time, the internal sensor will be used",
+                "es": "Si no se recibe actualización del sensor en este tiempo, se usará el sensor interno",
+                "fr": "Si aucune mise à jour n'est reçue du capteur dans ce délai, le capteur interne sera utilisé",
+                "nl": "Als er binnen deze tijd geen update van de sensor wordt ontvangen, wordt de interne sensor gebruikt",
+                "no": "Hvis ingen oppdatering mottas fra sensoren innen denne tiden, brukes intern sensor",
+                "sv": "Om ingen uppdatering tas emot från sensorn inom denna tid används den interna sensorn"
+              },
+              "id": "smart_fan_sensor_timeout",
+              "label": {
+                "da": "Sensor timeout",
+                "en": "Sensor timeout",
+                "es": "Tiempo de espera del sensor",
+                "fr": "Délai d'attente du capteur",
+                "nl": "Sensor timeout",
+                "no": "Sensor timeout",
+                "sv": "Sensor timeout"
+              },
+              "max": 30,
+              "min": 1,
+              "type": "number",
+              "units": {
+                "da": "minutter",
+                "en": "minutes",
+                "es": "minutos",
+                "fr": "minutes",
+                "nl": "minuten",
+                "no": "minutter",
+                "sv": "minuter"
+              },
+              "value": 5
+            }
+          ],
+          "label": {
+            "da": "Smart viftekontrol",
+            "en": "Smart fan control",
+            "es": "Control inteligente del ventilador",
+            "fr": "Contrôle intelligent du ventilateur",
+            "nl": "Slimme ventilatorregeling",
+            "no": "Smart viftekontroll",
+            "sv": "Smart fläktstyrning"
           },
           "type": "group"
         },
@@ -2957,20 +3198,6 @@
     },
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
         "alarm_generic.booster_heater1": {
           "insightsTitleFalse": {
             "da": "Tilkoblingsvarme 1 blev deaktiveret",
@@ -4908,20 +5135,6 @@
     },
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "da": "Udendørstemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "sv": "Utomhustemperatur"
-          }
-        },
         "thermostat_mode": {
           "values": [
             {
@@ -5431,6 +5644,24 @@
     }
   },
   "capabilities": {
+    "external_temperature": {
+      "decimals": 1,
+      "getable": true,
+      "insights": true,
+      "setable": false,
+      "title": {
+        "da": "Ekstern temperatur",
+        "en": "External temperature",
+        "es": "Temperatura externa",
+        "fr": "Température externe",
+        "nl": "Externe temperatuur",
+        "no": "Ekstern temperatur",
+        "sv": "Extern temperatur"
+      },
+      "type": "number",
+      "uiComponent": "sensor",
+      "units": "°C"
+    },
     "horizontal": {
       "getable": true,
       "setable": true,

@@ -61,6 +61,12 @@
     "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
     "refresh": "Recargar",
     "success": "La actualización fue exitosa.",
+    "temperatureSensors": {
+      "copyHint": "Copie el ID para usarlo en la configuración del dispositivo.",
+      "legend": "Sensores de temperatura disponibles",
+      "noSensors": "No se encontraron sensores de temperatura.",
+      "refresh": "Actualizar sensores"
+    },
     "title": "Configuración de MELCloud",
     "zones": {
       "legend": "Configuración de las zonas",

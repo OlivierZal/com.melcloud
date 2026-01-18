@@ -65,6 +65,12 @@
     "zones": {
       "legend": "Configuración de las zonas",
       "update": "Actualizar"
+    },
+    "temperatureSensors": {
+      "legend": "Sensores de temperatura disponibles",
+      "noSensors": "No se encontraron sensores de temperatura.",
+      "copyHint": "Copie el ID para usarlo en la configuración del dispositivo.",
+      "refresh": "Actualizar sensores"
     }
   },
   "warnings": {

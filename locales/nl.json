@@ -65,6 +65,12 @@
     "zones": {
       "legend": "Zonesinstellingen",
       "update": "Updaten"
+    },
+    "temperatureSensors": {
+      "legend": "Beschikbare temperatuursensoren",
+      "noSensors": "Geen temperatuursensoren gevonden.",
+      "copyHint": "Kopieer de ID om te gebruiken in apparaatinstellingen.",
+      "refresh": "Sensoren vernieuwen"
     }
   },
   "warnings": {

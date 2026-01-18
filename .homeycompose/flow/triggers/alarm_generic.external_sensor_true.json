@@ -1,0 +1,18 @@
+{
+  "args": [
+    {
+      "filter": "driver_id=melcloud",
+      "name": "device",
+      "type": "device"
+    }
+  ],
+  "title": {
+    "da": "Ekstern temperatursensor blev tilgængelig",
+    "en": "External temperature sensor became available",
+    "es": "El sensor de temperatura externo está disponible",
+    "fr": "Le capteur de température externe est devenu disponible",
+    "nl": "Externe temperatuursensor werd beschikbaar",
+    "no": "Ekstern temperatursensor ble tilgjengelig",
+    "sv": "Extern temperatursensor blev tillgänglig"
+  }
+}

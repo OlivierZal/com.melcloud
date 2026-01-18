@@ -61,6 +61,12 @@
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "refresh": "Herladen",
     "success": "Update geslaagd.",
+    "temperatureSensors": {
+      "copyHint": "Kopieer de ID om te gebruiken in apparaatinstellingen.",
+      "legend": "Beschikbare temperatuursensoren",
+      "noSensors": "Geen temperatuursensoren gevonden.",
+      "refresh": "Sensoren vernieuwen"
+    },
     "title": "MELCloud-instellingen",
     "zones": {
       "legend": "Zonesinstellingen",

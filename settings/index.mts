@@ -19,6 +19,7 @@ import type {
   HomeySettings,
   LoginDriverSetting,
   Settings,
+  TemperatureSensorInfo,
   ValueOf,
   Zone,
 } from '../types/index.mts'
@@ -38,6 +39,7 @@ class NoDeviceError extends Error {
   }
 }
 
+const EMPTY_LENGTH = 0
 const SIZE_ONE = 1
 
 const NUMBER_ENDS_WITH_TWO = 2
@@ -994,9 +996,123 @@ const needsAuthentication = (value = true): void => {
   unhide(authenticatingElement, value)
 }
 
+const temperatureSensorsListElement = getDivElement('temperature_sensors_list')
+const refreshTemperatureSensorsElement = getButtonElement(
+  'refresh_temperature_sensors',
+)
+
+const createSensorErrorElement = (
+  errorMessage: string,
+): HTMLParagraphElement => {
+  const errorElement = document.createElement('p')
+  errorElement.textContent = errorMessage
+  return errorElement
+}
+
+const createNoSensorsElement = (homey: Homey): HTMLParagraphElement => {
+  const noSensorsElement = document.createElement('p')
+  noSensorsElement.textContent = homey.__(
+    'settings.temperatureSensors.noSensors',
+  )
+  return noSensorsElement
+}
+
+const createCopyableCodeElement = (id: string, homey: Homey): HTMLElement => {
+  const codeElement = document.createElement('code')
+  codeElement.textContent = id
+  codeElement.style.cursor = 'pointer'
+  codeElement.title = 'Click to copy'
+  codeElement.addEventListener('click', () => {
+    navigator.clipboard.writeText(id).catch(() => {
+      //
+    })
+    homey.alert(`Copied: ${id}`).catch(() => {
+      //
+    })
+  })
+  return codeElement
+}
+
+const createSensorRow = (
+  tbodyElement: HTMLTableSectionElement,
+  sensor: TemperatureSensorInfo,
+  homey: Homey,
+): void => {
+  const { id, name } = sensor
+  const rowElement = tbodyElement.insertRow()
+  const nameCell = rowElement.insertCell()
+  nameCell.textContent = name
+  const idCell = rowElement.insertCell()
+  idCell.append(createCopyableCodeElement(id, homey))
+}
+
+const createTableHeader = (tableElement: HTMLTableElement): void => {
+  const theadElement = tableElement.createTHead()
+  const headerRow = theadElement.insertRow()
+  const nameHeader = document.createElement('th')
+  nameHeader.textContent = 'Name'
+  const idHeader = document.createElement('th')
+  idHeader.textContent = 'ID'
+  headerRow.append(nameHeader, idHeader)
+}
+
+const createSensorsTable = (
+  sensors: TemperatureSensorInfo[],
+  homey: Homey,
+): HTMLTableElement => {
+  const tableElement = document.createElement('table')
+  tableElement.classList.add('bordered')
+  createTableHeader(tableElement)
+  const tbodyElement = tableElement.createTBody()
+  for (const sensor of sensors) {
+    createSensorRow(tbodyElement, sensor, homey)
+  }
+  return tableElement
+}
+
+interface SensorResponseContext {
+  readonly error: Error | null
+  readonly homey: Homey
+  readonly sensors: TemperatureSensorInfo[]
+}
+
+const renderSensorResponse = ({
+  error,
+  homey,
+  sensors,
+}: SensorResponseContext): void => {
+  temperatureSensorsListElement.innerHTML = ''
+  if (error) {
+    temperatureSensorsListElement.append(
+      createSensorErrorElement(error.message),
+    )
+  } else if (sensors.length === EMPTY_LENGTH) {
+    temperatureSensorsListElement.append(createNoSensorsElement(homey))
+  } else {
+    temperatureSensorsListElement.append(createSensorsTable(sensors, homey))
+  }
+}
+
+const fetchTemperatureSensors = async (homey: Homey): Promise<void> =>
+  withDisablingButton(
+    refreshTemperatureSensorsElement.id,
+    async () =>
+      new Promise((resolve) => {
+        homey.api(
+          'GET',
+          '/sensors/temperature',
+          (error: Error | null, sensors: TemperatureSensorInfo[]) => {
+            renderSensorResponse({ error, homey, sensors })
+            resolve()
+          },
+        )
+      }),
+  )
+
 const loadPostLogin = async (homey: Homey): Promise<void> => {
   try {
     await fetchBuildings(homey)
+    await fetchTemperatureSensors(homey)
   } catch (error) {
     if (error instanceof NoDeviceError) {
       disableSettingButtons()
@@ -1244,6 +1360,11 @@ const addEventListeners = (homey: Homey): void => {
   })
   addHolidayModeEventListeners(homey)
   addFrostProtectionEventListeners(homey)
+  refreshTemperatureSensorsElement.addEventListener('click', () => {
+    fetchTemperatureSensors(homey).catch(() => {
+      //
+    })
+  })
 }
 
 const load = async (

@@ -58,7 +58,7 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/'],
+    ignores: ['.homeybuild/', '.homeybuild_old*/**'],
   },
   {
     extends: [

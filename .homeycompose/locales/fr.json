@@ -61,6 +61,12 @@
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
+    "temperatureSensors": {
+      "copyHint": "Copiez l'ID pour l'utiliser dans les paramètres de l'appareil.",
+      "legend": "Capteurs de température disponibles",
+      "noSensors": "Aucun capteur de température trouvé.",
+      "refresh": "Actualiser les capteurs"
+    },
     "title": "Paramètres de MELCloud",
     "zones": {
       "legend": "Paramètres des zones",

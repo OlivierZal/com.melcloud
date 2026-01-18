@@ -61,6 +61,12 @@
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
     "refresh": "Gjenta",
     "success": "Oppdatering lyktes.",
+    "temperatureSensors": {
+      "copyHint": "Kopier ID-en for å bruke i enhetsinnstillinger.",
+      "legend": "Tilgjengelige temperatursensorer",
+      "noSensors": "Ingen temperatursensorer funnet.",
+      "refresh": "Oppdater sensorer"
+    },
     "title": "MELCloud-innstillinger",
     "zones": {
       "legend": "Sonesinnstillinger",

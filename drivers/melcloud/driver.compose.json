@@ -11,6 +11,7 @@
     "vertical",
     "horizontal",
     "alarm_generic.silent",
+    "alarm_generic.external_sensor",
     "measure_power",
     "measure_power.auto",
     "measure_power.cooling",
@@ -35,6 +36,35 @@
     "measure_signal_strength"
   ],
   "capabilitiesOptions": {
+    "alarm_generic.external_sensor": {
+      "insightsTitleFalse": {
+        "da": "Ekstern sensor blev utilgængelig",
+        "en": "External sensor became unavailable",
+        "es": "El sensor externo dejó de estar disponible",
+        "fr": "Le capteur externe est devenu indisponible",
+        "nl": "Externe sensor werd onbeschikbaar",
+        "no": "Ekstern sensor ble utilgjengelig",
+        "sv": "Extern sensor blev otillgänglig"
+      },
+      "insightsTitleTrue": {
+        "da": "Ekstern sensor blev tilgængelig",
+        "en": "External sensor became available",
+        "es": "El sensor externo está disponible",
+        "fr": "Le capteur externe est devenu disponible",
+        "nl": "Externe sensor werd beschikbaar",
+        "no": "Ekstern sensor ble tilgjengelig",
+        "sv": "Extern sensor blev tillgänglig"
+      },
+      "title": {
+        "da": "Ekstern sensor aktiv",
+        "en": "External sensor active",
+        "es": "Sensor externo activo",
+        "fr": "Capteur externe actif",
+        "nl": "Externe sensor actief",
+        "no": "Ekstern sensor aktiv",
+        "sv": "Extern sensor aktiv"
+      }
+    },
     "alarm_generic.silent": {
       "insightsTitleFalse": {
         "da": "Stille tilstand blev deaktiveret",

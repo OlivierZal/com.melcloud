@@ -5,6 +5,186 @@
   {
     "children": [
       {
+        "id": "smart_fan_enabled",
+        "label": {
+          "da": "Aktiver smart viftekontrol",
+          "en": "Enable smart fan control",
+          "es": "Activar control inteligente del ventilador",
+          "fr": "Activer le contrôle intelligent du ventilateur",
+          "nl": "Slimme ventilatorregeling inschakelen",
+          "no": "Aktiver smart viftekontroll",
+          "sv": "Aktivera smart fläktstyrning"
+        },
+        "type": "checkbox",
+        "value": false
+      },
+      {
+        "hint": {
+          "da": "Brug MELCloud-appindstillinger for at se tilgængelige sensorer",
+          "en": "Use MELCloud app settings to view available sensors",
+          "es": "Usa la configuración de la aplicación MELCloud para ver los sensores disponibles",
+          "fr": "Utilisez les paramètres de l'application MELCloud pour voir les capteurs disponibles",
+          "nl": "Gebruik MELCloud-appinstellingen om beschikbare sensoren te bekijken",
+          "no": "Bruk MELCloud-appinnstillinger for å se tilgjengelige sensorer",
+          "sv": "Använd MELCloud-appinställningar för att se tillgängliga sensorer"
+        },
+        "id": "external_sensor_id",
+        "label": {
+          "da": "Ekstern temperatursensor (enheds-ID)",
+          "en": "External temperature sensor (device ID)",
+          "es": "Sensor de temperatura externo (ID del dispositivo)",
+          "fr": "Capteur de température externe (ID de l'appareil)",
+          "nl": "Externe temperatuursensor (apparaat-ID)",
+          "no": "Ekstern temperatursensor (enhets-ID)",
+          "sv": "Extern temperatursensor (enhets-ID)"
+        },
+        "type": "text",
+        "value": ""
+      },
+      {
+        "hint": {
+          "da": "Aggressiv: Hurtigst mulig. Moderat: Balanceret. Økonomisk: Langsom og stille.",
+          "en": "Aggressive: Fastest. Moderate: Balanced. Economical: Slow and quiet.",
+          "es": "Agresivo: Lo más rápido. Moderado: Equilibrado. Económico: Lento y silencioso.",
+          "fr": "Agressif: Le plus rapide. Modéré: Équilibré. Économique: Lent et silencieux.",
+          "nl": "Agressief: Snelst. Gematigd: Gebalanceerd. Zuinig: Langzaam en stil.",
+          "no": "Aggressiv: Raskest mulig. Moderat: Balansert. Økonomisk: Sakte og stille.",
+          "sv": "Aggressiv: Snabbast. Måttlig: Balanserad. Ekonomisk: Långsam och tyst."
+        },
+        "id": "smart_fan_mode",
+        "label": {
+          "da": "Styringsmodus",
+          "en": "Control mode",
+          "es": "Modo de control",
+          "fr": "Mode de contrôle",
+          "nl": "Regelmodus",
+          "no": "Styringsmodus",
+          "sv": "Styrläge"
+        },
+        "type": "dropdown",
+        "value": "moderate",
+        "values": [
+          {
+            "id": "aggressive",
+            "label": {
+              "da": "Aggressiv",
+              "en": "Aggressive",
+              "es": "Agresivo",
+              "fr": "Agressif",
+              "nl": "Agressief",
+              "no": "Aggressiv",
+              "sv": "Aggressiv"
+            }
+          },
+          {
+            "id": "moderate",
+            "label": {
+              "da": "Moderat",
+              "en": "Moderate",
+              "es": "Moderado",
+              "fr": "Modéré",
+              "nl": "Gematigd",
+              "no": "Moderat",
+              "sv": "Måttlig"
+            }
+          },
+          {
+            "id": "economical",
+            "label": {
+              "da": "Økonomisk",
+              "en": "Economical",
+              "es": "Económico",
+              "fr": "Économique",
+              "nl": "Zuinig",
+              "no": "Økonomisk",
+              "sv": "Ekonomisk"
+            }
+          }
+        ]
+      },
+      {
+        "hint": {
+          "da": "Når du manuelt ændrer viftehastigheden, sættes smart viftekontrol på pause i denne periode",
+          "en": "When you manually change the fan speed, smart fan control will pause for this duration",
+          "es": "Cuando cambias manualmente la velocidad del ventilador, el control inteligente se pausará durante este tiempo",
+          "fr": "Lorsque vous modifiez manuellement la vitesse du ventilateur, le contrôle intelligent se met en pause pendant cette durée",
+          "nl": "Wanneer je de ventilatorsnelheid handmatig wijzigt, pauzeert de slimme regeling gedurende deze tijd",
+          "no": "Når du manuelt endrer viftehastigheten, settes smart viftekontroll på pause i denne perioden",
+          "sv": "När du manuellt ändrar fläkthastigheten pausas smart fläktstyrning under denna tid"
+        },
+        "id": "smart_fan_manual_pause",
+        "label": {
+          "da": "Pause ved manuel overstyring",
+          "en": "Pause on manual override",
+          "es": "Pausa al anular manualmente",
+          "fr": "Pause lors de la modification manuelle",
+          "nl": "Pauze bij handmatige aanpassing",
+          "no": "Pause ved manuell overstyring",
+          "sv": "Paus vid manuell överstyrning"
+        },
+        "max": 120,
+        "min": 0,
+        "type": "number",
+        "units": {
+          "da": "minutter",
+          "en": "minutes",
+          "es": "minutos",
+          "fr": "minutes",
+          "nl": "minuten",
+          "no": "minutter",
+          "sv": "minuter"
+        },
+        "value": 30
+      },
+      {
+        "hint": {
+          "da": "Hvis ingen opdatering modtages fra sensoren inden for denne tid, bruges den interne sensor",
+          "en": "If no update is received from the sensor within this time, the internal sensor will be used",
+          "es": "Si no se recibe actualización del sensor en este tiempo, se usará el sensor interno",
+          "fr": "Si aucune mise à jour n'est reçue du capteur dans ce délai, le capteur interne sera utilisé",
+          "nl": "Als er binnen deze tijd geen update van de sensor wordt ontvangen, wordt de interne sensor gebruikt",
+          "no": "Hvis ingen oppdatering mottas fra sensoren innen denne tiden, brukes intern sensor",
+          "sv": "Om ingen uppdatering tas emot från sensorn inom denna tid används den interna sensorn"
+        },
+        "id": "smart_fan_sensor_timeout",
+        "label": {
+          "da": "Sensor timeout",
+          "en": "Sensor timeout",
+          "es": "Tiempo de espera del sensor",
+          "fr": "Délai d'attente du capteur",
+          "nl": "Sensor timeout",
+          "no": "Sensor timeout",
+          "sv": "Sensor timeout"
+        },
+        "max": 30,
+        "min": 1,
+        "type": "number",
+        "units": {
+          "da": "minutter",
+          "en": "minutes",
+          "es": "minutos",
+          "fr": "minutes",
+          "nl": "minuten",
+          "no": "minutter",
+          "sv": "minuter"
+        },
+        "value": 5
+      }
+    ],
+    "label": {
+      "da": "Smart viftekontrol",
+      "en": "Smart fan control",
+      "es": "Control inteligente del ventilador",
+      "fr": "Contrôle intelligent du ventilateur",
+      "nl": "Slimme ventilatorregeling",
+      "no": "Smart viftekontroll",
+      "sv": "Smart fläktstyrning"
+    },
+    "type": "group"
+  },
+  {
+    "children": [
+      {
         "id": "measure_power",
         "label": {
           "da": "Alle tilstande",

@@ -1,0 +1,18 @@
+{
+  "decimals": 1,
+  "getable": true,
+  "insights": true,
+  "setable": false,
+  "title": {
+    "da": "Ekstern temperatur",
+    "en": "External temperature",
+    "es": "Temperatura externa",
+    "fr": "Température externe",
+    "nl": "Externe temperatuur",
+    "no": "Ekstern temperatur",
+    "sv": "Extern temperatur"
+  },
+  "type": "number",
+  "uiComponent": "sensor",
+  "units": "°C"
+}

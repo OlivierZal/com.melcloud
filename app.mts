@@ -27,6 +27,7 @@ import {
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
+import { HomeyAPI } from 'homey-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
 import {
@@ -50,6 +51,7 @@ import {
   type ManifestDriverCapabilitiesOptions,
   type MELCloudDevice,
   type Settings,
+  type TemperatureSensorInfo,
   type ZoneData,
   fanSpeedValues,
   zoneModel,
@@ -149,13 +151,42 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
+interface CapabilityInstance {
+  value: unknown
+  destroy: () => void
+}
+
+interface HomeyAPIDeviceType {
+  available?: boolean
+  capabilities?: string[]
+  capabilitiesObj?: Record<string, { value?: unknown }>
+  name?: string
+  makeCapabilityInstance?: (
+    capabilityId: string,
+    listener: (value: unknown) => void,
+  ) => CapabilityInstance
+}
+
+type HomeyAPIInstance = Awaited<ReturnType<typeof HomeyAPI.createAppAPI>>
+
 // eslint-disable-next-line import-x/no-named-as-default-member
 export default class MELCloudApp extends Homey.App {
   declare public readonly homey: Homey.Homey
 
+  readonly #temperatureSensorListeners = new Map<
+    string,
+    {
+      capabilityInstance: CapabilityInstance
+      callback: (temperature: number) => void
+    }
+  >()
+
   #api!: MELCloudAPI
 
   #facadeManager!: FacadeManager
+
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  #homeyApi: HomeyAPIInstance | null = null
 
   public get api(): MELCloudAPI {
     return this.#api
@@ -188,6 +219,7 @@ export default class MELCloudApp extends Homey.App {
   // eslint-disable-next-line @typescript-eslint/require-await
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
+    this.#cleanupAllSensorListeners()
   }
 
   public getAtaCapabilities(): [
@@ -293,6 +325,52 @@ export default class MELCloudApp extends Homey.App {
     return this.#api.errorLog(query)
   }
 
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+  public async getExternalSensorAvailability(
+    deviceId: string,
+  ): Promise<boolean | null> {
+    try {
+      const api = await this.#getHomeyApi()
+      const devices = await api.devices.getDevices()
+      const device = devices[deviceId] as HomeyAPIDeviceType | undefined
+
+      if (device && typeof device.available === 'boolean') {
+        return device.available
+      }
+      return null
+    } catch (error) {
+      this.error('Failed to get external sensor availability:', error)
+      return null
+    }
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/strict-boolean-expressions, max-statements, @typescript-eslint/prefer-destructuring */
+  public async getExternalTemperature(
+    deviceId: string,
+  ): Promise<number | null> {
+    try {
+      const api = await this.#getHomeyApi()
+      const devices = await api.devices.getDevices()
+      const device = devices[deviceId]
+      if (device && 'capabilitiesObj' in device) {
+        const capabilities = device.capabilitiesObj as Record<
+          string,
+          { value?: unknown }
+        >
+        const temporary = capabilities['measure_temperature']?.value
+        if (typeof temporary === 'number') {
+          return temporary
+        }
+      }
+      return null
+    } catch (error) {
+      this.error('Failed to get external temperature:', error)
+      return null
+    }
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/strict-boolean-expressions, max-statements, @typescript-eslint/prefer-destructuring */
+
   public getFacade<T extends DeviceType>(
     zoneType: 'devices',
     id: number | string,
@@ -354,6 +432,34 @@ export default class MELCloudApp extends Homey.App {
   ): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).signal(hour)
   }
+
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/strict-boolean-expressions, max-statements */
+  public async getTemperatureSensors(): Promise<TemperatureSensorInfo[]> {
+    try {
+      const api = await this.#getHomeyApi()
+      const devices = await api.devices.getDevices()
+      const sensors: TemperatureSensorInfo[] = []
+
+      for (const [id, development] of Object.entries(devices)) {
+        const device = development as HomeyAPIDeviceType
+        if (
+          device.capabilities &&
+          Array.isArray(device.capabilities) &&
+          device.capabilities.includes('measure_temperature') &&
+          device.name &&
+          typeof device.name === 'string'
+        ) {
+          sensors.push({ id, name: device.name })
+        }
+      }
+
+      return sensors
+    } catch (error) {
+      this.error('Failed to get temperature sensors:', error)
+      return []
+    }
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/strict-boolean-expressions, max-statements */
 
   public async getTemperatures(
     deviceId: string,
@@ -419,6 +525,91 @@ export default class MELCloudApp extends Homey.App {
     handleResponse(data.AttributeErrors)
   }
 
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-destructuring, @typescript-eslint/restrict-template-expressions, max-statements, max-lines-per-function */
+  public async subscribeToTemperatureSensor(
+    deviceId: string,
+    callback: (temperature: number) => void,
+  ): Promise<boolean> {
+    try {
+      const api = await this.#getHomeyApi()
+      const devices = await api.devices.getDevices()
+      const development = devices[deviceId]
+
+      if (!development) {
+        this.error('Device not found:', deviceId)
+        return false
+      }
+
+      const device = development as HomeyAPIDeviceType
+
+      if (
+        !device.capabilities ||
+        !Array.isArray(device.capabilities) ||
+        !device.capabilities.includes('measure_temperature')
+      ) {
+        this.error('Device does not have temperature capability:', deviceId)
+        return false
+      }
+
+      this.unsubscribeFromTemperatureSensor(deviceId)
+
+      if (
+        device.makeCapabilityInstance &&
+        typeof device.makeCapabilityInstance === 'function'
+      ) {
+        const capabilityInstance = device.makeCapabilityInstance(
+          'measure_temperature',
+          (value: unknown) => {
+            if (typeof value === 'number') {
+              this.log(`Temperature update from ${deviceId}: ${value}°C`)
+              callback(value)
+            }
+          },
+        )
+
+        this.#temperatureSensorListeners.set(deviceId, {
+          callback,
+          capabilityInstance,
+        })
+
+        // Also get the current value immediately
+        const currentValue =
+          device.capabilitiesObj?.['measure_temperature']?.value
+        if (typeof currentValue === 'number') {
+          this.log(`Initial temperature from ${deviceId}: ${currentValue}°C`)
+          callback(currentValue)
+        }
+
+        return true
+      }
+
+      this.error('Device does not support makeCapabilityInstance:', deviceId)
+      return false
+    } catch (error) {
+      this.error('Failed to subscribe to temperature sensor:', error)
+      return false
+    }
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-destructuring, @typescript-eslint/restrict-template-expressions, max-statements, max-lines-per-function */
+
+  public unsubscribeFromTemperatureSensor(deviceId: string): void {
+    const listener = this.#temperatureSensorListeners.get(deviceId)
+    if (listener) {
+      try {
+        listener.capabilityInstance.destroy()
+      } catch {
+        // Ignore errors during cleanup
+      }
+      this.#temperatureSensorListeners.delete(deviceId)
+    }
+  }
+
+  #cleanupAllSensorListeners(): void {
+    for (const deviceId of this.#temperatureSensorListeners.keys()) {
+      this.unsubscribeFromTemperatureSensor(deviceId)
+    }
+  }
+
   #createNotification(language: string): void {
     const { homey } = this
     const {
@@ -463,6 +654,15 @@ export default class MELCloudApp extends Homey.App {
         )
     })
   }
+
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  async #getHomeyApi(): Promise<HomeyAPIInstance> {
+    if (this.#homeyApi === null) {
+      this.#homeyApi = await HomeyAPI.createAppAPI({ homey: this.homey })
+    }
+    return this.#homeyApi
+  }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
   #registerWidgetListeners(): void {
     this.homey.dashboards

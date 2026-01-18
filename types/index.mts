@@ -100,6 +100,8 @@ export {
   type SetCapabilities,
   type SetCapabilityTagMapping,
   type Settings,
+  type SmartFanSettings,
+  type TemperatureSensorInfo,
   type ValueOf,
   type Zone,
   type ZoneData,
