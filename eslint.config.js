@@ -579,40 +579,37 @@ const config = defineConfig([
   },
   {
     extends: [ymlConfigs.standard, ymlConfigs.prettier],
-
-    /*
-     * Rules: {
-     *   'yml/file-extension': [
-     *     'error',
-     *     {
-     *       extension: 'yml',
-     *     },
-     *   ],
-     *   'yml/require-string-key': 'error',
-     *   'yml/sort-keys': [
-     *     'error',
-     *     {
-     *       order: {
-     *         caseSensitive: true,
-     *         natural: true,
-     *         type: 'asc',
-     *       },
-     *       pathPattern: '^.*$',
-     *     },
-     *   ],
-     *   'yml/sort-sequence-values': [
-     *     'error',
-     *     {
-     *       order: {
-     *         caseSensitive: true,
-     *         natural: true,
-     *         type: 'asc',
-     *       },
-     *       pathPattern: '^.*$',
-     *     },
-     *   ],
-     * },
-     */
+    rules: {
+      'yml/file-extension': [
+        'error',
+        {
+          extension: 'yml',
+        },
+      ],
+      'yml/require-string-key': 'error',
+      'yml/sort-keys': [
+        'error',
+        {
+          order: {
+            caseSensitive: true,
+            natural: true,
+            type: 'asc',
+          },
+          pathPattern: '^.*$',
+        },
+      ],
+      'yml/sort-sequence-values': [
+        'error',
+        {
+          order: {
+            caseSensitive: true,
+            natural: true,
+            type: 'asc',
+          },
+          pathPattern: '^.*$',
+        },
+      ],
+    },
   },
   {
     extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],

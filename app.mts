@@ -185,9 +185,10 @@ export default class MELCloudApp extends Homey.App {
     this.#registerWidgetListeners()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve()
   }
 
   public getAtaCapabilities(): [

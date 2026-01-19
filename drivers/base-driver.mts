@@ -62,13 +62,13 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
 
   public abstract readonly type: T
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
@@ -81,21 +81,26 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
     })
     this.#handleLogin(session)
     session.setHandler('list_devices', async () => this.#discoverDevices())
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onRepair(session: PairSession): Promise<void> {
     this.#handleLogin(session)
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve()
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
-    return DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
-      capabilities: this.getRequiredCapabilities(data),
-      capabilitiesOptions: this.getCapabilitiesOptions(data),
-      data: { id },
-      name,
-    }))
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve(
+      DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
+        capabilities: this.getRequiredCapabilities(data),
+        capabilitiesOptions: this.getCapabilitiesOptions(data),
+        data: { id },
+        name,
+      })),
+    )
   }
 
   #handleLogin(session: PairSession): void {

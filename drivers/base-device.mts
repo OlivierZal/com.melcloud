@@ -171,9 +171,10 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   public override async onUninit(): Promise<void> {
     this.onDeleted()
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    return Promise.resolve()
   }
 
   public override async addCapability(capability: string): Promise<void> {
