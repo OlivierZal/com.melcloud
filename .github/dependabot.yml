@@ -1,6 +1,5 @@
 registries:
   npm-github:
-    replaces-base: true
     token: ${{ secrets.MY_GITHUB_PERSONAL_TOKEN }}
     type: npm-registry
     url: https://npm.pkg.github.com

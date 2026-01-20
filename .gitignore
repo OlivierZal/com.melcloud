@@ -1,6 +1,5 @@
 node_modules/
 /.homeybuild/
-/.npmrc
 /.vscode/*
 !/.vscode/settings.json
 /coverage/
