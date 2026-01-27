@@ -252,7 +252,7 @@
     "da": "Opdateret for kompatibilitet med Node.js 22 og senere, inklusive flere rettelser (bl.a. visning af forbudt tilstand).",
     "en": "Updated for compatibility with Node.js 22 and later, including several fixes (notably prohibited mode display).",
     "es": "Actualizado para compatibilidad con Node.js 22 y posteriores, incluyendo varias correcciones (en particular la visualización del modo prohibido).",
-    "fr": "Mis à jour pour la compatibilité avec Node.js 22 et versions ultérieures, incluant plusieurs correctifs (notamment l’affichage des modes interdits).",
+    "fr": "Mis à jour pour la compatibilité avec Node.js 22 et versions ultérieures, incluant plusieurs correctifs (notamment l’affichage du mode interdit).",
     "nl": "Bijgewerkt voor compatibiliteit met Node.js 22 en later, inclusief meerdere fixes (met name de weergave van verboden modi).",
     "no": "Oppdatert for kompatibilitet med Node.js 22 og senere, inkludert flere rettelser (spesielt visning av forbudt modus).",
     "sv": "Uppdaterad för kompatibilitet med Node.js 22 och senare, inklusive flera korrigeringar (särskilt visning av förbjudet läge)."

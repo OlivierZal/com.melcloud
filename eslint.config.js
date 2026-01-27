@@ -503,16 +503,16 @@ const config = defineConfig([
     },
   },
   {
-    extends: ['html/flat/all'],
+    extends: ['html/all'],
     files: ['**/*.html'],
     language: 'html/html',
     plugins: {
       html,
     },
     rules: {
-      '@html-eslint/no-empty-headings': 'off',
-      '@html-eslint/require-open-graph-protocol': 'off',
-      '@html-eslint/use-baseline': [
+      'html/no-empty-headings': 'off',
+      'html/require-open-graph-protocol': 'off',
+      'html/use-baseline': [
         'error',
         {
           available: 'newly',
