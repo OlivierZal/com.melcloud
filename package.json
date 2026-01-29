@@ -16,14 +16,14 @@
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^21.0.0",
-    "homey-lib": "^2.44.1",
+    "homey-lib": "^2.44.3",
     "luxon": "^3.7.2",
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
     "@eslint/css": "^0.14.1",
     "@eslint/js": "^9.39.2",
-    "@eslint/json": "^0.14.0",
+    "@eslint/json": "^1.0.0",
     "@eslint/markdown": "^7.5.1",
     "@html-eslint/eslint-plugin": "^0.54.0",
     "@html-eslint/parser": "^0.54.0",
@@ -32,7 +32,7 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.1.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260128.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260129.1",
     "apexcharts": "^5.3.6",
     "daisyui": "^5.5.14",
     "eslint": "^9.39.2",
