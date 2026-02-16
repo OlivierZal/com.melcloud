@@ -33,7 +33,7 @@
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.2.3",
     "@typescript/native-preview": "^7.0.0-dev.20260215.1",
-    "apexcharts": "^5.3.6",
+    "apexcharts": "^5.4.0",
     "daisyui": "^5.5.18",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
