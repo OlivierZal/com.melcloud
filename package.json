@@ -49,6 +49,6 @@
     "tailwind-csstree": "^0.1.4",
     "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.55.0"
+    "typescript-eslint": "^8.56.1"
   }
 }
