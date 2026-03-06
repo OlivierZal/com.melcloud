@@ -31,7 +31,7 @@
     "@tailwindcss/cli": "^4.2.1",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.3.5",
     "@typescript/native-preview": "^7.0.0-dev.20260304.1",
     "apexcharts": "^5.10.1",
     "daisyui": "^5.5.19",
