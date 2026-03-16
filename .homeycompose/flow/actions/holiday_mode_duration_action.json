@@ -1,0 +1,60 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "placeholder": {
+        "da": "Vælg zone eller enhed",
+        "en": "Select zone or device",
+        "es": "Seleccionar zona o dispositivo",
+        "fr": "Sélectionner une zone ou un appareil",
+        "nl": "Selecteer zone of apparaat",
+        "no": "Velg sone eller enhet",
+        "sv": "Välj zon eller enhet"
+      },
+      "title": {
+        "da": "Zone",
+        "en": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "nl": "Zone",
+        "no": "Sone",
+        "sv": "Zon"
+      },
+      "type": "autocomplete"
+    },
+    {
+      "max": 365,
+      "min": 1,
+      "name": "duration",
+      "title": {
+        "da": "Varighed (dage)",
+        "en": "Duration (days)",
+        "es": "Duración (días)",
+        "fr": "Durée (jours)",
+        "nl": "Duur (dagen)",
+        "no": "Varighet (dager)",
+        "sv": "Varaktighet (dagar)"
+      },
+      "type": "number"
+    }
+  ],
+  "id": "holiday_mode_duration_action",
+  "title": {
+    "da": "Aktivér feriefunktion i varighed",
+    "en": "Enable holiday mode for duration",
+    "es": "Activar modo vacaciones por duración",
+    "fr": "Activer le mode vacances pour durée",
+    "nl": "Vakantiemodus inschakelen voor duur",
+    "no": "Aktiver feriemodus for varighet",
+    "sv": "Aktivera semesterläge för varaktighet"
+  },
+  "titleFormatted": {
+    "da": "Aktivér feriefunktion i [[duration]] dage",
+    "en": "Enable holiday mode for [[duration]] days",
+    "es": "Activar modo vacaciones por [[duration]] días",
+    "fr": "Activer le mode vacances pour [[duration]] jours",
+    "nl": "Vakantiemodus inschakelen voor [[duration]] dagen",
+    "no": "Aktiver feriemodus for [[duration]] dager",
+    "sv": "Aktivera semesterläge för [[duration]] dagar"
+  }
+}
