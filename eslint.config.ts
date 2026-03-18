@@ -662,8 +662,8 @@ const config = defineConfig([
     extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
     files: ['**/package.json'],
     rules: {
-      'package-json/exports': 'off',
-      'package-json/files': 'off',
+      'package-json/require-exports': 'off',
+      'package-json/require-files': 'off',
     },
   },
 ])
