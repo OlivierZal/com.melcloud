@@ -1,6 +1,9 @@
-import type { DeviceType, FacadeManager } from '@olivierzal/melcloud-api'
-
-import type { BuildingZone, Zone } from '../types/index.mts'
+import type {
+  BuildingZone,
+  DeviceType,
+  FacadeManager,
+  Zone,
+} from '@olivierzal/melcloud-api'
 
 const state: { facadeManager?: FacadeManager } = {}
 
@@ -19,7 +22,7 @@ export const setFacadeManager = (value: FacadeManager): void => {
 export const getBuildings = ({
   type,
 }: { type?: DeviceType } = {}): BuildingZone[] =>
-  getFacadeManager().getBuildings({ type }) as BuildingZone[]
+  getFacadeManager().getBuildings({ type })
 
 export const getZones = ({ type }: { type?: DeviceType } = {}): Zone[] =>
-  getFacadeManager().getZones({ type }) as Zone[]
+  getFacadeManager().getZones({ type })

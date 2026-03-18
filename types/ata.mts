@@ -16,19 +16,22 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
-import type { OpCapabilities } from './generic.mts'
 
-export enum ThermostatModeAta {
-  auto = 'auto',
-  cool = 'cool',
-  dry = 'dry',
-  fan = 'fan',
-  heat = 'heat',
-  off = 'off',
-}
+export const ThermostatModeAta = {
+  auto: 'auto',
+  cool: 'cool',
+  dry: 'dry',
+  fan: 'fan',
+  heat: 'heat',
+  off: 'off',
+} as const
 
 export interface CapabilitiesAta
-  extends EnergyCapabilitiesAta, OpCapabilities<typeof DeviceType.Ata> {}
+  extends
+    EnergyCapabilitiesAta,
+    GetCapabilitiesAta,
+    ListCapabilitiesAta,
+    SetCapabilitiesAta {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number
@@ -71,6 +74,9 @@ export interface SetCapabilitiesAta extends BaseSetCapabilities {
   readonly thermostat_mode: keyof typeof ThermostatModeAta
   readonly vertical: keyof typeof Vertical
 }
+
+export type ThermostatModeAta =
+  (typeof ThermostatModeAta)[keyof typeof ThermostatModeAta]
 
 export const setCapabilityTagMappingAta: Record<
   keyof SetCapabilitiesAta,

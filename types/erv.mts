@@ -13,17 +13,18 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
-import type { OpCapabilities } from './generic.mts'
 
-export enum ThermostatModeErv {
-  auto = 'auto',
-  bypass = 'bypass',
-  off = 'off',
-  recovery = 'recovery',
-}
+export const ThermostatModeErv = {
+  auto: 'auto',
+  bypass: 'bypass',
+  off: 'off',
+  recovery: 'recovery',
+} as const
 
 export type CapabilitiesErv = EnergyCapabilitiesErv &
-  OpCapabilities<typeof DeviceType.Erv>
+  GetCapabilitiesErv &
+  ListCapabilitiesErv &
+  SetCapabilitiesErv
 
 export type EnergyCapabilitiesErv = Record<string, never>
 
@@ -41,6 +42,9 @@ export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_speed: FanSpeed
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
+
+export type ThermostatModeErv =
+  (typeof ThermostatModeErv)[keyof typeof ThermostatModeErv]
 
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,

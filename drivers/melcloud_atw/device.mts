@@ -7,111 +7,100 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
-import { K_MULTIPLIER } from '../../constants.mts'
+import type { EnergyReportConfig } from '../base-report.mts'
+
 import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
-  type OpCapabilities,
+  type OperationalCapabilities,
   type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
-  OperationModeStateHotWaterCapability,
-  OperationModeStateZoneCapability,
+  HotWaterOperationState,
+  ZoneOperationState,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-import {
-  EnergyReportRegularAtw,
-  EnergyReportTotalAtw,
-} from './reports/index.mts'
+const K_MULTIPLIER = 1000
 
-const isKeyOfOperationModeStateHotWaterCapability = (
+const isKeyOfHotWaterOperationState = (
   key: string,
-): key is keyof typeof OperationModeStateHotWaterCapability =>
-  key in OperationModeStateHotWaterCapability
+): key is keyof typeof HotWaterOperationState => key in HotWaterOperationState
 
-const isKeyOfOperationModeStateZoneCapability = (
+const isKeyOfZoneOperationState = (
   key: string,
-): key is keyof typeof OperationModeStateZoneCapability =>
-  key in OperationModeStateZoneCapability
+): key is keyof typeof ZoneOperationState => key in ZoneOperationState
 
-const convertFromDeviceMeasurePower = ((value: number) =>
-  value * K_MULTIPLIER) as ConvertFromDevice<typeof DeviceType.Atw>
-
-const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
-  keyOfValue(OperationModeZone, value)) as ConvertFromDevice<
+const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw
->
+> = (value: number) => value * K_MULTIPLIER
+
+const convertFromDeviceOperationZone: ConvertFromDevice<
+  typeof DeviceType.Atw
+> = (value: OperationModeZone) => keyOfValue(OperationModeZone, value)
 
 const getOperationModeStateHotWaterValue = (
   data: ListDeviceData<typeof DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
-): OperationModeStateHotWaterCapability => {
+): HotWaterOperationState => {
   if (data.ForcedHotWaterMode) {
-    return OperationModeStateHotWaterCapability.dhw
+    return HotWaterOperationState.dhw
   }
   if (data.ProhibitHotWater) {
-    return OperationModeStateHotWaterCapability.prohibited
+    return HotWaterOperationState.prohibited
   }
-  if (isKeyOfOperationModeStateHotWaterCapability(operationModeState)) {
-    return OperationModeStateHotWaterCapability[operationModeState]
+  if (isKeyOfHotWaterOperationState(operationModeState)) {
+    return HotWaterOperationState[operationModeState]
   }
-  return OperationModeStateHotWaterCapability.idle
+  return HotWaterOperationState.idle
 }
 
 const getOperationModeStateZoneValue = (
   data: ListDeviceData<typeof DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
   zone: ZoneAtw,
-): OperationModeStateZoneCapability => {
+): ZoneOperationState => {
   if (
     (data[`${zone}InCoolMode`] && data[`ProhibitCooling${zone}`]) ||
     (data[`${zone}InHeatMode`] && data[`ProhibitHeating${zone}`])
   ) {
-    return OperationModeStateZoneCapability.prohibited
+    return ZoneOperationState.prohibited
   }
-  if (
-    isKeyOfOperationModeStateZoneCapability(operationModeState) &&
-    !data[`Idle${zone}`]
-  ) {
-    return OperationModeStateZoneCapability[operationModeState]
+  if (isKeyOfZoneOperationState(operationModeState) && !data[`Idle${zone}`]) {
+    return ZoneOperationState[operationModeState]
   }
-  return OperationModeStateZoneCapability.idle
+  return ZoneOperationState.idle
 }
 
 export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   typeof DeviceType.Atw
 > {
-  protected readonly EnergyReportRegular = EnergyReportRegularAtw
-
-  protected readonly EnergyReportTotal = EnergyReportTotalAtw
-
-  protected readonly fromDevice: Partial<
+  protected readonly capabilityToDevice: Partial<
     Record<
-      keyof OpCapabilities<typeof DeviceType.Atw>,
+      keyof SetCapabilities<typeof DeviceType.Atw>,
+      ConvertToDevice<typeof DeviceType.Atw>
+    >
+  > = {
+    hot_water_mode: (value: keyof typeof HotWaterMode) =>
+      HotWaterMode[value] === HotWaterMode.forced,
+    thermostat_mode: (value: keyof typeof OperationModeZone) =>
+      OperationModeZone[value],
+    'thermostat_mode.zone2': (value: keyof typeof OperationModeZone) =>
+      OperationModeZone[value],
+  }
+
+  protected readonly deviceToCapability: Partial<
+    Record<
+      keyof OperationalCapabilities<typeof DeviceType.Atw>,
       ConvertFromDevice<typeof DeviceType.Atw>
     >
   > = {
     'alarm_generic.defrost': Boolean as ConvertFromDevice<
       typeof DeviceType.Atw
     >,
-    hot_water_mode: ((value: boolean) =>
-      value ? HotWaterMode.forced : HotWaterMode.auto) as ConvertFromDevice<
-      typeof DeviceType.Atw
-    >,
-    legionella: ((value: string) =>
-      DateTime.fromISO(value).toLocaleString({
-        day: 'numeric',
-        month: 'short',
-        weekday: 'short',
-      })) as ConvertFromDevice<typeof DeviceType.Atw>,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
-    operational_state: ((value: OperationModeState) =>
-      keyOfValue(OperationModeState, value)) as ConvertFromDevice<
-      typeof DeviceType.Atw
-    >,
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool',
@@ -130,25 +119,35 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
       ),
     thermostat_mode: convertFromDeviceOperationZone,
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
+    hot_water_mode: (value: boolean) =>
+      value ? HotWaterMode.forced : HotWaterMode.auto,
+    legionella: (value: string) =>
+      DateTime.fromISO(value).toLocaleString({
+        day: 'numeric',
+        month: 'short',
+        weekday: 'short',
+      }),
+    operational_state: (value: OperationModeState) =>
+      keyOfValue(OperationModeState, value),
+  }
+
+  protected readonly energyReportRegular: EnergyReportConfig = {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { days: 1 },
+    mode: 'regular',
+    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+  }
+
+  protected readonly energyReportTotal: EnergyReportConfig = {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { days: 1 },
+    mode: 'total',
+    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
 
   protected readonly thermostatMode = null
-
-  protected readonly toDevice: Partial<
-    Record<
-      keyof SetCapabilities<typeof DeviceType.Atw>,
-      ConvertToDevice<typeof DeviceType.Atw>
-    >
-  > = {
-    hot_water_mode: ((value: keyof typeof HotWaterMode) =>
-      HotWaterMode[value] === HotWaterMode.forced) as ConvertToDevice<
-      typeof DeviceType.Atw
-    >,
-    thermostat_mode: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<typeof DeviceType.Atw>,
-    'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<typeof DeviceType.Atw>,
-  }
 
   protected override async setCapabilityValues(
     data: ListDeviceData<typeof DeviceType.Atw>,
@@ -160,10 +159,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof DeviceType.Atw> {
-    return ((value: number) =>
-      value || this.getCapabilityOptions(capability).min) as ConvertFromDevice<
-      typeof DeviceType.Atw
-    >
+    return (value: number) => value || this.getCapabilityOptions(capability).min
   }
 
   async #setOperationModeStateHotWater(
@@ -193,7 +189,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   ): Promise<void> {
     await Promise.all(
       (['Zone1', 'Zone2'] as const).map(async (zone) => {
-        const zoneSuffix = zone.toLowerCase() as Lowercase<ZoneAtw>
+        const zoneSuffix = zone === 'Zone1' ? 'zone1' : 'zone2'
         if (this.hasCapability(`operational_state.${zoneSuffix}`)) {
           await this.setCapabilityValue(
             `operational_state.${zoneSuffix}`,

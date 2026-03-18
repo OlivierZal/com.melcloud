@@ -20,6 +20,10 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
+const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  (await homey.api('GET', path)) as T
+
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
@@ -826,16 +830,16 @@ const handleWindAnimation = (speed: number): void => {
 }
 
 const getAtaValues = async (homey: Homey): Promise<GroupState> =>
-  (await homey.api('GET', `/values/ata/${getZonePath()}`)) as GroupState
+  homeyApi<GroupState>(homey, `/values/ata/${getZonePath()}`)
 
 const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
-  (await homey.api(
-    'GET',
+  homeyApi<GroupAtaStates>(
+    homey,
     `/values/ata/${getZonePath()}?${new URLSearchParams({
       mode: 'detailed',
       status: 'on',
     } satisfies Required<GetAtaOptions>)}`,
-  )) as GroupAtaStates
+  )
 
 const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   const detailedAtaValues = await getDetailedAtaValues(homey)
@@ -1014,8 +1018,8 @@ const generateAtaValues = (homey: Homey): void => {
 }
 
 const getSubzones = (zone: Zone): Zone[] => [
-  ...('areas' in zone ? (zone.areas ?? []) : []),
-  ...('floors' in zone ? (zone.floors ?? []) : []),
+  ...('areas' in zone ? zone.areas : []),
+  ...('floors' in zone ? zone.floors : []),
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {
@@ -1033,10 +1037,9 @@ const generateZones = async (zones: Zone[] = []): Promise<void> => {
 }
 
 const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  ataCapabilities = (await homey.api('GET', '/capabilities/ata')) as [
-    keyof GroupState,
-    DriverCapabilitiesOptions,
-  ][]
+  ataCapabilities = await homeyApi<
+    [keyof GroupState, DriverCapabilitiesOptions][]
+  >(homey, '/capabilities/ata')
   defaultAtaValues = Object.fromEntries(
     ataCapabilities.map(([ataKey]) => [ataKey, null]),
   )
@@ -1094,12 +1097,12 @@ const handleDefaultZone = (defaultZone: Zone | null): void => {
 }
 
 const fetchBuildings = async (homey: Homey): Promise<void> => {
-  const buildings = (await homey.api(
-    'GET',
+  const buildings = await homeyApi<BuildingZone[]>(
+    homey,
     `/buildings?${new URLSearchParams({
       type: '0',
     } satisfies { type: `${DeviceType}` })}`,
-  )) as BuildingZone[]
+  )
   if (buildings.length) {
     const { animations: isAnimations, default_zone: defaultZone } =
       homey.getSettings()

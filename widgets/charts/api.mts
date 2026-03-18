@@ -17,6 +17,7 @@ const api = {
     query: { type?: `${DeviceType}` }
   }): DeviceZone[] {
     return getZones({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       type: type ? (Number(type) as DeviceType) : undefined,
     }).filter((zone) => zone.model === 'devices')
   },
@@ -31,6 +32,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getHourlyTemperatures(
       deviceId,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
@@ -59,6 +61,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getSignal(
       deviceId,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },

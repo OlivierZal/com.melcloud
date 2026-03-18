@@ -59,7 +59,12 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/', 'coverage/'],
+    ignores: [
+      'tests/**/*.js',
+      'tests/**/*.js.map',
+      '.homeybuild/',
+      'coverage/',
+    ],
   },
   {
     extends: [
@@ -135,7 +140,11 @@ const config = defineConfig([
             regex: String.raw`^[a-z]+(?:_[a-z0-9]+)*(\.(?:[a-z0-9]+_)*([a-z0-9]+)?)?$`,
           },
           format: null,
-          selector: ['objectLiteralProperty', 'typeProperty'],
+          selector: [
+            'objectLiteralMethod',
+            'objectLiteralProperty',
+            'typeProperty',
+          ],
         },
         {
           filter: {
@@ -158,6 +167,15 @@ const config = defineConfig([
           prefix: ['can', 'did', 'has', 'is', 'should', 'will'],
           selector: ['variable'],
           types: ['boolean'],
+        },
+        {
+          filter: {
+            match: true,
+            regex: '^[A-Z][a-z]',
+          },
+          format: ['PascalCase'],
+          modifiers: ['const', 'global'],
+          selector: ['variable'],
         },
         {
           format: ['UPPER_CASE'],
@@ -597,7 +615,7 @@ const config = defineConfig([
   },
   {
     extends: [vitest.configs.all],
-    files: ['tests/**'],
+    files: ['tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',

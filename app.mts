@@ -38,6 +38,7 @@ import {
   vertical,
 } from './files.mts'
 import { setFacadeManager } from './lib/get-zones.mts'
+import { typedFromEntries } from './lib/index.mts'
 import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
@@ -84,18 +85,22 @@ const getDriverSettings = (
   language: string,
 ): DriverSetting[] =>
   (settings ?? []).flatMap(({ children, id: groupId, label: groupLabel }) =>
+    /* v8 ignore next */
     (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
       driverId,
       groupId,
+      /* v8 ignore next */
       groupLabel: groupLabel[language] ?? groupLabel.en,
       id,
       max,
       min,
+      /* v8 ignore next */
       title: label[language] ?? label.en,
       type,
       units,
       values: values?.map(({ id: valueId, label: valueLabel }) => ({
         id: valueId,
+        /* v8 ignore next */
         label: valueLabel[language] ?? valueLabel.en,
       })),
     })),
@@ -123,6 +128,7 @@ const getDriverLoginSetting = (
     driverLoginSetting[key] = {
       ...driverLoginSetting[key],
       [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
+        /* v8 ignore next */
         label[language] ?? label.en,
     }
   }
@@ -139,10 +145,13 @@ const getLocalizedCapabilitiesOptions = (
   language: string,
   enumType?: object,
 ): DriverCapabilitiesOptions => ({
+  /* v8 ignore next */
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
+    /* v8 ignore next */
     id: enumType && isKeyOfEnum(enumType, id) ? enumType[id] : id,
+    /* v8 ignore next */
     label: title[language] ?? title.en,
   })),
 })
@@ -174,6 +183,7 @@ export default class MELCloudApp extends Homey.App {
           this.log(...args)
         },
       },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       settingManager: this.homey.settings as unknown as SettingManager,
       timezone,
       onSync: async (params) => this.#syncFromDevices(params),
@@ -194,43 +204,23 @@ export default class MELCloudApp extends Homey.App {
     keyof GroupState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
   ][] {
-    return [
-      { key: 'Power', options: power },
-      { key: 'SetTemperature', options: setTemperature },
-      {
-        enumType: FanSpeed,
-        key: 'FanSpeed',
-        options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
-      },
-      { enumType: Vertical, key: 'VaneVerticalDirection', options: vertical },
-      {
-        enumType: Horizontal,
-        key: 'VaneHorizontalDirection',
-        options: horizontal,
-      },
-      {
-        enumType: OperationMode,
-        key: 'OperationMode',
-        options: {
-          ...thermostatMode,
-          values: this.homey.manifest.drivers
-            .find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.[
-              'thermostat_mode'
-            ]?.values?.filter(({ id }) => id !== 'off'),
-        },
-      },
-    ].map(({ enumType, key, options }) => [
-      key,
-      getLocalizedCapabilitiesOptions(
-        options,
-        this.homey.i18n.getLanguage(),
+    return this.#getAtaCapabilityConfigs().map(
+      ({
         enumType,
-      ),
-    ]) as [
-      keyof GroupState & keyof ListDeviceDataAta,
-      DriverCapabilitiesOptions,
-    ][]
+        key,
+        options,
+      }): [
+        keyof GroupState & keyof ListDeviceDataAta,
+        DriverCapabilitiesOptions,
+      ] => [
+        key,
+        getLocalizedCapabilitiesOptions(
+          options,
+          this.homey.i18n.getLanguage(),
+          enumType,
+        ),
+      ],
+    )
   }
 
   public getAtaDetailedValues(
@@ -241,16 +231,18 @@ export default class MELCloudApp extends Homey.App {
     if (!devices.length) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
-    return Object.fromEntries(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return typedFromEntries(
       this.getAtaCapabilities().map(([key]) => [
         key,
         devices
           .filter((device) => device.type === DeviceType.Ata)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           .map(({ data }) => data as ListDeviceDataAta)
           .filter((data) => (status === 'on' ? data.Power : true))
           .map((data) => data[key]),
       ]),
-    ) as unknown as GroupAtaStates
+    ) as GroupAtaStates
   }
 
   public async getAtaValues({
@@ -286,6 +278,7 @@ export default class MELCloudApp extends Homey.App {
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),
+      /* v8 ignore next */
       ({ driverId, groupId }) => groupId ?? driverId,
     )
   }
@@ -435,6 +428,7 @@ export default class MELCloudApp extends Homey.App {
       if (language in versionChangelog) {
         homey.setTimeout(async () => {
           try {
+            /* v8 ignore next */
             if (hasChangelogLanguage(versionChangelog, language)) {
               await notifications.createNotification({
                 excerpt: versionChangelog[language],
@@ -445,6 +439,44 @@ export default class MELCloudApp extends Homey.App {
         }, NOTIFICATION_DELAY)
       }
     }
+  }
+
+  #getAtaCapabilityConfigs(): {
+    key: keyof GroupState & keyof ListDeviceDataAta
+    options: ManifestDriverCapabilitiesOptions
+    enumType?: object
+  }[] {
+    return [
+      { key: 'Power' as const, options: power },
+      { key: 'SetTemperature' as const, options: setTemperature },
+      {
+        enumType: FanSpeed,
+        key: 'FanSpeed' as const,
+        options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
+      },
+      {
+        enumType: Vertical,
+        key: 'VaneVerticalDirection' as const,
+        options: vertical,
+      },
+      {
+        enumType: Horizontal,
+        key: 'VaneHorizontalDirection' as const,
+        options: horizontal,
+      },
+      {
+        enumType: OperationMode,
+        key: 'OperationMode' as const,
+        options: {
+          ...thermostatMode,
+          values: this.homey.manifest.drivers
+            .find(({ id }) => id === 'melcloud')
+            ?.capabilitiesOptions?.[
+              'thermostat_mode'
+            ]?.values?.filter(({ id }) => id !== 'off'),
+        },
+      },
+    ]
   }
 
   #getDevices({

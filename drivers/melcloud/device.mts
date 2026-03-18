@@ -7,68 +7,66 @@ import {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
+import type { EnergyReportConfig } from '../base-report.mts'
+
 import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
-  type OpCapabilities,
+  type OperationalCapabilities,
   type SetCapabilities,
   ThermostatModeAta,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-import {
-  EnergyReportRegularAta,
-  EnergyReportTotalAta,
-} from './reports/index.mts'
-
 export default class MELCloudDeviceAta extends BaseMELCloudDevice<
   typeof DeviceType.Ata
 > {
-  protected readonly EnergyReportRegular = EnergyReportRegularAta
-
-  protected readonly EnergyReportTotal = EnergyReportTotalAta
-
-  protected readonly fromDevice: Partial<
-    Record<
-      keyof OpCapabilities<typeof DeviceType.Ata>,
-      ConvertFromDevice<typeof DeviceType.Ata>
-    >
-  > = {
-    'alarm_generic.silent': ((value: FanSpeed) =>
-      value === FanSpeed.silent) as ConvertFromDevice<typeof DeviceType.Ata>,
-    fan_speed: ((value: FanSpeed) =>
-      value === FanSpeed.silent ? FanSpeed.auto : value) as ConvertFromDevice<
-      typeof DeviceType.Ata
-    >,
-    horizontal: ((value: Horizontal) =>
-      keyOfValue(Horizontal, value)) as ConvertFromDevice<
-      typeof DeviceType.Ata
-    >,
-    thermostat_mode: ((
-      value: OperationMode,
-      data: ListDeviceData<typeof DeviceType.Ata>,
-    ) =>
-      data.Power ?
-        keyOfValue(OperationMode, value)
-      : ThermostatModeAta.off) as ConvertFromDevice<typeof DeviceType.Ata>,
-    vertical: ((value: Vertical) =>
-      keyOfValue(Vertical, value)) as ConvertFromDevice<typeof DeviceType.Ata>,
-  }
-
-  protected readonly thermostatMode = ThermostatModeAta
-
-  protected readonly toDevice: Partial<
+  protected readonly capabilityToDevice: Partial<
     Record<
       keyof SetCapabilities<typeof DeviceType.Ata>,
       ConvertToDevice<typeof DeviceType.Ata>
     >
   > = {
-    horizontal: ((value: keyof typeof Horizontal) =>
-      Horizontal[value]) as ConvertToDevice<typeof DeviceType.Ata>,
-    thermostat_mode: ((value: keyof typeof OperationMode) =>
-      OperationMode[value]) as ConvertToDevice<typeof DeviceType.Ata>,
-    vertical: ((value: keyof typeof Vertical) =>
-      Vertical[value]) as ConvertToDevice<typeof DeviceType.Ata>,
+    horizontal: (value: keyof typeof Horizontal) => Horizontal[value],
+    thermostat_mode: (value: keyof typeof OperationMode) =>
+      OperationMode[value],
+    vertical: (value: keyof typeof Vertical) => Vertical[value],
   }
+
+  protected readonly deviceToCapability: Partial<
+    Record<
+      keyof OperationalCapabilities<typeof DeviceType.Ata>,
+      ConvertFromDevice<typeof DeviceType.Ata>
+    >
+  > = {
+    'alarm_generic.silent': (value: FanSpeed) => value === FanSpeed.silent,
+    fan_speed: (value: FanSpeed) =>
+      value === FanSpeed.silent ? FanSpeed.auto : value,
+    horizontal: (value: Horizontal) => keyOfValue(Horizontal, value),
+    thermostat_mode: (
+      value: OperationMode,
+      data: ListDeviceData<typeof DeviceType.Ata>,
+    ) =>
+      data.Power ? keyOfValue(OperationMode, value) : ThermostatModeAta.off,
+    vertical: (value: Vertical) => keyOfValue(Vertical, value),
+  }
+
+  protected readonly energyReportRegular: EnergyReportConfig = {
+    duration: { hours: 1 },
+    interval: { hours: 1 },
+    minus: { hours: 1 },
+    mode: 'regular',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  }
+
+  protected readonly energyReportTotal: EnergyReportConfig = {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { hours: 1 },
+    mode: 'total',
+    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+  }
+
+  protected readonly thermostatMode = ThermostatModeAta
 }

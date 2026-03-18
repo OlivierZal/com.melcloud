@@ -38,6 +38,7 @@ const api = {
     query: { type?: `${DeviceType}` }
   }): BuildingZone[] {
     return getBuildings({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       type: type ? (Number(type) as DeviceType) : undefined,
     })
   },

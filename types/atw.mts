@@ -11,6 +11,7 @@ import type {
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
 
 import { thermostatMode } from '../files.mts'
+import { typedFromEntries } from '../lib/index.mts'
 
 import type {
   BaseGetCapabilities,
@@ -20,18 +21,20 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
-import type { OpCapabilities } from './generic.mts'
 
 const addSuffixToTitle = (
   title: LocalizedStrings,
   suffix: LocalizedStrings,
-): LocalizedStrings =>
-  Object.fromEntries(
+): LocalizedStrings => ({
+  ...typedFromEntries(
     Object.entries(suffix).map(([language, localizedSuffix]) => [
       language,
+      /* v8 ignore next */
       `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
     ]),
-  ) as LocalizedStrings
+  ),
+  en: `${title.en} ${suffix.en}`,
+})
 
 const curve: CapabilitiesOptionsValues<'curve'> = {
   id: 'curve',
@@ -127,31 +130,40 @@ export const getCapabilitiesOptionsAtw = ({
   }
 }
 
-export enum HotWaterMode {
-  auto = 'auto',
-  forced = 'forced',
-}
+export const HotWaterMode = {
+  auto: 'auto',
+  forced: 'forced',
+} as const
 
-export enum OperationModeStateHotWaterCapability {
-  dhw = 'dhw',
-  idle = 'idle',
-  legionella = 'legionella',
-  prohibited = 'prohibited',
-}
+export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
 
-export enum OperationModeStateZoneCapability {
-  cooling = 'cooling',
-  defrost = 'defrost',
-  heating = 'heating',
-  idle = 'idle',
-  prohibited = 'prohibited',
-}
+export const HotWaterOperationState = {
+  dhw: 'dhw',
+  idle: 'idle',
+  legionella: 'legionella',
+  prohibited: 'prohibited',
+} as const
+
+export type HotWaterOperationState =
+  (typeof HotWaterOperationState)[keyof typeof HotWaterOperationState]
+
+export const ZoneOperationState = {
+  cooling: 'cooling',
+  defrost: 'defrost',
+  heating: 'heating',
+  idle: 'idle',
+  prohibited: 'prohibited',
+} as const
 
 export interface CapabilitiesAtw
-  extends EnergyCapabilitiesAtw, OpCapabilities<typeof DeviceType.Atw> {
-  readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
-  readonly 'operational_state.zone1': OperationModeStateZoneCapability
-  readonly 'operational_state.zone2': OperationModeStateZoneCapability
+  extends
+    EnergyCapabilitiesAtw,
+    GetCapabilitiesAtw,
+    ListCapabilitiesAtw,
+    SetCapabilitiesAtw {
+  readonly 'operational_state.hot_water': HotWaterOperationState
+  readonly 'operational_state.zone1': ZoneOperationState
+  readonly 'operational_state.zone2': ZoneOperationState
 }
 
 export interface EnergyCapabilitiesAtw {
@@ -227,6 +239,9 @@ export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_heat': number
   readonly 'target_temperature.flow_heat_zone2': number
 }
+
+export type ZoneOperationState =
+  (typeof ZoneOperationState)[keyof typeof ZoneOperationState]
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,

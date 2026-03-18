@@ -16,6 +16,10 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
+const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  (await homey.api('GET', path)) as T
+
 const ZERO_DECIMALS = 0
 
 const FONT_SIZE_VERY_SMALL = '12px'
@@ -196,8 +200,8 @@ const getChartFunction =
     days?: number,
   ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
   async (days?: number) =>
-    (await homey.api(
-      'GET',
+    homeyApi<ReportChartLineOptions | ReportChartPieOptions>(
+      homey,
       `/logs/${chart}/${getZonePath()}${
         chartsWithDays.has(chart) && days !== undefined ?
           `?${new URLSearchParams({
@@ -205,7 +209,7 @@ const getChartFunction =
           } satisfies DaysQuery)}`
         : ''
       }`,
-    )) as Promise<ReportChartLineOptions | ReportChartPieOptions>
+    )
 
 const handleChartAndOptions = async (
   homey: Homey,
@@ -317,8 +321,8 @@ const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
 
 const fetchDevices = async (homey: Homey): Promise<void> => {
   const { chart, days, default_zone: defaultZone, height } = homey.getSettings()
-  const devices = (await homey.api(
-    'GET',
+  const devices = await homeyApi<DeviceZone[]>(
+    homey,
     `/devices${
       chart === 'hourly_temperatures' ?
         `?${new URLSearchParams({
@@ -326,7 +330,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
         } satisfies { type: `${DeviceType}` })}`
       : ''
     }`,
-  )) as DeviceZone[]
+  )
   if (devices.length) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)

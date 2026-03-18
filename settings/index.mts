@@ -23,10 +23,10 @@ import type {
   Zone,
 } from '../types/index.mts'
 
-enum Modulo {
-  base10 = 10,
-  base100 = 100,
-}
+const Modulo = {
+  base10: 10,
+  base100: 100,
+} as const
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
@@ -944,9 +944,9 @@ const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
   )
 
 const getSubzones = (zone: Zone): Zone[] => [
-  ...('devices' in zone ? (zone.devices ?? []) : []),
-  ...('areas' in zone ? (zone.areas ?? []) : []),
-  ...('floors' in zone ? (zone.floors ?? []) : []),
+  ...('devices' in zone ? zone.devices : []),
+  ...('areas' in zone ? zone.areas : []),
+  ...('floors' in zone ? zone.floors : []),
 ]
 
 const generateZones = async (zones: Zone[] = []): Promise<void> => {

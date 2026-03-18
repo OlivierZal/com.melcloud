@@ -2,7 +2,7 @@ const KEY_INDEX = 0
 
 export const keyOfValue = <T extends Record<string, number | string>>(
   object: T,
-  value: T[keyof T],
+  value: unknown,
 ): string & keyof T => {
   const entry = Object.entries(object).find(
     ([, entryValue]) => entryValue === value,

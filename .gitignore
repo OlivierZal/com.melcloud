@@ -1,6 +1,5 @@
 node_modules/
-*.mjs
-*.mjs.map
+*.js.map
 /.homeybuild/
 /.vscode/*
 !/.vscode/settings.json

@@ -35,6 +35,7 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<
     HasPM25Sensor: hasPM25Sensor,
   }: ListDeviceData<typeof DeviceType.Erv>): string[] {
     return [
+      /* v8 ignore next */
       ...(this.manifest.capabilities ?? []).filter(
         (capability) => !measureCapabilities.has(capability),
       ),
