@@ -11,7 +11,6 @@ import unicorn from 'eslint-plugin-unicorn'
 
 import { defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
-import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { configs as ymlConfigs } from 'eslint-plugin-yml'
@@ -61,10 +60,6 @@ const typeLikeSortOptions = {
 const config = defineConfig([
   {
     ignores: ['.homeybuild/', 'coverage/'],
-  },
-  {
-    ...jsdoc({ config: 'flat/recommended-typescript-error' }),
-    files: ['src/**/*.{ts,mts,js}'],
   },
   {
     extends: [

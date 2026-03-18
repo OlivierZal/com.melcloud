@@ -39,7 +39,7 @@ const buildGroupsForSelector = ({
 }): string[] =>
   compatibleModifierCombos({ modifierIncompatibilities, modifiers })
     .filter((combo) => {
-      const incompatibilities = selectorIncompatibilities[selector]
+      const { [selector]: incompatibilities } = selectorIncompatibilities
       return incompatibilities ?
           incompatibilities.isDisjointFrom(new Set(combo))
         : true
@@ -72,8 +72,8 @@ export const buildGroups = ({
       for (const [index] of firstGroup.entries()) {
         result.push(
           groupPairs.flatMap((groupPair) => {
-            const value = groupPair[index]
-            return value ? [value] : []
+            const { [index]: value } = groupPair
+            return value !== undefined && value !== '' ? [value] : []
           }),
         )
       }
