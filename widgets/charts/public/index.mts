@@ -66,6 +66,8 @@ let myChart: ApexCharts | null = null
 let options: ApexCharts.ApexOptions = {}
 let timeout: NodeJS.Timeout | null = null
 
+// ── DOM helpers ──
+
 const getElement = <T extends HTMLElement>(
   id: string,
   elementConstructor: new () => T,
@@ -90,6 +92,8 @@ const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
+// ── Style helpers ──
+
 const getStyle = (property: string): string => {
   styleCache[property] ??= getComputedStyle(document.documentElement)
     .getPropertyValue(property)
@@ -99,6 +103,26 @@ const getStyle = (property: string): string => {
 
 const normalizeSeriesName = (name: string): string =>
   name.replace('Temperature', '')
+
+// ── Shared chart config ──
+
+const getBaseChartConfig = (
+  height: number,
+  type: 'line' | 'pie',
+): ApexCharts.ApexOptions['chart'] => ({
+  height,
+  toolbar: { show: false },
+  type,
+})
+
+const getLegendConfig = (): ApexCharts.ApexOptions['legend'] => ({
+  fontSize: FONT_SIZE_VERY_SMALL,
+  fontWeight: getStyle('--homey-font-weight-regular'),
+  labels: { colors: getStyle('--homey-text-color-light') },
+  markers: { shape: 'square', strokeWidth: 0 },
+})
+
+// ── Chart options ──
 
 const getChartLineOptions = (
   { labels: categories, series, unit }: ReportChartLineOptions,
@@ -113,18 +137,14 @@ const getChartLineOptions = (
   }
   const style = { ...fontStyle, colors: colorLight }
   return {
-    chart: { height, toolbar: { show: false }, type: 'line' },
+    chart: getBaseChartConfig(height, 'line'),
     colors,
     grid: {
       borderColor: colorLight,
       strokeDashArray: 3,
       xaxis: { lines: { show: false } },
     },
-    legend: {
-      ...fontStyle,
-      labels: { colors: colorLight },
-      markers: { shape: 'square', strokeWidth: 0 },
-    },
+    legend: { ...getLegendConfig(), ...fontStyle },
     series: series.map(({ data, name: seriesName }) => {
       const name = normalizeSeriesName(seriesName)
       return { data, hidden: hidden.has(name), name }
@@ -153,7 +173,7 @@ const getChartPieOptions = (
   { labels, series }: ReportChartPieOptions,
   height: number,
 ): ApexCharts.ApexOptions => ({
-  chart: { height, toolbar: { show: false }, type: 'pie' },
+  chart: getBaseChartConfig(height, 'pie'),
   colors,
   dataLabels: {
     dropShadow: { enabled: false },
@@ -174,12 +194,7 @@ const getChartPieOptions = (
       .replace('Prevention', '')
       .replace(/(?<mode>.+)Ventilation$/u, '$<mode>'),
   ),
-  legend: {
-    fontSize: FONT_SIZE_VERY_SMALL,
-    fontWeight: getStyle('--homey-font-weight-regular'),
-    labels: { colors: getStyle('--homey-text-color-light') },
-    markers: { shape: 'square', strokeWidth: 0 },
-  },
+  legend: getLegendConfig(),
   series,
   stroke: { show: false },
 })
@@ -191,6 +206,8 @@ const getChartOptions = (
   'unit' in data ?
     getChartLineOptions(data, height)
   : getChartPieOptions(data, height)
+
+// ── Chart data fetching ──
 
 const getChartFunction =
   (
@@ -275,6 +292,8 @@ const draw = async (
     })
   }, getTimeout(chart))
 }
+
+// ── Setup ──
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   document.documentElement.lang = String(await homey.api('GET', '/language'))

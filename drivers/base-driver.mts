@@ -143,11 +143,10 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          const value = (
-            args.device.getCapabilityValue as (
-              capability: keyof Capabilities<T>,
-            ) => Capabilities<T>[keyof Capabilities<T>]
-          )(capability)
+          const getCapabilityValue = args.device.getCapabilityValue as (
+            capability: keyof Capabilities<T>,
+          ) => Capabilities<T>[keyof Capabilities<T>]
+          const value = getCapabilityValue(capability)
           return typeof value === 'string' || typeof value === 'number' ?
               value === args[getArg(capability)]
             : value

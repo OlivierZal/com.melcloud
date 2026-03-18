@@ -159,6 +159,50 @@ const getZonePath = (): string => zoneElement.value.replace('_', '/')
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
+const homeyApiGet = async <T,>(
+  homey: Homey,
+  path: string,
+): Promise<T> =>
+  new Promise((resolve, reject) => {
+    homey.api('GET', path, (error: Error | null, data: T) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+
+const homeyApiPut = async <T,>(
+  homey: Homey,
+  path: string,
+  body: unknown,
+): Promise<T> =>
+  new Promise((resolve, reject) => {
+    homey.api('PUT', path, body, (error: Error | null, data: T) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+
+const homeyApiPost = async <T,>(
+  homey: Homey,
+  path: string,
+  body: unknown,
+): Promise<T> =>
+  new Promise((resolve, reject) => {
+    homey.api('POST', path, body, (error: Error | null, data: T) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+
 const disableButton = (id: string, value = true): void => {
   const element = document.querySelector(`#${id}`)
   if (value) {
@@ -166,10 +210,6 @@ const disableButton = (id: string, value = true): void => {
     return
   }
   element?.classList.remove('is-disabled')
-}
-
-const enableButton = (id: string, value = true): void => {
-  disableButton(id, !value)
 }
 
 const disableButtons = (id: string, value = true): void => {
@@ -182,10 +222,6 @@ const disableButtons = (id: string, value = true): void => {
       }
     }
   }
-}
-
-const enableButtons = (id: string, value = true): void => {
-  disableButtons(id, !value)
 }
 
 const disableSettingButtons = (): void => {
@@ -201,7 +237,7 @@ const withDisablingButton = async (
 ): Promise<void> => {
   disableButton(id)
   await action()
-  enableButton(id)
+  disableButton(id, false)
 }
 
 const withDisablingButtons = async (
@@ -210,26 +246,18 @@ const withDisablingButtons = async (
 ): Promise<void> => {
   disableButtons(id)
   await action()
-  enableButtons(id)
+  disableButtons(id, false)
 }
 
 const hide = (element: HTMLDivElement, value = true): void => {
   element.classList.toggle('hidden', value)
 }
 
-const unhide = (element: HTMLDivElement, value = true): void => {
-  hide(element, !value)
+const setDocumentLanguage = async (homey: Homey): Promise<void> => {
+  try {
+    document.documentElement.lang = await homeyApiGet<string>(homey, '/language')
+  } catch {}
 }
-
-const setDocumentLanguage = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api('GET', '/language', (error: Error | null, language: string) => {
-      if (!error) {
-        document.documentElement.lang = language
-      }
-      resolve()
-    })
-  })
 
 const fetchHomeySettings = async (homey: Homey): Promise<HomeySettings> =>
   new Promise((resolve) => {
@@ -262,22 +290,14 @@ const fetchFlattenDeviceSettings = (): void => {
   )
 }
 
-const fetchDeviceSettings = async (homey: Homey): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      '/settings/devices',
-      async (error: Error | null, settings: DeviceSettings) => {
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          deviceSettings = settings
-          fetchFlattenDeviceSettings()
-        }
-        resolve()
-      },
-    )
-  })
+const fetchDeviceSettings = async (homey: Homey): Promise<void> => {
+  try {
+    deviceSettings = await homeyApiGet<DeviceSettings>(homey, '/settings/devices')
+    fetchFlattenDeviceSettings()
+  } catch (error) {
+    await homey.alert(getErrorMessage(error))
+  }
+}
 
 const addTextToCheckbox = (
   labelElement: HTMLLabelElement,
@@ -593,32 +613,25 @@ const setDeviceSettings = async (
     })
     return
   }
-  await withDisablingButtons(
-    `settings_${driverId ?? 'common'}`,
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'PUT',
-          `/settings/devices${
-            driverId === undefined ? '' : (
-              `?${new URLSearchParams({ driverId } satisfies {
-                driverId: string
-              })}`
-            )
-          }`,
-          body satisfies Settings,
-          async (error: Error | null) => {
-            if (!error) {
-              updateDeviceSettings(body, driverId)
-            }
-            await homey.alert(
-              error ? error.message : homey.__('settings.success'),
-            )
-            resolve()
-          },
-        )
-      }),
-  )
+  await withDisablingButtons(`settings_${driverId ?? 'common'}`, async () => {
+    try {
+      await homeyApiPut<unknown>(
+        homey,
+        `/settings/devices${
+          driverId === undefined ? '' : (
+            `?${new URLSearchParams({ driverId } satisfies {
+              driverId: string
+            })}`
+          )
+        }`,
+        body satisfies Settings,
+      )
+      updateDeviceSettings(body, driverId)
+      await homey.alert(homey.__('settings.success'))
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+    }
+  })
 }
 
 const addApplySettingsEventListener = (
@@ -722,7 +735,7 @@ const generateDriverSettings = (
         Array.from(fieldSetElement.querySelectorAll('input')),
         driverId,
       )
-      unhide(getDivElement(`has_devices_${driverId}`))
+      hide(getDivElement(`has_devices_${driverId}`), false)
     }
   }
 }
@@ -768,25 +781,17 @@ const generateCredentials = (
 const fetchDriverSettings = async (
   homey: Homey,
   credentials: { password?: string | null; username?: string | null },
-): Promise<void> =>
-  new Promise((resolve) => {
-    homey.api(
-      'GET',
-      '/settings/drivers',
-      async (
-        error: Error | null,
-        settings: Partial<Record<string, DriverSetting[]>>,
-      ) => {
-        if (error) {
-          await homey.alert(error.message)
-        } else {
-          generateSettings(homey, settings)
-          generateCredentials(settings, credentials)
-        }
-        resolve()
-      },
+): Promise<void> => {
+  try {
+    const settings = await homeyApiGet<Partial<Record<string, DriverSetting[]>>>(
+      homey, '/settings/drivers',
     )
-  })
+    generateSettings(homey, settings)
+    generateCredentials(settings, credentials)
+  } catch (error) {
+    await homey.alert(getErrorMessage(error))
+  }
+}
 
 const generateErrorLogTable = (
   homey: Homey,
@@ -847,30 +852,23 @@ const updateErrorLogElements = (
 }
 
 const fetchErrorLog = async (homey: Homey): Promise<void> =>
-  withDisablingButton(
-    seeElement.id,
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'GET',
-          `/logs/errors?${new URLSearchParams({
-            from: sinceElement.value,
-            limit: '29',
-            offset: '0',
-            to,
-          } satisfies ErrorLogQuery)}`,
-          async (error: Error | null, data: ErrorLog) => {
-            if (error) {
-              await homey.alert(error.message)
-            } else {
-              updateErrorLogElements(homey, data)
-              generateErrorLogTableData(homey, data.errors)
-            }
-            resolve()
-          },
-        )
-      }),
-  )
+  withDisablingButton(seeElement.id, async () => {
+    try {
+      const data = await homeyApiGet<ErrorLog>(
+        homey,
+        `/logs/errors?${new URLSearchParams({
+          from: sinceElement.value,
+          limit: '29',
+          offset: '0',
+          to,
+        } satisfies ErrorLogQuery)}`,
+      )
+      updateErrorLogElements(homey, data)
+      generateErrorLogTableData(homey, data.errors)
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+    }
+  })
 
 const updateZoneMapping = (data: Partial<ZoneSettings>): void => {
   const { value } = zoneElement
@@ -906,42 +904,26 @@ const refreshFrostProtectionData = (): void => {
 }
 
 const fetchHolidayModeData = async (homey: Homey): Promise<void> =>
-  withDisablingButtons(
-    'holiday_mode',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'GET',
-          `/settings/holiday_mode/${getZonePath()}`,
-          (error: Error | null, data: HolidayModeData) => {
-            if (!error) {
-              updateZoneMapping(data)
-              refreshHolidayModeData()
-            }
-            resolve()
-          },
-        )
-      }),
-  )
+  withDisablingButtons('holiday_mode', async () => {
+    try {
+      const data = await homeyApiGet<HolidayModeData>(
+        homey, `/settings/holiday_mode/${getZonePath()}`,
+      )
+      updateZoneMapping(data)
+      refreshHolidayModeData()
+    } catch {}
+  })
 
 const fetchFrostProtectionData = async (homey: Homey): Promise<void> =>
-  withDisablingButtons(
-    'frost_protection',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'GET',
-          `/settings/frost_protection/${getZonePath()}`,
-          (error: Error | null, data: FrostProtectionData) => {
-            if (!error) {
-              updateZoneMapping(data)
-              refreshFrostProtectionData()
-            }
-            resolve()
-          },
-        )
-      }),
-  )
+  withDisablingButtons('frost_protection', async () => {
+    try {
+      const data = await homeyApiGet<FrostProtectionData>(
+        homey, `/settings/frost_protection/${getZonePath()}`,
+      )
+      updateZoneMapping(data)
+      refreshFrostProtectionData()
+    } catch {}
+  })
 
 const getSubzones = (zone: Zone): Zone[] => [
   ...('devices' in zone ? zone.devices : []),
@@ -968,30 +950,24 @@ const fetchZoneSettings = async (homey: Homey): Promise<void> => {
   await fetchHolidayModeData(homey)
 }
 
-const fetchBuildings = async (homey: Homey): Promise<void> =>
-  new Promise((resolve, reject) => {
-    homey.api(
-      'GET',
-      '/buildings',
-      async (error: Error | null, buildings: BuildingZone[]) => {
-        if (error || !buildings.length) {
-          if (error) {
-            await homey.alert(error.message)
-          }
-          reject(error ?? new NoDeviceError(homey))
-          return
-        }
-        await generateZones(buildings)
-        await fetchErrorLog(homey)
-        await fetchZoneSettings(homey)
-        resolve()
-      },
-    )
+const fetchBuildings = async (homey: Homey): Promise<void> => {
+  const buildings = await homeyApiGet<BuildingZone[]>(
+    homey, '/buildings',
+  ).catch(async (error: unknown) => {
+    await homey.alert(getErrorMessage(error))
+    throw error
   })
+  if (!buildings.length) {
+    throw new NoDeviceError(homey)
+  }
+  await generateZones(buildings)
+  await fetchErrorLog(homey)
+  await fetchZoneSettings(homey)
+}
 
 const needsAuthentication = (value = true): void => {
   hide(authenticatedElement, value)
-  unhide(authenticatingElement, value)
+  hide(authenticatingElement, !value)
 }
 
 const loadPostLogin = async (homey: Homey): Promise<void> => {
@@ -1016,58 +992,43 @@ const login = async (homey: Homey): Promise<void> => {
     })
     return
   }
-  await withDisablingButton(
-    authenticateElement.id,
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'POST',
-          '/sessions',
-          { password, username } satisfies LoginCredentials,
-          async (error: Error | null, loggedIn: boolean) => {
-            await (error || !loggedIn ?
-              homey.alert(
-                error ?
-                  error.message
-                : homey.__('settings.authenticate.failure'),
-              )
-            : loadPostLogin(homey))
-            resolve()
-          },
-        )
-      }),
-  )
+  await withDisablingButton(authenticateElement.id, async () => {
+    try {
+      const isLoggedIn = await homeyApiPost<boolean>(
+        homey, '/sessions',
+        { password, username } satisfies LoginCredentials,
+      )
+      await (isLoggedIn ?
+        loadPostLogin(homey)
+      : homey.alert(homey.__('settings.authenticate.failure')))
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+    }
+  })
 }
 
 const setHolidayModeData = async (
   homey: Homey,
   { from: startDate, to: endDate }: HolidayModeQuery,
 ): Promise<void> =>
-  withDisablingButtons(
-    'holiday_mode',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'PUT',
-          `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
-          { from: startDate, to: endDate } satisfies HolidayModeQuery,
-          async (error: Error | null) => {
-            if (!error) {
-              updateZoneMapping({
-                HMEnabled: Boolean(endDate),
-                HMEndDate: endDate,
-                HMStartDate: startDate,
-              })
-              refreshHolidayModeData()
-            }
-            await homey.alert(
-              error ? error.message : homey.__('settings.success'),
-            )
-            resolve()
-          },
-        )
-      }),
-  )
+  withDisablingButtons('holiday_mode', async () => {
+    try {
+      await homeyApiPut<unknown>(
+        homey,
+        `/settings/holiday_mode/${zoneElement.value.replace('_', '/')}`,
+        { from: startDate, to: endDate } satisfies HolidayModeQuery,
+      )
+      updateZoneMapping({
+        HMEnabled: Boolean(endDate),
+        HMEndDate: endDate,
+        HMStartDate: startDate,
+      })
+      refreshHolidayModeData()
+      await homey.alert(homey.__('settings.success'))
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+    }
+  })
 
 const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   updateHolidayModeElement.addEventListener('click', () => {
@@ -1088,6 +1049,24 @@ const addUpdateHolidayModeEventListener = (homey: Homey): void => {
   })
 }
 
+const addDateChangeListener = (
+  primaryElement: HTMLInputElement,
+  otherElement: HTMLInputElement,
+): void => {
+  primaryElement.addEventListener('change', () => {
+    if (primaryElement.value) {
+      if (holidayModeEnabledElement.value === 'false') {
+        holidayModeEnabledElement.value = 'true'
+      }
+    } else if (
+      !otherElement.value &&
+      holidayModeEnabledElement.value === 'true'
+    ) {
+      holidayModeEnabledElement.value = 'false'
+    }
+  })
+}
+
 const addHolidayModeEventListeners = (homey: Homey): void => {
   holidayModeEnabledElement.addEventListener('change', () => {
     if (holidayModeEnabledElement.value === 'false') {
@@ -1095,30 +1074,8 @@ const addHolidayModeEventListeners = (homey: Homey): void => {
       holidayModeEndDateElement.value = ''
     }
   })
-  holidayModeStartDateElement.addEventListener('change', () => {
-    if (holidayModeStartDateElement.value) {
-      if (holidayModeEnabledElement.value === 'false') {
-        holidayModeEnabledElement.value = 'true'
-      }
-    } else if (
-      !holidayModeEndDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
-    ) {
-      holidayModeEnabledElement.value = 'false'
-    }
-  })
-  holidayModeEndDateElement.addEventListener('change', () => {
-    if (holidayModeEndDateElement.value) {
-      if (holidayModeEnabledElement.value === 'false') {
-        holidayModeEnabledElement.value = 'true'
-      }
-    } else if (
-      !holidayModeStartDateElement.value &&
-      holidayModeEnabledElement.value === 'true'
-    ) {
-      holidayModeEnabledElement.value = 'false'
-    }
-  })
+  addDateChangeListener(holidayModeStartDateElement, holidayModeEndDateElement)
+  addDateChangeListener(holidayModeEndDateElement, holidayModeStartDateElement)
   refreshHolidayModeElement.addEventListener('click', () => {
     refreshHolidayModeData()
   })
@@ -1151,31 +1108,23 @@ const setFrostProtectionData = async (
   homey: Homey,
   { enabled, max, min }: FrostProtectionQuery,
 ): Promise<void> =>
-  withDisablingButtons(
-    'frost_protection',
-    async () =>
-      new Promise((resolve) => {
-        homey.api(
-          'PUT',
-          `/settings/frost_protection/${getZonePath()}`,
-          { enabled, max, min } satisfies FrostProtectionQuery,
-          async (error: Error | null) => {
-            if (!error) {
-              updateZoneMapping({
-                FPEnabled: enabled,
-                FPMaxTemperature: max,
-                FPMinTemperature: min,
-              })
-              refreshFrostProtectionData()
-            }
-            await homey.alert(
-              error ? error.message : homey.__('settings.success'),
-            )
-            resolve()
-          },
-        )
-      }),
-  )
+  withDisablingButtons('frost_protection', async () => {
+    try {
+      await homeyApiPut<unknown>(
+        homey, `/settings/frost_protection/${getZonePath()}`,
+        { enabled, max, min } satisfies FrostProtectionQuery,
+      )
+      updateZoneMapping({
+        FPEnabled: enabled,
+        FPMaxTemperature: max,
+        FPMinTemperature: min,
+      })
+      refreshFrostProtectionData()
+      await homey.alert(homey.__('settings.success'))
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+    }
+  })
 
 const addFrostProtectionEventListeners = (homey: Homey): void => {
   for (const element of [

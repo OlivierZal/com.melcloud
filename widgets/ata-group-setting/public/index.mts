@@ -33,14 +33,73 @@ interface ResetParams {
   readonly mode: number
 }
 
+// ── Numeric constants ──
+
 const DEFAULT_DIVISOR_ONE = 1
 const DEFAULT_MULTIPLIER_ONE = 1
-
 const FACTOR_TWO = 2
+const FACTOR_FIVE = 5
 const FACTOR_TEN = 10
-
+const INCREMENT_ONE = 1
 const START_ANGLE = 0
 const FULL_CIRCLE = FACTOR_TWO * Math.PI
+
+// ── Temperature constants ──
+
+const MIN_SET_TEMPERATURE = 10
+const MAX_SET_TEMPERATURE = 31
+const MIN_SET_TEMPERATURE_COOLING = 16
+
+// ── Operation modes ──
+
+const MODE_MIXED = 0
+const MODE_AUTO = 8
+const MODE_COOL = 3
+const MODE_DRY = 2
+const MODE_FAN = 7
+const MODE_HEAT = 1
+const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
+const heatModes = new Set([MODE_AUTO, MODE_HEAT])
+type Mode =
+  | typeof MODE_AUTO
+  | typeof MODE_COOL
+  | typeof MODE_DRY
+  | typeof MODE_FAN
+  | typeof MODE_HEAT
+  | typeof MODE_MIXED
+
+// ── Speed constants ──
+
+const SPEED_VERY_SLOW = 1
+const SPEED_MODERATE = 3
+const SPEED_VERY_FAST = 5
+const SPEED_FACTOR_MIN = 1
+const SPEED_FACTOR_MAX = 50
+
+// ── Animation timing & layout constants ──
+
+const DEBOUNCE_DELAY = 1000
+const FLAME_DELAY = 2000
+const LEAF_DELAY = 1000
+const SMOKE_DELAY = 500
+const SNOWFLAKE_DELAY = 400
+const SUN_ENTER_AND_EXIT_DURATION = 5000
+const SUN_SHINE_DURATION = 5000
+
+const DEFAULT_RECT_X = 0
+const DEFAULT_RECT_Y = 0
+const FLAME_GAP = 20
+const LEAF_GAP = 50
+const LEAF_NO_LOOP_RADIUS = 0
+const SMOKE_ITERATIONS = 10
+const SMOKE_PARTICLE_SIZE_MIN = 0.1
+const SMOKE_PARTICLE_OPACITY_MIN = 0
+const SMOKE_PARTICLE_POSITION_Y_MIN = -50
+const SNOWFLAKE_GAP = 50
+
+const ANIMATION_KEYFRAME_COUNT = 101
+
+// ── Style helpers ──
 
 const generateStyleNumber = ({
   divisor,
@@ -55,6 +114,20 @@ const generateStyleNumber = ({
 }): number =>
   ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER_ONE)) /
   ((divisor ?? DEFAULT_DIVISOR_ONE) || DEFAULT_DIVISOR_ONE)
+
+const generateStyleString = (
+  params: { gap: number; min: number; divisor?: number; multiplier?: number },
+  unit = '',
+): string => `${String(generateStyleNumber(params))}${unit}`
+
+const generateDelay = (delay: number, speed: number): number =>
+  (Math.random() * delay) /
+  (SPEED_FACTOR_MIN *
+    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
+      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
+    DEFAULT_DIVISOR_ONE)
+
+// ── SmokeParticle class ──
 
 class SmokeParticle {
   public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
@@ -106,54 +179,7 @@ class SmokeParticle {
   }
 }
 
-const INCREMENT_ONE = 1
-
-const FACTOR_FIVE = 5
-
-const MIN_SET_TEMPERATURE = 10
-const MAX_SET_TEMPERATURE = 31
-const MIN_SET_TEMPERATURE_COOLING = 16
-
-const MODE_MIXED = 0
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-const MODE_FAN = 7
-const MODE_HEAT = 1
-const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
-const heatModes = new Set([MODE_AUTO, MODE_HEAT])
-type Mode =
-  | typeof MODE_AUTO
-  | typeof MODE_COOL
-  | typeof MODE_DRY
-  | typeof MODE_FAN
-  | typeof MODE_HEAT
-  | typeof MODE_MIXED
-
-const SPEED_VERY_SLOW = 1
-const SPEED_MODERATE = 3
-const SPEED_VERY_FAST = 5
-const SPEED_FACTOR_MIN = 1
-const SPEED_FACTOR_MAX = 50
-
-const DEBOUNCE_DELAY = 1000
-const FLAME_DELAY = 2000
-const LEAF_DELAY = 1000
-const SMOKE_DELAY = 500
-const SNOWFLAKE_DELAY = 400
-
-const DEFAULT_RECT_X = 0
-const DEFAULT_RECT_Y = 0
-const FLAME_GAP = 20
-const LEAF_GAP = 50
-const LEAF_NO_LOOP_RADIUS = 0
-const SMOKE_ITERATIONS = 10
-const SMOKE_PARTICLE_SIZE_MIN = 0.1
-const SMOKE_PARTICLE_OPACITY_MIN = 0
-const SMOKE_PARTICLE_POSITION_Y_MIN = -50
-const SNOWFLAKE_GAP = 50
-const SUN_ENTER_AND_EXIT_DURATION = 5000
-const SUN_SHINE_DURATION = 5000
+// ── DOM helpers ──
 
 const zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
 
@@ -211,6 +237,8 @@ let defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
 let smokeAnimationFrameId: number | null = null
 let smokeParticles: SmokeParticle[] = []
 
+// ── Animation element factory ──
+
 const createAnimationMapping = (): Record<
   AnimatedElement,
   { readonly innerHTML: string; readonly getIndex: () => number }
@@ -230,27 +258,21 @@ const createAnimationMapping = (): Record<
 }
 const animationMapping = createAnimationMapping()
 
+// ── Zone helpers ──
+
 const getZoneId = (id: number, model: string): string =>
   `${model}_${String(id)}`
 const getZoneName = (name: string, level: number): string =>
   `${'···'.repeat(level)} ${name}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
-const generateStyleString = (
-  params: { gap: number; min: number; divisor?: number; multiplier?: number },
-  unit = '',
-): string => `${String(generateStyleNumber(params))}${unit}`
-
-const generateDelay = (delay: number, speed: number): number =>
-  (Math.random() * delay) /
-  (SPEED_FACTOR_MIN *
-    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
-      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
-    DEFAULT_DIVISOR_ONE)
+// ── Language ──
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   document.documentElement.lang = String(await homey.api('GET', '/language'))
 }
+
+// ── DOM creation helpers ──
 
 const createLabelElement = (
   valueElement: HTMLValueElement,
@@ -376,11 +398,11 @@ const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
   return element
 }
 
+// ── Value processing ──
+
 const handleIntMin = (id: string, min: string): string =>
-  (
-    id === 'SetTemperature' &&
-    coolModes.has(Number(getSelectElement('OperationMode').value))
-  ) ?
+  id === 'SetTemperature' &&
+  coolModes.has(Number(getSelectElement('OperationMode').value)) ?
     String(MIN_SET_TEMPERATURE_COOLING)
   : min
 
@@ -453,10 +475,77 @@ const refreshAtaValues = (): void => {
   }
 }
 
+// ── Animation helpers ──
+
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(
     `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
   )
+
+/**
+ * Shared helper for creating positioned animated elements (flame, snowflake, leaf).
+ * Each element type follows: create → position relative to previous → style → append → animate.
+ */
+const createPositionedAnimatedElement = ({
+  animate,
+  applyStyles,
+  gap,
+  name,
+  positionProperty,
+  windowDimension,
+}: {
+  gap: number
+  name: 'flame' | 'leaf' | 'snowflake'
+  positionProperty: 'insetBlockStart' | 'insetInlineStart'
+  windowDimension: number
+  animate: (element: HTMLDivElement) => void
+  applyStyles: (element: HTMLDivElement) => void
+}): void => {
+  const element = createAnimatedElement(name)
+  const [elementName, index] = element.id.split('-')
+  if (elementName !== undefined) {
+    const previousElement = getPreviousElement(elementName, index)
+    const previousPosition =
+      previousElement ?
+        Number.parseFloat(previousElement.style[positionProperty])
+      : -gap * FACTOR_TWO
+    element.style[positionProperty] = generateStyleString(
+      {
+        gap,
+        min:
+          previousPosition > windowDimension ?
+            -gap
+          : previousPosition + gap,
+      },
+      'px',
+    )
+    applyStyles(element)
+    animationElement.append(element)
+    animate(element)
+  }
+}
+
+/**
+ * Shared helper for recurring animation generation (flames, snowflakes, leaves).
+ * All follow: setTimeout → create element → recurse.
+ */
+const generateRecurring = (
+  create: (speed: number) => void,
+  delay: number,
+  speed: number,
+): void => {
+  animationTimeouts.push(
+    setTimeout(
+      () => {
+        create(speed)
+        generateRecurring(create, delay, speed)
+      },
+      generateDelay(delay, speed),
+    ),
+  )
+}
+
+// ── Smoke animation ──
 
 const createSmoke = (flame: HTMLDivElement, speed: number): void => {
   if (flame.isConnected && canvasContext) {
@@ -505,12 +594,14 @@ const generateSmoke = (speed: number): void => {
   }
 }
 
+// ── Flame animation ──
+
 const generateFlameAnimation = (
   flame: HTMLDivElement,
   speed: number,
 ): Animation => {
   const animation = flame.animate(
-    [...Array.from({ length: 101 }).keys()].map(() => {
+    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
       const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
       const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
       const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
@@ -538,46 +629,26 @@ const generateFlameAnimation = (
 }
 
 const createFlame = (speed: number): void => {
-  const flame = createAnimatedElement('flame')
-  const [name, index] = flame.id.split('-')
-  if (name !== undefined) {
-    const previousElement = getPreviousElement(name, index)
-    const previousLeft =
-      previousElement ?
-        Number.parseFloat(previousElement.style.insetInlineStart)
-      : -FLAME_GAP * FACTOR_TWO
-    flame.style.insetInlineStart = generateStyleString(
-      {
-        gap: FLAME_GAP,
-        min:
-          previousLeft > window.innerWidth ?
-            -FLAME_GAP
-          : previousLeft + FLAME_GAP,
-      },
-      'px',
-    )
-    flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
-    animationElement.append(flame)
-    generateFlameAnimation(flame, speed)
-  }
-}
-
-const generateFlames = (speed: number): void => {
-  animationTimeouts.push(
-    setTimeout(
-      () => {
-        createFlame(speed)
-        generateFlames(speed)
-      },
-      generateDelay(FLAME_DELAY, speed),
-    ),
-  )
+  createPositionedAnimatedElement({
+    gap: FLAME_GAP,
+    name: 'flame',
+    positionProperty: 'insetInlineStart',
+    windowDimension: window.innerWidth,
+    animate: (flame) => {
+      generateFlameAnimation(flame, speed)
+    },
+    applyStyles: (flame) => {
+      flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
+    },
+  })
 }
 
 const handleFireAnimation = (speed: number): void => {
-  generateFlames(speed)
+  generateRecurring(createFlame, FLAME_DELAY, speed)
   generateSmoke(speed)
 }
+
+// ── Snowflake animation ──
 
 const generateSnowflakeAnimation = (
   snowflake: HTMLDivElement,
@@ -606,52 +677,32 @@ const generateSnowflakeAnimation = (
 }
 
 const createSnowflake = (speed: number): void => {
-  const snowflake = createAnimatedElement('snowflake')
-  const [name, index] = snowflake.id.split('-')
-  if (name !== undefined) {
-    const previousElement = getPreviousElement(name, index)
-    const previousLeft =
-      previousElement ?
-        Number.parseFloat(previousElement.style.insetInlineStart)
-      : -SNOWFLAKE_GAP * FACTOR_TWO
-    snowflake.style.insetInlineStart = generateStyleString(
-      {
-        gap: SNOWFLAKE_GAP,
-        min:
-          previousLeft > window.innerWidth ?
-            -SNOWFLAKE_GAP
-          : previousLeft + SNOWFLAKE_GAP,
-      },
-      'px',
-    )
-    snowflake.style.fontSize = generateStyleString(
-      { divisor: speed, gap: 1, min: 2 },
-      'rem',
-    )
-    snowflake.style.filter = `brightness(${generateStyleString(
-      { gap: 20, min: 100 },
-      '%',
-    )})`
-    animationElement.append(snowflake)
-    generateSnowflakeAnimation(snowflake, speed)
-  }
-}
-
-const generateSnowflakes = (speed: number): void => {
-  animationTimeouts.push(
-    setTimeout(
-      () => {
-        createSnowflake(speed)
-        generateSnowflakes(speed)
-      },
-      generateDelay(SNOWFLAKE_DELAY, speed),
-    ),
-  )
+  createPositionedAnimatedElement({
+    gap: SNOWFLAKE_GAP,
+    name: 'snowflake',
+    positionProperty: 'insetInlineStart',
+    windowDimension: window.innerWidth,
+    animate: (snowflake) => {
+      generateSnowflakeAnimation(snowflake, speed)
+    },
+    applyStyles: (snowflake) => {
+      snowflake.style.fontSize = generateStyleString(
+        { divisor: speed, gap: 1, min: 2 },
+        'rem',
+      )
+      snowflake.style.filter = `brightness(${generateStyleString(
+        { gap: 20, min: 100 },
+        '%',
+      )})`
+    },
+  })
 }
 
 const handleSnowAnimation = (speed: number): void => {
-  generateSnowflakes(speed)
+  generateRecurring(createSnowflake, SNOWFLAKE_DELAY, speed)
 }
+
+// ── Sun animation ──
 
 const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
   const duration = Number(
@@ -713,16 +764,14 @@ const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
   return animation
 }
 
-const generateSunShineAnimation = (sun: HTMLDivElement): Animation => {
-  const animation = sun.animate(
+const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
+  sun.animate(
     [
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
     ],
     { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
   )
-  return animation
-}
 
 const getSunElement = (): HTMLDivElement => {
   const sun = document.querySelector('#sun-1')
@@ -741,6 +790,8 @@ const handleSunAnimation = (speed: number): void => {
   sunAnimation.enter ??= generateSunEnterAnimation(sun)
 }
 
+// ── Leaf/wind animation ──
+
 const generateLeafAnimation = (
   leaf: HTMLDivElement,
   speed: number,
@@ -750,25 +801,29 @@ const generateLeafAnimation = (
   const loopEnd = loopStart + loopDuration
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const animation = leaf.animate(
-    [...Array.from({ length: 101 }).keys()].map((index: number) => {
-      const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
-      const indexLoopRadius =
-        index >= loopStart && index < loopEnd ? loopRadius : LEAF_NO_LOOP_RADIUS
-      const oscillate =
-        indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-          ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
-        : ''
-      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-      const translateX = `${String(
-        index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
-      )}px`
-      const translateY = `${String(
-        -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
-      )}px`
-      return {
-        transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
-      }
-    }),
+    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
+      (index: number) => {
+        const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
+        const indexLoopRadius =
+          index >= loopStart && index < loopEnd ?
+            loopRadius
+          : LEAF_NO_LOOP_RADIUS
+        const oscillate =
+          indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
+            ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+          : ''
+        const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
+        const translateX = `${String(
+          index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+        )}px`
+        const translateY = `${String(
+          -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+        )}px`
+        return {
+          transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
+        }
+      },
+    ),
     {
       duration: generateStyleNumber({
         divisor: speed,
@@ -787,47 +842,25 @@ const generateLeafAnimation = (
 }
 
 const createLeaf = (speed: number): void => {
-  const leaf = createAnimatedElement('leaf')
-  const [name, index] = leaf.id.split('-')
-  if (name !== undefined) {
-    const previousElement = getPreviousElement(name, index)
-    const previousTop =
-      previousElement ?
-        Number.parseFloat(previousElement.style.insetBlockStart)
-      : -LEAF_GAP * FACTOR_TWO
-    leaf.style.insetBlockStart = generateStyleString(
-      {
-        gap: LEAF_GAP,
-        min:
-          previousTop > window.innerHeight ? -LEAF_GAP : previousTop + LEAF_GAP,
-      },
-      'px',
-    )
-    leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
-    leaf.style.filter = `brightness(${generateStyleString(
-      { gap: 50, min: 100 },
-      '%',
-    )})`
-    animationElement.append(leaf)
-    generateLeafAnimation(leaf, speed)
-  }
+  createPositionedAnimatedElement({
+    gap: LEAF_GAP,
+    name: 'leaf',
+    positionProperty: 'insetBlockStart',
+    windowDimension: window.innerHeight,
+    animate: (leaf) => {
+      generateLeafAnimation(leaf, speed)
+    },
+    applyStyles: (leaf) => {
+      leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
+      leaf.style.filter = `brightness(${generateStyleString(
+        { gap: 50, min: 100 },
+        '%',
+      )})`
+    },
+  })
 }
 
-const generateLeaves = (speed: number): void => {
-  animationTimeouts.push(
-    setTimeout(
-      () => {
-        createLeaf(speed)
-        generateLeaves(speed)
-      },
-      generateDelay(LEAF_DELAY, speed),
-    ),
-  )
-}
-
-const handleWindAnimation = (speed: number): void => {
-  generateLeaves(speed)
-}
+// ── API calls ──
 
 const getAtaValues = async (homey: Homey): Promise<GroupState> =>
   homeyApi<GroupState>(homey, `/values/ata/${getZonePath()}`)
@@ -845,6 +878,8 @@ const getModes = async (homey: Homey): Promise<OperationMode[]> => {
   const detailedAtaValues = await getDetailedAtaValues(homey)
   return detailedAtaValues.OperationMode
 }
+
+// ── Reset animation ──
 
 const resetFireAnimation = async (
   homey: Homey,
@@ -910,6 +945,8 @@ const resetAnimation = async (
   await resetSunAnimation(homey, resetParams)
 }
 
+// ── Animation dispatch ──
+
 const handleMixedAnimation = async (
   homey: Homey,
   speed: number,
@@ -925,7 +962,7 @@ const handleMixedAnimation = async (
     handleSunAnimation(speed)
   }
   if (modes.has(MODE_FAN)) {
-    handleWindAnimation(speed)
+    generateRecurring(createLeaf, LEAF_DELAY, speed)
   }
 }
 
@@ -944,7 +981,7 @@ const animationHandling: Record<
     handleSunAnimation(speed)
   },
   [MODE_FAN]: (speed) => {
-    handleWindAnimation(speed)
+    generateRecurring(createLeaf, LEAF_DELAY, speed)
   },
   [MODE_HEAT]: (speed) => {
     handleFireAnimation(speed)
@@ -971,6 +1008,8 @@ const handleAnimation = async (
     }
   }
 }
+
+// ── Fetch & update ──
 
 const fetchAtaValues = async (
   homey: Homey,
