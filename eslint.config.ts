@@ -205,7 +205,6 @@ const config = defineConfig([
           checkLiteralConstAssertions: true,
         },
       ],
-      '@typescript-eslint/no-unsafe-type-assertion': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -659,8 +658,14 @@ const config = defineConfig([
       ],
     },
   },
-  packageJsonConfigs.recommended,
-  packageJsonConfigs.stylistic,
+  {
+    extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
+    files: ['**/package.json'],
+    rules: {
+      'package-json/exports': 'off',
+      'package-json/files': 'off',
+    },
+  },
 ])
 
 export default config

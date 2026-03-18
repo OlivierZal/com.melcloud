@@ -2,12 +2,17 @@
   "name": "com.melcloud",
   "version": "43.0.0",
   "description": "MELCloud for Homey",
+  "homepage": "https://github.com/OlivierZal/com.melcloud/",
+  "bugs": {
+    "url": "https://github.com/OlivierZal/com.melcloud/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OlivierZal/com.melcloud.git"
   },
   "license": "GPL-3.0-only",
   "author": "Olivier Zalmanski",
+  "sideEffects": false,
   "type": "module",
   "scripts": {
     "build": "npm run build:css && tsc -p tsconfig.build.json",
