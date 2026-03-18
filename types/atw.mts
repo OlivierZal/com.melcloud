@@ -148,7 +148,7 @@ export enum OperationModeStateZoneCapability {
 }
 
 export interface CapabilitiesAtw
-  extends EnergyCapabilitiesAtw, OpCapabilities<DeviceType.Atw> {
+  extends EnergyCapabilitiesAtw, OpCapabilities<typeof DeviceType.Atw> {
   readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
   readonly 'operational_state.zone1': OperationModeStateZoneCapability
   readonly 'operational_state.zone2': OperationModeStateZoneCapability
@@ -247,7 +247,7 @@ export const setCapabilityTagMappingAtw: Record<
 
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  keyof GetDeviceData<DeviceType.Atw>
+  keyof GetDeviceData<typeof DeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',

@@ -3,15 +3,6 @@ import type Homey from 'homey/lib/Homey'
 
 import { type DurationLike, DateTime, Duration } from 'luxon'
 
-interface TimerOptions {
-  readonly actionType: string
-  readonly timerType: 'setInterval' | 'setTimeout'
-  readonly timerWords: {
-    readonly dateSpecifier: string
-    readonly timeSpecifier: string
-  }
-}
-
 type HomeyClass = new (
   ...args: any[]
 ) => SimpleClass & { readonly homey: Homey }
@@ -25,6 +16,15 @@ type Timer = (
 type TimerClass = new (...args: any[]) => {
   readonly setInterval: Timer
   readonly setTimeout: Timer
+}
+
+interface TimerOptions {
+  readonly actionType: string
+  readonly timerType: 'setInterval' | 'setTimeout'
+  readonly timerWords: {
+    readonly dateSpecifier: string
+    readonly timeSpecifier: string
+  }
 }
 
 const capitalize = ([first = '', ...rest] = ''): string =>

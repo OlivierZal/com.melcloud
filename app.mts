@@ -4,21 +4,22 @@ import 'source-map-support/register.js'
 import Homey from 'homey'
 
 import {
+  type BuildingFacade,
+  type DeviceFacade,
   type ErrorLog,
   type ErrorLogQuery,
+  type Facade,
   type FrostProtectionData,
   type FrostProtectionQuery,
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
-  type IBuildingFacade,
-  type IDeviceFacade,
-  type IFacade,
-  type ISuperDeviceFacade,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
+  type SettingManager,
+  type ZoneFacade,
   DeviceType,
   FacadeManager,
   FanSpeed,
@@ -38,7 +39,7 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
-import { getZones } from './lib/index.mts'
+import { setFacadeManager } from './lib/get-zones.mts'
 import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
@@ -52,7 +53,6 @@ import {
   type Settings,
   type ZoneData,
   fanSpeedValues,
-  zoneModel,
 } from './types/index.mts'
 
 const NOTIFICATION_DELAY = 10_000
@@ -176,11 +176,12 @@ export default class MELCloudApp extends Homey.App {
           this.log(...args)
         },
       },
-      settingManager: this.homey.settings,
+      settingManager: this.homey.settings as unknown as SettingManager,
       timezone,
       onSync: async (params) => this.#syncFromDevices(params),
     })
-    this.#facadeManager = new FacadeManager(this.#api)
+    this.#facadeManager = new FacadeManager(this.#api, this.#api.registry)
+    setFacadeManager(this.#facadeManager)
     this.#createNotification(language)
     this.#registerWidgetListeners()
   }
@@ -238,8 +239,8 @@ export default class MELCloudApp extends Homey.App {
     { zoneId, zoneType }: ZoneData,
     { status }: { status?: GetAtaOptions['status'] } = {},
   ): GroupAtaStates {
-    const { devices } = zoneModel[zoneType].getById(Number(zoneId)) ?? {}
-    if (!devices) {
+    const { devices } = this.getFacade(zoneType, zoneId)
+    if (!devices.length) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
     return Object.fromEntries(
@@ -247,8 +248,9 @@ export default class MELCloudApp extends Homey.App {
         key,
         devices
           .filter((device) => device.type === DeviceType.Ata)
-          .filter(({ data }) => (status === 'on' ? data.Power : true))
-          .map(({ data }) => data[key]),
+          .map(({ data }) => data as ListDeviceDataAta)
+          .filter((data) => (status === 'on' ? data.Power : true))
+          .map((data) => data[key]),
       ]),
     ) as unknown as GroupAtaStates
   }
@@ -257,7 +259,7 @@ export default class MELCloudApp extends Homey.App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<GroupState> {
-    return this.getFacade(zoneType, zoneId).group()
+    return this.getFacade(zoneType, zoneId).getGroup()
   }
 
   public getDeviceSettings(): DeviceSettings {
@@ -291,22 +293,22 @@ export default class MELCloudApp extends Homey.App {
   }
 
   public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
-    return this.#api.errorLog(query)
+    return this.#api.getErrorLog(query)
   }
 
   public getFacade<T extends DeviceType>(
     zoneType: 'devices',
     id: number | string,
-  ): IDeviceFacade<T>
+  ): DeviceFacade<T>
   public getFacade(
-    zoneType: Exclude<keyof typeof zoneModel, 'devices'>,
+    zoneType: 'areas' | 'buildings' | 'floors',
     id: number | string,
-  ): IBuildingFacade | ISuperDeviceFacade
+  ): BuildingFacade | ZoneFacade
   public getFacade(
-    zoneType: keyof typeof zoneModel,
+    zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
     id: number | string,
-  ): IFacade {
-    const instance = zoneModel[zoneType].getById(Number(id))
+  ): Facade {
+    const instance = this.#api.registry[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
         this.homey.__(
@@ -321,21 +323,21 @@ export default class MELCloudApp extends Homey.App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
-    return this.getFacade(zoneType, zoneId).frostProtection()
+    return this.getFacade(zoneType, zoneId).getFrostProtection()
   }
 
   public async getHolidayModeSettings({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
-    return this.getFacade(zoneType, zoneId).holidayMode()
+    return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
   public async getHourlyTemperatures(
     deviceId: string,
     hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).hourlyTemperatures(hour)
+    return this.getFacade('devices', deviceId).getHourlyTemperatures(hour)
   }
 
   public async getOperationModes(
@@ -343,7 +345,7 @@ export default class MELCloudApp extends Homey.App {
     days: number,
   ): Promise<ReportChartPieOptions> {
     const now = DateTime.now()
-    return this.getFacade('devices', deviceId).operationModes({
+    return this.getFacade('devices', deviceId).getOperationModes({
       from: now.minus({ days }).toISO({ includeOffset: false }),
       to: now.toISO({ includeOffset: false }),
     })
@@ -353,7 +355,7 @@ export default class MELCloudApp extends Homey.App {
     deviceId: string,
     hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).signal(hour)
+    return this.getFacade('devices', deviceId).getSignalStrength(hour)
   }
 
   public async getTemperatures(
@@ -361,7 +363,7 @@ export default class MELCloudApp extends Homey.App {
     days: number,
   ): Promise<ReportChartLineOptions> {
     const now = DateTime.now()
-    return this.getFacade('devices', deviceId).temperatures({
+    return this.getFacade('devices', deviceId).getTemperatures({
       from: now.minus({ days }).toISO({ includeOffset: false }),
       to: now.toISO({ includeOffset: false }),
     })
@@ -469,7 +471,8 @@ export default class MELCloudApp extends Homey.App {
     this.homey.dashboards
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        getZones({ type: DeviceType.Ata })
+        this.#facadeManager
+          .getZones({ type: DeviceType.Ata })
           .filter(({ model }) => model !== 'devices')
           .filter(({ name }) =>
             name.toLowerCase().includes(query.toLowerCase()),
@@ -478,7 +481,8 @@ export default class MELCloudApp extends Homey.App {
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        getZones()
+        this.#facadeManager
+          .getZones()
           .filter(({ model }) => model === 'devices')
           .filter(({ name }) =>
             name.toLowerCase().includes(query.toLowerCase()),

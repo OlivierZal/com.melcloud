@@ -22,6 +22,11 @@ export enum ThermostatModeErv {
   recovery = 'recovery',
 }
 
+export type CapabilitiesErv = EnergyCapabilitiesErv &
+  OpCapabilities<typeof DeviceType.Erv>
+
+export type EnergyCapabilitiesErv = Record<string, never>
+
 export interface GetCapabilitiesErv extends BaseGetCapabilities {
   readonly measure_co2: number
   readonly measure_temperature: number
@@ -37,11 +42,6 @@ export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
 
-export type CapabilitiesErv = EnergyCapabilitiesErv &
-  OpCapabilities<DeviceType.Erv>
-
-export type EnergyCapabilitiesErv = Record<string, never>
-
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
   keyof UpdateDeviceDataErv
@@ -53,7 +53,7 @@ export const setCapabilityTagMappingErv: Record<
 
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  keyof GetDeviceData<DeviceType.Erv>
+  keyof GetDeviceData<typeof DeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',

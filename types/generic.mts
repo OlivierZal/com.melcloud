@@ -1,23 +1,18 @@
-import type { DateObjectUnits, DurationLike, HourNumbers } from 'luxon'
-
-import {
-  type DeviceType,
-  type EnergyData,
-  type FanSpeed,
-  type GetDeviceData,
-  type Horizontal,
-  type ListDeviceData,
-  type ListDeviceDataAta,
-  type ListDeviceDataErv,
-  type LoginCredentials,
-  type OperationMode,
-  type UpdateDeviceData,
-  type Vertical,
-  AreaModel,
-  BuildingModel,
-  DeviceModel,
-  FloorModel,
+import type {
+  DeviceType,
+  EnergyData,
+  FanSpeed,
+  GetDeviceData,
+  Horizontal,
+  ListDeviceData,
+  ListDeviceDataAta,
+  ListDeviceDataErv,
+  LoginCredentials,
+  OperationMode,
+  UpdateDeviceData,
+  Vertical,
 } from '@olivierzal/melcloud-api'
+import type { DateObjectUnits, DurationLike, HourNumbers } from 'luxon'
 
 import type {
   EnergyReportRegularAta,
@@ -60,13 +55,6 @@ import type {
   ListCapabilitiesErv,
   SetCapabilitiesErv,
 } from './erv.mts'
-
-export const zoneModel = {
-  areas: AreaModel,
-  buildings: BuildingModel,
-  devices: DeviceModel,
-  floors: FloorModel,
-}
 
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
@@ -169,15 +157,15 @@ export const fanSpeedValues = [
 ]
 
 type GetCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? GetCapabilitiesAta
-  : T extends DeviceType.Atw ? GetCapabilitiesAtw
-  : T extends DeviceType.Erv ? GetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? GetCapabilitiesAta
+  : T extends typeof DeviceType.Atw ? GetCapabilitiesAtw
+  : T extends typeof DeviceType.Erv ? GetCapabilitiesErv
   : never
 
 type ListCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? ListCapabilitiesAta
-  : T extends DeviceType.Atw ? ListCapabilitiesAtw
-  : T extends DeviceType.Erv ? ListCapabilitiesErv
+  T extends typeof DeviceType.Ata ? ListCapabilitiesAta
+  : T extends typeof DeviceType.Atw ? ListCapabilitiesAtw
+  : T extends typeof DeviceType.Erv ? ListCapabilitiesErv
   : never
 
 export interface AreaZone extends Omit<DeviceZone, 'model'> {
@@ -197,9 +185,28 @@ export interface BuildingZone extends Omit<FloorZone, 'model'> {
   readonly floors?: FloorZone[]
 }
 
+export type Capabilities<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? CapabilitiesAta
+  : T extends typeof DeviceType.Atw ? CapabilitiesAtw
+  : T extends typeof DeviceType.Erv ? CapabilitiesErv
+  : never
+
+export type CapabilitiesOptions<T extends DeviceType> =
+  T extends typeof DeviceType.Atw ? CapabilitiesOptionsAtw
+  : CapabilitiesOptionsAtaErv
+
 export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
+
+export type ConvertFromDevice<T extends DeviceType> = (
+  value: ListDeviceData<T>[keyof ListDeviceData<T>],
+  data?: ListDeviceData<T>,
+) => OpCapabilities<T>[keyof OpCapabilities<T>]
+
+export type ConvertToDevice<T extends DeviceType> = (
+  value: SetCapabilities<T>[keyof SetCapabilities<T>],
+) => UpdateDeviceData<T>[keyof UpdateDeviceData<T>]
 
 export interface DaysQuery {
   readonly days?: string
@@ -211,6 +218,10 @@ export interface DeviceDetails<T extends DeviceType> {
   readonly data: { readonly id: number }
   readonly name: string
 }
+
+export type DeviceSetting = Record<string, ValueOf<Settings>>
+
+export type DeviceSettings = Record<string, DeviceSetting>
 
 export interface DeviceZone extends BaseZone {
   readonly model: 'devices'
@@ -236,18 +247,57 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
+export type EnergyCapabilities<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? EnergyCapabilitiesAta
+  : T extends typeof DeviceType.Atw ? EnergyCapabilitiesAtw
+  : T extends typeof DeviceType.Erv ? EnergyCapabilitiesErv
+  : Record<string, never>
+
+export type EnergyCapabilityTagEntry<T extends DeviceType> = [
+  capability: string & keyof EnergyCapabilities<T>,
+  tags: (keyof EnergyData<T>)[],
+]
+
+export type EnergyCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof EnergyCapabilities<T>,
+  readonly (string & keyof EnergyData<T>)[]
+>
+
+export type EnergyReportMode = 'regular' | 'total'
+
+export type EnergyReportRegular<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? EnergyReportRegularAta
+  : T extends typeof DeviceType.Atw ? EnergyReportRegularAtw
+  : never
+
+export type EnergyReportTotal<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? EnergyReportTotalAta
+  : T extends typeof DeviceType.Atw ? EnergyReportTotalAtw
+  : never
+
 export interface FloorZone extends Omit<AreaZone, 'model'> {
   readonly model: 'floors'
   readonly areas?: AreaZone[]
 }
+
+export type FlowArgs<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? FlowArgsAta
+  : T extends typeof DeviceType.Atw ? FlowArgsAtw
+  : T extends typeof DeviceType.Erv ? FlowArgsErv
+  : never
 
 export interface GetAtaOptions {
   readonly mode?: 'detailed'
   readonly status?: 'on'
 }
 
+export type GetCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof GetCapabilities<T>,
+  keyof GetDeviceData<T>
+>
+
 export interface GroupAtaStates {
-  readonly FanSpeed: Exclude<FanSpeed, FanSpeed.silent>[]
+  readonly FanSpeed: Exclude<FanSpeed, typeof FanSpeed.silent>[]
   readonly OperationMode: OperationMode[]
   readonly Power: boolean[]
   readonly SetTemperature: number[]
@@ -284,6 +334,11 @@ export interface HomeyWidgetSettingsCharts extends BaseSettings {
 export interface HourQuery {
   readonly hour?: `${HourNumbers}`
 }
+
+export type ListCapabilityTagMapping<T extends DeviceType> = Record<
+  keyof ListCapabilities<T>,
+  keyof ListDeviceData<T>
+>
 
 export interface LoginDriverSetting extends DriverSetting {
   readonly id: keyof LoginCredentials
@@ -340,92 +395,6 @@ export interface ManifestDriverSettingData {
   }[]
 }
 
-export interface PairSetting {
-  readonly id: string
-}
-
-export interface ReportPlanParameters {
-  readonly duration: DurationLike
-  readonly interval: DurationLike
-  readonly minus: DurationLike
-  readonly values: DateObjectUnits
-}
-
-export interface Settings extends BaseSettings {
-  readonly always_on?: boolean
-}
-
-export interface ZoneData {
-  readonly zoneId: string
-  readonly zoneType: Exclude<keyof typeof zoneModel, 'devices'>
-}
-
-export type Capabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? CapabilitiesAta
-  : T extends DeviceType.Atw ? CapabilitiesAtw
-  : T extends DeviceType.Erv ? CapabilitiesErv
-  : never
-
-export type CapabilitiesOptions<T extends DeviceType> =
-  T extends DeviceType.Atw ? CapabilitiesOptionsAtw : CapabilitiesOptionsAtaErv
-
-export type ConvertFromDevice<T extends DeviceType> = (
-  value: ListDeviceData<T>[keyof ListDeviceData<T>],
-  data?: ListDeviceData<T>,
-) => OpCapabilities<T>[keyof OpCapabilities<T>]
-
-export type ConvertToDevice<T extends DeviceType> = (
-  value: SetCapabilities<T>[keyof SetCapabilities<T>],
-) => UpdateDeviceData<T>[keyof UpdateDeviceData<T>]
-
-export type DeviceSetting = Record<string, ValueOf<Settings>>
-
-export type DeviceSettings = Record<string, DeviceSetting>
-
-export type EnergyCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? EnergyCapabilitiesAta
-  : T extends DeviceType.Atw ? EnergyCapabilitiesAtw
-  : T extends DeviceType.Erv ? EnergyCapabilitiesErv
-  : Record<string, never>
-
-export type EnergyCapabilityTagEntry<T extends DeviceType> = [
-  capability: string & keyof EnergyCapabilities<T>,
-  tags: (keyof EnergyData<T>)[],
-]
-
-export type EnergyCapabilityTagMapping<T extends DeviceType> = Record<
-  keyof EnergyCapabilities<T>,
-  readonly (string & keyof EnergyData<T>)[]
->
-
-export type EnergyReportMode = 'regular' | 'total'
-
-export type EnergyReportRegular<T extends DeviceType> =
-  T extends DeviceType.Ata ? EnergyReportRegularAta
-  : T extends DeviceType.Atw ? EnergyReportRegularAtw
-  : never
-
-export type EnergyReportTotal<T extends DeviceType> =
-  T extends DeviceType.Ata ? EnergyReportTotalAta
-  : T extends DeviceType.Atw ? EnergyReportTotalAtw
-  : never
-
-export type FlowArgs<T extends DeviceType> =
-  T extends DeviceType.Ata ? FlowArgsAta
-  : T extends DeviceType.Atw ? FlowArgsAtw
-  : T extends DeviceType.Erv ? FlowArgsErv
-  : never
-
-export type GetCapabilityTagMapping<T extends DeviceType> = Record<
-  keyof GetCapabilities<T>,
-  keyof GetDeviceData<T>
->
-
-export type ListCapabilityTagMapping<T extends DeviceType> = Record<
-  keyof ListCapabilities<T>,
-  keyof ListDeviceData<T>
->
-
 export type MELCloudDevice =
   | MELCloudDeviceAta
   | MELCloudDeviceAtw
@@ -442,10 +411,21 @@ export type OpCapabilityTagEntry<T extends DeviceType> = [
 
 export type OpDeviceData<T extends DeviceType> = keyof ListDeviceData<T>
 
+export interface PairSetting {
+  readonly id: string
+}
+
+export interface ReportPlanParameters {
+  readonly duration: DurationLike
+  readonly interval: DurationLike
+  readonly minus: DurationLike
+  readonly values: DateObjectUnits
+}
+
 export type SetCapabilities<T extends DeviceType> =
-  T extends DeviceType.Ata ? SetCapabilitiesAta
-  : T extends DeviceType.Atw ? SetCapabilitiesAtw
-  : T extends DeviceType.Erv ? SetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? SetCapabilitiesAta
+  : T extends typeof DeviceType.Atw ? SetCapabilitiesAtw
+  : T extends typeof DeviceType.Erv ? SetCapabilitiesErv
   : never
 
 export type SetCapabilityTagMapping<T extends DeviceType> = Record<
@@ -453,6 +433,15 @@ export type SetCapabilityTagMapping<T extends DeviceType> = Record<
   keyof UpdateDeviceData<T>
 >
 
+export interface Settings extends BaseSettings {
+  readonly always_on?: boolean
+}
+
 export type ValueOf<T> = T[keyof T]
 
 export type Zone = AreaZone | BuildingZone | DeviceZone | FloorZone
+
+export interface ZoneData {
+  readonly zoneId: string
+  readonly zoneType: 'areas' | 'buildings' | 'floors'
+}

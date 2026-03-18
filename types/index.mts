@@ -105,5 +105,4 @@ export {
   type ZoneData,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
-  zoneModel,
 } from './generic.mts'

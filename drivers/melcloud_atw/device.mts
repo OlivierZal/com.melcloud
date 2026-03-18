@@ -8,6 +8,7 @@ import {
 import { DateTime } from 'luxon'
 
 import { K_MULTIPLIER } from '../../constants.mts'
+import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -36,13 +37,15 @@ const isKeyOfOperationModeStateZoneCapability = (
   key in OperationModeStateZoneCapability
 
 const convertFromDeviceMeasurePower = ((value: number) =>
-  value * K_MULTIPLIER) as ConvertFromDevice<DeviceType.Atw>
+  value * K_MULTIPLIER) as ConvertFromDevice<typeof DeviceType.Atw>
 
 const convertFromDeviceOperationZone = ((value: OperationModeZone) =>
-  OperationModeZone[value]) as ConvertFromDevice<DeviceType.Atw>
+  keyOfValue(OperationModeZone, value)) as ConvertFromDevice<
+  typeof DeviceType.Atw
+>
 
 const getOperationModeStateHotWaterValue = (
-  data: ListDeviceData<DeviceType.Atw>,
+  data: ListDeviceData<typeof DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
 ): OperationModeStateHotWaterCapability => {
   if (data.ForcedHotWaterMode) {
@@ -58,7 +61,7 @@ const getOperationModeStateHotWaterValue = (
 }
 
 const getOperationModeStateZoneValue = (
-  data: ListDeviceData<DeviceType.Atw>,
+  data: ListDeviceData<typeof DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
   zone: ZoneAtw,
 ): OperationModeStateZoneCapability => {
@@ -77,32 +80,38 @@ const getOperationModeStateZoneValue = (
   return OperationModeStateZoneCapability.idle
 }
 
-export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw> {
+export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
+  typeof DeviceType.Atw
+> {
   protected readonly EnergyReportRegular = EnergyReportRegularAtw
 
   protected readonly EnergyReportTotal = EnergyReportTotalAtw
 
   protected readonly fromDevice: Partial<
     Record<
-      keyof OpCapabilities<DeviceType.Atw>,
-      ConvertFromDevice<DeviceType.Atw>
+      keyof OpCapabilities<typeof DeviceType.Atw>,
+      ConvertFromDevice<typeof DeviceType.Atw>
     >
   > = {
-    'alarm_generic.defrost': Boolean as ConvertFromDevice<DeviceType.Atw>,
+    'alarm_generic.defrost': Boolean as ConvertFromDevice<
+      typeof DeviceType.Atw
+    >,
     hot_water_mode: ((value: boolean) =>
-      value ?
-        HotWaterMode.forced
-      : HotWaterMode.auto) as ConvertFromDevice<DeviceType.Atw>,
+      value ? HotWaterMode.forced : HotWaterMode.auto) as ConvertFromDevice<
+      typeof DeviceType.Atw
+    >,
     legionella: ((value: string) =>
       DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
         month: 'short',
         weekday: 'short',
-      })) as ConvertFromDevice<DeviceType.Atw>,
+      })) as ConvertFromDevice<typeof DeviceType.Atw>,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
     operational_state: ((value: OperationModeState) =>
-      OperationModeState[value]) as ConvertFromDevice<DeviceType.Atw>,
+      keyOfValue(OperationModeState, value)) as ConvertFromDevice<
+      typeof DeviceType.Atw
+    >,
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool',
@@ -127,21 +136,22 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
 
   protected readonly toDevice: Partial<
     Record<
-      keyof SetCapabilities<DeviceType.Atw>,
-      ConvertToDevice<DeviceType.Atw>
+      keyof SetCapabilities<typeof DeviceType.Atw>,
+      ConvertToDevice<typeof DeviceType.Atw>
     >
   > = {
     hot_water_mode: ((value: keyof typeof HotWaterMode) =>
-      HotWaterMode[value] ===
-      HotWaterMode.forced) as ConvertToDevice<DeviceType.Atw>,
+      HotWaterMode[value] === HotWaterMode.forced) as ConvertToDevice<
+      typeof DeviceType.Atw
+    >,
     thermostat_mode: ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
+      OperationModeZone[value]) as ConvertToDevice<typeof DeviceType.Atw>,
     'thermostat_mode.zone2': ((value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value]) as ConvertToDevice<DeviceType.Atw>,
+      OperationModeZone[value]) as ConvertToDevice<typeof DeviceType.Atw>,
   }
 
   protected override async setCapabilityValues(
-    data: ListDeviceData<DeviceType.Atw>,
+    data: ListDeviceData<typeof DeviceType.Atw>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
     await this.#setOperationModeStates(data)
@@ -149,15 +159,15 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
 
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
-  ): ConvertFromDevice<DeviceType.Atw> {
+  ): ConvertFromDevice<typeof DeviceType.Atw> {
     return ((value: number) =>
-      value ||
-      this.getCapabilityOptions(capability)
-        .min) as ConvertFromDevice<DeviceType.Atw>
+      value || this.getCapabilityOptions(capability).min) as ConvertFromDevice<
+      typeof DeviceType.Atw
+    >
   }
 
   async #setOperationModeStateHotWater(
-    data: ListDeviceData<DeviceType.Atw>,
+    data: ListDeviceData<typeof DeviceType.Atw>,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     await this.setCapabilityValue(
@@ -167,17 +177,18 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<DeviceType.Atw
   }
 
   async #setOperationModeStates(
-    data: ListDeviceData<DeviceType.Atw>,
+    data: ListDeviceData<typeof DeviceType.Atw>,
   ): Promise<void> {
-    const operationModeState = OperationModeState[
-      data.OperationMode
-    ] as keyof typeof OperationModeState
+    const operationModeState = keyOfValue(
+      OperationModeState,
+      data.OperationMode,
+    )
     await this.#setOperationModeStateHotWater(data, operationModeState)
     await this.#setOperationModeStateZones(data, operationModeState)
   }
 
   async #setOperationModeStateZones(
-    data: ListDeviceData<DeviceType.Atw>,
+    data: ListDeviceData<typeof DeviceType.Atw>,
     operationModeState: keyof typeof OperationModeState,
   ): Promise<void> {
     await Promise.all(

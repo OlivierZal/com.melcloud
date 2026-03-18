@@ -1,6 +1,6 @@
 import type {
+  DeviceFacade,
   DeviceType,
-  IDeviceFacade,
   ListDeviceData,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -94,7 +94,7 @@ export abstract class BaseMELCloudDevice<
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
 
-  #device?: IDeviceFacade<T>
+  #device?: DeviceFacade<T>
 
   protected abstract readonly EnergyReportRegular:
     | (new (device: BaseMELCloudDevice<T>) => EnergyReportRegular<T>)
@@ -210,7 +210,7 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<M>
   }
 
-  public async fetchDevice(): Promise<IDeviceFacade<T> | null> {
+  public async fetchDevice(): Promise<DeviceFacade<T> | null> {
     try {
       if (!this.#device) {
         this.#device = this.homey.app.getFacade('devices', this.id)

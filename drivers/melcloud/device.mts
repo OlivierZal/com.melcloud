@@ -7,6 +7,7 @@ import {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
+import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -21,49 +22,53 @@ import {
   EnergyReportTotalAta,
 } from './reports/index.mts'
 
-export default class MELCloudDeviceAta extends BaseMELCloudDevice<DeviceType.Ata> {
+export default class MELCloudDeviceAta extends BaseMELCloudDevice<
+  typeof DeviceType.Ata
+> {
   protected readonly EnergyReportRegular = EnergyReportRegularAta
 
   protected readonly EnergyReportTotal = EnergyReportTotalAta
 
   protected readonly fromDevice: Partial<
     Record<
-      keyof OpCapabilities<DeviceType.Ata>,
-      ConvertFromDevice<DeviceType.Ata>
+      keyof OpCapabilities<typeof DeviceType.Ata>,
+      ConvertFromDevice<typeof DeviceType.Ata>
     >
   > = {
     'alarm_generic.silent': ((value: FanSpeed) =>
-      value === FanSpeed.silent) as ConvertFromDevice<DeviceType.Ata>,
+      value === FanSpeed.silent) as ConvertFromDevice<typeof DeviceType.Ata>,
     fan_speed: ((value: FanSpeed) =>
-      value === FanSpeed.silent ?
-        FanSpeed.auto
-      : value) as ConvertFromDevice<DeviceType.Ata>,
+      value === FanSpeed.silent ? FanSpeed.auto : value) as ConvertFromDevice<
+      typeof DeviceType.Ata
+    >,
     horizontal: ((value: Horizontal) =>
-      Horizontal[value]) as ConvertFromDevice<DeviceType.Ata>,
+      keyOfValue(Horizontal, value)) as ConvertFromDevice<
+      typeof DeviceType.Ata
+    >,
     thermostat_mode: ((
       value: OperationMode,
-      data: ListDeviceData<DeviceType.Ata>,
+      data: ListDeviceData<typeof DeviceType.Ata>,
     ) =>
       data.Power ?
-        OperationMode[value]
-      : ThermostatModeAta.off) as ConvertFromDevice<DeviceType.Ata>,
+        keyOfValue(OperationMode, value)
+      : ThermostatModeAta.off) as ConvertFromDevice<typeof DeviceType.Ata>,
     vertical: ((value: Vertical) =>
-      Vertical[value]) as ConvertFromDevice<DeviceType.Ata>,
+      keyOfValue(Vertical, value)) as ConvertFromDevice<typeof DeviceType.Ata>,
   }
 
   protected readonly thermostatMode = ThermostatModeAta
 
   protected readonly toDevice: Partial<
     Record<
-      keyof SetCapabilities<DeviceType.Ata>,
-      ConvertToDevice<DeviceType.Ata>
+      keyof SetCapabilities<typeof DeviceType.Ata>,
+      ConvertToDevice<typeof DeviceType.Ata>
     >
   > = {
     horizontal: ((value: keyof typeof Horizontal) =>
-      Horizontal[value]) as ConvertToDevice<DeviceType.Ata>,
+      Horizontal[value]) as ConvertToDevice<typeof DeviceType.Ata>,
     thermostat_mode: ((value: keyof typeof OperationMode) =>
-      OperationMode[value]) as ConvertToDevice<DeviceType.Ata>,
+      OperationMode[value]) as ConvertToDevice<typeof DeviceType.Ata>,
     vertical: ((value: keyof typeof Vertical) =>
-      Vertical[value]) as ConvertToDevice<DeviceType.Ata>,
+      Vertical[value]) as ConvertToDevice<typeof DeviceType.Ata>,
   }
 }

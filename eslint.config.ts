@@ -4,6 +4,7 @@ import json from '@eslint/json'
 import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
+import vitest from '@vitest/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
 import perfectionist from 'eslint-plugin-perfectionist'
 import unicorn from 'eslint-plugin-unicorn'
@@ -16,9 +17,9 @@ import { configs as ymlConfigs } from 'eslint-plugin-yml'
 import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
 
-import { classGroups } from './eslint-utils/class-groups.js'
+import { classGroups } from './eslint-utils/class-groups.ts'
 
-const buildImportGroup = (selector) =>
+const buildImportGroup = (selector: string): string[] =>
   ['type', 'default', 'named', 'wildcard', 'require', 'ts-equals'].map(
     (modifier) => `${modifier}-${selector}`,
   )
@@ -58,7 +59,7 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/'],
+    ignores: ['.homeybuild/', 'coverage/'],
   },
   {
     extends: [
@@ -118,6 +119,12 @@ const config = defineConfig([
           objectLiteralTypeAssertions: 'never',
         },
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'inline-type-imports',
+        },
+      ],
       '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': [
         'error',
@@ -128,10 +135,6 @@ const config = defineConfig([
           },
           format: null,
           selector: ['property'],
-        },
-        {
-          format: ['camelCase'],
-          selector: ['enumMember'],
         },
         {
           filter: {
@@ -148,6 +151,10 @@ const config = defineConfig([
           },
           format: null,
           selector: ['objectLiteralProperty'],
+        },
+        {
+          format: ['camelCase'],
+          selector: ['enumMember'],
         },
         {
           format: ['camelCase', 'PascalCase'],
@@ -171,7 +178,7 @@ const config = defineConfig([
         },
         {
           format: ['PascalCase'],
-          selector: ['enumMember', 'typeLike'],
+          selector: ['typeLike'],
         },
         {
           format: ['camelCase'],
@@ -267,7 +274,14 @@ const config = defineConfig([
           allow: ['source-map-support/register.js'],
         },
       ],
-      'import-x/no-unused-modules': 'error',
+      'import-x/no-unused-modules': [
+        'error',
+        {
+          missingExports: true,
+          suppressMissingFileEnumeratorAPIWarning: true,
+          unusedExports: true,
+        },
+      ],
       'import-x/no-useless-path-segments': 'error',
       'import-x/no-webpack-loader-syntax': 'error',
       'import-x/unambiguous': 'error',
@@ -382,21 +396,19 @@ const config = defineConfig([
         {
           groups: [
             'declare-enum',
-            'declare-interface',
-            'declare-type',
+            ['declare-interface', 'declare-type'],
             'declare-class',
             'declare-function',
             'enum',
-            'interface',
-            'type',
+            ['interface', 'type'],
             'class',
             'function',
             'export-enum',
-            'export-interface',
-            'export-type',
+            ['export-interface', 'export-type'],
             'export-class',
             'export-function',
-            'export-default-interface',
+            'export-default-enum',
+            ['export-default-interface', 'export-default-type'],
             'export-default-class',
             'export-default-function',
           ],
@@ -478,6 +490,12 @@ const config = defineConfig([
     },
   },
   {
+    files: ['eslint-utils/**'],
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
+    },
+  },
+  {
     files: ['**/api.mts', 'app.mts', 'drivers/*/{device,driver}.mts'],
     rules: {
       'import-x/no-default-export': 'off',
@@ -492,6 +510,7 @@ const config = defineConfig([
   {
     files: ['**/*.config.{ts,js}'],
     rules: {
+      '@typescript-eslint/naming-convention': 'off',
       'import-x/max-dependencies': 'off',
       'import-x/no-default-export': 'off',
       'import-x/prefer-default-export': [
@@ -578,6 +597,30 @@ const config = defineConfig([
     },
   },
   {
+    extends: [vitest.configs.all],
+    files: ['tests/**'],
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      'import-x/max-dependencies': [
+        'error',
+        { ignoreTypeImports: true, max: 15 },
+      ],
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
+      'vitest/max-expects': ['error', { max: 12 }],
+      'vitest/no-hooks': 'off',
+      'vitest/prefer-expect-assertions': 'off',
+      'vitest/require-hook': 'off',
+      'vitest/require-mock-type-parameters': 'off',
+    },
+    settings: {
+      vitest: {
+        typecheck: true,
+      },
+    },
+  },
+  {
     extends: [ymlConfigs.standard, ymlConfigs.prettier],
     rules: {
       'yml/file-extension': [
@@ -611,7 +654,15 @@ const config = defineConfig([
       ],
     },
   },
-  packageJsonConfigs.recommended,
+  {
+    ...packageJsonConfigs.recommended,
+    rules: {
+      ...packageJsonConfigs.recommended.rules,
+      'package-json/require-exports': 'off',
+      'package-json/require-files': 'off',
+      'package-json/require-sideEffects': 'off',
+    },
+  },
   packageJsonConfigs.stylistic,
 ])
 

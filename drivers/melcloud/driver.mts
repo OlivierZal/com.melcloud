@@ -9,7 +9,9 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
-export default class MELCloudDriverAta extends BaseMELCloudDriver<DeviceType.Ata> {
+export default class MELCloudDriverAta extends BaseMELCloudDriver<
+  typeof DeviceType.Ata
+> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv

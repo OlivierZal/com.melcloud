@@ -1,14 +1,12 @@
+import type {
+  DeviceType,
+  ListDeviceData,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
-
-import {
-  type DeviceType,
-  type ListDeviceData,
-  type LoginCredentials,
-  DeviceModel,
-} from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -94,12 +92,16 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
     return Promise.resolve(
-      DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
-        capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: this.getCapabilitiesOptions(data),
-        data: { id },
-        name,
-      })),
+      this.homey.app.api.registry
+        .getDevicesByType(this.type)
+        .map(({ data, id, name }) => ({
+          capabilities: this.getRequiredCapabilities(data as ListDeviceData<T>),
+          capabilitiesOptions: this.getCapabilitiesOptions(
+            data as ListDeviceData<T>,
+          ),
+          data: { id },
+          name,
+        })),
     )
   }
 

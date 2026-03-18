@@ -20,14 +20,14 @@ declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
 
+type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
+
+type HTMLValueElement = HTMLInputElement | HTMLSelectElement
+
 interface ResetParams {
   readonly isSomethingOn: boolean
   readonly mode: number
 }
-
-type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
-
-type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 const DEFAULT_DIVISOR_ONE = 1
 const DEFAULT_MULTIPLIER_ONE = 1

@@ -28,7 +28,7 @@ export enum ThermostatModeAta {
 }
 
 export interface CapabilitiesAta
-  extends EnergyCapabilitiesAta, OpCapabilities<DeviceType.Ata> {}
+  extends EnergyCapabilitiesAta, OpCapabilities<typeof DeviceType.Ata> {}
 
 export interface EnergyCapabilitiesAta {
   readonly measure_power: number
@@ -86,7 +86,7 @@ export const setCapabilityTagMappingAta: Record<
 
 export const getCapabilityTagMappingAta: Record<
   keyof GetCapabilitiesAta,
-  keyof GetDeviceData<DeviceType.Ata>
+  keyof GetDeviceData<typeof DeviceType.Ata>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',

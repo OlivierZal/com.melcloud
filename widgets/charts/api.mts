@@ -16,9 +16,9 @@ const api = {
   }: {
     query: { type?: `${DeviceType}` }
   }): DeviceZone[] {
-    return getZones({ type: type ? Number(type) : undefined }).filter(
-      (zone) => zone.model === 'devices',
-    )
+    return getZones({
+      type: type ? (Number(type) as DeviceType) : undefined,
+    }).filter((zone) => zone.model === 'devices')
   },
   async getHourlyTemperatures({
     homey: { app },
