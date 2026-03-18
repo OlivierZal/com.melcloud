@@ -142,13 +142,12 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
-          const value =
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            (
-              args.device.getCapabilityValue as (
-                capability: keyof Capabilities<T>,
-              ) => Capabilities<T>[keyof Capabilities<T>]
-            )(capability)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          const value = (
+            args.device.getCapabilityValue as (
+              capability: keyof Capabilities<T>,
+            ) => Capabilities<T>[keyof Capabilities<T>]
+          )(capability)
           return typeof value === 'string' || typeof value === 'number' ?
               value === args[getArg(capability)]
             : value

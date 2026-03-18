@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
+    "noEmit": false,
     "outDir": ".homeybuild",
-    "rootDir": "."
+    "rootDir": ".",
+    "sourceMap": true
   },
   "exclude": ["tests"],
   "extends": "./tsconfig.json"

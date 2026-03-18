@@ -59,12 +59,7 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: [
-      'tests/**/*.js',
-      'tests/**/*.js.map',
-      '.homeybuild/',
-      'coverage/',
-    ],
+    ignores: ['.homeybuild/', 'coverage/'],
   },
   {
     extends: [
