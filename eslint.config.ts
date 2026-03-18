@@ -91,7 +91,6 @@ const config = defineConfig([
     },
     rules: {
       '@stylistic/line-comment-position': 'error',
-      '@stylistic/lines-around-comment': 'error',
       '@stylistic/multiline-comment-style': 'error',
       '@stylistic/quotes': [
         'error',
@@ -117,12 +116,6 @@ const config = defineConfig([
           arrayLiteralTypeAssertions: 'never',
           assertionStyle: 'as',
           objectLiteralTypeAssertions: 'never',
-        },
-      ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          fixStyle: 'inline-type-imports',
         },
       ],
       '@typescript-eslint/member-ordering': 'off',
@@ -243,6 +236,15 @@ const config = defineConfig([
       '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
+      'capitalized-comments': [
+        'error',
+        'always',
+        {
+          block: {
+            ignorePattern: String.raw`v8\s`,
+          },
+        },
+      ],
       curly: 'error',
       'import-x/first': 'error',
       'import-x/max-dependencies': [
