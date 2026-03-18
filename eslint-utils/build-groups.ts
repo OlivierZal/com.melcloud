@@ -38,9 +38,12 @@ const buildGroupsForSelector = ({
   selectorIncompatibilities: Record<string, Set<string>>
 }): string[] =>
   compatibleModifierCombos({ modifierIncompatibilities, modifiers })
-    .filter((combo) =>
-      selectorIncompatibilities[selector].isDisjointFrom(new Set(combo)),
-    )
+    .filter((combo) => {
+      const incompatibilities = selectorIncompatibilities[selector]
+      return incompatibilities ?
+          incompatibilities.isDisjointFrom(new Set(combo))
+        : true
+    })
     .map((combo) => [...combo, selector].join('-'))
 
 export const buildGroups = ({
@@ -53,8 +56,9 @@ export const buildGroups = ({
   modifiers: string[][]
   selectorIncompatibilities: Record<string, Set<string>>
   selectors: (string | string[])[]
-}): string[] =>
-  selectors.flatMap((selector: string | string[]): string | string[] => {
+}): (string | string[])[] => {
+  const result: (string | string[])[] = []
+  for (const selector of selectors) {
     if (Array.isArray(selector)) {
       const groupPairs = selector.map((pairedSelector) =>
         buildGroupsForSelector({
@@ -64,15 +68,25 @@ export const buildGroups = ({
           selectorIncompatibilities,
         }),
       )
-      const [firstGroup] = groupPairs
-      return firstGroup.map((_value, index) =>
-        groupPairs.map((groupPair) => groupPair[index]),
+      const [firstGroup = []] = groupPairs
+      for (const [index] of firstGroup.entries()) {
+        result.push(
+          groupPairs.flatMap((groupPair) => {
+            const value = groupPair[index]
+            return value ? [value] : []
+          }),
+        )
+      }
+    } else {
+      result.push(
+        ...buildGroupsForSelector({
+          modifierIncompatibilities,
+          modifiers,
+          selector,
+          selectorIncompatibilities,
+        }),
       )
     }
-    return buildGroupsForSelector({
-      modifierIncompatibilities,
-      modifiers,
-      selector,
-      selectorIncompatibilities,
-    })
-  })
+  }
+  return result
+}
