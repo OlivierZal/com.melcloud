@@ -1,5 +1,3 @@
-import 'source-map-support/register.js'
-
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
 

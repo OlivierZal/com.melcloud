@@ -11,6 +11,7 @@ import unicorn from 'eslint-plugin-unicorn'
 
 import { defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
+import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { configs as ymlConfigs } from 'eslint-plugin-yml'
@@ -62,6 +63,10 @@ const config = defineConfig([
     ignores: ['.homeybuild/', 'coverage/'],
   },
   {
+    ...jsdoc({ config: 'flat/recommended-typescript-error' }),
+    files: ['src/**/*.{ts,mts,js}'],
+  },
+  {
     extends: [
       js.configs.all,
       unicorn.configs.all,
@@ -76,7 +81,7 @@ const config = defineConfig([
       ecmaVersion: 'latest',
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.js'],
+          allowDefaultProject: ['*.js', '*.config.ts', 'eslint-utils/*.ts'],
         },
         warnOnUnsupportedTypeScriptVersion: false,
       },
@@ -146,10 +151,6 @@ const config = defineConfig([
           selector: ['objectLiteralProperty'],
         },
         {
-          format: ['camelCase'],
-          selector: ['enumMember'],
-        },
-        {
           format: ['camelCase', 'PascalCase'],
           selector: ['typeProperty'],
         },
@@ -171,7 +172,7 @@ const config = defineConfig([
         },
         {
           format: ['PascalCase'],
-          selector: ['typeLike'],
+          selector: ['enumMember', 'typeLike'],
         },
         {
           format: ['camelCase'],
@@ -191,12 +192,6 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/no-invalid-this': 'off',
-      '@typescript-eslint/no-magic-numbers': [
-        'error',
-        {
-          ignoreEnums: true,
-        },
-      ],
       '@typescript-eslint/no-redeclare': 'off',
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
@@ -270,12 +265,7 @@ const config = defineConfig([
       'import-x/no-named-default': 'error',
       'import-x/no-relative-packages': 'error',
       'import-x/no-self-import': 'error',
-      'import-x/no-unassigned-import': [
-        'error',
-        {
-          allow: ['source-map-support/register.js'],
-        },
-      ],
+      'import-x/no-unassigned-import': 'error',
       'import-x/no-unused-modules': [
         'error',
         {
@@ -483,6 +473,19 @@ const config = defineConfig([
     },
   },
   {
+    files: ['src/constants.ts'],
+    rules: {
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          format: ['PascalCase', 'UPPER_CASE'],
+          modifiers: ['const', 'exported'],
+          selector: ['variable'],
+        },
+      ],
+    },
+  },
+  {
     extends: [tsConfigs.disableTypeChecked],
     files: ['**/*.js'],
     rules: {
@@ -656,15 +659,7 @@ const config = defineConfig([
       ],
     },
   },
-  {
-    ...packageJsonConfigs.recommended,
-    rules: {
-      ...packageJsonConfigs.recommended.rules,
-      'package-json/require-exports': 'off',
-      'package-json/require-files': 'off',
-      'package-json/require-sideEffects': 'off',
-    },
-  },
+  packageJsonConfigs.recommended,
   packageJsonConfigs.stylistic,
 ])
 

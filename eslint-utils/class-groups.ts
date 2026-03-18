@@ -56,7 +56,7 @@ const selectorIncompatibilities = {
     'protected',
   ]),
   method: baseMethodIncompatibilities,
-  property: new Set<string>(),
+  property: new Set(),
   'set-method': accessorIncompatibilities,
   'static-block': allModifiers,
 }

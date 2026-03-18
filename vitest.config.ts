@@ -19,13 +19,14 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: [
-        '**/index.mts',
-        'types/**/*.mts',
-        'settings/**/*.mts',
-        'widgets/**/*.mts',
-      ],
-      include: ['**/*.mts', 'lib/**/*.mts'],
+      exclude: ['**/index.mts', 'types/**/*.mts'],
+      include: ['**/*.mts'],
+      thresholds: {
+        branches: 100,
+        functions: 100,
+        lines: 100,
+        statements: 100,
+      },
     },
     include: ['tests/**/*.test.mts'],
   },
