@@ -1,13 +1,11 @@
 /* eslint-disable
-    @typescript-eslint/class-methods-use-this,
-    @typescript-eslint/init-declarations,
+    @typescript-eslint/naming-convention,
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
     @typescript-eslint/no-unsafe-member-access,
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
     unicorn/consistent-function-scoping,
-    unicorn/no-useless-undefined,
 */
 import {
   type ListDeviceDataAta,
@@ -25,8 +23,6 @@ import { mock } from '../helpers.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DeviceAny = any
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
@@ -73,10 +69,12 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async removeCapability(): Promise<void> {
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async setWarning(): Promise<void> {
       await Promise.resolve()
     }
@@ -101,12 +99,14 @@ vi.mock('../../mixins/with-timers.mts', () => ({
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../drivers/base-report.mts', () => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
+    // eslint-disable-next-line unicorn/no-useless-undefined
     handle: vi.fn().mockResolvedValue(undefined),
     unschedule: vi.fn(),
   })),
 }))
 
 describe(MELCloudDeviceAta, () => {
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let device: DeviceAny
 
   beforeEach(() => {
@@ -216,5 +216,3 @@ describe(MELCloudDeviceAta, () => {
     })
   })
 })
-
-/* eslint-enable @typescript-eslint/naming-convention */

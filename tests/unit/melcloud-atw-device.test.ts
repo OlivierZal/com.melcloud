@@ -1,6 +1,4 @@
 /* eslint-disable
-    @typescript-eslint/class-methods-use-this,
-    @typescript-eslint/init-declarations,
     @typescript-eslint/naming-convention,
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
@@ -8,7 +6,6 @@
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
     unicorn/consistent-function-scoping,
-    unicorn/no-useless-undefined,
 */
 import {
   type DeviceType,
@@ -89,10 +86,12 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async removeCapability(): Promise<void> {
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async setWarning(): Promise<void> {
       await Promise.resolve()
     }
@@ -117,12 +116,11 @@ vi.mock('../../mixins/with-timers.mts', () => ({
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../drivers/base-report.mts', () => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
+    // eslint-disable-next-line unicorn/no-useless-undefined
     handle: vi.fn().mockResolvedValue(undefined),
     unschedule: vi.fn(),
   })),
 }))
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
@@ -138,6 +136,7 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
 type DeviceAny = any
 
 describe(MELCloudDeviceAtw, () => {
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let device: DeviceAny
 
   beforeEach(() => {
@@ -410,5 +409,3 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 })
-
-/* eslint-enable @typescript-eslint/naming-convention */

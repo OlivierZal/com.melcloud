@@ -1,7 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/init-declarations,
-    @typescript-eslint/naming-convention,
-*/
 import { type ListDeviceDataErv, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -53,12 +49,12 @@ vi.mock('homey', () => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Driver: MockDriver } }
 })
 
-/* eslint-disable @typescript-eslint/naming-convention */
-
 describe(MELCloudDriverErv, () => {
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let driver: MELCloudDriverErv
 
   beforeEach(() => {
@@ -98,7 +94,9 @@ describe(MELCloudDriverErv, () => {
   describe('getRequiredCapabilities', () => {
     it('should include base capabilities without measure sensors', () => {
       const data = mock<ListDeviceDataErv>({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasCO2Sensor: false,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasPM25Sensor: false,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -112,7 +110,9 @@ describe(MELCloudDriverErv, () => {
 
     it('should include measure_co2 when HasCO2Sensor is true', () => {
       const data = mock<ListDeviceDataErv>({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasCO2Sensor: true,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasPM25Sensor: false,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -122,7 +122,9 @@ describe(MELCloudDriverErv, () => {
 
     it('should include measure_pm25 when HasPM25Sensor is true', () => {
       const data = mock<ListDeviceDataErv>({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasCO2Sensor: false,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasPM25Sensor: true,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -132,7 +134,9 @@ describe(MELCloudDriverErv, () => {
 
     it('should include both sensors when both are available', () => {
       const data = mock<ListDeviceDataErv>({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasCO2Sensor: true,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasPM25Sensor: true,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -142,5 +146,3 @@ describe(MELCloudDriverErv, () => {
     })
   })
 })
-
-/* eslint-enable @typescript-eslint/naming-convention */

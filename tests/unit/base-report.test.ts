@@ -1,7 +1,9 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-imports,
     @typescript-eslint/naming-convention,
+    @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/strict-void-return,
+    unicorn/consistent-function-scoping,
     vitest/prefer-called-with,
 */
 import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
@@ -207,7 +209,6 @@ describe(EnergyReport, () => {
 
     it('should use zero fallback when hourly array element is undefined', async () => {
       const sparseArray: (number | undefined)[] = []
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const energyData = {
         Auto: sparseArray,
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
@@ -229,7 +230,6 @@ describe(EnergyReport, () => {
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const energyData = {
         Auto: 100,
         Cooling: 50,
@@ -346,14 +346,12 @@ describe(EnergyReport, () => {
       })
       await report.handle()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const timeoutCallback = setTimeoutMock.mock
         .calls[0]![0] as () => Promise<void>
       await timeoutCallback()
 
       expect(setIntervalMock).toHaveBeenCalled()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const intervalCallback = setIntervalMock.mock
         .calls[0]![0] as () => Promise<void>
       await intervalCallback()
@@ -364,17 +362,13 @@ describe(EnergyReport, () => {
 
   // eslint-disable-next-line vitest/prefer-lowercase-title
   describe('COP calculation', () => {
-    // eslint-disable-next-line unicorn/consistent-function-scoping
     const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const copConsumed = {
         'measure_power.cop': ['ConsumedTag'],
       } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const copProduced = {
         'measure_power.cop': ['ProducedTag'],
       } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const copEnergyMapping = {
         'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
       } as unknown as EnergyCapabilityTagMapping<TestDeviceType>

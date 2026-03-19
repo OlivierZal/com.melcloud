@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type {
   ListDeviceDataAta,
   ListDeviceDataAtw,
@@ -17,8 +18,6 @@ import {
   getCapabilitiesOptionsAtaErv,
 } from '../../types/generic.mts'
 import { mock } from '../helpers.ts'
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 describe(getCapabilitiesOptionsAtaErv, () => {
   it('should return fan_speed with min 0 when HasAutomaticFanSpeed is true', () => {
@@ -166,8 +165,6 @@ describe(getCapabilitiesOptionsAtw, () => {
     )
   })
 })
-
-/* eslint-enable @typescript-eslint/naming-convention */
 
 describe('hotWaterMode', () => {
   it('should have the correct values', () => {

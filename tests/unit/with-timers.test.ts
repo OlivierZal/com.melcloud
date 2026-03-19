@@ -1,3 +1,7 @@
+/* eslint-disable
+    @typescript-eslint/no-unsafe-type-assertion,
+    @typescript-eslint/unbound-method,
+*/
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -13,9 +17,7 @@ class BaseClass {
   public readonly homey = {
     clearInterval: vi.fn(),
     clearTimeout: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     setInterval: vi.fn().mockReturnValue(1 as never),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     setTimeout: vi.fn().mockReturnValue(2 as never),
   }
 
@@ -28,11 +30,9 @@ class BaseClass {
 }
 
 const TimerClass = withTimers(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   BaseClass as unknown as Parameters<typeof withTimers>[0],
 )
 
-/* eslint-disable @typescript-eslint/unbound-method */
 describe(withTimers, () => {
   beforeAll(() => {
     Settings.now = (): number => FAKE_NOW_MILLIS
@@ -101,4 +101,3 @@ describe(withTimers, () => {
     })
   })
 })
-/* eslint-enable @typescript-eslint/unbound-method */

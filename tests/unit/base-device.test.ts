@@ -1,7 +1,4 @@
 /* eslint-disable
-    @typescript-eslint/class-methods-use-this,
-    @typescript-eslint/explicit-function-return-type,
-    @typescript-eslint/init-declarations,
     @typescript-eslint/naming-convention,
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
@@ -89,16 +86,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -182,6 +182,7 @@ const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
 })
 
 describe(BaseMELCloudDevice, () => {
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let device: TestDevice
 
   beforeEach(() => {
@@ -629,7 +630,7 @@ describe(BaseMELCloudDevice, () => {
     it('should use deviceToCapability converter when present', async () => {
       const customDevice = new (class extends TestDevice {
         public override readonly deviceToCapability = {
-          measure_temperature: (value: number) => value * 2,
+          measure_temperature: (value: number): number => value * 2,
         }
       })()
       Object.defineProperty(customDevice, 'driver', {

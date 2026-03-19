@@ -1,8 +1,6 @@
 /* eslint-disable
-    @typescript-eslint/class-methods-use-this,
     @typescript-eslint/consistent-type-assertions,
     @typescript-eslint/consistent-type-imports,
-    @typescript-eslint/init-declarations,
     @typescript-eslint/naming-convention,
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-type-assertion,
@@ -92,12 +90,14 @@ class TestDriver extends BaseMELCloudDriver<TestDriverType> {
 
   public readonly type: TestDriverType = 0
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
     return ['onoff', 'measure_temperature']
   }
 }
 
 describe(BaseMELCloudDriver, () => {
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let driver: TestDriver
 
   beforeEach(() => {
