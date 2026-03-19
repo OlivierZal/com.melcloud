@@ -6,7 +6,7 @@ jobs:
       - uses: actions/checkout@v6
       - id: update_app_version
         name: Update app version
-        uses: athombv/github-action-homey-app-version@master
+        uses: athombv/github-action-homey-app-version@3342f092b437550e78074797b52fac6467a456e1 # master
         with:
           changelog: ${{ inputs.changelog }}
           version: ${{ inputs.version }}
