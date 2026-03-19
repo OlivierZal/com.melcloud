@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import type {
   DeviceType,
   GroupState,
@@ -181,8 +182,6 @@ class SmokeParticle {
 
 // ── DOM helpers ──
 
-const zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
-
 const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
 
 const elementTypes = new Set(['boolean', 'enum'])
@@ -210,67 +209,6 @@ const getDivElement = (id: string): HTMLDivElement =>
 
 const getSelectElement = (id: string): HTMLSelectElement =>
   getElement(id, HTMLSelectElement, 'select')
-
-const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
-const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
-
-const canvas = getCanvasElement('smoke_canvas')
-const canvasContext = canvas.getContext('2d')
-
-const animationElement = getDivElement('animation')
-const ataValuesElement = getDivElement('values_melcloud')
-
-const zoneElement = getSelectElement('zones')
-
-const animationTimeouts: NodeJS.Timeout[] = []
-const sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
-  enter: null,
-  exit: null,
-  shine: null,
-}
-
-let debounceTimeout: NodeJS.Timeout | null = null
-
-let ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
-let defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
-
-let smokeAnimationFrameId: number | null = null
-let smokeParticles: SmokeParticle[] = []
-
-// ── Animation element factory ──
-
-const createAnimationMapping = (): Record<
-  AnimatedElement,
-  { readonly innerHTML: string; readonly getIndex: () => number }
-> => {
-  let flameIndex = 0
-  let leafIndex = 0
-  let snowflakeIndex = 0
-  return {
-    flame: { innerHTML: '🔥', getIndex: () => (flameIndex += INCREMENT_ONE) },
-    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
-    snowflake: {
-      innerHTML: '❄',
-      getIndex: () => (snowflakeIndex += INCREMENT_ONE),
-    },
-    sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
-  }
-}
-const animationMapping = createAnimationMapping()
-
-// ── Zone helpers ──
-
-const getZoneId = (id: number, model: string): string =>
-  `${model}_${String(id)}`
-const getZoneName = (name: string, level: number): string =>
-  `${'···'.repeat(level)} ${name}`
-const getZonePath = (): string => zoneElement.value.replace('_', '/')
-
-// ── Language ──
-
-const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  document.documentElement.lang = String(await homey.api('GET', '/language'))
-}
 
 // ── DOM creation helpers ──
 
@@ -387,15 +325,17 @@ const createSelectElement = (
   return selectElement
 }
 
-const createAnimatedElement = (name: AnimatedElement): HTMLDivElement => {
-  const element = document.createElement('div')
-  element.classList.add(name)
-  if (name in animationMapping) {
-    const { [name]: mapping } = animationMapping
-    ;({ innerHTML: element.innerHTML } = mapping)
-    element.id = `${name}-${String(mapping.getIndex())}`
-  }
-  return element
+// ── Zone helpers ──
+
+const getZoneId = (id: number, model: string): string =>
+  `${model}_${String(id)}`
+const getZoneName = (name: string, level: number): string =>
+  `${'···'.repeat(level)} ${name}`
+
+// ── Language ──
+
+const setDocumentLanguage = async (homey: Homey): Promise<void> => {
+  document.documentElement.lang = String(await homey.api('GET', '/language'))
 }
 
 // ── Value processing ──
@@ -433,597 +373,730 @@ const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const isGroupAtaState = (value: string): value is keyof GroupState =>
-  value in defaultAtaValues
+const getSubzones = (zone: Zone): Zone[] => [
+  ...('areas' in zone ? zone.areas : []),
+  ...('floors' in zone ? zone.floors : []),
+]
 
-const buildAtaValuesBody = (): GroupState =>
-  Object.fromEntries(
-    // eslint-disable-next-line unicorn/prefer-spread
-    Array.from(
-      ataValuesElement.querySelectorAll<HTMLValueElement>('input, select'),
-    )
-      .filter(
-        ({ id, value }) =>
-          isGroupAtaState(id) &&
-          !['', zoneMapping[zoneElement.value]?.[id]?.toString()].includes(
-            value,
-          ),
+// ── AnimationController class ──
+
+class AnimationController {
+  readonly #animationElement: HTMLDivElement
+
+  readonly #animationHandling: Record<
+    Mode,
+    (speed: number) => Promise<void> | void
+  > = {
+    [MODE_AUTO]: (speed) => {
+      this.#handleFireAnimation(speed)
+      this.#handleSnowAnimation(speed)
+    },
+    [MODE_COOL]: (speed) => {
+      this.#handleSnowAnimation(speed)
+    },
+    [MODE_DRY]: (speed) => {
+      this.#handleSunAnimation(speed)
+    },
+    [MODE_FAN]: (speed) => {
+      this.#generateRecurring(
+        (fanSpeed) => {
+          this.#createLeaf(fanSpeed)
+        },
+        LEAF_DELAY,
+        speed,
       )
-      .map((element) => [element.id, processValue(element)]),
-  )
+    },
+    [MODE_HEAT]: (speed) => {
+      this.#handleFireAnimation(speed)
+    },
+    [MODE_MIXED]: async (speed) => this.#handleMixedAnimation(speed),
+  }
 
-const updateZoneMapping = (data: Partial<GroupState>): void => {
-  const { value } = zoneElement
-  zoneMapping[value] = { ...zoneMapping[value], ...data }
-}
+  readonly #animationMapping: Record<
+    AnimatedElement,
+    { readonly innerHTML: string; readonly getIndex: () => number }
+  >
 
-const updateAtaValue = (id: keyof GroupState): void => {
-  const ataValueElement = document.querySelector(`#${id}`)
-  if (
-    ataValueElement &&
-    (ataValueElement instanceof HTMLInputElement ||
-      ataValueElement instanceof HTMLSelectElement)
+  readonly #canvas: HTMLCanvasElement
+
+  readonly #canvasContext: CanvasRenderingContext2D | null
+
+  readonly #homey: Homey
+
+  readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
+    enter: null,
+    exit: null,
+    shine: null,
+  }
+
+  readonly #timeouts: NodeJS.Timeout[] = []
+
+  #smokeAnimationFrameId: number | null = null
+
+  #smokeParticles: SmokeParticle[] = []
+
+  public constructor(
+    homey: Homey,
+    animationElement: HTMLDivElement,
+    canvas: HTMLCanvasElement,
   ) {
-    ataValueElement.value =
-      zoneMapping[zoneElement.value]?.[id]?.toString() ?? ''
+    this.#homey = homey
+    this.#animationElement = animationElement
+    this.#canvas = canvas
+    this.#canvasContext = canvas.getContext('2d')
+    this.#animationMapping = this.#createAnimationMapping()
   }
-}
 
-const refreshAtaValues = (): void => {
-  for (const [ataKey] of ataCapabilities) {
-    updateAtaValue(ataKey)
+  public async handleAnimation(
+    state: GroupState,
+    isAnimations: boolean,
+  ): Promise<void> {
+    if (isAnimations) {
+      const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+      const isSomethingOn = isOn !== false
+      const newSpeed = Number(speed) || SPEED_MODERATE
+      const newMode = Number(mode ?? null)
+      await this.#reset({ isSomethingOn, mode: newMode })
+      if (isSomethingOn && this.#hasModeAnimation(newMode)) {
+        await this.#animationHandling[newMode](newSpeed)
+      }
+    }
   }
-}
 
-// ── Animation helpers ──
+  public async reset(resetParams?: ResetParams): Promise<void> {
+    await this.#reset(resetParams)
+  }
 
-const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
-  document.querySelector<HTMLElement>(
-    `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
-  )
+  #createAnimatedElement(name: AnimatedElement): HTMLDivElement {
+    const element = document.createElement('div')
+    element.classList.add(name)
+    if (name in this.#animationMapping) {
+      const { [name]: mapping } = this.#animationMapping
+      ;({ innerHTML: element.innerHTML } = mapping)
+      element.id = `${name}-${String(mapping.getIndex())}`
+    }
+    return element
+  }
 
-/**
- * Shared helper for creating positioned animated elements (flame, snowflake, leaf).
- * Each element type follows: create → position relative to previous → style → append → animate.
- */
-const createPositionedAnimatedElement = ({
-  animate,
-  applyStyles,
-  gap,
-  name,
-  positionProperty,
-  windowDimension,
-}: {
-  gap: number
-  name: 'flame' | 'leaf' | 'snowflake'
-  positionProperty: 'insetBlockStart' | 'insetInlineStart'
-  windowDimension: number
-  animate: (element: HTMLDivElement) => void
-  applyStyles: (element: HTMLDivElement) => void
-}): void => {
-  const element = createAnimatedElement(name)
-  const [elementName, index] = element.id.split('-')
-  if (elementName !== undefined) {
-    const previousElement = getPreviousElement(elementName, index)
-    const previousPosition =
-      previousElement ?
-        Number.parseFloat(previousElement.style[positionProperty])
-      : -gap * FACTOR_TWO
-    element.style[positionProperty] = generateStyleString(
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #createAnimationMapping(): Record<
+    AnimatedElement,
+    { readonly innerHTML: string; readonly getIndex: () => number }
+  > {
+    let flameIndex = 0
+    let leafIndex = 0
+    let snowflakeIndex = 0
+    return {
+      flame: {
+        innerHTML: '🔥',
+        getIndex: () => (flameIndex += INCREMENT_ONE),
+      },
+      leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
+      snowflake: {
+        innerHTML: '❄',
+        getIndex: () => (snowflakeIndex += INCREMENT_ONE),
+      },
+      sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
+    }
+  }
+
+  #createFlame(speed: number): void {
+    this.#createPositionedAnimatedElement({
+      gap: FLAME_GAP,
+      name: 'flame',
+      positionProperty: 'insetInlineStart',
+      windowDimension: window.innerWidth,
+      animate: (flame) => {
+        this.#generateFlameAnimation(flame, speed)
+      },
+      applyStyles: (flame) => {
+        flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
+      },
+    })
+  }
+
+  #createLeaf(speed: number): void {
+    this.#createPositionedAnimatedElement({
+      gap: LEAF_GAP,
+      name: 'leaf',
+      positionProperty: 'insetBlockStart',
+      windowDimension: window.innerHeight,
+      animate: (leaf) => {
+        this.#generateLeafAnimation(leaf, speed)
+      },
+      applyStyles: (leaf) => {
+        leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
+        leaf.style.filter = `brightness(${generateStyleString(
+          { gap: 50, min: 100 },
+          '%',
+        )})`
+      },
+    })
+  }
+
+  #createPositionedAnimatedElement({
+    animate,
+    applyStyles,
+    gap,
+    name,
+    positionProperty,
+    windowDimension,
+  }: {
+    gap: number
+    name: 'flame' | 'leaf' | 'snowflake'
+    positionProperty: 'insetBlockStart' | 'insetInlineStart'
+    windowDimension: number
+    animate: (element: HTMLDivElement) => void
+    applyStyles: (element: HTMLDivElement) => void
+  }): void {
+    const element = this.#createAnimatedElement(name)
+    const [elementName, index] = element.id.split('-')
+    if (elementName !== undefined) {
+      const previousElement = this.#getPreviousElement(elementName, index)
+      const previousPosition =
+        previousElement ?
+          Number.parseFloat(previousElement.style[positionProperty])
+        : -gap * FACTOR_TWO
+      element.style[positionProperty] = generateStyleString(
+        {
+          gap,
+          min:
+            previousPosition > windowDimension ?
+              -gap
+            : previousPosition + gap,
+        },
+        'px',
+      )
+      applyStyles(element)
+      this.#animationElement.append(element)
+      animate(element)
+    }
+  }
+
+  #createSmoke(flame: HTMLDivElement, speed: number): void {
+    if (flame.isConnected && this.#canvasContext) {
+      const { left, top, width } = flame.getBoundingClientRect()
+      let index = 0
+      while (index <= SMOKE_ITERATIONS) {
+        this.#smokeParticles.push(
+          new SmokeParticle(
+            this.#canvasContext,
+            left + width / FACTOR_TWO,
+            top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
+          ),
+        )
+        index += INCREMENT_ONE
+      }
+      setTimeout(
+        () => {
+          this.#createSmoke(flame, speed)
+        },
+        generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
+      )
+    }
+  }
+
+  #createSnowflake(speed: number): void {
+    this.#createPositionedAnimatedElement({
+      gap: SNOWFLAKE_GAP,
+      name: 'snowflake',
+      positionProperty: 'insetInlineStart',
+      windowDimension: window.innerWidth,
+      animate: (snowflake) => {
+        this.#generateSnowflakeAnimation(snowflake, speed)
+      },
+      applyStyles: (snowflake) => {
+        snowflake.style.fontSize = generateStyleString(
+          { divisor: speed, gap: 1, min: 2 },
+          'rem',
+        )
+        snowflake.style.filter = `brightness(${generateStyleString(
+          { gap: 20, min: 100 },
+          '%',
+        )})`
+      },
+    })
+  }
+
+  #generateFlameAnimation(
+    flame: HTMLDivElement,
+    speed: number,
+  ): Animation {
+    const animation = flame.animate(
+      [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
+        const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
+        const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
+        const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
+        const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
+        return {
+          filter: `brightness(${brightness})`,
+          transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
+        }
+      }),
       {
-        gap,
-        min:
-          previousPosition > windowDimension ?
-            -gap
-          : previousPosition + gap,
+        duration: generateStyleNumber({
+          divisor: speed,
+          gap: 10,
+          min: 20,
+          multiplier: 1000,
+        }),
+        easing: 'ease-in-out',
       },
-      'px',
     )
-    applyStyles(element)
-    animationElement.append(element)
-    animate(element)
+    animation.onfinish = (): void => {
+      flame.remove()
+    }
+    this.#createSmoke(flame, speed)
+    return animation
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #generateLeafAnimation(
+    leaf: HTMLDivElement,
+    speed: number,
+  ): Animation {
+    const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
+    const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
+    const loopEnd = loopStart + loopDuration
+    const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
+    const animation = leaf.animate(
+      [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
+        (index: number) => {
+          const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
+          const indexLoopRadius =
+            index >= loopStart && index < loopEnd ?
+              loopRadius
+            : LEAF_NO_LOOP_RADIUS
+          const oscillate =
+            indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
+              ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+            : ''
+          const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
+          const translateX = `${String(
+            index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+          )}px`
+          const translateY = `${String(
+            -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+          )}px`
+          return {
+            transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
+          }
+        },
+      ),
+      {
+        duration: generateStyleNumber({
+          divisor: speed,
+          gap: 5,
+          min: 3,
+          multiplier: 1000,
+        }),
+        easing: 'linear',
+        fill: 'forwards',
+      },
+    )
+    animation.onfinish = (): void => {
+      leaf.remove()
+    }
+    return animation
+  }
+
+  #generateRecurring(
+    create: (speed: number) => void,
+    delay: number,
+    speed: number,
+  ): void {
+    this.#timeouts.push(
+      setTimeout(
+        () => {
+          create(speed)
+          this.#generateRecurring(create, delay, speed)
+        },
+        generateDelay(delay, speed),
+      ),
+    )
+  }
+
+  #generateSmoke(speed: number): void {
+    if (this.#canvasContext) {
+      ;({ innerHeight: this.#canvas.height, innerWidth: this.#canvas.width } =
+        globalThis)
+      this.#canvasContext.clearRect(
+        DEFAULT_RECT_X,
+        DEFAULT_RECT_Y,
+        this.#canvas.width,
+        this.#canvas.height,
+      )
+      this.#smokeParticles = this.#smokeParticles.filter((particle) => {
+        particle.update(speed)
+        particle.draw()
+        return (
+          particle.size > SMOKE_PARTICLE_SIZE_MIN &&
+          particle.opacity > SMOKE_PARTICLE_OPACITY_MIN &&
+          particle.positionY > SMOKE_PARTICLE_POSITION_Y_MIN
+        )
+      })
+      this.#smokeAnimationFrameId = requestAnimationFrame(() => {
+        this.#generateSmoke(speed)
+      })
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #generateSnowflakeAnimation(
+    snowflake: HTMLDivElement,
+    speed: number,
+  ): Animation {
+    const animation = snowflake.animate(
+      [
+        { transform: 'translateY(0) rotate(0deg)' },
+        { transform: 'translateY(100vb) rotate(360deg)' },
+      ],
+      {
+        duration: generateStyleNumber({
+          divisor: speed,
+          gap: 1,
+          min: 5,
+          multiplier: 1000,
+        }),
+        easing: 'linear',
+        fill: 'forwards',
+      },
+    )
+    animation.onfinish = (): void => {
+      snowflake.remove()
+    }
+    return animation
+  }
+
+  #generateSunEnterAnimation(sun: HTMLDivElement): Animation {
+    const duration = Number(
+      this.#sunAnimation.exit?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+    )
+    this.#sunAnimation.exit?.pause()
+    this.#sunAnimation.exit = null
+    const { blockSize, inlineSize, insetBlockStart, insetInlineEnd } =
+      getComputedStyle(sun)
+    const animation = sun.animate(
+      [
+        {
+          insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
+          insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
+        },
+        {
+          insetBlockStart: `${String(
+            (window.innerHeight - Number.parseFloat(blockSize)) / FACTOR_TWO,
+          )}px`,
+          insetInlineEnd: `${String(
+            (window.innerWidth - Number.parseFloat(inlineSize)) / FACTOR_TWO,
+          )}px`,
+        },
+      ],
+      { duration, easing: 'ease-in-out', fill: 'forwards' },
+    )
+    animation.onfinish = (): void => {
+      this.#sunAnimation.enter = null
+    }
+    return animation
+  }
+
+  #generateSunExitAnimation(sun: HTMLDivElement): Animation {
+    const duration = Number(
+      this.#sunAnimation.enter?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+    )
+    this.#sunAnimation.enter?.pause()
+    this.#sunAnimation.enter = null
+    const { insetBlockStart, insetInlineEnd } = getComputedStyle(sun)
+    const animation = sun.animate(
+      [
+        {
+          insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
+          insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
+        },
+        {
+          insetBlockStart: `${String(-window.innerHeight)}px`,
+          insetInlineEnd: `${String(-window.innerWidth)}px`,
+        },
+      ],
+      { duration, easing: 'ease-in-out', fill: 'forwards' },
+    )
+    animation.onfinish = (): void => {
+      sun.remove()
+      this.#sunAnimation.enter = null
+      this.#sunAnimation.exit = null
+      this.#sunAnimation.shine = null
+    }
+    return animation
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #generateSunShineAnimation(sun: HTMLDivElement): Animation {
+    return sun.animate(
+      [
+        { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
+        { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
+      ],
+      { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
+    )
+  }
+
+  async #getModes(): Promise<OperationMode[]> {
+    const detailedAtaValues = await homeyApi<GroupAtaStates>(
+      this.#homey,
+      `/values/ata/${this.#getZonePath()}?${new URLSearchParams({
+        mode: 'detailed',
+        status: 'on',
+      } satisfies Required<GetAtaOptions>)}`,
+    )
+    return detailedAtaValues.OperationMode
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #getPreviousElement(name: string, index?: string): HTMLElement | null {
+    return document.querySelector<HTMLElement>(
+      `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
+    )
+  }
+
+  #getSunElement(): HTMLDivElement {
+    const sun = document.querySelector('#sun-1')
+    if (!(sun instanceof HTMLDivElement)) {
+      const newSun = this.#createAnimatedElement('sun')
+      this.#animationElement.append(newSun)
+      return newSun
+    }
+    return sun
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  #getZonePath(): string {
+    return getSelectElement('zones').value.replace('_', '/')
+  }
+
+  #handleFireAnimation(speed: number): void {
+    this.#generateRecurring(
+      (flameSpeed) => {
+        this.#createFlame(flameSpeed)
+      },
+      FLAME_DELAY,
+      speed,
+    )
+    this.#generateSmoke(speed)
+  }
+
+  async #handleMixedAnimation(speed: number): Promise<void> {
+    const modes = new Set(await this.#getModes())
+    if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
+      this.#handleSnowAnimation(speed)
+    }
+    if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
+      this.#handleFireAnimation(speed)
+    }
+    if (modes.has(MODE_DRY)) {
+      this.#handleSunAnimation(speed)
+    }
+    if (modes.has(MODE_FAN)) {
+      this.#generateRecurring(
+        (leafSpeed) => {
+          this.#createLeaf(leafSpeed)
+        },
+        LEAF_DELAY,
+        speed,
+      )
+    }
+  }
+
+  #handleSnowAnimation(speed: number): void {
+    this.#generateRecurring(
+      (snowSpeed) => {
+        this.#createSnowflake(snowSpeed)
+      },
+      SNOWFLAKE_DELAY,
+      speed,
+    )
+  }
+
+  #handleSunAnimation(speed: number): void {
+    const sun = this.#getSunElement()
+    this.#sunAnimation.shine ??= this.#generateSunShineAnimation(sun)
+    this.#sunAnimation.shine.playbackRate = speed
+    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
+  }
+
+  #hasModeAnimation(mode: number): mode is Mode {
+    return mode in this.#animationHandling
+  }
+
+  async #reset(resetParams?: ResetParams): Promise<void> {
+    for (const timeout of this.#timeouts) {
+      clearTimeout(timeout)
+    }
+    this.#timeouts.length = 0
+    await this.#resetFireAnimation(resetParams)
+    await this.#resetSunAnimation(resetParams)
+  }
+
+  async #resetFireAnimation(resetParams?: ResetParams): Promise<void> {
+    if (resetParams) {
+      const { isSomethingOn, mode } = resetParams
+      const modes = await this.#getModes()
+      if (
+        isSomethingOn &&
+        (heatModes.has(mode) ||
+          (mode === MODE_MIXED &&
+            modes.some((currentMode) => heatModes.has(currentMode))))
+      ) {
+        if (this.#smokeAnimationFrameId !== null) {
+          cancelAnimationFrame(this.#smokeAnimationFrameId)
+          this.#smokeAnimationFrameId = null
+        }
+        return
+      }
+    }
+    // eslint-disable-next-line unicorn/prefer-spread
+    for (const flame of Array.from(
+      document.querySelectorAll<HTMLElement>('.flame'),
+    )) {
+      setTimeout(
+        () => {
+          flame.remove()
+        },
+        generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+      )
+    }
+  }
+
+  async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {
+    const sun = document.querySelector('#sun-1')
+    const modes = await this.#getModes()
+    if (
+      sun &&
+      sun instanceof HTMLDivElement &&
+      (!resetParams ||
+        !resetParams.isSomethingOn ||
+        (resetParams.mode !== MODE_DRY &&
+          (resetParams.mode !== MODE_MIXED ||
+            modes.every((currentMode: number) => currentMode !== MODE_DRY))))
+    ) {
+      this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
+    }
   }
 }
 
-/**
- * Shared helper for recurring animation generation (flames, snowflakes, leaves).
- * All follow: setTimeout → create element → recurse.
- */
-const generateRecurring = (
-  create: (speed: number) => void,
-  delay: number,
-  speed: number,
-): void => {
-  animationTimeouts.push(
-    setTimeout(
-      () => {
-        create(speed)
-        generateRecurring(create, delay, speed)
-      },
-      generateDelay(delay, speed),
-    ),
-  )
-}
+// ── AtaValueManager class ──
 
-// ── Smoke animation ──
+class AtaValueManager {
+  readonly #ataValuesElement: HTMLDivElement
 
-const createSmoke = (flame: HTMLDivElement, speed: number): void => {
-  if (flame.isConnected && canvasContext) {
-    const { left, top, width } = flame.getBoundingClientRect()
-    let index = 0
-    while (index <= SMOKE_ITERATIONS) {
-      smokeParticles.push(
-        new SmokeParticle(
-          canvasContext,
-          left + width / FACTOR_TWO,
-          top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
+  readonly #homey: Homey
+
+  readonly #zoneElement: HTMLSelectElement
+
+  readonly #zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
+
+  #ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
+
+  #defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
+
+  public constructor(
+    homey: Homey,
+    ataValuesElement: HTMLDivElement,
+    zoneElement: HTMLSelectElement,
+  ) {
+    this.#homey = homey
+    this.#ataValuesElement = ataValuesElement
+    this.#zoneElement = zoneElement
+  }
+
+  public async fetchCapabilities(): Promise<void> {
+    this.#ataCapabilities = await homeyApi<
+      [keyof GroupState, DriverCapabilitiesOptions][]
+    >(this.#homey, '/capabilities/ata')
+    this.#defaultAtaValues = Object.fromEntries(
+      this.#ataCapabilities.map(([ataKey]) => [ataKey, null]),
+    )
+  }
+
+  public async fetchValues(): Promise<GroupState> {
+    const values = await homeyApi<GroupState>(
+      this.#homey,
+      `/values/ata/${this.#getZonePath()}`,
+    )
+    this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
+    this.#refreshAtaValues()
+    return values
+  }
+
+  public generateAtaValues(): void {
+    for (const [id, { title, type, values }] of this.#ataCapabilities) {
+      createValueElement(this.#ataValuesElement, {
+        title,
+        valueElement: this.#generateAtaValue({ id, type, values }),
+      })
+    }
+  }
+
+  public async generateZones(zones: Zone[] = []): Promise<void> {
+    if (zones.length) {
+      for (const zone of zones) {
+        const { id, level, model, name } = zone
+        createOptionElement(this.#zoneElement, {
+          id: getZoneId(id, model),
+          label: getZoneName(name, level),
+        })
+        // eslint-disable-next-line no-await-in-loop
+        await this.generateZones(getSubzones(zone))
+      }
+    }
+  }
+
+  public handleDefaultZone(defaultZone: Zone | null): void {
+    if (defaultZone) {
+      const { id, model } = defaultZone
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        this.#zoneElement.value = value
+      }
+    }
+  }
+
+  public refreshValues(): void {
+    this.#refreshAtaValues()
+  }
+
+  public async setValues(): Promise<void> {
+    try {
+      const body = this.#buildAtaValuesBody()
+      if (Object.keys(body).length) {
+        await this.#homey.api(
+          'PUT',
+          `/values/ata/${this.#getZonePath()}`,
+          body satisfies GroupState,
+        )
+      }
+    } catch {}
+  }
+
+  #buildAtaValuesBody(): GroupState {
+    return Object.fromEntries(
+      // eslint-disable-next-line unicorn/prefer-spread
+      Array.from(
+        this.#ataValuesElement.querySelectorAll<HTMLValueElement>(
+          'input, select',
         ),
       )
-      index += INCREMENT_ONE
-    }
-    setTimeout(
-      () => {
-        createSmoke(flame, speed)
-      },
-      generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
+        .filter(
+          ({ id, value }) =>
+            this.#isGroupAtaState(id) &&
+            ![
+              '',
+              this.#zoneMapping[this.#zoneElement.value]?.[id]?.toString(),
+            ].includes(value),
+        )
+        .map((element) => [element.id, processValue(element)]),
     )
   }
-}
 
-const generateSmoke = (speed: number): void => {
-  if (canvasContext) {
-    ;({ innerHeight: canvas.height, innerWidth: canvas.width } = globalThis)
-    canvasContext.clearRect(
-      DEFAULT_RECT_X,
-      DEFAULT_RECT_Y,
-      canvas.width,
-      canvas.height,
-    )
-    smokeParticles = smokeParticles.filter((particle) => {
-      particle.update(speed)
-      particle.draw()
-      return (
-        particle.size > SMOKE_PARTICLE_SIZE_MIN &&
-        particle.opacity > SMOKE_PARTICLE_OPACITY_MIN &&
-        particle.positionY > SMOKE_PARTICLE_POSITION_Y_MIN
-      )
-    })
-    smokeAnimationFrameId = requestAnimationFrame(() => {
-      generateSmoke(speed)
-    })
-  }
-}
-
-// ── Flame animation ──
-
-const generateFlameAnimation = (
-  flame: HTMLDivElement,
-  speed: number,
-): Animation => {
-  const animation = flame.animate(
-    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
-      const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
-      const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
-      const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
-      const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
-      return {
-        filter: `brightness(${brightness})`,
-        transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
-      }
-    }),
-    {
-      duration: generateStyleNumber({
-        divisor: speed,
-        gap: 10,
-        min: 20,
-        multiplier: 1000,
-      }),
-      easing: 'ease-in-out',
-    },
-  )
-  animation.onfinish = (): void => {
-    flame.remove()
-  }
-  createSmoke(flame, speed)
-  return animation
-}
-
-const createFlame = (speed: number): void => {
-  createPositionedAnimatedElement({
-    gap: FLAME_GAP,
-    name: 'flame',
-    positionProperty: 'insetInlineStart',
-    windowDimension: window.innerWidth,
-    animate: (flame) => {
-      generateFlameAnimation(flame, speed)
-    },
-    applyStyles: (flame) => {
-      flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
-    },
-  })
-}
-
-const handleFireAnimation = (speed: number): void => {
-  generateRecurring(createFlame, FLAME_DELAY, speed)
-  generateSmoke(speed)
-}
-
-// ── Snowflake animation ──
-
-const generateSnowflakeAnimation = (
-  snowflake: HTMLDivElement,
-  speed: number,
-): Animation => {
-  const animation = snowflake.animate(
-    [
-      { transform: 'translateY(0) rotate(0deg)' },
-      { transform: 'translateY(100vb) rotate(360deg)' },
-    ],
-    {
-      duration: generateStyleNumber({
-        divisor: speed,
-        gap: 1,
-        min: 5,
-        multiplier: 1000,
-      }),
-      easing: 'linear',
-      fill: 'forwards',
-    },
-  )
-  animation.onfinish = (): void => {
-    snowflake.remove()
-  }
-  return animation
-}
-
-const createSnowflake = (speed: number): void => {
-  createPositionedAnimatedElement({
-    gap: SNOWFLAKE_GAP,
-    name: 'snowflake',
-    positionProperty: 'insetInlineStart',
-    windowDimension: window.innerWidth,
-    animate: (snowflake) => {
-      generateSnowflakeAnimation(snowflake, speed)
-    },
-    applyStyles: (snowflake) => {
-      snowflake.style.fontSize = generateStyleString(
-        { divisor: speed, gap: 1, min: 2 },
-        'rem',
-      )
-      snowflake.style.filter = `brightness(${generateStyleString(
-        { gap: 20, min: 100 },
-        '%',
-      )})`
-    },
-  })
-}
-
-const handleSnowAnimation = (speed: number): void => {
-  generateRecurring(createSnowflake, SNOWFLAKE_DELAY, speed)
-}
-
-// ── Sun animation ──
-
-const generateSunExitAnimation = (sun: HTMLDivElement): Animation => {
-  const duration = Number(
-    sunAnimation.enter?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
-  )
-  sunAnimation.enter?.pause()
-  sunAnimation.enter = null
-  const { insetBlockStart, insetInlineEnd } = getComputedStyle(sun)
-  const animation = sun.animate(
-    [
-      {
-        insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
-        insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
-      },
-      {
-        insetBlockStart: `${String(-window.innerHeight)}px`,
-        insetInlineEnd: `${String(-window.innerWidth)}px`,
-      },
-    ],
-    { duration, easing: 'ease-in-out', fill: 'forwards' },
-  )
-  animation.onfinish = (): void => {
-    sun.remove()
-    sunAnimation.enter = null
-    sunAnimation.exit = null
-    sunAnimation.shine = null
-  }
-  return animation
-}
-
-const generateSunEnterAnimation = (sun: HTMLDivElement): Animation => {
-  const duration = Number(
-    sunAnimation.exit?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
-  )
-  sunAnimation.exit?.pause()
-  sunAnimation.exit = null
-  const { blockSize, inlineSize, insetBlockStart, insetInlineEnd } =
-    getComputedStyle(sun)
-  const animation = sun.animate(
-    [
-      {
-        insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
-        insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
-      },
-      {
-        insetBlockStart: `${String(
-          (window.innerHeight - Number.parseFloat(blockSize)) / FACTOR_TWO,
-        )}px`,
-        insetInlineEnd: `${String(
-          (window.innerWidth - Number.parseFloat(inlineSize)) / FACTOR_TWO,
-        )}px`,
-      },
-    ],
-    { duration, easing: 'ease-in-out', fill: 'forwards' },
-  )
-  animation.onfinish = (): void => {
-    sunAnimation.enter = null
-  }
-  return animation
-}
-
-const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
-  sun.animate(
-    [
-      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
-      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
-    ],
-    { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
-  )
-
-const getSunElement = (): HTMLDivElement => {
-  const sun = document.querySelector('#sun-1')
-  if (!(sun instanceof HTMLDivElement)) {
-    const newSun = createAnimatedElement('sun')
-    animationElement.append(newSun)
-    return newSun
-  }
-  return sun
-}
-
-const handleSunAnimation = (speed: number): void => {
-  const sun = getSunElement()
-  sunAnimation.shine ??= generateSunShineAnimation(sun)
-  sunAnimation.shine.playbackRate = speed
-  sunAnimation.enter ??= generateSunEnterAnimation(sun)
-}
-
-// ── Leaf/wind animation ──
-
-const generateLeafAnimation = (
-  leaf: HTMLDivElement,
-  speed: number,
-): Animation => {
-  const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
-  const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
-  const loopEnd = loopStart + loopDuration
-  const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
-  const animation = leaf.animate(
-    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
-      (index: number) => {
-        const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
-        const indexLoopRadius =
-          index >= loopStart && index < loopEnd ?
-            loopRadius
-          : LEAF_NO_LOOP_RADIUS
-        const oscillate =
-          indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-            ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
-          : ''
-        const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-        const translateX = `${String(
-          index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
-        )}px`
-        const translateY = `${String(
-          -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
-        )}px`
-        return {
-          transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
-        }
-      },
-    ),
-    {
-      duration: generateStyleNumber({
-        divisor: speed,
-        gap: 5,
-        min: 3,
-        multiplier: 1000,
-      }),
-      easing: 'linear',
-      fill: 'forwards',
-    },
-  )
-  animation.onfinish = (): void => {
-    leaf.remove()
-  }
-  return animation
-}
-
-const createLeaf = (speed: number): void => {
-  createPositionedAnimatedElement({
-    gap: LEAF_GAP,
-    name: 'leaf',
-    positionProperty: 'insetBlockStart',
-    windowDimension: window.innerHeight,
-    animate: (leaf) => {
-      generateLeafAnimation(leaf, speed)
-    },
-    applyStyles: (leaf) => {
-      leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
-      leaf.style.filter = `brightness(${generateStyleString(
-        { gap: 50, min: 100 },
-        '%',
-      )})`
-    },
-  })
-}
-
-// ── API calls ──
-
-const getAtaValues = async (homey: Homey): Promise<GroupState> =>
-  homeyApi<GroupState>(homey, `/values/ata/${getZonePath()}`)
-
-const getDetailedAtaValues = async (homey: Homey): Promise<GroupAtaStates> =>
-  homeyApi<GroupAtaStates>(
-    homey,
-    `/values/ata/${getZonePath()}?${new URLSearchParams({
-      mode: 'detailed',
-      status: 'on',
-    } satisfies Required<GetAtaOptions>)}`,
-  )
-
-const getModes = async (homey: Homey): Promise<OperationMode[]> => {
-  const detailedAtaValues = await getDetailedAtaValues(homey)
-  return detailedAtaValues.OperationMode
-}
-
-// ── Reset animation ──
-
-const resetFireAnimation = async (
-  homey: Homey,
-  resetParams?: ResetParams,
-): Promise<void> => {
-  if (resetParams) {
-    const { isSomethingOn, mode } = resetParams
-    const modes = await getModes(homey)
-    if (
-      isSomethingOn &&
-      (heatModes.has(mode) ||
-        (mode === MODE_MIXED &&
-          modes.some((currentMode) => heatModes.has(currentMode))))
-    ) {
-      if (smokeAnimationFrameId !== null) {
-        cancelAnimationFrame(smokeAnimationFrameId)
-        smokeAnimationFrameId = null
-      }
-      return
-    }
-  }
-  // eslint-disable-next-line unicorn/prefer-spread
-  for (const flame of Array.from(
-    document.querySelectorAll<HTMLElement>('.flame'),
-  )) {
-    setTimeout(
-      () => {
-        flame.remove()
-      },
-      generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
-    )
-  }
-}
-
-const resetSunAnimation = async (
-  homey: Homey,
-  resetParams?: ResetParams,
-): Promise<void> => {
-  const sun = document.querySelector('#sun-1')
-  const modes = await getModes(homey)
-  if (
-    sun &&
-    sun instanceof HTMLDivElement &&
-    (!resetParams ||
-      !resetParams.isSomethingOn ||
-      (resetParams.mode !== MODE_DRY &&
-        (resetParams.mode !== MODE_MIXED ||
-          modes.every((currentMode: number) => currentMode !== MODE_DRY))))
-  ) {
-    sunAnimation.exit = generateSunExitAnimation(sun)
-  }
-}
-
-const resetAnimation = async (
-  homey: Homey,
-  resetParams?: ResetParams,
-): Promise<void> => {
-  for (const timeout of animationTimeouts) {
-    clearTimeout(timeout)
-  }
-  animationTimeouts.length = 0
-  await resetFireAnimation(homey, resetParams)
-  await resetSunAnimation(homey, resetParams)
-}
-
-// ── Animation dispatch ──
-
-const handleMixedAnimation = async (
-  homey: Homey,
-  speed: number,
-): Promise<void> => {
-  const modes = new Set(await getModes(homey))
-  if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
-    handleSnowAnimation(speed)
-  }
-  if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
-    handleFireAnimation(speed)
-  }
-  if (modes.has(MODE_DRY)) {
-    handleSunAnimation(speed)
-  }
-  if (modes.has(MODE_FAN)) {
-    generateRecurring(createLeaf, LEAF_DELAY, speed)
-  }
-}
-
-const animationHandling: Record<
-  Mode,
-  (speed: number, homey: Homey) => Promise<void> | void
-> = {
-  [MODE_AUTO]: (speed) => {
-    handleFireAnimation(speed)
-    handleSnowAnimation(speed)
-  },
-  [MODE_COOL]: (speed) => {
-    handleSnowAnimation(speed)
-  },
-  [MODE_DRY]: (speed) => {
-    handleSunAnimation(speed)
-  },
-  [MODE_FAN]: (speed) => {
-    generateRecurring(createLeaf, LEAF_DELAY, speed)
-  },
-  [MODE_HEAT]: (speed) => {
-    handleFireAnimation(speed)
-  },
-  [MODE_MIXED]: async (speed, homey) => handleMixedAnimation(homey, speed),
-}
-
-const hasModeAnimation = (mode: number): mode is Mode =>
-  mode in animationHandling
-
-const handleAnimation = async (
-  homey: Homey,
-  state: GroupState,
-  isAnimations: boolean,
-): Promise<void> => {
-  if (isAnimations) {
-    const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
-    const isSomethingOn = isOn !== false
-    const newSpeed = Number(speed) || SPEED_MODERATE
-    const newMode = Number(mode ?? null)
-    await resetAnimation(homey, { isSomethingOn, mode: newMode })
-    if (isSomethingOn && hasModeAnimation(newMode)) {
-      await animationHandling[newMode](newSpeed, homey)
-    }
-  }
-}
-
-// ── Fetch & update ──
-
-const fetchAtaValues = async (
-  homey: Homey,
-  isAnimations: boolean,
-): Promise<void> => {
-  const values = await getAtaValues(homey)
-  updateZoneMapping({ ...defaultAtaValues, ...values })
-  refreshAtaValues()
-  await handleAnimation(homey, values, isAnimations)
-}
-
-const generateAtaValue = (
-  homey: Homey,
-  {
+  #generateAtaValue({
     id,
     type,
     values,
@@ -1031,133 +1104,152 @@ const generateAtaValue = (
     id: string
     type: string
     values?: readonly { id: string; label: string }[]
-  },
-): HTMLValueElement | null => {
-  if (elementTypes.has(type)) {
-    return createSelectElement(homey, id, values)
-  }
-  if (type === 'number') {
-    return createInputElement({
-      id,
-      max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
-      min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
-      type,
-    })
-  }
-  return null
-}
-
-const generateAtaValues = (homey: Homey): void => {
-  for (const [id, { title, type, values }] of ataCapabilities) {
-    createValueElement(ataValuesElement, {
-      title,
-      valueElement: generateAtaValue(homey, { id, type, values }),
-    })
-  }
-}
-
-const getSubzones = (zone: Zone): Zone[] => [
-  ...('areas' in zone ? zone.areas : []),
-  ...('floors' in zone ? zone.floors : []),
-]
-
-const generateZones = async (zones: Zone[] = []): Promise<void> => {
-  if (zones.length) {
-    for (const zone of zones) {
-      const { id, level, model, name } = zone
-      createOptionElement(zoneElement, {
-        id: getZoneId(id, model),
-        label: getZoneName(name, level),
+  }): HTMLValueElement | null {
+    if (elementTypes.has(type)) {
+      return createSelectElement(this.#homey, id, values)
+    }
+    if (type === 'number') {
+      return createInputElement({
+        id,
+        max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
+        min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
+        type,
       })
-      // eslint-disable-next-line no-await-in-loop
-      await generateZones(getSubzones(zone))
     }
+    return null
+  }
+
+  #getZonePath(): string {
+    return this.#zoneElement.value.replace('_', '/')
+  }
+
+  #isGroupAtaState(value: string): value is keyof GroupState {
+    return value in this.#defaultAtaValues
+  }
+
+  #refreshAtaValues(): void {
+    for (const [ataKey] of this.#ataCapabilities) {
+      this.#updateAtaValue(ataKey)
+    }
+  }
+
+  #updateAtaValue(id: keyof GroupState): void {
+    const ataValueElement = document.querySelector(`#${id}`)
+    if (
+      ataValueElement &&
+      (ataValueElement instanceof HTMLInputElement ||
+        ataValueElement instanceof HTMLSelectElement)
+    ) {
+      ataValueElement.value =
+        this.#zoneMapping[this.#zoneElement.value]?.[id]?.toString() ?? ''
+    }
+  }
+
+  #updateZoneMapping(data: Partial<GroupState>): void {
+    const { value } = this.#zoneElement
+    this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
   }
 }
 
-const fetchAtaCapabilities = async (homey: Homey): Promise<void> => {
-  ataCapabilities = await homeyApi<
-    [keyof GroupState, DriverCapabilitiesOptions][]
-  >(homey, '/capabilities/ata')
-  defaultAtaValues = Object.fromEntries(
-    ataCapabilities.map(([ataKey]) => [ataKey, null]),
-  )
-}
+// ── WidgetApp class ──
 
-const setAtaValues = async (homey: Homey): Promise<void> => {
-  try {
-    const body = buildAtaValuesBody()
-    if (Object.keys(body).length) {
-      await homey.api(
-        'PUT',
-        `/values/ata/${getZonePath()}`,
-        body satisfies GroupState,
-      )
-    }
-  } catch {}
-}
+class WidgetApp {
+  readonly #animationController: AnimationController
 
-const addEventListeners = (homey: Homey, isAnimations: boolean): void => {
-  zoneElement.addEventListener('change', () => {
-    fetchAtaValues(homey, isAnimations).catch(() => {
-      //
-    })
-  })
-  refreshAtaValuesElement.addEventListener('click', () => {
-    homey.hapticFeedback()
-    refreshAtaValues()
-  })
-  updateAtaValuesElement.addEventListener('click', () => {
-    homey.hapticFeedback()
-    setAtaValues(homey).catch(() => {
-      //
-    })
-  })
-  homey.on('deviceupdate', () => {
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout)
-    }
-    debounceTimeout = setTimeout(() => {
-      fetchAtaValues(homey, isAnimations).catch(() => {
+  readonly #ataValueManager: AtaValueManager
+
+  readonly #homey: Homey
+
+  #debounceTimeout: NodeJS.Timeout | null = null
+
+  #isAnimations = false
+
+  public constructor(homey: Homey) {
+    this.#homey = homey
+    const animationElement = getDivElement('animation')
+    const canvas = getCanvasElement('smoke_canvas')
+    const ataValuesElement = getDivElement('values_melcloud')
+    const zoneElement = getSelectElement('zones')
+    this.#animationController = new AnimationController(
+      homey,
+      animationElement,
+      canvas,
+    )
+    this.#ataValueManager = new AtaValueManager(
+      homey,
+      ataValuesElement,
+      zoneElement,
+    )
+  }
+
+  public async init(): Promise<void> {
+    await setDocumentLanguage(this.#homey)
+    await this.#ataValueManager.fetchCapabilities()
+    await this.#initBuildings()
+    this.#homey.ready({ height: document.body.scrollHeight })
+  }
+
+  #addEventListeners(): void {
+    const zoneElement = getSelectElement('zones')
+    const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
+    const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
+    zoneElement.addEventListener('change', () => {
+      this.#fetchAndAnimate().catch(() => {
         //
       })
-    }, DEBOUNCE_DELAY)
-  })
-}
+    })
+    refreshAtaValuesElement.addEventListener('click', () => {
+      this.#homey.hapticFeedback()
+      this.#ataValueManager.refreshValues()
+    })
+    updateAtaValuesElement.addEventListener('click', () => {
+      this.#homey.hapticFeedback()
+      this.#ataValueManager.setValues().catch(() => {
+        //
+      })
+    })
+    this.#homey.on('deviceupdate', () => {
+      if (this.#debounceTimeout) {
+        clearTimeout(this.#debounceTimeout)
+      }
+      this.#debounceTimeout = setTimeout(() => {
+        this.#fetchAndAnimate().catch(() => {
+          //
+        })
+      }, DEBOUNCE_DELAY)
+    })
+  }
 
-const handleDefaultZone = (defaultZone: Zone | null): void => {
-  if (defaultZone) {
-    const { id, model } = defaultZone
-    const value = getZoneId(id, model)
-    if (document.querySelector(`#zones option[value="${value}"]`)) {
-      zoneElement.value = value
+  async #fetchAndAnimate(): Promise<void> {
+    const values = await this.#ataValueManager.fetchValues()
+    await this.#animationController.handleAnimation(values, this.#isAnimations)
+  }
+
+  async #initBuildings(): Promise<void> {
+    const buildings = await homeyApi<BuildingZone[]>(
+      this.#homey,
+      `/buildings?${new URLSearchParams({
+        type: '0',
+      } satisfies { type: `${DeviceType}` })}`,
+    )
+    if (buildings.length) {
+      const { animations: isAnimations, default_zone: defaultZone } =
+        this.#homey.getSettings()
+      this.#isAnimations = isAnimations
+      this.#addEventListeners()
+      this.#ataValueManager.generateAtaValues()
+      await this.#ataValueManager.generateZones(buildings)
+      this.#ataValueManager.handleDefaultZone(defaultZone)
+      await this.#fetchAndAnimate()
     }
   }
 }
 
-const fetchBuildings = async (homey: Homey): Promise<void> => {
-  const buildings = await homeyApi<BuildingZone[]>(
-    homey,
-    `/buildings?${new URLSearchParams({
-      type: '0',
-    } satisfies { type: `${DeviceType}` })}`,
-  )
-  if (buildings.length) {
-    const { animations: isAnimations, default_zone: defaultZone } =
-      homey.getSettings()
-    addEventListeners(homey, isAnimations)
-    generateAtaValues(homey)
-    await generateZones(buildings)
-    handleDefaultZone(defaultZone)
-    await fetchAtaValues(homey, isAnimations)
-  }
-}
+// ── Entry point ──
 
 // @ts-expect-error: read by another script in `./index.html`
 // eslint-disable-next-line func-style
 async function onHomeyReady(homey: Homey): Promise<void> {
-  await setDocumentLanguage(homey)
-  await fetchAtaCapabilities(homey)
-  await fetchBuildings(homey)
-  homey.ready({ height: document.body.scrollHeight })
+  const app = new WidgetApp(homey)
+  await app.init()
 }
