@@ -3,6 +3,7 @@
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
     @typescript-eslint/no-unsafe-member-access,
+    @typescript-eslint/no-unsafe-return,
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
     unicorn/consistent-function-scoping,
@@ -16,7 +17,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MELCloudDeviceErv from '../../drivers/melcloud_erv/device.mts'
 
 import { ThermostatModeErv } from '../../types/index.mts'
-import { mock } from '../helpers.ts'
+import { mock, testEnergyReportConfig } from '../helpers.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DeviceAny = any
@@ -117,17 +118,9 @@ describe(MELCloudDeviceErv, () => {
     })
   })
 
-  describe('energyReportRegular', () => {
-    it('should be null', () => {
-      expect(device.energyReportRegular).toBeNull()
-    })
-  })
+  testEnergyReportConfig(() => device, 'energyReportRegular', null)
 
-  describe('energyReportTotal', () => {
-    it('should be null', () => {
-      expect(device.energyReportTotal).toBeNull()
-    })
-  })
+  testEnergyReportConfig(() => device, 'energyReportTotal', null)
 
   describe('deviceToCapability', () => {
     it('should convert thermostat_mode to key when Power is on', () => {

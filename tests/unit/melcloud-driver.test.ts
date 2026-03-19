@@ -9,6 +9,7 @@ import {
   listCapabilityTagMappingAta,
   setCapabilityTagMappingAta,
 } from '../../types/index.mts'
+import { testDriverType, testTagMappings } from '../helpers.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
@@ -49,30 +50,13 @@ describe(MELCloudDriverAta, () => {
     driver = new MELCloudDriverAta()
   })
 
-  describe('type', () => {
-    it('should be DeviceType.Ata', () => {
-      expect(driver.type).toBe(DeviceType.Ata)
-    })
-  })
+  testDriverType(() => driver, DeviceType.Ata)
 
-  describe('tag mappings', () => {
-    it('should use the correct energy capability tag mapping', () => {
-      expect(driver.energyCapabilityTagMapping).toBe(
-        energyCapabilityTagMappingAta,
-      )
-    })
-
-    it('should use the correct get capability tag mapping', () => {
-      expect(driver.getCapabilityTagMapping).toBe(getCapabilityTagMappingAta)
-    })
-
-    it('should use the correct list capability tag mapping', () => {
-      expect(driver.listCapabilityTagMapping).toBe(listCapabilityTagMappingAta)
-    })
-
-    it('should use the correct set capability tag mapping', () => {
-      expect(driver.setCapabilityTagMapping).toBe(setCapabilityTagMappingAta)
-    })
+  testTagMappings(() => driver, {
+    energyCapabilityTagMapping: energyCapabilityTagMappingAta,
+    getCapabilityTagMapping: getCapabilityTagMappingAta,
+    listCapabilityTagMapping: listCapabilityTagMappingAta,
+    setCapabilityTagMapping: setCapabilityTagMappingAta,
   })
 
   describe('getRequiredCapabilities', () => {

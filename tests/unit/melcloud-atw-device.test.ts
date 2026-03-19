@@ -3,6 +3,7 @@
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
     @typescript-eslint/no-unsafe-member-access,
+    @typescript-eslint/no-unsafe-return,
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
     unicorn/consistent-function-scoping,
@@ -31,7 +32,7 @@ import {
   HotWaterOperationState,
   ZoneOperationState,
 } from '../../types/index.mts'
-import { mock } from '../helpers.ts'
+import { mock, testEnergyReportConfig } from '../helpers.ts'
 
 type AtwType = typeof DeviceType.Atw
 
@@ -157,28 +158,20 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  describe('energyReportRegular', () => {
-    it('should have daily interval', () => {
-      expect(device.energyReportRegular).toStrictEqual({
-        duration: { days: 1 },
-        interval: { days: 1 },
-        minus: { days: 1 },
-        mode: 'regular',
-        values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
-      })
-    })
+  testEnergyReportConfig(() => device, 'energyReportRegular', {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { days: 1 },
+    mode: 'regular',
+    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   })
 
-  describe('energyReportTotal', () => {
-    it('should have daily interval', () => {
-      expect(device.energyReportTotal).toStrictEqual({
-        duration: { days: 1 },
-        interval: { days: 1 },
-        minus: { days: 1 },
-        mode: 'total',
-        values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-      })
-    })
+  testEnergyReportConfig(() => device, 'energyReportTotal', {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { days: 1 },
+    mode: 'total',
+    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   })
 
   describe('deviceToCapability', () => {

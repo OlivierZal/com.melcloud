@@ -9,7 +9,7 @@ import {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types/index.mts'
-import { mock } from '../helpers.ts'
+import { mock, testDriverType, testTagMappings } from '../helpers.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
@@ -61,31 +61,16 @@ describe(MELCloudDriverErv, () => {
     driver = new MELCloudDriverErv()
   })
 
-  describe('type', () => {
-    it('should be DeviceType.Erv', () => {
-      expect(driver.type).toBe(DeviceType.Erv)
-    })
+  testDriverType(() => driver, DeviceType.Erv)
+
+  testTagMappings(() => driver, {
+    energyCapabilityTagMapping: energyCapabilityTagMappingErv,
+    getCapabilityTagMapping: getCapabilityTagMappingErv,
+    listCapabilityTagMapping: listCapabilityTagMappingErv,
+    setCapabilityTagMapping: setCapabilityTagMappingErv,
   })
 
   describe('tag mappings', () => {
-    it('should use the correct energy capability tag mapping', () => {
-      expect(driver.energyCapabilityTagMapping).toBe(
-        energyCapabilityTagMappingErv,
-      )
-    })
-
-    it('should use the correct get capability tag mapping', () => {
-      expect(driver.getCapabilityTagMapping).toBe(getCapabilityTagMappingErv)
-    })
-
-    it('should use the correct list capability tag mapping', () => {
-      expect(driver.listCapabilityTagMapping).toBe(listCapabilityTagMappingErv)
-    })
-
-    it('should use the correct set capability tag mapping', () => {
-      expect(driver.setCapabilityTagMapping).toBe(setCapabilityTagMappingErv)
-    })
-
     it('should have empty energy capability tag mapping', () => {
       expect(driver.energyCapabilityTagMapping).toStrictEqual({})
     })

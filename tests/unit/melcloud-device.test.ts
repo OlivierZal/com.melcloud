@@ -3,6 +3,7 @@
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
     @typescript-eslint/no-unsafe-member-access,
+    @typescript-eslint/no-unsafe-return,
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/prefer-destructuring,
     unicorn/consistent-function-scoping,
@@ -19,7 +20,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
 
 import { ThermostatModeAta } from '../../types/index.mts'
-import { mock } from '../helpers.ts'
+import { mock, testEnergyReportConfig } from '../helpers.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DeviceAny = any
@@ -120,28 +121,20 @@ describe(MELCloudDeviceAta, () => {
     })
   })
 
-  describe('energyReportRegular', () => {
-    it('should have hourly interval', () => {
-      expect(device.energyReportRegular).toStrictEqual({
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
-    })
+  testEnergyReportConfig(() => device, 'energyReportRegular', {
+    duration: { hours: 1 },
+    interval: { hours: 1 },
+    minus: { hours: 1 },
+    mode: 'regular',
+    values: { millisecond: 0, minute: 5, second: 0 },
   })
 
-  describe('energyReportTotal', () => {
-    it('should have daily interval', () => {
-      expect(device.energyReportTotal).toStrictEqual({
-        duration: { days: 1 },
-        interval: { days: 1 },
-        minus: { hours: 1 },
-        mode: 'total',
-        values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-      })
-    })
+  testEnergyReportConfig(() => device, 'energyReportTotal', {
+    duration: { days: 1 },
+    interval: { days: 1 },
+    minus: { hours: 1 },
+    mode: 'total',
+    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   })
 
   describe('deviceToCapability', () => {
