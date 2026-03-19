@@ -47,9 +47,11 @@ const FULL_CIRCLE = FACTOR_TWO * Math.PI
 
 // ── Temperature constants ──
 
-const MIN_SET_TEMPERATURE = 10
-const MAX_SET_TEMPERATURE = 31
-const MIN_SET_TEMPERATURE_COOLING = 16
+const Temperature = {
+  coolingMin: 16,
+  max: 31,
+  min: 10,
+} as const
 
 // ── Operation modes ──
 
@@ -71,32 +73,42 @@ type Mode =
 
 // ── Speed constants ──
 
-const SPEED_VERY_SLOW = 1
-const SPEED_MODERATE = 3
-const SPEED_VERY_FAST = 5
-const SPEED_FACTOR_MIN = 1
-const SPEED_FACTOR_MAX = 50
+const Speed = {
+  factorMax: 50,
+  factorMin: 1,
+  moderate: 3,
+  veryFast: 5,
+  verySlow: 1,
+} as const
 
 // ── Animation timing & layout constants ──
 
-const DEBOUNCE_DELAY = 1000
-const FLAME_DELAY = 2000
-const LEAF_DELAY = 1000
-const SMOKE_DELAY = 500
-const SNOWFLAKE_DELAY = 400
-const SUN_ENTER_AND_EXIT_DURATION = 5000
-const SUN_SHINE_DURATION = 5000
+const AnimationDelay = {
+  debounce: 1000,
+  flame: 2000,
+  leaf: 1000,
+  smoke: 500,
+  snowflake: 400,
+  sunShine: 5000,
+  sunTransition: 5000,
+} as const
+
+const AnimationGap = {
+  flame: 20,
+  leaf: 50,
+  snowflake: 50,
+} as const
+
+const SmokeThreshold = {
+  iterations: 10,
+  opacityMin: 0,
+  positionYMin: -50,
+  sizeMin: 0.1,
+} as const
 
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
-const FLAME_GAP = 20
-const LEAF_GAP = 50
 const LEAF_NO_LOOP_RADIUS = 0
-const SMOKE_ITERATIONS = 10
-const SMOKE_PARTICLE_SIZE_MIN = 0.1
-const SMOKE_PARTICLE_OPACITY_MIN = 0
-const SMOKE_PARTICLE_POSITION_Y_MIN = -50
-const SNOWFLAKE_GAP = 50
 
 const ANIMATION_KEYFRAME_COUNT = 101
 
@@ -123,9 +135,9 @@ const generateStyleString = (
 
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
-  (SPEED_FACTOR_MIN *
-    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
-      ((speed - SPEED_VERY_SLOW) / (SPEED_VERY_FAST - SPEED_VERY_SLOW)) ||
+  (Speed.factorMin *
+    (Speed.factorMax / Speed.factorMin) **
+      ((speed - Speed.verySlow) / (Speed.veryFast - Speed.verySlow)) ||
     DEFAULT_DIVISOR_ONE)
 
 // ── SmokeParticle class ──
@@ -345,7 +357,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(MIN_SET_TEMPERATURE_COOLING)
+    String(Temperature.coolingMin)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
@@ -380,6 +392,124 @@ const getSubzones = (zone: Zone): Zone[] => [
   ...('floors' in zone ? zone.floors : []),
 ]
 
+// ── Animation helpers ──
+
+const createAnimationMapping = (): Record<
+  AnimatedElement,
+  { readonly innerHTML: string; readonly getIndex: () => number }
+> => {
+  let flameIndex = 0
+  let leafIndex = 0
+  let snowflakeIndex = 0
+  return {
+    flame: {
+      innerHTML: '🔥',
+      getIndex: () => (flameIndex += INCREMENT_ONE),
+    },
+    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
+    snowflake: {
+      innerHTML: '❄',
+      getIndex: () => (snowflakeIndex += INCREMENT_ONE),
+    },
+    sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
+  }
+}
+
+const generateLeafAnimation = (
+  leaf: HTMLDivElement,
+  speed: number,
+): Animation => {
+  const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
+  const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
+  const loopEnd = loopStart + loopDuration
+  const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
+  const animation = leaf.animate(
+    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
+      (index: number) => {
+        const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
+        const indexLoopRadius =
+          index >= loopStart && index < loopEnd ?
+            loopRadius
+          : LEAF_NO_LOOP_RADIUS
+        const oscillate =
+          indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
+            ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+          : ''
+        const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
+        const translateX = `${String(
+          index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+        )}px`
+        const translateY = `${String(
+          -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+        )}px`
+        return {
+          transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
+        }
+      },
+    ),
+    {
+      duration: generateStyleNumber({
+        divisor: speed,
+        gap: 5,
+        min: 3,
+        multiplier: 1000,
+      }),
+      easing: 'linear',
+      fill: 'forwards',
+    },
+  )
+  animation.onfinish = (): void => {
+    leaf.remove()
+  }
+  return animation
+}
+
+const generateSnowflakeAnimation = (
+  snowflake: HTMLDivElement,
+  speed: number,
+): Animation => {
+  const animation = snowflake.animate(
+    [
+      { transform: 'translateY(0) rotate(0deg)' },
+      { transform: 'translateY(100vb) rotate(360deg)' },
+    ],
+    {
+      duration: generateStyleNumber({
+        divisor: speed,
+        gap: 1,
+        min: 5,
+        multiplier: 1000,
+      }),
+      easing: 'linear',
+      fill: 'forwards',
+    },
+  )
+  animation.onfinish = (): void => {
+    snowflake.remove()
+  }
+  return animation
+}
+
+const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
+  sun.animate(
+    [
+      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
+      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
+    ],
+    { duration: AnimationDelay.sunShine, easing: 'linear', iterations: Infinity },
+  )
+
+const getPreviousElement = (
+  name: string,
+  index?: string,
+): HTMLElement | null =>
+  document.querySelector<HTMLElement>(
+    `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
+  )
+
+const getZonePath = (): string =>
+  getSelectElement('zones').value.replace('_', '/')
+
 // ── AnimationController class ──
 
 class AnimationController {
@@ -404,7 +534,7 @@ class AnimationController {
         (fanSpeed) => {
           this.#createLeaf(fanSpeed)
         },
-        LEAF_DELAY,
+        AnimationDelay.leaf,
         speed,
       )
     },
@@ -447,7 +577,7 @@ class AnimationController {
     this.#animationElement = animationElement
     this.#canvas = canvas
     this.#canvasContext = canvas.getContext('2d')
-    this.#animationMapping = this.#createAnimationMapping()
+    this.#animationMapping = createAnimationMapping()
   }
 
   public async handleAnimation(
@@ -457,7 +587,7 @@ class AnimationController {
     if (isAnimations) {
       const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
       const isSomethingOn = isOn !== false
-      const newSpeed = Number(speed) || SPEED_MODERATE
+      const newSpeed = Number(speed) || Speed.moderate
       const newMode = Number(mode ?? null)
       await this.#reset({ isSomethingOn, mode: newMode })
       if (isSomethingOn && this.#hasModeAnimation(newMode)) {
@@ -481,31 +611,9 @@ class AnimationController {
     return element
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #createAnimationMapping(): Record<
-    AnimatedElement,
-    { readonly innerHTML: string; readonly getIndex: () => number }
-  > {
-    let flameIndex = 0
-    let leafIndex = 0
-    let snowflakeIndex = 0
-    return {
-      flame: {
-        innerHTML: '🔥',
-        getIndex: () => (flameIndex += INCREMENT_ONE),
-      },
-      leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
-      snowflake: {
-        innerHTML: '❄',
-        getIndex: () => (snowflakeIndex += INCREMENT_ONE),
-      },
-      sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
-    }
-  }
-
   #createFlame(speed: number): void {
     this.#createPositionedAnimatedElement({
-      gap: FLAME_GAP,
+      gap: AnimationGap.flame,
       name: 'flame',
       positionProperty: 'insetInlineStart',
       windowDimension: window.innerWidth,
@@ -520,12 +628,12 @@ class AnimationController {
 
   #createLeaf(speed: number): void {
     this.#createPositionedAnimatedElement({
-      gap: LEAF_GAP,
+      gap: AnimationGap.leaf,
       name: 'leaf',
       positionProperty: 'insetBlockStart',
       windowDimension: window.innerHeight,
       animate: (leaf) => {
-        this.#generateLeafAnimation(leaf, speed)
+        generateLeafAnimation(leaf, speed)
       },
       applyStyles: (leaf) => {
         leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
@@ -555,7 +663,7 @@ class AnimationController {
     const element = this.#createAnimatedElement(name)
     const [elementName, index] = element.id.split('-')
     if (elementName !== undefined) {
-      const previousElement = this.#getPreviousElement(elementName, index)
+      const previousElement = getPreviousElement(elementName, index)
       const previousPosition =
         previousElement ?
           Number.parseFloat(previousElement.style[positionProperty])
@@ -578,7 +686,7 @@ class AnimationController {
     if (flame.isConnected && this.#canvasContext) {
       const { left, top, width } = flame.getBoundingClientRect()
       let index = 0
-      while (index <= SMOKE_ITERATIONS) {
+      while (index <= SmokeThreshold.iterations) {
         this.#smokeParticles.push(
           new SmokeParticle(
             this.#canvasContext,
@@ -592,19 +700,19 @@ class AnimationController {
         () => {
           this.#createSmoke(flame, speed)
         },
-        generateDelay(SMOKE_DELAY, SPEED_VERY_SLOW),
+        generateDelay(AnimationDelay.smoke, Speed.verySlow),
       )
     }
   }
 
   #createSnowflake(speed: number): void {
     this.#createPositionedAnimatedElement({
-      gap: SNOWFLAKE_GAP,
+      gap: AnimationGap.snowflake,
       name: 'snowflake',
       positionProperty: 'insetInlineStart',
       windowDimension: window.innerWidth,
       animate: (snowflake) => {
-        this.#generateSnowflakeAnimation(snowflake, speed)
+        generateSnowflakeAnimation(snowflake, speed)
       },
       applyStyles: (snowflake) => {
         snowflake.style.fontSize = generateStyleString(
@@ -648,53 +756,6 @@ class AnimationController {
     return animation
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #generateLeafAnimation(leaf: HTMLDivElement, speed: number): Animation {
-    const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
-    const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
-    const loopEnd = loopStart + loopDuration
-    const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
-    const animation = leaf.animate(
-      [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
-        (index: number) => {
-          const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
-          const indexLoopRadius =
-            index >= loopStart && index < loopEnd ?
-              loopRadius
-            : LEAF_NO_LOOP_RADIUS
-          const oscillate =
-            indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-              ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
-            : ''
-          const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-          const translateX = `${String(
-            index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
-          )}px`
-          const translateY = `${String(
-            -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
-          )}px`
-          return {
-            transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
-          }
-        },
-      ),
-      {
-        duration: generateStyleNumber({
-          divisor: speed,
-          gap: 5,
-          min: 3,
-          multiplier: 1000,
-        }),
-        easing: 'linear',
-        fill: 'forwards',
-      },
-    )
-    animation.onfinish = (): void => {
-      leaf.remove()
-    }
-    return animation
-  }
-
   #generateRecurring(
     create: (speed: number) => void,
     delay: number,
@@ -725,9 +786,9 @@ class AnimationController {
         particle.update(speed)
         particle.draw()
         return (
-          particle.size > SMOKE_PARTICLE_SIZE_MIN &&
-          particle.opacity > SMOKE_PARTICLE_OPACITY_MIN &&
-          particle.positionY > SMOKE_PARTICLE_POSITION_Y_MIN
+          particle.size > SmokeThreshold.sizeMin &&
+          particle.opacity > SmokeThreshold.opacityMin &&
+          particle.positionY > SmokeThreshold.positionYMin
         )
       })
       this.#smokeAnimationFrameId = requestAnimationFrame(() => {
@@ -736,36 +797,9 @@ class AnimationController {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #generateSnowflakeAnimation(
-    snowflake: HTMLDivElement,
-    speed: number,
-  ): Animation {
-    const animation = snowflake.animate(
-      [
-        { transform: 'translateY(0) rotate(0deg)' },
-        { transform: 'translateY(100vb) rotate(360deg)' },
-      ],
-      {
-        duration: generateStyleNumber({
-          divisor: speed,
-          gap: 1,
-          min: 5,
-          multiplier: 1000,
-        }),
-        easing: 'linear',
-        fill: 'forwards',
-      },
-    )
-    animation.onfinish = (): void => {
-      snowflake.remove()
-    }
-    return animation
-  }
-
   #generateSunEnterAnimation(sun: HTMLDivElement): Animation {
     const duration = Number(
-      this.#sunAnimation.exit?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+      this.#sunAnimation.exit?.currentTime ?? AnimationDelay.sunTransition,
     )
     this.#sunAnimation.exit?.pause()
     this.#sunAnimation.exit = null
@@ -796,7 +830,7 @@ class AnimationController {
 
   #generateSunExitAnimation(sun: HTMLDivElement): Animation {
     const duration = Number(
-      this.#sunAnimation.enter?.currentTime ?? SUN_ENTER_AND_EXIT_DURATION,
+      this.#sunAnimation.enter?.currentTime ?? AnimationDelay.sunTransition,
     )
     this.#sunAnimation.enter?.pause()
     this.#sunAnimation.enter = null
@@ -823,33 +857,15 @@ class AnimationController {
     return animation
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #generateSunShineAnimation(sun: HTMLDivElement): Animation {
-    return sun.animate(
-      [
-        { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
-        { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
-      ],
-      { duration: SUN_SHINE_DURATION, easing: 'linear', iterations: Infinity },
-    )
-  }
-
   async #getModes(): Promise<OperationMode[]> {
     const detailedAtaValues = await homeyApi<GroupAtaStates>(
       this.#homey,
-      `/values/ata/${this.#getZonePath()}?${new URLSearchParams({
+      `/values/ata/${getZonePath()}?${new URLSearchParams({
         mode: 'detailed',
         status: 'on',
       } satisfies Required<GetAtaOptions>)}`,
     )
     return detailedAtaValues.OperationMode
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #getPreviousElement(name: string, index?: string): HTMLElement | null {
-    return document.querySelector<HTMLElement>(
-      `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
-    )
   }
 
   #getSunElement(): HTMLDivElement {
@@ -862,17 +878,12 @@ class AnimationController {
     return sun
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #getZonePath(): string {
-    return getSelectElement('zones').value.replace('_', '/')
-  }
-
   #handleFireAnimation(speed: number): void {
     this.#generateRecurring(
       (flameSpeed) => {
         this.#createFlame(flameSpeed)
       },
-      FLAME_DELAY,
+      AnimationDelay.flame,
       speed,
     )
     this.#generateSmoke(speed)
@@ -894,7 +905,7 @@ class AnimationController {
         (leafSpeed) => {
           this.#createLeaf(leafSpeed)
         },
-        LEAF_DELAY,
+        AnimationDelay.leaf,
         speed,
       )
     }
@@ -905,14 +916,14 @@ class AnimationController {
       (snowSpeed) => {
         this.#createSnowflake(snowSpeed)
       },
-      SNOWFLAKE_DELAY,
+      AnimationDelay.snowflake,
       speed,
     )
   }
 
   #handleSunAnimation(speed: number): void {
     const sun = this.#getSunElement()
-    this.#sunAnimation.shine ??= this.#generateSunShineAnimation(sun)
+    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
     this.#sunAnimation.shine.playbackRate = speed
     this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
@@ -955,7 +966,7 @@ class AnimationController {
         () => {
           flame.remove()
         },
-        generateDelay(FLAME_DELAY, SPEED_VERY_SLOW),
+        generateDelay(AnimationDelay.flame, Speed.verySlow),
       )
     }
   }
@@ -1106,8 +1117,8 @@ class AtaValueManager {
     if (type === 'number') {
       return createInputElement({
         id,
-        max: id === 'SetTemperature' ? MAX_SET_TEMPERATURE : undefined,
-        min: id === 'SetTemperature' ? MIN_SET_TEMPERATURE : undefined,
+        max: id === 'SetTemperature' ? Temperature.max : undefined,
+        min: id === 'SetTemperature' ? Temperature.min : undefined,
         type,
       })
     }
@@ -1211,7 +1222,7 @@ class WidgetApp {
         this.#fetchAndAnimate().catch(() => {
           //
         })
-      }, DEBOUNCE_DELAY)
+      }, AnimationDelay.debounce)
     })
   }
 
