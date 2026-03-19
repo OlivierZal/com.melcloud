@@ -43,6 +43,10 @@ const INITIAL_ERROR_COUNT = 0
 
 const SIZE_ONE = 1
 
+/*
+ * Slavic language pluralization rules: numbers ending in 2-4 use a special
+ * form, except 12-14 which use the regular plural
+ */
 const NUMBER_ENDS_WITH_TWO = 2
 const NUMBER_ENDS_WITH_THREE = 3
 const NUMBER_ENDS_WITH_FOUR = 4
@@ -100,6 +104,7 @@ const getSelectElement = (id: string): HTMLSelectElement =>
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
+// Wraps Homey's callback-based settings API in a Promise for async/await usage
 const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
   new Promise((resolve, reject) => {
     homey.api('GET', path, (error: Error | null, data: T) => {

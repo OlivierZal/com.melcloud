@@ -72,6 +72,7 @@ export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
           .plus(duration)
           .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
       )
+
       return this.homey[timerType](callback, duration.as('milliseconds'))
     }
   }

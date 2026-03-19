@@ -6,6 +6,12 @@ const SLICE_START_ZERO = 0
 const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
   typeof value === 'function'
 
+/**
+ * Class decorator that prepends contextual information to log() and error() calls.
+ * Each `logs` argument is resolved as: a property name (returns its value),
+ * a zero-arg method name ending with '()' (calls it and returns result),
+ * or a literal string (used as-is). Values are separated by '-' in the output.
+ */
 export const addToLogs =
   <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
   (target: T, _context: ClassDecoratorContext): T => {
@@ -21,9 +27,11 @@ export const addToLogs =
       #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
           ...logs.flatMap((log) => {
+            // Property name: return its value
             if (this.#isKeyOfThis(log)) {
               return [this[log], '-']
             }
+            // Zero-arg method name ending with '()': call it and return the result
             if (log.endsWith(PARENTHESES)) {
               const functionName = log.slice(
                 SLICE_START_ZERO,
@@ -37,6 +45,7 @@ export const addToLogs =
                 return [this[functionName].apply(this), '-']
               }
             }
+            // Literal string: used as-is
             return [log, '-']
           }),
           ...args,

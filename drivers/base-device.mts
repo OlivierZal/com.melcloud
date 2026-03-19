@@ -318,9 +318,13 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #init(data: ListDeviceData<T>): Promise<void> {
+    // Configure capabilities based on device data
     await this.#setCapabilities(data)
+    // Set capability options from driver
     await this.#setCapabilityOptions(data)
+    // Sync initial values from device
     await this.syncFromDevice(data)
+    // Schedule energy reports
     await this.#handleEnergyReports()
   }
 
@@ -341,6 +345,11 @@ export abstract class BaseMELCloudDevice<
     this.registerMultipleCapabilityListener(
       Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
+        /*
+         * When thermostat_mode is set to 'off', sync onoff to false and
+         * remove thermostat_mode from the update (MELCloud uses
+         * Power=false, not OperationMode=off)
+         */
         if (
           'thermostat_mode' in values &&
           this.#isThermostatModeSupportingOff()
@@ -377,6 +386,7 @@ export abstract class BaseMELCloudDevice<
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings()
     const currentCapabilities = new Set(this.getCapabilities())
+
     const requiredCapabilities = new Set(
       [
         ...Object.keys(settings).filter(
@@ -386,6 +396,7 @@ export abstract class BaseMELCloudDevice<
         ...this.driver.getRequiredCapabilities(data),
       ].filter((capability) => this.#isCapability(capability)),
     )
+
     for (const capability of currentCapabilities.symmetricDifference(
       requiredCapabilities,
     )) {
@@ -394,6 +405,7 @@ export abstract class BaseMELCloudDevice<
         this.addCapability(capability)
       : this.removeCapability(capability))
     }
+
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
     )
@@ -435,10 +447,12 @@ export abstract class BaseMELCloudDevice<
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
+
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.triggerCapabilityListener('onoff', true)
       return
     }
+
     if (
       changedKeys.some(
         (setting) =>

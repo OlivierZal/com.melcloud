@@ -38,6 +38,7 @@ const hourlyCharts = new Set<HomeySettings['chart']>([
   'signal',
 ])
 
+// D3/Tableau-inspired color palette for chart series
 const colors = [
   '#1F77B4',
   '#D62728',
@@ -183,6 +184,10 @@ const getChartPieOptions = (
       fontWeight: getStyle('--homey-font-weight-bold'),
     },
   },
+  /*
+   * Clean up MELCloud operation mode labels for display
+   * (e.g., 'CoolingMode' -> 'Cooling')
+   */
   labels: labels.map((label) =>
     label
       .replace('Actual', '')
@@ -236,6 +241,11 @@ const handleChartAndOptions = async (
     height,
   }: { chart: HomeySettings['chart']; height: number; days?: number },
 ): Promise<ApexCharts.ApexOptions> => {
+  /*
+   * Preserve user's hidden series selections across data refreshes. If chart
+   * type changes or a previously hidden series disappears, destroy and
+   * recreate the chart
+   */
   const hiddenSeries = (options.series ?? []).map((serie) =>
     typeof serie === 'number' || serie.hidden !== true ? null : serie.name,
   )
@@ -259,6 +269,10 @@ const handleChartAndOptions = async (
   return newOptions
 }
 
+/*
+ * Daily charts refresh 5 minutes after each full hour (to allow data
+ * aggregation). Hourly charts refresh every 60 seconds
+ */
 const getTimeout = (chart: HomeySettings['chart']): number => {
   if (hourlyCharts.has(chart)) {
     return NEXT_TIMEOUT

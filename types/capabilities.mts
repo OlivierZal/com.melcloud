@@ -56,6 +56,12 @@ export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
+/*
+ * Uses method signature syntax (bivariant) instead of arrow function syntax
+ * (contravariant). This allows converter functions to accept narrower parameter
+ * types (e.g., FanSpeed instead of the full ListDeviceData value union) without
+ * type errors.
+ */
 export type ConvertFromDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   bivariant(
@@ -64,6 +70,12 @@ export type ConvertFromDevice<T extends DeviceType> = {
   ): OperationalCapabilities<T>[keyof OperationalCapabilities<T>]
 }['bivariant']
 
+/*
+ * Uses method signature syntax (bivariant) instead of arrow function syntax
+ * (contravariant). This allows converter functions to accept narrower parameter
+ * types (e.g., FanSpeed instead of the full UpdateDeviceData value union)
+ * without type errors.
+ */
 export type ConvertToDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style
   bivariant(

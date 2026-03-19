@@ -20,6 +20,7 @@ import { isTotalEnergyKey, typedEntries } from '../lib/index.mts'
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
+// Conversion factor from kW to W for power values
 const K_MULTIPLIER = 1000
 
 const DEFAULT_ZERO = 0
@@ -94,6 +95,10 @@ export class EnergyReport<T extends DeviceType> {
     this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
+  /*
+   * COP (Coefficient of Performance) = produced energy / consumed energy.
+   * Falls back to divisor of 1 to avoid division by zero when no energy consumed
+   */
   #calculateCopValue(
     data: EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
@@ -121,6 +126,10 @@ export class EnergyReport<T extends DeviceType> {
     return sumTags(data, tags) / this.#linkedDeviceCount
   }
 
+  /*
+   * Power values are stored as 24-element arrays (one per hour).
+   * Multiply by K_MULTIPLIER to convert from kW to W
+   */
   #calculatePowerValue(
     data: EnergyData<T>,
     tags: readonly (keyof EnergyData<T>)[],
@@ -133,6 +142,7 @@ export class EnergyReport<T extends DeviceType> {
         total += (tagData[hour] ?? DEFAULT_ZERO) * K_MULTIPLIER
       }
     }
+
     return total / this.#linkedDeviceCount
   }
 
@@ -140,6 +150,7 @@ export class EnergyReport<T extends DeviceType> {
     const device = await this.#device.fetchDevice()
     if (device) {
       try {
+        // Fetch energy data from the previous period (offset by config.minus)
         const toDateTime = DateTime.now().minus(this.#config.minus)
         const to = toDateTime.toISODate()
         await this.#set(

@@ -56,6 +56,10 @@ const getOperationModeStateHotWaterValue = (
   return HotWaterOperationState.idle
 }
 
+/*
+ * Determines the operational state of an ATW zone. A zone is 'prohibited'
+ * when its heating/cooling mode is active but blocked by prohibition settings
+ */
 const getOperationModeStateZoneValue = (
   data: ListDeviceData<typeof DeviceType.Atw>,
   operationModeState: keyof typeof OperationModeState,
@@ -159,6 +163,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof DeviceType.Atw> {
+    // A value of 0 means the temperature is unset — fall back to the minimum allowed value
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }
 

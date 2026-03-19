@@ -62,6 +62,7 @@ const drivers: Record<DeviceType, string> = {
   [DeviceType.Erv]: 'melcloud_erv',
 }
 
+// Type guard ensuring the language key exists in the changelog object for safe property access
 const hasChangelogLanguage = (
   versionChangelog: object,
   language: string,
@@ -441,6 +442,10 @@ export default class MELCloudApp extends Homey.App {
     }
   }
 
+  /*
+   * ATA capability configuration. `enumType` maps Homey's string capability IDs
+   * to MELCloud's numeric enum values for localization
+   */
   #getAtaCapabilityConfigs(): {
     key: keyof GroupState & keyof ListDeviceDataAta
     options: ManifestDriverCapabilitiesOptions
@@ -486,10 +491,11 @@ export default class MELCloudApp extends Homey.App {
     driverId?: string
     ids?: number[]
   } = {}): MELCloudDevice[] {
-    return (
+    const targetDrivers =
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
-      : [this.homey.drivers.getDriver(driverId)]).flatMap((driver) => {
+      : [this.homey.drivers.getDriver(driverId)]
+    return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
       return ids === undefined ? devices : (
           devices.filter(({ id }) => ids.includes(id))

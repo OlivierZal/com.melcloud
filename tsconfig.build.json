@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "noEmit": false,
-    "outDir": ".homeybuild",
     "rootDir": ".",
     "sourceMap": true
   },

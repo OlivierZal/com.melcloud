@@ -47,6 +47,7 @@ const FULL_CIRCLE = FACTOR_TWO * Math.PI
 
 // ── Temperature constants ──
 
+// Temperature range for the SetTemperature capability (°C)
 const Temperature = {
   coolingMin: 16,
   max: 31,
@@ -73,6 +74,7 @@ type Mode =
 
 // ── Speed constants ──
 
+// Fan speed constants and animation speed factors
 const Speed = {
   factorMax: 50,
   factorMin: 1,
@@ -83,6 +85,7 @@ const Speed = {
 
 // ── Animation timing & layout constants ──
 
+// Delays between animation spawns (ms)
 const AnimationDelay = {
   debounce: 1000,
   flame: 2000,
@@ -93,12 +96,14 @@ const AnimationDelay = {
   sunTransition: 5000,
 } as const
 
+// Minimum spacing between animated elements (px)
 const AnimationGap = {
   flame: 20,
   leaf: 50,
   snowflake: 50,
 } as const
 
+// Thresholds for smoke particle lifecycle
 const SmokeThreshold = {
   iterations: 10,
   opacityMin: 0,
@@ -133,6 +138,11 @@ const generateStyleString = (
   unit = '',
 ): string => `${String(generateStyleNumber(params))}${unit}`
 
+/*
+ * Calculates a randomized delay with exponential speed scaling. Higher speed
+ * values produce shorter delays via exponential interpolation between
+ * factorMin and factorMax
+ */
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
   (Speed.factorMin *
@@ -415,6 +425,10 @@ const createAnimationMapping = (): Record<
   }
 }
 
+/*
+ * Generates a parametric leaf animation: the leaf follows a curved path
+ * with a circular loop segment and sine-wave oscillation
+ */
 const generateLeafAnimation = (
   leaf: HTMLDivElement,
   speed: number,
@@ -586,10 +600,13 @@ class AnimationController {
   ): Promise<void> {
     if (isAnimations) {
       const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+
       const isSomethingOn = isOn !== false
       const newSpeed = Number(speed) || Speed.moderate
       const newMode = Number(mode ?? null)
+
       await this.#reset({ isSomethingOn, mode: newMode })
+
       if (isSomethingOn && this.#hasModeAnimation(newMode)) {
         await this.#animationHandling[newMode](newSpeed)
       }
