@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { type ListDeviceDataAtw, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -38,7 +39,6 @@ vi.mock('homey', () => {
     public manifest = { capabilities: [] }
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Driver: MockDriver } }
 })
 
@@ -62,9 +62,7 @@ describe(MELCloudDriverAtw, () => {
   describe('getRequiredCapabilities', () => {
     it('should return zone1 capabilities for basic device', () => {
       const data = mock<ListDeviceDataAtw>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         CanCool: false,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasZone2: false,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -78,9 +76,7 @@ describe(MELCloudDriverAtw, () => {
 
     it('should include cool capabilities when CanCool is true', () => {
       const data = mock<ListDeviceDataAtw>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         CanCool: true,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasZone2: false,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -90,9 +86,7 @@ describe(MELCloudDriverAtw, () => {
 
     it('should include zone2 capabilities when HasZone2 is true', () => {
       const data = mock<ListDeviceDataAtw>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         CanCool: false,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasZone2: true,
       })
       const capabilities = driver.getRequiredCapabilities(data)
@@ -105,9 +99,7 @@ describe(MELCloudDriverAtw, () => {
 
     it('should include zone2 cool capabilities when both CanCool and HasZone2 are true', () => {
       const data = mock<ListDeviceDataAtw>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         CanCool: true,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         HasZone2: true,
       })
       const capabilities = driver.getRequiredCapabilities(data)

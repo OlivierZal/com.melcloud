@@ -317,16 +317,16 @@ describe(BaseMELCloudDriver, () => {
         string,
         (args: Record<string, unknown>) => Promise<void>
       > = {}
-      // eslint-disable-next-line vitest/prefer-spy-on
-      driver.homey.flow.getActionCard = vi
-        .fn()
-        .mockImplementation((cardName: string) => ({
-          registerRunListener: (
-            listener: (args: Record<string, unknown>) => Promise<void>,
-          ): void => {
-            actionListeners[cardName] = listener
-          },
-        }))
+      vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(
+        (cardName: string) =>
+          ({
+            registerRunListener: (
+              listener: (args: Record<string, unknown>) => Promise<void>,
+            ): void => {
+              actionListeners[cardName] = listener
+            },
+          }) as never,
+      )
       await driver.onInit()
 
       await actionListeners['onoff_action']!({
@@ -338,8 +338,7 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should silently catch when action card does not exist', async () => {
-      // eslint-disable-next-line vitest/prefer-spy-on
-      driver.homey.flow.getActionCard = vi.fn().mockImplementation(() => {
+      vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(() => {
         throw new Error('Card not found')
       })
 
@@ -353,16 +352,16 @@ describe(BaseMELCloudDriver, () => {
         string,
         (args: Record<string, unknown>) => unknown
       > = {}
-      // eslint-disable-next-line vitest/prefer-spy-on
-      driver.homey.flow.getConditionCard = vi
-        .fn()
-        .mockImplementation((cardName: string) => ({
-          registerRunListener: (
-            listener: (args: Record<string, unknown>) => unknown,
-          ): void => {
-            conditionListeners[cardName] = listener
-          },
-        }))
+      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
+        (cardName: string) =>
+          ({
+            registerRunListener: (
+              listener: (args: Record<string, unknown>) => unknown,
+            ): void => {
+              conditionListeners[cardName] = listener
+            },
+          }) as never,
+      )
       await driver.onInit()
 
       const result = conditionListeners['onoff_condition']!({
@@ -378,16 +377,16 @@ describe(BaseMELCloudDriver, () => {
         string,
         (args: Record<string, unknown>) => unknown
       > = {}
-      // eslint-disable-next-line vitest/prefer-spy-on
-      driver.homey.flow.getConditionCard = vi
-        .fn()
-        .mockImplementation((cardName: string) => ({
-          registerRunListener: (
-            listener: (args: Record<string, unknown>) => unknown,
-          ): void => {
-            conditionListeners[cardName] = listener
-          },
-        }))
+      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
+        (cardName: string) =>
+          ({
+            registerRunListener: (
+              listener: (args: Record<string, unknown>) => unknown,
+            ): void => {
+              conditionListeners[cardName] = listener
+            },
+          }) as never,
+      )
       await driver.onInit()
 
       const resultTrue = conditionListeners['thermostat_mode_condition']!({
@@ -405,10 +404,11 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should silently catch when condition card does not exist', async () => {
-      // eslint-disable-next-line vitest/prefer-spy-on
-      driver.homey.flow.getConditionCard = vi.fn().mockImplementation(() => {
-        throw new Error('Card not found')
-      })
+      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
+        () => {
+          throw new Error('Card not found')
+        },
+      )
 
       await expect(driver.onInit()).resolves.toBeUndefined()
     })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -38,7 +39,6 @@ vi.mock('homey', () => {
     public manifest = { capabilities: [] }
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Driver: MockDriver } }
 })
 

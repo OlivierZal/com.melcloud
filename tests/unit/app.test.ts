@@ -3,24 +3,20 @@
     @typescript-eslint/naming-convention,
     @typescript-eslint/no-unsafe-type-assertion,
 */
-import type {
-  BuildingFacade,
-  ErrorLog,
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionQuery,
-  GroupState,
-  HolidayModeData,
-  HolidayModeQuery,
-  ListDeviceDataAta,
-  LoginCredentials,
-  ReportChartLineOptions,
-  ReportChartPieOptions,
-  ZoneFacade,
-} from '@olivierzal/melcloud-api'
-
-// eslint-disable-next-line no-duplicate-imports
 import {
+  type BuildingFacade,
+  type ErrorLog,
+  type ErrorLogQuery,
+  type FrostProtectionData,
+  type FrostProtectionQuery,
+  type GroupState,
+  type HolidayModeData,
+  type HolidayModeQuery,
+  type ListDeviceDataAta,
+  type LoginCredentials,
+  type ReportChartLineOptions,
+  type ReportChartPieOptions,
+  type ZoneFacade,
   DeviceType,
   FacadeManager,
   MELCloudAPI,
@@ -103,6 +99,9 @@ vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
 
 const { default: MelCloudApp } = await import('../../app.mts')
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const mockCreate = vi.mocked(MELCloudAPI.create)
+
 const mockGetLanguage = vi.fn<() => string>().mockReturnValue('en')
 const mockGetTimezone = vi.fn<() => string>().mockReturnValue('Europe/Paris')
 const mockSettingsGet = vi.fn<(key: string) => string | null>()
@@ -150,8 +149,7 @@ const mockManifestDrivers: ManifestDriver[] = [
 ]
 
 const setupMocks = (): void => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  vi.mocked(MELCloudAPI.create).mockResolvedValue(mockApiInstance as never)
+  mockCreate.mockResolvedValue(mockApiInstance as never)
   vi.mocked(FacadeManager).mockImplementation(function mockConstructor() {
     return mock<FacadeManager>({
       get: mockFacadeManagerGet,
@@ -206,8 +204,7 @@ describe('melCloudApp', () => {
     it('should initialize the API and facade manager', async () => {
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(MELCloudAPI.create).toHaveBeenCalledWith(
+      expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           language: 'en',
           timezone: 'Europe/Paris',
@@ -227,8 +224,7 @@ describe('melCloudApp', () => {
       })
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      const createCallArgs = vi.mocked(MELCloudAPI.create).mock.calls[0]![0]!
+      const createCallArgs = mockCreate.mock.calls[0]![0]!
 
       const { logger } = createCallArgs as unknown as {
         logger: {
@@ -998,8 +994,7 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      const onSyncCallback = vi.mocked(MELCloudAPI.create).mock.calls[0]![0]!
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback({ type: DeviceType.Ata })
 
@@ -1028,8 +1023,7 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      const onSyncCallback = vi.mocked(MELCloudAPI.create).mock.calls[0]![0]!
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback({ ids: [1], type: DeviceType.Ata })
 
@@ -1052,8 +1046,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      const onSyncCallback = vi.mocked(MELCloudAPI.create).mock.calls[0]![0]!
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params?: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback()
 

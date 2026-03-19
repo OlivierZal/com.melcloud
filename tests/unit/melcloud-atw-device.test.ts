@@ -17,17 +17,14 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import type {
-  EnergyCapabilityTagMapping,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  SetCapabilityTagMapping,
-} from '../../types/index.mts'
 
 import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 
-// eslint-disable-next-line no-duplicate-imports
 import {
+  type EnergyCapabilityTagMapping,
+  type GetCapabilityTagMapping,
+  type ListCapabilityTagMapping,
+  type SetCapabilityTagMapping,
   HotWaterMode,
   HotWaterOperationState,
   ZoneOperationState,
@@ -244,8 +241,7 @@ describe(MELCloudDeviceAtw, () => {
       const result = converter?.('2026-03-18T10:00:00')
 
       expect(result).toBeDefined()
-      // eslint-disable-next-line vitest/prefer-expect-type-of
-      expect(typeof result).toBe('string')
+      expect(result).toBeTypeOf('string')
     })
   })
 
