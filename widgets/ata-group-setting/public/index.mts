@@ -341,8 +341,10 @@ const setDocumentLanguage = async (homey: Homey): Promise<void> => {
 // ── Value processing ──
 
 const handleIntMin = (id: string, min: string): string =>
-  id === 'SetTemperature' &&
-  coolModes.has(Number(getSelectElement('OperationMode').value)) ?
+  (
+    id === 'SetTemperature' &&
+    coolModes.has(Number(getSelectElement('OperationMode').value))
+  ) ?
     String(MIN_SET_TEMPERATURE_COOLING)
   : min
 
@@ -423,11 +425,12 @@ class AnimationController {
 
   readonly #homey: Homey
 
-  readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> = {
-    enter: null,
-    exit: null,
-    shine: null,
-  }
+  readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> =
+    {
+      enter: null,
+      exit: null,
+      shine: null,
+    }
 
   readonly #timeouts: NodeJS.Timeout[] = []
 
@@ -561,9 +564,7 @@ class AnimationController {
         {
           gap,
           min:
-            previousPosition > windowDimension ?
-              -gap
-            : previousPosition + gap,
+            previousPosition > windowDimension ? -gap : previousPosition + gap,
         },
         'px',
       )
@@ -618,10 +619,7 @@ class AnimationController {
     })
   }
 
-  #generateFlameAnimation(
-    flame: HTMLDivElement,
-    speed: number,
-  ): Animation {
+  #generateFlameAnimation(flame: HTMLDivElement, speed: number): Animation {
     const animation = flame.animate(
       [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
         const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
@@ -651,10 +649,7 @@ class AnimationController {
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  #generateLeafAnimation(
-    leaf: HTMLDivElement,
-    speed: number,
-  ): Animation {
+  #generateLeafAnimation(leaf: HTMLDivElement, speed: number): Animation {
     const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
     const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
     const loopEnd = loopStart + loopDuration

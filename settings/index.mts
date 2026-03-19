@@ -100,10 +100,7 @@ const getSelectElement = (id: string): HTMLSelectElement =>
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error)
 
-const homeyApiGet = async <T,>(
-  homey: Homey,
-  path: string,
-): Promise<T> =>
+const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
   new Promise((resolve, reject) => {
     homey.api('GET', path, (error: Error | null, data: T) => {
       if (error) {
@@ -369,7 +366,8 @@ class DeviceSettingsManager {
   public async fetchDeviceSettings(): Promise<void> {
     try {
       this.#deviceSettings = await homeyApiGet<DeviceSettings>(
-        this.#homey, '/settings/devices',
+        this.#homey,
+        '/settings/devices',
       )
       this.#fetchFlattenDeviceSettings()
     } catch (error) {
@@ -381,9 +379,9 @@ class DeviceSettingsManager {
     Partial<Record<string, DriverSetting[]>>
   > {
     try {
-      const settings = await homeyApiGet<Partial<Record<string, DriverSetting[]>>>(
-        this.#homey, '/settings/drivers',
-      )
+      const settings = await homeyApiGet<
+        Partial<Record<string, DriverSetting[]>>
+      >(this.#homey, '/settings/drivers')
       this.#generateSettings(settings)
       return settings
     } catch (error) {
@@ -753,10 +751,7 @@ class AuthManager {
 
   #usernameElement: HTMLInputElement | null = null
 
-  public constructor(
-    homey: Homey,
-    loadPostLoginCallback: () => Promise<void>,
-  ) {
+  public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
     this.#authenticateElement = getButtonElement('authenticate')
@@ -939,9 +934,7 @@ class ErrorLogManager {
     const rowElement = theadElement.insertRow()
     for (const key of keys) {
       const thElement = document.createElement('th')
-      thElement.textContent = this.#homey.__(
-        `settings.errorLog.columns.${key}`,
-      )
+      thElement.textContent = this.#homey.__(`settings.errorLog.columns.${key}`)
       rowElement.append(thElement)
     }
     this.#errorLogElement.append(tableElement)
@@ -983,8 +976,7 @@ class ErrorLogManager {
     this.#errorCount += errors.length
     this.#from = fromDateHuman
     this.#to = nextToDate
-    this.#errorCountLabelElement.textContent =
-      `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
+    this.#errorCountLabelElement.textContent = `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
     this.#periodLabelElement.textContent = this.#homey.__(
       'settings.errorLog.period',
       { from: this.#from },
@@ -1014,7 +1006,10 @@ class ZoneSettingsManager {
 
   #zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
 
-  public constructor(homey: Homey, deviceSettingsManager: DeviceSettingsManager) {
+  public constructor(
+    homey: Homey,
+    deviceSettingsManager: DeviceSettingsManager,
+  ) {
     this.#homey = homey
     this.#deviceSettingsManager = deviceSettingsManager
     this.#zoneElement = getSelectElement('zones')
@@ -1022,10 +1017,8 @@ class ZoneSettingsManager {
       'enabled_frost_protection',
     )
     this.#holidayModeEnabledElement = getSelectElement('enabled_holiday_mode')
-    this.#frostProtectionMinTemperatureElement =
-      initFrostProtectionMinElement()
-    this.#frostProtectionMaxTemperatureElement =
-      initFrostProtectionMaxElement()
+    this.#frostProtectionMinTemperatureElement = initFrostProtectionMinElement()
+    this.#frostProtectionMaxTemperatureElement = initFrostProtectionMaxElement()
     this.#holidayModeStartDateElement = getInputElement('start_date')
     this.#holidayModeEndDateElement = getInputElement('end_date')
   }
@@ -1114,9 +1107,8 @@ class ZoneSettingsManager {
         HMStartDate: startDate,
       } = data
       this.#holidayModeEnabledElement.value = String(isEnabled)
-      this.#holidayModeStartDateElement.value = isEnabled ?
-        (startDate ?? '')
-      : ''
+      this.#holidayModeStartDateElement.value =
+        isEnabled ? (startDate ?? '') : ''
       this.#holidayModeEndDateElement.value = isEnabled ? (endDate ?? '') : ''
     }
   }
@@ -1205,9 +1197,12 @@ class ZoneSettingsManager {
         }
       })
     }
-    getButtonElement('refresh_frost_protection').addEventListener('click', () => {
-      this.refreshFrostProtectionData()
-    })
+    getButtonElement('refresh_frost_protection').addEventListener(
+      'click',
+      () => {
+        this.refreshFrostProtectionData()
+      },
+    )
     getButtonElement('apply_frost_protection').addEventListener('click', () => {
       try {
         const { max, min } = this.#getFPMinAndMax()
@@ -1315,9 +1310,8 @@ class SettingsApp {
       this.#deviceSettingsManager,
     )
     this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(
-      homey,
-      async () => this.#loadPostLogin(),
+    this.#authManager = new AuthManager(homey, async () =>
+      this.#loadPostLogin(),
     )
   }
 
