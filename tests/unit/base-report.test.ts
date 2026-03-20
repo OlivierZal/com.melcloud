@@ -11,7 +11,10 @@ import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 
-import { type EnergyReportConfig, EnergyReport } from '../../drivers/base-report.mts'
+import {
+  type EnergyReportConfig,
+  EnergyReport,
+} from '../../drivers/base-report.mts'
 import { assertDefined, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
