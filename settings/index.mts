@@ -80,6 +80,9 @@ const getElement = <T extends HTMLElement>(
   elementType: string,
 ): T => {
   const element = document.querySelector(`#${id}`)
+  if (element === null) {
+    throw new TypeError(`Element with id \`${id}\` not found`)
+  }
   if (!(element instanceof elementConstructor)) {
     throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
   }
@@ -701,11 +704,13 @@ class DeviceSettingsManager {
         return
       }
       element.indeterminate = true
-      element.addEventListener('change', () => {
-        if (element.indeterminate) {
+      element.addEventListener(
+        'change',
+        () => {
           element.indeterminate = false
-        }
-      })
+        },
+        { once: true },
+      )
     }
   }
 }

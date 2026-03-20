@@ -439,26 +439,26 @@ export default class MELCloudApp extends Homey.App {
     enumType?: Record<string, unknown>
   }[] {
     return [
-      { key: 'Power' as const, options: power },
-      { key: 'SetTemperature' as const, options: setTemperature },
+      { key: 'Power', options: power },
+      { key: 'SetTemperature', options: setTemperature },
       {
         enumType: FanSpeed,
-        key: 'FanSpeed' as const,
+        key: 'FanSpeed',
         options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
       },
       {
         enumType: Vertical,
-        key: 'VaneVerticalDirection' as const,
+        key: 'VaneVerticalDirection',
         options: vertical,
       },
       {
         enumType: Horizontal,
-        key: 'VaneHorizontalDirection' as const,
+        key: 'VaneHorizontalDirection',
         options: horizontal,
       },
       {
         enumType: OperationMode,
-        key: 'OperationMode' as const,
+        key: 'OperationMode',
         options: {
           ...thermostatMode,
           values: this.homey.manifest.drivers

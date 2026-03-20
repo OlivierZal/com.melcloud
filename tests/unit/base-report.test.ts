@@ -11,7 +11,7 @@ import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 
-import { EnergyReport } from '../../drivers/base-report.mts'
+import { type EnergyReportConfig, EnergyReport } from '../../drivers/base-report.mts'
 import { assertDefined, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
@@ -32,17 +32,17 @@ const regularConfig = {
   duration: { hours: 1 },
   interval: { hours: 1 },
   minus: { hours: 1 },
-  mode: 'regular' as const,
+  mode: 'regular',
   values: { millisecond: 0, minute: 5, second: 0 },
-}
+} satisfies EnergyReportConfig
 
 const totalConfig = {
   duration: { days: 1 },
   interval: { days: 1 },
   minus: { hours: 1 },
-  mode: 'total' as const,
+  mode: 'total',
   values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-}
+} satisfies EnergyReportConfig
 
 const energyCapabilityTagMapping = mock<
   EnergyCapabilityTagMapping<TestDeviceType>
