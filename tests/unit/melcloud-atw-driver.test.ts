@@ -12,33 +12,9 @@ import {
 import { mock, testDriverType, testTagMappings } from '../helpers.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
-vi.mock('homey', () => {
-  class MockDriver {
-    public getDevices = vi.fn().mockReturnValue([])
-
-    public homey = {
-      app: {
-        api: {
-          authenticate: vi.fn(),
-          registry: { getDevicesByType: vi.fn().mockReturnValue([]) },
-        },
-      },
-      flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-      },
-    }
-
-    public log = vi.fn()
-
-    public manifest = { capabilities: [] }
-  }
-
-  return { default: { Driver: MockDriver } }
+vi.mock('homey', async () => {
+  const { createMockDriverClass } = await import('../helpers.ts')
+  return { default: { Driver: createMockDriverClass() } }
 })
 
 describe(MELCloudDriverAtw, () => {

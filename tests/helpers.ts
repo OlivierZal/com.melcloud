@@ -1,10 +1,112 @@
 /* eslint-disable
+    max-classes-per-file,
     vitest/no-conditional-tests,
     vitest/prefer-each,
 */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
+
+export const createMockDeviceClass = (
+  overrides?: Record<string, unknown>,
+): new () => any => {
+  class MockDevice {
+    public addCapability = vi.fn()
+
+    public driver = {}
+
+    public error = vi.fn()
+
+    public getCapabilities = vi.fn().mockReturnValue([])
+
+    public getCapabilityOptions = vi.fn()
+
+    public getCapabilityValue = vi.fn()
+
+    public getData = vi.fn().mockReturnValue({ id: 1 })
+
+    public getSetting = vi.fn()
+
+    public getSettings = vi.fn().mockReturnValue({})
+
+    public hasCapability = vi.fn().mockReturnValue(true)
+
+    public homey = {
+      __: vi.fn(),
+      api: { realtime: vi.fn() },
+      app: { getFacade: vi.fn() },
+      clearInterval: vi.fn(),
+      clearTimeout: vi.fn(),
+      setInterval: vi.fn(),
+      setTimeout: vi.fn(),
+    }
+
+    public log = vi.fn()
+
+    public registerMultipleCapabilityListener = vi.fn()
+
+    public setCapabilityOptions = vi.fn()
+
+    public setCapabilityValue = vi.fn()
+
+    public setSettings = vi.fn()
+
+    public triggerCapabilityListener = vi.fn()
+
+    public constructor() {
+      if (overrides) {
+        Object.assign(this, overrides)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+    public async removeCapability(): Promise<void> {
+      await Promise.resolve()
+    }
+
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+    public async setWarning(): Promise<void> {
+      await Promise.resolve()
+    }
+  }
+  return MockDevice
+}
+
+export const createMockDriverClass = (
+  overrides?: Record<string, unknown>,
+): new () => any => {
+  class MockDriver {
+    public getDevices = vi.fn().mockReturnValue([])
+
+    public homey = {
+      app: {
+        api: {
+          authenticate: vi.fn(),
+          registry: { getDevicesByType: vi.fn().mockReturnValue([]) },
+        },
+      },
+      flow: {
+        getActionCard: vi.fn().mockReturnValue({
+          registerRunListener: vi.fn(),
+        }),
+        getConditionCard: vi.fn().mockReturnValue({
+          registerRunListener: vi.fn(),
+        }),
+      },
+    }
+
+    public log = vi.fn()
+
+    public manifest = { capabilities: [] }
+
+    public constructor() {
+      if (overrides) {
+        Object.assign(this, overrides)
+      }
+    }
+  }
+  return MockDriver
+}
 
 export const testDriverType = (
   getDriver: () => { type: unknown },

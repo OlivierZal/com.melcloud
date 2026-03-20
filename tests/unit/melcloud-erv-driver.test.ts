@@ -12,44 +12,26 @@ import {
 import { mock, testDriverType, testTagMappings } from '../helpers.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
-vi.mock('homey', () => {
-  class MockDriver {
-    public getDevices = vi.fn().mockReturnValue([])
-
-    public homey = {
-      app: {
-        api: {
-          authenticate: vi.fn(),
-          registry: { getDevicesByType: vi.fn().mockReturnValue([]) },
+vi.mock('homey', async () => {
+  const { createMockDriverClass } = await import('../helpers.ts')
+  return {
+    default: {
+      Driver: createMockDriverClass({
+        manifest: {
+          capabilities: [
+            'onoff',
+            'thermostat_mode',
+            'fan_speed',
+            'measure_temperature',
+            'measure_temperature.outdoor',
+            'measure_co2',
+            'measure_pm25',
+            'measure_signal_strength',
+          ],
         },
-      },
-      flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-      },
-    }
-
-    public log = vi.fn()
-
-    public manifest = {
-      capabilities: [
-        'onoff',
-        'thermostat_mode',
-        'fan_speed',
-        'measure_temperature',
-        'measure_temperature.outdoor',
-        'measure_co2',
-        'measure_pm25',
-        'measure_signal_strength',
-      ],
-    }
+      }),
+    },
   }
-
-  return { default: { Driver: MockDriver } }
 })
 
 describe(MELCloudDriverErv, () => {

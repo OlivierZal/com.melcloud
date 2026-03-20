@@ -10,62 +10,9 @@ import { ThermostatModeErv } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
-vi.mock('homey', () => {
-  class MockDevice {
-    public addCapability = vi.fn()
-
-    public driver = {}
-
-    public error = vi.fn()
-
-    public getCapabilities = vi.fn().mockReturnValue([])
-
-    public getCapabilityOptions = vi.fn()
-
-    public getCapabilityValue = vi.fn()
-
-    public getData = vi.fn().mockReturnValue({ id: 1 })
-
-    public getSetting = vi.fn()
-
-    public getSettings = vi.fn().mockReturnValue({})
-
-    public hasCapability = vi.fn().mockReturnValue(true)
-
-    public homey = {
-      __: vi.fn(),
-      api: { realtime: vi.fn() },
-      app: { getFacade: vi.fn() },
-      clearInterval: vi.fn(),
-      clearTimeout: vi.fn(),
-      setInterval: vi.fn(),
-      setTimeout: vi.fn(),
-    }
-
-    public log = vi.fn()
-
-    public registerMultipleCapabilityListener = vi.fn()
-
-    public setCapabilityOptions = vi.fn()
-
-    public setCapabilityValue = vi.fn()
-
-    public setSettings = vi.fn()
-
-    public triggerCapabilityListener = vi.fn()
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-    public async removeCapability(): Promise<void> {
-      await Promise.resolve()
-    }
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-    public async setWarning(): Promise<void> {
-      await Promise.resolve()
-    }
-  }
-
-  return { default: { Device: MockDevice } }
+vi.mock('homey', async () => {
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  return { default: { Device: createMockDeviceClass() } }
 })
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
