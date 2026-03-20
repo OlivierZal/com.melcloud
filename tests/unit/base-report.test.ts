@@ -26,6 +26,23 @@ const clearIntervalMock = vi.fn()
 const setTimeoutMock = vi.fn().mockReturnValue(1)
 const setIntervalMock = vi.fn().mockReturnValue(2)
 const logMock = vi.fn()
+const errorMock = vi.fn()
+
+const regularConfig = {
+  duration: { hours: 1 },
+  interval: { hours: 1 },
+  minus: { hours: 1 },
+  mode: 'regular' as const,
+  values: { millisecond: 0, minute: 5, second: 0 },
+}
+
+const totalConfig = {
+  duration: { days: 1 },
+  interval: { days: 1 },
+  minus: { hours: 1 },
+  mode: 'total' as const,
+  values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+}
 
 const energyCapabilityTagMapping = mock<
   EnergyCapabilityTagMapping<TestDeviceType>
@@ -43,6 +60,7 @@ const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
 const mockDevice = mock<BaseMELCloudDevice<TestDeviceType>>({
   cleanMapping: cleanMappingMock,
   driver: mockDriver,
+  error: errorMock,
   fetchDevice: fetchDeviceMock,
   homey: mock<import('homey').Homey>({
     clearInterval: clearIntervalMock,
@@ -69,13 +87,7 @@ describe(EnergyReport, () => {
   describe('handle', () => {
     it('should unschedule when no energy capability tag entries', async () => {
       cleanMappingMock.mockReturnValue({})
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(clearTimeoutMock).toHaveBeenCalled()
@@ -90,16 +102,26 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: getEnergyMock,
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(getEnergyMock).toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalled()
+    })
+
+    it('should log error when getEnergy fails', async () => {
+      const energyError = new Error('fetch failed')
+      fetchDeviceMock.mockResolvedValue({
+        data: {},
+        getEnergy: vi.fn().mockRejectedValue(energyError),
+      })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.handle()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        energyError,
+      )
       expect(setTimeoutMock).toHaveBeenCalled()
     })
 
@@ -111,13 +133,7 @@ describe(EnergyReport, () => {
           Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
         }),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
       await report.handle()
 
@@ -126,13 +142,7 @@ describe(EnergyReport, () => {
 
     it('should handle null device from fetchDevice', async () => {
       fetchDeviceMock.mockResolvedValue(null)
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setTimeoutMock).toHaveBeenCalled()
@@ -141,13 +151,7 @@ describe(EnergyReport, () => {
 
   describe('unschedule', () => {
     it('should clear timeout and interval', () => {
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       report.unschedule()
 
       expect(clearTimeoutMock).toHaveBeenCalled()
@@ -167,13 +171,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalled()
@@ -191,13 +189,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { days: 1 },
-        interval: { days: 1 },
-        minus: { hours: 1 },
-        mode: 'total',
-        values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalled()
@@ -213,13 +205,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalled()
@@ -234,13 +220,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 0)
@@ -256,13 +236,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalled()
@@ -309,13 +283,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: getEnergyMockLocal,
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { days: 1 },
-        interval: { days: 1 },
-        minus: { hours: 1 },
-        mode: 'total',
-        values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
       expect(getEnergyMockLocal).toHaveBeenCalledWith(
@@ -333,13 +301,7 @@ describe(EnergyReport, () => {
           Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
         }),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       const timeoutCallback = setTimeoutMock.mock.calls.at(0)?.at(0) as
@@ -403,13 +365,7 @@ describe(EnergyReport, () => {
           ProducedTag: 6,
         }),
       })
-      const report = new EnergyReport(mockDeviceWithCop, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
@@ -427,13 +383,7 @@ describe(EnergyReport, () => {
           ProducedTag: 5,
         }),
       })
-      const report = new EnergyReport(mockDeviceWithCop, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
@@ -458,13 +408,7 @@ describe(EnergyReport, () => {
         data: {},
         getEnergy: vi.fn().mockResolvedValue(energyData),
       })
-      const report = new EnergyReport(mockDevice, {
-        duration: { hours: 1 },
-        interval: { hours: 1 },
-        minus: { hours: 1 },
-        mode: 'regular',
-        values: { millisecond: 0, minute: 5, second: 0 },
-      })
+      const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
