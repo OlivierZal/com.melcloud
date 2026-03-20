@@ -1097,7 +1097,9 @@ class AtaValueManager {
           body satisfies GroupState,
         )
       }
-    } catch {}
+    } catch {
+      // Non-critical: values will resync on next device update
+    }
   }
 
   #buildAtaValuesBody(): GroupState {

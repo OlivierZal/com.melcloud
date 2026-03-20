@@ -421,7 +421,9 @@ export default class MELCloudApp extends Homey.App {
           try {
             await notifications.createNotification({ excerpt })
             settings.set('notifiedVersion', version)
-          } catch {}
+          } catch {
+            // Non-critical: notification display is best-effort
+          }
         }, NOTIFICATION_DELAY)
       }
     }

@@ -1049,7 +1049,9 @@ class ZoneSettingsManager {
           )
           this.#updateZoneMapping(data)
           this.refreshFrostProtectionData()
-        } catch {}
+        } catch {
+          // Non-critical: UI falls back to default values
+        }
       },
     )
   }
@@ -1065,7 +1067,9 @@ class ZoneSettingsManager {
           )
           this.#updateZoneMapping(data)
           this.refreshHolidayModeData()
-        } catch {}
+        } catch {
+          // Non-critical: UI falls back to default values
+        }
       },
     )
   }
@@ -1339,7 +1343,9 @@ class SettingsApp {
         homey,
         '/language',
       )
-    } catch {}
+    } catch {
+      // Non-critical: page defaults to browser language
+    }
   }
 
   public async init(): Promise<void> {
@@ -1399,7 +1405,9 @@ class SettingsApp {
       try {
         await this.#fetchBuildings()
         return
-      } catch {}
+      } catch {
+        // Session expired or no devices: fall through to login
+      }
     }
     this.#authManager.needsAuthentication()
   }

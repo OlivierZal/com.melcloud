@@ -132,7 +132,9 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
             args[getArg(capability)],
           )
         })
-    } catch {}
+    } catch {
+      // Flow card may not exist for this capability
+    }
   }
 
   #registerConditionRunListener(
@@ -151,7 +153,9 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
               value === args[getArg(capability)]
             : value
         })
-    } catch {}
+    } catch {
+      // Flow card may not exist for this capability
+    }
   }
 
   #registerRunListeners(): void {
