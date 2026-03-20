@@ -28,12 +28,10 @@ vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', () => ({
-  EnergyReport: vi.fn().mockImplementation(() => ({
-    handle: vi.fn().mockResolvedValue(undefined),
-    unschedule: vi.fn(),
-  })),
-}))
+vi.mock('../../drivers/base-report.mts', async () => {
+  const { createEnergyReportMock } = await import('../helpers.ts')
+  return createEnergyReportMock()
+})
 
 describe(MELCloudDeviceAta, () => {
   let device: any
@@ -66,41 +64,21 @@ describe(MELCloudDeviceAta, () => {
   })
 
   describe('deviceToCapability', () => {
-    it('should convert alarm_generic.silent from FanSpeed.silent to true', () => {
-      const converter = device.deviceToCapability['alarm_generic.silent']
+    it.each([
+      ['alarm_generic.silent', FanSpeed.silent, true],
+      ['alarm_generic.silent', FanSpeed.auto, false],
+      ['fan_speed', FanSpeed.silent, FanSpeed.auto],
+      ['fan_speed', FanSpeed.fast, FanSpeed.fast],
+      ['horizontal', Horizontal.center, 'center'],
+      ['vertical', Vertical.auto, 'auto'],
+    ])(
+      '%s(%s) should return %s',
+      (key, input, expected) => {
+        const converter = device.deviceToCapability[key]
 
-      expect(converter?.(FanSpeed.silent)).toBe(true)
-    })
-
-    it('should convert alarm_generic.silent from non-silent to false', () => {
-      const converter = device.deviceToCapability['alarm_generic.silent']
-
-      expect(converter?.(FanSpeed.auto)).toBe(false)
-    })
-
-    it('should convert fan_speed from silent to auto', () => {
-      const converter = device.deviceToCapability.fan_speed
-
-      expect(converter?.(FanSpeed.silent)).toBe(FanSpeed.auto)
-    })
-
-    it('should pass through fan_speed for non-silent values', () => {
-      const converter = device.deviceToCapability.fan_speed
-
-      expect(converter?.(FanSpeed.fast)).toBe(FanSpeed.fast)
-    })
-
-    it('should convert horizontal from enum value to key', () => {
-      const converter = device.deviceToCapability.horizontal
-
-      expect(converter?.(Horizontal.center)).toBe('center')
-    })
-
-    it('should convert vertical from enum value to key', () => {
-      const converter = device.deviceToCapability.vertical
-
-      expect(converter?.(Vertical.auto)).toBe('auto')
-    })
+        expect(converter?.(input)).toBe(expected)
+      },
+    )
 
     it('should convert thermostat_mode to key when Power is on', () => {
       const converter = device.deviceToCapability.thermostat_mode
@@ -118,22 +96,17 @@ describe(MELCloudDeviceAta, () => {
   })
 
   describe('capabilityToDevice', () => {
-    it('should convert horizontal key to enum value', () => {
-      const converter = device.capabilityToDevice.horizontal
+    it.each([
+      ['horizontal', 'center', Horizontal.center],
+      ['thermostat_mode', 'heat', OperationMode.heat],
+      ['vertical', 'middle', Vertical.middle],
+    ])(
+      '%s(%s) should return %s',
+      (key, input, expected) => {
+        const converter = device.capabilityToDevice[key]
 
-      expect(converter?.('center')).toBe(Horizontal.center)
-    })
-
-    it('should convert thermostat_mode key to enum value', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
-
-      expect(converter?.('heat')).toBe(OperationMode.heat)
-    })
-
-    it('should convert vertical key to enum value', () => {
-      const converter = device.capabilityToDevice.vertical
-
-      expect(converter?.('middle')).toBe(Vertical.middle)
-    })
+        expect(converter?.(input)).toBe(expected)
+      },
+    )
   })
 })

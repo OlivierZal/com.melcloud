@@ -107,12 +107,10 @@ vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', () => ({
-  EnergyReport: vi.fn().mockImplementation(() => ({
-    handle: vi.fn().mockResolvedValue(undefined),
-    unschedule: vi.fn(),
-  })),
-}))
+vi.mock('../../drivers/base-report.mts', async () => {
+  const { createEnergyReportMock } = await import('../helpers.ts')
+  return createEnergyReportMock()
+})
 
 type TestDeviceType = typeof DeviceType.Ata
 
@@ -128,7 +126,7 @@ class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
 
   public readonly energyReportTotal: EnergyReportConfig | null = null
 
-  public readonly thermostatMode: object | null = null
+  public readonly thermostatMode: Record<string, string> | null = null
 
   public capabilityToDevice: Partial<
     Record<
@@ -476,7 +474,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should handle thermostat_mode off when thermostat supports off', async () => {
       const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 0 }
+        public override readonly thermostatMode = { off: 'off' }
       })()
       Object.defineProperty(deviceWithThermostat, 'driver', {
         configurable: true,
@@ -497,7 +495,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
       const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 0 }
+        public override readonly thermostatMode = { off: 'off' }
       })()
       Object.defineProperty(deviceWithThermostat, 'driver', {
         configurable: true,

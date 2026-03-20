@@ -25,12 +25,10 @@ vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', () => ({
-  EnergyReport: vi.fn().mockImplementation(() => ({
-    handle: vi.fn().mockResolvedValue(undefined),
-    unschedule: vi.fn(),
-  })),
-}))
+vi.mock('../../drivers/base-report.mts', async () => {
+  const { createEnergyReportMock } = await import('../helpers.ts')
+  return createEnergyReportMock()
+})
 
 describe(MELCloudDeviceErv, () => {
   let device: any
@@ -51,54 +49,34 @@ describe(MELCloudDeviceErv, () => {
   testEnergyReportConfig(() => device, 'energyReportTotal', null)
 
   describe('deviceToCapability', () => {
-    it('should convert thermostat_mode to key when Power is on', () => {
-      const converter = device.deviceToCapability.thermostat_mode
-      const data = mock<ListDeviceDataErv>({ Power: true })
+    it.each([
+      [VentilationMode.auto, true, 'auto'],
+      [VentilationMode.auto, false, ThermostatModeErv.off],
+      [VentilationMode.recovery, true, 'recovery'],
+      [VentilationMode.bypass, true, 'bypass'],
+    ])(
+      'thermostat_mode(%s, Power: %s) should return %s',
+      (input, power, expected) => {
+        const converter = device.deviceToCapability.thermostat_mode
+        const data = mock<ListDeviceDataErv>({ Power: power })
 
-      expect(converter?.(VentilationMode.auto, data)).toBe('auto')
-    })
-
-    it('should return off for thermostat_mode when Power is off', () => {
-      const converter = device.deviceToCapability.thermostat_mode
-      const data = mock<ListDeviceDataErv>({ Power: false })
-
-      expect(converter?.(VentilationMode.auto, data)).toBe(
-        ThermostatModeErv.off,
-      )
-    })
-
-    it('should convert recovery mode correctly', () => {
-      const converter = device.deviceToCapability.thermostat_mode
-      const data = mock<ListDeviceDataErv>({ Power: true })
-
-      expect(converter?.(VentilationMode.recovery, data)).toBe('recovery')
-    })
-
-    it('should convert bypass mode correctly', () => {
-      const converter = device.deviceToCapability.thermostat_mode
-      const data = mock<ListDeviceDataErv>({ Power: true })
-
-      expect(converter?.(VentilationMode.bypass, data)).toBe('bypass')
-    })
+        expect(converter?.(input, data)).toBe(expected)
+      },
+    )
   })
 
   describe('capabilityToDevice', () => {
-    it('should convert thermostat_mode key to enum value', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
+    it.each([
+      ['auto', VentilationMode.auto],
+      ['recovery', VentilationMode.recovery],
+      ['bypass', VentilationMode.bypass],
+    ])(
+      'thermostat_mode(%s) should return %s',
+      (input, expected) => {
+        const converter = device.capabilityToDevice.thermostat_mode
 
-      expect(converter?.('auto')).toBe(VentilationMode.auto)
-    })
-
-    it('should convert recovery key to enum value', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
-
-      expect(converter?.('recovery')).toBe(VentilationMode.recovery)
-    })
-
-    it('should convert bypass key to enum value', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
-
-      expect(converter?.('bypass')).toBe(VentilationMode.bypass)
-    })
+        expect(converter?.(input)).toBe(expected)
+      },
+    )
   })
 })

@@ -21,12 +21,10 @@ import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
 // Conversion factor from kW to W for power values
-const K_MULTIPLIER = 1000
+const KILOWATT_TO_WATT = 1000
 
-const DEFAULT_ZERO = 0
-const DEFAULT_DIVISOR_ONE = 1
-
-const DEFAULT_DEVICE_COUNT_ONE = 1
+const INITIAL_SUM = 0
+const NO_ENERGY_DIVISOR = 1
 
 const sumTags = <T extends DeviceType>(
   data: EnergyData<T>,
@@ -34,7 +32,7 @@ const sumTags = <T extends DeviceType>(
 ): number =>
   tags.reduce(
     (accumulator, tag) => accumulator + Number(data[tag]),
-    DEFAULT_ZERO,
+    INITIAL_SUM,
   )
 
 export interface EnergyReportConfig {
@@ -54,7 +52,7 @@ export class EnergyReport<T extends DeviceType> {
 
   private readonly driver: BaseMELCloudDriver<T>
 
-  #linkedDeviceCount = DEFAULT_DEVICE_COUNT_ONE
+  #linkedDeviceCount = NO_ENERGY_DIVISOR
 
   #reportTimeout: NodeJS.Timeout | null = null
 
@@ -115,7 +113,7 @@ export class EnergyReport<T extends DeviceType> {
     } = this
     return (
       sumTags(data, producedTags) /
-      (sumTags(data, consumedTags) || DEFAULT_DIVISOR_ONE)
+      (sumTags(data, consumedTags) || NO_ENERGY_DIVISOR)
     )
   }
 
@@ -128,18 +126,18 @@ export class EnergyReport<T extends DeviceType> {
 
   /*
    * Power values are stored as 24-element arrays (one per hour).
-   * Multiply by K_MULTIPLIER to convert from kW to W
+   * Multiply by KILOWATT_TO_WATT to convert from kW to W
    */
   #calculatePowerValue(
     data: EnergyData<T>,
     tags: readonly (keyof EnergyData<T>)[],
     hour: HourNumbers,
   ): number {
-    let total = DEFAULT_ZERO
+    let total = INITIAL_SUM
     for (const tag of tags) {
       const { [tag]: tagData } = data
       if (Array.isArray(tagData)) {
-        total += (tagData[hour] ?? DEFAULT_ZERO) * K_MULTIPLIER
+        total += (tagData[hour] ?? INITIAL_SUM) * KILOWATT_TO_WATT
       }
     }
 

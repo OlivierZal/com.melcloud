@@ -1,5 +1,3 @@
-const KEY_INDEX = 0
-
 /*
  * Reverse enum lookup: finds the key for a given value.
  * Object.entries returns [key, value] tuples, so entry[0] is the key
@@ -14,5 +12,6 @@ export const keyOfValue = <T extends Record<string, number | string>>(
   if (!entry) {
     throw new Error(`Unknown value: ${String(value)}`)
   }
-  return entry[KEY_INDEX] as string & keyof T
+  const [key] = entry
+  return key as string & keyof T
 }

@@ -52,7 +52,7 @@ const colors = [
   '#393B79',
   '#E7BA52',
 ]
-const hidden = new Set([
+const hidden: ReadonlySet<string> = new Set([
   'FlowBoiler',
   'FlowZone1',
   'FlowZone2',

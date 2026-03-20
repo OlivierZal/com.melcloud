@@ -62,12 +62,6 @@ const drivers: Record<DeviceType, string> = {
   [DeviceType.Erv]: 'melcloud_erv',
 }
 
-// Type guard ensuring the language key exists in the changelog object for safe property access
-const hasChangelogLanguage = (
-  versionChangelog: object,
-  language: string,
-): language is keyof typeof versionChangelog => language in versionChangelog
-
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -136,22 +130,17 @@ const getDriverLoginSetting = (
   return Object.values(driverLoginSetting)
 }
 
-const isKeyOfEnum = (
-  enumType: object,
-  key: string,
-): key is keyof typeof enumType => key in enumType
-
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
   language: string,
-  enumType?: object,
+  enumType?: Record<string, unknown>,
 ): DriverCapabilitiesOptions => ({
   /* v8 ignore next */
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
     /* v8 ignore next */
-    id: enumType && isKeyOfEnum(enumType, id) ? enumType[id] : id,
+    id: enumType && id in enumType ? String(enumType[id]) : id,
     /* v8 ignore next */
     label: title[language] ?? title.en,
   })),
@@ -424,18 +413,14 @@ export default class MELCloudApp extends Homey.App {
     if (settings.get('notifiedVersion') !== version) {
       const { [version]: versionChangelog = {} } = changelog as Record<
         string,
-        object
+        Record<string, string>
       >
-      if (language in versionChangelog) {
+      const { [language]: excerpt } = versionChangelog
+      if (excerpt !== undefined) {
         homey.setTimeout(async () => {
           try {
-            /* v8 ignore next */
-            if (hasChangelogLanguage(versionChangelog, language)) {
-              await notifications.createNotification({
-                excerpt: versionChangelog[language],
-              })
-              settings.set('notifiedVersion', version)
-            }
+            await notifications.createNotification({ excerpt })
+            settings.set('notifiedVersion', version)
           } catch {}
         }, NOTIFICATION_DELAY)
       }
@@ -449,7 +434,7 @@ export default class MELCloudApp extends Homey.App {
   #getAtaCapabilityConfigs(): {
     key: keyof GroupState & keyof ListDeviceDataAta
     options: ManifestDriverCapabilitiesOptions
-    enumType?: object
+    enumType?: Record<string, unknown>
   }[] {
     return [
       { key: 'Power' as const, options: power },

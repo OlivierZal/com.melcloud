@@ -22,7 +22,7 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-const K_MULTIPLIER = 1000
+const KILOWATT_TO_WATT = 1000
 
 const isKeyOfHotWaterOperationState = (
   key: string,
@@ -34,7 +34,7 @@ const isKeyOfZoneOperationState = (
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw
-> = (value: number) => value * K_MULTIPLIER
+> = (value: number) => value * KILOWATT_TO_WATT
 
 const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw

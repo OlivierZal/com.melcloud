@@ -56,12 +56,10 @@ vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', () => ({
-  EnergyReport: vi.fn().mockImplementation(() => ({
-    handle: vi.fn().mockResolvedValue(undefined),
-    unschedule: vi.fn(),
-  })),
-}))
+vi.mock('../../drivers/base-report.mts', async () => {
+  const { createEnergyReportMock } = await import('../helpers.ts')
+  return createEnergyReportMock()
+})
 
 const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
@@ -111,68 +109,26 @@ describe(MELCloudDeviceAtw, () => {
   })
 
   describe('deviceToCapability', () => {
-    it('should convert alarm_generic.defrost using Boolean', () => {
-      const converter = device.deviceToCapability['alarm_generic.defrost']
+    it.each([
+      ['alarm_generic.defrost', 1, true],
+      ['alarm_generic.defrost', 0, false],
+      ['measure_power', 2.5, 2.5 * K_MULTIPLIER],
+      ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
+      ['thermostat_mode', OperationModeZone.room, 'room'],
+      ['thermostat_mode.zone2', OperationModeZone.flow, 'flow'],
+      ['hot_water_mode', true, HotWaterMode.forced],
+      ['hot_water_mode', false, HotWaterMode.auto],
+      ['operational_state', OperationModeState.heating, 'heating'],
+      ['target_temperature.flow_heat', 0, 10],
+      ['target_temperature.flow_heat', 35, 35],
+    ])(
+      '%s(%s) should return %s',
+      (key, input, expected) => {
+        const converter = device.deviceToCapability[key]
 
-      expect(converter?.(1)).toBe(true)
-      expect(converter?.(0)).toBe(false)
-    })
-
-    it('should convert measure_power by multiplying by 1000', () => {
-      const converter = device.deviceToCapability.measure_power
-
-      expect(converter?.(2.5)).toBe(2.5 * K_MULTIPLIER)
-    })
-
-    it('should convert measure_power.produced by multiplying by 1000', () => {
-      const converter = device.deviceToCapability['measure_power.produced']
-
-      expect(converter?.(1.5)).toBe(1.5 * K_MULTIPLIER)
-    })
-
-    it('should convert thermostat_mode from enum value to key', () => {
-      const converter = device.deviceToCapability.thermostat_mode
-
-      expect(converter?.(OperationModeZone.room)).toBe('room')
-    })
-
-    it('should convert thermostat_mode.zone2 from enum value to key', () => {
-      const converter = device.deviceToCapability['thermostat_mode.zone2']
-
-      expect(converter?.(OperationModeZone.flow)).toBe('flow')
-    })
-
-    it('should convert hot_water_mode true to forced', () => {
-      const converter = device.deviceToCapability.hot_water_mode
-
-      expect(converter?.(true)).toBe(HotWaterMode.forced)
-    })
-
-    it('should convert hot_water_mode false to auto', () => {
-      const converter = device.deviceToCapability.hot_water_mode
-
-      expect(converter?.(false)).toBe(HotWaterMode.auto)
-    })
-
-    it('should convert operational_state from enum value to key', () => {
-      const converter = device.deviceToCapability.operational_state
-
-      expect(converter?.(OperationModeState.heating)).toBe('heating')
-    })
-
-    it('should use min option when target_temperature.flow_heat is 0', () => {
-      const converter =
-        device.deviceToCapability['target_temperature.flow_heat']
-
-      expect(converter?.(0)).toBe(10)
-    })
-
-    it('should pass through non-zero target_temperature.flow_heat', () => {
-      const converter =
-        device.deviceToCapability['target_temperature.flow_heat']
-
-      expect(converter?.(35)).toBe(35)
-    })
+        expect(converter?.(input)).toBe(expected)
+      },
+    )
 
     it('should convert legionella from ISO date to locale string', () => {
       const converter = device.deviceToCapability.legionella
@@ -185,29 +141,19 @@ describe(MELCloudDeviceAtw, () => {
   })
 
   describe('capabilityToDevice', () => {
-    it('should convert hot_water_mode forced to true', () => {
-      const converter = device.capabilityToDevice.hot_water_mode
+    it.each([
+      ['hot_water_mode', 'forced', true],
+      ['hot_water_mode', 'auto', false],
+      ['thermostat_mode', 'room', OperationModeZone.room],
+      ['thermostat_mode.zone2', 'flow', OperationModeZone.flow],
+    ])(
+      '%s(%s) should return %s',
+      (key, input, expected) => {
+        const converter = device.capabilityToDevice[key]
 
-      expect(converter?.('forced')).toBe(true)
-    })
-
-    it('should convert hot_water_mode auto to false', () => {
-      const converter = device.capabilityToDevice.hot_water_mode
-
-      expect(converter?.('auto')).toBe(false)
-    })
-
-    it('should convert thermostat_mode key to enum value', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
-
-      expect(converter?.('room')).toBe(OperationModeZone.room)
-    })
-
-    it('should convert thermostat_mode.zone2 key to enum value', () => {
-      const converter = device.capabilityToDevice['thermostat_mode.zone2']
-
-      expect(converter?.('flow')).toBe(OperationModeZone.flow)
-    })
+        expect(converter?.(input)).toBe(expected)
+      },
+    )
   })
 
   describe('setCapabilityValues (operation mode states)', () => {

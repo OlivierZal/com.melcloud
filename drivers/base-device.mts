@@ -104,7 +104,7 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract readonly energyReportTotal: EnergyReportConfig | null
 
-  protected abstract readonly thermostatMode: object | null
+  protected abstract readonly thermostatMode: Record<string, string> | null
 
   protected abstract capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>

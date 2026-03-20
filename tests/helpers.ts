@@ -6,6 +6,15 @@ import { describe, expect, it, vi } from 'vitest'
 
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
 
+export const createEnergyReportMock = (): {
+  EnergyReport: ReturnType<typeof vi.fn>
+} => ({
+  EnergyReport: vi.fn().mockImplementation(() => ({
+    handle: vi.fn().mockResolvedValue(undefined),
+    unschedule: vi.fn(),
+  })),
+})
+
 const applyOverrides = (
   target: object,
   overrides?: Record<string, unknown>,
