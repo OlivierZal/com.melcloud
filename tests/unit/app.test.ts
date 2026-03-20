@@ -180,6 +180,12 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
   return app
 }
 
+const createMockDriver = (
+  devices: MELCloudDevice[],
+): { getDevices: ReturnType<typeof vi.fn> } => ({
+  getDevices: vi.fn().mockReturnValue(devices),
+})
+
 describe('melCloudApp', () => {
   let app: InstanceType<typeof MelCloudApp>
 
@@ -407,9 +413,7 @@ describe('melCloudApp', () => {
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice1, mockDevice2]),
-      }
+      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
@@ -427,9 +431,7 @@ describe('melCloudApp', () => {
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: false }),
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice1, mockDevice2]),
-      }
+      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
@@ -690,9 +692,7 @@ describe('melCloudApp', () => {
         onSettings: mockOnSettings,
         setSettings: mockSetSettings,
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice]),
-      }
+      const mockDriver = createMockDriver([mockDevice])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
@@ -711,9 +711,7 @@ describe('melCloudApp', () => {
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
         setSettings: mockSetSettings,
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice]),
-      }
+      const mockDriver = createMockDriver([mockDevice])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
@@ -731,9 +729,7 @@ describe('melCloudApp', () => {
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
         setSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice]),
-      }
+      const mockDriver = createMockDriver([mockDevice])
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
@@ -917,9 +913,7 @@ describe('melCloudApp', () => {
         getSettings: vi.fn().mockReturnValue({}),
         id: 2,
       })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice1, mockDevice2]),
-      }
+      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
@@ -982,85 +976,67 @@ describe('melCloudApp', () => {
   })
 
   describe('#syncFromDevices via onSync callback', () => {
-    it('should sync devices from onSync callback', async () => {
-      const syncFromDeviceMock = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const mockDevice = mock<MELCloudDevice>({
+    const getOnSyncCallback = (): (params?: {
+      ids?: number[]
+      type?: number
+    }) => Promise<void> => {
+      const config = mockCreate.mock.calls.at(0)?.at(0) as
+        | {
+            onSync?: (params?: {
+              ids?: number[]
+              type?: number
+            }) => Promise<void>
+          }
+        | undefined
+      assertDefined(config?.onSync)
+      return config.onSync
+    }
+
+    const createSyncDevice = (
+      id: number,
+      syncFromDevice = vi.fn<() => Promise<void>>().mockResolvedValue(),
+    ): { device: MELCloudDevice; syncFromDevice: ReturnType<typeof vi.fn> } => ({
+      device: mock<MELCloudDevice>({
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
-        id: 1,
-        syncFromDevice: syncFromDeviceMock,
-      })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice]),
-      }
+        id,
+        syncFromDevice,
+      }),
+      syncFromDevice,
+    })
+
+    it('should sync devices from onSync callback', async () => {
+      const { device, syncFromDevice } = createSyncDevice(1)
+      const mockDriver = createMockDriver([device])
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const config = mockCreate.mock.calls.at(0)?.at(0) as
-        | { onSync?: (params: { ids?: number[]; type?: number }) => Promise<void> }
-        | undefined
-      assertDefined(config?.onSync)
-      await config.onSync({ type: DeviceType.Ata })
+      await getOnSyncCallback()({ type: DeviceType.Ata })
 
-      expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
+      expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
 
     it('should sync devices with ids filter', async () => {
-      const syncFromDeviceMock = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const mockDevice1 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
-        getSettings: vi.fn().mockReturnValue({}),
-        id: 1,
-        syncFromDevice: syncFromDeviceMock,
-      })
-      const mockDevice2 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
-        getSettings: vi.fn().mockReturnValue({}),
-        id: 2,
-        syncFromDevice: vi.fn<() => Promise<void>>().mockResolvedValue(),
-      })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice1, mockDevice2]),
-      }
+      const { device: device1, syncFromDevice } = createSyncDevice(1)
+      const { device: device2 } = createSyncDevice(2)
+      const mockDriver = createMockDriver([device1, device2])
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const config = mockCreate.mock.calls.at(0)?.at(0) as
-        | { onSync?: (params: { ids?: number[]; type?: number }) => Promise<void> }
-        | undefined
-      assertDefined(config?.onSync)
-      await config.onSync({ ids: [1], type: DeviceType.Ata })
+      await getOnSyncCallback()({ ids: [1], type: DeviceType.Ata })
 
-      expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
+      expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
 
     it('should sync all devices when no type specified', async () => {
-      const syncFromDeviceMock = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const mockDevice = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
-        getSettings: vi.fn().mockReturnValue({}),
-        id: 1,
-        syncFromDevice: syncFromDeviceMock,
-      })
-      const mockDriver = {
-        getDevices: vi.fn().mockReturnValue([mockDevice]),
-      }
+      const { device, syncFromDevice } = createSyncDevice(1)
+      const mockDriver = createMockDriver([device])
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      const config = mockCreate.mock.calls.at(0)?.at(0) as
-        | { onSync?: (params?: { ids?: number[]; type?: number }) => Promise<void> }
-        | undefined
-      assertDefined(config?.onSync)
-      await config.onSync()
+      await getOnSyncCallback()()
 
-      expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
+      expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
   })
 
