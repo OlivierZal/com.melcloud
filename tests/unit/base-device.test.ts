@@ -16,7 +16,7 @@ import type {
 } from '../../types/index.mts'
 
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import { mock } from '../helpers.ts'
+import { assertDefined, mock } from '../helpers.ts'
 
 const setValuesMock = vi.fn()
 const realtimeMock = vi.fn()
@@ -457,6 +457,18 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
+  const getCapabilityListenerCallback = (): ((
+    values: Record<string, unknown>,
+  ) => Promise<void>) => {
+    const callback = registerMultipleCapabilityListenerMock.mock.calls
+      .at(0)
+      ?.at(1) as
+      | ((values: Record<string, unknown>) => Promise<void>)
+      | undefined
+    assertDefined(callback)
+    return callback
+  }
+
   describe('capability listener callback', () => {
     it('should call setValues when capability values are set', async () => {
       getFacadeMock.mockReturnValue({
@@ -465,8 +477,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(setValuesMock).toHaveBeenCalled()
@@ -486,8 +497,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await deviceWithThermostat.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
 
       expect(setValuesMock).toHaveBeenCalled()
@@ -507,8 +517,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await deviceWithThermostat.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
 
       expect(setValuesMock).toHaveBeenCalled()
@@ -522,8 +531,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
@@ -538,8 +546,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await device.onInit()
       superSetWarningMock.mockClear()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
@@ -556,8 +563,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await freshDevice.onInit()
       setValuesMock.mockClear()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(setValuesMock).not.toHaveBeenCalled()
@@ -584,8 +590,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await freshDevice.onInit()
       setValuesMock.mockClear()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({})
 
       expect(setValuesMock).not.toHaveBeenCalled()
@@ -599,8 +604,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock
-        .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).toHaveBeenCalledWith('string error')

@@ -12,7 +12,7 @@ import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 
 import { EnergyReport } from '../../drivers/base-report.mts'
-import { mock } from '../helpers.ts'
+import { assertDefined, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
 
@@ -342,14 +342,18 @@ describe(EnergyReport, () => {
       })
       await report.handle()
 
-      const timeoutCallback = setTimeoutMock.mock
-        .calls[0]![0] as () => Promise<void>
+      const timeoutCallback = setTimeoutMock.mock.calls.at(0)?.at(0) as
+        | (() => Promise<void>)
+        | undefined
+      assertDefined(timeoutCallback)
       await timeoutCallback()
 
       expect(setIntervalMock).toHaveBeenCalled()
 
-      const intervalCallback = setIntervalMock.mock
-        .calls[0]![0] as () => Promise<void>
+      const intervalCallback = setIntervalMock.mock.calls.at(0)?.at(0) as
+        | (() => Promise<void>)
+        | undefined
+      assertDefined(intervalCallback)
       await intervalCallback()
 
       expect(fetchDeviceMock).toHaveBeenCalled()

@@ -15,7 +15,7 @@ import type {
 } from '../../types/index.mts'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import { mock } from '../helpers.ts'
+import { assertDefined, mock } from '../helpers.ts'
 
 type TestDriverType = typeof DeviceType.Ata
 
@@ -320,7 +320,9 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      await actionListeners['onoff_action']!({
+      const listener = actionListeners['onoff_action']
+      assertDefined(listener)
+      await listener({
         device: { triggerCapabilityListener: triggerMock },
         onoff: true,
       })
@@ -355,7 +357,9 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const result = conditionListeners['onoff_condition']!({
+      const onoffListener = conditionListeners['onoff_condition']
+      assertDefined(onoffListener)
+      const result = onoffListener({
         device: { getCapabilityValue: vi.fn().mockReturnValue(true) },
         onoff: true,
       })
@@ -380,12 +384,15 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const resultTrue = conditionListeners['thermostat_mode_condition']!({
+      const thermostatListener = conditionListeners['thermostat_mode_condition']
+      assertDefined(thermostatListener)
+
+      const resultTrue = thermostatListener({
         device: { getCapabilityValue: vi.fn().mockReturnValue('heat') },
         thermostat_mode: 'heat',
       })
 
-      const resultFalse = conditionListeners['thermostat_mode_condition']!({
+      const resultFalse = thermostatListener({
         device: { getCapabilityValue: vi.fn().mockReturnValue('cool') },
         thermostat_mode: 'heat',
       })

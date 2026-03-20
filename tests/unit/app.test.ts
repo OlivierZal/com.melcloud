@@ -26,7 +26,7 @@ import type {
   Settings,
 } from '../../types/index.mts'
 
-import { mock } from '../helpers.js'
+import { assertDefined, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
@@ -216,7 +216,9 @@ describe('melCloudApp', () => {
       })
       await app.onInit()
 
-      const createCallArgs = mockCreate.mock.calls[0]![0]!
+      const createCallArgs = mockCreate.mock.calls[0]?.[0]
+
+      expect(createCallArgs).toBeDefined()
 
       const { logger } = createCallArgs as unknown as {
         logger: {
@@ -282,7 +284,11 @@ describe('melCloudApp', () => {
       expect(capabilities).toBeInstanceOf(Array)
       expect(capabilities.length).toBeGreaterThan(0)
 
-      const [firstKey, firstOptions] = capabilities[0]!
+      const firstCapability = capabilities[0]
+
+      expect(firstCapability).toBeDefined()
+
+      const [firstKey, firstOptions] = firstCapability ?? ['', {}]
 
       expect(firstKey).toBe('Power')
       expect(firstOptions).toHaveProperty('title')
@@ -873,7 +879,10 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(1)
 
-      const callback = mockSetTimeout.mock.calls[0]![0] as () => Promise<void>
+      const callback = mockSetTimeout.mock.calls.at(0)?.at(0) as
+        | (() => Promise<void>)
+        | undefined
+      assertDefined(callback)
       await callback()
 
       expect(mockCreateNotification).toHaveBeenCalledWith({
@@ -887,7 +896,10 @@ describe('melCloudApp', () => {
       mockCreateNotification.mockRejectedValue(new Error('fail'))
       await app.onInit()
 
-      const callback = mockSetTimeout.mock.calls[0]![0] as () => Promise<void>
+      const callback = mockSetTimeout.mock.calls.at(0)?.at(0) as
+        | (() => Promise<void>)
+        | undefined
+      assertDefined(callback)
 
       await expect(callback()).resolves.toBeUndefined()
     })
@@ -934,9 +946,10 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      const ataCallback = mockRegisterAta.mock.calls[0]![1] as (
-        query: string,
-      ) => unknown[]
+      const ataCallback = mockRegisterAta.mock.calls.at(0)?.at(1) as
+        | ((query: string) => unknown[])
+        | undefined
+      assertDefined(ataCallback)
       const result = ataCallback('build')
 
       expect(result).toStrictEqual([{ model: 'buildings', name: 'Building 1' }])
@@ -958,9 +971,10 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      const chartsCallback = mockRegisterCharts.mock.calls[0]![1] as (
-        query: string,
-      ) => unknown[]
+      const chartsCallback = mockRegisterCharts.mock.calls.at(0)?.at(1) as
+        | ((query: string) => unknown[])
+        | undefined
+      assertDefined(chartsCallback)
       const result = chartsCallback('device 1')
 
       expect(result).toStrictEqual([{ model: 'devices', name: 'Device 1' }])
@@ -984,11 +998,11 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params: {
-        ids?: number[]
-        type?: number
-      }) => Promise<void>
-      await onSyncCallback({ type: DeviceType.Ata })
+      const config = mockCreate.mock.calls.at(0)?.at(0) as
+        | { onSync?: (params: { ids?: number[]; type?: number }) => Promise<void> }
+        | undefined
+      assertDefined(config?.onSync)
+      await config.onSync({ type: DeviceType.Ata })
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
     })
@@ -1015,11 +1029,11 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params: {
-        ids?: number[]
-        type?: number
-      }) => Promise<void>
-      await onSyncCallback({ ids: [1], type: DeviceType.Ata })
+      const config = mockCreate.mock.calls.at(0)?.at(0) as
+        | { onSync?: (params: { ids?: number[]; type?: number }) => Promise<void> }
+        | undefined
+      assertDefined(config?.onSync)
+      await config.onSync({ ids: [1], type: DeviceType.Ata })
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
     })
@@ -1040,11 +1054,11 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params?: {
-        ids?: number[]
-        type?: number
-      }) => Promise<void>
-      await onSyncCallback()
+      const config = mockCreate.mock.calls.at(0)?.at(0) as
+        | { onSync?: (params?: { ids?: number[]; type?: number }) => Promise<void> }
+        | undefined
+      assertDefined(config?.onSync)
+      await config.onSync()
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
     })

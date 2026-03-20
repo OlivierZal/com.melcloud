@@ -4,6 +4,11 @@
 */
 import { describe, expect, it, vi } from 'vitest'
 
+// eslint-disable-next-line func-style
+export function assertDefined<T>(value: T | undefined): asserts value is T {
+  expect(value).toBeDefined()
+}
+
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
 
 export const createEnergyReportMock = (): {
