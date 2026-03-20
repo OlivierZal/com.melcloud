@@ -1,5 +1,6 @@
 /* eslint-disable
     @typescript-eslint/naming-convention,
+    @typescript-eslint/no-explicit-any,
     @typescript-eslint/no-unsafe-assignment,
     @typescript-eslint/no-unsafe-call,
     @typescript-eslint/no-unsafe-member-access,
@@ -22,8 +23,6 @@ import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
 import { ThermostatModeAta } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DeviceAny = any
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
@@ -108,10 +107,10 @@ vi.mock('../../drivers/base-report.mts', () => ({
 
 describe(MELCloudDeviceAta, () => {
   // eslint-disable-next-line @typescript-eslint/init-declarations
-  let device: DeviceAny
+  let device: any
 
   beforeEach(() => {
-    device = new (MELCloudDeviceAta as unknown as new () => DeviceAny)()
+    device = new (MELCloudDeviceAta as unknown as new () => any)()
   })
 
   describe('thermostatMode', () => {

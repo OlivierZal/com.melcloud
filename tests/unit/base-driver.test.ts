@@ -6,7 +6,6 @@
     @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/unbound-method,
     max-classes-per-file,
-    no-void,
     vitest/prefer-called-with,
 */
 import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
@@ -160,7 +159,7 @@ describe(BaseMELCloudDriver, () => {
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'showView') {
-                void handler('loading')
+                handler('loading')
               }
             },
           ),
@@ -179,7 +178,7 @@ describe(BaseMELCloudDriver, () => {
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'showView') {
-                void handler('loading')
+                handler('loading')
               }
             },
           ),
@@ -198,7 +197,7 @@ describe(BaseMELCloudDriver, () => {
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'showView') {
-                void handler('other_view')
+                handler('other_view')
               }
             },
           ),

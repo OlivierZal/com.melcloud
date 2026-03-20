@@ -130,19 +130,17 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
   setCapabilityTagMapping: mock<SetCapabilityTagMapping<AtwType>>({}),
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DeviceAny = any
-
 describe(MELCloudDeviceAtw, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
-  let device: DeviceAny
+  // eslint-disable-next-line @typescript-eslint/init-declarations, @typescript-eslint/no-explicit-any
+  let device: any
 
   beforeEach(() => {
     vi.clearAllMocks()
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    device = new (MELCloudDeviceAtw as unknown as new () => DeviceAny)()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    device = new (MELCloudDeviceAtw as unknown as new () => any)()
     Object.defineProperty(device, 'driver', {
       configurable: true,
       value: mockDriver,
