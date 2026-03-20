@@ -7,6 +7,15 @@ import { describe, expect, it, vi } from 'vitest'
 
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
 
+const applyOverrides = (
+  target: object,
+  overrides?: Record<string, unknown>,
+): void => {
+  if (overrides) {
+    Object.assign(target, overrides)
+  }
+}
+
 export const createMockDeviceClass = (
   overrides?: Record<string, unknown>,
 ): new () => any => {
@@ -54,9 +63,7 @@ export const createMockDeviceClass = (
     public triggerCapabilityListener = vi.fn()
 
     public constructor() {
-      if (overrides) {
-        Object.assign(this, overrides)
-      }
+      applyOverrides(this, overrides)
     }
 
     // eslint-disable-next-line @typescript-eslint/class-methods-use-this
@@ -100,9 +107,7 @@ export const createMockDriverClass = (
     public manifest = { capabilities: [] }
 
     public constructor() {
-      if (overrides) {
-        Object.assign(this, overrides)
-      }
+      applyOverrides(this, overrides)
     }
   }
   return MockDriver
