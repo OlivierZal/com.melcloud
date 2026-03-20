@@ -1,8 +1,4 @@
-/* eslint-disable
-    @typescript-eslint/consistent-type-assertions,
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-unsafe-type-assertion,
-*/
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {
   type BuildingFacade,
   type ErrorLog,

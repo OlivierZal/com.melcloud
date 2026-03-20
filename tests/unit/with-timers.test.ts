@@ -1,7 +1,4 @@
-/* eslint-disable
-    @typescript-eslint/no-unsafe-type-assertion,
-    @typescript-eslint/unbound-method,
-*/
+/* eslint-disable @typescript-eslint/unbound-method */
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 

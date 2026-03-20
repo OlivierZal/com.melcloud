@@ -1,13 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-unsafe-assignment,
-    @typescript-eslint/no-unsafe-call,
-    @typescript-eslint/no-unsafe-member-access,
-    @typescript-eslint/no-unsafe-return,
-    @typescript-eslint/no-unsafe-type-assertion,
-    @typescript-eslint/prefer-destructuring,
-    unicorn/consistent-function-scoping,
-*/
 import {
   type DeviceType,
   type ListDeviceDataAtw,
@@ -131,7 +121,7 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
 })
 
 describe(MELCloudDeviceAtw, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/init-declarations
   let device: any
 
   beforeEach(() => {
@@ -139,7 +129,6 @@ describe(MELCloudDeviceAtw, () => {
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     device = new (MELCloudDeviceAtw as unknown as new () => any)()
     Object.defineProperty(device, 'driver', {
       configurable: true,

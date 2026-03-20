@@ -1,11 +1,4 @@
-/* eslint-disable
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-unsafe-type-assertion,
-    @typescript-eslint/prefer-destructuring,
-    max-classes-per-file,
-    unicorn/consistent-function-scoping,
-    vitest/prefer-called-with,
-*/
+/* eslint-disable max-classes-per-file */
 import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'

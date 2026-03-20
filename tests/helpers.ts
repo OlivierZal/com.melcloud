@@ -1,12 +1,9 @@
 /* eslint-disable
-    @typescript-eslint/no-explicit-any,
-    @typescript-eslint/no-unsafe-member-access,
     vitest/no-conditional-tests,
     vitest/prefer-each,
 */
 import { describe, expect, it } from 'vitest'
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
 
 export const testDriverType = (

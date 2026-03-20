@@ -1,10 +1,6 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-imports,
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-unsafe-type-assertion,
     @typescript-eslint/strict-void-return,
-    unicorn/consistent-function-scoping,
-    vitest/prefer-called-with,
 */
 import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 

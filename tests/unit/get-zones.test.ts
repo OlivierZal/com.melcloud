@@ -45,7 +45,6 @@ describe('get-zones', () => {
 
   describe('when FacadeManager is initialized', () => {
     beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       setFacadeManager(mockFacadeManager as never)
       vi.clearAllMocks()
       mockFacadeManager.getBuildings.mockReturnValue(mockBuildings)

@@ -16,7 +16,6 @@ describe(keyOfValue, () => {
   })
 
   it('should throw for an unknown value', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     expect(() => keyOfValue(testEnum, -1 as never)).toThrow('Unknown value:')
   })
 })

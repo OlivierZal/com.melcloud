@@ -1,14 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-explicit-any,
-    @typescript-eslint/no-unsafe-assignment,
-    @typescript-eslint/no-unsafe-call,
-    @typescript-eslint/no-unsafe-member-access,
-    @typescript-eslint/no-unsafe-return,
-    @typescript-eslint/no-unsafe-type-assertion,
-    @typescript-eslint/prefer-destructuring,
-    unicorn/consistent-function-scoping,
-*/
 import {
   type ListDeviceDataAta,
   FanSpeed,
