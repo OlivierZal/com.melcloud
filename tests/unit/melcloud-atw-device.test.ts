@@ -1,14 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/naming-convention,
-    @typescript-eslint/no-explicit-any,
-    @typescript-eslint/no-unsafe-assignment,
-    @typescript-eslint/no-unsafe-call,
-    @typescript-eslint/no-unsafe-member-access,
-    @typescript-eslint/no-unsafe-return,
-    @typescript-eslint/no-unsafe-type-assertion,
-    @typescript-eslint/prefer-destructuring,
-    unicorn/consistent-function-scoping,
-*/
 import {
   type DeviceType,
   type ListDeviceDataAtw,
@@ -46,7 +35,6 @@ const {
   setCapabilityValueMock: vi.fn(),
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', async () => {
   const { createMockDeviceClass } = await import('../helpers.ts')
   return {
@@ -60,7 +48,6 @@ vi.mock('homey', async () => {
   }
 })
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../decorators/add-to-logs.mts', () => ({
   addToLogs:
     () =>
@@ -68,15 +55,12 @@ vi.mock('../../decorators/add-to-logs.mts', () => ({
       target,
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../drivers/base-report.mts', () => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
-    // eslint-disable-next-line unicorn/no-useless-undefined
     handle: vi.fn().mockResolvedValue(undefined),
     unschedule: vi.fn(),
   })),
@@ -93,7 +77,6 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
 })
 
 describe(MELCloudDeviceAtw, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
   let device: any
 
   beforeEach(() => {

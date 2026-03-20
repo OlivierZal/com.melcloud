@@ -14,22 +14,18 @@ class BaseClass {
   public readonly homey = {
     clearInterval: vi.fn(),
     clearTimeout: vi.fn(),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     setInterval: vi.fn().mockReturnValue(1 as never),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     setTimeout: vi.fn().mockReturnValue(2 as never),
   }
 
   public log = vi.fn()
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   public error(..._context: unknown[]): void {
     // Noop
   }
 }
 
 const TimerClass = withTimers(
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   BaseClass as unknown as Parameters<typeof withTimers>[0],
 )
 

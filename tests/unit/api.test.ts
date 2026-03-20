@@ -22,7 +22,6 @@ import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn()
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../lib/index.mts', () => ({
   getBuildings: mockGetBuildings,
 }))
@@ -43,7 +42,6 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 const homey = { app: mockApp, i18n: mockI18n } as unknown as Homey
 
 describe('api', () => {

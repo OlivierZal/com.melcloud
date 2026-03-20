@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { type ListDeviceDataErv, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,7 +11,6 @@ import {
 } from '../../types/index.mts'
 import { mock, testDriverType, testTagMappings } from '../helpers.ts'
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', async () => {
   const { createMockDriverClass } = await import('../helpers.ts')
   return {
@@ -36,7 +34,6 @@ vi.mock('homey', async () => {
 })
 
 describe(MELCloudDriverErv, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
   let driver: MELCloudDriverErv
 
   beforeEach(() => {

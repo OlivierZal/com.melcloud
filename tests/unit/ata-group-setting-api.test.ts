@@ -14,7 +14,6 @@ import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn<() => BuildingZone[]>()
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../lib/index.mts', () => ({
   getBuildings: mockGetBuildings,
 }))
@@ -31,7 +30,7 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const homey = mock<Homey>({ app: mockApp, i18n: mockI18n } as never)
 
 describe('ata-group-setting api', () => {

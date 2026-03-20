@@ -30,17 +30,14 @@ import { mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class, vitest/prefer-import-in-mock, @typescript-eslint/naming-convention
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 vi.mock('homey', () => ({ default: { App: class HomeyApp {} } }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../lib/get-zones.mts', () => ({
   setFacadeManager: mockSetFacadeManager,
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../files.mts', () => ({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   changelog: { '1.0.0': { en: 'English changelog', nl: 'Dutch changelog' } },
   fanSpeed: {
     title: { en: 'Fan speed' },
@@ -85,12 +82,9 @@ const mockApiInstance = {
 const mockFacadeManagerGet = vi.fn()
 const mockFacadeManagerGetZones = vi.fn().mockReturnValue([])
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
   ...(await importOriginal()),
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   FacadeManager: vi.fn(),
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   MELCloudAPI: {
     create: vi.fn(),
   },
@@ -148,9 +142,7 @@ const mockManifestDrivers: ManifestDriver[] = [
 ]
 
 const setupMocks = (): void => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   mockCreate.mockResolvedValue(mockApiInstance as never)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   vi.mocked(FacadeManager).mockImplementation(function mockConstructor() {
     return mock<FacadeManager>({
       get: mockFacadeManagerGet,
@@ -170,7 +162,6 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
   Object.defineProperty(app, 'homey', {
     configurable: true,
     value: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       __: mockTranslate,
       clock: { getTimezone: mockGetTimezone },
       dashboards: { getWidget: mockGetWidget },
@@ -190,7 +181,6 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
 }
 
 describe('melCloudApp', () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
   let app: InstanceType<typeof MelCloudApp>
 
   beforeEach(() => {
@@ -228,7 +218,6 @@ describe('melCloudApp', () => {
 
       const createCallArgs = mockCreate.mock.calls[0]![0]!
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const { logger } = createCallArgs as unknown as {
         logger: {
           error: (...args: unknown[]) => void
@@ -315,7 +304,6 @@ describe('melCloudApp', () => {
 
   describe('getAtaDetailedValues', () => {
     it('should return detailed values for ATA devices', async () => {
-      /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-type-assertion */
       const mockFacade = mock<BuildingFacade>({
         devices: [
           {
@@ -324,7 +312,6 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      /* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-type-assertion */
       mockFacadeManagerGet.mockReturnValue(mockFacade)
       mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
       await app.onInit()
@@ -339,7 +326,6 @@ describe('melCloudApp', () => {
     })
 
     it('should filter by power status when status is on', async () => {
-      /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-type-assertion */
       const mockFacade = mock<BuildingFacade>({
         devices: [
           {
@@ -360,7 +346,6 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      /* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-type-assertion */
       mockFacadeManagerGet.mockReturnValue(mockFacade)
       mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
       await app.onInit()
@@ -409,12 +394,10 @@ describe('melCloudApp', () => {
   describe('getDeviceSettings', () => {
     it('should aggregate device settings', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
@@ -431,12 +414,10 @@ describe('melCloudApp', () => {
 
     it('should set to null when settings differ between devices', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({ always_on: false }),
       })
@@ -502,7 +483,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw for zone not found', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
       mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -513,7 +493,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw with device error for device type', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
       mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -661,7 +640,6 @@ describe('melCloudApp', () => {
   describe('setAtaValues', () => {
     it('should set group values and not throw on success', async () => {
       const mockFacade = mock<BuildingFacade>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         setGroup: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
       mockFacadeManagerGet.mockReturnValue(mockFacade)
@@ -679,7 +657,6 @@ describe('melCloudApp', () => {
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<BuildingFacade>({
         setGroup: vi.fn().mockResolvedValue({
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           AttributeErrors: { temp: ['Invalid value'] },
         }),
       })
@@ -701,7 +678,6 @@ describe('melCloudApp', () => {
       const mockSetSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockDevice = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -724,7 +700,6 @@ describe('melCloudApp', () => {
     it('should skip devices with no changed keys', async () => {
       const mockSetSettings = vi.fn()
       const mockDevice = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSetting: vi.fn().mockReturnValue(true),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -744,7 +719,6 @@ describe('melCloudApp', () => {
 
     it('should filter by driverId when provided', async () => {
       const mockDevice = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -769,7 +743,6 @@ describe('melCloudApp', () => {
       const mockFacade = mock<ZoneFacade>({
         setFrostProtection: vi
           .fn()
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           .mockResolvedValue({ AttributeErrors: null }),
       })
       mockFacadeManagerGet.mockReturnValue(mockFacade)
@@ -787,7 +760,6 @@ describe('melCloudApp', () => {
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<ZoneFacade>({
         setFrostProtection: vi.fn().mockResolvedValue({
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           AttributeErrors: { min: ['Too low'] },
         }),
       })
@@ -807,7 +779,6 @@ describe('melCloudApp', () => {
   describe('setHolidayModeSettings', () => {
     it('should delegate to facade and not throw on success', async () => {
       const mockFacade = mock<ZoneFacade>({
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         setHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
       mockFacadeManagerGet.mockReturnValue(mockFacade)
@@ -825,7 +796,6 @@ describe('melCloudApp', () => {
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<ZoneFacade>({
         setHolidayMode: vi.fn().mockResolvedValue({
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           AttributeErrors: { date: ['Invalid date'] },
         }),
       })
@@ -903,7 +873,6 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(1)
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = mockSetTimeout.mock.calls[0]![0] as () => Promise<void>
       await callback()
 
@@ -918,7 +887,6 @@ describe('melCloudApp', () => {
       mockCreateNotification.mockRejectedValue(new Error('fail'))
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = mockSetTimeout.mock.calls[0]![0] as () => Promise<void>
 
       await expect(callback()).resolves.toBeUndefined()
@@ -928,13 +896,11 @@ describe('melCloudApp', () => {
   describe('#getDevices with ids filter', () => {
     it('should filter devices by ids', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 2,
@@ -968,7 +934,6 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const ataCallback = mockRegisterAta.mock.calls[0]![1] as (
         query: string,
       ) => unknown[]
@@ -993,7 +958,6 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const chartsCallback = mockRegisterCharts.mock.calls[0]![1] as (
         query: string,
       ) => unknown[]
@@ -1009,7 +973,6 @@ describe('melCloudApp', () => {
         .fn<() => Promise<void>>()
         .mockResolvedValue()
       const mockDevice = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
@@ -1021,7 +984,6 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback({ type: DeviceType.Ata })
@@ -1034,14 +996,12 @@ describe('melCloudApp', () => {
         .fn<() => Promise<void>>()
         .mockResolvedValue()
       const mockDevice1 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
         syncFromDevice: syncFromDeviceMock,
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 2,
@@ -1053,7 +1013,6 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback({ ids: [1], type: DeviceType.Ata })
@@ -1066,7 +1025,6 @@ describe('melCloudApp', () => {
         .fn<() => Promise<void>>()
         .mockResolvedValue()
       const mockDevice = mock<MELCloudDevice>({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
@@ -1078,7 +1036,6 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const onSyncCallback = mockCreate.mock.calls[0]![0]!
         .onSync as (params?: { ids?: number[]; type?: number }) => Promise<void>
       await onSyncCallback()

@@ -2,7 +2,6 @@
     @typescript-eslint/consistent-type-assertions,
     @typescript-eslint/consistent-type-imports,
     @typescript-eslint/unbound-method,
-    max-classes-per-file,
 */
 import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
 
@@ -25,7 +24,6 @@ const authenticateMock = vi.fn()
 const showViewMock = vi.fn()
 const setHandlerMock = vi.fn()
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
   class MockDriver {
     public getDevices = vi.fn().mockReturnValue([])
@@ -54,7 +52,6 @@ vi.mock('homey', () => {
     public manifest = { capabilities: ['onoff', 'thermostat_mode'] }
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Driver: MockDriver } }
 })
 
@@ -86,20 +83,17 @@ class TestDriver extends BaseMELCloudDriver<TestDriverType> {
 
   public readonly type: TestDriverType = 0
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
     return ['onoff', 'measure_temperature']
   }
 }
 
 describe(BaseMELCloudDriver, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
   let driver: TestDriver
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     driver = new (TestDriver as unknown as new () => TestDriver)()
   })
 
@@ -255,11 +249,9 @@ describe(BaseMELCloudDriver, () => {
         driver.homey.app.api.registry,
         'getDevicesByType',
       ).mockReturnValue([
-        // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-type-assertion
         { data: { Power: true }, id: 1, name: 'Device 1' } as never,
       ])
       await driver.onPair(session)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const devices = await listHandler()
 
       expect(devices).toStrictEqual([
@@ -294,7 +286,6 @@ describe(BaseMELCloudDriver, () => {
 
     it('should group tags ending with Produced into produced mapping', async () => {
       const driverWithProduced = new (class extends TestDriver {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         public override readonly energyCapabilityTagMapping = {
           measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
         } as unknown as EnergyCapabilityTagMapping<TestDriverType>
@@ -319,7 +310,6 @@ describe(BaseMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(
         (cardName: string) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => Promise<void>,
@@ -355,7 +345,6 @@ describe(BaseMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
         (cardName: string) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => unknown,
@@ -381,7 +370,6 @@ describe(BaseMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
         (cardName: string) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => unknown,

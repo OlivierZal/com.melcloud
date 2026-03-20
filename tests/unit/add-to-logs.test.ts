@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { describe, expect, it, vi } from 'vitest'
 
 import { addToLogs } from '../../decorators/add-to-logs.mts'
@@ -15,7 +14,6 @@ class TestClass {
     errorSpy.call(this, ...args)
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   public getName(): string {
     return 'MyDevice'
   }
@@ -32,7 +30,7 @@ class TestClassWithNonZeroArgMethod {
     errorSpy.call(this, ...args)
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public getLabel(_prefix: string): string {
     return 'label'
   }

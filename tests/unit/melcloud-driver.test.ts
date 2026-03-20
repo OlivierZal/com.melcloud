@@ -11,15 +11,12 @@ import {
 } from '../../types/index.mts'
 import { testDriverType, testTagMappings } from '../helpers.ts'
 
-// eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', async () => {
   const { createMockDriverClass } = await import('../helpers.ts')
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Driver: createMockDriverClass() } }
 })
 
 describe(MELCloudDriverAta, () => {
-  // eslint-disable-next-line @typescript-eslint/init-declarations
   let driver: MELCloudDriverAta
 
   beforeEach(() => {
