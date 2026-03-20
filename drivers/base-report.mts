@@ -158,7 +158,9 @@ export class EnergyReport<T extends DeviceType> {
           }),
           toDateTime.hour,
         )
-      } catch {}
+      } catch (error) {
+        this.#device.error('Energy report fetch failed:', error)
+      }
     }
   }
 
