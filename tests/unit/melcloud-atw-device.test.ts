@@ -25,15 +25,12 @@ type AtwType = typeof DeviceType.Atw
 
 const K_MULTIPLIER = 1000
 
-const {
-  getCapabilityOptionsMock,
-  hasCapabilityMock,
-  setCapabilityValueMock,
-} = vi.hoisted(() => ({
-  getCapabilityOptionsMock: vi.fn().mockReturnValue({ min: 10 }),
-  hasCapabilityMock: vi.fn().mockReturnValue(true),
-  setCapabilityValueMock: vi.fn(),
-}))
+const { getCapabilityOptionsMock, hasCapabilityMock, setCapabilityValueMock } =
+  vi.hoisted(() => ({
+    getCapabilityOptionsMock: vi.fn().mockReturnValue({ min: 10 }),
+    hasCapabilityMock: vi.fn().mockReturnValue(true),
+    setCapabilityValueMock: vi.fn(),
+  }))
 
 vi.mock('homey', async () => {
   const { createMockDeviceClass } = await import('../helpers.ts')

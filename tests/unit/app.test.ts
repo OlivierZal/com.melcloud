@@ -984,8 +984,10 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!
-        .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params: {
+        ids?: number[]
+        type?: number
+      }) => Promise<void>
       await onSyncCallback({ type: DeviceType.Ata })
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
@@ -1013,8 +1015,10 @@ describe('melCloudApp', () => {
       mockGetDriver.mockReturnValue(mockDriver)
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!
-        .onSync as (params: { ids?: number[]; type?: number }) => Promise<void>
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params: {
+        ids?: number[]
+        type?: number
+      }) => Promise<void>
       await onSyncCallback({ ids: [1], type: DeviceType.Ata })
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)
@@ -1036,8 +1040,10 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      const onSyncCallback = mockCreate.mock.calls[0]![0]!
-        .onSync as (params?: { ids?: number[]; type?: number }) => Promise<void>
+      const onSyncCallback = mockCreate.mock.calls[0]![0]!.onSync as (params?: {
+        ids?: number[]
+        type?: number
+      }) => Promise<void>
       await onSyncCallback()
 
       expect(syncFromDeviceMock).toHaveBeenCalledTimes(1)

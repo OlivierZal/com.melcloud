@@ -395,11 +395,9 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should silently catch when condition card does not exist', async () => {
-      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
-        () => {
-          throw new Error('Card not found')
-        },
-      )
+      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(() => {
+        throw new Error('Card not found')
+      })
 
       await expect(driver.onInit()).resolves.toBeUndefined()
     })

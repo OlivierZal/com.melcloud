@@ -510,13 +510,14 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
       { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
     ],
-    { duration: AnimationDelay.sunShine, easing: 'linear', iterations: Infinity },
+    {
+      duration: AnimationDelay.sunShine,
+      easing: 'linear',
+      iterations: Infinity,
+    },
   )
 
-const getPreviousElement = (
-  name: string,
-  index?: string,
-): HTMLElement | null =>
+const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(
     `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
   )
