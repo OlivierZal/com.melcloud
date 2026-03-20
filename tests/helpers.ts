@@ -5,6 +5,7 @@
 */
 import { describe, expect, it, vi } from 'vitest'
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
 export const mock = <T>(overrides: Partial<T> = {}): T => overrides as T
 
 const applyOverrides = (
@@ -18,6 +19,7 @@ const applyOverrides = (
 
 export const createMockDeviceClass = (
   overrides?: Record<string, unknown>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): new () => any => {
   class MockDevice {
     public addCapability = vi.fn()
@@ -41,6 +43,7 @@ export const createMockDeviceClass = (
     public hasCapability = vi.fn().mockReturnValue(true)
 
     public homey = {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       __: vi.fn(),
       api: { realtime: vi.fn() },
       app: { getFacade: vi.fn() },
@@ -81,6 +84,7 @@ export const createMockDeviceClass = (
 
 export const createMockDriverClass = (
   overrides?: Record<string, unknown>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): new () => any => {
   class MockDriver {
     public getDevices = vi.fn().mockReturnValue([])
@@ -125,12 +129,14 @@ export const testDriverType = (
 }
 
 export const testTagMappings = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getDriver: () => any,
   mappings: Record<string, unknown>,
 ): void => {
   describe('tag mappings', () => {
     for (const [name, expected] of Object.entries(mappings)) {
       it(`should use the correct ${name}`, () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(getDriver()[name]).toBe(expected)
       })
     }
@@ -138,6 +144,7 @@ export const testTagMappings = (
 }
 
 export const testEnergyReportConfig = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getDevice: () => any,
   property: string,
   expected: object | null,
@@ -145,10 +152,12 @@ export const testEnergyReportConfig = (
   describe(property, () => {
     if (expected === null) {
       it('should be null', () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(getDevice()[property]).toBeNull()
       })
     } else {
       it('should have correct config', () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         expect(getDevice()[property]).toStrictEqual(expected)
       })
     }

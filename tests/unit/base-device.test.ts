@@ -29,11 +29,13 @@ const triggerCapabilityListenerMock = vi.fn()
 const getFacadeMock = vi.fn()
 const getSettingMock = vi.fn()
 
+/* eslint-disable @typescript-eslint/naming-convention */
 const mockDeviceData = {
   FanSpeed: 3,
   Power: true,
   SetTemperature: 22,
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('homey', () => {
@@ -57,6 +59,7 @@ vi.mock('homey', () => {
     public hasCapability = vi.fn().mockReturnValue(true)
 
     public homey = {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       __: vi.fn().mockImplementation((key: string) => key),
       api: { realtime: realtimeMock },
       app: { getFacade: getFacadeMock },
@@ -98,6 +101,7 @@ vi.mock('homey', () => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   return { default: { Device: MockDevice } }
 })
 
@@ -105,6 +109,7 @@ vi.mock('homey', () => {
 vi.mock('../../decorators/add-to-logs.mts', () => ({
   addToLogs:
     () =>
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     <T>(target: T): T =>
       target,
 }))
@@ -116,6 +121,7 @@ vi.mock('../../mixins/with-timers.mts', () => ({
 
 // eslint-disable-next-line vitest/prefer-import-in-mock
 vi.mock('../../drivers/base-report.mts', () => ({
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   EnergyReport: vi.fn().mockImplementation(() => ({
     // eslint-disable-next-line unicorn/no-useless-undefined
     handle: vi.fn().mockResolvedValue(undefined),
@@ -222,6 +228,7 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(true)
       await device.onInit()
 
+      // eslint-disable-next-line @typescript-eslint/prefer-destructuring
       const { onoff: converter } = device.capabilityToDevice
 
       expect(converter?.(false)).toBe(true)
@@ -231,6 +238,7 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(false)
       await device.onInit()
 
+      // eslint-disable-next-line @typescript-eslint/prefer-destructuring
       const { onoff: converter } = device.capabilityToDevice
 
       expect(converter?.(true)).toBe(true)
@@ -350,10 +358,12 @@ describe(BaseMELCloudDevice, () => {
 
   describe('syncFromDevice', () => {
     it('should set capability values from provided data', async () => {
+      /* eslint-disable @typescript-eslint/naming-convention */
       const data = mock<ListDeviceDataAta>({
         Power: true,
         RoomTemperature: 21,
       })
+      /* eslint-enable @typescript-eslint/naming-convention */
       await device.fetchDevice()
       await device.syncFromDevice(data)
 
@@ -370,10 +380,12 @@ describe(BaseMELCloudDevice, () => {
 
   describe('setCapabilityValues', () => {
     it('should emit realtime event', async () => {
+      /* eslint-disable @typescript-eslint/naming-convention */
       const data = mock<ListDeviceDataAta>({
         Power: true,
         RoomTemperature: 21,
       })
+      /* eslint-enable @typescript-eslint/naming-convention */
       await device.fetchDevice()
       await device.exposedSetCapabilityValues(data)
 
@@ -439,6 +451,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should handle energy capability changes', async () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithEnergy, {
         energyCapabilityTagMapping: mock<
@@ -477,6 +490,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ onoff: true })
@@ -498,6 +512,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await deviceWithThermostat.onInit()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ thermostat_mode: 'off' })
@@ -519,6 +534,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await deviceWithThermostat.onInit()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ thermostat_mode: 'heat' })
@@ -534,6 +550,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ onoff: true })
@@ -550,6 +567,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await device.onInit()
       superSetWarningMock.mockClear()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ onoff: true })
@@ -568,6 +586,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await freshDevice.onInit()
       setValuesMock.mockClear()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ onoff: true })
@@ -582,6 +601,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       const freshDevice = new TestDevice()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const driverWithEmptySetMapping = Object.create(
         mockDriver,
       ) as typeof mockDriver
@@ -596,6 +616,7 @@ describe(BaseMELCloudDevice, () => {
       })
       await freshDevice.onInit()
       setValuesMock.mockClear()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({})
@@ -611,6 +632,7 @@ describe(BaseMELCloudDevice, () => {
         setValues: setValuesMock,
       })
       await device.onInit()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const callback = registerMultipleCapabilityListenerMock.mock
         .calls[0]![1] as (values: Record<string, unknown>) => Promise<void>
       await callback({ onoff: true })
@@ -631,6 +653,7 @@ describe(BaseMELCloudDevice, () => {
         value: mockDriver,
       })
       getFacadeMock.mockReturnValue({
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         data: { ...mockDeviceData, RoomTemperature: 10 },
         getEnergy: vi.fn(),
         setValues: setValuesMock,
@@ -638,6 +661,7 @@ describe(BaseMELCloudDevice, () => {
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
       await customDevice.fetchDevice()
       await customDevice.exposedSetCapabilityValues(
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         mock<ListDeviceDataAta>({ Power: true, RoomTemperature: 10 }),
       )
 
@@ -691,6 +715,7 @@ describe(BaseMELCloudDevice, () => {
       const getCapabilitiesOptionsMock = vi.fn().mockReturnValue({
         measure_temperature: { units: '°C' },
       })
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const driverWithOptions = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithOptions, {
         getCapabilitiesOptions: getCapabilitiesOptionsMock,
@@ -715,7 +740,9 @@ describe(BaseMELCloudDevice, () => {
 
   describe('#handleEnergyReports', () => {
     it('should create energy report for regular config', async () => {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const { EnergyReport } = await import('../../drivers/base-report.mts')
+      // eslint-disable-next-line @typescript-eslint/prefer-destructuring
       const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
       const deviceWithRegular = new (class extends TestDevice {
         public override readonly energyReportRegular = {
@@ -743,7 +770,9 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should create energy report for total config', async () => {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const { EnergyReport } = await import('../../drivers/base-report.mts')
+      // eslint-disable-next-line @typescript-eslint/prefer-destructuring
       const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
       const deviceWithTotal = new (class extends TestDevice {
         public override readonly energyReportTotal = {
