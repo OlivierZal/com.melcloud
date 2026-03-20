@@ -293,12 +293,6 @@ const config = defineConfig([
           allowElseIf: false,
         },
       ],
-      'no-empty': [
-        'error',
-        {
-          allowEmptyCatch: true,
-        },
-      ],
       'no-ternary': 'off',
       'no-undefined': 'off',
       'no-underscore-dangle': [

@@ -121,14 +121,11 @@ describe(MELCloudDeviceAtw, () => {
       ['operational_state', OperationModeState.heating, 'heating'],
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],
-    ])(
-      '%s(%s) should return %s',
-      (key, input, expected) => {
-        const converter = device.deviceToCapability[key]
+    ])('%s(%s) should return %s', (key, input, expected) => {
+      const converter = device.deviceToCapability[key]
 
-        expect(converter?.(input)).toBe(expected)
-      },
-    )
+      expect(converter?.(input)).toBe(expected)
+    })
 
     it('should convert legionella from ISO date to locale string', () => {
       const converter = device.deviceToCapability.legionella
@@ -146,14 +143,11 @@ describe(MELCloudDeviceAtw, () => {
       ['hot_water_mode', 'auto', false],
       ['thermostat_mode', 'room', OperationModeZone.room],
       ['thermostat_mode.zone2', 'flow', OperationModeZone.flow],
-    ])(
-      '%s(%s) should return %s',
-      (key, input, expected) => {
-        const converter = device.capabilityToDevice[key]
+    ])('%s(%s) should return %s', (key, input, expected) => {
+      const converter = device.capabilityToDevice[key]
 
-        expect(converter?.(input)).toBe(expected)
-      },
-    )
+      expect(converter?.(input)).toBe(expected)
+    })
   })
 
   describe('setCapabilityValues (operation mode states)', () => {

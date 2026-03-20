@@ -71,14 +71,11 @@ describe(MELCloudDeviceAta, () => {
       ['fan_speed', FanSpeed.fast, FanSpeed.fast],
       ['horizontal', Horizontal.center, 'center'],
       ['vertical', Vertical.auto, 'auto'],
-    ])(
-      '%s(%s) should return %s',
-      (key, input, expected) => {
-        const converter = device.deviceToCapability[key]
+    ])('%s(%s) should return %s', (key, input, expected) => {
+      const converter = device.deviceToCapability[key]
 
-        expect(converter?.(input)).toBe(expected)
-      },
-    )
+      expect(converter?.(input)).toBe(expected)
+    })
 
     it('should convert thermostat_mode to key when Power is on', () => {
       const converter = device.deviceToCapability.thermostat_mode
@@ -100,13 +97,10 @@ describe(MELCloudDeviceAta, () => {
       ['horizontal', 'center', Horizontal.center],
       ['thermostat_mode', 'heat', OperationMode.heat],
       ['vertical', 'middle', Vertical.middle],
-    ])(
-      '%s(%s) should return %s',
-      (key, input, expected) => {
-        const converter = device.capabilityToDevice[key]
+    ])('%s(%s) should return %s', (key, input, expected) => {
+      const converter = device.capabilityToDevice[key]
 
-        expect(converter?.(input)).toBe(expected)
-      },
-    )
+      expect(converter?.(input)).toBe(expected)
+    })
   })
 })

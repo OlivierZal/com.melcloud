@@ -70,13 +70,10 @@ describe(MELCloudDeviceErv, () => {
       ['auto', VentilationMode.auto],
       ['recovery', VentilationMode.recovery],
       ['bypass', VentilationMode.bypass],
-    ])(
-      'thermostat_mode(%s) should return %s',
-      (input, expected) => {
-        const converter = device.capabilityToDevice.thermostat_mode
+    ])('thermostat_mode(%s) should return %s', (input, expected) => {
+      const converter = device.capabilityToDevice.thermostat_mode
 
-        expect(converter?.(input)).toBe(expected)
-      },
-    )
+      expect(converter?.(input)).toBe(expected)
+    })
   })
 })

@@ -976,10 +976,10 @@ describe('melCloudApp', () => {
   })
 
   describe('#syncFromDevices via onSync callback', () => {
-    const getOnSyncCallback = (): (params?: {
+    const getOnSyncCallback = (): ((params?: {
       ids?: number[]
       type?: number
-    }) => Promise<void> => {
+    }) => Promise<void>) => {
       const config = mockCreate.mock.calls.at(0)?.at(0) as
         | {
             onSync?: (params?: {
@@ -995,7 +995,10 @@ describe('melCloudApp', () => {
     const createSyncDevice = (
       id: number,
       syncFromDevice = vi.fn<() => Promise<void>>().mockResolvedValue(),
-    ): { device: MELCloudDevice; syncFromDevice: ReturnType<typeof vi.fn> } => ({
+    ): {
+      device: MELCloudDevice
+      syncFromDevice: ReturnType<typeof vi.fn>
+    } => ({
       device: mock<MELCloudDevice>({
         driver: { id: 'melcloud' } as never,
         getSettings: vi.fn().mockReturnValue({}),
