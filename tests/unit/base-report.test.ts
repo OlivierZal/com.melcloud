@@ -75,6 +75,12 @@ const mockDevice = mock<BaseMELCloudDevice<TestDeviceType>>({
   setTimeout: setTimeoutMock,
 })
 
+const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
+  const getEnergyMock = vi.fn().mockResolvedValue(energyData)
+  fetchDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
+  return getEnergyMock
+}
+
 describe(EnergyReport, () => {
   beforeAll(() => {
     Settings.now = (): number => FAKE_NOW_MILLIS
@@ -97,13 +103,9 @@ describe(EnergyReport, () => {
     })
 
     it('should fetch energy data and schedule when entries exist', async () => {
-      const getEnergyMock = vi.fn().mockResolvedValue({
+      const getEnergyMock = mockEnergyFetch({
         Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: getEnergyMock,
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
@@ -129,12 +131,9 @@ describe(EnergyReport, () => {
     })
 
     it('should not schedule twice', async () => {
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue({
-          Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-        }),
+      mockEnergyFetch({
+        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
@@ -166,14 +165,12 @@ describe(EnergyReport, () => {
 
   describe('energy value calculations', () => {
     it('should set power values using hourly data', async () => {
-      const energyData = mock<EnergyDataAta>({
-        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
-        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
+          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -184,14 +181,12 @@ describe(EnergyReport, () => {
       cleanMappingMock.mockReturnValue({
         meter_power: ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
-      const energyData = mock<EnergyDataAta>({
-        TotalAutoConsumed: 100,
-        TotalCoolingConsumed: 50,
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          TotalAutoConsumed: 100,
+          TotalCoolingConsumed: 50,
+        }),
+      )
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
@@ -200,14 +195,10 @@ describe(EnergyReport, () => {
 
     it('should use zero fallback when hourly array element is undefined', async () => {
       const sparseArray: (number | undefined)[] = []
-      const energyData = {
+      mockEnergyFetch({
         Auto: sparseArray,
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-      } as unknown as EnergyDataAta
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      } as unknown as EnergyDataAta)
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -215,14 +206,10 @@ describe(EnergyReport, () => {
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
-      const energyData = {
+      mockEnergyFetch({
         Auto: 100,
         Cooling: 50,
-      } as unknown as EnergyDataAta
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      } as unknown as EnergyDataAta)
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -230,15 +217,13 @@ describe(EnergyReport, () => {
     })
 
     it('should handle UsageDisclaimerPercentages for linked device count', async () => {
-      const energyData = mock<EnergyDataAta>({
-        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
-        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
-        UsageDisclaimerPercentages: '50,50',
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
+          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
+          UsageDisclaimerPercentages: '50,50',
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -251,14 +236,12 @@ describe(EnergyReport, () => {
       cleanMappingMock.mockReturnValue({
         meter_power: ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
-      const energyData = mock<EnergyDataAta>({
-        TotalAutoConsumed: 100,
-        TotalCoolingConsumed: 50,
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          TotalAutoConsumed: 100,
+          TotalCoolingConsumed: 50,
+        }),
+      )
       const report = new EnergyReport(mockDevice, {
         duration: { hours: 1 },
         interval: { hours: 1 },
@@ -277,15 +260,11 @@ describe(EnergyReport, () => {
       cleanMappingMock.mockReturnValue({
         meter_power: ['TotalAutoConsumed'],
       })
-      const getEnergyMockLocal = vi.fn().mockResolvedValue(
+      const getEnergyMockLocal = mockEnergyFetch(
         mock<EnergyDataAta>({
           TotalAutoConsumed: 100,
         }),
       )
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: getEnergyMockLocal,
-      })
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
@@ -297,12 +276,9 @@ describe(EnergyReport, () => {
 
   describe('#schedule interval setup', () => {
     it('should call setInterval inside setTimeout callback', async () => {
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue({
-          Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-        }),
+      mockEnergyFetch({
+        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
@@ -361,13 +337,7 @@ describe(EnergyReport, () => {
 
     it('should calculate COP as produced / consumed', async () => {
       const mockDeviceWithCop = createCopMocks()
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue({
-          ConsumedTag: 2,
-          ProducedTag: 6,
-        }),
-      })
+      mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.handle()
 
@@ -379,13 +349,7 @@ describe(EnergyReport, () => {
 
     it('should use 1 as divisor when consumed is 0', async () => {
       const mockDeviceWithCop = createCopMocks()
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue({
-          ConsumedTag: 0,
-          ProducedTag: 5,
-        }),
-      })
+      mockEnergyFetch({ ConsumedTag: 0, ProducedTag: 5 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.handle()
 
@@ -402,15 +366,13 @@ describe(EnergyReport, () => {
       cleanMappingMock.mockReturnValue({
         'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
-      const energyData = mock<EnergyDataAta>({
-        TotalAutoConsumed: 100,
-        TotalCoolingConsumed: 50,
-        UsageDisclaimerPercentages: '50,50',
-      })
-      fetchDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi.fn().mockResolvedValue(energyData),
-      })
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          TotalAutoConsumed: 100,
+          TotalCoolingConsumed: 50,
+          UsageDisclaimerPercentages: '50,50',
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 

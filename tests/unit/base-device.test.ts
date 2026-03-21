@@ -163,21 +163,32 @@ const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
   }),
 })
 
+const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
+  getFacadeMock.mockReturnValue({
+    data,
+    getEnergy: vi.fn(),
+    setValues: setValuesMock,
+  })
+}
+
+const setDriver = (
+  target: TestDevice,
+  driver: BaseMELCloudDriver<TestDeviceType> = mockDriver,
+): void => {
+  Object.defineProperty(target, 'driver', {
+    configurable: true,
+    value: driver,
+  })
+}
+
 describe(BaseMELCloudDevice, () => {
   let device: TestDevice
 
   beforeEach(() => {
     vi.clearAllMocks()
-    getFacadeMock.mockReturnValue({
-      data: mockDeviceData,
-      getEnergy: vi.fn(),
-      setValues: setValuesMock,
-    })
+    mockFacade()
     device = new TestDevice()
-    Object.defineProperty(device, 'driver', {
-      configurable: true,
-      value: mockDriver,
-    })
+    setDriver(device)
   })
 
   describe('id', () => {
@@ -401,11 +412,7 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should sync from device when non-always_on non-energy setting changes', async () => {
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.fetchDevice()
       await device.onSettings({
         changedKeys: ['some_other_setting'],
@@ -444,10 +451,7 @@ describe(BaseMELCloudDevice, () => {
           id: 'test',
         }),
       })
-      Object.defineProperty(device, 'driver', {
-        configurable: true,
-        value: driverWithEnergy,
-      })
+      setDriver(device, driverWithEnergy)
       await device.onSettings({
         changedKeys: ['measure_power'],
         newSettings: { measure_power: true },
@@ -471,11 +475,7 @@ describe(BaseMELCloudDevice, () => {
 
   describe('capability listener callback', () => {
     it('should call setValues when capability values are set', async () => {
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -487,15 +487,8 @@ describe(BaseMELCloudDevice, () => {
       const deviceWithThermostat = new (class extends TestDevice {
         public override readonly thermostatMode = { off: 'off' }
       })()
-      Object.defineProperty(deviceWithThermostat, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(deviceWithThermostat)
+      mockFacade()
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
@@ -507,15 +500,8 @@ describe(BaseMELCloudDevice, () => {
       const deviceWithThermostat = new (class extends TestDevice {
         public override readonly thermostatMode = { off: 'off' }
       })()
-      Object.defineProperty(deviceWithThermostat, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(deviceWithThermostat)
+      mockFacade()
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
@@ -525,11 +511,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should handle setValues error with warning', async () => {
       setValuesMock.mockRejectedValue(new Error('API error'))
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -539,11 +521,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should ignore "No data to set" error', async () => {
       setValuesMock.mockRejectedValue(new Error('No data to set'))
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
       superSetWarningMock.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -557,10 +535,7 @@ describe(BaseMELCloudDevice, () => {
         throw new Error('Not found')
       })
       const freshDevice = new TestDevice()
-      Object.defineProperty(freshDevice, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
+      setDriver(freshDevice)
       await freshDevice.onInit()
       setValuesMock.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -570,11 +545,7 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should not call setValues when buildUpdateData returns empty object', async () => {
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       const freshDevice = new TestDevice()
       const driverWithEmptySetMapping = Object.create(
         mockDriver,
@@ -584,10 +555,7 @@ describe(BaseMELCloudDevice, () => {
           {},
         ),
       })
-      Object.defineProperty(freshDevice, 'driver', {
-        configurable: true,
-        value: driverWithEmptySetMapping,
-      })
+      setDriver(freshDevice, driverWithEmptySetMapping)
       await freshDevice.onInit()
       setValuesMock.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -598,11 +566,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should set warning for non-Error thrown values', async () => {
       setValuesMock.mockRejectedValue('string error')
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -618,15 +582,8 @@ describe(BaseMELCloudDevice, () => {
           measure_temperature: (value: number): number => value * 2,
         }
       })()
-      Object.defineProperty(customDevice, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
-      getFacadeMock.mockReturnValue({
-        data: { ...mockDeviceData, RoomTemperature: 10 },
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(customDevice)
+      mockFacade({ ...mockDeviceData, RoomTemperature: 10 })
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
       await customDevice.fetchDevice()
       await customDevice.exposedSetCapabilityValues(
@@ -647,11 +604,7 @@ describe(BaseMELCloudDevice, () => {
       })
       vi.spyOn(device, 'getCapabilities').mockReturnValue([])
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
 
       expect(superAddCapabilityMock).toHaveBeenCalled()
@@ -667,11 +620,7 @@ describe(BaseMELCloudDevice, () => {
       vi.spyOn(device, 'hasCapability').mockImplementation(
         (cap: string) => cap === 'fan_speed',
       )
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      mockFacade()
       await device.onInit()
 
       expect(superRemoveCapabilityMock).toHaveBeenCalledWith('fan_speed')
@@ -687,15 +636,8 @@ describe(BaseMELCloudDevice, () => {
       Object.assign(driverWithOptions, {
         getCapabilitiesOptions: getCapabilitiesOptionsMock,
       })
-      Object.defineProperty(device, 'driver', {
-        configurable: true,
-        value: driverWithOptions,
-      })
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(device, driverWithOptions)
+      mockFacade()
       await device.onInit()
 
       expect(device.setCapabilityOptions).toHaveBeenCalledWith(
@@ -718,15 +660,8 @@ describe(BaseMELCloudDevice, () => {
           values: { millisecond: 0, minute: 5, second: 0 },
         }
       })()
-      Object.defineProperty(deviceWithRegular, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(deviceWithRegular)
+      mockFacade()
       await deviceWithRegular.onInit()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
@@ -746,15 +681,8 @@ describe(BaseMELCloudDevice, () => {
           values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
         }
       })()
-      Object.defineProperty(deviceWithTotal, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
-      getFacadeMock.mockReturnValue({
-        data: mockDeviceData,
-        getEnergy: vi.fn(),
-        setValues: setValuesMock,
-      })
+      setDriver(deviceWithTotal)
+      mockFacade()
       await deviceWithTotal.onInit()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
@@ -776,10 +704,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should not set capability values when fetchData returns null via fetchDevice', async () => {
       const freshDevice = new TestDevice()
-      Object.defineProperty(freshDevice, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
+      setDriver(freshDevice)
       getFacadeMock.mockImplementation(() => {
         throw new Error('Not found')
       })
@@ -791,10 +716,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should skip setCapabilityValues when syncFromDevice gets null from fetchData', async () => {
       const freshDevice = new TestDevice()
-      Object.defineProperty(freshDevice, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
+      setDriver(freshDevice)
       vi.spyOn(freshDevice, 'fetchDevice').mockResolvedValue(null)
       realtimeMock.mockClear()
       await freshDevice.syncFromDevice()
@@ -806,10 +728,7 @@ describe(BaseMELCloudDevice, () => {
   describe('#fetchData error path', () => {
     it('should set warning when fetchDevice throws', async () => {
       const errorDevice = new TestDevice()
-      Object.defineProperty(errorDevice, 'driver', {
-        configurable: true,
-        value: mockDriver,
-      })
+      setDriver(errorDevice)
       vi.spyOn(errorDevice, 'fetchDevice').mockRejectedValue(
         new Error('fetch failed'),
       )

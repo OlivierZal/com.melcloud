@@ -180,6 +180,15 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
   return app
 }
 
+const initWithBuildingFacade = async (
+  app: InstanceType<typeof MelCloudApp>,
+  facade: BuildingFacade | ZoneFacade,
+): Promise<void> => {
+  mockFacadeManagerGet.mockReturnValue(facade)
+  mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
+  await app.onInit()
+}
+
 const createMockDriver = (
   devices: MELCloudDevice[],
 ): { getDevices: ReturnType<typeof vi.fn> } => ({
@@ -324,9 +333,7 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       const detailedValues = app.getAtaDetailedValues({
         zoneId: '1',
@@ -358,9 +365,7 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       const detailedValues = app.getAtaDetailedValues(
         { zoneId: '1', zoneType: 'buildings' },
@@ -372,9 +377,7 @@ describe('melCloudApp', () => {
 
     it('should throw when no devices found', async () => {
       const mockFacade = mock<BuildingFacade>({ devices: [] })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       expect(() =>
         app.getAtaDetailedValues({ zoneId: '1', zoneType: 'buildings' }),
@@ -390,9 +393,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<GroupState>>()
           .mockResolvedValue(mockGroupState),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       const groupState = await app.getAtaValues({
         zoneId: '1',
@@ -519,9 +520,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<FrostProtectionData>>()
           .mockResolvedValue(mockData),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       const frostProtection = await app.getFrostProtectionSettings({
         zoneId: '1',
@@ -540,9 +539,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<HolidayModeData>>()
           .mockResolvedValue(mockData),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       const holidayMode = await app.getHolidayModeSettings({
         zoneId: '1',
@@ -650,9 +647,7 @@ describe('melCloudApp', () => {
       const mockFacade = mock<BuildingFacade>({
         setGroup: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setAtaValues(mock<GroupState>(), {
@@ -668,9 +663,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { temp: ['Invalid value'] },
         }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setAtaValues(mock<GroupState>(), {
@@ -747,9 +740,7 @@ describe('melCloudApp', () => {
           .fn()
           .mockResolvedValue({ AttributeErrors: null }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
@@ -765,9 +756,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { min: ['Too low'] },
         }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
@@ -783,9 +772,7 @@ describe('melCloudApp', () => {
       const mockFacade = mock<ZoneFacade>({
         setHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setHolidayModeSettings(mock<HolidayModeQuery>(), {
@@ -801,9 +788,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { date: ['Invalid date'] },
         }),
       })
-      mockFacadeManagerGet.mockReturnValue(mockFacade)
-      mockApiInstance.registry.buildings.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithBuildingFacade(app, mockFacade)
 
       await expect(
         app.setHolidayModeSettings(mock<HolidayModeQuery>(), {
