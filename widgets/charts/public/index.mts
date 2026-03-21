@@ -375,10 +375,10 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   }
 }
 
-// @ts-expect-error: read by another script in `./index.html`
-// eslint-disable-next-line func-style
-async function onHomeyReady(homey: Homey): Promise<void> {
+const onHomeyReady = async (homey: Homey): Promise<void> => {
   await setDocumentLanguage(homey)
   await fetchDevices(homey)
   homey.ready({ height: document.body.scrollHeight })
 }
+
+Object.assign(globalThis, { onHomeyReady })

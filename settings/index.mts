@@ -1431,9 +1431,9 @@ class SettingsApp {
   }
 }
 
-// @ts-expect-error: read by another script in `./index.html`
-// eslint-disable-next-line func-style
-async function onHomeyReady(homey: Homey): Promise<void> {
+const onHomeyReady = async (homey: Homey): Promise<void> => {
   const app = new SettingsApp(homey)
   await app.init()
 }
+
+Object.assign(globalThis, { onHomeyReady })
