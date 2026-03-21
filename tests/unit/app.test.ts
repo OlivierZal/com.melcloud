@@ -180,7 +180,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
   return app
 }
 
-const initWithBuildingFacade = async (
+const initWithFacade = async (
   app: InstanceType<typeof MelCloudApp>,
   facade: BuildingFacade | ZoneFacade,
 ): Promise<void> => {
@@ -333,7 +333,7 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       const detailedValues = app.getAtaDetailedValues({
         zoneId: '1',
@@ -365,7 +365,7 @@ describe('melCloudApp', () => {
           } as never,
         ],
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       const detailedValues = app.getAtaDetailedValues(
         { zoneId: '1', zoneType: 'buildings' },
@@ -377,7 +377,7 @@ describe('melCloudApp', () => {
 
     it('should throw when no devices found', async () => {
       const mockFacade = mock<BuildingFacade>({ devices: [] })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       expect(() =>
         app.getAtaDetailedValues({ zoneId: '1', zoneType: 'buildings' }),
@@ -393,7 +393,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<GroupState>>()
           .mockResolvedValue(mockGroupState),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       const groupState = await app.getAtaValues({
         zoneId: '1',
@@ -520,7 +520,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<FrostProtectionData>>()
           .mockResolvedValue(mockData),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       const frostProtection = await app.getFrostProtectionSettings({
         zoneId: '1',
@@ -539,7 +539,7 @@ describe('melCloudApp', () => {
           .fn<() => Promise<HolidayModeData>>()
           .mockResolvedValue(mockData),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       const holidayMode = await app.getHolidayModeSettings({
         zoneId: '1',
@@ -647,7 +647,7 @@ describe('melCloudApp', () => {
       const mockFacade = mock<BuildingFacade>({
         setGroup: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setAtaValues(mock<GroupState>(), {
@@ -663,7 +663,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { temp: ['Invalid value'] },
         }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setAtaValues(mock<GroupState>(), {
@@ -740,7 +740,7 @@ describe('melCloudApp', () => {
           .fn()
           .mockResolvedValue({ AttributeErrors: null }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
@@ -756,7 +756,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { min: ['Too low'] },
         }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
@@ -772,7 +772,7 @@ describe('melCloudApp', () => {
       const mockFacade = mock<ZoneFacade>({
         setHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setHolidayModeSettings(mock<HolidayModeQuery>(), {
@@ -788,7 +788,7 @@ describe('melCloudApp', () => {
           AttributeErrors: { date: ['Invalid date'] },
         }),
       })
-      await initWithBuildingFacade(app, mockFacade)
+      await initWithFacade(app, mockFacade)
 
       await expect(
         app.setHolidayModeSettings(mock<HolidayModeQuery>(), {

@@ -412,7 +412,6 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should sync from device when non-always_on non-energy setting changes', async () => {
-      mockFacade()
       await device.fetchDevice()
       await device.onSettings({
         changedKeys: ['some_other_setting'],
@@ -475,7 +474,6 @@ describe(BaseMELCloudDevice, () => {
 
   describe('capability listener callback', () => {
     it('should call setValues when capability values are set', async () => {
-      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -488,7 +486,6 @@ describe(BaseMELCloudDevice, () => {
         public override readonly thermostatMode = { off: 'off' }
       })()
       setDriver(deviceWithThermostat)
-      mockFacade()
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
@@ -501,7 +498,6 @@ describe(BaseMELCloudDevice, () => {
         public override readonly thermostatMode = { off: 'off' }
       })()
       setDriver(deviceWithThermostat)
-      mockFacade()
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
@@ -511,7 +507,6 @@ describe(BaseMELCloudDevice, () => {
 
     it('should handle setValues error with warning', async () => {
       setValuesMock.mockRejectedValue(new Error('API error'))
-      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -521,7 +516,6 @@ describe(BaseMELCloudDevice, () => {
 
     it('should ignore "No data to set" error', async () => {
       setValuesMock.mockRejectedValue(new Error('No data to set'))
-      mockFacade()
       await device.onInit()
       superSetWarningMock.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -545,7 +539,6 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should not call setValues when buildUpdateData returns empty object', async () => {
-      mockFacade()
       const freshDevice = new TestDevice()
       const driverWithEmptySetMapping = Object.create(
         mockDriver,
@@ -566,7 +559,6 @@ describe(BaseMELCloudDevice, () => {
 
     it('should set warning for non-Error thrown values', async () => {
       setValuesMock.mockRejectedValue('string error')
-      mockFacade()
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -604,7 +596,6 @@ describe(BaseMELCloudDevice, () => {
       })
       vi.spyOn(device, 'getCapabilities').mockReturnValue([])
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
-      mockFacade()
       await device.onInit()
 
       expect(superAddCapabilityMock).toHaveBeenCalled()
@@ -620,7 +611,6 @@ describe(BaseMELCloudDevice, () => {
       vi.spyOn(device, 'hasCapability').mockImplementation(
         (cap: string) => cap === 'fan_speed',
       )
-      mockFacade()
       await device.onInit()
 
       expect(superRemoveCapabilityMock).toHaveBeenCalledWith('fan_speed')
@@ -637,7 +627,6 @@ describe(BaseMELCloudDevice, () => {
         getCapabilitiesOptions: getCapabilitiesOptionsMock,
       })
       setDriver(device, driverWithOptions)
-      mockFacade()
       await device.onInit()
 
       expect(device.setCapabilityOptions).toHaveBeenCalledWith(
@@ -661,7 +650,6 @@ describe(BaseMELCloudDevice, () => {
         }
       })()
       setDriver(deviceWithRegular)
-      mockFacade()
       await deviceWithRegular.onInit()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
@@ -682,7 +670,6 @@ describe(BaseMELCloudDevice, () => {
         }
       })()
       setDriver(deviceWithTotal)
-      mockFacade()
       await deviceWithTotal.onInit()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
