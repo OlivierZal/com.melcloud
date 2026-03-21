@@ -19,19 +19,7 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: [
-        '**/index.mts',
-        'files.mts',
-        'settings/**',
-        'types/ata.mts',
-        'types/bases.mts',
-        'types/capabilities.mts',
-        'types/erv.mts',
-        'types/manifest.mts',
-        'types/settings.mts',
-        'types/widgets.mts',
-        'widgets/*/public/**',
-      ],
+      exclude: ['**/public/**/*.mts', '**/settings/**/*.mts'],
       include: ['**/*.mts'],
       thresholds: {
         branches: 100,

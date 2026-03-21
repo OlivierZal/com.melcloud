@@ -12,6 +12,13 @@ import type {
   HomeyWidgetSettingsCharts as HomeySettings,
 } from '../../../types/index.mts'
 
+import {
+  createOptionElement,
+  getDivElement,
+  getSelectElement,
+} from './dom.mts'
+import { getZoneId } from './zones.mts'
+
 declare interface Homey extends HomeyWidget {
   readonly getSettings: () => HomeySettings
 }
@@ -69,31 +76,7 @@ let timeout: NodeJS.Timeout | null = null
 
 // ── DOM helpers ──
 
-const getElement = <T extends HTMLElement>(
-  id: string,
-  elementConstructor: new () => T,
-  elementType: string,
-): T => {
-  const element = document.querySelector(`#${id}`)
-  if (element === null) {
-    throw new TypeError(`Element with id \`${id}\` not found`)
-  }
-  if (!(element instanceof elementConstructor)) {
-    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
-  }
-  return element
-}
-
-const getDivElement = (id: string): HTMLDivElement =>
-  getElement(id, HTMLDivElement, 'div')
-
-const getSelectElement = (id: string): HTMLSelectElement =>
-  getElement(id, HTMLSelectElement, 'select')
-
 const zoneElement = getSelectElement('zones')
-
-const getZoneId = (id: number, model: string): string =>
-  `${model}_${String(id)}`
 const getZonePath = (): string => zoneElement.value.replace('_', '/')
 
 // ── Style helpers ──
@@ -314,15 +297,6 @@ const draw = async (
 
 const setDocumentLanguage = async (homey: Homey): Promise<void> => {
   document.documentElement.lang = String(await homey.api('GET', '/language'))
-}
-
-const createOptionElement = (
-  selectElement: HTMLSelectElement,
-  { id, label }: { id: string; label: string },
-): void => {
-  if (!selectElement.querySelector(`option[value="${id}"]`)) {
-    selectElement.append(new Option(label, id))
-  }
 }
 
 const generateZones = (zones: DeviceZone[]): void => {
