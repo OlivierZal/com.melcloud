@@ -26,11 +26,11 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "npm run build",
-    "typecheck": "tsc --noEmit",
     "publish:homey": "homey app publish",
     "run:homey": "homey app run --remote",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
     "validate:homey": "homey app validate --level publish"
   },
   "dependencies": {
