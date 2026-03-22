@@ -19,7 +19,7 @@ jobs:
           scope: '@olivierzal'
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm audit --omit=dev
+        run: npm audit --audit-level=high --omit=dev
   lint:
     if: github.actor != 'dependabot[bot]'
     name: Lint
@@ -38,6 +38,7 @@ jobs:
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm ci --ignore-scripts
+      - run: npm run typecheck
       - run: npm run lint
       - run: npm run format
   test:
