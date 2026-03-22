@@ -1,14 +1,12 @@
+import type {
+  DeviceType,
+  ListDeviceData,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import Homey from 'homey'
-
-import {
-  type DeviceType,
-  type ListDeviceData,
-  type LoginCredentials,
-  DeviceModel,
-} from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -20,15 +18,18 @@ import type {
   ListCapabilityTagMapping,
   ManifestDriver,
   MELCloudDevice,
-  OpCapabilities,
+  OperationalCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
 
+import { typedEntries, typedKeys } from '../lib/index.mts'
+
 const getArg = <T extends DeviceType>(
-  capability: string & keyof OpCapabilities<T>,
+  capability: string & keyof OperationalCapabilities<T>,
 ): keyof FlowArgs<T> => {
   const [arg] = capability.split('.')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   return arg as keyof FlowArgs<T>
 }
 
@@ -94,12 +95,18 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
     return Promise.resolve(
-      DeviceModel.getByType(this.type).map(({ data, id, name }) => ({
-        capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: this.getCapabilitiesOptions(data),
-        data: { id },
-        name,
-      })),
+      this.homey.app.api.registry
+        .getDevicesByType(this.type)
+        .map(({ data, id, name }) => ({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          capabilities: this.getRequiredCapabilities(data as ListDeviceData<T>),
+          capabilitiesOptions: this.getCapabilitiesOptions(
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            data as ListDeviceData<T>,
+          ),
+          data: { id },
+          name,
+        })),
     )
   }
 
@@ -125,37 +132,44 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
             args[getArg(capability)],
           )
         })
-    } catch {}
+    } catch {
+      // Flow card may not exist for this capability
+    }
   }
 
   #registerConditionRunListener(
-    capability: string & keyof OpCapabilities<T>,
+    capability: string & keyof OperationalCapabilities<T>,
   ): void {
     try {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
-          const value = (
-            args.device.getCapabilityValue as (
-              capability: keyof Capabilities<T>,
-            ) => Capabilities<T>[keyof Capabilities<T>]
-          )(capability)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          const getCapabilityValue = args.device.getCapabilityValue as (
+            capability: keyof Capabilities<T>,
+          ) => Capabilities<T>[keyof Capabilities<T>]
+          const value = getCapabilityValue(capability)
           return typeof value === 'string' || typeof value === 'number' ?
               value === args[getArg(capability)]
             : value
         })
-    } catch {}
+    } catch {
+      // Flow card may not exist for this capability
+    }
   }
 
   #registerRunListeners(): void {
-    for (const capability of Object.keys({
+    for (const capability of typedKeys<
+      string & keyof OperationalCapabilities<T>
+    >({
       ...this.setCapabilityTagMapping,
       ...this.getCapabilityTagMapping,
       ...this.listCapabilityTagMapping,
-    }) as (string & keyof OpCapabilities<T>)[]) {
+    })) {
       this.#registerConditionRunListener(capability)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           capability as string & keyof SetCapabilities<T>,
         )
       }
@@ -163,18 +177,15 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   }
 
   #setProducedAndConsumedTagMappings(): void {
-    for (const [capability, tags] of Object.entries(
-      this.energyCapabilityTagMapping,
-    )) {
+    for (const [capability, tags] of typedEntries<
+      string & keyof EnergyCapabilityTagMapping<T>,
+      EnergyCapabilityTagMapping<T>[keyof EnergyCapabilityTagMapping<T>]
+    >(this.energyCapabilityTagMapping)) {
       const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
         tag.endsWith('Consumed') ? 'consumed' : 'produced',
       )
-      this.consumedTagMapping[
-        capability as keyof EnergyCapabilityTagMapping<T>
-      ] = consumed
-      this.producedTagMapping[
-        capability as keyof EnergyCapabilityTagMapping<T>
-      ] = produced
+      this.consumedTagMapping[capability] = consumed
+      this.producedTagMapping[capability] = produced
     }
   }
 

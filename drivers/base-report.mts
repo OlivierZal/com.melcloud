@@ -15,53 +15,66 @@ import type {
   EnergyReportMode,
 } from '../types/index.mts'
 
-import { K_MULTIPLIER } from '../constants.mts'
-import { isTotalEnergyKey } from '../lib/index.mts'
+import {
+  isTotalEnergyKey,
+  KILOWATT_TO_WATT,
+  typedEntries,
+} from '../lib/index.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
-const DEFAULT_ZERO = 0
-const DEFAULT_DIVISOR_ONE = 1
+const INITIAL_SUM = 0
+const NO_ENERGY_DIVISOR = 1
 
-const DEFAULT_DEVICE_COUNT_ONE = 1
+const sumTags = <T extends DeviceType>(
+  data: EnergyData<T>,
+  tags: readonly (keyof EnergyData<T>)[],
+): number =>
+  tags.reduce(
+    (accumulator, tag) => accumulator + Number(data[tag]),
+    INITIAL_SUM,
+  )
 
-export abstract class BaseEnergyReport<T extends DeviceType> {
+export interface EnergyReportConfig {
+  readonly duration: DurationLike
+  readonly interval: DurationLike
+  readonly minus: DurationLike
+  readonly mode: EnergyReportMode
+  readonly values: DateObjectUnits
+}
+
+export class EnergyReport<T extends DeviceType> {
+  readonly #config: EnergyReportConfig
+
   readonly #device: BaseMELCloudDevice<T>
 
   readonly #homey: Homey.Homey
 
   private readonly driver: BaseMELCloudDriver<T>
 
-  #linkedDeviceCount = DEFAULT_DEVICE_COUNT_ONE
+  #linkedDeviceCount = NO_ENERGY_DIVISOR
 
   #reportTimeout: NodeJS.Timeout | null = null
 
   #reportInterval?: NodeJS.Timeout
 
-  protected abstract readonly duration: DurationLike
-
-  protected abstract readonly interval: DurationLike
-
-  protected abstract readonly minus: DurationLike
-
-  protected abstract readonly mode: EnergyReportMode
-
-  protected abstract readonly values: DateObjectUnits
-
-  public constructor(device: BaseMELCloudDevice<T>) {
+  public constructor(
+    device: BaseMELCloudDevice<T>,
+    config: EnergyReportConfig,
+  ) {
     this.#device = device
+    this.#config = config
     ;({ driver: this.driver, homey: this.#homey } = this.#device)
   }
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
-    return (
-      Object.entries(
-        this.#device.cleanMapping(this.driver.energyCapabilityTagMapping),
-      ) as EnergyCapabilityTagEntry<T>[]
-    ).filter(
+    return typedEntries<
+      string & keyof EnergyCapabilities<T>,
+      readonly (keyof EnergyData<T>)[]
+    >(this.#device.cleanMapping(this.driver.energyCapabilityTagMapping)).filter(
       ([capability]) =>
-        isTotalEnergyKey(capability) === (this.mode === 'total'),
+        isTotalEnergyKey(capability) === (this.#config.mode === 'total'),
     )
   }
 
@@ -78,9 +91,13 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
     this.#homey.clearTimeout(this.#reportTimeout)
     this.#reportTimeout = null
     this.#homey.clearInterval(this.#reportInterval)
-    this.#device.log(`${this.mode} energy report has been cancelled`)
+    this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
+  /*
+   * COP (Coefficient of Performance) = produced energy / consumed energy.
+   * Falls back to divisor of 1 to avoid division by zero when no energy consumed
+   */
   #calculateCopValue(
     data: EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
@@ -96,74 +113,74 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
       },
     } = this
     return (
-      producedTags.reduce(
-        (accumulator, tag) => accumulator + Number(data[tag]),
-        DEFAULT_ZERO,
-      ) /
-      (consumedTags.reduce(
-        (accumulator, tag) => accumulator + Number(data[tag]),
-        DEFAULT_ZERO,
-      ) || DEFAULT_DIVISOR_ONE)
+      sumTags(data, producedTags) /
+      (sumTags(data, consumedTags) || NO_ENERGY_DIVISOR)
     )
   }
 
   #calculateEnergyValue(
     data: EnergyData<T>,
-    tags: (keyof EnergyData<T>)[],
+    tags: readonly (keyof EnergyData<T>)[],
   ): number {
-    return (
-      tags.reduce(
-        (accumulator, tag) => accumulator + Number(data[tag]),
-        DEFAULT_ZERO,
-      ) / this.#linkedDeviceCount
-    )
+    return sumTags(data, tags) / this.#linkedDeviceCount
   }
 
+  /*
+   * Power values are stored as 24-element arrays (one per hour).
+   * Multiply by KILOWATT_TO_WATT to convert from kW to W
+   */
   #calculatePowerValue(
     data: EnergyData<T>,
-    tags: (keyof EnergyData<T>)[],
+    tags: readonly (keyof EnergyData<T>)[],
     hour: HourNumbers,
   ): number {
-    return (
-      tags.reduce(
-        (accumulator, tag) =>
-          accumulator +
-          ((data[tag] as number[])[hour] ?? DEFAULT_ZERO) * K_MULTIPLIER,
-        DEFAULT_ZERO,
-      ) / this.#linkedDeviceCount
-    )
+    let total = INITIAL_SUM
+    for (const tag of tags) {
+      const { [tag]: tagData } = data
+      if (Array.isArray(tagData)) {
+        total += (tagData[hour] ?? INITIAL_SUM) * KILOWATT_TO_WATT
+      }
+    }
+
+    return total / this.#linkedDeviceCount
   }
 
   async #get(): Promise<void> {
     const device = await this.#device.fetchDevice()
     if (device) {
       try {
-        const toDateTime = DateTime.now().minus(this.minus)
+        // Fetch energy data from the previous period (offset by config.minus)
+        const toDateTime = DateTime.now().minus(this.#config.minus)
         const to = toDateTime.toISODate()
         await this.#set(
-          await device.energy({
-            from: this.mode === 'total' ? undefined : to,
+          await device.getEnergy({
+            from: this.#config.mode === 'total' ? undefined : to,
             to,
           }),
           toDateTime.hour,
         )
-      } catch {}
+      } catch (error) {
+        this.#device.error('Energy report fetch failed:', error)
+      }
     }
   }
 
   #schedule(): void {
     if (!this.#reportTimeout) {
-      const actionType = `${this.mode} energy report`
+      const actionType = `${this.#config.mode} energy report`
       this.#reportTimeout = this.#device.setTimeout(
         async () => {
           await this.handle()
           this.#reportInterval = this.#device.setInterval(
             async () => this.handle(),
-            this.interval,
+            this.#config.interval,
             actionType,
           )
         },
-        DateTime.now().plus(this.duration).set(this.values).diffNow(),
+        DateTime.now()
+          .plus(this.#config.duration)
+          .set(this.#config.values)
+          .diffNow(),
         actionType,
       )
     }
@@ -178,11 +195,12 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
       this.#energyCapabilityTagEntries.map(
         async ([capability, tags]: [
           string & keyof EnergyCapabilities<T>,
-          (keyof EnergyData<T>)[],
+          readonly (keyof EnergyData<T>)[],
         ]) => {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(
               capability,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
               this.#calculateCopValue(
                 data,
                 capability,
@@ -193,6 +211,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
           if (capability.startsWith('measure_power')) {
             await this.#device.setCapabilityValue(
               capability,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
               this.#calculatePowerValue(
                 data,
                 tags,
@@ -203,6 +222,7 @@ export abstract class BaseEnergyReport<T extends DeviceType> {
           }
           await this.#device.setCapabilityValue(
             capability,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
             this.#calculateEnergyValue(data, tags) as Capabilities<T>[string &
               keyof EnergyCapabilities<T>],
           )

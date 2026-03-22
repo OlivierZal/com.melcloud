@@ -4,6 +4,8 @@ import type {
   GetDeviceData,
   ListDeviceDataAtw,
   OperationModeState,
+  OperationModeStateHotWater,
+  OperationModeStateZone,
   OperationModeZone,
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
@@ -11,6 +13,7 @@ import type {
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
 
 import { thermostatMode } from '../files.mts'
+import { typedFromEntries } from '../lib/index.mts'
 
 import type {
   BaseGetCapabilities,
@@ -20,18 +23,20 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
-import type { OpCapabilities } from './generic.mts'
 
 const addSuffixToTitle = (
   title: LocalizedStrings,
   suffix: LocalizedStrings,
-): LocalizedStrings =>
-  Object.fromEntries(
+): LocalizedStrings => ({
+  ...typedFromEntries(
     Object.entries(suffix).map(([language, localizedSuffix]) => [
       language,
+      /* v8 ignore next */
       `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
     ]),
-  ) as LocalizedStrings
+  ),
+  en: `${title.en} ${suffix.en}`,
+})
 
 const curve: CapabilitiesOptionsValues<'curve'> = {
   id: 'curve',
@@ -127,31 +132,20 @@ export const getCapabilitiesOptionsAtw = ({
   }
 }
 
-export enum HotWaterMode {
-  auto = 'auto',
-  forced = 'forced',
-}
-
-export enum OperationModeStateHotWaterCapability {
-  dhw = 'dhw',
-  idle = 'idle',
-  legionella = 'legionella',
-  prohibited = 'prohibited',
-}
-
-export enum OperationModeStateZoneCapability {
-  cooling = 'cooling',
-  defrost = 'defrost',
-  heating = 'heating',
-  idle = 'idle',
-  prohibited = 'prohibited',
-}
+export const HotWaterMode = {
+  auto: 'auto',
+  forced: 'forced',
+} as const
 
 export interface CapabilitiesAtw
-  extends EnergyCapabilitiesAtw, OpCapabilities<DeviceType.Atw> {
-  readonly 'operational_state.hot_water': OperationModeStateHotWaterCapability
-  readonly 'operational_state.zone1': OperationModeStateZoneCapability
-  readonly 'operational_state.zone2': OperationModeStateZoneCapability
+  extends
+    EnergyCapabilitiesAtw,
+    GetCapabilitiesAtw,
+    ListCapabilitiesAtw,
+    SetCapabilitiesAtw {
+  readonly 'operational_state.hot_water': OperationModeStateHotWater
+  readonly 'operational_state.zone1': OperationModeStateZone
+  readonly 'operational_state.zone2': OperationModeStateZone
 }
 
 export interface EnergyCapabilitiesAtw {
@@ -187,6 +181,8 @@ export interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.zone2': number
   readonly operational_state: keyof typeof OperationModeState
 }
+
+export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
 
 export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
@@ -247,7 +243,7 @@ export const setCapabilityTagMappingAtw: Record<
 
 export const getCapabilityTagMappingAtw: Record<
   keyof GetCapabilitiesAtw,
-  keyof GetDeviceData<DeviceType.Atw>
+  keyof GetDeviceData<typeof DeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',

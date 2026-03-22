@@ -2,40 +2,60 @@
   "name": "com.melcloud",
   "version": "43.0.0",
   "description": "MELCloud for Homey",
+  "homepage": "https://github.com/OlivierZal/com.melcloud/",
+  "bugs": {
+    "url": "https://github.com/OlivierZal/com.melcloud/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OlivierZal/com.melcloud.git"
+  },
   "license": "GPL-3.0-only",
+  "author": "Olivier Zalmanski",
+  "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run prepare && tsc",
+    "build": "npm run build:clean && npm run build:assets && tsc -p tsconfig.build.json",
+    "build:assets": "npm run build:css && npm run build:public",
+    "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
+    "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done",
     "format": "prettier . --check",
-    "format:docs": "prettier README.md --ignore-path --write",
     "format:fix": "prettier . --write",
+    "install:homey": "homey app install",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build:css && npm run format:docs && npm run lint:fix && npm run format:fix"
+    "prepare": "npm run build",
+    "publish:homey": "homey app publish",
+    "run:homey": "homey app run --remote",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "validate:homey": "homey app validate --level publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^21.0.0",
+    "@olivierzal/melcloud-api": "^22.0.0-rc.1",
     "homey-lib": "^2.47.0",
-    "luxon": "^3.7.2",
-    "source-map-support": "^0.5.21"
+    "luxon": "^3.7.2"
   },
   "devDependencies": {
     "@eslint/css": "^1.0.0",
-    "@eslint/js": "10.0.1",
+    "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.1.0",
     "@eslint/markdown": "^7.5.1",
     "@html-eslint/eslint-plugin": "^0.58.1",
     "@html-eslint/parser": "^0.58.0",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@swc/core": "^1.15.18",
     "@tailwindcss/cli": "^4.2.2",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.5.0",
     "@typescript/native-preview": "^7.0.0-dev.20260319.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/eslint-plugin": "^1.6.12",
     "apexcharts": "^5.10.4",
     "daisyui": "^5.5.19",
-    "eslint": "10.0.3",
+    "eslint": "^10.0.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.16.2",
@@ -43,12 +63,15 @@
     "eslint-plugin-perfectionist": "^5.7.0",
     "eslint-plugin-unicorn": "^63.0.0",
     "eslint-plugin-yml": "^3.3.1",
+    "jiti": "^2.6.1",
     "jsonc-eslint-parser": "^3.1.0",
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.2",
     "tailwind-csstree": "^0.1.5",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1"
+    "typescript-eslint": "^8.57.1",
+    "unplugin-swc": "^1.5.9",
+    "vitest": "^4.1.0"
   }
 }

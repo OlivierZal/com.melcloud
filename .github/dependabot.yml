@@ -7,13 +7,35 @@ updates:
   - directory: /
     package-ecosystem: github-actions
     schedule:
-      interval: daily
-      time: '05:00'
+      interval: weekly
   - directory: /
+    groups:
+      eslint:
+        patterns:
+          - '@eslint/*'
+          - '@html-eslint/*'
+          - '@stylistic/*'
+          - eslint
+          - eslint-*
+      minor-and-patch:
+        exclude-patterns:
+          - '@eslint/*'
+          - '@html-eslint/*'
+          - '@stylistic/*'
+          - '@vitest/*'
+          - eslint
+          - eslint-*
+          - vitest
+        update-types:
+          - minor
+          - patch
+      vitest:
+        patterns:
+          - '@vitest/*'
+          - vitest
     package-ecosystem: npm
     registries:
       - npm-github
     schedule:
-      interval: daily
-      time: '05:00'
+      interval: weekly
 version: 2

@@ -1,6 +1,6 @@
 import type {
+  DeviceFacade,
   DeviceType,
-  IDeviceFacade,
   ListDeviceData,
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
@@ -16,22 +16,22 @@ import type {
   DeviceDetails,
   EnergyCapabilityTagMapping,
   EnergyReportMode,
-  EnergyReportRegular,
-  EnergyReportTotal,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  OpCapabilities,
-  OpCapabilityTagEntry,
+  OperationalCapabilities,
+  OperationalCapabilityTagEntry,
   SetCapabilities,
   SetCapabilityTagMapping,
   Settings,
 } from '../types/index.mts'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
-import { isTotalEnergyKey } from '../lib/index.mts'
+import { isTotalEnergyKey, typedEntries } from '../lib/index.mts'
 import { withTimers } from '../mixins/with-timers.mts'
 
 import type { BaseMELCloudDriver } from './base-driver.mts'
+
+import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 const DEBOUNCE_DELAY = 1000
 
@@ -48,69 +48,65 @@ export abstract class BaseMELCloudDevice<
   declare public readonly driver: BaseMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
-    K extends string & keyof CapabilitiesOptions<T>,
+    TKey extends string & keyof CapabilitiesOptions<T>,
   >(
-    capability: K,
-  ) => CapabilitiesOptions<T>[K]
+    capability: TKey,
+  ) => CapabilitiesOptions<T>[TKey]
 
   declare public readonly getCapabilityValue: <
-    K extends string & keyof Capabilities<T>,
+    TKey extends string & keyof Capabilities<T>,
   >(
-    capability: K,
-  ) => Capabilities<T>[K]
+    capability: TKey,
+  ) => Capabilities<T>[TKey]
 
   declare public readonly getData: () => DeviceDetails<T>['data']
 
-  declare public readonly getSetting: <K extends keyof Settings>(
-    setting: K,
-  ) => NonNullable<Settings[K]>
+  declare public readonly getSetting: <TKey extends keyof Settings>(
+    setting: TKey,
+  ) => NonNullable<Settings[TKey]>
 
   declare public readonly getSettings: () => Settings
 
   declare public readonly homey: Homey.Homey
 
   declare public readonly setCapabilityOptions: <
-    K extends string & keyof CapabilitiesOptions<T>,
+    TKey extends string & keyof CapabilitiesOptions<T>,
   >(
-    capability: K,
-    options: CapabilitiesOptions<T>[K] & Record<string, unknown>,
+    capability: TKey,
+    options: CapabilitiesOptions<T>[TKey] & Record<string, unknown>,
   ) => Promise<void>
 
   declare public readonly setCapabilityValue: <
-    K extends string & keyof Capabilities<T>,
+    TKey extends string & keyof Capabilities<T>,
   >(
-    capability: K,
-    value: Capabilities<T>[K],
+    capability: TKey,
+    value: Capabilities<T>[TKey],
   ) => Promise<void>
 
   declare public readonly setSettings: (settings: Settings) => Promise<void>
 
   readonly #reports: {
-    regular?: EnergyReportRegular<T>
-    total?: EnergyReportTotal<T>
+    regular?: EnergyReport<T>
+    total?: EnergyReport<T>
   } = {}
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
 
-  #device?: IDeviceFacade<T>
+  #device?: DeviceFacade<T>
 
-  protected abstract readonly EnergyReportRegular:
-    | (new (device: BaseMELCloudDevice<T>) => EnergyReportRegular<T>)
-    | null
-
-  protected abstract readonly EnergyReportTotal:
-    | (new (device: BaseMELCloudDevice<T>) => EnergyReportTotal<T>)
-    | null
-
-  protected abstract readonly fromDevice: Partial<
-    Record<keyof OpCapabilities<T>, ConvertFromDevice<T>>
+  protected abstract readonly deviceToCapability: Partial<
+    Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
 
-  protected abstract readonly thermostatMode: object | null
+  protected abstract readonly energyReportRegular: EnergyReportConfig | null
 
-  protected abstract toDevice: Partial<
+  protected abstract readonly energyReportTotal: EnergyReportConfig | null
+
+  protected abstract readonly thermostatMode: Record<string, string> | null
+
+  protected abstract capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
@@ -118,16 +114,21 @@ export abstract class BaseMELCloudDevice<
     return this.getData().id
   }
 
+  protected get facade(): DeviceFacade<T> | undefined {
+    return this.#device
+  }
+
   get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
     return this.cleanMapping(this.driver.listCapabilityTagMapping)
   }
 
-  get #opCapabilityTagEntries(): OpCapabilityTagEntry<T>[] {
-    return Object.entries({
+  get #opCapabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return typedEntries({
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
-    }) as OpCapabilityTagEntry<T>[]
+    }) as OperationalCapabilityTagEntry<T>[]
   }
 
   public override onDeleted(): void {
@@ -135,9 +136,9 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override async onInit(): Promise<void> {
-    this.toDevice = {
-      onoff: (onoff: boolean): boolean => this.getSetting('always_on') || onoff,
-      ...this.toDevice,
+    this.capabilityToDevice = {
+      onoff: (isOn: boolean): boolean => this.getSetting('always_on') || isOn,
+      ...this.capabilityToDevice,
     }
     await this.setWarning(null)
     this.#registerCapabilityListeners()
@@ -197,20 +198,21 @@ export abstract class BaseMELCloudDevice<
   }
 
   public cleanMapping<
-    M extends
+    TMapping extends
       | EnergyCapabilityTagMapping<T>
       | GetCapabilityTagMapping<T>
       | ListCapabilityTagMapping<T>
       | SetCapabilityTagMapping<T>,
-  >(capabilityTagMapping: M): Partial<M> {
+  >(capabilityTagMapping: TMapping): Partial<TMapping> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
         this.hasCapability(capability),
       ),
-    ) as Partial<M>
+    ) as Partial<TMapping>
   }
 
-  public async fetchDevice(): Promise<IDeviceFacade<T> | null> {
+  public async fetchDevice(): Promise<DeviceFacade<T> | null> {
     try {
       if (!this.#device) {
         this.#device = this.homey.app.getFacade('devices', this.id)
@@ -225,6 +227,7 @@ export abstract class BaseMELCloudDevice<
 
   public async syncFromDevice(data?: ListDeviceData<T>): Promise<void> {
     const newData = data ?? (await this.#fetchData())
+    /* v8 ignore next */
     if (newData) {
       await this.setCapabilityValues(newData)
     }
@@ -246,24 +249,29 @@ export abstract class BaseMELCloudDevice<
 
   #buildUpdateData(values: Partial<SetCapabilities<T>>): UpdateDeviceData<T> {
     this.log('Requested data:', values)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         this.#setCapabilityTagMapping[capability as keyof SetCapabilities<T>],
         this.#convertToDevice(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           capability as keyof SetCapabilities<T>,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           value as UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
         ),
       ]),
     ) as UpdateDeviceData<T>
   }
 
-  #convertFromDevice<K extends keyof Capabilities<T>>(
-    capability: K,
+  #convertFromDevice<TKey extends keyof Capabilities<T>>(
+    capability: TKey,
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
     data?: ListDeviceData<T>,
-  ): Capabilities<T>[K] {
-    return (this.fromDevice[capability]?.(value, data) ??
-      value) as Capabilities<T>[K]
+  ): Capabilities<T>[TKey] {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    return (this.deviceToCapability[capability]?.(value, data) ??
+      value) as Capabilities<T>[TKey]
   }
 
   #convertToDevice(
@@ -271,7 +279,8 @@ export abstract class BaseMELCloudDevice<
     value: UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
   ): UpdateDeviceData<T>[keyof UpdateDeviceData<T>] {
     return (
-      this.toDevice[capability]?.(
+      this.capabilityToDevice[capability]?.(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         value as SetCapabilities<T>[keyof SetCapabilities<T>],
       ) ?? value
     )
@@ -290,12 +299,12 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #handleEnergyReports(): Promise<void> {
-    if (this.EnergyReportRegular) {
-      this.#reports.regular = new this.EnergyReportRegular(this)
+    if (this.energyReportRegular) {
+      this.#reports.regular = new EnergyReport(this, this.energyReportRegular)
       await this.#reports.regular.handle()
     }
-    if (this.EnergyReportTotal) {
-      this.#reports.total = new this.EnergyReportTotal(this)
+    if (this.energyReportTotal) {
+      this.#reports.total = new EnergyReport(this, this.energyReportTotal)
       await this.#reports.total.handle()
     }
   }
@@ -313,13 +322,18 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #init(data: ListDeviceData<T>): Promise<void> {
+    // Configure capabilities based on device data
     await this.#setCapabilities(data)
+    // Set capability options from driver
     await this.#setCapabilityOptions(data)
+    // Sync initial values from device
     await this.syncFromDevice(data)
+    // Schedule energy reports
     await this.#handleEnergyReports()
   }
 
   #isCapability(capability: string): boolean {
+    /* v8 ignore next */
     return (this.driver.manifest.capabilities ?? []).includes(capability)
   }
 
@@ -335,6 +349,11 @@ export abstract class BaseMELCloudDevice<
     this.registerMultipleCapabilityListener(
       Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
+        /*
+         * When thermostat_mode is set to 'off', sync onoff to false and
+         * remove thermostat_mode from the update (MELCloud uses
+         * Power=false, not OperationMode=off)
+         */
         if (
           'thermostat_mode' in values &&
           this.#isThermostatModeSupportingOff()
@@ -345,6 +364,7 @@ export abstract class BaseMELCloudDevice<
             delete values['thermostat_mode']
           }
         }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         await this.#set(values as Partial<SetCapabilities<T>>)
       },
       DEBOUNCE_DELAY,
@@ -370,6 +390,7 @@ export abstract class BaseMELCloudDevice<
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings()
     const currentCapabilities = new Set(this.getCapabilities())
+
     const requiredCapabilities = new Set(
       [
         ...Object.keys(settings).filter(
@@ -379,6 +400,7 @@ export abstract class BaseMELCloudDevice<
         ...this.driver.getRequiredCapabilities(data),
       ].filter((capability) => this.#isCapability(capability)),
     )
+
     for (const capability of currentCapabilities.symmetricDifference(
       requiredCapabilities,
     )) {
@@ -387,6 +409,7 @@ export abstract class BaseMELCloudDevice<
         this.addCapability(capability)
       : this.removeCapability(capability))
     }
+
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
     )
@@ -396,6 +419,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     for (const [capability, options] of Object.entries(
       this.driver.getCapabilitiesOptions(data),
     ) as [
@@ -427,10 +451,12 @@ export abstract class BaseMELCloudDevice<
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
+
     if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.triggerCapabilityListener('onoff', true)
       return
     }
+
     if (
       changedKeys.some(
         (setting) =>

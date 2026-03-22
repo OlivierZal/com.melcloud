@@ -10,7 +10,9 @@ import {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
-export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw> {
+export default class MELCloudDriverAtw extends BaseMELCloudDriver<
+  typeof DeviceType.Atw
+> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
@@ -23,7 +25,7 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
 
   public readonly type = DeviceType.Atw
 
-  readonly #zone1Capabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
+  readonly #zone1Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [
     'onoff',
     'hot_water_mode',
     'measure_temperature',
@@ -43,11 +45,11 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'measure_power.produced',
   ]
 
-  readonly #zone1CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
-    'target_temperature.flow_cool',
-  ]
+  readonly #zone1CoolCapabilities: (keyof Capabilities<
+    typeof DeviceType.Atw
+  >)[] = ['target_temperature.flow_cool']
 
-  readonly #zone2Capabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
+  readonly #zone2Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -55,14 +57,14 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<DeviceType.Atw
     'operational_state.zone2',
   ]
 
-  readonly #zone2CoolCapabilities: (keyof Capabilities<DeviceType.Atw>)[] = [
-    'target_temperature.flow_cool_zone2',
-  ]
+  readonly #zone2CoolCapabilities: (keyof Capabilities<
+    typeof DeviceType.Atw
+  >)[] = ['target_temperature.flow_cool_zone2']
 
   public getRequiredCapabilities({
     CanCool: canCool,
     HasZone2: hasZone2,
-  }: ListDeviceData<DeviceType.Atw>): string[] {
+  }: ListDeviceData<typeof DeviceType.Atw>): string[] {
     return [
       ...this.#zone1Capabilities,
       ...(canCool ? this.#zone1CoolCapabilities : []),

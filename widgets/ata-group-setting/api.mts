@@ -37,7 +37,10 @@ const api = {
   }: {
     query: { type?: `${DeviceType}` }
   }): BuildingZone[] {
-    return getBuildings({ type: type ? Number(type) : undefined })
+    return getBuildings({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      type: type ? (Number(type) as DeviceType) : undefined,
+    })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()

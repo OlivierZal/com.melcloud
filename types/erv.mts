@@ -13,14 +13,20 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
-import type { OpCapabilities } from './generic.mts'
 
-export enum ThermostatModeErv {
-  auto = 'auto',
-  bypass = 'bypass',
-  off = 'off',
-  recovery = 'recovery',
-}
+export const ThermostatModeErv = {
+  auto: 'auto',
+  bypass: 'bypass',
+  off: 'off',
+  recovery: 'recovery',
+} as const
+
+export type CapabilitiesErv = EnergyCapabilitiesErv &
+  GetCapabilitiesErv &
+  ListCapabilitiesErv &
+  SetCapabilitiesErv
+
+export type EnergyCapabilitiesErv = Record<string, never>
 
 export interface GetCapabilitiesErv extends BaseGetCapabilities {
   readonly measure_co2: number
@@ -37,10 +43,8 @@ export interface SetCapabilitiesErv extends BaseSetCapabilities {
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
 
-export type CapabilitiesErv = EnergyCapabilitiesErv &
-  OpCapabilities<DeviceType.Erv>
-
-export type EnergyCapabilitiesErv = Record<string, never>
+export type ThermostatModeErv =
+  (typeof ThermostatModeErv)[keyof typeof ThermostatModeErv]
 
 export const setCapabilityTagMappingErv: Record<
   keyof SetCapabilitiesErv,
@@ -53,7 +57,7 @@ export const setCapabilityTagMappingErv: Record<
 
 export const getCapabilityTagMappingErv: Record<
   keyof GetCapabilitiesErv,
-  keyof GetDeviceData<DeviceType.Erv>
+  keyof GetDeviceData<typeof DeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',

@@ -4,6 +4,7 @@ import json from '@eslint/json'
 import markdown from '@eslint/markdown'
 import html from '@html-eslint/eslint-plugin'
 import stylistic from '@stylistic/eslint-plugin'
+import vitest from '@vitest/eslint-plugin'
 import prettier from 'eslint-config-prettier/flat'
 import perfectionist from 'eslint-plugin-perfectionist'
 import unicorn from 'eslint-plugin-unicorn'
@@ -16,9 +17,9 @@ import { configs as ymlConfigs } from 'eslint-plugin-yml'
 import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
 
-import { classGroups } from './eslint-utils/class-groups.js'
+import { classGroups } from './eslint-utils/class-groups.ts'
 
-const buildImportGroup = (selector) =>
+const buildImportGroup = (selector: string): string[] =>
   ['type', 'default', 'named', 'wildcard', 'require', 'ts-equals'].map(
     (modifier) => `${modifier}-${selector}`,
   )
@@ -58,7 +59,7 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/'],
+    ignores: ['.homeybuild/', 'coverage/'],
   },
   {
     extends: [
@@ -75,7 +76,7 @@ const config = defineConfig([
       ecmaVersion: 'latest',
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.js'],
+          allowDefaultProject: ['*.js', '*.config.ts', 'eslint-utils/*.ts'],
         },
         warnOnUnsupportedTypeScriptVersion: false,
       },
@@ -90,7 +91,6 @@ const config = defineConfig([
     },
     rules: {
       '@stylistic/line-comment-position': 'error',
-      '@stylistic/lines-around-comment': 'error',
       '@stylistic/multiline-comment-style': 'error',
       '@stylistic/quotes': [
         'error',
@@ -121,66 +121,138 @@ const config = defineConfig([
       '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': [
         'error',
-        {
-          filter: {
-            match: true,
-            regex: '^EnergyReport(Regular|Total)$',
-          },
-          format: null,
-          selector: ['property'],
-        },
+        // ── Catch-all ────────────────────────────────────────
         {
           format: ['camelCase'],
-          selector: ['enumMember'],
+          leadingUnderscore: 'forbid',
+          selector: 'default',
+          trailingUnderscore: 'forbid',
         },
+        /*
+         * ── Variables ────────────────────────────────────────
+         * PascalCase: React components, class-like refs, `as const` objects.
+         * UPPER_CASE: allowed for legacy/team preference on primitives — not enforced.
+         */
         {
-          filter: {
-            match: true,
-            regex: String.raw`^[a-z]+(?:_[a-z0-9]+)*(\.(?:[a-z0-9]+_)*([a-z0-9]+)?)?$`,
-          },
+          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          selector: 'variable',
+        },
+        // Destructured — we don't control external shapes (API responses, libs).
+        {
           format: null,
-          selector: ['objectLiteralProperty', 'typeProperty'],
+          modifiers: ['destructured'],
+          selector: 'variable',
         },
-        {
-          filter: {
-            match: true,
-            regex: String.raw`^(HM|FP)`,
-          },
-          format: null,
-          selector: ['objectLiteralProperty'],
-        },
-        {
-          format: ['camelCase', 'PascalCase'],
-          selector: ['typeProperty'],
-        },
-        {
-          format: ['camelCase', 'PascalCase'],
-          selector: ['import'],
-        },
+        /*
+         * ── Booleans (variables, parameters, class properties) ──
+         * Semantic prefixes make intent obvious at the call site.
+         */
         {
           format: ['PascalCase'],
-          prefix: ['can', 'did', 'has', 'is', 'should', 'will'],
-          selector: ['variable'],
+          prefix: ['is', 'has', 'can', 'should'],
+          selector: ['variable', 'parameter', 'classProperty'],
           types: ['boolean'],
         },
+        /*
+         * ── Parameters ───────────────────────────────────────
+         * Leading underscore for intentionally unused params (_event, _ctx).
+         */
         {
-          format: ['UPPER_CASE'],
-          modifiers: ['const', 'global'],
-          selector: ['variable'],
-          types: ['boolean', 'number', 'string'],
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+          selector: 'parameter',
+        },
+        // Destructured parameters — we don't control external shapes (API types).
+        {
+          format: null,
+          modifiers: ['destructured'],
+          selector: 'parameter',
+        },
+        // Destructured boolean parameters from external types.
+        {
+          format: null,
+          modifiers: ['destructured'],
+          selector: 'parameter',
+          types: ['boolean'],
+        },
+        /*
+         * ── Functions & methods ──────────────────────────────
+         * PascalCase covers HOCs, factory functions (CreateApp), React hooks wrappers.
+         */
+        {
+          format: ['camelCase', 'PascalCase'],
+          selector: [
+            'function',
+            'classMethod',
+            'objectLiteralMethod',
+            'typeMethod',
+          ],
+        },
+        /*
+         * ── Homey-specific ──────────────────────────────────
+         * Capability handlers: thermostat_mode, fan_speed, hot_water_mode, etc.
+         */
+        {
+          format: null,
+          modifiers: ['requiresQuotes'],
+          selector: 'objectLiteralMethod',
         },
         {
-          format: ['PascalCase'],
-          selector: ['enumMember', 'typeLike'],
+          filter: { match: true, regex: '_' },
+          format: null,
+          selector: 'objectLiteralMethod',
+        },
+        // Homey translation function __ in mocks
+        {
+          filter: { match: true, regex: '^__$' },
+          format: null,
+          selector: 'objectLiteralProperty',
+        },
+        /*
+         * ── Properties ───────────────────────────────────────
+         * Permissive: DTOs, API contracts, and serialization use mixed conventions.
+         */
+        {
+          format: ['camelCase', 'PascalCase', 'snake_case', 'UPPER_CASE'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
+        // Quoted keys ('Content-Type', 'x-api-key', '@scope/pkg') — skip entirely.
+        {
+          format: null,
+          modifiers: ['requiresQuotes'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
         },
         {
           format: ['camelCase'],
           leadingUnderscore: 'allow',
-          selector: ['parameter'],
+          selector: 'classProperty',
         },
+        // ── Imports ──────────────────────────────────────────
         {
-          format: ['camelCase'],
-          selector: ['default'],
+          format: ['camelCase', 'PascalCase'],
+          selector: 'import',
+        },
+        // ── Types, interfaces, classes, enums ────────────────
+        {
+          format: ['PascalCase'],
+          selector: 'typeLike',
+        },
+        /*
+         * PascalCase enum members: modern TS convention (Status.Active, not Status.ACTIVE).
+         * Aligns with the `as const` + union type pattern that increasingly replaces enums.
+         */
+        {
+          format: ['PascalCase'],
+          selector: 'enumMember',
+        },
+        /*
+         * ── Type parameters (generics) ───────────────────────
+         * T-prefix: T, TKey, TValue, TResult — universal TS convention.
+         */
+        {
+          format: ['PascalCase'],
+          prefix: ['T'],
+          selector: 'typeParameter',
         },
       ],
       '@typescript-eslint/no-dupe-class-members': 'off',
@@ -191,12 +263,6 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/no-invalid-this': 'off',
-      '@typescript-eslint/no-magic-numbers': [
-        'error',
-        {
-          ignoreEnums: true,
-        },
-      ],
       '@typescript-eslint/no-redeclare': 'off',
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
@@ -210,7 +276,6 @@ const config = defineConfig([
           checkLiteralConstAssertions: true,
         },
       ],
-      '@typescript-eslint/no-unsafe-type-assertion': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -236,6 +301,15 @@ const config = defineConfig([
       '@typescript-eslint/return-await': ['error', 'in-try-catch'],
       '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
+      'capitalized-comments': [
+        'error',
+        'always',
+        {
+          block: {
+            ignorePattern: String.raw`v8\s`,
+          },
+        },
+      ],
       curly: 'error',
       'import-x/first': 'error',
       'import-x/max-dependencies': [
@@ -261,13 +335,15 @@ const config = defineConfig([
       'import-x/no-named-default': 'error',
       'import-x/no-relative-packages': 'error',
       'import-x/no-self-import': 'error',
-      'import-x/no-unassigned-import': [
+      'import-x/no-unassigned-import': 'error',
+      'import-x/no-unused-modules': [
         'error',
         {
-          allow: ['source-map-support/register.js'],
+          missingExports: true,
+          suppressMissingFileEnumeratorAPIWarning: true,
+          unusedExports: true,
         },
       ],
-      'import-x/no-unused-modules': 'error',
       'import-x/no-useless-path-segments': 'error',
       'import-x/no-webpack-loader-syntax': 'error',
       'import-x/unambiguous': 'error',
@@ -278,12 +354,6 @@ const config = defineConfig([
         'error',
         {
           allowElseIf: false,
-        },
-      ],
-      'no-empty': [
-        'error',
-        {
-          allowEmptyCatch: true,
         },
       ],
       'no-ternary': 'off',
@@ -382,21 +452,19 @@ const config = defineConfig([
         {
           groups: [
             'declare-enum',
-            'declare-interface',
-            'declare-type',
+            ['declare-interface', 'declare-type'],
             'declare-class',
             'declare-function',
             'enum',
-            'interface',
-            'type',
+            ['interface', 'type'],
             'class',
             'function',
             'export-enum',
-            'export-interface',
-            'export-type',
+            ['export-interface', 'export-type'],
             'export-class',
             'export-function',
-            'export-default-interface',
+            'export-default-enum',
+            ['export-default-interface', 'export-default-type'],
             'export-default-class',
             'export-default-function',
           ],
@@ -492,6 +560,7 @@ const config = defineConfig([
   {
     files: ['**/*.config.{ts,js}'],
     rules: {
+      '@typescript-eslint/naming-convention': 'off',
       'import-x/max-dependencies': 'off',
       'import-x/no-default-export': 'off',
       'import-x/prefer-default-export': [
@@ -500,6 +569,12 @@ const config = defineConfig([
           target: 'any',
         },
       ],
+    },
+  },
+  {
+    files: ['eslint-utils/**'],
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
     },
   },
   {
@@ -578,6 +653,43 @@ const config = defineConfig([
     },
   },
   {
+    extends: [vitest.configs.all],
+    files: ['tests/**/*.ts'],
+    rules: {
+      '@typescript-eslint/class-methods-use-this': 'off',
+      '@typescript-eslint/init-declarations': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-magic-numbers': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-type-assertion': 'off',
+      '@typescript-eslint/prefer-destructuring': 'off',
+      'import-x/max-dependencies': [
+        'error',
+        { ignoreTypeImports: true, max: 15 },
+      ],
+      'max-classes-per-file': 'off',
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
+      'unicorn/consistent-function-scoping': 'off',
+      'unicorn/no-useless-undefined': 'off',
+      'vitest/max-expects': ['error', { max: 12 }],
+      'vitest/no-hooks': 'off',
+      'vitest/prefer-called-with': 'off',
+      'vitest/prefer-expect-assertions': 'off',
+      'vitest/prefer-import-in-mock': 'off',
+      'vitest/require-hook': 'off',
+      'vitest/require-mock-type-parameters': 'off',
+    },
+    settings: {
+      vitest: {
+        typecheck: true,
+      },
+    },
+  },
+  {
     extends: [ymlConfigs.standard, ymlConfigs.prettier],
     rules: {
       'yml/file-extension': [
@@ -611,8 +723,14 @@ const config = defineConfig([
       ],
     },
   },
-  packageJsonConfigs.recommended,
-  packageJsonConfigs.stylistic,
+  {
+    extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
+    files: ['**/package.json'],
+    rules: {
+      'package-json/require-exports': 'off',
+      'package-json/require-files': 'off',
+    },
+  },
 ])
 
 export default config

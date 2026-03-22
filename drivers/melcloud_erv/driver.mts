@@ -15,7 +15,9 @@ const measureCapabilities = new Set([
   'measure_signal_strength',
 ])
 
-export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv> {
+export default class MELCloudDriverErv extends BaseMELCloudDriver<
+  typeof DeviceType.Erv
+> {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
@@ -31,8 +33,9 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<DeviceType.Erv
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,
     HasPM25Sensor: hasPM25Sensor,
-  }: ListDeviceData<DeviceType.Erv>): string[] {
+  }: ListDeviceData<typeof DeviceType.Erv>): string[] {
     return [
+      /* v8 ignore next */
       ...(this.manifest.capabilities ?? []).filter(
         (capability) => !measureCapabilities.has(capability),
       ),

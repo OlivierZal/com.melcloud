@@ -2,6 +2,9 @@ jobs:
   dependabot:
     if: github.actor == 'dependabot[bot]'
     name: Dependabot
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - id: metadata
@@ -12,10 +15,8 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge --delete-branch "$PR_URL"
 name: Dependabot
 on: pull_request
-permissions:
-  contents: write
-  pull-requests: write

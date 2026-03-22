@@ -10,6 +10,8 @@ export interface BaseSetCapabilities {
   readonly onoff: boolean
 }
 
+export type BaseSettings = Partial<Record<string, unknown>>
+
 export interface CapabilitiesOptionsValues<T extends string> {
   readonly id: T
   readonly title: LocalizedStrings
@@ -25,5 +27,3 @@ export interface RangeOptions {
   readonly step?: number
   readonly units?: string
 }
-
-export type BaseSettings = Partial<Record<string, unknown>>
