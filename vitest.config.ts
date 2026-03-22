@@ -19,7 +19,7 @@ export default defineConfig({
   ],
   test: {
     coverage: {
-      exclude: ['**/public/**/*.mts', '**/settings/**/*.mts'],
+      exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {
