@@ -24,7 +24,6 @@ name: Publish app on Homey
 on:
   release:
     types: [published]
-  workflow_dispatch: {}
 permissions:
   contents: read
   packages: read
