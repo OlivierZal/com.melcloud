@@ -89,7 +89,7 @@ jobs:
         name: Install dependencies
         run: npm ci
       - name: Build code & validate app
-        uses: athombv/github-action-homey-app-validate@master
+        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # master
         with:
           level: publish
       - env:
@@ -110,8 +110,8 @@ jobs:
               PR_URL=$(gh pr view "$BRANCH_NAME" --json url -q '.url')
               gh pr merge --auto --merge --delete-branch "$PR_URL"
             else
-              git pull origin $HEAD_REF --rebase
-              git push origin HEAD:$HEAD_REF
+              git pull origin "$HEAD_REF" --rebase
+              git push origin "HEAD:$HEAD_REF"
             fi
           fi
 name: Build app
