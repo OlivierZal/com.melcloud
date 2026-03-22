@@ -95,6 +95,7 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_REF: ${{ github.head_ref || github.ref_name }}
+        if: github.event_name == 'pull_request' || github.ref_type == 'branch'
         name: Commit & push changes
         run: |
           git config user.name "github-actions[bot]"
@@ -110,8 +111,8 @@ jobs:
               PR_URL=$(gh pr view "$BRANCH_NAME" --json url -q '.url')
               gh pr merge --auto --merge --delete-branch "$PR_URL"
             else
-              git pull --rebase origin -- "$HEAD_REF"
-              git push origin -- "HEAD:$HEAD_REF"
+              git pull --rebase origin "$HEAD_REF"
+              git push origin "HEAD:$HEAD_REF"
             fi
           fi
 name: Build app
