@@ -95,8 +95,7 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_REF: ${{ github.head_ref || github.ref_name }}
-        if: ${{ github.event_name == 'pull_request' || github.ref_type == 'branch' }}
-        if: github.ref_type == 'branch'
+        if: github.event_name == 'pull_request' || github.ref_type == 'branch'
         name: Commit & push changes
         run: |
           git config user.name "github-actions[bot]"
