@@ -85,10 +85,8 @@ export {
   getCapabilitiesOptionsAtw,
   getCapabilityTagMappingAtw,
   HotWaterMode,
-  HotWaterOperationState,
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
-  ZoneOperationState,
 } from './atw.mts'
 export {
   type CapabilitiesErv,

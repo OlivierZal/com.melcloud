@@ -56,9 +56,9 @@ describe(MELCloudDeviceErv, () => {
       [VentilationMode.bypass, true, 'bypass'],
     ])(
       'thermostat_mode(%s, Power: %s) should return %s',
-      (input, power, expected) => {
+      (input, isPoweredOn, expected) => {
         const converter = device.deviceToCapability.thermostat_mode
-        const data = mock<ListDeviceDataErv>({ Power: power })
+        const data = mock<ListDeviceDataErv>({ Power: isPoweredOn })
 
         expect(converter?.(input, data)).toBe(expected)
       },

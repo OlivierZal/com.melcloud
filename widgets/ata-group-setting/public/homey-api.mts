@@ -1,9 +1,9 @@
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 
 export interface Homey<
-  S extends Record<string, unknown> = Record<string, unknown>,
+  TSettings extends Record<string, unknown> = Record<string, unknown>,
 > extends HomeyWidget {
-  readonly getSettings: () => S
+  readonly getSettings: () => TSettings
 }
 
 export const homeyApiGet = async <T,>(

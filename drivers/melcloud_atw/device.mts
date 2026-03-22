@@ -1,7 +1,8 @@
 import {
+  type DeviceAtwFacade,
+  type DeviceAtwHasZone2Facade,
   type DeviceType,
   type ListDeviceData,
-  type ZoneAtw,
   OperationModeState,
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
@@ -9,7 +10,7 @@ import { DateTime } from 'luxon'
 
 import type { EnergyReportConfig } from '../base-report.mts'
 
-import { keyOfValue } from '../../lib/index.mts'
+import { KILOWATT_TO_WATT, keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -17,20 +18,8 @@ import {
   type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
-  HotWaterOperationState,
-  ZoneOperationState,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
-
-const KILOWATT_TO_WATT = 1000
-
-const isKeyOfHotWaterOperationState = (
-  key: string,
-): key is keyof typeof HotWaterOperationState => key in HotWaterOperationState
-
-const isKeyOfZoneOperationState = (
-  key: string,
-): key is keyof typeof ZoneOperationState => key in ZoneOperationState
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw
@@ -39,43 +28,6 @@ const convertFromDeviceMeasurePower: ConvertFromDevice<
 const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
 > = (value: OperationModeZone) => keyOfValue(OperationModeZone, value)
-
-const getOperationModeStateHotWaterValue = (
-  data: ListDeviceData<typeof DeviceType.Atw>,
-  operationModeState: keyof typeof OperationModeState,
-): HotWaterOperationState => {
-  if (data.ForcedHotWaterMode) {
-    return HotWaterOperationState.dhw
-  }
-  if (data.ProhibitHotWater) {
-    return HotWaterOperationState.prohibited
-  }
-  if (isKeyOfHotWaterOperationState(operationModeState)) {
-    return HotWaterOperationState[operationModeState]
-  }
-  return HotWaterOperationState.idle
-}
-
-/*
- * Determines the operational state of an ATW zone. A zone is 'prohibited'
- * when its heating/cooling mode is active but blocked by prohibition settings
- */
-const getOperationModeStateZoneValue = (
-  data: ListDeviceData<typeof DeviceType.Atw>,
-  operationModeState: keyof typeof OperationModeState,
-  zone: ZoneAtw,
-): ZoneOperationState => {
-  if (
-    (data[`${zone}InCoolMode`] && data[`ProhibitCooling${zone}`]) ||
-    (data[`${zone}InHeatMode`] && data[`ProhibitHeating${zone}`])
-  ) {
-    return ZoneOperationState.prohibited
-  }
-  if (isKeyOfZoneOperationState(operationModeState) && !data[`Idle${zone}`]) {
-    return ZoneOperationState[operationModeState]
-  }
-  return ZoneOperationState.idle
-}
 
 export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   typeof DeviceType.Atw
@@ -123,8 +75,8 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
       ),
     thermostat_mode: convertFromDeviceOperationZone,
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
-    hot_water_mode: (value: boolean) =>
-      value ? HotWaterMode.forced : HotWaterMode.auto,
+    hot_water_mode: (isForced: boolean) =>
+      isForced ? HotWaterMode.forced : HotWaterMode.auto,
     legionella: (value: string) =>
       DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
@@ -157,7 +109,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     data: ListDeviceData<typeof DeviceType.Atw>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
-    await this.#setOperationModeStates(data)
+    await this.#setOperationModeStates()
   }
 
   #convertFromDeviceTargetTemperatureFlow(
@@ -167,41 +119,27 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }
 
-  async #setOperationModeStateHotWater(
-    data: ListDeviceData<typeof DeviceType.Atw>,
-    operationModeState: keyof typeof OperationModeState,
-  ): Promise<void> {
+  async #setOperationModeStates(): Promise<void> {
+    const { facade } = this
+    if (!facade || !('hotWater' in facade)) {
+      return
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    const atwFacade = facade as DeviceAtwFacade
     await this.setCapabilityValue(
       'operational_state.hot_water',
-      getOperationModeStateHotWaterValue(data, operationModeState),
+      atwFacade.hotWater.operationalState,
     )
-  }
-
-  async #setOperationModeStates(
-    data: ListDeviceData<typeof DeviceType.Atw>,
-  ): Promise<void> {
-    const operationModeState = keyOfValue(
-      OperationModeState,
-      data.OperationMode,
+    await this.setCapabilityValue(
+      'operational_state.zone1',
+      atwFacade.zone1.operationalState,
     )
-    await this.#setOperationModeStateHotWater(data, operationModeState)
-    await this.#setOperationModeStateZones(data, operationModeState)
-  }
-
-  async #setOperationModeStateZones(
-    data: ListDeviceData<typeof DeviceType.Atw>,
-    operationModeState: keyof typeof OperationModeState,
-  ): Promise<void> {
-    await Promise.all(
-      (['Zone1', 'Zone2'] as const).map(async (zone) => {
-        const zoneSuffix = zone === 'Zone1' ? 'zone1' : 'zone2'
-        if (this.hasCapability(`operational_state.${zoneSuffix}`)) {
-          await this.setCapabilityValue(
-            `operational_state.${zoneSuffix}`,
-            getOperationModeStateZoneValue(data, operationModeState, zone),
-          )
-        }
-      }),
-    )
+    if (this.hasCapability('operational_state.zone2') && 'zone2' in facade) {
+      await this.setCapabilityValue(
+        'operational_state.zone2',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        (facade as DeviceAtwHasZone2Facade).zone2.operationalState,
+      )
+    }
   }
 }

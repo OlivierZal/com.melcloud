@@ -121,75 +121,138 @@ const config = defineConfig([
       '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': [
         'error',
+        // ── Catch-all ────────────────────────────────────────
         {
-          filter: {
-            match: true,
-            regex: '^EnergyReport(Regular|Total)$',
-          },
+          format: ['camelCase'],
+          leadingUnderscore: 'forbid',
+          selector: 'default',
+          trailingUnderscore: 'forbid',
+        },
+        /*
+         * ── Variables ────────────────────────────────────────
+         * PascalCase: React components, class-like refs, `as const` objects.
+         * UPPER_CASE: allowed for legacy/team preference on primitives — not enforced.
+         */
+        {
+          format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
+          selector: 'variable',
+        },
+        // Destructured — we don't control external shapes (API responses, libs).
+        {
           format: null,
-          selector: ['property'],
+          modifiers: ['destructured'],
+          selector: 'variable',
         },
-        {
-          filter: {
-            match: true,
-            regex: String.raw`^[a-z]+(?:_[a-z0-9]+)*(\.(?:[a-z0-9]+_)*([a-z0-9]+)?)?$`,
-          },
-          format: null,
-          selector: [
-            'objectLiteralMethod',
-            'objectLiteralProperty',
-            'typeProperty',
-          ],
-        },
-        {
-          filter: {
-            match: true,
-            regex: String.raw`^(HM|FP)`,
-          },
-          format: null,
-          selector: ['objectLiteralProperty'],
-        },
-        {
-          format: ['camelCase', 'PascalCase'],
-          selector: ['typeProperty'],
-        },
-        {
-          format: ['camelCase', 'PascalCase'],
-          selector: ['import'],
-        },
+        /*
+         * ── Booleans (variables, parameters, class properties) ──
+         * Semantic prefixes make intent obvious at the call site.
+         */
         {
           format: ['PascalCase'],
-          prefix: ['can', 'did', 'has', 'is', 'should', 'will'],
-          selector: ['variable'],
+          prefix: ['is', 'has', 'can', 'should'],
+          selector: ['variable', 'parameter', 'classProperty'],
           types: ['boolean'],
         },
+        /*
+         * ── Parameters ───────────────────────────────────────
+         * Leading underscore for intentionally unused params (_event, _ctx).
+         */
         {
-          filter: {
-            match: true,
-            regex: '^[A-Z][a-z]',
-          },
-          format: ['PascalCase'],
-          modifiers: ['const', 'global'],
-          selector: ['variable'],
+          format: ['camelCase'],
+          leadingUnderscore: 'allow',
+          selector: 'parameter',
+        },
+        // Destructured parameters — we don't control external shapes (API types).
+        {
+          format: null,
+          modifiers: ['destructured'],
+          selector: 'parameter',
+        },
+        // Destructured boolean parameters from external types.
+        {
+          format: null,
+          modifiers: ['destructured'],
+          selector: 'parameter',
+          types: ['boolean'],
+        },
+        /*
+         * ── Functions & methods ──────────────────────────────
+         * PascalCase covers HOCs, factory functions (CreateApp), React hooks wrappers.
+         */
+        {
+          format: ['camelCase', 'PascalCase'],
+          selector: [
+            'function',
+            'classMethod',
+            'objectLiteralMethod',
+            'typeMethod',
+          ],
+        },
+        /*
+         * ── Homey-specific ──────────────────────────────────
+         * Capability handlers: thermostat_mode, fan_speed, hot_water_mode, etc.
+         */
+        {
+          format: null,
+          modifiers: ['requiresQuotes'],
+          selector: 'objectLiteralMethod',
         },
         {
-          format: ['UPPER_CASE'],
-          modifiers: ['const', 'global'],
-          selector: ['variable'],
-          types: ['boolean', 'number', 'string'],
+          filter: { match: true, regex: '_' },
+          format: null,
+          selector: 'objectLiteralMethod',
         },
+        // Homey translation function __ in mocks
         {
-          format: ['PascalCase'],
-          selector: ['enumMember', 'typeLike'],
+          filter: { match: true, regex: '^__$' },
+          format: null,
+          selector: 'objectLiteralProperty',
+        },
+        /*
+         * ── Properties ───────────────────────────────────────
+         * Permissive: DTOs, API contracts, and serialization use mixed conventions.
+         */
+        {
+          format: ['camelCase', 'PascalCase', 'snake_case', 'UPPER_CASE'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
+        },
+        // Quoted keys ('Content-Type', 'x-api-key', '@scope/pkg') — skip entirely.
+        {
+          format: null,
+          modifiers: ['requiresQuotes'],
+          selector: ['objectLiteralProperty', 'typeProperty'],
         },
         {
           format: ['camelCase'],
           leadingUnderscore: 'allow',
-          selector: ['parameter'],
+          selector: 'classProperty',
         },
+        // ── Imports ──────────────────────────────────────────
         {
-          format: ['camelCase'],
-          selector: ['default'],
+          format: ['camelCase', 'PascalCase'],
+          selector: 'import',
+        },
+        // ── Types, interfaces, classes, enums ────────────────
+        {
+          format: ['PascalCase'],
+          selector: 'typeLike',
+        },
+        /*
+         * PascalCase enum members: modern TS convention (Status.Active, not Status.ACTIVE).
+         * Aligns with the `as const` + union type pattern that increasingly replaces enums.
+         */
+        {
+          format: ['PascalCase'],
+          selector: 'enumMember',
+        },
+        /*
+         * ── Type parameters (generics) ───────────────────────
+         * T-prefix: T, TKey, TValue, TResult — universal TS convention.
+         */
+        {
+          format: ['PascalCase'],
+          prefix: ['T'],
+          selector: 'typeParameter',
         },
       ],
       '@typescript-eslint/no-dupe-class-members': 'off',
@@ -474,31 +537,12 @@ const config = defineConfig([
     },
   },
   {
-    files: ['src/constants.ts'],
-    rules: {
-      '@typescript-eslint/naming-convention': [
-        'error',
-        {
-          format: ['PascalCase', 'UPPER_CASE'],
-          modifiers: ['const', 'exported'],
-          selector: ['variable'],
-        },
-      ],
-    },
-  },
-  {
     extends: [tsConfigs.disableTypeChecked],
     files: ['**/*.js'],
     rules: {
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'import-x/named': 'error',
-    },
-  },
-  {
-    files: ['eslint-utils/**'],
-    rules: {
-      '@typescript-eslint/naming-convention': 'off',
     },
   },
   {
@@ -525,6 +569,12 @@ const config = defineConfig([
           target: 'any',
         },
       ],
+    },
+  },
+  {
+    files: ['eslint-utils/**'],
+    rules: {
+      '@typescript-eslint/naming-convention': 'off',
     },
   },
   {
@@ -608,7 +658,6 @@ const config = defineConfig([
     rules: {
       '@typescript-eslint/class-methods-use-this': 'off',
       '@typescript-eslint/init-declarations': 'off',
-      '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

@@ -1,14 +1,14 @@
-export const typedEntries = <K extends string, V>(
-  object: Partial<Record<K, V>>,
+export const typedEntries = <TKey extends string, TValue>(
+  object: Partial<Record<TKey, TValue>>,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-): [K, V][] => Object.entries(object) as [K, V][]
+): [TKey, TValue][] => Object.entries(object) as [TKey, TValue][]
 
-export const typedFromEntries = <K extends string, V>(
-  entries: Iterable<readonly [K, V]>,
+export const typedFromEntries = <TKey extends string, TValue>(
+  entries: Iterable<readonly [TKey, TValue]>,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-): Record<K, V> => Object.fromEntries(entries) as Record<K, V>
+): Record<TKey, TValue> => Object.fromEntries(entries) as Record<TKey, TValue>
 
-export const typedKeys = <K extends string>(
-  object: Partial<Record<K, unknown>>,
+export const typedKeys = <TKey extends string>(
+  object: Partial<Record<TKey, unknown>>,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-): K[] => Object.keys(object) as K[]
+): TKey[] => Object.keys(object) as TKey[]

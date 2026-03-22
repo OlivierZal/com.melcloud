@@ -1,17 +1,13 @@
-import type {
-  ListDeviceDataAta,
-  ListDeviceDataAtw,
-  ListDeviceDataErv,
+import {
+  type ListDeviceDataAta,
+  type ListDeviceDataAtw,
+  type ListDeviceDataErv,
+  OperationModeStateHotWater,
+  OperationModeStateZone,
 } from '@olivierzal/melcloud-api'
-
 import { describe, expect, it } from 'vitest'
 
-import {
-  getCapabilitiesOptionsAtw,
-  HotWaterMode,
-  HotWaterOperationState,
-  ZoneOperationState,
-} from '../../types/atw.mts'
+import { getCapabilitiesOptionsAtw, HotWaterMode } from '../../types/atw.mts'
 import {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
@@ -176,7 +172,7 @@ describe('hotWaterMode', () => {
 
 describe('hotWaterOperationState', () => {
   it('should have the correct values', () => {
-    expect(HotWaterOperationState).toStrictEqual({
+    expect(OperationModeStateHotWater).toStrictEqual({
       dhw: 'dhw',
       idle: 'idle',
       legionella: 'legionella',
@@ -187,7 +183,7 @@ describe('hotWaterOperationState', () => {
 
 describe('zoneOperationState', () => {
   it('should have the correct values', () => {
-    expect(ZoneOperationState).toStrictEqual({
+    expect(OperationModeStateZone).toStrictEqual({
       cooling: 'cooling',
       defrost: 'defrost',
       heating: 'heating',

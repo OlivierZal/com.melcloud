@@ -4,6 +4,8 @@ import type {
   GetDeviceData,
   ListDeviceDataAtw,
   OperationModeState,
+  OperationModeStateHotWater,
+  OperationModeStateZone,
   OperationModeZone,
   UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
@@ -135,35 +137,15 @@ export const HotWaterMode = {
   forced: 'forced',
 } as const
 
-export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
-
-export const HotWaterOperationState = {
-  dhw: 'dhw',
-  idle: 'idle',
-  legionella: 'legionella',
-  prohibited: 'prohibited',
-} as const
-
-export type HotWaterOperationState =
-  (typeof HotWaterOperationState)[keyof typeof HotWaterOperationState]
-
-export const ZoneOperationState = {
-  cooling: 'cooling',
-  defrost: 'defrost',
-  heating: 'heating',
-  idle: 'idle',
-  prohibited: 'prohibited',
-} as const
-
 export interface CapabilitiesAtw
   extends
     EnergyCapabilitiesAtw,
     GetCapabilitiesAtw,
     ListCapabilitiesAtw,
     SetCapabilitiesAtw {
-  readonly 'operational_state.hot_water': HotWaterOperationState
-  readonly 'operational_state.zone1': ZoneOperationState
-  readonly 'operational_state.zone2': ZoneOperationState
+  readonly 'operational_state.hot_water': OperationModeStateHotWater
+  readonly 'operational_state.zone1': OperationModeStateZone
+  readonly 'operational_state.zone2': OperationModeStateZone
 }
 
 export interface EnergyCapabilitiesAtw {
@@ -199,6 +181,8 @@ export interface GetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.zone2': number
   readonly operational_state: keyof typeof OperationModeState
 }
+
+export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
 
 export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
@@ -239,9 +223,6 @@ export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_heat': number
   readonly 'target_temperature.flow_heat_zone2': number
 }
-
-export type ZoneOperationState =
-  (typeof ZoneOperationState)[keyof typeof ZoneOperationState]
 
 export const setCapabilityTagMappingAtw: Record<
   keyof SetCapabilitiesAtw,

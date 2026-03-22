@@ -15,13 +15,14 @@ import type {
   EnergyReportMode,
 } from '../types/index.mts'
 
-import { isTotalEnergyKey, typedEntries } from '../lib/index.mts'
+import {
+  isTotalEnergyKey,
+  KILOWATT_TO_WATT,
+  typedEntries,
+} from '../lib/index.mts'
 
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
-
-// Conversion factor from kW to W for power values
-const KILOWATT_TO_WATT = 1000
 
 const INITIAL_SUM = 0
 const NO_ENERGY_DIVISOR = 1

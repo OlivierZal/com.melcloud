@@ -187,9 +187,9 @@ class NoDeviceError extends Error {
   }
 }
 
-const disableButton = (id: string, value = true): void => {
+const disableButton = (id: string, isDisabled = true): void => {
   const element = document.querySelector(`#${id}`)
-  if (value) {
+  if (isDisabled) {
     element?.classList.add('is-disabled')
     return
   }
@@ -205,8 +205,8 @@ const withDisablingButton = async (
   disableButton(id, false)
 }
 
-const hide = (element: HTMLDivElement, value = true): void => {
-  element.classList.toggle('hidden', value)
+const hide = (element: HTMLDivElement, isHidden = true): void => {
+  element.classList.toggle('hidden', isHidden)
 }
 
 const addTextToCheckbox = (
@@ -254,12 +254,12 @@ const createValueElement = (
     title,
     valueElement,
   }: { title: string; valueElement: HTMLValueElement | null },
-  wrapWithDiv = true,
+  shouldWrapWithDiv = true,
 ): void => {
   if (valueElement) {
     const labelElement = createLabelElement(valueElement, title)
     parentElement.append(
-      wrapWithDiv ? createDivElement(labelElement) : labelElement,
+      shouldWrapWithDiv ? createDivElement(labelElement) : labelElement,
     )
   }
 }
@@ -465,9 +465,9 @@ class AuthManager {
     })
   }
 
-  public needsAuthentication(value = true): void {
-    hide(this.#authenticatedElement, value)
-    hide(this.#authenticatingElement, !value)
+  public needsAuthentication(isRequired = true): void {
+    hide(this.#authenticatedElement, isRequired)
+    hide(this.#authenticatingElement, !isRequired)
   }
 
   #generateCredential(
@@ -662,8 +662,8 @@ class DeviceSettingsManager {
     return this.#flatDeviceSettings
   }
 
-  public disableButtons(id: string, value = true): void {
-    this.#disableButtons(id, value)
+  public disableButtons(id: string, isDisabled = true): void {
+    this.#disableButtons(id, isDisabled)
   }
 
   public async fetchDeviceSettings(): Promise<void> {
@@ -758,13 +758,16 @@ class DeviceSettingsManager {
     return settings
   }
 
-  #disableButtons(id: string, value = true): void {
+  #disableButtons(id: string, isDisabled = true): void {
     const isCommon = id.endsWith('common')
     for (const action of ['apply', 'refresh']) {
-      disableButton(`${action}_${id}`, value)
+      disableButton(`${action}_${id}`, isDisabled)
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(`${action}_${id.replace(/common$/u, driverId)}`, value)
+          disableButton(
+            `${action}_${id.replace(/common$/u, driverId)}`,
+            isDisabled,
+          )
         }
       }
     }

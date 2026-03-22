@@ -322,6 +322,12 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('fetchDevice', () => {
+    it('should expose facade via protected getter after fetch', async () => {
+      await device.fetchDevice()
+
+      expect((device as unknown as { facade: unknown }).facade).toBeDefined()
+    })
+
     it('should get facade and return device', async () => {
       const result = await device.fetchDevice()
 
