@@ -16,7 +16,9 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:assets && tsc -p tsconfig.build.json",
-    "build:assets": "for dir in settings widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done && npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
+    "build:assets": "npm run build:css && npm run build:public",
+    "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
+    "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done && cp public/dom.mts public/zones.mts settings/",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "lint": "eslint .",

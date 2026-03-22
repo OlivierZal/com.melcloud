@@ -4,7 +4,6 @@ import type {
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type ApexCharts from 'apexcharts'
-import type HomeyWidget from 'homey/lib/HomeyWidget'
 
 import type {
   DaysQuery,
@@ -12,20 +11,9 @@ import type {
   HomeyWidgetSettingsCharts as HomeySettings,
 } from '../../../types/index.mts'
 
-import {
-  createOptionElement,
-  getDivElement,
-  getSelectElement,
-} from './dom.mts'
+import { createOptionElement, getDivElement, getSelectElement } from './dom.mts'
+import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 import { getZoneId } from './zones.mts'
-
-declare interface Homey extends HomeyWidget {
-  readonly getSettings: () => HomeySettings
-}
-
-const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  (await homey.api('GET', path)) as T
 
 const ZERO_DECIMALS = 0
 
@@ -208,7 +196,7 @@ const getChartFunction =
     days?: number,
   ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
   async (days?: number) =>
-    homeyApi<ReportChartLineOptions | ReportChartPieOptions>(
+    homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
       homey,
       `/logs/${chart}/${getZonePath()}${
         chartsWithDays.has(chart) && days !== undefined ?
@@ -288,16 +276,12 @@ const draw = async (
   await homey.setHeight(document.body.scrollHeight)
   timeout = setTimeout(() => {
     draw(homey, { chart, days, height }).catch(() => {
-      //
+      // Best-effort: chart will retry on next scheduled refresh
     })
   }, getTimeout(chart))
 }
 
 // ── Setup ──
-
-const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  document.documentElement.lang = String(await homey.api('GET', '/language'))
-}
 
 const generateZones = (zones: DeviceZone[]): void => {
   for (const { id, model, name: label } of zones) {
@@ -314,7 +298,7 @@ const addEventListeners = (
       clearTimeout(timeout)
     }
     draw(homey, config).catch(() => {
-      //
+      // Best-effort: chart will retry on next zone change or refresh
     })
   })
 }
@@ -329,9 +313,9 @@ const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
   }
 }
 
-const fetchDevices = async (homey: Homey): Promise<void> => {
+const fetchDevices = async (homey: Homey<HomeySettings>): Promise<void> => {
   const { chart, days, default_zone: defaultZone, height } = homey.getSettings()
-  const devices = await homeyApi<DeviceZone[]>(
+  const devices = await homeyApiGet<DeviceZone[]>(
     homey,
     `/devices${
       chart === 'hourly_temperatures' ?
@@ -349,7 +333,7 @@ const fetchDevices = async (homey: Homey): Promise<void> => {
   }
 }
 
-const onHomeyReady = async (homey: Homey): Promise<void> => {
+const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
   await setDocumentLanguage(homey)
   await fetchDevices(homey)
   homey.ready({ height: document.body.scrollHeight })

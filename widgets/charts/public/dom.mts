@@ -1,6 +1,9 @@
 export type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-export const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
+export const booleanStrings: string[] = [
+  'false',
+  'true',
+] satisfies `${boolean}`[]
 
 export const getElement = <T extends HTMLElement>(
   id: string,

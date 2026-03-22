@@ -9,22 +9,22 @@ import type Homey from 'homey/lib/HomeySettings'
 
 import type { Zone } from '../types/index.mts'
 
-import {
-  createOptionElement,
-  getButtonElement,
-  getInputElement,
-  getSelectElement,
-} from './dom.mts'
-import { getZoneId, getZoneName } from './zones.mts'
-
-import { getErrorMessage, homeyApiGet, homeyApiPut } from './api.mts'
 import type { DeviceSettingsManager } from './device-settings.mts'
+
 import {
   FROST_PROTECTION_TEMPERATURE_GAP,
   initFrostProtectionMaxElement,
   initFrostProtectionMinElement,
   int,
 } from './dom-helpers.mts'
+import {
+  createOptionElement,
+  getButtonElement,
+  getInputElement,
+  getSelectElement,
+} from './dom.mts'
+import { getErrorMessage, homeyApiGet, homeyApiPut } from './homey-api.mts'
+import { getZoneId, getZoneName } from './zones.mts'
 
 const getSubzones = (zone: Zone): Zone[] => [
   ...('devices' in zone ? zone.devices : []),
@@ -73,7 +73,7 @@ export class ZoneSettingsManager {
   public addEventListeners(): void {
     this.#zoneElement.addEventListener('change', () => {
       this.fetchZoneSettings().catch(() => {
-        //
+        // Errors are handled internally by fetchFrostProtectionData and fetchHolidayModeData
       })
     })
     this.#addHolidayModeEventListeners()
@@ -262,11 +262,11 @@ export class ZoneSettingsManager {
           max,
           min,
         }).catch(() => {
-          //
+          // Errors are handled internally via homey.alert in setFrostProtectionData
         })
       } catch (error) {
         this.#homey.alert(getErrorMessage(error)).catch(() => {
-          //
+          // Best-effort UI notification: the alert itself is the error display
         })
       }
     })
@@ -297,7 +297,7 @@ export class ZoneSettingsManager {
         this.#homey
           .alert(this.#homey.__('settings.holidayMode.endDateMissing'))
           .catch(() => {
-            //
+            // Best-effort UI notification: the alert itself is the error display
           })
         return
       }
@@ -305,7 +305,7 @@ export class ZoneSettingsManager {
         from: this.#holidayModeStartDateElement.value || undefined,
         to: endDate,
       }).catch(() => {
-        //
+        // Errors are handled internally via homey.alert in setHolidayModeData
       })
     })
   }

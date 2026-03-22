@@ -7,8 +7,6 @@ import type {
   Zone,
 } from '../../../types/index.mts'
 
-import type { Homey } from './types.mts'
-
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -16,6 +14,7 @@ import {
   getSelectElement,
   handleNumericInputElement,
 } from './dom.mts'
+import { type Homey, homeyApiGet, homeyApiPut } from './homey-api.mts'
 import { getZoneId, getZoneName } from './zones.mts'
 
 // ── Temperature constants ──
@@ -173,10 +172,6 @@ const getSubzones = (zone: Zone): Zone[] => [
 
 // ── AtaValueManager class ──
 
-const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  (await homey.api('GET', path)) as T
-
 export class AtaValueManager {
   readonly #ataValuesElement: HTMLDivElement
 
@@ -201,7 +196,7 @@ export class AtaValueManager {
   }
 
   public async fetchCapabilities(): Promise<void> {
-    this.#ataCapabilities = await homeyApi<
+    this.#ataCapabilities = await homeyApiGet<
       [keyof GroupState, DriverCapabilitiesOptions][]
     >(this.#homey, '/capabilities/ata')
     this.#defaultAtaValues = Object.fromEntries(
@@ -210,7 +205,7 @@ export class AtaValueManager {
   }
 
   public async fetchValues(): Promise<GroupState> {
-    const values = await homeyApi<GroupState>(
+    const values = await homeyApiGet<GroupState>(
       this.#homey,
       `/values/ata/${this.#getZonePath()}`,
     )
@@ -257,17 +252,13 @@ export class AtaValueManager {
   }
 
   public async setValues(): Promise<void> {
-    try {
-      const body = this.#buildAtaValuesBody()
-      if (Object.keys(body).length) {
-        await this.#homey.api(
-          'PUT',
-          `/values/ata/${this.#getZonePath()}`,
-          body satisfies GroupState,
-        )
-      }
-    } catch {
-      // Non-critical: values will resync on next device update
+    const body = this.#buildAtaValuesBody()
+    if (Object.keys(body).length) {
+      await homeyApiPut(
+        this.#homey,
+        `/values/ata/${this.#getZonePath()}`,
+        body satisfies GroupState,
+      )
     }
   }
 

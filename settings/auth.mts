@@ -3,15 +3,14 @@ import type Homey from 'homey/lib/HomeySettings'
 
 import type { DriverSetting, LoginDriverSetting } from '../types/index.mts'
 
-import { getButtonElement, getDivElement } from './dom.mts'
-
-import { homeyApiPost, getErrorMessage } from './api.mts'
 import {
   createInputElement,
   createValueElement,
   hide,
   withDisablingButton,
 } from './dom-helpers.mts'
+import { getButtonElement, getDivElement } from './dom.mts'
+import { getErrorMessage, homeyApiPost } from './homey-api.mts'
 
 export class AuthManager {
   readonly #authenticatedElement: HTMLDivElement
@@ -42,7 +41,7 @@ export class AuthManager {
   public addEventListeners(): void {
     this.#authenticateElement.addEventListener('click', () => {
       this.login().catch(() => {
-        //
+        // Errors are handled internally via homey.alert in login
       })
     })
   }
@@ -73,7 +72,7 @@ export class AuthManager {
       this.#homey
         .alert(this.#homey.__('settings.authenticate.failure'))
         .catch(() => {
-          //
+          // Best-effort UI notification: the alert itself is the error display
         })
       return
     }

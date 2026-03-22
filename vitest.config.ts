@@ -21,6 +21,7 @@ export default defineConfig({
     coverage: {
       exclude: ['**/public/**/*.mts', '**/settings/**/*.mts'],
       include: ['**/*.mts'],
+      reporter: ['text', 'lcov'],
       thresholds: {
         branches: 100,
         functions: 100,

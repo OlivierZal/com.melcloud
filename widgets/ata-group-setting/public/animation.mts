@@ -1,13 +1,11 @@
 import type { GroupState, OperationMode } from '@olivierzal/melcloud-api'
 
-import type {
-  GetAtaOptions,
-  GroupAtaStates,
-} from '../../../types/index.mts'
-
-import type { Homey } from './types.mts'
+import type { GetAtaOptions, GroupAtaStates } from '../../../types/index.mts'
 
 import { getSelectElement } from './dom.mts'
+import { type Homey, homeyApiGet } from './homey-api.mts'
+import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
+import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
@@ -19,12 +17,9 @@ export interface ResetParams {
 // ── Numeric constants ──
 
 const DEFAULT_DIVISOR_ONE = 1
-const DEFAULT_MULTIPLIER_ONE = 1
 const FACTOR_TWO = 2
 const FACTOR_FIVE = 5
-const FACTOR_TEN = 10
 const INCREMENT_ONE = 1
-const START_ANGLE = 0
 const FULL_CIRCLE = FACTOR_TWO * Math.PI
 
 // ── Speed constants ──
@@ -76,40 +71,11 @@ const AnimationGap = {
   snowflake: 50,
 } as const
 
-// Thresholds for smoke particle lifecycle
-const SmokeThreshold = {
-  iterations: 10,
-  opacityMin: 0,
-  positionYMin: -50,
-  sizeMin: 0.1,
-} as const
-
 const DEFAULT_RECT_X = 0
 const DEFAULT_RECT_Y = 0
 const LEAF_NO_LOOP_RADIUS = 0
 
 const ANIMATION_KEYFRAME_COUNT = 101
-
-// ── Style helpers ──
-
-const generateStyleNumber = ({
-  divisor,
-  gap,
-  min,
-  multiplier,
-}: {
-  gap: number
-  min: number
-  divisor?: number
-  multiplier?: number
-}): number =>
-  ((Math.random() * gap + min) * (multiplier ?? DEFAULT_MULTIPLIER_ONE)) /
-  ((divisor ?? DEFAULT_DIVISOR_ONE) || DEFAULT_DIVISOR_ONE)
-
-const generateStyleString = (
-  params: { gap: number; min: number; divisor?: number; multiplier?: number },
-  unit = '',
-): string => `${String(generateStyleNumber(params))}${unit}`
 
 /*
  * Calculates a randomized delay with exponential speed scaling. Higher speed
@@ -123,66 +89,8 @@ const generateDelay = (delay: number, speed: number): number =>
       ((speed - Speed.verySlow) / (Speed.veryFast - Speed.verySlow)) ||
     DEFAULT_DIVISOR_ONE)
 
-// ── API helper ──
-
-const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  (await homey.api('GET', path)) as T
-
 const getZonePath = (): string =>
   getSelectElement('zones').value.replace('_', '/')
-
-// ── SmokeParticle class ──
-
-class SmokeParticle {
-  public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
-
-  public positionY: number
-
-  public size = generateStyleNumber({ gap: 2, min: 2 })
-
-  readonly #context: CanvasRenderingContext2D
-
-  readonly #speedX: number
-
-  readonly #speedY: number
-
-  #positionX: number
-
-  public constructor(
-    context: CanvasRenderingContext2D,
-    positionX: number,
-    positionY: number,
-  ) {
-    this.#context = context
-    this.#positionX = positionX
-    this.#speedX = generateStyleNumber({ gap: 0.2, min: -0.1 })
-    this.#speedY = generateStyleNumber({ gap: 0.6, min: 0.2 })
-    this.positionY = positionY
-  }
-
-  public draw(): void {
-    this.#context.beginPath()
-    this.#context.arc(
-      this.#positionX,
-      this.positionY,
-      this.size,
-      START_ANGLE,
-      FULL_CIRCLE,
-    )
-    this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
-    this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
-    this.#context.fill()
-    this.#context.filter = 'none'
-  }
-
-  public update(speed: number): void {
-    this.opacity -= 0.001
-    this.#positionX += this.#speedX * speed
-    this.positionY -= this.#speedY * speed
-    this.size *= 1.002
-  }
-}
 
 // ── Animation helpers ──
 
@@ -655,7 +563,7 @@ export class AnimationController {
   }
 
   async #getModes(): Promise<OperationMode[]> {
-    const detailedAtaValues = await homeyApi<GroupAtaStates>(
+    const detailedAtaValues = await homeyApiGet<GroupAtaStates>(
       this.#homey,
       `/values/ata/${getZonePath()}?${new URLSearchParams({
         mode: 'detailed',

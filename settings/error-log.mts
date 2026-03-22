@@ -1,15 +1,18 @@
-import type { ErrorDetails, ErrorLog, ErrorLogQuery } from '@olivierzal/melcloud-api'
+import type {
+  ErrorDetails,
+  ErrorLog,
+  ErrorLogQuery,
+} from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeySettings'
 
+import { withDisablingButton } from './dom-helpers.mts'
 import {
   getButtonElement,
   getDivElement,
   getInputElement,
   getLabelElement,
 } from './dom.mts'
-
-import { getErrorMessage, homeyApiGet } from './api.mts'
-import { withDisablingButton } from './dom-helpers.mts'
+import { getErrorMessage, homeyApiGet } from './homey-api.mts'
 
 const Modulo = {
   base10: 10,
@@ -100,13 +103,13 @@ export class ErrorLogManager {
             this.#homey.__('settings.errorLog.error', { from: this.#from }),
           )
           .catch(() => {
-            //
+            // Best-effort UI notification: the alert itself is the error display
           })
       }
     })
     this.#seeElement.addEventListener('click', () => {
       this.fetchErrorLog().catch(() => {
-        //
+        // Errors are handled internally via homey.alert in fetchErrorLog
       })
     })
   }

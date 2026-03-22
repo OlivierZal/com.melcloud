@@ -9,14 +9,6 @@ import type {
 } from '../types/index.mts'
 
 import {
-  type HTMLValueElement,
-  booleanStrings,
-  getButtonElement,
-  getDivElement,
-} from './dom.mts'
-
-import { getErrorMessage, homeyApiGet, homeyApiPut } from './api.mts'
-import {
   commonElementTypes,
   commonElementValueTypes,
   createCheckboxElement,
@@ -27,6 +19,13 @@ import {
   hide,
   int,
 } from './dom-helpers.mts'
+import {
+  type HTMLValueElement,
+  booleanStrings,
+  getButtonElement,
+  getDivElement,
+} from './dom.mts'
+import { getErrorMessage, homeyApiGet, homeyApiPut } from './homey-api.mts'
 
 const SIZE_ONE = 1
 
@@ -100,7 +99,7 @@ export class DeviceSettingsManager {
     const buttonElement = getButtonElement(`apply_${settings}`)
     buttonElement.addEventListener('click', () => {
       this.#setDeviceSettings(elements, driverId).catch(() => {
-        //
+        // Errors are handled internally via homey.alert in #setDeviceSettings
       })
     })
   }
@@ -295,7 +294,7 @@ export class DeviceSettingsManager {
       this.#homey
         .alert(this.#homey.__('settings.devices.apply.nothing'))
         .catch(() => {
-          //
+          // Best-effort UI notification: the alert itself is the error display
         })
       return
     }

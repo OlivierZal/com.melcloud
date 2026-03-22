@@ -2,13 +2,12 @@ import type Homey from 'homey/lib/HomeySettings'
 
 import type { BuildingZone, HomeySettings } from '../types/index.mts'
 
-import { getButtonElement } from './dom.mts'
-
-import { getErrorMessage, homeyApiGet } from './api.mts'
 import { AuthManager } from './auth.mts'
 import { DeviceSettingsManager } from './device-settings.mts'
 import { disableButton, NoDeviceError } from './dom-helpers.mts'
+import { getButtonElement } from './dom.mts'
 import { ErrorLogManager } from './error-log.mts'
+import { getErrorMessage, homeyApiGet } from './homey-api.mts'
 import { ZoneSettingsManager } from './zone-settings.mts'
 
 class SettingsApp {
@@ -83,7 +82,7 @@ class SettingsApp {
       this.#homey
         .openURL('https://homey.app/a/com.mecloud.extension')
         .catch(() => {
-          //
+          // Best-effort navigation: if opening the URL fails, there is nothing more to do
         })
     })
   }

@@ -1,8 +1,9 @@
 import type { DeviceType } from '@olivierzal/melcloud-api'
 
-import type { BuildingZone } from '../../../types/index.mts'
-
-import type { Homey } from './types.mts'
+import type {
+  BuildingZone,
+  HomeyWidgetSettingsAtaGroupSetting as HomeySettings,
+} from '../../../types/index.mts'
 
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
@@ -12,14 +13,7 @@ import {
   getDivElement,
   getSelectElement,
 } from './dom.mts'
-
-const homeyApi = async <T,>(homey: Homey, path: string): Promise<T> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  (await homey.api('GET', path)) as T
-
-const setDocumentLanguage = async (homey: Homey): Promise<void> => {
-  document.documentElement.lang = String(await homey.api('GET', '/language'))
-}
+import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 
 // ── WidgetApp class ──
 
@@ -28,13 +22,13 @@ class WidgetApp {
 
   readonly #ataValueManager: AtaValueManager
 
-  readonly #homey: Homey
+  readonly #homey: Homey<HomeySettings>
 
   #debounceTimeout: NodeJS.Timeout | null = null
 
   #isAnimations = false
 
-  public constructor(homey: Homey) {
+  public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animationElement = getDivElement('animation')
     const canvas = getCanvasElement('smoke_canvas')
@@ -65,7 +59,7 @@ class WidgetApp {
     const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
     zoneElement.addEventListener('change', () => {
       this.#fetchAndAnimate().catch(() => {
-        //
+        // Errors are handled internally by fetchValues/handleAnimation
       })
     })
     refreshAtaValuesElement.addEventListener('click', () => {
@@ -75,7 +69,7 @@ class WidgetApp {
     updateAtaValuesElement.addEventListener('click', () => {
       this.#homey.hapticFeedback()
       this.#ataValueManager.setValues().catch(() => {
-        //
+        // Best-effort: values will resync on next device update
       })
     })
     this.#homey.on('deviceupdate', () => {
@@ -84,7 +78,7 @@ class WidgetApp {
       }
       this.#debounceTimeout = setTimeout(() => {
         this.#fetchAndAnimate().catch(() => {
-          //
+          // Errors are handled internally by fetchValues/handleAnimation
         })
       }, AnimationDelay.debounce)
     })
@@ -96,7 +90,7 @@ class WidgetApp {
   }
 
   async #initBuildings(): Promise<void> {
-    const buildings = await homeyApi<BuildingZone[]>(
+    const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,
       `/buildings?${new URLSearchParams({
         type: '0',
@@ -117,7 +111,7 @@ class WidgetApp {
 
 // ── Entry point ──
 
-const onHomeyReady = async (homey: Homey): Promise<void> => {
+const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
   const app = new WidgetApp(homey)
   await app.init()
 }
