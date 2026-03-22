@@ -109,9 +109,9 @@ jobs:
               gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code."
               PR_URL=$(gh pr view "$BRANCH_NAME" --json url -q '.url')
               gh pr merge --auto --merge --delete-branch "$PR_URL"
-            else
-              git pull --rebase origin -- "$HEAD_REF"
-              git push origin -- "HEAD:$HEAD_REF"
+            elif [[ ${{ github.ref_type }} == "branch" ]]; then
+              git pull --rebase origin "$HEAD_REF"
+              git push origin "HEAD:$HEAD_REF"
             fi
           fi
 name: Build app
