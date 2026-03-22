@@ -21,7 +21,10 @@ jobs:
       - name: URL
         run: echo "Manage your app at ${{ steps.publish.outputs.url }}." >> $GITHUB_STEP_SUMMARY
 name: Publish app on Homey
-on: workflow_dispatch
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
 permissions:
   contents: read
   packages: read
