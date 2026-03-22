@@ -69,7 +69,7 @@ class WidgetApp {
     updateAtaValuesElement.addEventListener('click', () => {
       this.#homey.hapticFeedback()
       this.#ataValueManager.setValues().catch(() => {
-        // Best-effort: values will resync on next device update
+        // Values will resync on next device update
       })
     })
     this.#homey.on('deviceupdate', () => {
