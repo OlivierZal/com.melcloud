@@ -52,7 +52,7 @@
     "@types/node": "^25.5.0",
     "@typescript/native-preview": "^7.0.0-dev.20260319.1",
     "@vitest/coverage-v8": "^4.1.0",
-    "@vitest/eslint-plugin": "^1.6.12",
+    "@vitest/eslint-plugin": "^1.6.13",
     "apexcharts": "^5.10.4",
     "daisyui": "^5.5.19",
     "eslint": "^10.1.0",
