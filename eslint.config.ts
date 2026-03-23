@@ -558,6 +558,12 @@ const config = defineConfig([
     },
   },
   {
+    files: ['settings/index.mts'],
+    rules: {
+      'max-classes-per-file': 'off',
+    },
+  },
+  {
     files: ['**/*.config.{ts,js}'],
     rules: {
       '@typescript-eslint/naming-convention': 'off',

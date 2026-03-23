@@ -27,7 +27,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepare": "npm run build",
     "publish:homey": "homey app publish",
-    "run:homey": "homey app run --remote",
+    "start:homey": "homey app run --remote",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",

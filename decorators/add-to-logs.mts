@@ -1,7 +1,12 @@
-import type { SimpleClass } from 'homey'
-
 const PARENTHESES = '()'
 const SLICE_START_ZERO = 0
+
+interface Loggable {
+  /* eslint-disable @typescript-eslint/method-signature-style -- Method syntax required: class overrides are methods, not properties */
+  error(...args: unknown[]): void
+  log(...args: unknown[]): void
+  /* eslint-enable @typescript-eslint/method-signature-style */
+}
 
 const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
   typeof value === 'function'
@@ -13,7 +18,7 @@ const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
  * or a literal string (used as-is). Values are separated by '-' in the output.
  */
 export const addToLogs =
-  <T extends abstract new (...args: any[]) => SimpleClass>(...logs: string[]) =>
+  <T extends abstract new (...args: any[]) => Loggable>(...logs: string[]) =>
   (target: T, _context: ClassDecoratorContext): T => {
     abstract class LogDecorator extends target {
       public override error(...args: unknown[]): void {

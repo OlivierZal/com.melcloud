@@ -1,7 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/consistent-type-imports,
-    @typescript-eslint/strict-void-return,
-*/
 import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 
 import { DateTime, Settings } from 'luxon'
@@ -9,6 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 
 import {
@@ -65,7 +62,7 @@ const mockDevice = mock<BaseMELCloudDevice<TestDeviceType>>({
   driver: mockDriver,
   error: errorMock,
   fetchDevice: fetchDeviceMock,
-  homey: mock<import('homey').Homey>({
+  homey: mock<Homey.Homey>({
     clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
   }),
@@ -301,8 +298,7 @@ describe(EnergyReport, () => {
     })
   })
 
-  // eslint-disable-next-line vitest/prefer-lowercase-title
-  describe('COP calculation', () => {
+  describe('cop calculation', () => {
     const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
       const copConsumed = {
         'measure_power.cop': ['ConsumedTag'],
@@ -324,7 +320,7 @@ describe(EnergyReport, () => {
         }),
         driver: copDriver,
         fetchDevice: fetchDeviceMock,
-        homey: mock<import('homey').Homey>({
+        homey: mock<Homey.Homey>({
           clearInterval: clearIntervalMock,
           clearTimeout: clearTimeoutMock,
         }),
@@ -360,8 +356,7 @@ describe(EnergyReport, () => {
     })
   })
 
-  // eslint-disable-next-line vitest/prefer-lowercase-title
-  describe('UsageDisclaimerPercentages divides by device count', () => {
+  describe('usageDisclaimerPercentages divides by device count', () => {
     it('should divide energy values by linked device count', async () => {
       cleanMappingMock.mockReturnValue({
         'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],

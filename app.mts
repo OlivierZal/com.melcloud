@@ -1,6 +1,3 @@
-// eslint-disable-next-line import-x/no-extraneous-dependencies
-import Homey from 'homey'
-
 import {
   type BuildingFacade,
   type DeviceFacade,
@@ -37,6 +34,7 @@ import {
   vertical,
 } from './files.mts'
 import { setFacadeManager } from './lib/get-zones.mts'
+import { type Homey, App } from './lib/homey.mts'
 import { typedFromEntries } from './lib/index.mts'
 import {
   type DeviceSettings,
@@ -145,8 +143,7 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// eslint-disable-next-line import-x/no-named-as-default-member
-export default class MELCloudApp extends Homey.App {
+export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
   #api!: MELCloudAPI
@@ -184,7 +181,7 @@ export default class MELCloudApp extends Homey.App {
 
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 

@@ -5,9 +5,6 @@ import type {
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
-// eslint-disable-next-line import-x/no-extraneous-dependencies
-import Homey from 'homey'
-
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -26,6 +23,7 @@ import type {
 } from '../types/index.mts'
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
+import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey, typedEntries } from '../lib/index.mts'
 import { withTimers } from '../mixins/with-timers.mts'
 
@@ -43,8 +41,7 @@ const getErrorMessage = (error: unknown): string =>
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
-  // eslint-disable-next-line import-x/no-named-as-default-member
-> extends withTimers(Homey.Device) {
+> extends withTimers(Device) {
   declare public readonly driver: BaseMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
@@ -174,7 +171,7 @@ export abstract class BaseMELCloudDevice<
 
   public override async onUninit(): Promise<void> {
     this.onDeleted()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 

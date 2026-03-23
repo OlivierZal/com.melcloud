@@ -264,7 +264,7 @@ export class AtaValueManager {
 
   #buildAtaValuesBody(): GroupState {
     return Object.fromEntries(
-      // eslint-disable-next-line unicorn/prefer-spread
+      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
       Array.from(
         this.#ataValuesElement.querySelectorAll<HTMLValueElement>(
           'input, select',

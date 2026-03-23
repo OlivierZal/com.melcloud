@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect(), not vi.mocked() or mock assignments */
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 

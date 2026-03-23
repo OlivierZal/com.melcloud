@@ -5,9 +5,6 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
 
-// eslint-disable-next-line import-x/no-extraneous-dependencies
-import Homey from 'homey'
-
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -23,6 +20,7 @@ import type {
   SetCapabilityTagMapping,
 } from '../types/index.mts'
 
+import { type Homey, Driver } from '../lib/homey.mts'
 import { typedEntries, typedKeys } from '../lib/index.mts'
 
 const getArg = <T extends DeviceType>(
@@ -33,10 +31,7 @@ const getArg = <T extends DeviceType>(
   return arg as keyof FlowArgs<T>
 }
 
-export abstract class BaseMELCloudDriver<T extends DeviceType>
-  // eslint-disable-next-line import-x/no-named-as-default-member
-  extends Homey.Driver
-{
+export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
   declare public readonly getDevices: () => MELCloudDevice[]
 
   declare public readonly homey: Homey.Homey
@@ -66,7 +61,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 
@@ -82,18 +77,18 @@ export abstract class BaseMELCloudDriver<T extends DeviceType>
     })
     this.#handleLogin(session)
     session.setHandler('list_devices', async () => this.#discoverDevices())
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 
   public override async onRepair(session: PairSession): Promise<void> {
     this.#handleLogin(session)
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve(
       this.homey.app.api.registry
         .getDevicesByType(this.type)

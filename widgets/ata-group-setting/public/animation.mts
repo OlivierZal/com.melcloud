@@ -663,7 +663,7 @@ export class AnimationController {
         return
       }
     }
-    // eslint-disable-next-line unicorn/prefer-spread
+    // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
     for (const flame of Array.from(
       document.querySelectorAll<HTMLElement>('.flame'),
     )) {

@@ -5,7 +5,6 @@ import { addToLogs } from '../../decorators/add-to-logs.mts'
 const logSpy = vi.fn()
 const errorSpy = vi.fn()
 
-// @ts-expect-error: test class intentionally doesn't extend SimpleClass
 @addToLogs('[TestClass]', 'getName()', 'id')
 class TestClass {
   public readonly id = 42
@@ -23,14 +22,13 @@ class TestClass {
   }
 }
 
-// @ts-expect-error: test class intentionally doesn't extend SimpleClass
 @addToLogs('getLabel()')
 class TestClassWithNonZeroArgMethod {
   public error(...args: unknown[]): void {
     errorSpy.call(this, ...args)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Parameter needed for function arity check, argsIgnorePattern doesn't match
   public getLabel(_prefix: string): string {
     return 'label'
   }

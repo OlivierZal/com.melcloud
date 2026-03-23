@@ -30,8 +30,9 @@ import { assertDefined, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-vi.mock('homey', () => ({ default: { App: class HomeyApp {} } }))
+vi.mock('../../lib/homey.mts', () => ({
+  App: Function,
+}))
 
 vi.mock('../../lib/get-zones.mts', () => ({
   setFacadeManager: mockSetFacadeManager,
@@ -92,7 +93,7 @@ vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
 
 const { default: MelCloudApp } = await import('../../app.mts')
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
+// eslint-disable-next-line @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect()
 const mockCreate = vi.mocked(MELCloudAPI.create)
 
 const mockGetLanguage = vi.fn<() => string>().mockReturnValue('en')

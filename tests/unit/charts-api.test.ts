@@ -26,8 +26,7 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const homey = mock<Homey>({ app: mockApp, i18n: mockI18n } as never)
+const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
 
 describe('charts api', () => {
   beforeEach(() => {

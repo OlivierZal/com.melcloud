@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import type {
   ErrorDetails,
   ErrorLog,
@@ -807,7 +806,7 @@ class DeviceSettingsManager {
       }
     }
     this.#addSettingsEventListeners(
-      // eslint-disable-next-line unicorn/prefer-spread
+      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
       Array.from(this.#settingsCommonElement.querySelectorAll('select')),
     )
   }
@@ -825,7 +824,7 @@ class DeviceSettingsManager {
         this.#handleDriverSettings(driverSetting, fieldSetElement)
         settingsElement.append(fieldSetElement)
         this.#addSettingsEventListeners(
-          // eslint-disable-next-line unicorn/prefer-spread
+          // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
           Array.from(fieldSetElement.querySelectorAll('input')),
           driverId,
         )
