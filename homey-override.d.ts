@@ -22,11 +22,10 @@ declare module 'homey' {
   }
 
   interface ManagerSettings extends HomeyLib.ManagerSettings {
-    get: <T extends keyof HomeySettings>(key: T) => HomeySettings[T]
-    set: <T extends keyof HomeySettings>(
-      key: T,
-      value: HomeySettings[T],
-    ) => void
+    get: ((key: string) => unknown) &
+      (<T extends keyof HomeySettings>(key: T) => HomeySettings[T])
+    set: ((key: string, value: unknown) => void) &
+      (<T extends keyof HomeySettings>(key: T, value: HomeySettings[T]) => void)
   }
 }
 

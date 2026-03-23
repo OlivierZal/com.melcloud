@@ -314,7 +314,7 @@ export abstract class BaseMELCloudDevice<
     changedCapabilities: string[],
   ): Promise<void> {
     for (const capability of changedCapabilities) {
-      // eslint-disable-next-line no-await-in-loop
+      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
       await (newSettings[capability] === true ?
         this.addCapability(capability)
       : this.removeCapability(capability))
@@ -404,7 +404,7 @@ export abstract class BaseMELCloudDevice<
     for (const capability of currentCapabilities.symmetricDifference(
       requiredCapabilities,
     )) {
-      // eslint-disable-next-line no-await-in-loop
+      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
       await (requiredCapabilities.has(capability) ?
         this.addCapability(capability)
       : this.removeCapability(capability))
@@ -427,7 +427,7 @@ export abstract class BaseMELCloudDevice<
       CapabilitiesOptions<T>[Extract<keyof CapabilitiesOptions<T>, string>] &
         Record<string, unknown>,
     ][]) {
-      // eslint-disable-next-line no-await-in-loop
+      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
       await this.setCapabilityOptions(capability, options)
     }
   }

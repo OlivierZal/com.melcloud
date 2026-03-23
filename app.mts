@@ -16,7 +16,6 @@ import {
   type LoginCredentials,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
-  type SettingManager,
   type ZoneFacade,
   DeviceType,
   FacadeManager,
@@ -173,8 +172,7 @@ export default class MELCloudApp extends Homey.App {
           this.log(...args)
         },
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      settingManager: this.homey.settings as unknown as SettingManager,
+      settingManager: this.homey.settings,
       timezone,
       onSync: async (params) => this.#syncFromDevices(params),
     })

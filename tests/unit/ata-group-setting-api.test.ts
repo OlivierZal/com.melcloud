@@ -14,7 +14,8 @@ import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn<() => BuildingZone[]>()
 
-vi.mock('../../lib/index.mts', () => ({
+vi.mock('../../lib/index.mts', async (importOriginal) => ({
+  ...(await importOriginal()),
   getBuildings: mockGetBuildings,
 }))
 

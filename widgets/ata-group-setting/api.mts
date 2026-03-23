@@ -9,7 +9,7 @@ import type {
   ZoneData,
 } from '../../types/index.mts'
 
-import { getBuildings } from '../../lib/index.mts'
+import { getBuildings, toDeviceType } from '../../lib/index.mts'
 
 const api = {
   getAtaCapabilities({
@@ -38,8 +38,7 @@ const api = {
     query: { type?: `${DeviceType}` }
   }): BuildingZone[] {
     return getBuildings({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      type: type ? (Number(type) as DeviceType) : undefined,
+      type: type ? toDeviceType(type) : undefined,
     })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {

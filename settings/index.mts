@@ -1112,7 +1112,7 @@ class ZoneSettingsManager {
           id: getZoneId(id, model),
           label: getZoneName(name, level),
         })
-        // eslint-disable-next-line no-await-in-loop
+        // eslint-disable-next-line no-await-in-loop -- Sequential: parent-child order required for tree rendering
         await this.generateZones(getSubzones(zone))
       }
     }

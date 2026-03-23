@@ -10,7 +10,8 @@ import { mock } from '../helpers.js'
 
 const mockGetZones = vi.fn()
 
-vi.mock('../../lib/index.mts', () => ({
+vi.mock('../../lib/index.mts', async (importOriginal) => ({
+  ...(await importOriginal()),
   getZones: mockGetZones,
 }))
 
@@ -63,6 +64,12 @@ describe('charts api', () => {
         { id: 2, level: 1, model: 'devices', name: 'Device 1' },
       ])
       expect(mockGetZones).toHaveBeenCalledWith({ type: 0 })
+    })
+
+    it('should throw on invalid device type', () => {
+      expect(() => api.getDevices({ query: { type: '99' as '0' } })).toThrow(
+        RangeError,
+      )
     })
 
     it('should return empty array when no device zones exist', () => {
