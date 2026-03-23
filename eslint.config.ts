@@ -546,6 +546,13 @@ const config = defineConfig([
     },
   },
   {
+    files: ['lib/homey.mts'],
+    rules: {
+      'import-x/no-extraneous-dependencies': 'off',
+      'import-x/no-named-as-default-member': 'off',
+    },
+  },
+  {
     files: ['**/api.mts', 'app.mts', 'drivers/*/{device,driver}.mts'],
     rules: {
       'import-x/no-default-export': 'off',
