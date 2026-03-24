@@ -205,7 +205,7 @@ const withDisablingButton = async (
 }
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
-  element.classList.toggle('hidden', isHidden)
+  element.hidden = isHidden
 }
 
 const addTextToCheckbox = (
@@ -905,7 +905,7 @@ class DeviceSettingsManager {
         )
       }
       this.#homey
-        .alert(this.#homey.__('settings.devices.apply.nothing'))
+        .alert(this.#homey.__('settings.devices.nothing'))
         .catch(() => {
           // Best-effort UI notification: the alert itself is the error display
         })
@@ -915,15 +915,13 @@ class DeviceSettingsManager {
       `settings_${driverId ?? 'common'}`,
       async () => {
         try {
+          const driverQuery =
+            driverId === undefined ? '' : (
+              `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
+            )
           await homeyApiPut<unknown>(
             this.#homey,
-            `/settings/devices${
-              driverId === undefined ? '' : (
-                `?${new URLSearchParams({ driverId } satisfies {
-                  driverId: string
-                })}`
-              )
-            }`,
+            `/settings/devices${driverQuery}`,
             body satisfies Settings,
           )
           this.#updateDeviceSettings(body, driverId)
@@ -956,14 +954,14 @@ class DeviceSettingsManager {
     value: ValueOf<Settings>,
     driverId?: string,
   ): boolean {
-    if (value !== null) {
-      const setting =
-        driverId === undefined ?
-          this.#flatDeviceSettings[id]
-        : this.#deviceSettings[driverId]?.[id]
-      return setting === null ? true : value !== setting
+    if (value === null) {
+      return false
     }
-    return false
+    const setting =
+      driverId === undefined ?
+        this.#flatDeviceSettings[id]
+      : this.#deviceSettings[driverId]?.[id]
+    return setting === null || value !== setting
   }
 
   #updateCommonSetting(element: HTMLSelectElement): void {
@@ -1206,11 +1204,15 @@ class ZoneSettingsManager {
     otherElement: HTMLInputElement,
   ): void {
     primaryElement.addEventListener('change', () => {
-      if (primaryElement.value) {
-        if (this.#holidayModeEnabledElement.value === 'false') {
-          this.#holidayModeEnabledElement.value = 'true'
-        }
-      } else if (
+      if (
+        primaryElement.value &&
+        this.#holidayModeEnabledElement.value === 'false'
+      ) {
+        this.#holidayModeEnabledElement.value = 'true'
+        return
+      }
+      if (
+        !primaryElement.value &&
         !otherElement.value &&
         this.#holidayModeEnabledElement.value === 'true'
       ) {
@@ -1430,6 +1432,7 @@ class SettingsApp {
     if (contextKey !== undefined) {
       try {
         await this.#fetchBuildings()
+        this.#authManager.needsAuthentication(false)
         return
       } catch {
         // Session expired or no devices: fall through to login

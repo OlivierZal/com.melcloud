@@ -1,9 +1,7 @@
 import { generateStyleNumber } from './style-helpers.mts'
 
-const START_ANGLE = 0
-const FACTOR_TWO = 2
-const FACTOR_TEN = 10
-const FULL_CIRCLE = FACTOR_TWO * Math.PI
+const BLUR_DIVISOR = 10
+const FULL_CIRCLE = 2 * Math.PI
 
 export const SmokeThreshold = {
   iterations: 10,
@@ -45,10 +43,10 @@ export class SmokeParticle {
       this.#positionX,
       this.positionY,
       this.size,
-      START_ANGLE,
+      0,
       FULL_CIRCLE,
     )
-    this.#context.filter = `blur(${String(this.size / FACTOR_TEN)}px)`
+    this.#context.filter = `blur(${String(this.size / BLUR_DIVISOR)}px)`
     this.#context.fillStyle = `rgba(200, 200, 200, ${String(this.opacity)})`
     this.#context.fill()
     this.#context.filter = 'none'

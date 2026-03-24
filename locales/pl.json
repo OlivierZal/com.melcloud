@@ -14,12 +14,13 @@
       "true": "Tak"
     },
     "devices": {
+      "legend": "Ustawienia urządzenia",
+      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
+      "nothing": "Brak zmian do zastosowania.",
       "apply": {
         "button": "Zastosuj do wszystkich urządzeń",
         "nothing": "Brak zmian do zastosowania."
-      },
-      "legend": "Ustawienia urządzenia",
-      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",

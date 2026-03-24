@@ -14,12 +14,13 @@
       "true": "Ja"
     },
     "devices": {
+      "legend": "Geräteeinstellungen",
+      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
+      "nothing": "Keine Änderung zum Anwenden.",
       "apply": {
         "button": "Auf alle Geräte anwenden",
         "nothing": "Keine Änderung zum Anwenden."
-      },
-      "legend": "Geräteeinstellungen",
-      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",

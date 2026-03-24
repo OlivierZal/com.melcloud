@@ -1,5 +1,4 @@
 import type {
-  DeviceType,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
@@ -11,18 +10,15 @@ import type {
   HomeyWidgetSettingsCharts as HomeySettings,
 } from '../../../types/index.mts'
 
+import { DeviceType } from './constants.mts'
 import { createOptionElement, getDivElement, getSelectElement } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
-import { getZoneId } from './zones.mts'
+import { getZoneId, getZonePath } from './zones.mts'
 
-const ZERO_DECIMALS = 0
-
+// Below --homey-font-size-small (14px) — intentional for compact chart labels
 const FONT_SIZE_VERY_SMALL = '12px'
 const NEXT_TIMEOUT = 60_000
-
-const HOUR_ONE = 1
-const MINUTE_FIVE = 5
-const TIME_ZERO = 0
+const AGGREGATION_DELAY_MINUTES = 5
 
 const chartsWithDays = new Set<HomeySettings['chart']>([
   'operation_modes',
@@ -65,7 +61,7 @@ let timeout: NodeJS.Timeout | null = null
 // ── DOM helpers ──
 
 const zoneElement = getSelectElement('zones')
-const getZonePath = (): string => zoneElement.value.replace('_', '/')
+const getZoneValue = (): string => getZonePath(zoneElement.value)
 
 // ── Style helpers ──
 
@@ -138,7 +134,7 @@ const getChartLineOptions = (
     },
     yaxis: {
       ...axisStyle,
-      labels: { style, formatter: (value) => value.toFixed(ZERO_DECIMALS) },
+      labels: { style, formatter: (value) => value.toFixed(0) },
       ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
     },
   }
@@ -188,24 +184,20 @@ const getChartOptions = (
 
 // ── Chart data fetching ──
 
-const getChartFunction =
-  (
-    homey: Homey,
-    chart: HomeySettings['chart'],
-  ): ((
-    days?: number,
-  ) => Promise<ReportChartLineOptions | ReportChartPieOptions>) =>
-  async (days?: number) =>
-    homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
-      homey,
-      `/logs/${chart}/${getZonePath()}${
-        chartsWithDays.has(chart) && days !== undefined ?
-          `?${new URLSearchParams({
-            days: String(days),
-          } satisfies DaysQuery)}`
-        : ''
-      }`,
-    )
+const fetchChartData = async (
+  homey: Homey,
+  chart: HomeySettings['chart'],
+  days?: number,
+): Promise<ReportChartLineOptions | ReportChartPieOptions> => {
+  const daysQuery =
+    chartsWithDays.has(chart) && days !== undefined ?
+      `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
+    : ''
+  return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
+    homey,
+    `/logs/${chart}/${getZoneValue()}${daysQuery}`,
+  )
+}
 
 const handleChartAndOptions = async (
   homey: Homey,
@@ -224,10 +216,10 @@ const handleChartAndOptions = async (
     typeof serie === 'number' || serie.hidden !== true ? null : serie.name,
   )
   const newOptions = getChartOptions(
-    await getChartFunction(homey, chart)(days),
+    await fetchChartData(homey, chart, days),
     height,
   )
-  if (
+  const shouldRecreateChart =
     newOptions.chart?.type === 'pie' ||
     hiddenSeries.some(
       (name) =>
@@ -236,7 +228,7 @@ const handleChartAndOptions = async (
           .map((serie) => (typeof serie === 'number' ? null : serie.name))
           .includes(name),
     )
-  ) {
+  if (shouldRecreateChart) {
     myChart?.destroy()
     myChart = null
   }
@@ -253,7 +245,7 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   }
   const now = new Date()
   const next = new Date(now)
-  next.setHours(next.getHours() + HOUR_ONE, MINUTE_FIVE, TIME_ZERO, TIME_ZERO)
+  next.setHours(next.getHours() + 1, AGGREGATION_DELAY_MINUTES, 0, 0)
   return next.getTime() - now.getTime()
 }
 
@@ -304,27 +296,23 @@ const addEventListeners = (
 }
 
 const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
-  if (defaultZone) {
-    const { id, model } = defaultZone
-    const value = getZoneId(id, model)
-    if (document.querySelector(`#zones option[value="${value}"]`)) {
-      zoneElement.value = value
-    }
+  if (!defaultZone) {
+    return
+  }
+  const { id, model } = defaultZone
+  const value = getZoneId(id, model)
+  if (document.querySelector(`#zones option[value="${value}"]`)) {
+    zoneElement.value = value
   }
 }
 
 const fetchDevices = async (homey: Homey<HomeySettings>): Promise<void> => {
   const { chart, days, default_zone: defaultZone, height } = homey.getSettings()
-  const devices = await homeyApiGet<DeviceZone[]>(
-    homey,
-    `/devices${
-      chart === 'hourly_temperatures' ?
-        `?${new URLSearchParams({
-          type: '1',
-        } satisfies { type: `${DeviceType}` })}`
-      : ''
-    }`,
-  )
+  const typeQuery =
+    chart === 'hourly_temperatures' ?
+      `?${new URLSearchParams({ type: String(DeviceType.Atw) })}`
+    : ''
+  const devices = await homeyApiGet<DeviceZone[]>(homey, `/devices${typeQuery}`)
   if (devices.length) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)

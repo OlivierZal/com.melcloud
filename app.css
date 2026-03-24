@@ -3,7 +3,7 @@
 @import 'tailwindcss/utilities';
 
 @plugin 'daisyui' {
-  /* eslint-disable-next-line css/no-invalid-at-rules */
+  /* eslint-disable-next-line css/no-invalid-at-rules -- daisyui plugin config */
   themes: false;
 }
 

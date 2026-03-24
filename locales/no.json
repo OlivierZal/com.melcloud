@@ -14,12 +14,13 @@
       "true": "Ja"
     },
     "devices": {
+      "legend": "Enhetsinnstillinger",
+      "none": "Legg til en enhet for å låse opp alle appinnstillingene!",
+      "nothing": "Ingen endring å bruke.",
       "apply": {
         "button": "Bruk på alle enheter",
         "nothing": "Ingen endring å bruke."
-      },
-      "legend": "Enhetsinnstillinger",
-      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",

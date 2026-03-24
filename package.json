@@ -17,7 +17,7 @@
   "scripts": {
     "build": "npm run build:clean && npm run build:assets && tsc -p tsconfig.build.json",
     "build:assets": "npm run build:css && npm run build:public",
-    "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
+    "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/constants.mts \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
     "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done",
     "format": "prettier . --check",

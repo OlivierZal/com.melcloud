@@ -14,12 +14,13 @@
       "true": "Sí"
     },
     "devices": {
+      "legend": "Configuración de los dispositivos",
+      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
+      "nothing": "No hay cambios que aplicar.",
       "apply": {
         "button": "Aplicar a todos los dispositivos",
         "nothing": "No hay cambios que aplicar."
-      },
-      "legend": "Configuración de los dispositivos",
-      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",

@@ -14,12 +14,13 @@
       "true": "Yes"
     },
     "devices": {
+      "legend": "Device settings",
+      "none": "Add a device to unlock all the app's settings!",
+      "nothing": "No change to apply.",
       "apply": {
         "button": "Apply to all devices",
         "nothing": "No change to apply."
-      },
-      "legend": "Device settings",
-      "none": "Add a device to unlock all the app's settings!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",

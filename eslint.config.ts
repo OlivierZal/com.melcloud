@@ -263,6 +263,14 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/no-invalid-this': 'off',
+      '@typescript-eslint/no-magic-numbers': [
+        'error',
+        {
+          ignore: [-1, 0, 1, 2],
+          ignoreEnums: true,
+          ignoreReadonlyClassProperties: true,
+        },
+      ],
       '@typescript-eslint/no-redeclare': 'off',
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
@@ -283,7 +291,6 @@ const config = defineConfig([
           enableAutofixRemoval: {
             imports: true,
           },
-          varsIgnorePattern: '^onHomeyReady$',
         },
       ],
       '@typescript-eslint/prefer-destructuring': [
