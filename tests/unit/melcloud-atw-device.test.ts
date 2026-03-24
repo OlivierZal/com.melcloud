@@ -1,6 +1,6 @@
 import {
-  type DeviceType,
   type ListDeviceDataAtw,
+  DeviceType,
   OperationModeState,
   OperationModeStateHotWater,
   OperationModeStateZone,
@@ -159,6 +159,7 @@ describe(MELCloudDeviceAtw, () => {
       Object.defineProperty(device, 'facade', {
         configurable: true,
         value: {
+          type: DeviceType.Atw,
           hotWater: overrides.hotWater ?? {
             operationalState: OperationModeStateHotWater.idle,
           },

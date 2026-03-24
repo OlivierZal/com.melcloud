@@ -1,8 +1,8 @@
 import {
-  type DeviceAtwFacade,
-  type DeviceAtwHasZone2Facade,
   type DeviceType,
   type ListDeviceData,
+  hasZone2,
+  isAtwFacade,
   OperationModeState,
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
@@ -115,30 +115,27 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof DeviceType.Atw> {
-    // A value of 0 means the temperature is unset — fall back to the minimum allowed value
+    // Fall back to the minimum allowed value in case of undefined or null
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }
 
   async #setOperationModeStates(): Promise<void> {
     const { facade } = this
-    if (!facade || !('hotWater' in facade)) {
+    if (!facade || !isAtwFacade(facade)) {
       return
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const atwFacade = facade as DeviceAtwFacade
     await this.setCapabilityValue(
       'operational_state.hot_water',
-      atwFacade.hotWater.operationalState,
+      facade.hotWater.operationalState,
     )
     await this.setCapabilityValue(
       'operational_state.zone1',
-      atwFacade.zone1.operationalState,
+      facade.zone1.operationalState,
     )
-    if (this.hasCapability('operational_state.zone2') && 'zone2' in facade) {
+    if (this.hasCapability('operational_state.zone2') && hasZone2(facade)) {
       await this.setCapabilityValue(
         'operational_state.zone2',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        (facade as DeviceAtwHasZone2Facade).zone2.operationalState,
+        facade.zone2.operationalState,
       )
     }
   }
