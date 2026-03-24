@@ -87,7 +87,7 @@ jobs:
         uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # master
         with:
           level: publish
-name: Build app
+name: CI
 on:
   pull_request: {}
   push:
