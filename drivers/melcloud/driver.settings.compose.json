@@ -7,12 +7,18 @@
       {
         "id": "measure_power",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -21,12 +27,18 @@
       {
         "id": "measure_power.auto",
         "label": {
+          "ar": "تلقائي",
           "da": "Automatisk",
+          "de": "Automatisch",
           "en": "Automatic",
           "es": "Automático",
           "fr": "Automatique",
+          "it": "Automatica",
+          "ko": "자동",
           "nl": "Automatisch",
           "no": "Automatisk",
+          "pl": "Automatyczny",
+          "ru": "Автоматически",
           "sv": "Automatiskt"
         },
         "type": "checkbox",
@@ -35,12 +47,18 @@
       {
         "id": "measure_power.cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -49,12 +67,18 @@
       {
         "id": "measure_power.dry",
         "label": {
+          "ar": "إزالة الرطوبة",
           "da": "Affugtning",
+          "de": "Entfeuchtung",
           "en": "Dry",
           "es": "Desumidificación",
           "fr": "Déshumidification",
+          "it": "Deumidificazione",
+          "ko": "제습",
           "nl": "Ontvochtiging",
           "no": "Avfukting",
+          "pl": "Osuszanie",
+          "ru": "Осушение",
           "sv": "Avfuktning"
         },
         "type": "checkbox",
@@ -63,12 +87,18 @@
       {
         "id": "measure_power.fan",
         "label": {
+          "ar": "مروحة",
           "da": "Blæser",
+          "de": "Lüfter",
           "en": "Fan",
           "es": "Ventilador",
           "fr": "Ventilateur",
+          "it": "Ventilatore",
+          "ko": "팬",
           "nl": "Ventilator",
           "no": "Vifte",
+          "pl": "Wentylator",
+          "ru": "Вентилятор",
           "sv": "Fläkt"
         },
         "type": "checkbox",
@@ -77,12 +107,18 @@
       {
         "id": "measure_power.heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -91,12 +127,18 @@
       {
         "id": "measure_power.other",
         "label": {
+          "ar": "أخرى",
           "da": "Andet",
+          "de": "Sonstige",
           "en": "Other",
           "es": "Otro",
           "fr": "Autre",
+          "it": "Altro",
+          "ko": "기타",
           "nl": "Andere",
           "no": "Annet",
+          "pl": "Inne",
+          "ru": "Другое",
           "sv": "Övrigt"
         },
         "type": "checkbox",
@@ -104,12 +146,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة",
       "da": "Effektvisning",
+      "de": "Leistungsanzeige",
       "en": "Power display",
       "es": "Visualización de la potencia",
       "fr": "Affichage de la puissance",
+      "it": "Visualizzazione potenza",
+      "ko": "전력 표시",
       "nl": "Vermogensweergave",
       "no": "Effektvisning",
+      "pl": "Wyświetlanie mocy",
+      "ru": "Отображение мощности",
       "sv": "Effektvisning"
     },
     "type": "group"
@@ -119,12 +167,18 @@
       {
         "id": "meter_power",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -133,12 +187,18 @@
       {
         "id": "meter_power.auto",
         "label": {
+          "ar": "تلقائي",
           "da": "Automatisk",
+          "de": "Automatisch",
           "en": "Automatic",
           "es": "Automático",
           "fr": "Automatique",
+          "it": "Automatica",
+          "ko": "자동",
           "nl": "Automatisch",
           "no": "Automatisk",
+          "pl": "Automatyczny",
+          "ru": "Автоматически",
           "sv": "Automatiskt"
         },
         "type": "checkbox",
@@ -147,12 +207,18 @@
       {
         "id": "meter_power.cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -161,12 +227,18 @@
       {
         "id": "meter_power.dry",
         "label": {
+          "ar": "إزالة الرطوبة",
           "da": "Affugtning",
+          "de": "Entfeuchtung",
           "en": "Dry",
           "es": "Desumidificación",
           "fr": "Déshumidification",
+          "it": "Deumidificazione",
+          "ko": "제습",
           "nl": "Ontvochtiging",
           "no": "Avfukting",
+          "pl": "Osuszanie",
+          "ru": "Осушение",
           "sv": "Avfuktning"
         },
         "type": "checkbox",
@@ -175,12 +247,18 @@
       {
         "id": "meter_power.fan",
         "label": {
+          "ar": "مروحة",
           "da": "Blæser",
+          "de": "Lüfter",
           "en": "Fan",
           "es": "Ventilador",
           "fr": "Ventilateur",
+          "it": "Ventilatore",
+          "ko": "팬",
           "nl": "Ventilator",
           "no": "Vifte",
+          "pl": "Wentylator",
+          "ru": "Вентилятор",
           "sv": "Fläkt"
         },
         "type": "checkbox",
@@ -189,12 +267,18 @@
       {
         "id": "meter_power.heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -203,12 +287,18 @@
       {
         "id": "meter_power.other",
         "label": {
+          "ar": "أخرى",
           "da": "Andet",
+          "de": "Sonstige",
           "en": "Other",
           "es": "Otro",
           "fr": "Autre",
+          "it": "Altro",
+          "ko": "기타",
           "nl": "Andere",
           "no": "Annet",
+          "pl": "Inne",
+          "ru": "Другое",
           "sv": "Övrigt"
         },
         "type": "checkbox",
@@ -216,12 +306,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة",
       "da": "Energivisning",
+      "de": "Energieanzeige",
       "en": "Energy display",
       "es": "Visualización de la energía",
       "fr": "Affichage de l'énergie",
+      "it": "Visualizzazione energia",
+      "ko": "에너지 표시",
       "nl": "Energieweergave",
       "no": "Energivisning",
+      "pl": "Wyświetlanie energii",
+      "ru": "Отображение энергии",
       "sv": "Energivisning"
     },
     "type": "group"
@@ -231,12 +327,18 @@
       {
         "id": "meter_power.daily",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -245,12 +347,18 @@
       {
         "id": "meter_power.daily_auto",
         "label": {
+          "ar": "تلقائي",
           "da": "Automatisk",
+          "de": "Automatisch",
           "en": "Automatic",
           "es": "Automático",
           "fr": "Automatique",
+          "it": "Automatica",
+          "ko": "자동",
           "nl": "Automatisch",
           "no": "Automatisk",
+          "pl": "Automatyczny",
+          "ru": "Автоматически",
           "sv": "Automatiskt"
         },
         "type": "checkbox",
@@ -259,12 +367,18 @@
       {
         "id": "meter_power.daily_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -273,12 +387,18 @@
       {
         "id": "meter_power.daily_dry",
         "label": {
+          "ar": "إزالة الرطوبة",
           "da": "Affugtning",
+          "de": "Entfeuchtung",
           "en": "Dry",
           "es": "Desumidificación",
           "fr": "Déshumidification",
+          "it": "Deumidificazione",
+          "ko": "제습",
           "nl": "Ontvochtiging",
           "no": "Avfukting",
+          "pl": "Osuszanie",
+          "ru": "Осушение",
           "sv": "Avfuktning"
         },
         "type": "checkbox",
@@ -287,12 +407,18 @@
       {
         "id": "meter_power.daily_fan",
         "label": {
+          "ar": "مروحة",
           "da": "Blæser",
+          "de": "Lüfter",
           "en": "Fan",
           "es": "Ventilador",
           "fr": "Ventilateur",
+          "it": "Ventilatore",
+          "ko": "팬",
           "nl": "Ventilator",
           "no": "Vifte",
+          "pl": "Wentylator",
+          "ru": "Вентилятор",
           "sv": "Fläkt"
         },
         "type": "checkbox",
@@ -301,12 +427,18 @@
       {
         "id": "meter_power.daily_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -315,12 +447,18 @@
       {
         "id": "meter_power.daily_other",
         "label": {
+          "ar": "أخرى",
           "da": "Andet",
+          "de": "Sonstige",
           "en": "Other",
           "es": "Otro",
           "fr": "Autre",
+          "it": "Altro",
+          "ko": "기타",
           "nl": "Andere",
           "no": "Annet",
+          "pl": "Inne",
+          "ru": "Другое",
           "sv": "Övrigt"
         },
         "type": "checkbox",
@@ -328,12 +466,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة اليومية",
       "da": "Daglig energivisning",
+      "de": "Tägliche Energieanzeige",
       "en": "Daily energy display",
       "es": "Visualización de la energía diaria",
       "fr": "Affichage de l'énergie quotidienne",
+      "it": "Visualizzazione energia giornaliera",
+      "ko": "일일 에너지 표시",
       "nl": "Dagelijkse energieweergave",
       "no": "Daglig energivisning",
+      "pl": "Dzienne wyświetlanie energii",
+      "ru": "Ежедневное отображение энергии",
       "sv": "Daglig energivisning"
     },
     "type": "group"

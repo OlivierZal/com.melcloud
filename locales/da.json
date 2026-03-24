@@ -14,12 +14,13 @@
       "true": "Ja"
     },
     "devices": {
+      "legend": "Enhedsindstillinger",
+      "none": "Tilføj en enhed for at låse alle appens indstillinger op!",
+      "nothing": "Ingen ændringer at anvende.",
       "apply": {
         "button": "Anvend på alle enheder",
         "nothing": "Ingen ændringer at anvende."
-      },
-      "legend": "Enhedsindstillinger",
-      "none": "Tilføj en enhed for at låse alle appens indstillinger op!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
@@ -65,7 +66,8 @@
     "zones": {
       "legend": "Zonesindstillinger",
       "update": "Opdater"
-    }
+    },
+    "update": "Opdater"
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit dashboard."

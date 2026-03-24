@@ -1,5 +1,4 @@
 const PARENTHESES = '()'
-const SLICE_START_ZERO = 0
 
 interface Loggable {
   /* eslint-disable @typescript-eslint/method-signature-style -- Method syntax required: class overrides are methods, not properties */
@@ -38,14 +37,11 @@ export const addToLogs =
             }
             // Zero-arg method name ending with '()': call it and return the result
             if (log.endsWith(PARENTHESES)) {
-              const functionName = log.slice(
-                SLICE_START_ZERO,
-                -PARENTHESES.length,
-              )
+              const functionName = log.slice(0, -PARENTHESES.length)
               if (
                 this.#isKeyOfThis(functionName) &&
                 isFunction(this[functionName]) &&
-                !this[functionName].length
+                this[functionName].length === 0
               ) {
                 return [this[functionName].apply(this), '-']
               }

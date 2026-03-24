@@ -65,12 +65,18 @@
     }
   },
   "description": {
+    "ar": "تحكم في مضخة الحرارة الخاصة بك",
     "da": "Tag kontrol over din varmepumpe",
+    "de": "Übernehmen Sie die Kontrolle über Ihre Wärmepumpe",
     "en": "Take control of your heat pump",
     "es": "Tome el control de su bomba de calor",
     "fr": "Prenez le contrôle de votre pompe à chaleur",
+    "it": "Prendi il controllo della tua pompa di calore",
+    "ko": "히트펌프를 제어하세요",
     "nl": "Neem de controle over uw warmtepomp",
     "no": "Ta kontroll over varmepumpen din",
+    "pl": "Przejmij kontrolę nad swoją pompą ciepła",
+    "ru": "Возьмите под контроль свой тепловой насос",
     "sv": "Ta kontroll över din värmepump"
   },
   "esm": true,
@@ -89,6 +95,18 @@
   "source": "https://github.com/OlivierZal/com.melcloud",
   "support": "https://github.com/OlivierZal/com.melcloud/issues",
   "tags": {
+    "ar": [
+      "ecodan",
+      "erv",
+      "melcloud",
+      "mitsubishi",
+      "استرداد الطاقة",
+      "تكييف الهواء",
+      "مضخة حرارة",
+      "مكيف هواء",
+      "هواء إلى ماء",
+      "هواء إلى هواء"
+    ],
     "da": [
       "aircondition",
       "ecodan",
@@ -101,6 +119,18 @@
       "varmegenvinding",
       "varmepumpe"
     ],
+    "de": [
+      "ecodan",
+      "erv",
+      "klimaanlage",
+      "klimatisierung",
+      "luft luft",
+      "luft wasser",
+      "melcloud",
+      "mitsubishi",
+      "wärmepumpe",
+      "wärmerückgewinnung"
+    ],
     "en": [
       "air conditioner",
       "air conditioning",
@@ -108,8 +138,8 @@
       "air to water",
       "conditioned air",
       "ecodan",
-      "erv",
       "energy recovery",
+      "erv",
       "heat pump",
       "melcloud",
       "mitsubishi"
@@ -138,11 +168,36 @@
       "récupération de chaleur",
       "vre"
     ],
+    "it": [
+      "aria acqua",
+      "aria aria",
+      "climatizzatore",
+      "climatizzazione",
+      "ecodan",
+      "erv",
+      "melcloud",
+      "mitsubishi",
+      "pompa di calore",
+      "recupero energetico"
+    ],
+    "ko": [
+      "ecodan",
+      "erv",
+      "melcloud",
+      "mitsubishi",
+      "공기 대 공기",
+      "공기 대 물",
+      "에너지 회수",
+      "에어컨",
+      "열교환",
+      "히트펌프"
+    ],
     "nl": [
       "airco",
       "airconditioner",
       "airconditioning",
       "ecodan",
+      "erv",
       "geconditioneerde lucht",
       "lucht lucht",
       "lucht water",
@@ -163,6 +218,30 @@
       "varmegjenvinning",
       "varmepumpe"
     ],
+    "pl": [
+      "ecodan",
+      "erv",
+      "klimatyzacja",
+      "klimatyzator",
+      "melcloud",
+      "mitsubishi",
+      "odzysk ciepła",
+      "pompa ciepła",
+      "powietrze powietrze",
+      "powietrze woda"
+    ],
+    "ru": [
+      "ecodan",
+      "erv",
+      "melcloud",
+      "mitsubishi",
+      "воздух вода",
+      "воздух воздух",
+      "кондиционер",
+      "кондиционирование",
+      "рекуперация",
+      "тепловой насос"
+    ],
     "sv": [
       "ecodan",
       "erv",
@@ -171,8 +250,8 @@
       "luftkonditionering",
       "melcloud",
       "mitsubishi",
-      "värmeåtervinning",
-      "värmepump"
+      "värmepump",
+      "värmeåtervinning"
     ]
   },
   "version": "43.0.0"

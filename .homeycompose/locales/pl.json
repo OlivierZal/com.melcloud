@@ -1,0 +1,73 @@
+{
+  "errors": {
+    "deviceNotFound": "Nie znaleziono urządzenia.",
+    "zoneNotFound": "Nie znaleziono strefy."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Zaloguj się",
+      "failure": "Uwierzytelnianie nie powiodło się.",
+      "legend": "Dane logowania"
+    },
+    "boolean": {
+      "false": "Nie",
+      "true": "Tak"
+    },
+    "devices": {
+      "apply": {
+        "button": "Zastosuj do wszystkich urządzeń",
+        "nothing": "Brak zmian do zastosowania."
+      },
+      "legend": "Ustawienia urządzenia",
+      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!"
+    },
+    "devicesAta": {
+      "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",
+      "configure": "Konfiguruj",
+      "legend": "Ustawienia urządzenia powietrze-powietrze"
+    },
+    "devicesAtw": {
+      "legend": "Ustawienia urządzenia powietrze-woda"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Data",
+        "device": "Urządzenie",
+        "error": "Błąd"
+      },
+      "error": "Wybierz datę przed\n__from__.",
+      "errorCount": {
+        "0": "błędów",
+        "1": "błąd",
+        "234": "błędy",
+        "plural": "błędów"
+      },
+      "legend": "Historia błędów",
+      "period": "Od __from__:",
+      "see": "Pokaż wszystkie błędy",
+      "since": "od"
+    },
+    "frostProtection": {
+      "enabled": "Włącz <strong>ochronę przed zamarzaniem</strong>",
+      "max": "Temperatura maksymalna",
+      "min": "Temperatura minimalna"
+    },
+    "holidayMode": {
+      "enabled": "Włącz <strong>tryb wakacyjny</strong>",
+      "endDate": "Data zakończenia",
+      "endDateMissing": "Brak daty zakończenia.",
+      "startDate": "Data rozpoczęcia"
+    },
+    "intError": "__name__: musi być liczbą całkowitą od __min__ do __max__.",
+    "refresh": "Odśwież",
+    "success": "Aktualizacja powiodła się.",
+    "title": "Ustawienia MELCloud",
+    "update": "Aktualizuj",
+    "zones": {
+      "legend": "Ustawienia strefy"
+    }
+  },
+  "warnings": {
+    "dashboard": "Wyjdź z urządzenia i wróć, aby zaktualizować pulpit."
+  }
+}

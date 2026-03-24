@@ -62,9 +62,9 @@
     "refresh": "Genindlæs",
     "success": "Opdatering lykkedes.",
     "title": "MELCloud-indstillinger",
+    "update": "Opdater",
     "zones": {
-      "legend": "Zonesindstillinger",
-      "update": "Opdater"
+      "legend": "Zonesindstillinger"
     }
   },
   "warnings": {

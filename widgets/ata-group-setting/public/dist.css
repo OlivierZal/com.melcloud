@@ -1,59 +1,6 @@
 /*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @layer properties;
-.diff {
-  @layer daisyui.l1.l2.l3 {
-    position: relative;
-    display: grid;
-    width: 100%;
-    overflow: hidden;
-    webkit-user-select: none;
-    user-select: none;
-    grid-template-rows: 1fr 1.8rem 1fr;
-    direction: ltr;
-    container-type: inline-size;
-    grid-template-columns: auto 1fr;
-    &:focus-visible, &:has(.diff-item-1:focus-visible) {
-      outline-style: var(--tw-outline-style);
-      outline-width: 2px;
-      outline-offset: 1px;
-      outline-color: var(--color-base-content);
-    }
-    &:focus-visible {
-      outline-style: var(--tw-outline-style);
-      outline-width: 2px;
-      outline-offset: 1px;
-      outline-color: var(--color-base-content);
-      .diff-resizer {
-        min-width: 95cqi;
-        max-width: 95cqi;
-      }
-    }
-    &:has(.diff-item-1:focus-visible) {
-      outline-style: var(--tw-outline-style);
-      outline-width: 2px;
-      outline-offset: 1px;
-      .diff-resizer {
-        min-width: 5cqi;
-        max-width: 5cqi;
-      }
-    }
-    @supports (-webkit-overflow-scrolling: touch) and (overflow: -webkit-paged-x) {
-      &:focus {
-        .diff-resizer {
-          min-width: 5cqi;
-          max-width: 5cqi;
-        }
-      }
-      &:has(.diff-item-1:focus) {
-        .diff-resizer {
-          min-width: 95cqi;
-          max-width: 95cqi;
-        }
-      }
-    }
-  }
-}
 .dropdown {
   @layer daisyui.l1.l2.l3 {
     position: relative;
@@ -1231,9 +1178,6 @@
 }
 .hidden {
   display: none;
-}
-.inline {
-  display: inline;
 }
 .table {
   display: table;

@@ -1,11 +1,18 @@
-import type { GroupState, OperationMode } from '@olivierzal/melcloud-api'
+import type { GroupState } from '@olivierzal/melcloud-api'
 
 import type { GetAtaOptions, GroupAtaStates } from '../../../types/index.mts'
 
+import {
+  FanSpeed,
+  heatModes,
+  OPERATION_MODE_MIXED,
+  OperationMode,
+} from './constants.mts'
 import { getSelectElement } from './dom.mts'
 import { type Homey, homeyApiGet } from './homey-api.mts'
 import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
 import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
+import { getZonePath } from './zones.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
@@ -16,40 +23,12 @@ export interface ResetParams {
 
 // ── Numeric constants ──
 
-const DEFAULT_DIVISOR_ONE = 1
-const FACTOR_TWO = 2
-const FACTOR_FIVE = 5
-const INCREMENT_ONE = 1
-const FULL_CIRCLE = FACTOR_TWO * Math.PI
+const FULL_CIRCLE = 2 * Math.PI
 
-// ── Speed constants ──
+// ── Animation speed factors ──
 
-// Fan speed constants and animation speed factors
-export const Speed = {
-  factorMax: 50,
-  factorMin: 1,
-  moderate: 3,
-  veryFast: 5,
-  verySlow: 1,
-} as const
-
-// ── Operation modes ──
-
-const MODE_MIXED = 0
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-const MODE_FAN = 7
-const MODE_HEAT = 1
-export const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
-const heatModes = new Set([MODE_AUTO, MODE_HEAT])
-type Mode =
-  | typeof MODE_AUTO
-  | typeof MODE_COOL
-  | typeof MODE_DRY
-  | typeof MODE_FAN
-  | typeof MODE_HEAT
-  | typeof MODE_MIXED
+const SPEED_FACTOR_MAX = 50
+const SPEED_FACTOR_MIN = 1
 
 // ── Animation timing & layout constants ──
 
@@ -71,10 +50,7 @@ const AnimationGap = {
   snowflake: 50,
 } as const
 
-const DEFAULT_RECT_X = 0
-const DEFAULT_RECT_Y = 0
-const LEAF_NO_LOOP_RADIUS = 0
-
+const LEAF_OSCILLATION_FACTOR = 5
 const ANIMATION_KEYFRAME_COUNT = 101
 
 /*
@@ -84,13 +60,12 @@ const ANIMATION_KEYFRAME_COUNT = 101
  */
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
-  (Speed.factorMin *
-    (Speed.factorMax / Speed.factorMin) **
-      ((speed - Speed.verySlow) / (Speed.veryFast - Speed.verySlow)) ||
-    DEFAULT_DIVISOR_ONE)
+  (SPEED_FACTOR_MIN *
+    (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
+      ((speed - FanSpeed.very_slow) /
+        (FanSpeed.very_fast - FanSpeed.very_slow)) || 1)
 
-const getZonePath = (): string =>
-  getSelectElement('zones').value.replace('_', '/')
+const getZoneValue = (): string => getZonePath(getSelectElement('zones').value)
 
 // ── Animation helpers ──
 
@@ -104,14 +79,14 @@ const createAnimationMapping = (): Record<
   return {
     flame: {
       innerHTML: '🔥',
-      getIndex: () => (flameIndex += INCREMENT_ONE),
+      getIndex: () => (flameIndex += 1),
     },
-    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += INCREMENT_ONE) },
+    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += 1) },
     snowflake: {
       innerHTML: '❄',
-      getIndex: () => (snowflakeIndex += INCREMENT_ONE),
+      getIndex: () => (snowflakeIndex += 1),
     },
-    sun: { innerHTML: '☀', getIndex: () => INCREMENT_ONE },
+    sun: { innerHTML: '☀', getIndex: () => 1 },
   }
 }
 
@@ -132,19 +107,17 @@ const generateLeafAnimation = (
       (index: number) => {
         const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
         const indexLoopRadius =
-          index >= loopStart && index < loopEnd ?
-            loopRadius
-          : LEAF_NO_LOOP_RADIUS
+          index >= loopStart && index < loopEnd ? loopRadius : 0
         const oscillate =
-          indexLoopRadius > LEAF_NO_LOOP_RADIUS ?
-            ` translate(${String((indexLoopRadius / FACTOR_FIVE) * Math.sin(angle * FACTOR_FIVE))}px, 0px)`
+          indexLoopRadius > 0 ?
+            ` translate(${String((indexLoopRadius / LEAF_OSCILLATION_FACTOR) * Math.sin(angle * LEAF_OSCILLATION_FACTOR))}px, 0px)`
           : ''
         const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
         const translateX = `${String(
-          index * FACTOR_FIVE + indexLoopRadius * Math.sin(angle),
+          index * LEAF_OSCILLATION_FACTOR + indexLoopRadius * Math.sin(angle),
         )}px`
         const translateY = `${String(
-          -(index * FACTOR_TWO - indexLoopRadius * Math.cos(angle)),
+          -(index * 2 - indexLoopRadius * Math.cos(angle)),
         )}px`
         return {
           transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
@@ -208,9 +181,7 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
   )
 
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
-  document.querySelector<HTMLElement>(
-    `#${name}-${String(Number(index) - INCREMENT_ONE)}`,
-  )
+  document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
 // ── AnimationController class ──
 
@@ -218,20 +189,21 @@ export class AnimationController {
   readonly #animationElement: HTMLDivElement
 
   readonly #animationHandling: Record<
-    Mode,
+    number,
     (speed: number) => Promise<void> | void
   > = {
-    [MODE_AUTO]: (speed) => {
+    [OPERATION_MODE_MIXED]: async (speed) => this.#handleMixedAnimation(speed),
+    [OperationMode.auto]: (speed) => {
       this.#handleFireAnimation(speed)
       this.#handleSnowAnimation(speed)
     },
-    [MODE_COOL]: (speed) => {
+    [OperationMode.cool]: (speed) => {
       this.#handleSnowAnimation(speed)
     },
-    [MODE_DRY]: (speed) => {
+    [OperationMode.dry]: (speed) => {
       this.#handleSunAnimation(speed)
     },
-    [MODE_FAN]: (speed) => {
+    [OperationMode.fan]: (speed) => {
       this.#generateRecurring(
         (fanSpeed) => {
           this.#createLeaf(fanSpeed)
@@ -240,10 +212,9 @@ export class AnimationController {
         speed,
       )
     },
-    [MODE_HEAT]: (speed) => {
+    [OperationMode.heat]: (speed) => {
       this.#handleFireAnimation(speed)
     },
-    [MODE_MIXED]: async (speed) => this.#handleMixedAnimation(speed),
   }
 
   readonly #animationMapping: Record<
@@ -290,13 +261,13 @@ export class AnimationController {
       const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
 
       const isSomethingOn = isOn !== false
-      const newSpeed = Number(speed) || Speed.moderate
+      const newSpeed = Number(speed) || FanSpeed.moderate
       const newMode = Number(mode ?? null)
 
       await this.#reset({ isSomethingOn, mode: newMode })
 
       if (isSomethingOn && this.#hasModeAnimation(newMode)) {
-        await this.#animationHandling[newMode](newSpeed)
+        await this.#animationHandling[newMode]?.(newSpeed)
       }
     }
   }
@@ -372,7 +343,7 @@ export class AnimationController {
       const previousPosition =
         previousElement ?
           Number.parseFloat(previousElement.style[positionProperty])
-        : -gap * FACTOR_TWO
+        : -gap * 2
       element.style[positionProperty] = generateStyleString(
         {
           gap,
@@ -395,17 +366,17 @@ export class AnimationController {
         this.#smokeParticles.push(
           new SmokeParticle(
             this.#canvasContext,
-            left + width / FACTOR_TWO,
+            left + width / 2,
             top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
           ),
         )
-        index += INCREMENT_ONE
+        index += 1
       }
       setTimeout(
         () => {
           this.#createSmoke(flame, speed)
         },
-        generateDelay(AnimationDelay.smoke, Speed.verySlow),
+        generateDelay(AnimationDelay.smoke, FanSpeed.very_slow),
       )
     }
   }
@@ -482,8 +453,8 @@ export class AnimationController {
       ;({ innerHeight: this.#canvas.height, innerWidth: this.#canvas.width } =
         globalThis)
       this.#canvasContext.clearRect(
-        DEFAULT_RECT_X,
-        DEFAULT_RECT_Y,
+        0,
+        0,
         this.#canvas.width,
         this.#canvas.height,
       )
@@ -518,10 +489,10 @@ export class AnimationController {
         },
         {
           insetBlockStart: `${String(
-            (window.innerHeight - Number.parseFloat(blockSize)) / FACTOR_TWO,
+            (window.innerHeight - Number.parseFloat(blockSize)) / 2,
           )}px`,
           insetInlineEnd: `${String(
-            (window.innerWidth - Number.parseFloat(inlineSize)) / FACTOR_TWO,
+            (window.innerWidth - Number.parseFloat(inlineSize)) / 2,
           )}px`,
         },
       ],
@@ -562,10 +533,10 @@ export class AnimationController {
     return animation
   }
 
-  async #getModes(): Promise<OperationMode[]> {
+  async #getModes(): Promise<number[]> {
     const detailedAtaValues = await homeyApiGet<GroupAtaStates>(
       this.#homey,
-      `/values/ata/${getZonePath()}?${new URLSearchParams({
+      `/values/ata/${getZoneValue()}?${new URLSearchParams({
         mode: 'detailed',
         status: 'on',
       } satisfies Required<GetAtaOptions>)}`,
@@ -596,16 +567,16 @@ export class AnimationController {
 
   async #handleMixedAnimation(speed: number): Promise<void> {
     const modes = new Set(await this.#getModes())
-    if (modes.has(MODE_AUTO) || modes.has(MODE_COOL)) {
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
       this.#handleSnowAnimation(speed)
     }
-    if (modes.has(MODE_AUTO) || modes.has(MODE_HEAT)) {
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
       this.#handleFireAnimation(speed)
     }
-    if (modes.has(MODE_DRY)) {
+    if (modes.has(OperationMode.dry)) {
       this.#handleSunAnimation(speed)
     }
-    if (modes.has(MODE_FAN)) {
+    if (modes.has(OperationMode.fan)) {
       this.#generateRecurring(
         (leafSpeed) => {
           this.#createLeaf(leafSpeed)
@@ -633,7 +604,7 @@ export class AnimationController {
     this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
 
-  #hasModeAnimation(mode: number): mode is Mode {
+  #hasModeAnimation(mode: number): boolean {
     return mode in this.#animationHandling
   }
 
@@ -653,7 +624,7 @@ export class AnimationController {
       if (
         isSomethingOn &&
         (heatModes.has(mode) ||
-          (mode === MODE_MIXED &&
+          (mode === OPERATION_MODE_MIXED &&
             modes.some((currentMode) => heatModes.has(currentMode))))
       ) {
         if (this.#smokeAnimationFrameId !== null) {
@@ -671,24 +642,26 @@ export class AnimationController {
         () => {
           flame.remove()
         },
-        generateDelay(AnimationDelay.flame, Speed.verySlow),
+        generateDelay(AnimationDelay.flame, FanSpeed.very_slow),
       )
     }
   }
 
   async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {
     const sun = document.querySelector('#sun-1')
-    const modes = await this.#getModes()
-    if (
-      sun &&
-      sun instanceof HTMLDivElement &&
-      (!resetParams ||
-        !resetParams.isSomethingOn ||
-        (resetParams.mode !== MODE_DRY &&
-          (resetParams.mode !== MODE_MIXED ||
-            modes.every((currentMode: number) => currentMode !== MODE_DRY))))
-    ) {
-      this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
+    if (!(sun instanceof HTMLDivElement)) {
+      return
     }
+    if (resetParams?.isSomethingOn === true) {
+      const modes = await this.#getModes()
+      const isDryActive =
+        resetParams.mode === OperationMode.dry ||
+        (resetParams.mode === OPERATION_MODE_MIXED &&
+          modes.includes(OperationMode.dry))
+      if (isDryActive) {
+        return
+      }
+    }
+    this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
   }
 }

@@ -7,33 +7,51 @@
     }
   ],
   "title": {
+    "ar": "تغير وضع الترموستات في المنطقة 2",
     "da": "Termostattilstand i zone 2 er blevet ændret",
+    "de": "Thermostatmodus in Zone 2 hat sich geändert",
     "en": "Thermostat mode in zone 2 changed",
     "es": "El modo del termostato en la zona 2 ha cambiado",
     "fr": "Mode thermostat dans la zone 2 a changé",
+    "it": "La modalità termostato nella zona 2 è cambiata",
+    "ko": "구역 2의 온도 조절기 모드가 변경되었습니다",
     "nl": "Thermostaat modus in zone 2 is veranderd",
     "no": "Termostatmodus i sone 2 ble endret",
+    "pl": "Tryb termostatu w strefie 2 uległ zmianie",
+    "ru": "Режим термостата в зоне 2 изменился",
     "sv": "Termostatläge i zon 2 ändrades"
   },
   "tokens": [
     {
       "example": {
+        "ar": "درجة الحرارة الداخلية",
         "da": "Indendørs føler",
+        "de": "Innentemperatur",
         "en": "Indoor temperature",
         "es": "Temperatura interior",
         "fr": "Température intérieure",
+        "it": "Temperatura interna",
+        "ko": "실내 온도",
         "nl": "Binnentemperatuur",
         "no": "Innendørs føler",
+        "pl": "Temperatura wewnętrzna",
+        "ru": "Температура в помещении",
         "sv": "Inomhusgivare"
       },
       "name": "thermostat_mode.zone2",
       "title": {
+        "ar": "وضع الترموستات - المنطقة 2",
         "da": "Termostattilstand - zone 2",
+        "de": "Thermostatmodus - Zone 2",
         "en": "Thermostat mode - zone 2",
         "es": "Modo del termostato - zona 2",
         "fr": "Mode thermostat - zone 2",
+        "it": "Modalità termostato - zona 2",
+        "ko": "온도 조절기 모드 - 구역 2",
         "nl": "Thermostaat modus - zone 2",
         "no": "Termostatmodus - sone 2",
+        "pl": "Tryb termostatu - strefa 2",
+        "ru": "Режим термостата - зона 2",
         "sv": "Termostatläge - zon 2"
       },
       "type": "string"

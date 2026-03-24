@@ -145,32 +145,19 @@ const Modulo = {
   base100: 100,
 } as const
 
-const INITIAL_ERROR_COUNT = 0
-
-const SIZE_ONE = 1
-
 /*
  * Slavic language pluralization rules: numbers ending in 2-4 use a special
  * form, except 12-14 which use the regular plural
  */
-const NUMBER_ENDS_WITH_TWO = 2
-const NUMBER_ENDS_WITH_THREE = 3
-const NUMBER_ENDS_WITH_FOUR = 4
-const numberEndsWithTwoThreeFour = new Set([
-  NUMBER_ENDS_WITH_FOUR,
-  NUMBER_ENDS_WITH_THREE,
-  NUMBER_ENDS_WITH_TWO,
-])
-
+/*
+ * Slavic plural rules: numbers ending in 2/3/4 use a special plural
+ * form, except 12-14 which use the regular plural
+ */
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Slavic grammar constants */
 const PLURAL_THRESHOLD = 2
-const PLURAL_EXCEPTION_TWELVE = 12
-const PLURAL_EXCEPTION_THIRTEEN = 13
-const PLURAL_EXCEPTION_FOURTEEN = 14
-const pluralExceptions = new Set([
-  PLURAL_EXCEPTION_FOURTEEN,
-  PLURAL_EXCEPTION_THIRTEEN,
-  PLURAL_EXCEPTION_TWELVE,
-])
+const numberEndsWithTwoThreeFour = new Set([2, 3, 4])
+const pluralExceptions = new Set([12, 13, 14])
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -205,7 +192,7 @@ const withDisablingButton = async (
 }
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
-  element.classList.toggle('hidden', isHidden)
+  element.hidden = isHidden
 }
 
 const addTextToCheckbox = (
@@ -502,7 +489,7 @@ class ErrorLogManager {
 
   readonly #sinceElement: HTMLInputElement
 
-  #errorCount = INITIAL_ERROR_COUNT
+  #errorCount = 0
 
   #errorLogTBodyElement: HTMLTableSectionElement | null = null
 
@@ -751,7 +738,7 @@ class DeviceSettingsManager {
         errors.push(getErrorMessage(error))
       }
     }
-    if (errors.length) {
+    if (errors.length > 0) {
       throw new Error(errors.join('\n') || 'Unknown error')
     }
     return settings
@@ -786,7 +773,7 @@ class DeviceSettingsManager {
         ),
       ).map(([id, groupedValues]) => {
         const set = new Set(groupedValues?.map(({ values }) => values))
-        return [id, set.size === SIZE_ONE ? set.values().next().value : null]
+        return [id, set.size === 1 ? set.values().next().value : null]
       }),
     )
   }
@@ -898,14 +885,14 @@ class DeviceSettingsManager {
     driverId?: string,
   ): Promise<void> {
     const body = this.#buildSettingsBody(elements)
-    if (!Object.keys(body).length) {
+    if (Object.keys(body).length === 0) {
       if (driverId === undefined) {
         this.#refreshCommonSettings(
           elements.filter((element) => element instanceof HTMLSelectElement),
         )
       }
       this.#homey
-        .alert(this.#homey.__('settings.devices.apply.nothing'))
+        .alert(this.#homey.__('settings.devices.nothing'))
         .catch(() => {
           // Best-effort UI notification: the alert itself is the error display
         })
@@ -915,15 +902,13 @@ class DeviceSettingsManager {
       `settings_${driverId ?? 'common'}`,
       async () => {
         try {
+          const driverQuery =
+            driverId === undefined ? '' : (
+              `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
+            )
           await homeyApiPut<unknown>(
             this.#homey,
-            `/settings/devices${
-              driverId === undefined ? '' : (
-                `?${new URLSearchParams({ driverId } satisfies {
-                  driverId: string
-                })}`
-              )
-            }`,
+            `/settings/devices${driverQuery}`,
             body satisfies Settings,
           )
           this.#updateDeviceSettings(body, driverId)
@@ -956,14 +941,14 @@ class DeviceSettingsManager {
     value: ValueOf<Settings>,
     driverId?: string,
   ): boolean {
-    if (value !== null) {
-      const setting =
-        driverId === undefined ?
-          this.#flatDeviceSettings[id]
-        : this.#deviceSettings[driverId]?.[id]
-      return setting === null ? true : value !== setting
+    if (value === null) {
+      return false
     }
-    return false
+    const setting =
+      driverId === undefined ?
+        this.#flatDeviceSettings[id]
+      : this.#deviceSettings[driverId]?.[id]
+    return setting === null || value !== setting
   }
 
   #updateCommonSetting(element: HTMLSelectElement): void {
@@ -1104,7 +1089,7 @@ class ZoneSettingsManager {
   }
 
   public async generateZones(zones: Zone[] = []): Promise<void> {
-    if (zones.length) {
+    if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
         createOptionElement(this.#zoneElement, {
@@ -1147,7 +1132,7 @@ class ZoneSettingsManager {
   }
 
   public async setFrostProtectionData({
-    enabled,
+    isEnabled,
     max,
     min,
   }: FrostProtectionQuery): Promise<void> {
@@ -1158,10 +1143,10 @@ class ZoneSettingsManager {
           await homeyApiPut<unknown>(
             this.#homey,
             `/settings/frost_protection/${this.#getZonePath()}`,
-            { enabled, max, min } satisfies FrostProtectionQuery,
+            { isEnabled, max, min } satisfies FrostProtectionQuery,
           )
           this.#updateZoneMapping({
-            FPEnabled: enabled,
+            FPEnabled: isEnabled,
             FPMaxTemperature: max,
             FPMinTemperature: min,
           })
@@ -1206,11 +1191,15 @@ class ZoneSettingsManager {
     otherElement: HTMLInputElement,
   ): void {
     primaryElement.addEventListener('change', () => {
-      if (primaryElement.value) {
-        if (this.#holidayModeEnabledElement.value === 'false') {
-          this.#holidayModeEnabledElement.value = 'true'
-        }
-      } else if (
+      if (
+        primaryElement.value &&
+        this.#holidayModeEnabledElement.value === 'false'
+      ) {
+        this.#holidayModeEnabledElement.value = 'true'
+        return
+      }
+      if (
+        !primaryElement.value &&
         !otherElement.value &&
         this.#holidayModeEnabledElement.value === 'true'
       ) {
@@ -1240,7 +1229,7 @@ class ZoneSettingsManager {
       try {
         const { max, min } = this.#getFPMinAndMax()
         this.setFrostProtectionData({
-          enabled: this.#frostProtectionEnabledElement.value === 'true',
+          isEnabled: this.#frostProtectionEnabledElement.value === 'true',
           max,
           min,
         }).catch(() => {
@@ -1305,7 +1294,7 @@ class ZoneSettingsManager {
         return null
       }
     })
-    if (errors.length || min === null || max === null) {
+    if (errors.length > 0 || min === null || max === null) {
       throw new Error(errors.join('\n') || 'Unknown error')
     }
     if (max < min) {
@@ -1418,7 +1407,7 @@ class SettingsApp {
       await this.#homey.alert(getErrorMessage(error))
       throw error
     })
-    if (!buildings.length) {
+    if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.generateZones(buildings)
@@ -1430,6 +1419,7 @@ class SettingsApp {
     if (contextKey !== undefined) {
       try {
         await this.#fetchBuildings()
+        this.#authManager.needsAuthentication(false)
         return
       } catch {
         // Session expired or no devices: fall through to login

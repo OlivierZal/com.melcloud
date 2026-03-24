@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "الوضع الصامت !{{قيد التشغيل|متوقف}}",
     "da": "Den stille tilstand er !{{tændt|slukket}}",
+    "de": "Der Ruhemodus ist !{{an|aus}}",
     "en": "The silent mode is !{{on|off}}",
     "es": "El modo silencioso está !{{activado|desactivado}}",
     "fr": "Le mode silencieux est !{{en marche|arrêté}}",
+    "it": "La modalità silenziosa è !{{attiva|disattiva}}",
+    "ko": "저소음 모드가 !{{켜져 있습니다|꺼져 있습니다}}",
     "nl": "De stille modus is !{{aan|uit}}",
     "no": "Den stille modusen er !{{på|av}}",
+    "pl": "Tryb cichy jest !{{włączony|wyłączony}}",
+    "ru": "Тихий режим !{{включён|выключен}}",
     "sv": "Det tysta läget är !{{på|av}}"
   }
 }

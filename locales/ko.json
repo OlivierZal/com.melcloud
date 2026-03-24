@@ -1,0 +1,75 @@
+{
+  "errors": {
+    "deviceNotFound": "기기를 찾을 수 없습니다.",
+    "zoneNotFound": "구역을 찾을 수 없습니다."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "로그인",
+      "failure": "인증에 실패했습니다.",
+      "legend": "로그인 정보"
+    },
+    "boolean": {
+      "false": "아니요",
+      "true": "예"
+    },
+    "devices": {
+      "legend": "기기 설정",
+      "none": "기기를 추가하여 모든 앱 설정을 잠금 해제하세요!",
+      "nothing": "적용할 변경 사항이 없습니다.",
+      "apply": {
+        "button": "모든 기기에 적용",
+        "nothing": "적용할 변경 사항이 없습니다."
+      }
+    },
+    "devicesAta": {
+      "autoAdjust": "에어컨 온도 자동 조절",
+      "configure": "구성",
+      "legend": "공기 대 공기 기기 설정"
+    },
+    "devicesAtw": {
+      "legend": "공기 대 물 기기 설정"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "날짜",
+        "device": "기기",
+        "error": "오류"
+      },
+      "error": "__from__ 이전 날짜를 선택하세요.",
+      "errorCount": {
+        "0": "개 오류",
+        "1": "개 오류",
+        "234": "개 오류",
+        "plural": "개 오류"
+      },
+      "legend": "오류 기록",
+      "period": "__from__ 이후:",
+      "see": "모든 오류 보기",
+      "since": "이후"
+    },
+    "frostProtection": {
+      "enabled": "<strong>동파 방지</strong> 활성화",
+      "max": "최대 온도",
+      "min": "최소 온도"
+    },
+    "holidayMode": {
+      "enabled": "<strong>휴가 모드</strong> 활성화",
+      "endDate": "종료 날짜",
+      "endDateMissing": "종료 날짜가 없습니다.",
+      "startDate": "시작 날짜"
+    },
+    "intError": "__name__: __min__에서 __max__ 사이의 정수여야 합니다.",
+    "refresh": "새로고침",
+    "success": "업데이트 성공.",
+    "title": "MELCloud 설정",
+    "zones": {
+      "legend": "구역 설정",
+      "update": "업데이트"
+    },
+    "update": "업데이트"
+  },
+  "warnings": {
+    "dashboard": "기기를 나갔다가 다시 돌아와 대시보드를 업데이트하세요."
+  }
+}

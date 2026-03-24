@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم إيقاف وضع إذابة الجليد",
     "da": "Afrimningsfunktionen blev deaktiveret",
+    "de": "Der Abtaumodus wurde ausgeschaltet",
     "en": "The defrost mode turned off",
     "es": "El modo de descongelación se ha desactivado",
     "fr": "Le mode dégivrage s'est désactivé",
+    "it": "La modalità sbrinamento si è disattivata",
+    "ko": "제상 모드가 꺼졌습니다",
     "nl": "De ontdooimodus ging uit",
     "no": "Avfrostingsmodusen er deaktivert",
+    "pl": "Tryb odszraniania został wyłączony",
+    "ru": "Режим оттайки выключился",
     "sv": "Avfrostningsläget är inaktiverat"
   }
 }

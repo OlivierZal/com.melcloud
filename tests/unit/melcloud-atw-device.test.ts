@@ -1,6 +1,6 @@
 import {
-  type DeviceType,
   type ListDeviceDataAtw,
+  DeviceType,
   OperationModeState,
   OperationModeStateHotWater,
   OperationModeStateZone,
@@ -162,6 +162,7 @@ describe(MELCloudDeviceAtw, () => {
           hotWater: overrides.hotWater ?? {
             operationalState: OperationModeStateHotWater.idle,
           },
+          type: DeviceType.Atw,
           zone1: overrides.zone1 ?? {
             operationalState: OperationModeStateZone.idle,
           },

@@ -12,60 +12,90 @@
         {
           "id": "idle",
           "title": {
+            "ar": "خامل",
             "da": "Inaktiv",
+            "de": "Leerlauf",
             "en": "Idle",
             "es": "Inactivo",
             "fr": "Inactif",
+            "it": "Inattivo",
+            "ko": "대기",
             "nl": "Inactief",
             "no": "Inaktiv",
+            "pl": "Bezczynny",
+            "ru": "Ожидание",
             "sv": "Inaktiv"
           }
         },
         {
           "id": "heating",
           "title": {
+            "ar": "تدفئة",
             "da": "Opvarmning",
+            "de": "Heizen",
             "en": "Heating",
             "es": "Calefacción",
             "fr": "Chauffage",
+            "it": "Riscaldamento",
+            "ko": "난방",
             "nl": "Verwarming",
             "no": "Oppvarming",
+            "pl": "Ogrzewanie",
+            "ru": "Отопление",
             "sv": "Uppvärmning"
           }
         },
         {
           "id": "cooling",
           "title": {
+            "ar": "تبريد",
             "da": "Køling",
+            "de": "Kühlung",
             "en": "Cooling",
             "es": "Enfriamiento",
             "fr": "Refroidissement",
+            "it": "Raffrescamento",
+            "ko": "냉방",
             "nl": "Koeling",
             "no": "Kjøling",
+            "pl": "Chłodzenie",
+            "ru": "Охлаждение",
             "sv": "Kylning"
           }
         },
         {
           "id": "defrost",
           "title": {
+            "ar": "إذابة الجليد",
             "da": "Afrimning",
+            "de": "Abtauung",
             "en": "Defrost",
             "es": "Descongelación",
             "fr": "Dégivrage",
+            "it": "Sbrinamento",
+            "ko": "제상",
             "nl": "Ontdooien",
             "no": "Avfrosting",
+            "pl": "Odszranianie",
+            "ru": "Оттайка",
             "sv": "Avfrostning"
           }
         },
         {
           "id": "prohibited",
           "title": {
+            "ar": "محظور",
             "da": "Forbudt",
+            "de": "Gesperrt",
             "en": "Prohibited",
             "es": "Prohibido",
             "fr": "Interdit",
+            "it": "Vietato",
+            "ko": "금지됨",
             "nl": "Verboden",
             "no": "Forbudt",
+            "pl": "Zabroniony",
+            "ru": "Запрещено",
             "sv": "Förbjuden"
           }
         }
@@ -73,21 +103,33 @@
     }
   ],
   "title": {
+    "ar": "حالة التشغيل !{{هي|ليست}} في المنطقة 1",
     "da": "Driftstilstanden !{{er|er ikke}} i zone 1",
+    "de": "Der Betriebszustand !{{ist|ist nicht}} in Zone 1",
     "en": "The operational state !{{is|is not}} in zone 1",
     "es": "El estado operativo !{{está|no está}} en la zona 1",
     "fr": "L'état opérationnel !{{est|n'est pas}} dans la zone 1",
+    "it": "Lo stato operativo !{{è|non è}} nella zona 1",
+    "ko": "구역 1의 작동 상태가 !{{맞습니다|아닙니다}}",
     "nl": "De operationele staat !{{is|is niet}} in zone 1",
     "no": "Driftstilstanden !{{er|er ikke}} i sone 1",
+    "pl": "Stan operacyjny !{{jest|nie jest}} w strefie 1",
+    "ru": "Рабочее состояние !{{соответствует|не соответствует}} в зоне 1",
     "sv": "Drifttillståndet !{{är|är inte}} i zon 1"
   },
   "titleFormatted": {
+    "ar": "حالة التشغيل !{{هي|ليست}} [[operational_state]] في المنطقة 1",
     "da": "Driftstilstanden !{{er|er ikke}} [[operational_state]] i zone 1",
+    "de": "Der Betriebszustand !{{ist|ist nicht}} [[operational_state]] in Zone 1",
     "en": "The operational state !{{is|is not}} [[operational_state]] in zone 1",
     "es": "El estado operativo !{{está|no está}} [[operational_state]] en la zona 1",
     "fr": "L'état opérationnel !{{est|n'est pas}} [[operational_state]] dans la zone 1",
+    "it": "Lo stato operativo !{{è|non è}} [[operational_state]] nella zona 1",
+    "ko": "구역 1의 작동 상태가 [[operational_state]] !{{입니다|이(가) 아닙니다}}",
     "nl": "De operationele staat !{{is|is niet}} [[operational_state]] in zone 1",
     "no": "Driftstilstanden !{{er|er ikke}} [[operational_state]] i sone 1",
+    "pl": "Stan operacyjny !{{jest|nie jest}} [[operational_state]] w strefie 1",
+    "ru": "Рабочее состояние !{{соответствует|не соответствует}} [[operational_state]] в зоне 1",
     "sv": "Drifttillståndet !{{är|är inte}} [[operational_state]] i zon 1"
   }
 }

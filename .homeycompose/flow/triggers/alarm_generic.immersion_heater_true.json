@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم تشغيل سخان الغمر",
     "da": "Dyppevarmeren blev aktiveret",
+    "de": "Der Tauchsieder wurde eingeschaltet",
     "en": "The immersion heater turned on",
     "es": "El calentador eléctrico sumergible se ha activado",
     "fr": "Le thermoplongeur s'est activé",
+    "it": "Lo scaldabagno ad immersione si è acceso",
+    "ko": "침수 히터가 켜졌습니다",
     "nl": "De dompelelement gaat aan",
     "no": "Dyppvarmeren er aktivert",
+    "pl": "Grzałka nurkowa została włączona",
+    "ru": "Погружной нагреватель включился",
     "sv": "Doppvärmaren är aktiverad"
   }
 }

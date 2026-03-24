@@ -24,17 +24,11 @@ import {
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
-const INITIAL_SUM = 0
-const NO_ENERGY_DIVISOR = 1
-
 const sumTags = <T extends DeviceType>(
   data: EnergyData<T>,
   tags: readonly (keyof EnergyData<T>)[],
 ): number =>
-  tags.reduce(
-    (accumulator, tag) => accumulator + Number(data[tag]),
-    INITIAL_SUM,
-  )
+  tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
 
 export interface EnergyReportConfig {
   readonly duration: DurationLike
@@ -53,7 +47,7 @@ export class EnergyReport<T extends DeviceType> {
 
   private readonly driver: BaseMELCloudDriver<T>
 
-  #linkedDeviceCount = NO_ENERGY_DIVISOR
+  #linkedDeviceCount = 1
 
   #reportTimeout: NodeJS.Timeout | null = null
 
@@ -79,7 +73,7 @@ export class EnergyReport<T extends DeviceType> {
   }
 
   public async handle(): Promise<void> {
-    if (!this.#energyCapabilityTagEntries.length) {
+    if (this.#energyCapabilityTagEntries.length === 0) {
       this.unschedule()
       return
     }
@@ -112,10 +106,7 @@ export class EnergyReport<T extends DeviceType> {
         consumedTagMapping: { [capability]: consumedTags = [] },
       },
     } = this
-    return (
-      sumTags(data, producedTags) /
-      (sumTags(data, consumedTags) || NO_ENERGY_DIVISOR)
-    )
+    return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
   }
 
   #calculateEnergyValue(
@@ -134,11 +125,11 @@ export class EnergyReport<T extends DeviceType> {
     tags: readonly (keyof EnergyData<T>)[],
     hour: HourNumbers,
   ): number {
-    let total = INITIAL_SUM
+    let total = 0
     for (const tag of tags) {
       const { [tag]: tagData } = data
       if (Array.isArray(tagData)) {
-        total += (tagData[hour] ?? INITIAL_SUM) * KILOWATT_TO_WATT
+        total += (tagData[hour] ?? 0) * KILOWATT_TO_WATT
       }
     }
 

@@ -13,7 +13,8 @@
         <header class="homey-header">
             <h1 class="homey-title" data-i18n="settings.title"></h1>
         </header>
-        <div id="authenticating" class="hidden">
+        <!-- Shown before authentication -->
+        <div id="authenticating" hidden>
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.authenticate.legend"></legend>
                 <div id="login"></div>
@@ -28,25 +29,18 @@
                 </div>
             </fieldset>
         </div>
-        <div id="authenticated">
+        <!-- Shown after authentication — hidden by default to prevent flash -->
+        <div id="authenticated" hidden>
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.errorLog.legend"></legend>
-                <div id="error_log" class="homey-form-group">
-                    <div class="container-inline-end">
-                        <label id="period" class="homey-form-label inline unset-margin-block-start bolded"></label>
-                        <label id="error_count" class="homey-form-label inline unset-margin-block-start"></label>
-                    </div>
-                </div>
                 <div class="homey-form-group container">
-                    <div class="container-inline-start">
-                        <button
-                            id="see"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            aria-label="See"
-                            data-i18n="settings.errorLog.see"
-                        ></button>
-                    </div>
+                    <button
+                        id="see"
+                        type="button"
+                        class="homey-button-secondary-shadow"
+                        aria-label="See"
+                        data-i18n="settings.errorLog.see"
+                    ></button>
                     <div class="container-inline-end">
                         <label
                             class="homey-form-label unset-margin"
@@ -57,8 +51,13 @@
                         <input
                             id="since"
                             type="date"
-                            value=""
                         >
+                    </div>
+                </div>
+                <div id="error_log" class="homey-form-group">
+                    <div class="container-inline-end">
+                        <label id="period" class="homey-form-label unset-margin bolded"></label>
+                        <label id="error_count" class="homey-form-label unset-margin"></label>
                     </div>
                 </div>
             </fieldset>
@@ -83,8 +82,8 @@
                         <option data-i18n="settings.boolean.true" value="true"></option>
                     </select>
                 </div>
-                <div class="container">
-                    <div class="homey-form-group">
+                <div class="homey-form-group container">
+                    <div>
                         <label
                             class="homey-form-label"
                             aria-label="Start date"
@@ -94,10 +93,9 @@
                         <input
                             id="start_date"
                             type="datetime-local"
-                            value=""
                         >
                     </div>
-                    <div class="homey-form-group">
+                    <div>
                         <label
                             class="homey-form-label"
                             aria-label="End date"
@@ -107,7 +105,6 @@
                         <input
                             id="end_date"
                             type="datetime-local"
-                            value=""
                         >
                     </div>
                 </div>
@@ -124,7 +121,7 @@
                         type="button"
                         class="homey-button-danger-shadow"
                         aria-label="Update"
-                        data-i18n="settings.zones.update"
+                        data-i18n="settings.update"
                     ></button>
                 </div>
                 <div class="homey-form-group">
@@ -182,33 +179,32 @@
                         type="button"
                         class="homey-button-danger-shadow"
                         aria-label="Update"
-                        data-i18n="settings.zones.update"
+                        data-i18n="settings.update"
                     ></button>
                 </div>
             </fieldset>
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.devices.legend"></legend>
                 <div id="settings_common"></div>
-                <div class="homey-form-group">
+                <div class="homey-form-group container">
                     <button
                         id="refresh_settings_common"
                         type="button"
-                        class="homey-button-secondary-shadow-full"
+                        class="homey-button-secondary-shadow"
                         aria-label="Refresh"
                         data-i18n="settings.refresh"
                     ></button>
-                </div>
-                <div class="homey-form-group">
                     <button
                         id="apply_settings_common"
                         type="button"
-                        class="homey-button-danger-shadow-full"
-                        aria-label="Apply"
-                        data-i18n="settings.devices.apply.button"
+                        class="homey-button-danger-shadow"
+                        aria-label="Update"
+                        data-i18n="settings.update"
                     ></button>
                 </div>
             </fieldset>
-            <div id="has_devices_melcloud" class="hidden">
+            <!-- Shown when air-to-air devices exist -->
+            <div id="has_devices_melcloud" hidden>
                 <fieldset class="homey-form-fieldset">
                     <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend"></legend>
                     <div class="homey-form-group">
@@ -228,46 +224,43 @@
                         ></button>
                     </div>
                     <div id="settings_melcloud" class="homey-form-group"></div>
-                    <div class="homey-form-group">
+                    <div class="homey-form-group container">
                         <button
                             id="refresh_settings_melcloud"
                             type="button"
-                            class="homey-button-secondary-shadow-full"
+                            class="homey-button-secondary-shadow"
                             aria-label="Refresh"
                             data-i18n="settings.refresh"
                         ></button>
-                    </div>
-                    <div class="homey-form-group">
                         <button
                             id="apply_settings_melcloud"
                             type="button"
-                            class="homey-button-danger-shadow-full"
-                            aria-label="Apply"
-                            data-i18n="settings.devices.apply.button"
+                            class="homey-button-danger-shadow"
+                            aria-label="Update"
+                            data-i18n="settings.update"
                         ></button>
                     </div>
                 </fieldset>
             </div>
-            <div id="has_devices_melcloud_atw" class="hidden">
+            <!-- Shown when air-to-water devices exist -->
+            <div id="has_devices_melcloud_atw" hidden>
                 <fieldset class="homey-form-fieldset">
                     <legend class="homey-form-legend" data-i18n="settings.devicesAtw.legend"></legend>
                     <div id="settings_melcloud_atw" class="homey-form-group"></div>
-                    <div class="homey-form-group">
+                    <div class="homey-form-group container">
                         <button
                             id="refresh_settings_melcloud_atw"
                             type="button"
-                            class="homey-button-secondary-shadow-full"
+                            class="homey-button-secondary-shadow"
                             aria-label="Refresh"
                             data-i18n="settings.refresh"
                         ></button>
-                    </div>
-                    <div class="homey-form-group">
                         <button
                             id="apply_settings_melcloud_atw"
                             type="button"
-                            class="homey-button-danger-shadow-full"
-                            aria-label="Apply"
-                            data-i18n="settings.devices.apply.button"
+                            class="homey-button-danger-shadow"
+                            aria-label="Update"
+                            data-i18n="settings.update"
                         ></button>
                     </div>
                 </fieldset>

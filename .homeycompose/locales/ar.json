@@ -1,0 +1,73 @@
+{
+  "errors": {
+    "deviceNotFound": "لم يتم العثور على الجهاز.",
+    "zoneNotFound": "لم يتم العثور على المنطقة."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "تسجيل الدخول",
+      "failure": "فشل المصادقة.",
+      "legend": "بيانات الاعتماد"
+    },
+    "boolean": {
+      "false": "لا",
+      "true": "نعم"
+    },
+    "devices": {
+      "apply": {
+        "button": "تطبيق على جميع الأجهزة",
+        "nothing": "لا توجد تغييرات للتطبيق."
+      },
+      "legend": "إعدادات الجهاز",
+      "none": "أضف جهازًا لفتح جميع إعدادات التطبيق!"
+    },
+    "devicesAta": {
+      "autoAdjust": "ضبط تلقائي لدرجة حرارة المكيف",
+      "configure": "تكوين",
+      "legend": "إعدادات جهاز هواء-هواء"
+    },
+    "devicesAtw": {
+      "legend": "إعدادات جهاز هواء-ماء"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "التاريخ",
+        "device": "الجهاز",
+        "error": "الخطأ"
+      },
+      "error": "اختر تاريخًا قبل\n__from__.",
+      "errorCount": {
+        "0": "أخطاء",
+        "1": "خطأ",
+        "234": "أخطاء",
+        "plural": "أخطاء"
+      },
+      "legend": "سجل الأخطاء",
+      "period": "منذ __from__:",
+      "see": "عرض جميع الأخطاء",
+      "since": "منذ"
+    },
+    "frostProtection": {
+      "enabled": "تفعيل <strong>الحماية من التجمد</strong>",
+      "max": "درجة الحرارة القصوى",
+      "min": "درجة الحرارة الدنيا"
+    },
+    "holidayMode": {
+      "enabled": "تفعيل <strong>وضع الإجازة</strong>",
+      "endDate": "تاريخ الانتهاء",
+      "endDateMissing": "تاريخ الانتهاء مفقود.",
+      "startDate": "تاريخ البدء"
+    },
+    "intError": "__name__: يجب أن يكون عددًا صحيحًا بين __min__ و __max__.",
+    "refresh": "إعادة تحميل",
+    "success": "تم التحديث بنجاح.",
+    "title": "إعدادات MELCloud",
+    "update": "تحديث",
+    "zones": {
+      "legend": "إعدادات المنطقة"
+    }
+  },
+  "warnings": {
+    "dashboard": "اخرج من الجهاز وعد لتحديث لوحة التحكم."
+  }
+}

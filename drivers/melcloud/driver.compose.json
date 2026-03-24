@@ -37,30 +37,48 @@
   "capabilitiesOptions": {
     "alarm_generic.silent": {
       "insightsTitleFalse": {
+        "ar": "تم إيقاف الوضع الصامت",
         "da": "Stille tilstand blev deaktiveret",
+        "de": "Stiller Modus ausgeschaltet",
         "en": "Silent mode turned off",
         "es": "Modo silencioso desactivado",
         "fr": "Mode silencieux s'est désactivé",
+        "it": "Modalità silenziosa disattivata",
+        "ko": "저소음 모드 꺼짐",
         "nl": "Stille modus ging uit",
         "no": "Stille modus deaktivert",
+        "pl": "Tryb cichy wyłączony",
+        "ru": "Тихий режим выключен",
         "sv": "Tyst läge inaktiverat"
       },
       "insightsTitleTrue": {
+        "ar": "تم تشغيل الوضع الصامت",
         "da": "Stille tilstand blev aktiveret",
+        "de": "Stiller Modus eingeschaltet",
         "en": "Silent mode turned on",
         "es": "Modo silencioso activado",
         "fr": "Mode silencieux s'est activé",
+        "it": "Modalità silenziosa attivata",
+        "ko": "저소음 모드 켜짐",
         "nl": "Stille modus ging af",
         "no": "Stille modus aktivert",
+        "pl": "Tryb cichy włączony",
+        "ru": "Тихий режим включен",
         "sv": "Tyst läge aktiverat"
       },
       "title": {
+        "ar": "الوضع الصامت",
         "da": "Stille tilstand",
+        "de": "Stiller Modus",
         "en": "Silent mode",
         "es": "Modo silencioso",
         "fr": "Mode silencieux",
+        "it": "Modalità silenziosa",
+        "ko": "저소음 모드",
         "nl": "Stille modus",
         "no": "Stille modus",
+        "pl": "Tryb cichy",
+        "ru": "Тихий режим",
         "sv": "Tyst läge"
       }
     },
@@ -69,12 +87,18 @@
       "max": 6,
       "setable": false,
       "title": {
+        "ar": "سرعة المروحة الحالية",
         "da": "Aktuel ventilatorhastighed",
+        "de": "Aktuelle Lüftergeschwindigkeit",
         "en": "Current fan speed",
         "es": "Velocidad actual del ventilador",
         "fr": "Vitesse actuelle de ventilation",
+        "it": "Velocità attuale della ventola",
+        "ko": "현재 팬 속도",
         "nl": "Huidige ventilatorsnelheid",
         "no": "Nåværende viftehastighet",
+        "pl": "Aktualna prędkość wentylatora",
+        "ru": "Текущая скорость вентилятора",
         "sv": "Aktuell fläkthastighet"
       },
       "uiComponent": "sensor",
@@ -82,210 +106,324 @@
     },
     "measure_power.auto": {
       "title": {
+        "ar": "الطاقة - تلقائي",
         "da": "Effekt - automatisk",
+        "de": "Leistung - automatisch",
         "en": "Power - automatic",
         "es": "Potencia - automático",
         "fr": "Puissance - automatique",
+        "it": "Potenza - automatica",
+        "ko": "전력 - 자동",
         "nl": "Vermogen - automatische",
         "no": "Effekt - automatisk",
+        "pl": "Moc - automatyczny",
+        "ru": "Мощность - авто",
         "sv": "Effekt - automatiskt"
       }
     },
     "measure_power.cooling": {
       "title": {
+        "ar": "الطاقة - تبريد",
         "da": "Effekt - køling",
+        "de": "Leistung - Kühlung",
         "en": "Power - cooling",
         "es": "Potencia - enfriamiento",
         "fr": "Puissance - refroidissement",
+        "it": "Potenza - raffreddamento",
+        "ko": "전력 - 냉방",
         "nl": "Vermogen - koeling",
         "no": "Effekt - kjøling",
+        "pl": "Moc - chłodzenie",
+        "ru": "Мощность - охлаждение",
         "sv": "Effekt - kylning"
       }
     },
     "measure_power.dry": {
       "title": {
+        "ar": "الطاقة - إزالة الرطوبة",
         "da": "Effekt - affugtning",
+        "de": "Leistung - Entfeuchtung",
         "en": "Power - dry",
         "es": "Potencia - desumidificación",
         "fr": "Puissance - déshumidification",
+        "it": "Potenza - deumidificazione",
+        "ko": "전력 - 제습",
         "nl": "Vermogen - ontvochtiging",
         "no": "Effekt - avfukting",
+        "pl": "Moc - osuszanie",
+        "ru": "Мощность - осушение",
         "sv": "Effekt - avfuktning"
       }
     },
     "measure_power.fan": {
       "title": {
+        "ar": "الطاقة - مروحة",
         "da": "Effekt - blæser",
+        "de": "Leistung - Lüfter",
         "en": "Power - fan",
         "es": "Potencia - ventilador",
         "fr": "Puissance - ventilateur",
+        "it": "Potenza - ventilazione",
+        "ko": "전력 - 팬",
         "nl": "Vermogen - ventilator",
         "no": "Effekt - vifte",
+        "pl": "Moc - wentylator",
+        "ru": "Мощность - вентилятор",
         "sv": "Effekt - fläkt"
       }
     },
     "measure_power.heating": {
       "title": {
+        "ar": "الطاقة - تدفئة",
         "da": "Effekt - opvarmning",
+        "de": "Leistung - Heizung",
         "en": "Power - heating",
         "es": "Potencia - calefacción",
         "fr": "Puissance - chauffage",
+        "it": "Potenza - riscaldamento",
+        "ko": "전력 - 난방",
         "nl": "Vermogen - verwarming",
         "no": "Effekt - oppvarming",
+        "pl": "Moc - ogrzewanie",
+        "ru": "Мощность - отопление",
         "sv": "Effekt - uppvärmning"
       }
     },
     "measure_power.other": {
       "title": {
+        "ar": "الطاقة - أخرى",
         "da": "Effekt - andet",
+        "de": "Leistung - Sonstiges",
         "en": "Power - other",
         "es": "Potencia - otro",
         "fr": "Puissance - autre",
+        "it": "Potenza - altro",
+        "ko": "전력 - 기타",
         "nl": "Vermogen - andere",
         "no": "Effekt - annet",
+        "pl": "Moc - inne",
+        "ru": "Мощность - прочее",
         "sv": "Effekt - övrigt"
       }
     },
     "meter_power.auto": {
       "title": {
+        "ar": "الطاقة المستهلكة - تلقائي",
         "da": "Energi - automatisk",
+        "de": "Energie - automatisch",
         "en": "Energy - automatic",
         "es": "Energía - automático",
         "fr": "Énergie - automatique",
+        "it": "Energia - automatica",
+        "ko": "에너지 - 자동",
         "nl": "Energie - automatische",
         "no": "Energi - automatisk",
+        "pl": "Energia - automatyczny",
+        "ru": "Энергия - авто",
         "sv": "Energi - automatiskt"
       }
     },
     "meter_power.cooling": {
       "title": {
+        "ar": "الطاقة المستهلكة - تبريد",
         "da": "Energi - køling",
+        "de": "Energie - Kühlung",
         "en": "Energy - cooling",
         "es": "Energía - enfriamiento",
         "fr": "Énergie - refroidissement",
+        "it": "Energia - raffreddamento",
+        "ko": "에너지 - 냉방",
         "nl": "Energie - koeling",
         "no": "Energi - kjøling",
+        "pl": "Energia - chłodzenie",
+        "ru": "Энергия - охлаждение",
         "sv": "Energi - kylning"
       }
     },
     "meter_power.daily": {
       "title": {
+        "ar": "الطاقة اليومية",
         "da": "Daglig energi",
+        "de": "Tägliche Energie",
         "en": "Daily energy",
         "es": "Energía diaria",
         "fr": "Énergie quotidienne",
+        "it": "Energia giornaliera",
+        "ko": "일일 에너지",
         "nl": "Dagelijkse energie",
         "no": "Daglig energi",
+        "pl": "Energia dzienna",
+        "ru": "Энергия за день",
         "sv": "Daglig energi"
       }
     },
     "meter_power.daily_auto": {
       "title": {
+        "ar": "الطاقة اليومية - تلقائي",
         "da": "Daglig energi - automatisk",
+        "de": "Tägliche Energie - automatisch",
         "en": "Daily energy - automatic",
         "es": "Energía diaria - automático",
         "fr": "Énergie quotidienne - automatique",
+        "it": "Energia giornaliera - automatica",
+        "ko": "일일 에너지 - 자동",
         "nl": "Dagelijkse energie - automatische",
         "no": "Daglig energi - automatisk",
+        "pl": "Energia dzienna - automatyczny",
+        "ru": "Энергия за день - авто",
         "sv": "Daglig energi - automatiskt"
       }
     },
     "meter_power.daily_cooling": {
       "title": {
+        "ar": "الطاقة اليومية - تبريد",
         "da": "Daglig energi - køling",
+        "de": "Tägliche Energie - Kühlung",
         "en": "Daily energy - cooling",
         "es": "Energía diaria - enfriamiento",
         "fr": "Énergie quotidienne - refroidissement",
+        "it": "Energia giornaliera - raffreddamento",
+        "ko": "일일 에너지 - 냉방",
         "nl": "Dagelijkse energie - koeling",
         "no": "Daglig energi - kjøling",
+        "pl": "Energia dzienna - chłodzenie",
+        "ru": "Энергия за день - охлаждение",
         "sv": "Daglig energi - kylning"
       }
     },
     "meter_power.daily_dry": {
       "title": {
+        "ar": "الطاقة اليومية - إزالة الرطوبة",
         "da": "Daglig energi - affugtning",
+        "de": "Tägliche Energie - Entfeuchtung",
         "en": "Daily energy - dry",
         "es": "Energía diaria - desumidificación",
         "fr": "Énergie quotidienne - déshumidification",
+        "it": "Energia giornaliera - deumidificazione",
+        "ko": "일일 에너지 - 제습",
         "nl": "Dagelijkse energie - ontvochtiging",
         "no": "Daglig energi - avfukting",
+        "pl": "Energia dzienna - osuszanie",
+        "ru": "Энергия за день - осушение",
         "sv": "Daglig energi - avfuktning"
       }
     },
     "meter_power.daily_fan": {
       "title": {
+        "ar": "الطاقة اليومية - مروحة",
         "da": "Daglig energi - blæser",
+        "de": "Tägliche Energie - Lüfter",
         "en": "Daily energy - fan",
         "es": "Energía diaria - ventilación",
         "fr": "Énergie quotidienne - ventilateur",
+        "it": "Energia giornaliera - ventilazione",
+        "ko": "일일 에너지 - 팬",
         "nl": "Dagelijkse energie - ventilator",
         "no": "Daglig energi - vifte",
+        "pl": "Energia dzienna - wentylator",
+        "ru": "Энергия за день - вентилятор",
         "sv": "Daglig energi - fläkt"
       }
     },
     "meter_power.daily_heating": {
       "title": {
+        "ar": "الطاقة اليومية - تدفئة",
         "da": "Daglig energi - opvarmning",
+        "de": "Tägliche Energie - Heizung",
         "en": "Daily energy - heating",
         "es": "Energía diaria - calefacción",
         "fr": "Énergie quotidienne - chauffage",
+        "it": "Energia giornaliera - riscaldamento",
+        "ko": "일일 에너지 - 난방",
         "nl": "Dagelijkse energie - verwarming",
         "no": "Daglig energi - oppvarming",
+        "pl": "Energia dzienna - ogrzewanie",
+        "ru": "Энергия за день - отопление",
         "sv": "Daglig energi - uppvärmning"
       }
     },
     "meter_power.daily_other": {
       "title": {
+        "ar": "الطاقة اليومية - أخرى",
         "da": "Daglig energi - andet",
+        "de": "Tägliche Energie - Sonstiges",
         "en": "Daily energy - other",
         "es": "Energía diaria - otro",
         "fr": "Énergie quotidienne - autre",
+        "it": "Energia giornaliera - altro",
+        "ko": "일일 에너지 - 기타",
         "nl": "Dagelijkse energie - andere",
         "no": "Daglig energi - annet",
+        "pl": "Energia dzienna - inne",
+        "ru": "Энергия за день - прочее",
         "sv": "Daglig energi - övrigt"
       }
     },
     "meter_power.dry": {
       "title": {
+        "ar": "الطاقة المستهلكة - إزالة الرطوبة",
         "da": "Energi - affugtning",
+        "de": "Energie - Entfeuchtung",
         "en": "Energy - dry",
         "es": "Energía - desumidificación",
         "fr": "Énergie - déshumidification",
+        "it": "Energia - deumidificazione",
+        "ko": "에너지 - 제습",
         "nl": "Energie - ontvochtiging",
         "no": "Energi - avfukting",
+        "pl": "Energia - osuszanie",
+        "ru": "Энергия - осушение",
         "sv": "Energi - avfuktning"
       }
     },
     "meter_power.fan": {
       "title": {
+        "ar": "الطاقة المستهلكة - مروحة",
         "da": "Energi - blæser",
+        "de": "Energie - Lüfter",
         "en": "Energy - fan",
         "es": "Energía - ventilador",
         "fr": "Énergie - ventilateur",
+        "it": "Energia - ventilazione",
+        "ko": "에너지 - 팬",
         "nl": "Energie - ventilator",
         "no": "Energi - vifte",
+        "pl": "Energia - wentylator",
+        "ru": "Энергия - вентилятор",
         "sv": "Energi - fläkt"
       }
     },
     "meter_power.heating": {
       "title": {
+        "ar": "الطاقة المستهلكة - تدفئة",
         "da": "Energi - opvarmning",
+        "de": "Energie - Heizung",
         "en": "Energy - heating",
         "es": "Energía - calefacción",
         "fr": "Énergie - chauffage",
+        "it": "Energia - riscaldamento",
+        "ko": "에너지 - 난방",
         "nl": "Energie - verwarming",
         "no": "Energi - oppvarming",
+        "pl": "Energia - ogrzewanie",
+        "ru": "Энергия - отопление",
         "sv": "Energi - uppvärmning"
       }
     },
     "meter_power.other": {
       "title": {
+        "ar": "الطاقة المستهلكة - أخرى",
         "da": "Energi - andet",
+        "de": "Energie - Sonstiges",
         "en": "Energy - other",
         "es": "Energía - otro",
         "fr": "Énergie - autre",
+        "it": "Energia - altro",
+        "ko": "에너지 - 기타",
         "nl": "Energie - andere",
         "no": "Energi - annet",
+        "pl": "Energia - inne",
+        "ru": "Энергия - прочее",
         "sv": "Energi - övrigt"
       }
     },
@@ -298,72 +436,108 @@
         {
           "id": "auto",
           "title": {
+            "ar": "تلقائي",
             "da": "Automatisk",
+            "de": "Automatisch",
             "en": "Automatic",
             "es": "Automático",
             "fr": "Automatique",
+            "it": "Automatica",
+            "ko": "자동",
             "nl": "Automatisch",
             "no": "Automatisk",
+            "pl": "Automatyczny",
+            "ru": "Авто",
             "sv": "Automatiskt"
           }
         },
         {
           "id": "cool",
           "title": {
+            "ar": "تبريد",
             "da": "Køl ned",
+            "de": "Kühlen",
             "en": "Cool",
             "es": "Enfriar",
             "fr": "Refroidir",
+            "it": "Raffreddamento",
+            "ko": "냉방",
             "nl": "Koelen",
             "no": "Avkjøle",
+            "pl": "Chłodzenie",
+            "ru": "Охлаждение",
             "sv": "Kyla"
           }
         },
         {
           "id": "dry",
           "title": {
+            "ar": "إزالة الرطوبة",
             "da": "Affugte",
+            "de": "Entfeuchten",
             "en": "Dry",
             "es": "Deshumidificar",
             "fr": "Déshumidifier",
+            "it": "Deumidificazione",
+            "ko": "제습",
             "nl": "Ontvochtigen",
             "no": "Avfukte",
+            "pl": "Osuszanie",
+            "ru": "Осушение",
             "sv": "Avfukta"
           }
         },
         {
           "id": "fan",
           "title": {
+            "ar": "مروحة",
             "da": "Blæse",
+            "de": "Lüfter",
             "en": "Fan",
             "es": "Ventilar",
             "fr": "Ventiler",
+            "it": "Ventilazione",
+            "ko": "팬",
             "nl": "Ventileren",
             "no": "Vifte",
+            "pl": "Wentylator",
+            "ru": "Вентилятор",
             "sv": "Fläkta"
           }
         },
         {
           "id": "heat",
           "title": {
+            "ar": "تدفئة",
             "da": "Opvarm",
+            "de": "Heizen",
             "en": "Heat",
             "es": "Calentar",
             "fr": "Chauffer",
+            "it": "Riscaldamento",
+            "ko": "난방",
             "nl": "Verhitten",
             "no": "Varme",
+            "pl": "Ogrzewanie",
+            "ru": "Отопление",
             "sv": "Värme"
           }
         },
         {
           "id": "off",
           "title": {
+            "ar": "إيقاف",
             "da": "Deaktiveret",
+            "de": "Aus",
             "en": "Off",
             "es": "Desactivado",
             "fr": "Désactivé",
+            "it": "Spento",
+            "ko": "끄기",
             "nl": "Uit",
             "no": "Av",
+            "pl": "Wyłączony",
+            "ru": "Выкл.",
             "sv": "Av"
           }
         }
@@ -371,12 +545,18 @@
     }
   },
   "name": {
+    "ar": "مضخة حرارية هواء-هواء",
     "da": "Luft-til-luft varmepumpe",
+    "de": "Luft-Luft-Wärmepumpe",
     "en": "Air-to-air heat pump",
     "es": "Bomba de calor aire-aire",
     "fr": "Pompe à chaleur air-air",
+    "it": "Pompa di calore aria-aria",
+    "ko": "공기-공기 히트펌프",
     "nl": "Lucht-lucht warmtepomp",
     "no": "Luft-til-luft varmepumpe",
+    "pl": "Pompa ciepła powietrze-powietrze",
+    "ru": "Воздушный тепловой насос",
     "sv": "Luft-till-luft värmepump"
   }
 }

@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم إيقاف الماء الساخن الصحي الاقتصادي",
     "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
+    "de": "Das Eco-Warmwasser wurde ausgeschaltet",
     "en": "The eco domestic hot water turned off",
     "es": "El agua caliente sanitaria eco se ha desactivado",
     "fr": "L'eau chaude sanitaire éco s'est désactivée",
+    "it": "L'acqua calda sanitaria eco si è disattivata",
+    "ko": "에코 급탕이 꺼졌습니다",
     "nl": "De eco sanitair warm water ging uit",
     "no": "Eco-modus for varmvannslastning er deaktivert",
+    "pl": "Ekologiczna ciepła woda użytkowa została wyłączona",
+    "ru": "Эко-режим горячего водоснабжения выключился",
     "sv": "Eco-läge för varmvattenladdning är inaktiverat"
   }
 }

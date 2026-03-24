@@ -1,6 +1,6 @@
-Denne appen integrerer MELCloud i Homey for å kontrollere:
-- luft-til-luft varmepumper;
-- luft-til-vann varmepumper;
+Denne appen integrerer MELCloud i Homey for å styre:
+- luft-til-luft-varmepumper;
+- luft-til-vann-varmepumper;
 - ventilatorer med varmegjenvinning (ERV).
 
-Denne appen støttes ikke, verifiseres eller godkjennes av Mitsubishi Electric Corporation. Mitsubishi kan ikke holdes ansvarlig for eventuelle krav eller skader som kan oppstå ved bruk av denne appen til å kontrollere MELCloud-applikasjoner eller enheter.
+Denne appen er ikke godkjent, verifisert eller autorisert av Mitsubishi Electric Corporation. Mitsubishi kan ikke holdes ansvarlig for eventuelle krav eller skader som kan oppstå ved bruk av denne appen til å styre MELCloud-enheter.

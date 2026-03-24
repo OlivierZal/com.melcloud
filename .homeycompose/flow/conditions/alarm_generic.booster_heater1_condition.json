@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "سخان التعزيز 1 !{{قيد التشغيل|متوقف}}",
     "da": "Tilkoblingsvarmen 1 er !{{tændt|slukket}}",
+    "de": "Der Zusatzheizer 1 ist !{{an|aus}}",
     "en": "The booster heater 1 is !{{on|off}}",
     "es": "El calentador de refuerzo 1 está !{{activado|desactivado}}",
     "fr": "Le chauffage d'appoint 1 est !{{en marche|arrêté}}",
+    "it": "Il riscaldatore ausiliario 1 è !{{acceso|spento}}",
+    "ko": "보조 히터 1이 !{{켜져 있습니다|꺼져 있습니다}}",
     "nl": "Het bijverwarmingselement 1 is !{{aan|uit}}",
     "no": "Tilleggsvarmen 1 er !{{på|av}}",
+    "pl": "Grzałka wspomagająca 1 jest !{{włączona|wyłączona}}",
+    "ru": "Дополнительный нагреватель 1 !{{включён|выключен}}",
     "sv": "Tillskottsvärmaren 1 är !{{på|av}}"
   }
 }

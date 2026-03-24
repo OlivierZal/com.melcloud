@@ -12,48 +12,72 @@
         {
           "id": "idle",
           "title": {
+            "ar": "خامل",
             "da": "Inaktiv",
+            "de": "Leerlauf",
             "en": "Idle",
             "es": "Inactivo",
             "fr": "Inactif",
+            "it": "Inattivo",
+            "ko": "대기",
             "nl": "Inactief",
             "no": "Inaktiv",
+            "pl": "Bezczynny",
+            "ru": "Ожидание",
             "sv": "Inaktiv"
           }
         },
         {
           "id": "dhw",
           "title": {
+            "ar": "ماء ساخن صحي",
             "da": "Varmtvandsindlæsning",
+            "de": "Warmwasserbereitung",
             "en": "Domestic hot water",
             "es": "Agua caliente sanitaria",
             "fr": "Eau chaude sanitaire",
+            "it": "Acqua calda sanitaria",
+            "ko": "급탕",
             "nl": "Sanitair warm water",
             "no": "Varmvannslastning",
+            "pl": "Ciepła woda użytkowa",
+            "ru": "Горячее водоснабжение",
             "sv": "Varmvattenladdning"
           }
         },
         {
           "id": "legionella",
           "title": {
+            "ar": "مضاد للبكتيريا",
             "da": "Anti-legionella",
+            "de": "Anti-Legionellen",
             "en": "Anti-legionella",
             "es": "Anti-legionela",
             "fr": "Antilégionelle",
+            "it": "Anti-legionella",
+            "ko": "레지오넬라 방지",
             "nl": "Anti-legionella",
             "no": "Anti-legionella",
+            "pl": "Antylegionella",
+            "ru": "Антилегионелла",
             "sv": "Anti-legionella"
           }
         },
         {
           "id": "prohibited",
           "title": {
+            "ar": "محظور",
             "da": "Forbudt",
+            "de": "Gesperrt",
             "en": "Prohibited",
             "es": "Prohibido",
             "fr": "Interdit",
+            "it": "Vietato",
+            "ko": "금지됨",
             "nl": "Verboden",
             "no": "Forbudt",
+            "pl": "Zabroniony",
+            "ru": "Запрещено",
             "sv": "Förbjuden"
           }
         }
@@ -61,21 +85,33 @@
     }
   ],
   "title": {
+    "ar": "حالة التشغيل للماء الساخن الصحي !{{هي|ليست}}",
     "da": "Driftstilstanden for varmtvandsindlæsning !{{er|er ikke}}",
+    "de": "Der Betriebszustand für Warmwasser !{{ist|ist nicht}}",
     "en": "The operational state for domestic hot water !{{is|is not}}",
     "es": "El estado operativo para el agua caliente sanitaria !{{está|no está}}",
     "fr": "L'état opérationnel pour l'eau chaude sanitaire !{{est|n'est pas}}",
+    "it": "Lo stato operativo per l'acqua calda sanitaria !{{è|non è}}",
+    "ko": "급탕 작동 상태가 !{{맞습니다|아닙니다}}",
     "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}}",
     "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}}",
+    "pl": "Stan operacyjny ciepłej wody użytkowej !{{jest|nie jest}}",
+    "ru": "Рабочее состояние горячего водоснабжения !{{соответствует|не соответствует}}",
     "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}}"
   },
   "titleFormatted": {
+    "ar": "حالة التشغيل للماء الساخن الصحي !{{هي|ليست}} [[operational_state]]",
     "da": "Driftstilstanden for varmtvandsindlæsning !{{er|er ikke}} [[operational_state]]",
+    "de": "Der Betriebszustand für Warmwasser !{{ist|ist nicht}} [[operational_state]]",
     "en": "The operational state for domestic hot water !{{is|is not}} [[operational_state]]",
     "es": "El estado operativo para el agua caliente sanitaria !{{está|no está}} [[operational_state]]",
     "fr": "L'état opérationnel pour l'eau chaude sanitaire !{{est|n'est pas}} [[operational_state]]",
+    "it": "Lo stato operativo per l'acqua calda sanitaria !{{è|non è}} [[operational_state]]",
+    "ko": "급탕 작동 상태가 [[operational_state]] !{{입니다|이(가) 아닙니다}}",
     "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}} [[operational_state]]",
     "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}} [[operational_state]]",
+    "pl": "Stan operacyjny ciepłej wody użytkowej !{{jest|nie jest}} [[operational_state]]",
+    "ru": "Рабочее состояние горячего водоснабжения !{{соответствует|не соответствует}} [[operational_state]]",
     "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}} [[operational_state]]"
   }
 }

@@ -7,33 +7,51 @@
     }
   ],
   "title": {
+    "ar": "تغيرت حالة التشغيل في المنطقة 2",
     "da": "Driftstilstanden i zone 2 blev ændret",
+    "de": "Der Betriebszustand in Zone 2 hat sich geändert",
     "en": "The operational state in zone 2 changed",
     "es": "El estado operativo en la zona 2 ha cambiado",
     "fr": "L'état opérationnel dans la zone 2 a changé",
+    "it": "Lo stato operativo nella zona 2 è cambiato",
+    "ko": "구역 2의 작동 상태가 변경되었습니다",
     "nl": "De operationele staat in zone 2 is veranderd",
     "no": "Driftstilstanden i sone 2 ble endret",
+    "pl": "Stan operacyjny w strefie 2 uległ zmianie",
+    "ru": "Рабочее состояние в зоне 2 изменилось",
     "sv": "Drifttillståndet i zon 2 ändrades"
   },
   "tokens": [
     {
       "example": {
+        "ar": "خامل",
         "da": "Inaktiv",
+        "de": "Leerlauf",
         "en": "Idle",
         "es": "Inactivo",
         "fr": "Inactif",
+        "it": "Inattivo",
+        "ko": "대기",
         "nl": "Inactief",
         "no": "Inaktiv",
+        "pl": "Bezczynny",
+        "ru": "Ожидание",
         "sv": "Inaktiv"
       },
       "name": "operational_state.zone2",
       "title": {
+        "ar": "حالة التشغيل - المنطقة 2",
         "da": "Driftstilstand - zone 2",
+        "de": "Betriebszustand - Zone 2",
         "en": "Operational state - zone 2",
         "es": "Estado operativo - zona 2",
         "fr": "État opérationnel - zone 2",
+        "it": "Stato operativo - zona 2",
+        "ko": "작동 상태 - 구역 2",
         "nl": "Operationele staat - zone 2",
         "no": "Driftstilstand - sone 2",
+        "pl": "Stan operacyjny - strefa 2",
+        "ru": "Рабочее состояние - зона 2",
         "sv": "Drifttillstånd - zon 2"
       },
       "type": "string"

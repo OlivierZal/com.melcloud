@@ -1,0 +1,75 @@
+{
+  "errors": {
+    "deviceNotFound": "Gerät nicht gefunden.",
+    "zoneNotFound": "Zone nicht gefunden."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Anmelden",
+      "failure": "Authentifizierung fehlgeschlagen.",
+      "legend": "Anmeldedaten"
+    },
+    "boolean": {
+      "false": "Nein",
+      "true": "Ja"
+    },
+    "devices": {
+      "legend": "Geräteeinstellungen",
+      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
+      "nothing": "Keine Änderung zum Anwenden.",
+      "apply": {
+        "button": "Auf alle Geräte anwenden",
+        "nothing": "Keine Änderung zum Anwenden."
+      }
+    },
+    "devicesAta": {
+      "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
+      "configure": "Konfigurieren",
+      "legend": "Luft-Luft-Geräteeinstellungen"
+    },
+    "devicesAtw": {
+      "legend": "Luft-Wasser-Geräteeinstellungen"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Datum",
+        "device": "Gerät",
+        "error": "Fehler"
+      },
+      "error": "Wählen Sie ein Datum vor\n__from__.",
+      "errorCount": {
+        "0": "Fehler",
+        "1": "Fehler",
+        "234": "Fehler",
+        "plural": "Fehler"
+      },
+      "legend": "Fehlerprotokoll",
+      "period": "Seit __from__:",
+      "see": "Alle Fehler anzeigen",
+      "since": "seit"
+    },
+    "frostProtection": {
+      "enabled": "<strong>Frostschutz</strong> aktivieren",
+      "max": "Maximale Temperatur",
+      "min": "Minimale Temperatur"
+    },
+    "holidayMode": {
+      "enabled": "<strong>Urlaubsmodus</strong> aktivieren",
+      "endDate": "Enddatum",
+      "endDateMissing": "Enddatum fehlt.",
+      "startDate": "Startdatum"
+    },
+    "intError": "__name__: muss eine ganze Zahl zwischen __min__ und __max__ sein.",
+    "refresh": "Neu laden",
+    "success": "Aktualisierung erfolgreich.",
+    "title": "MELCloud-Einstellungen",
+    "zones": {
+      "legend": "Zoneneinstellungen",
+      "update": "Aktualisieren"
+    },
+    "update": "Aktualisieren"
+  },
+  "warnings": {
+    "dashboard": "Verlassen Sie das Gerät und kehren Sie zurück, um Ihr Dashboard zu aktualisieren."
+  }
+}

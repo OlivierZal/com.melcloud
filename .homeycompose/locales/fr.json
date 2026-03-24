@@ -62,9 +62,9 @@
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
     "title": "Paramètres de MELCloud",
+    "update": "Mettre à jour",
     "zones": {
-      "legend": "Paramètres des zones",
-      "update": "Mettre à jour"
+      "legend": "Paramètres des zones"
     }
   },
   "warnings": {

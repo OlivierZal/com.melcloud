@@ -14,12 +14,13 @@
       "true": "Oui"
     },
     "devices": {
+      "legend": "Paramètres des appareils",
+      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
+      "nothing": "Aucun changement à appliquer.",
       "apply": {
         "button": "Appliquer à tous les appareils",
         "nothing": "Aucun changement à appliquer."
-      },
-      "legend": "Paramètres des appareils",
-      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
@@ -65,7 +66,8 @@
     "zones": {
       "legend": "Paramètres des zones",
       "update": "Mettre à jour"
-    }
+    },
+    "update": "Mettre à jour"
   },
   "warnings": {
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."

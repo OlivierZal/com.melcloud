@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم تشغيل وضع إذابة الجليد",
     "da": "Afrimningsfunktionen blev aktiveret",
+    "de": "Der Abtaumodus wurde eingeschaltet",
     "en": "The defrost mode turned on",
     "es": "El modo de descongelación se ha activado",
     "fr": "Le mode dégivrage s'est activé",
+    "it": "La modalità sbrinamento si è attivata",
+    "ko": "제상 모드가 켜졌습니다",
     "nl": "De ontdooimodus gaat aan",
     "no": "Avfrostingsmodusen er aktivert",
+    "pl": "Tryb odszraniania został włączony",
+    "ru": "Режим оттайки включился",
     "sv": "Avfrostningsläget är aktiverat"
   }
 }

@@ -14,21 +14,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة حرارة الماء الساخن",
     "da": "Indstil varmtvandstemperaturen",
+    "de": "Warmwassertemperatur einstellen",
     "en": "Set the hot water temperature",
     "es": "Configurar la temperatura del agua caliente",
     "fr": "Définir la température de l'eau chaude",
+    "it": "Imposta la temperatura dell'acqua calda",
+    "ko": "온수 온도 설정",
     "nl": "Stel de warmwatertemperatuur in",
     "no": "Innstill varmtvanntemperaturen",
+    "pl": "Ustaw temperaturę ciepłej wody",
+    "ru": "Установить температуру горячей воды",
     "sv": "Ställ in varmvattentemperaturen"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة حرارة خزان الماء على [[target_temperature]]",
     "da": "Indstil varmtvandstemperaturen til [[target_temperature]]",
+    "de": "Warmwassertemperatur einstellen auf [[target_temperature]]",
     "en": "Set the tank water temperature to [[target_temperature]]",
     "es": "Configurar la temperatura del agua caliente a [[target_temperature]]",
     "fr": "Définir la température de l'eau chaude à [[target_temperature]]",
+    "it": "Imposta la temperatura dell'acqua del serbatoio su [[target_temperature]]",
+    "ko": "탱크 수온을 [[target_temperature]](으)로 설정",
     "nl": "Stel de warmwatertemperatuur in op [[target_temperature]]",
     "no": "Innstill varmtvanntemperaturen til [[target_temperature]]",
+    "pl": "Ustaw temperaturę wody w zbiorniku na [[target_temperature]]",
+    "ru": "Установить температуру воды в баке на [[target_temperature]]",
     "sv": "Ställ in varmvattentemperaturen till [[target_temperature]]"
   }
 }

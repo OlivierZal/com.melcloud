@@ -12,84 +12,126 @@
         {
           "id": "auto",
           "title": {
+            "ar": "تلقائي",
             "da": "Automatisk",
+            "de": "Automatisch",
             "en": "Automatic",
             "es": "Automático",
             "fr": "Automatique",
+            "it": "Automatica",
+            "ko": "자동",
             "nl": "Automatisch",
             "no": "Automatisk",
+            "pl": "Automatyczny",
+            "ru": "Автоматически",
             "sv": "Automatiskt"
           }
         },
         {
           "id": "upwards",
           "title": {
+            "ar": "لأعلى",
             "da": "Opad",
+            "de": "Oben",
             "en": "Upwards",
             "es": "Arriba",
             "fr": "Haut",
+            "it": "Su",
+            "ko": "위쪽",
             "nl": "Omhoog",
             "no": "Oppover",
+            "pl": "Do góry",
+            "ru": "Вверх",
             "sv": "Uppåt"
           }
         },
         {
           "id": "mid_high",
           "title": {
+            "ar": "متوسط-عالي",
             "da": "Mellemhøj",
+            "de": "Mitte-hoch",
             "en": "Mid-high",
             "es": "Medio alto",
             "fr": "Milieu haut",
+            "it": "Medio-alto",
+            "ko": "중상",
             "nl": "Midden-hoog",
             "no": "Mellomhøy",
+            "pl": "Średnio-wysoko",
+            "ru": "Средне-высоко",
             "sv": "Mellanhög"
           }
         },
         {
           "id": "middle",
           "title": {
+            "ar": "وسط",
             "da": "Midten",
+            "de": "Mitte",
             "en": "Middle",
             "es": "Medio",
             "fr": "Milieu",
+            "it": "Medio",
+            "ko": "중간",
             "nl": "Midden",
             "no": "Midten",
+            "pl": "Środek",
+            "ru": "Середина",
             "sv": "Mitten"
           }
         },
         {
           "id": "mid_low",
           "title": {
+            "ar": "متوسط-منخفض",
             "da": "Mellemlav",
+            "de": "Mitte-tief",
             "en": "Mid-low",
             "es": "Medio bajo",
             "fr": "Milieu bas",
+            "it": "Medio-basso",
+            "ko": "중하",
             "nl": "Midden-laag",
             "no": "Mellomlav",
+            "pl": "Średnio-nisko",
+            "ru": "Средне-низко",
             "sv": "Mellanlåg"
           }
         },
         {
           "id": "downwards",
           "title": {
+            "ar": "لأسفل",
             "da": "Nedad",
+            "de": "Unten",
             "en": "Downwards",
             "es": "Abajo",
             "fr": "Bas",
+            "it": "Giù",
+            "ko": "아래쪽",
             "nl": "Omlaag",
             "no": "Nedover",
+            "pl": "W dół",
+            "ru": "Вниз",
             "sv": "Nedåt"
           }
         },
         {
           "id": "swing",
           "title": {
+            "ar": "تأرجح",
             "da": "Sving",
+            "de": "Schwenken",
             "en": "Swing",
             "es": "Oscilación",
             "fr": "Balayage",
+            "it": "Oscillazione",
+            "ko": "스윙",
             "nl": "Swing",
             "no": "Sving",
+            "pl": "Wahanie",
+            "ru": "Качание",
             "sv": "Svängning"
           }
         }
@@ -97,21 +139,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط الريشة العمودية",
     "da": "Indstil den vertikale luftstrømsretningen",
+    "de": "Vertikale Lamelle einstellen",
     "en": "Set the vertical vane",
     "es": "Configurar la discarga de aire vertical",
     "fr": "Définir le soufflage vertical",
+    "it": "Imposta l'aletta verticale",
+    "ko": "수직 베인 설정",
     "nl": "Stel de uitblaasrichting verticaal in",
     "no": "Innstill den vertikale luftstrømretningen",
+    "pl": "Ustaw pionową kierownicę",
+    "ru": "Установить вертикальные жалюзи",
     "sv": "Ställ in den vertikala luftflödesriktningen"
   },
   "titleFormatted": {
+    "ar": "ضبط الريشة العمودية على [[vertical]]",
     "da": "Indstil den vertikale luftstrømsretningen til [[vertical]]",
+    "de": "Vertikale Lamelle einstellen auf [[vertical]]",
     "en": "Set the vertical vane to [[vertical]]",
     "es": "Configurar la discarga de aire vertical a [[vertical]]",
     "fr": "Définir le soufflage vertical à [[vertical]]",
+    "it": "Imposta l'aletta verticale su [[vertical]]",
+    "ko": "수직 베인을 [[vertical]](으)로 설정",
     "nl": "Stel de uitblaasrichting verticaal in op [[vertical]]",
     "no": "Innstill den vertikale luftstrømretningen til [[vertical]]",
+    "pl": "Ustaw pionową kierownicę na [[vertical]]",
+    "ru": "Установить вертикальные жалюзи на [[vertical]]",
     "sv": "Ställ in den vertikala luftflödesriktningen till [[vertical]]"
   }
 }

@@ -14,21 +14,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة حرارة تدفق التبريد في المنطقة 2",
     "da": "Indstil fremledningstemperaturen for køling i zone 2",
+    "de": "Vorlauftemperatur für Kühlung in Zone 2 einstellen",
     "en": "Set the cool flow temperature in zone 2",
     "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2",
     "fr": "Définir la température de départ pour le refroidissement dans la zone 2",
+    "it": "Imposta la temperatura di mandata per il raffrescamento nella zona 2",
+    "ko": "구역 2의 냉방 유량 온도 설정",
     "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in",
     "no": "Innstill fremløpstemperaturen for kjøling i sone 2",
+    "pl": "Ustaw temperaturę zasilania chłodzenia w strefie 2",
+    "ru": "Установить температуру подачи для охлаждения в зоне 2",
     "sv": "Ställ in framledningstemperaturen för kylning i zon 2"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة حرارة تدفق التبريد في المنطقة 2 على [[target_temperature]]",
     "da": "Indstil fremledningstemperaturen for køling i zone 2 til [[target_temperature]]",
+    "de": "Vorlauftemperatur für Kühlung in Zone 2 einstellen auf [[target_temperature]]",
     "en": "Set the cool flow temperature in zone 2 to [[target_temperature]]",
     "es": "Configurar la temperatura de partida para el enfriamiento en la zona 2 a [[target_temperature]]",
     "fr": "Définir la température de départ pour le refroidissement dans la zone 2 à [[target_temperature]]",
+    "it": "Imposta la temperatura di mandata per il raffrescamento nella zona 2 su [[target_temperature]]",
+    "ko": "구역 2의 냉방 유량 온도를 [[target_temperature]](으)로 설정",
     "nl": "Stel de aanvoertemperatuur voor koeling in zone 2 in op [[target_temperature]]",
     "no": "Innstill fremløpstemperaturen for kjøling i sone 2 til [[target_temperature]]",
+    "pl": "Ustaw temperaturę zasilania chłodzenia w strefie 2 na [[target_temperature]]",
+    "ru": "Установить температуру подачи для охлаждения в зоне 2 на [[target_temperature]]",
     "sv": "Ställ in framledningstemperaturen för kylning i zon 2 till [[target_temperature]]"
   }
 }

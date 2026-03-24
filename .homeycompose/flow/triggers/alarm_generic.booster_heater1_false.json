@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم إيقاف سخان التعزيز 1",
     "da": "Tilkoblingsvarmen 1 blev deaktiveret",
+    "de": "Der Zusatzheizer 1 wurde ausgeschaltet",
     "en": "The booster heater 1 turned off",
     "es": "El calentador de refuerzo 1 se ha desactivado",
     "fr": "Le chauffage d'appoint 1 s'est désactivé",
+    "it": "Il riscaldatore ausiliario 1 si è spento",
+    "ko": "보조 히터 1이 꺼졌습니다",
     "nl": "Het bijverwarmingselement 1 ging uit",
     "no": "Tilleggsvarmen 1 er deaktivert",
+    "pl": "Grzałka wspomagająca 1 została wyłączona",
+    "ru": "Дополнительный нагреватель 1 выключился",
     "sv": "Tillskottsvärmaren 1 är inaktiverad"
   }
 }

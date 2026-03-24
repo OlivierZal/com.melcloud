@@ -14,12 +14,13 @@
       "true": "Ja"
     },
     "devices": {
+      "legend": "Apparaatinstellingen",
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
+      "nothing": "Geen wijziging om toe te passen.",
       "apply": {
         "button": "Toepassen op alle apparaten",
         "nothing": "Geen wijziging om toe te passen."
-      },
-      "legend": "Apparaatinstellingen",
-      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
+      }
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
@@ -65,7 +66,8 @@
     "zones": {
       "legend": "Zonesinstellingen",
       "update": "Updaten"
-    }
+    },
+    "update": "Updaten"
   },
   "warnings": {
     "dashboard": "Verlaat het apparaat en keer terug om uw dashboard te updaten."

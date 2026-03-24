@@ -162,7 +162,7 @@ export abstract class BaseMELCloudDevice<
     const changedEnergyKeys = changedCapabilities.filter((setting) =>
       this.#isEnergyCapability(setting),
     )
-    if (changedEnergyKeys.length) {
+    if (changedEnergyKeys.length > 0) {
       await this.#updateEnergyReportsOnSettings({
         changedKeys: changedEnergyKeys,
       })
@@ -372,7 +372,7 @@ export abstract class BaseMELCloudDevice<
     const device = await this.fetchDevice()
     if (device) {
       const updateData = this.#buildUpdateData(values)
-      if (Object.keys(updateData).length) {
+      if (Object.keys(updateData).length > 0) {
         try {
           await device.setValues(updateData)
         } catch (error) {
@@ -444,7 +444,7 @@ export abstract class BaseMELCloudDevice<
     changedKeys: string[]
     newSettings: Settings
   }): Promise<void> {
-    if (changedCapabilities.length) {
+    if (changedCapabilities.length > 0) {
       await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }

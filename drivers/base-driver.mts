@@ -93,12 +93,8 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       this.homey.app.api.registry
         .getDevicesByType(this.type)
         .map(({ data, id, name }) => ({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          capabilities: this.getRequiredCapabilities(data as ListDeviceData<T>),
-          capabilitiesOptions: this.getCapabilitiesOptions(
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            data as ListDeviceData<T>,
-          ),
+          capabilities: this.getRequiredCapabilities(data),
+          capabilitiesOptions: this.getCapabilitiesOptions(data),
           data: { id },
           name,
         })),

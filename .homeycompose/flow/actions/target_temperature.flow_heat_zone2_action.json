@@ -14,21 +14,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة حرارة التدفق في المنطقة 2",
     "da": "Indstil fremledningstemperaturen i zone 2",
+    "de": "Vorlauftemperatur in Zone 2 einstellen",
     "en": "Set the flow temperature in zone 2",
     "es": "Configurar la temperatura de partida en la zona 2",
     "fr": "Définir la température de départ dans la zone 2",
+    "it": "Imposta la temperatura di mandata nella zona 2",
+    "ko": "구역 2의 유량 온도 설정",
     "nl": "Stel de aanvoertemperatuur in zone 2 in",
     "no": "Innstill fremløpstemperaturen i sone 2",
+    "pl": "Ustaw temperaturę zasilania w strefie 2",
+    "ru": "Установить температуру подачи в зоне 2",
     "sv": "Ställ in framledningstemperaturen i zon 2"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة حرارة التدفق في المنطقة 2 على [[target_temperature]]",
     "da": "Indstil fremledningstemperaturen i zone 2 til [[target_temperature]]",
+    "de": "Vorlauftemperatur in Zone 2 einstellen auf [[target_temperature]]",
     "en": "Set the flow temperature in zone 2 to [[target_temperature]]",
     "es": "Configurar la temperatura de partida en la zona 2 a [[target_temperature]]",
     "fr": "Définir la température de départ dans la zone 2 à [[target_temperature]]",
+    "it": "Imposta la temperatura di mandata nella zona 2 su [[target_temperature]]",
+    "ko": "구역 2의 유량 온도를 [[target_temperature]](으)로 설정",
     "nl": "Stel de aanvoertemperatuur in zone 2 in op [[target_temperature]]",
     "no": "Innstill fremløpstemperaturen i sone 2 til [[target_temperature]]",
+    "pl": "Ustaw temperaturę zasilania w strefie 2 na [[target_temperature]]",
+    "ru": "Установить температуру подачи в зоне 2 на [[target_temperature]]",
     "sv": "Ställ in framledningstemperaturen i zon 2 till [[target_temperature]]"
   }
 }

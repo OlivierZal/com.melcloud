@@ -15,17 +15,18 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:clean && npm run build:assets && tsc -p tsconfig.build.json",
-    "build:assets": "npm run build:css && npm run build:public",
-    "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
+    "build": "tsc -p tsconfig.build.json",
+    "build:assets": "npm run build:clean && npm run build:css && npm run build:public",
+    "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/constants.mts \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
+    "build:constants": "for dir in widgets/ata-group-setting/public widgets/charts/public; do grep -v sourceMappingURL node_modules/@olivierzal/melcloud-api/dist/constants.js > \"$dir/constants.mts\"; done",
     "build:css": "npx @tailwindcss/cli -i app.css -o widgets/ata-group-setting/public/dist.css && npx @tailwindcss/cli -i app.css -o widgets/charts/public/dist.css",
-    "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done",
+    "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done && npm run build:constants",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "install:homey": "homey app install",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build",
+    "prepare": "npm run build:assets && npm run build",
     "publish:homey": "homey app publish",
     "start:homey": "homey app run --remote",
     "test": "vitest run",
@@ -34,7 +35,7 @@
     "validate:homey": "homey app validate --level publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^22.0.0-rc.1",
+    "@olivierzal/melcloud-api": "^22.0.5",
     "homey-lib": "^2.47.0",
     "luxon": "^3.7.2"
   },

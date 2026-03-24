@@ -7,6 +7,7 @@ import type {
   Zone,
 } from '../../../types/index.mts'
 
+import { coolModes, Temperature } from './constants.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -15,23 +16,7 @@ import {
   handleNumericInputElement,
 } from './dom.mts'
 import { type Homey, homeyApiGet, homeyApiPut } from './homey-api.mts'
-import { getZoneId, getZoneName } from './zones.mts'
-
-// ── Temperature constants ──
-
-// Temperature range for the SetTemperature capability (°C)
-const Temperature = {
-  coolingMin: 16,
-  max: 31,
-  min: 10,
-} as const
-
-// ── Operation modes ──
-
-const MODE_AUTO = 8
-const MODE_COOL = 3
-const MODE_DRY = 2
-const coolModes = new Set([MODE_AUTO, MODE_COOL, MODE_DRY])
+import { getZoneId, getZoneName, getZonePath } from './zones.mts'
 
 // ── DOM helpers ──
 
@@ -135,7 +120,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(Temperature.coolingMin)
+    String(Temperature.cooling_min)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
@@ -207,7 +192,7 @@ export class AtaValueManager {
   public async fetchValues(): Promise<GroupState> {
     const values = await homeyApiGet<GroupState>(
       this.#homey,
-      `/values/ata/${this.#getZonePath()}`,
+      `/values/ata/${this.#getZoneValue()}`,
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#refreshAtaValues()
@@ -224,7 +209,7 @@ export class AtaValueManager {
   }
 
   public async generateZones(zones: Zone[] = []): Promise<void> {
-    if (zones.length) {
+    if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
         createOptionElement(this.#zoneElement, {
@@ -253,10 +238,10 @@ export class AtaValueManager {
 
   public async setValues(): Promise<void> {
     const body = this.#buildAtaValuesBody()
-    if (Object.keys(body).length) {
+    if (Object.keys(body).length > 0) {
       await homeyApiPut(
         this.#homey,
-        `/values/ata/${this.#getZonePath()}`,
+        `/values/ata/${this.#getZoneValue()}`,
         body satisfies GroupState,
       )
     }
@@ -305,8 +290,8 @@ export class AtaValueManager {
     return null
   }
 
-  #getZonePath(): string {
-    return this.#zoneElement.value.replace('_', '/')
+  #getZoneValue(): string {
+    return getZonePath(this.#zoneElement.value)
   }
 
   #isGroupAtaState(value: string): value is keyof GroupState {

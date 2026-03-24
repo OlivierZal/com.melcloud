@@ -22,5 +22,5 @@ input {
 
 select:not(#zones) {
   padding-inline-end: 2.5rem;
-  text-align-last: right;
+  text-align-last: end;
 }
