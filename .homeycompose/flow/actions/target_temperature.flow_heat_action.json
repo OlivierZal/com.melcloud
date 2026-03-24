@@ -14,21 +14,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة حرارة التدفق",
     "da": "Indstil fremledningstemperaturen",
+    "de": "Vorlauftemperatur einstellen",
     "en": "Set the flow temperature",
     "es": "Configurar la temperatura de partida",
     "fr": "Définir la température de départ",
+    "it": "Imposta la temperatura di mandata",
+    "ko": "유량 온도 설정",
     "nl": "Stel de aanvoertemperatuur in",
     "no": "Innstill fremløpstemperaturen",
+    "pl": "Ustaw temperaturę zasilania",
+    "ru": "Установить температуру подачи",
     "sv": "Ställ in framledningstemperaturen"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة حرارة التدفق على [[target_temperature]]",
     "da": "Indstil fremledningstemperaturen til [[target_temperature]]",
+    "de": "Vorlauftemperatur einstellen auf [[target_temperature]]",
     "en": "Set the flow temperature to [[target_temperature]]",
     "es": "Configurar la temperatura de partida a [[target_temperature]]",
     "fr": "Définir la température de départ à [[target_temperature]]",
+    "it": "Imposta la temperatura di mandata su [[target_temperature]]",
+    "ko": "유량 온도를 [[target_temperature]](으)로 설정",
     "nl": "Stel de aanvoertemperatuur in op [[target_temperature]]",
     "no": "Innstill fremløpstemperaturen til [[target_temperature]]",
+    "pl": "Ustaw temperaturę zasilania na [[target_temperature]]",
+    "ru": "Установить температуру подачи на [[target_temperature]]",
     "sv": "Ställ in framledningstemperaturen till [[target_temperature]]"
   }
 }

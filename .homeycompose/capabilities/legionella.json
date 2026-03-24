@@ -3,12 +3,18 @@
   "icon": "/assets/legionella.svg",
   "setable": false,
   "title": {
+    "ar": "آخر عملية مكافحة الليجيونيلا",
     "da": "Seneste anti-legionella drift",
+    "de": "Letzter Anti-Legionellen-Betrieb",
     "en": "Last anti-legionella operation",
     "es": "Última operación anti-legionela",
     "fr": "Dernière opération antilégionelle",
+    "it": "Ultima operazione anti-legionella",
+    "ko": "마지막 레지오넬라 방지 작동",
     "nl": "Laatste anti-legionella operatie",
     "no": "Siste anti-legionella drift",
+    "pl": "Ostatnia operacja antylegionellowa",
+    "ru": "Последняя операция против легионеллы",
     "sv": "Senaste anti-legionella drift"
   },
   "type": "string",

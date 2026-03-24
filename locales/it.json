@@ -1,0 +1,74 @@
+{
+  "errors": {
+    "deviceNotFound": "Dispositivo non trovato.",
+    "zoneNotFound": "Zona non trovata."
+  },
+  "settings": {
+    "authenticate": {
+      "button": "Accedi",
+      "failure": "Autenticazione fallita.",
+      "legend": "Credenziali"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Sì"
+    },
+    "devices": {
+      "apply": {
+        "button": "Applica a tutti i dispositivi",
+        "nothing": "Nessuna modifica da applicare."
+      },
+      "legend": "Impostazioni dispositivo",
+      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!"
+    },
+    "devicesAta": {
+      "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
+      "configure": "Configura",
+      "legend": "Impostazioni dispositivo aria-aria"
+    },
+    "devicesAtw": {
+      "legend": "Impostazioni dispositivo aria-acqua"
+    },
+    "errorLog": {
+      "columns": {
+        "date": "Data",
+        "device": "Dispositivo",
+        "error": "Errore"
+      },
+      "error": "Scegli una data prima di\n__from__.",
+      "errorCount": {
+        "0": "errori",
+        "1": "errore",
+        "234": "errori",
+        "plural": "errori"
+      },
+      "legend": "Cronologia errori",
+      "period": "Dal __from__:",
+      "see": "Visualizza tutti gli errori",
+      "since": "dal"
+    },
+    "frostProtection": {
+      "enabled": "Attiva <strong>protezione antigelo</strong>",
+      "max": "Temperatura massima",
+      "min": "Temperatura minima"
+    },
+    "holidayMode": {
+      "enabled": "Attiva <strong>modalità vacanza</strong>",
+      "endDate": "Data di fine",
+      "endDateMissing": "Data di fine mancante.",
+      "startDate": "Data di inizio"
+    },
+    "intError": "__name__: deve essere un numero intero compreso tra __min__ e __max__.",
+    "refresh": "Ricarica",
+    "success": "Aggiornamento riuscito.",
+    "title": "Impostazioni MELCloud",
+    "zones": {
+      "legend": "Impostazioni zona",
+      "update": "Aggiorna"
+    },
+    "update": "Aggiorna"
+  },
+  "warnings": {
+    "dashboard": "Esci dal dispositivo e torna indietro per aggiornare la dashboard."
+  }
+}

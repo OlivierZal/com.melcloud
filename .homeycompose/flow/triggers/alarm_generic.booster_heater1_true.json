@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم تشغيل سخان التعزيز 1",
     "da": "Tilkoblingsvarmen 1 blev aktiveret",
+    "de": "Der Zusatzheizer 1 wurde eingeschaltet",
     "en": "The booster heater 1 turned on",
     "es": "El calentador de refuerzo 1 se ha activado",
     "fr": "Le chauffage d'appoint 1 s'est activé",
+    "it": "Il riscaldatore ausiliario 1 si è acceso",
+    "ko": "보조 히터 1이 켜졌습니다",
     "nl": "Het bijverwarmingselement 1 gaat aan",
     "no": "Tilleggsvarmen 1 er aktivert",
+    "pl": "Grzałka wspomagająca 1 została włączona",
+    "ru": "Дополнительный нагреватель 1 включился",
     "sv": "Tillskottsvärmaren 1 är aktiverad"
   }
 }

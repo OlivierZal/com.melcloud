@@ -13,21 +13,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة الحرارة في المنطقة 2",
     "da": "Indstil temperaturen i zone 2",
+    "de": "Temperatur in Zone 2 einstellen",
     "en": "Set the temperature in zone 2",
     "es": "Configurar la temperatura en la zona 2",
     "fr": "Définir la température dans la zone 2",
+    "it": "Imposta la temperatura nella zona 2",
+    "ko": "구역 2의 온도 설정",
     "nl": "Stel de temperatuur in zone 2 in",
     "no": "Innstill temperaturen i sone 2",
+    "pl": "Ustaw temperaturę w strefie 2",
+    "ru": "Установить температуру в зоне 2",
     "sv": "Ställ in temperaturen i zon 2"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة الحرارة في المنطقة 2 على [[target_temperature]]",
     "da": "Indstil temperaturen i zone 2 til [[target_temperature]]",
+    "de": "Temperatur in Zone 2 einstellen auf [[target_temperature]]",
     "en": "Set the temperature in zone 2 to [[target_temperature]]",
     "es": "Configurar la temperatura en la zona 2 a [[target_temperature]]",
     "fr": "Définir la température dans la zone 2 à [[target_temperature]]",
+    "it": "Imposta la temperatura nella zona 2 su [[target_temperature]]",
+    "ko": "구역 2의 온도를 [[target_temperature]](으)로 설정",
     "nl": "Stel de temperatuur in zone 2 in op [[target_temperature]]",
     "no": "Innstill temperaturen i sone 2 til [[target_temperature]]",
+    "pl": "Ustaw temperaturę w strefie 2 na [[target_temperature]]",
+    "ru": "Установить температуру в зоне 2 на [[target_temperature]]",
     "sv": "Ställ in temperaturen i zon 2 till [[target_temperature]]"
   }
 }

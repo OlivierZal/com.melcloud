@@ -7,33 +7,51 @@
     }
   ],
   "title": {
+    "ar": "تغيرت الريشة الأفقية",
     "da": "Den horisontale luftstrømsretningen er blevet ændret",
+    "de": "Die horizontale Lamelle hat sich geändert",
     "en": "The horizontal vane changed",
     "es": "La descarga horizontal ha cambiado",
     "fr": "Le soufflage horizontal a changé",
+    "it": "L'aletta orizzontale è cambiata",
+    "ko": "수평 베인이 변경되었습니다",
     "nl": "De uitblaasrichting horizontaal is veranderd",
     "no": "Den horisontale luftstrømretningen ble endret",
+    "pl": "Pozioma kierownica uległa zmianie",
+    "ru": "Горизонтальные жалюзи изменились",
     "sv": "Den horisontella luftflödesriktningen ändrades"
   },
   "tokens": [
     {
       "example": {
+        "ar": "تلقائي",
         "da": "Automatisk",
+        "de": "Automatisch",
         "en": "Automatic",
         "es": "Automático",
         "fr": "Automatique",
+        "it": "Automatica",
+        "ko": "자동",
         "nl": "Automatisch",
         "no": "Automatisk",
+        "pl": "Automatyczny",
+        "ru": "Автоматически",
         "sv": "Automatiskt"
       },
       "name": "horizontal",
       "title": {
+        "ar": "الريشة الأفقية",
         "da": "Horisontal luftstrømsretning",
+        "de": "Horizontale Lamelle",
         "en": "Horizontal vane",
         "es": "Descarga horizontal",
         "fr": "Soufflage horizontal",
+        "it": "Aletta orizzontale",
+        "ko": "수평 베인",
         "nl": "Uitblaasrichting horizontaal",
         "no": "Horisontal luftstrømretning",
+        "pl": "Pozioma kierownica",
+        "ru": "Горизонтальные жалюзи",
         "sv": "Horisontell luftflödesriktning"
       },
       "type": "string"

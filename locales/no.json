@@ -19,7 +19,7 @@
         "nothing": "Ingen endring å bruke."
       },
       "legend": "Enhetsinnstillinger",
-      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
+      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
@@ -59,13 +59,14 @@
       "startDate": "Startdato"
     },
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
-    "refresh": "Gjenta",
+    "refresh": "Oppfrisk",
     "success": "Oppdatering lyktes.",
     "title": "MELCloud-innstillinger",
     "zones": {
       "legend": "Sonesinnstillinger",
       "update": "Oppdater"
-    }
+    },
+    "update": "Oppdater"
   },
   "warnings": {
     "dashboard": "Forlat enheten og gå tilbake for å oppdatere dashbordet ditt."

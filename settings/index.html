@@ -31,12 +31,6 @@
         <div id="authenticated">
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.errorLog.legend"></legend>
-                <div id="error_log" class="homey-form-group">
-                    <div class="container-inline-end">
-                        <label id="period" class="homey-form-label inline unset-margin-block-start bolded"></label>
-                        <label id="error_count" class="homey-form-label inline unset-margin-block-start"></label>
-                    </div>
-                </div>
                 <div class="homey-form-group container">
                     <div class="container-inline-start">
                         <button
@@ -61,6 +55,12 @@
                         >
                     </div>
                 </div>
+                <div id="error_log" class="homey-form-group">
+                    <div class="container-inline-end">
+                        <label id="period" class="homey-form-label inline unset-margin-block-start bolded"></label>
+                        <label id="error_count" class="homey-form-label inline unset-margin-block-start"></label>
+                    </div>
+                </div>
             </fieldset>
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.zones.legend"></legend>
@@ -83,33 +83,31 @@
                         <option data-i18n="settings.boolean.true" value="true"></option>
                     </select>
                 </div>
-                <div class="container">
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            aria-label="Start date"
-                            data-i18n="settings.holidayMode.startDate"
-                            for="start_date"
-                        ></label>
-                        <input
-                            id="start_date"
-                            type="datetime-local"
-                            value=""
-                        >
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            aria-label="End date"
-                            data-i18n="settings.holidayMode.endDate"
-                            for="end_date"
-                        ></label>
-                        <input
-                            id="end_date"
-                            type="datetime-local"
-                            value=""
-                        >
-                    </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Start date"
+                        data-i18n="settings.holidayMode.startDate"
+                        for="start_date"
+                    ></label>
+                    <input
+                        id="start_date"
+                        type="datetime-local"
+                        value=""
+                    >
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="End date"
+                        data-i18n="settings.holidayMode.endDate"
+                        for="end_date"
+                    ></label>
+                    <input
+                        id="end_date"
+                        type="datetime-local"
+                        value=""
+                    >
                 </div>
                 <div class="homey-form-group container">
                     <button
@@ -124,7 +122,7 @@
                         type="button"
                         class="homey-button-danger-shadow"
                         aria-label="Update"
-                        data-i18n="settings.zones.update"
+                        data-i18n="settings.update"
                     ></button>
                 </div>
                 <div class="homey-form-group">
@@ -182,7 +180,7 @@
                         type="button"
                         class="homey-button-danger-shadow"
                         aria-label="Update"
-                        data-i18n="settings.zones.update"
+                        data-i18n="settings.update"
                     ></button>
                 </div>
             </fieldset>

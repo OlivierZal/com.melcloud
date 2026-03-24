@@ -14,21 +14,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط درجة حرارة تدفق التبريد",
     "da": "Indstil fremledningstemperaturen for køling",
+    "de": "Vorlauftemperatur für Kühlung einstellen",
     "en": "Set the cool flow temperature",
     "es": "Configurar la temperatura de partida para el enfriamiento",
     "fr": "Définir la température de départ pour le refroidissement",
+    "it": "Imposta la temperatura di mandata per il raffrescamento",
+    "ko": "냉방 유량 온도 설정",
     "nl": "Stel de aanvoertemperatuur voor koeling in",
     "no": "Innstill fremløpstemperaturen for kjøling",
+    "pl": "Ustaw temperaturę zasilania chłodzenia",
+    "ru": "Установить температуру подачи для охлаждения",
     "sv": "Ställ in framledningstemperaturen för kylning"
   },
   "titleFormatted": {
+    "ar": "ضبط درجة حرارة تدفق التبريد على [[target_temperature]]",
     "da": "Indstil fremledningstemperaturen for køling til [[target_temperature]]",
+    "de": "Vorlauftemperatur für Kühlung einstellen auf [[target_temperature]]",
     "en": "Set the cool flow temperature to [[target_temperature]]",
     "es": "Configurar la temperatura de partida para el enfriamiento a [[target_temperature]]",
     "fr": "Définir la température de départ pour le refroidissement à [[target_temperature]]",
+    "it": "Imposta la temperatura di mandata per il raffrescamento su [[target_temperature]]",
+    "ko": "냉방 유량 온도를 [[target_temperature]](으)로 설정",
     "nl": "Stel de aanvoertemperatuur voor koeling in op [[target_temperature]]",
     "no": "Innstill fremløpstemperaturen for kjøling til [[target_temperature]]",
+    "pl": "Ustaw temperaturę zasilania chłodzenia na [[target_temperature]]",
+    "ru": "Установить температуру подачи для охлаждения на [[target_temperature]]",
     "sv": "Ställ in framledningstemperaturen för kylning till [[target_temperature]]"
   }
 }

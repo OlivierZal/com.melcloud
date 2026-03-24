@@ -65,7 +65,8 @@
     "zones": {
       "legend": "Zone settings",
       "update": "Update"
-    }
+    },
+    "update": "Update"
   },
   "warnings": {
     "dashboard": "Exit the device and return to update your dashboard."

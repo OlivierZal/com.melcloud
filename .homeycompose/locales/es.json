@@ -1,6 +1,6 @@
 {
   "errors": {
-    "deviceNotFound": "Dispositivo no encontrada.",
+    "deviceNotFound": "Dispositivo no encontrado.",
     "zoneNotFound": "Zona no encontrada."
   },
   "settings": {
@@ -62,9 +62,9 @@
     "refresh": "Recargar",
     "success": "La actualización fue exitosa.",
     "title": "Configuración de MELCloud",
+    "update": "Actualizar",
     "zones": {
-      "legend": "Configuración de las zonas",
-      "update": "Actualizar"
+      "legend": "Configuración de las zonas"
     }
   },
   "warnings": {

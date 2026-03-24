@@ -16,48 +16,72 @@
         {
           "id": "auto",
           "title": {
+            "ar": "تلقائي",
             "da": "Automatisk",
+            "de": "Automatisch",
             "en": "Automatic",
             "es": "Automático",
             "fr": "Automatique",
+            "it": "Automatica",
+            "ko": "자동",
             "nl": "Automatisch",
             "no": "Automatisk",
+            "pl": "Automatyczny",
+            "ru": "Авто",
             "sv": "Automatiskt"
           }
         },
         {
           "id": "bypass",
           "title": {
+            "ar": "تجاوز",
             "da": "Bypass",
+            "de": "Bypass",
             "en": "Bypass",
             "es": "Bypass",
             "fr": "Bypass",
+            "it": "Bypass",
+            "ko": "바이패스",
             "nl": "Bypass",
             "no": "Bypass",
+            "pl": "Bypass",
+            "ru": "Байпас",
             "sv": "Bypass"
           }
         },
         {
           "id": "recovery",
           "title": {
+            "ar": "استرداد الطاقة",
             "da": "Varmegenvinding",
+            "de": "Wärmerückgewinnung",
             "en": "Energy Recovery",
             "es": "Recuperación de energía",
             "fr": "Récupération d'énergie",
+            "it": "Recupero energetico",
+            "ko": "에너지 회수",
             "nl": "Warmteterugwinning",
             "no": "Varmegjenvinning",
+            "pl": "Odzysk energii",
+            "ru": "Рекуперация энергии",
             "sv": "Värmeåtervinning"
           }
         },
         {
           "id": "off",
           "title": {
+            "ar": "إيقاف",
             "da": "Deaktiveret",
+            "de": "Aus",
             "en": "Off",
             "es": "Desactivado",
             "fr": "Désactivé",
+            "it": "Spento",
+            "ko": "끄기",
             "nl": "Uit",
             "no": "Av",
+            "pl": "Wyłączony",
+            "ru": "Выкл.",
             "sv": "Av"
           }
         }
@@ -65,12 +89,18 @@
     }
   },
   "name": {
+    "ar": "مبادل حراري مع استرداد الطاقة (ERV)",
     "da": "Ventilator med varmegenvinding (ERV)",
+    "de": "Lüftungsgerät mit Wärmerückgewinnung (ERV)",
     "en": "Energy recovery ventilator (ERV)",
     "es": "Ventilador con recuperación de calor (ERV)",
     "fr": "Ventilateur avec récupération de chaleur (ERV)",
+    "it": "Ventilatore con recupero di calore (ERV)",
+    "ko": "에너지 회수 환기장치 (ERV)",
     "nl": "Ventilator met warmteterugwinning (WTW)",
     "no": "Ventilator med varmegjenvinning (ERV)",
+    "pl": "Wentylator z odzyskiem ciepła (ERV)",
+    "ru": "Вентиляция с рекуперацией энергии (ERV)",
     "sv": "Ventilator med värmeåtervinning (ERV)"
   }
 }

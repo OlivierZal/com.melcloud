@@ -12,96 +12,144 @@
         {
           "id": "auto",
           "title": {
+            "ar": "تلقائي",
             "da": "Automatisk",
+            "de": "Automatisch",
             "en": "Automatic",
             "es": "Automático",
             "fr": "Automatique",
+            "it": "Automatica",
+            "ko": "자동",
             "nl": "Automatisch",
             "no": "Automatisk",
+            "pl": "Automatyczny",
+            "ru": "Автоматически",
             "sv": "Automatiskt"
           }
         },
         {
           "id": "leftwards",
           "title": {
+            "ar": "يسار",
             "da": "Venstre",
+            "de": "Links",
             "en": "Leftwards",
             "es": "Izquierda",
             "fr": "Gauche",
+            "it": "Sinistra",
+            "ko": "왼쪽",
             "nl": "Links",
             "no": "Venstre",
+            "pl": "W lewo",
+            "ru": "Влево",
             "sv": "Vänster"
           }
         },
         {
           "id": "center_left",
           "title": {
+            "ar": "وسط-يسار",
             "da": "Midt-venstre",
+            "de": "Mitte-links",
             "en": "Center-left",
             "es": "Centro-izquierda",
             "fr": "Centre-gauche",
+            "it": "Centro-sinistra",
+            "ko": "중앙-왼쪽",
             "nl": "Midden-links",
             "no": "Middelvenstre",
+            "pl": "Środek-lewo",
+            "ru": "Центр-лево",
             "sv": "Mitten-vänster"
           }
         },
         {
           "id": "center",
           "title": {
+            "ar": "وسط",
             "da": "Midten",
+            "de": "Mitte",
             "en": "Center",
             "es": "Centro",
             "fr": "Centre",
+            "it": "Centro",
+            "ko": "중앙",
             "nl": "Midden",
             "no": "Midten",
+            "pl": "Środek",
+            "ru": "Центр",
             "sv": "Mitten"
           }
         },
         {
           "id": "center_right",
           "title": {
+            "ar": "وسط-يمين",
             "da": "Midt-højre",
+            "de": "Mitte-rechts",
             "en": "Center-right",
             "es": "Centro-derecha",
             "fr": "Centre-droite",
+            "it": "Centro-destra",
+            "ko": "중앙-오른쪽",
             "nl": "Midden-rechts",
             "no": "Middelhøyre",
+            "pl": "Środek-prawo",
+            "ru": "Центр-право",
             "sv": "Mitten-höger"
           }
         },
         {
           "id": "rightwards",
           "title": {
+            "ar": "يمين",
             "da": "Højre",
+            "de": "Rechts",
             "en": "Rightwards",
             "es": "Derecha",
             "fr": "Droite",
+            "it": "Destra",
+            "ko": "오른쪽",
             "nl": "Rechts",
             "no": "Høyre",
+            "pl": "W prawo",
+            "ru": "Вправо",
             "sv": "Höger"
           }
         },
         {
           "id": "wide",
           "title": {
+            "ar": "واسع",
             "da": "Bred",
+            "de": "Breit",
             "en": "Wide",
             "es": "Ancho",
             "fr": "Large",
+            "it": "Ampio",
+            "ko": "넓게",
             "nl": "Breed",
             "no": "Bred",
+            "pl": "Szeroki",
+            "ru": "Широкий",
             "sv": "Bred"
           }
         },
         {
           "id": "swing",
           "title": {
+            "ar": "تأرجح",
             "da": "Sving",
+            "de": "Schwenken",
             "en": "Swing",
             "es": "Oscilación",
             "fr": "Balayage",
+            "it": "Oscillazione",
+            "ko": "스윙",
             "nl": "Swing",
             "no": "Sving",
+            "pl": "Wahanie",
+            "ru": "Качание",
             "sv": "Svängning"
           }
         }
@@ -109,21 +157,33 @@
     }
   ],
   "title": {
+    "ar": "ضبط الريشة الأفقية",
     "da": "Indstil den horisontale luftstrømsretningen",
+    "de": "Horizontale Lamelle einstellen",
     "en": "Set the horizontal vane",
     "es": "Configurar la descarga horizontal",
     "fr": "Définir le soufflage horizontal",
+    "it": "Imposta l'aletta orizzontale",
+    "ko": "수평 베인 설정",
     "nl": "Stel de uitblaasrichting horizontaal in",
     "no": "Innstill den horisontale luftstrømretningen",
+    "pl": "Ustaw poziomą kierownicę",
+    "ru": "Установить горизонтальные жалюзи",
     "sv": "Ställ in den horisontella luftflödesriktningen"
   },
   "titleFormatted": {
+    "ar": "ضبط الريشة الأفقية على [[horizontal]]",
     "da": "Indstil den horisontale luftstrømsretningen til [[horizontal]]",
+    "de": "Horizontale Lamelle einstellen auf [[horizontal]]",
     "en": "Set the horizontal vane to [[horizontal]]",
     "es": "Configurar la descarga horizontal a [[horizontal]]",
     "fr": "Définir le soufflage horizontal à [[horizontal]]",
+    "it": "Imposta l'aletta orizzontale su [[horizontal]]",
+    "ko": "수평 베인을 [[horizontal]](으)로 설정",
     "nl": "Stel de uitblaasrichting horizontaal in op [[horizontal]]",
     "no": "Innstill den horisontale luftstrømretningen til [[horizontal]]",
+    "pl": "Ustaw poziomą kierownicę na [[horizontal]]",
+    "ru": "Установить горизонтальные жалюзи на [[horizontal]]",
     "sv": "Ställ in den horisontella luftflödesriktningen till [[horizontal]]"
   }
 }

@@ -7,12 +7,18 @@
       {
         "id": "legionella",
         "label": {
+          "ar": "آخر عملية مكافحة الليجيونيلا",
           "da": "Seneste anti-legionella drift",
+          "de": "Letzter Anti-Legionellen-Betrieb",
           "en": "Last anti-legionella operation",
           "es": "Última operación anti-legionela",
           "fr": "Dernière opération antilégionelle",
+          "it": "Ultima operazione anti-legionella",
+          "ko": "마지막 레지오넬라 방지 작동",
           "nl": "Laatste anti-legionella operatie",
           "no": "Siste anti-legionella drift",
+          "pl": "Ostatnia operacja antylegionellowa",
+          "ru": "Последняя операция против легионеллы",
           "sv": "Senaste anti-legionella drift"
         },
         "type": "checkbox",
@@ -21,12 +27,18 @@
       {
         "id": "measure_temperature.condensing",
         "label": {
+          "ar": "درجة حرارة التكثيف",
           "da": "Kondenseringstemperatur",
+          "de": "Kondensationstemperatur",
           "en": "Condensing temperature",
           "es": "Temperatura de condensación",
           "fr": "Température de condensation",
+          "it": "Temperatura di condensazione",
+          "ko": "응축 온도",
           "nl": "Condensatietemperatuur",
           "no": "Kondenseringstemperatur",
+          "pl": "Temperatura skraplania",
+          "ru": "Температура конденсации",
           "sv": "Kondenseringstemperatur"
         },
         "type": "checkbox",
@@ -35,12 +47,18 @@
       {
         "id": "measure_temperature.target_curve",
         "label": {
+          "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي",
           "da": "Måltemperatur for varmekurve",
+          "de": "Solltemperatur der Heizkurve",
           "en": "Weather compensation curve target temperature",
           "es": "Temperatura configurada de la curva de calefacción",
           "fr": "Température cible de la courbe de chauffe",
+          "it": "Temperatura target della curva di compensazione climatica",
+          "ko": "기상 보상 곡선 목표 온도",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
           "no": "Ønsket temperatur for varmekurve",
+          "pl": "Temperatura docelowa krzywej kompensacji pogodowej",
+          "ru": "Целевая температура кривой погодозависимого регулирования",
           "sv": "Måltemperatur för värmekurva"
         },
         "type": "checkbox",
@@ -49,12 +67,18 @@
       {
         "id": "measure_temperature.target_curve_zone2",
         "label": {
+          "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي - المنطقة 2",
           "da": "Måltemperatur for varmekurve - zone 2",
+          "de": "Solltemperatur der Heizkurve - Zone 2",
           "en": "Weather compensation curve target temperature - zone 2",
           "es": "Temperatura configurada de la curva de calefacción - zona 2",
           "fr": "Température cible de la courbe de chauffe - zone 2",
+          "it": "Temperatura target della curva di compensazione climatica - zona 2",
+          "ko": "기상 보상 곡선 목표 온도 - 구역 2",
           "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
           "no": "Ønsket temperatur for varmekurve - sone 2",
+          "pl": "Temperatura docelowa krzywej kompensacji pogodowej - strefa 2",
+          "ru": "Целевая температура кривой погодозависимого регулирования - зона 2",
           "sv": "Måltemperatur för värmekurva - zon 2"
         },
         "type": "checkbox",
@@ -63,12 +87,18 @@
       {
         "id": "alarm_generic.booster_heater1",
         "label": {
+          "ar": "سخان معزز 1",
           "da": "Tilførselsvarme 1",
+          "de": "Zusatzheizung 1",
           "en": "Booster heater 1",
           "es": "Calentador de refuerzo 1",
           "fr": "Chauffage d'appoint 1",
+          "it": "Riscaldatore ausiliario 1",
+          "ko": "보조 히터 1",
           "nl": "Boosterverwarmingselement 1",
           "no": "Tilleggsvarme 1",
+          "pl": "Grzałka wspomagająca 1",
+          "ru": "Дополнительный нагреватель 1",
           "sv": "Tillskottsvärmare 1"
         },
         "type": "checkbox",
@@ -77,12 +107,18 @@
       {
         "id": "alarm_generic.booster_heater2",
         "label": {
+          "ar": "سخان معزز 2",
           "da": "Tilførselsvarme 2",
+          "de": "Zusatzheizung 2",
           "en": "Booster heater 2",
           "es": "Calentador de refuerzo 2",
           "fr": "Chauffage d'appoint 2",
+          "it": "Riscaldatore ausiliario 2",
+          "ko": "보조 히터 2",
           "nl": "Boosterverwarmingselement 2",
           "no": "Tilleggsvarme 2",
+          "pl": "Grzałka wspomagająca 2",
+          "ru": "Дополнительный нагреватель 2",
           "sv": "Tillskottsvärmare 2"
         },
         "type": "checkbox",
@@ -91,12 +127,18 @@
       {
         "id": "alarm_generic.booster_heater2_plus",
         "label": {
+          "ar": "سخان معزز 2+",
           "da": "Tilførselsvarme 2+",
+          "de": "Zusatzheizung 2+",
           "en": "Booster heater 2+",
           "es": "Calentador de refuerzo 2+",
           "fr": "Chauffage d'appoint 2+",
+          "it": "Riscaldatore ausiliario 2+",
+          "ko": "보조 히터 2+",
           "nl": "Boosterverwarmingselement 2+",
           "no": "Tilleggsvarme 2+",
+          "pl": "Grzałka wspomagająca 2+",
+          "ru": "Дополнительный нагреватель 2+",
           "sv": "Tillskottsvärmare 2+"
         },
         "type": "checkbox",
@@ -105,12 +147,18 @@
       {
         "id": "alarm_generic.defrost",
         "label": {
+          "ar": "وضع إزالة الصقيع",
           "da": "Afrimningsfunktion",
+          "de": "Abtaumodus",
           "en": "Defrost mode",
           "es": "Modo de descongelación",
           "fr": "Mode dégivrage",
+          "it": "Modalità sbrinamento",
+          "ko": "제상 모드",
           "nl": "Ontdooimodus",
           "no": "Avfrostingsmodus",
+          "pl": "Tryb odszraniania",
+          "ru": "Режим разморозки",
           "sv": "Avfrostningsläge"
         },
         "type": "checkbox",
@@ -119,12 +167,18 @@
       {
         "id": "alarm_generic.eco_hot_water",
         "label": {
+          "ar": "الماء الساخن المنزلي الاقتصادي",
           "da": "Eco-tilstand for varmtvandsindlæsning",
+          "de": "Eco-Warmwasser",
           "en": "Eco domestic hot water",
           "es": "Agua caliente sanitaria eco",
           "fr": "Eau chaude sanitaire éco",
+          "it": "Acqua calda sanitaria eco",
+          "ko": "에코 온수",
           "nl": "Sanitair eco warm water",
           "no": "Eco-modus for varmvannslastning",
+          "pl": "Eco ciepła woda użytkowa",
+          "ru": "Эко горячее водоснабжение",
           "sv": "Eco-läge för varmvattenladdning"
         },
         "type": "checkbox",
@@ -133,12 +187,18 @@
       {
         "id": "alarm_generic.immersion_heater",
         "label": {
+          "ar": "سخان غاطس",
           "da": "Dyppevarmer",
+          "de": "Tauchsieder",
           "en": "Immersion heater",
           "es": "Calentador eléctrico sumergible",
           "fr": "Thermoplongeur",
+          "it": "Riscaldatore a immersione",
+          "ko": "침수 히터",
           "nl": "Dompelelement",
           "no": "Dyppvarmer",
+          "pl": "Grzałka zanurzeniowa",
+          "ru": "Погружной нагреватель",
           "sv": "Doppvärmare"
         },
         "type": "checkbox",
@@ -147,12 +207,18 @@
     ],
     "id": "dashboard",
     "label": {
+      "ar": "عرض لوحة المعلومات",
       "da": "Dashboardvisning",
+      "de": "Dashboard-Anzeige",
       "en": "Dashboard display",
       "es": "Visualización del panel de control",
       "fr": "Affichage sur le tableau de bord",
+      "it": "Visualizzazione dashboard",
+      "ko": "대시보드 표시",
       "nl": "Dashboardweergave",
       "no": "Dashbordvisning",
+      "pl": "Wyświetlanie panelu",
+      "ru": "Отображение панели управления",
       "sv": "Instrumentpanelvisning"
     },
     "type": "group"
@@ -161,22 +227,34 @@
     "children": [
       {
         "hint": {
+          "ar": "THW6",
           "da": "THW6",
+          "de": "THW6",
           "en": "THW6",
           "es": "THW6",
           "fr": "THW6",
+          "it": "THW6",
+          "ko": "THW6",
           "nl": "THW6",
           "no": "THW6",
+          "pl": "THW6",
+          "ru": "THW6",
           "sv": "THW6"
         },
         "id": "measure_temperature.flow_zone1",
         "label": {
+          "ar": "درجة حرارة التدفق",
           "da": "Fremledningstemperatur",
+          "de": "Vorlauftemperatur",
           "en": "Flow temperature",
           "es": "Temperatura de partida",
           "fr": "Température de départ",
+          "it": "Temperatura di mandata",
+          "ko": "유량 온도",
           "nl": "Aanvoertemperatuur",
           "no": "Fremløpstemperatur ",
+          "pl": "Temperatura zasilania",
+          "ru": "Температура подачи",
           "sv": "Framledningstemperatur"
         },
         "type": "checkbox",
@@ -184,22 +262,34 @@
       },
       {
         "hint": {
+          "ar": "THW7",
           "da": "THW7",
+          "de": "THW7",
           "en": "THW7",
           "es": "THW7",
           "fr": "THW7",
+          "it": "THW7",
+          "ko": "THW7",
           "nl": "THW7",
           "no": "THW7",
+          "pl": "THW7",
+          "ru": "THW7",
           "sv": "THW7"
         },
         "id": "measure_temperature.return_zone1",
         "label": {
+          "ar": "درجة حرارة العودة",
           "da": "Returtemperatur",
+          "de": "Rücklauftemperatur",
           "en": "Return temperature",
           "es": "Temperatura de retorno",
           "fr": "Température de retour",
+          "it": "Temperatura di ritorno",
+          "ko": "환수 온도",
           "nl": "Retourtemperatuur",
           "no": "Returtemperatur",
+          "pl": "Temperatura powrotu",
+          "ru": "Температура обратки",
           "sv": "Returtemperatur"
         },
         "type": "checkbox",
@@ -207,22 +297,34 @@
       },
       {
         "hint": {
+          "ar": "THW8",
           "da": "THW8",
+          "de": "THW8",
           "en": "THW8",
           "es": "THW8",
           "fr": "THW8",
+          "it": "THW8",
+          "ko": "THW8",
           "nl": "THW8",
           "no": "THW8",
+          "pl": "THW8",
+          "ru": "THW8",
           "sv": "THW8"
         },
         "id": "measure_temperature.flow_zone2",
         "label": {
+          "ar": "درجة حرارة التدفق - المنطقة 2",
           "da": "Fremledningstemperatur - zone 2",
+          "de": "Vorlauftemperatur - Zone 2",
           "en": "Flow temperature - zone 2",
           "es": "Temperatura de partida - zona 2",
           "fr": "Température de départ - zone 2",
+          "it": "Temperatura di mandata - zona 2",
+          "ko": "유량 온도 - 구역 2",
           "nl": "Aanvoertemperatuur - zone 2",
           "no": "Fremløpstemperatur  - sone 2",
+          "pl": "Temperatura zasilania - strefa 2",
+          "ru": "Температура подачи - зона 2",
           "sv": "Framledningstemperatur - zon 2"
         },
         "type": "checkbox",
@@ -230,22 +332,34 @@
       },
       {
         "hint": {
+          "ar": "THW9",
           "da": "THW9",
+          "de": "THW9",
           "en": "THW9",
           "es": "THW9",
           "fr": "THW9",
+          "it": "THW9",
+          "ko": "THW9",
           "nl": "THW9",
           "no": "THW9",
+          "pl": "THW9",
+          "ru": "THW9",
           "sv": "THW9"
         },
         "id": "measure_temperature.return_zone2",
         "label": {
+          "ar": "درجة حرارة العودة - المنطقة 2",
           "da": "Returtemperatur - zone 2",
+          "de": "Rücklauftemperatur - Zone 2",
           "en": "Return temperature - zone 2",
           "es": "Temperatura de retorno - zona 2",
           "fr": "Température de retour - zone 2",
+          "it": "Temperatura di ritorno - zona 2",
+          "ko": "환수 온도 - 구역 2",
           "nl": "Retourtemperatuur - zone 2",
           "no": "Returtemperatur - sone 2",
+          "pl": "Temperatura powrotu - strefa 2",
+          "ru": "Температура обратки - зона 2",
           "sv": "Returtemperatur - zon 2"
         },
         "type": "checkbox",
@@ -253,22 +367,34 @@
       },
       {
         "hint": {
+          "ar": "THW10",
           "da": "THW10",
+          "de": "THW10",
           "en": "THW10",
           "es": "THW10",
           "fr": "THW10",
+          "it": "THW10",
+          "ko": "THW10",
           "nl": "THW10",
           "no": "THW10",
+          "pl": "THW10",
+          "ru": "THW10",
           "sv": "THW10"
         },
         "id": "measure_temperature.tank_water_mixing",
         "label": {
+          "ar": "درجة حرارة ماء خزان الخلط",
           "da": "Vandtemperatur for blandingstank",
+          "de": "Mischtank-Wassertemperatur",
           "en": "Mixing tank water temperature",
           "es": "Temperatura del agua del tanque de mezcla",
           "fr": "Température de l'eau du réservoir de mélange",
+          "it": "Temperatura dell'acqua del serbatoio di miscelazione",
+          "ko": "혼합 탱크 수온",
           "nl": "Watertemperatuur voor mengtank",
           "no": "Vanntemperatur for blandingstank",
+          "pl": "Temperatura wody w zbiorniku mieszającym",
+          "ru": "Температура воды в смесительном баке",
           "sv": "Vattentemperatur för blandningstank"
         },
         "type": "checkbox",
@@ -276,12 +402,18 @@
       }
     ],
     "label": {
+      "ar": "استخدام أجهزة الاستشعار الخارجية",
       "da": "Brug af eksterne sensorer",
+      "de": "Verwendung externer Sensoren",
       "en": "Using external sensors",
       "es": "Uso de sensores externos",
       "fr": "Utilisation de capteurs externes",
+      "it": "Utilizzo di sensori esterni",
+      "ko": "외부 센서 사용",
       "nl": "Gebruik van externe sensoren",
       "no": "Bruk av eksterne sensorer",
+      "pl": "Korzystanie z czujników zewnętrznych",
+      "ru": "Использование внешних датчиков",
       "sv": "Användning av externa sensorer"
     },
     "type": "group"
@@ -291,12 +423,18 @@
       {
         "id": "meter_power",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -305,12 +443,18 @@
       {
         "id": "meter_power.cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -319,12 +463,18 @@
       {
         "id": "meter_power.heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -333,12 +483,18 @@
       {
         "id": "meter_power.hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -346,12 +502,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة",
       "da": "Energivisning",
+      "de": "Energieanzeige",
       "en": "Energy display",
       "es": "Visualización de la energía",
       "fr": "Affichage de l'énergie",
+      "it": "Visualizzazione energia",
+      "ko": "에너지 표시",
       "nl": "Energieweergave",
       "no": "Energivisning",
+      "pl": "Wyświetlanie energii",
+      "ru": "Отображение энергии",
       "sv": "Energivisning"
     },
     "type": "group"
@@ -361,12 +523,18 @@
       {
         "id": "meter_power.produced",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -375,12 +543,18 @@
       {
         "id": "meter_power.produced_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -389,12 +563,18 @@
       {
         "id": "meter_power.produced_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -403,12 +583,18 @@
       {
         "id": "meter_power.produced_hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -416,12 +602,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة المنتجة",
       "da": "Visning af produceret energi",
+      "de": "Anzeige der erzeugten Energie",
       "en": "Produced energy display",
       "es": "Visualización de la energía producida",
       "fr": "Affichage de l'énergie produite",
+      "it": "Visualizzazione energia prodotta",
+      "ko": "생산 에너지 표시",
       "nl": "Weergave van geproduceerde energie",
       "no": "Visning av produsert energi",
+      "pl": "Wyświetlanie wyprodukowanej energii",
+      "ru": "Отображение произведённой энергии",
       "sv": "Visning av producerad energi"
     },
     "type": "group"
@@ -431,12 +623,18 @@
       {
         "id": "meter_power.cop",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -445,12 +643,18 @@
       {
         "id": "meter_power.cop_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -459,12 +663,18 @@
       {
         "id": "meter_power.cop_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -473,12 +683,18 @@
       {
         "id": "meter_power.cop_hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -486,12 +702,18 @@
       }
     ],
     "label": {
+      "ar": "عرض معامل الأداء",
       "da": "CoP-visning",
+      "de": "CoP-Anzeige",
       "en": "CoP display",
       "es": "Visualización del CoP",
       "fr": "Affichage du CoP",
+      "it": "Visualizzazione CoP",
+      "ko": "CoP 표시",
       "nl": "CoP-weergeven",
       "no": "CoP-visning",
+      "pl": "Wyświetlanie CoP",
+      "ru": "Отображение CoP",
       "sv": "CoP-visning"
     },
     "type": "group"
@@ -501,12 +723,18 @@
       {
         "id": "meter_power.daily",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -515,12 +743,18 @@
       {
         "id": "meter_power.daily_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -529,12 +763,18 @@
       {
         "id": "meter_power.daily_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -543,12 +783,18 @@
       {
         "id": "meter_power.daily_hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -556,12 +802,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة اليومية",
       "da": "Daglig energivisning",
+      "de": "Tägliche Energieanzeige",
       "en": "Daily energy display",
       "es": "Visualización de la energía diaria",
       "fr": "Affichage de l'énergie quotidienne",
+      "it": "Visualizzazione energia giornaliera",
+      "ko": "일일 에너지 표시",
       "nl": "Dagelijkse energieweergave",
       "no": "Daglig energivisning",
+      "pl": "Dzienne wyświetlanie energii",
+      "ru": "Ежедневное отображение энергии",
       "sv": "Daglig energivisning"
     },
     "type": "group"
@@ -571,12 +823,18 @@
       {
         "id": "meter_power.produced_daily",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -585,12 +843,18 @@
       {
         "id": "meter_power.produced_daily_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -599,12 +863,18 @@
       {
         "id": "meter_power.produced_daily_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -613,12 +883,18 @@
       {
         "id": "meter_power.produced_daily_hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -626,12 +902,18 @@
       }
     ],
     "label": {
+      "ar": "عرض الطاقة المنتجة اليومية",
       "da": "Daglig produceret energivisning",
+      "de": "Tägliche Anzeige der erzeugten Energie",
       "en": "Daily produced energy display",
       "es": "Visualización de la energía producida diaria",
       "fr": "Affichage de l'énergie produite quotidienne",
+      "it": "Visualizzazione energia prodotta giornaliera",
+      "ko": "일일 생산 에너지 표시",
       "nl": "Weergave van dagelijks geproduceerde energie",
       "no": "Daglig produsert energivisning",
+      "pl": "Dzienne wyświetlanie wyprodukowanej energii",
+      "ru": "Ежедневное отображение произведённой энергии",
       "sv": "Daglig producerad energivisning"
     },
     "type": "group"
@@ -641,12 +923,18 @@
       {
         "id": "meter_power.cop_daily",
         "label": {
+          "ar": "جميع الأوضاع",
           "da": "Alle tilstande",
+          "de": "Alle Modi",
           "en": "All modes",
           "es": "Todos los modos",
           "fr": "Tous modes",
+          "it": "Tutte le modalità",
+          "ko": "모든 모드",
           "nl": "Alle modi",
           "no": "Alle moduser",
+          "pl": "Wszystkie tryby",
+          "ru": "Все режимы",
           "sv": "Alla lägen"
         },
         "type": "checkbox",
@@ -655,12 +943,18 @@
       {
         "id": "meter_power.cop_daily_cooling",
         "label": {
+          "ar": "تبريد",
           "da": "Køling",
+          "de": "Kühlung",
           "en": "Cooling",
           "es": "Enfriamiento",
           "fr": "Refroidissement",
+          "it": "Raffreddamento",
+          "ko": "냉방",
           "nl": "Koeling",
           "no": "Kjøling",
+          "pl": "Chłodzenie",
+          "ru": "Охлаждение",
           "sv": "Kylning"
         },
         "type": "checkbox",
@@ -669,12 +963,18 @@
       {
         "id": "meter_power.cop_daily_heating",
         "label": {
+          "ar": "تدفئة",
           "da": "Opvarmning",
+          "de": "Heizung",
           "en": "Heating",
           "es": "Calefacción",
           "fr": "Chauffage",
+          "it": "Riscaldamento",
+          "ko": "난방",
           "nl": "Verwarming",
           "no": "Oppvarming",
+          "pl": "Ogrzewanie",
+          "ru": "Отопление",
           "sv": "Uppvärmning"
         },
         "type": "checkbox",
@@ -683,12 +983,18 @@
       {
         "id": "meter_power.cop_daily_hotwater",
         "label": {
+          "ar": "الماء الساخن المنزلي",
           "da": "Varmtvandsindlæsning",
+          "de": "Warmwasser",
           "en": "Domestic hot water",
           "es": "Agua caliente sanitaria",
           "fr": "Eau chaude sanitaire",
+          "it": "Acqua calda sanitaria",
+          "ko": "온수",
           "nl": "Sanitair warm water",
           "no": "Varmvannslastning",
+          "pl": "Ciepła woda użytkowa",
+          "ru": "Горячее водоснабжение",
           "sv": "Varmvattenladdning"
         },
         "type": "checkbox",
@@ -696,12 +1002,18 @@
       }
     ],
     "label": {
+      "ar": "عرض معامل الأداء اليومي",
       "da": "Daglig CoP-visning",
+      "de": "Tägliche CoP-Anzeige",
       "en": "Daily CoP display",
       "es": "Visualización del CoP diario",
       "fr": "Affichage du CoP quotidien",
+      "it": "Visualizzazione CoP giornaliero",
+      "ko": "일일 CoP 표시",
       "nl": "Dagelijkse CoP-weergeven",
       "no": "Daglig CoP-visning",
+      "pl": "Dzienne wyświetlanie CoP",
+      "ru": "Ежедневное отображение CoP",
       "sv": "Daglig CoP-visning"
     },
     "type": "group"

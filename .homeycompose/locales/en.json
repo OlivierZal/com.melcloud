@@ -62,9 +62,9 @@
     "refresh": "Refresh",
     "success": "Update succeeded.",
     "title": "MELCloud settings",
+    "update": "Update",
     "zones": {
-      "legend": "Zone settings",
-      "update": "Update"
+      "legend": "Zone settings"
     }
   },
   "warnings": {

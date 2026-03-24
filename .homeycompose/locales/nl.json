@@ -19,7 +19,7 @@
         "nothing": "Geen wijziging om toe te passen."
       },
       "legend": "Apparaatinstellingen",
-      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
@@ -62,9 +62,9 @@
     "refresh": "Herladen",
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen",
+    "update": "Updaten",
     "zones": {
-      "legend": "Zonesinstellingen",
-      "update": "Updaten"
+      "legend": "Zonesinstellingen"
     }
   },
   "warnings": {

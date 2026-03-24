@@ -7,24 +7,36 @@
     }
   ],
   "title": {
+    "ar": "تغيرت سرعة المروحة الحالية",
     "da": "Den aktuelle ventilatorhastigheden ændrede sig",
+    "de": "Die aktuelle Lüftergeschwindigkeit hat sich geändert",
     "en": "The current fan speed changed",
     "es": "La velocidad actual del ventilador ha cambiado",
     "fr": "La vitesse actuelle de ventilation a changé",
+    "it": "La velocità attuale della ventola è cambiata",
+    "ko": "현재 팬 속도가 변경되었습니다",
     "nl": "De huidige ventilatorsnelheid is veranderd",
     "no": "Den nåværende viftehastigheten ble endret",
+    "pl": "Aktualna prędkość wentylatora uległa zmianie",
+    "ru": "Текущая скорость вентилятора изменилась",
     "sv": "Den aktuella fläkthastigheten ändrades"
   },
   "tokens": [
     {
       "name": "fan_speed.state",
       "title": {
+        "ar": "سرعة المروحة الحالية",
         "da": "Aktuel ventilatorhastighed",
+        "de": "Aktuelle Lüftergeschwindigkeit",
         "en": "Current fan speed",
         "es": "Velocidad actual del ventilador",
         "fr": "Vitesse actuelle de ventilation",
+        "it": "Velocità attuale della ventola",
+        "ko": "현재 팬 속도",
         "nl": "Huidige ventilatorsnelheid",
         "no": "Nåværende viftehastighet",
+        "pl": "Aktualna prędkość wentylatora",
+        "ru": "Текущая скорость вентилятора",
         "sv": "Aktuell fläkthastighet"
       },
       "type": "number"

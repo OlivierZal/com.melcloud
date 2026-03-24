@@ -65,7 +65,8 @@
     "zones": {
       "legend": "Zonsinställningar",
       "update": "Uppdatera"
-    }
+    },
+    "update": "Uppdatera"
   },
   "warnings": {
     "dashboard": "Lämna enheten och gå tillbaka för att uppdatera din instrumentpanel."

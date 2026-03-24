@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "الماء الساخن الصحي الاقتصادي !{{قيد التشغيل|متوقف}}",
     "da": "Eco-tilstand for varmtvandsindlæsning er !{{tændt|slukket}}",
+    "de": "Das Eco-Warmwasser ist !{{an|aus}}",
     "en": "The eco domestic hot water is !{{on|off}}",
     "es": "El agua caliente sanitaria eco está !{{activada|desactivada}}",
     "fr": "L'eau chaude sanitaire forcée est !{{en marche|arrêté}}",
+    "it": "L'acqua calda sanitaria eco è !{{attiva|disattiva}}",
+    "ko": "에코 급탕이 !{{켜져 있습니다|꺼져 있습니다}}",
     "nl": "De eco sanitair warm water is !{{aan|uit}}",
     "no": "Eco-modus for varmvannslastning er !{{på|av}}",
+    "pl": "Ekologiczna ciepła woda użytkowa jest !{{włączona|wyłączona}}",
+    "ru": "Эко-режим горячего водоснабжения !{{включён|выключен}}",
     "sv": "Eco-läge för varmvattenladdning är !{{på|av}}"
   }
 }

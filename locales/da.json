@@ -65,7 +65,8 @@
     "zones": {
       "legend": "Zonesindstillinger",
       "update": "Opdater"
-    }
+    },
+    "update": "Opdater"
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit dashboard."

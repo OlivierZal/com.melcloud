@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "وضع إذابة الجليد !{{قيد التشغيل|متوقف}}",
     "da": "Afrimningsfunktionen er !{{tændt|slukket}}",
+    "de": "Der Abtaumodus ist !{{an|aus}}",
     "en": "The defrost mode is !{{on|off}}",
     "es": "El modo de descongelación está !{{activado|desactivado}}",
     "fr": "Le mode dégivrage est !{{en marche|arrêté}}",
+    "it": "La modalità sbrinamento è !{{attiva|disattiva}}",
+    "ko": "제상 모드가 !{{켜져 있습니다|꺼져 있습니다}}",
     "nl": "De ontdooimodus is !{{aan|uit}}",
     "no": "Avfrostingsmodusen er !{{på|av}}",
+    "pl": "Tryb odszraniania jest !{{włączony|wyłączony}}",
+    "ru": "Режим оттайки !{{включён|выключен}}",
     "sv": "Avfrostningsläget är !{{på|av}}"
   }
 }

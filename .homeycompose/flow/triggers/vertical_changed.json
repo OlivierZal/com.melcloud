@@ -7,33 +7,51 @@
     }
   ],
   "title": {
+    "ar": "تغيرت الريشة العمودية",
     "da": "Den vertikale luftstrømsretningen er blevet ændret",
+    "de": "Die vertikale Lamelle hat sich geändert",
     "en": "The vertical vane changed",
     "es": "La descarga vertical ha cambiado",
     "fr": "Le soufflage vertical a changé",
+    "it": "L'aletta verticale è cambiata",
+    "ko": "수직 베인이 변경되었습니다",
     "nl": "De uitblaasrichting verticaal is veranderd",
     "no": "Den vertikale luftstrømretningen ble endret",
+    "pl": "Pionowa kierownica uległa zmianie",
+    "ru": "Вертикальные жалюзи изменились",
     "sv": "Den vertikala luftflödesriktningen ändrades"
   },
   "tokens": [
     {
       "example": {
+        "ar": "تلقائي",
         "da": "Automatisk",
+        "de": "Automatisch",
         "en": "Automatic",
         "es": "Automático",
         "fr": "Automatique",
+        "it": "Automatica",
+        "ko": "자동",
         "nl": "Automatisch",
         "no": "Automatisk",
+        "pl": "Automatyczny",
+        "ru": "Автоматически",
         "sv": "Automatiskt"
       },
       "name": "vertical",
       "title": {
+        "ar": "الريشة العمودية",
         "da": "Vertikal luftstrømsretning",
+        "de": "Vertikale Lamelle",
         "en": "Vertical vane",
         "es": "Descarga vertical",
         "fr": "Soufflage vertical",
+        "it": "Aletta verticale",
+        "ko": "수직 베인",
         "nl": "Uitblaasrichting verticaal",
         "no": "Vertikal luftstrømretning",
+        "pl": "Pionowa kierownica",
+        "ru": "Вертикальные жалюзи",
         "sv": "Vertikal luftflödesriktning"
       },
       "type": "string"

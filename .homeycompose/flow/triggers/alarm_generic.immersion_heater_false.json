@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم إيقاف سخان الغمر",
     "da": "Dyppevarmeren blev deaktiveret",
+    "de": "Der Tauchsieder wurde ausgeschaltet",
     "en": "The immersion heater turned off",
     "es": "El calentador eléctrico sumergible se ha desactivado",
     "fr": "Le thermoplongeur s'est désactivé",
+    "it": "Lo scaldabagno ad immersione si è spento",
+    "ko": "침수 히터가 꺼졌습니다",
     "nl": "De dompelelement ging uit",
     "no": "Dyppvarmeren er deaktivert",
+    "pl": "Grzałka nurkowa została wyłączona",
+    "ru": "Погружной нагреватель выключился",
     "sv": "Doppvärmaren är inaktiverad"
   }
 }

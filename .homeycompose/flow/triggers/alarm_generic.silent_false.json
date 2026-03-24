@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم إيقاف الوضع الصامت",
     "da": "Den stille tilstanden blev deaktiveret",
+    "de": "Der Ruhemodus wurde ausgeschaltet",
     "en": "The silent mode turned off",
     "es": "El modo silencioso se ha desactivado",
     "fr": "Le mode silencieux s'est désactivé",
+    "it": "La modalità silenziosa si è disattivata",
+    "ko": "저소음 모드가 꺼졌습니다",
     "nl": "De stille modus ging uit",
     "no": "Den stille modusen er deaktivert",
+    "pl": "Tryb cichy został wyłączony",
+    "ru": "Тихий режим выключился",
     "sv": "Det tysta läget är inaktiverat"
   }
 }

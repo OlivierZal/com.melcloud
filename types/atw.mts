@@ -41,12 +41,18 @@ const addSuffixToTitle = (
 const curve: CapabilitiesOptionsValues<'curve'> = {
   id: 'curve',
   title: {
+    ar: 'منحنى التعويض المناخي',
     da: 'Varmekurve',
+    de: 'Heizkurve',
     en: 'Weather compensation curve',
     es: 'Curva de calefacción',
     fr: 'Courbe de chauffe',
+    it: 'Curva di compensazione climatica',
+    ko: '기상 보상 곡선',
     nl: 'Weerscompensatiecurve',
     no: 'Varmekurve',
+    pl: 'Krzywa kompensacji pogodowej',
+    ru: 'Кривая погодозависимого регулирования',
     sv: 'Värmekurva',
   },
 }
@@ -54,12 +60,18 @@ const curve: CapabilitiesOptionsValues<'curve'> = {
 const flow: CapabilitiesOptionsValues<'flow'> = {
   id: 'flow',
   title: {
+    ar: 'درجة حرارة تدفق ثابتة',
     da: 'Fast fremledningstemperatur',
+    de: 'Feste Vorlauftemperatur',
     en: 'Fixed flow temperature',
     es: 'Temperatura de partida fija',
     fr: 'Température de départ fixe',
+    it: 'Temperatura di mandata fissa',
+    ko: '고정 유량 온도',
     nl: 'Vaste aanvoertemperatuur',
     no: 'Fast fremløpstemperatur',
+    pl: 'Stała temperatura zasilania',
+    ru: 'Фиксированная температура подачи',
     sv: 'Fast framledningstemperatur',
   },
 }
@@ -67,12 +79,18 @@ const flow: CapabilitiesOptionsValues<'flow'> = {
 const room: CapabilitiesOptionsValues<'room'> = {
   id: 'room',
   title: {
+    ar: 'درجة الحرارة الداخلية',
     da: 'Indendørs føler',
+    de: 'Innentemperatur',
     en: 'Indoor temperature',
     es: 'Temperatura interior',
     fr: 'Température intérieure',
+    it: 'Temperatura interna',
+    ko: '실내 온도',
     nl: 'Binnentemperatuur',
     no: 'Innendørs føler',
+    pl: 'Temperatura wewnętrzna',
+    ru: 'Температура в помещении',
     sv: 'Inomhusgivare',
   },
 }
@@ -88,23 +106,35 @@ const createCoolObject = ({
 }): CapabilitiesOptionsValues<keyof typeof OperationModeZone> => ({
   id: `${id}_${COOL_SUFFIX}`,
   title: addSuffixToTitle(title, {
+    ar: '- تبريد',
     da: '- køling',
+    de: '- Kühlung',
     en: '- cooling',
     es: '- enfriamiento',
     fr: '- refroidissement',
+    it: '- raffrescamento',
+    ko: '- 냉방',
     nl: '- koeling',
     no: '- kjøling',
+    pl: '- chłodzenie',
+    ru: '- охлаждение',
     sv: '- kylning',
   }),
 })
 
 const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
+  ar: '- المنطقة 2',
   da: '- zone 2',
+  de: '- Zone 2',
   en: '- zone 2',
   es: '- zona 2',
   fr: '- zone 2',
+  it: '- zona 2',
+  ko: '- 구역 2',
   nl: '- zone 2',
   no: '- sone 2',
+  pl: '- strefa 2',
+  ru: '- зона 2',
   sv: '- zon 2',
 })
 

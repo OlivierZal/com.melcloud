@@ -7,12 +7,18 @@
     }
   ],
   "title": {
+    "ar": "تم تشغيل الماء الساخن الصحي الاقتصادي",
     "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
+    "de": "Das Eco-Warmwasser wurde eingeschaltet",
     "en": "The eco domestic hot water turned on",
     "es": "El agua caliente sanitaria eco se ha activado",
     "fr": "L'eau chaude sanitaire éco s'est activée",
+    "it": "L'acqua calda sanitaria eco si è attivata",
+    "ko": "에코 급탕이 켜졌습니다",
     "nl": "De eco sanitair warm water gaat aan",
     "no": "Eco-modus for varmvannslastning er aktivert",
+    "pl": "Ekologiczna ciepła woda użytkowa została włączona",
+    "ru": "Эко-режим горячего водоснабжения включился",
     "sv": "Eco-läge för varmvattenladdning är aktiverat"
   }
 }

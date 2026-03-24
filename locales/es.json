@@ -1,6 +1,6 @@
 {
   "errors": {
-    "deviceNotFound": "Dispositivo no encontrada.",
+    "deviceNotFound": "Dispositivo no encontrado.",
     "zoneNotFound": "Zona no encontrada."
   },
   "settings": {
@@ -65,7 +65,8 @@
     "zones": {
       "legend": "Configuración de las zonas",
       "update": "Actualizar"
-    }
+    },
+    "update": "Actualizar"
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."

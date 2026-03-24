@@ -7,33 +7,51 @@
     }
   ],
   "title": {
+    "ar": "تغيرت حالة التشغيل للماء الساخن الصحي",
     "da": "Driftstilstanden for varmtvandsindlæsning blev ændret",
+    "de": "Der Betriebszustand für Warmwasser hat sich geändert",
     "en": "The operational state for domestic hot water changed",
     "es": "El estado operativo para el agua caliente sanitaria ha cambiado",
     "fr": "L'état opérationnel pour l'eau chaude sanitaire a changé",
+    "it": "Lo stato operativo per l'acqua calda sanitaria è cambiato",
+    "ko": "급탕 작동 상태가 변경되었습니다",
     "nl": "De operationele staat voor het sanitair warm water is veranderd",
     "no": "Driftstilstanden for varmvannslastning ble endret",
+    "pl": "Stan operacyjny ciepłej wody użytkowej uległ zmianie",
+    "ru": "Рабочее состояние горячего водоснабжения изменилось",
     "sv": "Drifttillståndet för varmvattenladdning ändrades"
   },
   "tokens": [
     {
       "example": {
+        "ar": "خامل",
         "da": "Inaktiv",
+        "de": "Leerlauf",
         "en": "Idle",
         "es": "Inactivo",
         "fr": "Inactif",
+        "it": "Inattivo",
+        "ko": "대기",
         "nl": "Inactief",
         "no": "Inaktiv",
+        "pl": "Bezczynny",
+        "ru": "Ожидание",
         "sv": "Inaktiv"
       },
       "name": "operational_state.hot_water",
       "title": {
+        "ar": "حالة التشغيل - ماء ساخن صحي",
         "da": "Driftstilstand - varmtvandsindlæsning",
+        "de": "Betriebszustand - Warmwasser",
         "en": "Operational state - domestic hot water",
         "es": "Estado operativo - agua caliente sanitaria",
         "fr": "État opérationnel - eau chaude sanitaire",
+        "it": "Stato operativo - acqua calda sanitaria",
+        "ko": "작동 상태 - 급탕",
         "nl": "Operationele staat - sanitair warm water",
         "no": "Driftstilstand - varmvannslastning",
+        "pl": "Stan operacyjny - ciepła woda użytkowa",
+        "ru": "Рабочее состояние - горячее водоснабжение",
         "sv": "Drifttillstånd - varmvattenladdning"
       },
       "type": "string"
