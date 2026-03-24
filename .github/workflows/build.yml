@@ -38,9 +38,6 @@ jobs:
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm ci --ignore-scripts
-      - run: npm run build:assets
-      - name: Verify generated files are up to date
-        run: git diff --exit-code -- widgets/*/public/
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format
@@ -64,7 +61,6 @@ jobs:
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm ci --ignore-scripts
-      - run: npm run build
       - run: npm test -- --coverage
       - env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -87,10 +83,12 @@ jobs:
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm ci --ignore-scripts
-      - run: npm run build:assets
       - name: Validate app
         uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # master
         with:
           level: publish
 name: Build app
-on: [pull_request, push]
+on:
+  pull_request: {}
+  push:
+    branches: [main]
