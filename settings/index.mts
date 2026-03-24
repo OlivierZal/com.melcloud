@@ -145,32 +145,19 @@ const Modulo = {
   base100: 100,
 } as const
 
-const INITIAL_ERROR_COUNT = 0
-
-const SIZE_ONE = 1
-
 /*
  * Slavic language pluralization rules: numbers ending in 2-4 use a special
  * form, except 12-14 which use the regular plural
  */
-const NUMBER_ENDS_WITH_TWO = 2
-const NUMBER_ENDS_WITH_THREE = 3
-const NUMBER_ENDS_WITH_FOUR = 4
-const numberEndsWithTwoThreeFour = new Set([
-  NUMBER_ENDS_WITH_FOUR,
-  NUMBER_ENDS_WITH_THREE,
-  NUMBER_ENDS_WITH_TWO,
-])
-
+/*
+ * Slavic plural rules: numbers ending in 2/3/4 use a special plural
+ * form, except 12-14 which use the regular plural
+ */
+/* eslint-disable @typescript-eslint/no-magic-numbers -- Slavic grammar constants */
 const PLURAL_THRESHOLD = 2
-const PLURAL_EXCEPTION_TWELVE = 12
-const PLURAL_EXCEPTION_THIRTEEN = 13
-const PLURAL_EXCEPTION_FOURTEEN = 14
-const pluralExceptions = new Set([
-  PLURAL_EXCEPTION_FOURTEEN,
-  PLURAL_EXCEPTION_THIRTEEN,
-  PLURAL_EXCEPTION_TWELVE,
-])
+const numberEndsWithTwoThreeFour = new Set([2, 3, 4])
+const pluralExceptions = new Set([12, 13, 14])
+/* eslint-enable @typescript-eslint/no-magic-numbers */
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -502,7 +489,7 @@ class ErrorLogManager {
 
   readonly #sinceElement: HTMLInputElement
 
-  #errorCount = INITIAL_ERROR_COUNT
+  #errorCount = 0
 
   #errorLogTBodyElement: HTMLTableSectionElement | null = null
 
@@ -751,7 +738,7 @@ class DeviceSettingsManager {
         errors.push(getErrorMessage(error))
       }
     }
-    if (errors.length) {
+    if (errors.length > 0) {
       throw new Error(errors.join('\n') || 'Unknown error')
     }
     return settings
@@ -786,7 +773,7 @@ class DeviceSettingsManager {
         ),
       ).map(([id, groupedValues]) => {
         const set = new Set(groupedValues?.map(({ values }) => values))
-        return [id, set.size === SIZE_ONE ? set.values().next().value : null]
+        return [id, set.size === 1 ? set.values().next().value : null]
       }),
     )
   }
@@ -898,7 +885,7 @@ class DeviceSettingsManager {
     driverId?: string,
   ): Promise<void> {
     const body = this.#buildSettingsBody(elements)
-    if (!Object.keys(body).length) {
+    if (Object.keys(body).length === 0) {
       if (driverId === undefined) {
         this.#refreshCommonSettings(
           elements.filter((element) => element instanceof HTMLSelectElement),
@@ -1102,7 +1089,7 @@ class ZoneSettingsManager {
   }
 
   public async generateZones(zones: Zone[] = []): Promise<void> {
-    if (zones.length) {
+    if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
         createOptionElement(this.#zoneElement, {
@@ -1307,7 +1294,7 @@ class ZoneSettingsManager {
         return null
       }
     })
-    if (errors.length || min === null || max === null) {
+    if (errors.length > 0 || min === null || max === null) {
       throw new Error(errors.join('\n') || 'Unknown error')
     }
     if (max < min) {
@@ -1420,7 +1407,7 @@ class SettingsApp {
       await this.#homey.alert(getErrorMessage(error))
       throw error
     })
-    if (!buildings.length) {
+    if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.generateZones(buildings)

@@ -96,7 +96,7 @@ class WidgetApp {
         type: '0',
       } satisfies { type: `${DeviceType}` })}`,
     )
-    if (buildings.length) {
+    if (buildings.length > 0) {
       const { animations: isAnimations, default_zone: defaultZone } =
         this.#homey.getSettings()
       this.#isAnimations = isAnimations

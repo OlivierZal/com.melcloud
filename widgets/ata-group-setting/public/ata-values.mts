@@ -209,7 +209,7 @@ export class AtaValueManager {
   }
 
   public async generateZones(zones: Zone[] = []): Promise<void> {
-    if (zones.length) {
+    if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
         createOptionElement(this.#zoneElement, {
@@ -238,7 +238,7 @@ export class AtaValueManager {
 
   public async setValues(): Promise<void> {
     const body = this.#buildAtaValuesBody()
-    if (Object.keys(body).length) {
+    if (Object.keys(body).length > 0) {
       await homeyApiPut(
         this.#homey,
         `/values/ata/${this.#getZoneValue()}`,

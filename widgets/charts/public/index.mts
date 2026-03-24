@@ -313,7 +313,7 @@ const fetchDevices = async (homey: Homey<HomeySettings>): Promise<void> => {
       `?${new URLSearchParams({ type: String(DeviceType.Atw) })}`
     : ''
   const devices = await homeyApiGet<DeviceZone[]>(homey, `/devices${typeQuery}`)
-  if (devices.length) {
+  if (devices.length > 0) {
     addEventListeners(homey, { chart, days, height: Number(height) })
     generateZones(devices)
     handleDefaultZone(defaultZone)

@@ -493,7 +493,6 @@ const config = defineConfig([
       'perfectionist/sort-union-types': ['error', typeSortOptions],
       'sort-imports': 'off',
       'sort-keys': 'off',
-      'unicorn/explicit-length-check': 'off',
       'unicorn/no-keyword-prefix': 'off',
       'unicorn/no-null': 'off',
       'unicorn/no-useless-switch-case': 'off',
