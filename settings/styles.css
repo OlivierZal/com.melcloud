@@ -35,31 +35,36 @@
 }
 
 /*
- * Date inputs — homey-form-input does not support date/datetime-local,
- * so we replicate its box-shadow border pattern here.
+ * Date inputs — homey-form-input does not support date/datetime-local.
+ * Uses border for iOS WebView compatibility + padding compensation on focus.
  */
 input[type='date'],
 input[type='datetime-local'] {
+  -webkit-tap-highlight-color: transparent;
   background: var(--homey-color-component);
-  border: none;
+  border: 1px solid var(--homey-color-line);
   border-radius: var(--homey-border-radius-small);
-  box-shadow: 0 0 0 1px var(--homey-color-line);
   box-sizing: border-box;
   color: var(--homey-color-text);
   font-size: var(--homey-font-size-default);
   line-height: 24px;
-  min-inline-size: 0; /* Prevent overflow in grid/flex containers */
+  min-inline-size: 0;
   padding: var(--homey-su-1);
+  text-align: start;
+  transition: var(--homey-duration-fast) var(--homey-curve-fast-in);
+  transition-property: border-color, color;
 }
 
 input[type='date']:hover,
 input[type='datetime-local']:hover {
-  box-shadow: 0 0 0 1px var(--homey-color-line-hover);
+  border-color: var(--homey-color-line-hover);
 }
 
 input[type='date']:focus,
 input[type='datetime-local']:focus {
-  box-shadow: 0 0 0 2px var(--homey-color-highlight);
+  border-color: var(--homey-color-highlight);
+  border-width: 2px;
+  padding: calc(var(--homey-su-1) - 1px);
 }
 
 /* Utility classes */
@@ -72,6 +77,21 @@ input[type='datetime-local']:focus {
   display: grid;
   gap: var(--homey-su-2);
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Prevent grid children from overflowing their column */
+.container > * {
+  min-inline-size: 0;
+}
+
+/* Constrain date inputs inside grid columns on iOS */
+.container > div:not(.container-inline-end) {
+  display: flex;
+  flex-direction: column;
+}
+
+.container-inline-end > input {
+  flex: 1;
 }
 
 /* Flex container */

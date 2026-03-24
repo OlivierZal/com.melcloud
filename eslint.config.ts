@@ -130,8 +130,8 @@ const config = defineConfig([
         },
         /*
          * ── Variables ────────────────────────────────────────
-         * PascalCase: React components, class-like refs, `as const` objects.
-         * UPPER_CASE: allowed for legacy/team preference on primitives — not enforced.
+         * PascalCase: `as const` enum-like objects.
+         * UPPER_CASE: scalar constants.
          */
         {
           format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
@@ -155,7 +155,7 @@ const config = defineConfig([
         },
         /*
          * ── Parameters ───────────────────────────────────────
-         * Leading underscore for intentionally unused params (_event, _ctx).
+         * Leading underscore for intentionally unused params.
          */
         {
           format: ['camelCase'],
@@ -175,12 +175,9 @@ const config = defineConfig([
           selector: 'parameter',
           types: ['boolean'],
         },
-        /*
-         * ── Functions & methods ──────────────────────────────
-         * PascalCase covers HOCs, factory functions (CreateApp), React hooks wrappers.
-         */
+        // ── Functions & methods ──────────────────────────────
         {
-          format: ['camelCase', 'PascalCase'],
+          format: ['camelCase'],
           selector: [
             'function',
             'classMethod',
@@ -190,7 +187,7 @@ const config = defineConfig([
         },
         /*
          * ── Homey-specific ──────────────────────────────────
-         * Capability handlers: thermostat_mode, fan_speed, hot_water_mode, etc.
+         * Capability handlers use snake_case.
          */
         {
           format: null,
@@ -202,7 +199,7 @@ const config = defineConfig([
           format: null,
           selector: 'objectLiteralMethod',
         },
-        // Homey translation function __ in mocks
+        // Translation function __ (double underscore)
         {
           filter: { match: true, regex: '^__$' },
           format: null,
@@ -238,14 +235,6 @@ const config = defineConfig([
           selector: 'typeLike',
         },
         /*
-         * PascalCase enum members: modern TS convention (Status.Active, not Status.ACTIVE).
-         * Aligns with the `as const` + union type pattern that increasingly replaces enums.
-         */
-        {
-          format: ['PascalCase'],
-          selector: 'enumMember',
-        },
-        /*
          * ── Type parameters (generics) ───────────────────────
          * T-prefix: T, TKey, TValue, TResult — universal TS convention.
          */
@@ -267,8 +256,9 @@ const config = defineConfig([
         'error',
         {
           ignore: [-1, 0, 1, 2],
-          ignoreEnums: true,
+          ignoreNumericLiteralTypes: true,
           ignoreReadonlyClassProperties: true,
+          ignoreTypeIndexes: true,
         },
       ],
       '@typescript-eslint/no-redeclare': 'off',
