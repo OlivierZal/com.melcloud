@@ -1145,7 +1145,7 @@ class ZoneSettingsManager {
   }
 
   public async setFrostProtectionData({
-    enabled,
+    isEnabled,
     max,
     min,
   }: FrostProtectionQuery): Promise<void> {
@@ -1156,10 +1156,10 @@ class ZoneSettingsManager {
           await homeyApiPut<unknown>(
             this.#homey,
             `/settings/frost_protection/${this.#getZonePath()}`,
-            { enabled, max, min } satisfies FrostProtectionQuery,
+            { isEnabled, max, min } satisfies FrostProtectionQuery,
           )
           this.#updateZoneMapping({
-            FPEnabled: enabled,
+            FPEnabled: isEnabled,
             FPMaxTemperature: max,
             FPMinTemperature: min,
           })
@@ -1242,7 +1242,7 @@ class ZoneSettingsManager {
       try {
         const { max, min } = this.#getFPMinAndMax()
         this.setFrostProtectionData({
-          enabled: this.#frostProtectionEnabledElement.value === 'true',
+          isEnabled: this.#frostProtectionEnabledElement.value === 'true',
           max,
           min,
         }).catch(() => {

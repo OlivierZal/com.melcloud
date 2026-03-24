@@ -120,7 +120,7 @@ const handleIntMin = (id: string, min: string): string =>
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelectElement('OperationMode').value))
   ) ?
-    String(Temperature.coolingMin)
+    String(Temperature.cooling_min)
   : min
 
 const int = ({ id, max, min, value }: HTMLInputElement): number => {
