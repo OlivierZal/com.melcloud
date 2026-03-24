@@ -39,6 +39,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm ci --ignore-scripts
       - run: npm run build:assets
+      - name: Verify generated files are up to date
+        run: git diff --exit-code -- widgets/*/public/
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format
@@ -71,15 +73,11 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     name: Validate app
     permissions:
-      contents: write
+      contents: read
       packages: read
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           cache: npm
@@ -88,34 +86,11 @@ jobs:
           scope: '@olivierzal'
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        name: Install dependencies
-        run: npm ci
-      - name: Build code & validate app
+        run: npm ci --ignore-scripts
+      - run: npm run build:assets
+      - name: Validate app
         uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # master
         with:
           level: publish
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEAD_REF: ${{ github.head_ref || github.ref_name }}
-        if: github.event_name == 'pull_request' || github.ref_type == 'branch'
-        name: Commit & push changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff --cached --exit-code; then
-            git commit -m "Code maintenance: lint, format and build code"
-            if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
-              BRANCH_NAME="maintenance-$(date +'%Y%m%d%H%M%S')"
-              git checkout -b "$BRANCH_NAME"
-              git push origin "$BRANCH_NAME"
-              gh pr create --base main --head "$BRANCH_NAME" --title "Maintenance PR" --body "Automatic code maintenance: lint, format and build code."
-              PR_URL=$(gh pr view "$BRANCH_NAME" --json url -q '.url')
-              gh pr merge --auto --merge --delete-branch "$PR_URL"
-            else
-              git pull --rebase origin "$HEAD_REF"
-              git push origin "HEAD:$HEAD_REF"
-            fi
-          fi
 name: Build app
 on: [pull_request, push]
