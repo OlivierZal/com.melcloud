@@ -15,7 +15,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm run build:assets && tsc -p tsconfig.build.json",
     "build:assets": "npm run build:clean && npm run build:css && npm run build:public",
     "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/constants.mts \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
     "build:constants": "for dir in widgets/ata-group-setting/public widgets/charts/public; do grep -v sourceMappingURL node_modules/@olivierzal/melcloud-api/dist/constants.js > \"$dir/constants.mts\"; done",
@@ -26,7 +26,7 @@
     "install:homey": "homey app install",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build:assets && npm run build",
+    "prepare": "npm run build",
     "publish:homey": "homey app publish",
     "start:homey": "homey app run --remote",
     "test": "vitest run",
