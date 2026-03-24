@@ -224,7 +224,7 @@ export default class MELCloudApp extends App {
           .filter((device) => device.type === DeviceType.Ata)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
           .map(({ data }) => data as ListDeviceDataAta)
-          .filter((data) => (status === 'on' ? data.Power : true))
+          .filter((data) => status !== 'on' || data.Power)
           .map((data) => data[key]),
       ]),
     ) as GroupAtaStates
