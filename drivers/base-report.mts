@@ -24,15 +24,11 @@ import {
 import type { BaseMELCloudDevice } from './base-device.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 
-
 const sumTags = <T extends DeviceType>(
   data: EnergyData<T>,
   tags: readonly (keyof EnergyData<T>)[],
 ): number =>
-  tags.reduce(
-    (accumulator, tag) => accumulator + Number(data[tag]),
-    0,
-  )
+  tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
 
 export interface EnergyReportConfig {
   readonly duration: DurationLike
@@ -110,10 +106,7 @@ export class EnergyReport<T extends DeviceType> {
         consumedTagMapping: { [capability]: consumedTags = [] },
       },
     } = this
-    return (
-      sumTags(data, producedTags) /
-      (sumTags(data, consumedTags) || 1)
-    )
+    return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
   }
 
   #calculateEnergyValue(
