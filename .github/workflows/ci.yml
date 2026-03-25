@@ -20,9 +20,9 @@ jobs:
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm audit --audit-level=high --omit=dev
-  lint:
+  check:
     if: github.actor != 'dependabot[bot]'
-    name: Lint
+    name: Check
     permissions:
       contents: read
       packages: read
