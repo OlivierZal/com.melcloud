@@ -56,9 +56,8 @@ export const buildGroups = ({
   modifiers: string[][]
   selectorIncompatibilities: Record<string, Set<string>>
   selectors: (string | string[])[]
-}): (string | string[])[] => {
-  const result: (string | string[])[] = []
-  for (const selector of selectors) {
+}): (string | string[])[] =>
+  selectors.flatMap<string | string[]>((selector) => {
     if (Array.isArray(selector)) {
       const groupPairs = selector.map((pairedSelector) =>
         buildGroupsForSelector({
@@ -69,24 +68,17 @@ export const buildGroups = ({
         }),
       )
       const [firstGroup = []] = groupPairs
-      for (const [index] of firstGroup.entries()) {
-        result.push(
-          groupPairs.flatMap((groupPair) => {
-            const { [index]: value } = groupPair
-            return value !== undefined && value !== '' ? [value] : []
-          }),
-        )
-      }
-    } else {
-      result.push(
-        ...buildGroupsForSelector({
-          modifierIncompatibilities,
-          modifiers,
-          selector,
-          selectorIncompatibilities,
+      return firstGroup.map((_value, index) =>
+        groupPairs.flatMap((groupPair) => {
+          const { [index]: value } = groupPair
+          return value !== undefined && value !== '' ? [value] : []
         }),
       )
     }
-  }
-  return result
-}
+    return buildGroupsForSelector({
+      modifierIncompatibilities,
+      modifiers,
+      selector,
+      selectorIncompatibilities,
+    })
+  })

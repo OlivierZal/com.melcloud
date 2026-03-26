@@ -361,8 +361,7 @@ export class AnimationController {
   #createSmoke(flame: HTMLDivElement, speed: number): void {
     if (flame.isConnected && this.#canvasContext) {
       const { left, top, width } = flame.getBoundingClientRect()
-      let index = 0
-      while (index <= SmokeThreshold.iterations) {
+      for (let index = 0; index <= SmokeThreshold.iterations; index += 1) {
         this.#smokeParticles.push(
           new SmokeParticle(
             this.#canvasContext,
@@ -370,7 +369,6 @@ export class AnimationController {
             top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
           ),
         )
-        index += 1
       }
       setTimeout(
         () => {
