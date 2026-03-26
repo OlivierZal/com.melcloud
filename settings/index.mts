@@ -146,10 +146,6 @@ const Modulo = {
 } as const
 
 /*
- * Slavic language pluralization rules: numbers ending in 2-4 use a special
- * form, except 12-14 which use the regular plural
- */
-/*
  * Slavic plural rules: numbers ending in 2/3/4 use a special plural
  * form, except 12-14 which use the regular plural
  */
