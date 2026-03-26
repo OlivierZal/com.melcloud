@@ -54,7 +54,7 @@ describe(MELCloudDriverErv, () => {
     })
   })
 
-  describe('getRequiredCapabilities', () => {
+  describe('required capabilities', () => {
     it('should include base capabilities without measure sensors', () => {
       const data = mock<ListDeviceDataErv>({
         HasCO2Sensor: false,

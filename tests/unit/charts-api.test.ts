@@ -32,7 +32,7 @@ describe('charts api', () => {
     vi.clearAllMocks()
   })
 
-  describe('getDevices', () => {
+  describe('device retrieval', () => {
     it('should return only device zones without type filter', () => {
       const zones = [
         { id: 1, level: 0, model: 'buildings' as const, name: 'Building 1' },
@@ -82,7 +82,7 @@ describe('charts api', () => {
     })
   })
 
-  describe('getHourlyTemperatures', () => {
+  describe('hourly temperature retrieval', () => {
     it('should call app.getHourlyTemperatures with hour number', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
       mockApp.getHourlyTemperatures.mockResolvedValue(lineOptions)
@@ -115,7 +115,7 @@ describe('charts api', () => {
     })
   })
 
-  describe('getLanguage', () => {
+  describe('language retrieval', () => {
     it('should return the language from i18n', () => {
       mockI18n.getLanguage.mockReturnValue('nl')
 
@@ -126,7 +126,7 @@ describe('charts api', () => {
     })
   })
 
-  describe('getOperationModes', () => {
+  describe('operation mode retrieval', () => {
     it('should call app.getOperationModes with numeric days', async () => {
       const pieOptions = mock<ReportChartPieOptions>()
       mockApp.getOperationModes.mockResolvedValue(pieOptions)
@@ -142,7 +142,7 @@ describe('charts api', () => {
     })
   })
 
-  describe('getSignal', () => {
+  describe('signal retrieval', () => {
     it('should call app.getSignal with hour number', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
       mockApp.getSignal.mockResolvedValue(lineOptions)
@@ -172,7 +172,7 @@ describe('charts api', () => {
     })
   })
 
-  describe('getTemperatures', () => {
+  describe('temperature retrieval', () => {
     it('should call app.getTemperatures with numeric days', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
       mockApp.getTemperatures.mockResolvedValue(lineOptions)

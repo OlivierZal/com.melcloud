@@ -4,8 +4,8 @@ import {
 } from '@olivierzal/melcloud-api'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 
-describe('aTW operation state types', () => {
-  describe('operationModeStateHotWater', () => {
+describe('atw operation state types', () => {
+  describe('hot water operation mode state', () => {
     it('should have all expected states', () => {
       expect(OperationModeStateHotWater).toStrictEqual({
         dhw: 'dhw',
@@ -26,7 +26,7 @@ describe('aTW operation state types', () => {
     })
   })
 
-  describe('operationModeStateZone', () => {
+  describe('zone operation mode state', () => {
     it('should have all expected states', () => {
       expect(OperationModeStateZone).toStrictEqual({
         cooling: 'cooling',

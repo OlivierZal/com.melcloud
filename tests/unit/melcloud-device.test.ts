@@ -39,7 +39,7 @@ describe(MELCloudDeviceAta, () => {
     device = new (MELCloudDeviceAta as unknown as new () => any)()
   })
 
-  describe('thermostatMode', () => {
+  describe('thermostat mode configuration', () => {
     it('should be ThermostatModeAta with off support', () => {
       expect(device.thermostatMode).toBe(ThermostatModeAta)
       expect(device.thermostatMode).toHaveProperty('off')
@@ -62,7 +62,7 @@ describe(MELCloudDeviceAta, () => {
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   })
 
-  describe('deviceToCapability', () => {
+  describe('device-to-capability conversions', () => {
     it.each([
       ['alarm_generic.silent', FanSpeed.silent, true],
       ['alarm_generic.silent', FanSpeed.auto, false],
@@ -91,7 +91,7 @@ describe(MELCloudDeviceAta, () => {
     })
   })
 
-  describe('capabilityToDevice', () => {
+  describe('capability-to-device conversions', () => {
     it.each([
       ['horizontal', 'center', Horizontal.center],
       ['thermostat_mode', 'heat', OperationMode.heat],

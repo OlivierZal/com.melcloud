@@ -32,7 +32,7 @@ describe(withTimers, () => {
     Settings.now = (): number => FAKE_NOW_MILLIS
   })
 
-  describe('setTimeout', () => {
+  describe('timeout scheduling', () => {
     it('should call homey.setTimeout with the correct duration in ms', () => {
       const instance = new TimerClass()
       instance.setTimeout(callback, { hours: 1 }, 'sync data')
@@ -65,7 +65,7 @@ describe(withTimers, () => {
     })
   })
 
-  describe('setInterval', () => {
+  describe('interval scheduling', () => {
     it('should call homey.setInterval with the correct duration in ms', () => {
       const instance = new TimerClass()
       instance.setInterval(callback, { minutes: 5 }, 'poll status')

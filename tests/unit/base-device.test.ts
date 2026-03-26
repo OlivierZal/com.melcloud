@@ -166,13 +166,13 @@ describe(BaseMELCloudDevice, () => {
     setDriver(device)
   })
 
-  describe('id', () => {
+  describe('device identifier', () => {
     it('should return the device id from getData', () => {
       expect(device.id).toBe(1)
     })
   })
 
-  describe('onInit', () => {
+  describe('initialization', () => {
     it('should clear warning, register listeners, and fetch device', async () => {
       await device.onInit()
 
@@ -211,7 +211,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('onDeleted', () => {
+  describe('deletion', () => {
     it('should not throw when called', () => {
       expect(() => {
         device.onDeleted()
@@ -219,7 +219,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('onUninit', () => {
+  describe('uninitialization', () => {
     it('should call onDeleted and return a resolved promise', async () => {
       const result = device.onUninit()
 
@@ -227,7 +227,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('addCapability', () => {
+  describe('adding capabilities', () => {
     it('should add capability if not already present', async () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.addCapability('fan_speed')
@@ -243,7 +243,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('removeCapability', () => {
+  describe('removing capabilities', () => {
     it('should remove capability if present', async () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(true)
       await device.removeCapability('fan_speed')
@@ -259,7 +259,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('setWarning', () => {
+  describe('warning management', () => {
     it('should call super.setWarning with error message then null when error is an Error', async () => {
       await device.setWarning(new Error('test error'))
 
@@ -280,7 +280,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('cleanMapping', () => {
+  describe('mapping cleanup', () => {
     it('should filter mapping to only capabilities the device has', () => {
       vi.spyOn(device, 'hasCapability').mockImplementation(
         (cap: string) => cap === 'onoff',
@@ -296,7 +296,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('fetchDevice', () => {
+  describe('device fetching', () => {
     it('should expose facade via protected getter after fetch', async () => {
       await device.fetchDevice()
 
@@ -328,7 +328,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('syncFromDevice', () => {
+  describe('device synchronization', () => {
     it('should set capability values from provided data', async () => {
       const data = mock<ListDeviceDataAta>({
         Power: true,
@@ -348,7 +348,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('setCapabilityValues', () => {
+  describe('capability value emission', () => {
     it('should emit realtime event', async () => {
       const data = mock<ListDeviceDataAta>({
         Power: true,
@@ -361,7 +361,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('onSettings', () => {
+  describe('settings changes', () => {
     it('should trigger onoff when always_on changes to true', async () => {
       await device.onSettings({
         changedKeys: ['always_on'],
@@ -453,7 +453,7 @@ describe(BaseMELCloudDevice, () => {
     return callback
   }
 
-  describe('capability listener callback', () => {
+  describe('capability change handling', () => {
     it('should call setValues when capability values are set', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
@@ -548,7 +548,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('setCapabilityValues with converters', () => {
+  describe('capability value conversion', () => {
     it('should use deviceToCapability converter when present', async () => {
       const customDevice = new (class extends TestDevice {
         public override readonly deviceToCapability = {
@@ -570,7 +570,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('#setCapabilities', () => {
+  describe('capability setup', () => {
     it('should add capabilities from required and enabled settings', async () => {
       vi.spyOn(device, 'getSettings').mockReturnValue({
         fan_speed: true,
@@ -598,7 +598,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('#setCapabilityOptions', () => {
+  describe('capability options setup', () => {
     it('should set capability options from driver', async () => {
       const getCapabilitiesOptionsMock = vi.fn().mockReturnValue({
         measure_temperature: { units: '°C' },
@@ -617,7 +617,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('#handleEnergyReports', () => {
+  describe('energy report handling', () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
       const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
@@ -659,7 +659,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('syncFromDevice when device is null', () => {
+  describe('synchronization when device is unavailable', () => {
     it('should not throw when fetchDevice returns null', async () => {
       getFacadeMock.mockImplementation(() => {
         throw new Error('Not found')
@@ -693,7 +693,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('#fetchData error path', () => {
+  describe('fetch error handling', () => {
     it('should set warning when fetchDevice throws', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)

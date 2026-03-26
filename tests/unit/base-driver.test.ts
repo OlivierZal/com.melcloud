@@ -86,7 +86,7 @@ describe(BaseMELCloudDriver, () => {
     driver = new (TestDriver as unknown as new () => TestDriver)()
   })
 
-  describe('onInit', () => {
+  describe('initialization', () => {
     it('should set produced and consumed tag mappings', async () => {
       await driver.onInit()
 
@@ -113,7 +113,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('onPair', () => {
+  describe('pairing', () => {
     it('should set handlers on the session', async () => {
       const session = mock<import('homey/lib/PairSession')>({
         setHandler: setHandlerMock,
@@ -254,7 +254,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('onRepair', () => {
+  describe('repairing', () => {
     it('should set login handler on the session', async () => {
       const session = mock<import('homey/lib/PairSession')>({
         setHandler: setHandlerMock,
@@ -290,7 +290,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('#registerActionRunListener', () => {
+  describe('action run listener registration', () => {
     it('should invoke triggerCapabilityListener on the device with the correct args', async () => {
       const triggerMock = vi.fn<() => Promise<void>>().mockResolvedValue()
       const actionListeners: Record<
@@ -328,7 +328,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('#registerConditionRunListener', () => {
+  describe('condition run listener registration', () => {
     it('should return boolean capability value for boolean capabilities', async () => {
       const conditionListeners: Record<
         string,

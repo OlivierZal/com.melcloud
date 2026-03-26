@@ -36,7 +36,7 @@ describe('ata-group-setting api', () => {
     vi.clearAllMocks()
   })
 
-  describe('getAtaCapabilities', () => {
+  describe('ata capability retrieval', () => {
     it('should delegate to app.getAtaCapabilities', () => {
       const capabilities =
         mock<[keyof GroupState, DriverCapabilitiesOptions][]>()
@@ -49,7 +49,7 @@ describe('ata-group-setting api', () => {
     })
   })
 
-  describe('getAtaValues', () => {
+  describe('ata value retrieval', () => {
     const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
 
     it('should call getAtaDetailedValues when mode is detailed', async () => {
@@ -83,7 +83,7 @@ describe('ata-group-setting api', () => {
     })
   })
 
-  describe('getBuildings', () => {
+  describe('building retrieval', () => {
     it('should delegate to getBuildings without type', () => {
       const buildings = mock<BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
@@ -105,7 +105,7 @@ describe('ata-group-setting api', () => {
     })
   })
 
-  describe('getLanguage', () => {
+  describe('language retrieval', () => {
     it('should return the language from i18n', () => {
       mockI18n.getLanguage.mockReturnValue('en')
 
@@ -116,7 +116,7 @@ describe('ata-group-setting api', () => {
     })
   })
 
-  describe('setAtaValues', () => {
+  describe('ata value update', () => {
     it('should delegate to app.setAtaValues', async () => {
       const body = mock<GroupState>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })

@@ -84,7 +84,7 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  describe('thermostatMode', () => {
+  describe('thermostat mode configuration', () => {
     it('should be null (no off support)', () => {
       expect(device.thermostatMode).toBeNull()
     })
@@ -106,7 +106,7 @@ describe(MELCloudDeviceAtw, () => {
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   })
 
-  describe('deviceToCapability', () => {
+  describe('device-to-capability conversions', () => {
     it.each([
       ['alarm_generic.defrost', 1, true],
       ['alarm_generic.defrost', 0, false],
@@ -135,7 +135,7 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  describe('capabilityToDevice', () => {
+  describe('capability-to-device conversions', () => {
     it.each([
       ['hot_water_mode', 'forced', true],
       ['hot_water_mode', 'auto', false],
@@ -148,7 +148,7 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  describe('setCapabilityValues (operation mode states)', () => {
+  describe('operation mode state mapping', () => {
     const mockFacade = (overrides: {
       hotWater?: { operationalState: OperationModeStateHotWater }
       zone1?: { operationalState: OperationModeStateZone }

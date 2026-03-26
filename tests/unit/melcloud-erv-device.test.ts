@@ -36,7 +36,7 @@ describe(MELCloudDeviceErv, () => {
     device = new (MELCloudDeviceErv as unknown as new () => any)()
   })
 
-  describe('thermostatMode', () => {
+  describe('thermostat mode configuration', () => {
     it('should be ThermostatModeErv with off support', () => {
       expect(device.thermostatMode).toBe(ThermostatModeErv)
       expect(device.thermostatMode).toHaveProperty('off')
@@ -47,7 +47,7 @@ describe(MELCloudDeviceErv, () => {
 
   testEnergyReportConfig(() => device, 'energyReportTotal', null)
 
-  describe('deviceToCapability', () => {
+  describe('device-to-capability conversions', () => {
     it.each([
       [VentilationMode.auto, true, 'auto'],
       [VentilationMode.auto, false, ThermostatModeErv.off],
@@ -64,7 +64,7 @@ describe(MELCloudDeviceErv, () => {
     )
   })
 
-  describe('capabilityToDevice', () => {
+  describe('capability-to-device conversions', () => {
     it.each([
       ['auto', VentilationMode.auto],
       ['recovery', VentilationMode.recovery],

@@ -47,7 +47,7 @@ describe('api', () => {
     vi.clearAllMocks()
   })
 
-  describe('getBuildings', () => {
+  describe('building retrieval', () => {
     it('should delegate to getBuildings', () => {
       const buildings = [{ id: 1, name: 'Building 1' }]
       mockGetBuildings.mockReturnValue(buildings)
@@ -59,7 +59,7 @@ describe('api', () => {
     })
   })
 
-  describe('getDeviceSettings', () => {
+  describe('device settings retrieval', () => {
     it('should delegate to app.getDeviceSettings', () => {
       const deviceSettings = mock<DeviceSettings>()
       mockApp.getDeviceSettings.mockReturnValue(deviceSettings)
@@ -71,7 +71,7 @@ describe('api', () => {
     })
   })
 
-  describe('getDriverSettings', () => {
+  describe('driver settings retrieval', () => {
     it('should delegate to app.getDriverSettings', () => {
       const driverSettings = mock<Partial<Record<string, DriverSetting[]>>>()
       mockApp.getDriverSettings.mockReturnValue(driverSettings)
@@ -83,7 +83,7 @@ describe('api', () => {
     })
   })
 
-  describe('getErrors', () => {
+  describe('error retrieval', () => {
     it('should delegate to app.getErrors with query', async () => {
       const errorLog = mock<ErrorLog>()
       const query = mock<ErrorLogQuery>()
@@ -96,7 +96,7 @@ describe('api', () => {
     })
   })
 
-  describe('getFrostProtectionSettings', () => {
+  describe('frost protection settings retrieval', () => {
     it('should delegate to app.getFrostProtectionSettings with params', async () => {
       const frostProtection = mock<FrostProtectionData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
@@ -109,7 +109,7 @@ describe('api', () => {
     })
   })
 
-  describe('getHolidayModeSettings', () => {
+  describe('holiday mode settings retrieval', () => {
     it('should delegate to app.getHolidayModeSettings with params', async () => {
       const holidayMode = mock<HolidayModeData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
@@ -122,7 +122,7 @@ describe('api', () => {
     })
   })
 
-  describe('getLanguage', () => {
+  describe('language retrieval', () => {
     it('should return the language from i18n', () => {
       mockI18n.getLanguage.mockReturnValue('en')
 
@@ -141,7 +141,7 @@ describe('api', () => {
     })
   })
 
-  describe('login', () => {
+  describe('authentication', () => {
     it('should delegate to app.login with body', async () => {
       const credentials = mock<LoginCredentials>({
         password: 'pass',
@@ -165,7 +165,7 @@ describe('api', () => {
     })
   })
 
-  describe('setDeviceSettings', () => {
+  describe('device settings update', () => {
     it('should delegate to app.setDeviceSettings with body and driverId', async () => {
       const body = mock<Settings>({ always_on: true })
       mockApp.setDeviceSettings.mockResolvedValue()
@@ -197,7 +197,7 @@ describe('api', () => {
     })
   })
 
-  describe('setFrostProtectionSettings', () => {
+  describe('frost protection settings update', () => {
     it('should delegate to app.setFrostProtectionSettings', async () => {
       const body = mock<FrostProtectionQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
@@ -212,7 +212,7 @@ describe('api', () => {
     })
   })
 
-  describe('setHolidayModeSettings', () => {
+  describe('holiday mode settings update', () => {
     it('should delegate to app.setHolidayModeSettings', async () => {
       const body = mock<HolidayModeQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })

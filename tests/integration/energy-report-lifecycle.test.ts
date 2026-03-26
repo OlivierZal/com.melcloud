@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { isTotalEnergyKey, KILOWATT_TO_WATT } from '../../lib/index.mts'
 
 describe('energy report lifecycle', () => {
-  describe('kILOWATT_TO_WATT constant', () => {
+  describe('kilowatt to watt conversion', () => {
     it('should convert kW to W correctly', () => {
       const kilowatts = 1.5
       const watts = kilowatts * KILOWATT_TO_WATT

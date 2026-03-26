@@ -31,7 +31,7 @@ describe(MELCloudDriverAtw, () => {
     setCapabilityTagMapping: setCapabilityTagMappingAtw,
   })
 
-  describe('getRequiredCapabilities', () => {
+  describe('required capabilities', () => {
     it('should return zone1 capabilities for basic device', () => {
       const data = mock<ListDeviceDataAtw>({
         CanCool: false,

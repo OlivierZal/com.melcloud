@@ -52,7 +52,7 @@ describe(getCapabilitiesOptionsAtaErv, () => {
   })
 })
 
-describe('fanSpeedValues', () => {
+describe('fan speed values', () => {
   it('should contain 6 entries', () => {
     expect(fanSpeedValues).toHaveLength(6)
   })
@@ -161,7 +161,7 @@ describe(getCapabilitiesOptionsAtw, () => {
   })
 })
 
-describe('hotWaterMode', () => {
+describe('hot water mode options', () => {
   it('should have the correct values', () => {
     expect(HotWaterMode).toStrictEqual({
       auto: 'auto',
@@ -170,7 +170,7 @@ describe('hotWaterMode', () => {
   })
 })
 
-describe('hotWaterOperationState', () => {
+describe('hot water operation state options', () => {
   it('should have the correct values', () => {
     expect(OperationModeStateHotWater).toStrictEqual({
       dhw: 'dhw',
@@ -181,7 +181,7 @@ describe('hotWaterOperationState', () => {
   })
 })
 
-describe('zoneOperationState', () => {
+describe('zone operation state options', () => {
   it('should have the correct values', () => {
     expect(OperationModeStateZone).toStrictEqual({
       cooling: 'cooling',

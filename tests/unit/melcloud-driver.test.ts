@@ -31,7 +31,7 @@ describe(MELCloudDriverAta, () => {
     setCapabilityTagMapping: setCapabilityTagMappingAta,
   })
 
-  describe('getRequiredCapabilities', () => {
+  describe('required capabilities', () => {
     it('should return all operational capabilities except measure_signal_strength', () => {
       const capabilities = driver.getRequiredCapabilities()
 

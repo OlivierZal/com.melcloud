@@ -207,7 +207,7 @@ describe('melCloudApp', () => {
     app = createApp()
   })
 
-  describe('onInit', () => {
+  describe('initialization', () => {
     it('should initialize the API and facade manager', async () => {
       await app.onInit()
 
@@ -282,7 +282,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('onUninit', () => {
+  describe('uninitialization', () => {
     it('should clear sync', async () => {
       await app.onInit()
       await app.onUninit()
@@ -291,7 +291,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getAtaCapabilities', () => {
+  describe('ata capabilities', () => {
     it('should return localized capability configs', async () => {
       await app.onInit()
       const capabilities = app.getAtaCapabilities()
@@ -323,7 +323,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getAtaDetailedValues', () => {
+  describe('ata detailed values', () => {
     it('should return detailed values for ATA devices', async () => {
       const mockFacade = mock<BuildingFacade>({
         devices: [
@@ -385,7 +385,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getAtaValues', () => {
+  describe('ata values', () => {
     it('should delegate to facade getGroup', async () => {
       const mockGroupState = mock<GroupState>()
       const mockFacade = mock<BuildingFacade>({
@@ -404,7 +404,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getDeviceSettings', () => {
+  describe('device settings retrieval', () => {
     it('should aggregate device settings', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
         driver: { id: 'melcloud' } as never,
@@ -442,7 +442,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getDriverSettings', () => {
+  describe('driver settings retrieval', () => {
     it('should return driver settings grouped by ID', async () => {
       await app.onInit()
 
@@ -464,7 +464,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getErrors', () => {
+  describe('error retrieval', () => {
     it('should delegate to api getErrorLog', async () => {
       const mockErrorLog = mock<ErrorLog>()
       mockApiInstance.getErrorLog.mockResolvedValue(mockErrorLog)
@@ -478,7 +478,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getFacade', () => {
+  describe('facade retrieval', () => {
     it('should return facade for a valid zone', async () => {
       const mockInstance = { id: 1 }
       const mockFacade = mock<BuildingFacade>()
@@ -512,7 +512,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getFrostProtectionSettings', () => {
+  describe('frost protection settings retrieval', () => {
     it('should delegate to facade', async () => {
       const mockData = mock<FrostProtectionData>()
       const mockFacade = mock<ZoneFacade>({
@@ -531,7 +531,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getHolidayModeSettings', () => {
+  describe('holiday mode settings retrieval', () => {
     it('should delegate to facade', async () => {
       const mockData = mock<HolidayModeData>()
       const mockFacade = mock<ZoneFacade>({
@@ -550,7 +550,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getHourlyTemperatures', () => {
+  describe('hourly temperature retrieval', () => {
     it('should delegate to device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
       mockFacadeManagerGet.mockReturnValue(
@@ -569,7 +569,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getOperationModes', () => {
+  describe('operation mode retrieval', () => {
     it('should delegate to device facade with date range', async () => {
       const mockData = mock<ReportChartPieOptions>()
       mockFacadeManagerGet.mockReturnValue(
@@ -588,7 +588,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getSignal', () => {
+  describe('signal retrieval', () => {
     it('should delegate to device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
       mockFacadeManagerGet.mockReturnValue(
@@ -607,7 +607,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('getTemperatures', () => {
+  describe('temperature retrieval', () => {
     it('should delegate to device facade with date range', async () => {
       const mockData = mock<ReportChartLineOptions>()
       mockFacadeManagerGet.mockReturnValue(
@@ -626,7 +626,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('login', () => {
+  describe('authentication', () => {
     it('should delegate to api authenticate', async () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
@@ -642,7 +642,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('setAtaValues', () => {
+  describe('ata value update', () => {
     it('should set group values and not throw on success', async () => {
       const mockFacade = mock<BuildingFacade>({
         setGroup: vi.fn().mockResolvedValue({ AttributeErrors: null }),
@@ -674,7 +674,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('setDeviceSettings', () => {
+  describe('device settings update', () => {
     it('should update changed settings on matching devices', async () => {
       const mockSetSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
@@ -733,7 +733,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('setFrostProtectionSettings', () => {
+  describe('frost protection settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
       const mockFacade = mock<ZoneFacade>({
         setFrostProtection: vi
@@ -767,7 +767,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('setHolidayModeSettings', () => {
+  describe('holiday mode settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
       const mockFacade = mock<ZoneFacade>({
         setHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
@@ -886,7 +886,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('#getDevices with ids filter', () => {
+  describe('device filtering by ids', () => {
     it('should filter devices by ids', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
         driver: { id: 'melcloud' } as never,
@@ -908,7 +908,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('#registerWidgetListeners with query filtering', () => {
+  describe('widget listener query filtering', () => {
     it('should filter zones by query for ata-group-setting widget', async () => {
       const mockRegisterAta = vi.fn()
       const mockRegisterCharts = vi.fn()
@@ -960,7 +960,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('#syncFromDevices via onSync callback', () => {
+  describe('device synchronization via onSync callback', () => {
     const getOnSyncCallback = (): ((params?: {
       ids?: number[]
       type?: number
