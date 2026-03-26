@@ -7,10 +7,9 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
-
 import { ThermostatModeAta } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
+import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
 
 vi.mock('homey', async () => {
   const { createMockDeviceClass: create } = await import('../helpers.ts')

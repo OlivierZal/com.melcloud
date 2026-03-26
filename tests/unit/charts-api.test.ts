@@ -3,7 +3,6 @@ import type {
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { mock } from '../helpers.js'

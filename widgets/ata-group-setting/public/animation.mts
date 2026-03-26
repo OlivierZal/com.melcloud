@@ -1,7 +1,6 @@
 import type { GroupState } from '@olivierzal/melcloud-api'
 
 import type { GetAtaOptions, GroupAtaStates } from '../../../types/index.mts'
-
 import {
   FanSpeed,
   heatModes,
@@ -187,7 +186,6 @@ const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
 
 export class AnimationController {
   readonly #animationElement: HTMLDivElement
-
   readonly #animationHandling: Record<
     number,
     (speed: number) => Promise<void> | void
@@ -216,31 +214,22 @@ export class AnimationController {
       this.#handleFireAnimation(speed)
     },
   }
-
   readonly #animationMapping: Record<
     AnimatedElement,
     { readonly innerHTML: string; readonly getIndex: () => number }
   >
-
   readonly #canvas: HTMLCanvasElement
-
   readonly #canvasContext: CanvasRenderingContext2D | null
-
   readonly #homey: Homey
-
+  #smokeAnimationFrameId: number | null = null
+  #smokeParticles: SmokeParticle[] = []
   readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> =
     {
       enter: null,
       exit: null,
       shine: null,
     }
-
   readonly #timeouts: NodeJS.Timeout[] = []
-
-  #smokeAnimationFrameId: number | null = null
-
-  #smokeParticles: SmokeParticle[] = []
-
   public constructor(
     homey: Homey,
     animationElement: HTMLDivElement,
@@ -252,7 +241,6 @@ export class AnimationController {
     this.#canvasContext = canvas.getContext('2d')
     this.#animationMapping = createAnimationMapping()
   }
-
   public async handleAnimation(
     state: GroupState,
     isAnimations: boolean,
@@ -271,11 +259,9 @@ export class AnimationController {
       }
     }
   }
-
   public async reset(resetParams?: ResetParams): Promise<void> {
     await this.#reset(resetParams)
   }
-
   #createAnimatedElement(name: AnimatedElement): HTMLDivElement {
     const element = document.createElement('div')
     element.classList.add(name)
@@ -286,7 +272,6 @@ export class AnimationController {
     }
     return element
   }
-
   #createFlame(speed: number): void {
     this.#createPositionedAnimatedElement({
       gap: AnimationGap.flame,
@@ -301,7 +286,6 @@ export class AnimationController {
       },
     })
   }
-
   #createLeaf(speed: number): void {
     this.#createPositionedAnimatedElement({
       gap: AnimationGap.leaf,
@@ -320,7 +304,6 @@ export class AnimationController {
       },
     })
   }
-
   #createPositionedAnimatedElement({
     animate,
     applyStyles,
@@ -357,7 +340,6 @@ export class AnimationController {
       animate(element)
     }
   }
-
   #createSmoke(flame: HTMLDivElement, speed: number): void {
     if (flame.isConnected && this.#canvasContext) {
       const { left, top, width } = flame.getBoundingClientRect()
@@ -378,7 +360,6 @@ export class AnimationController {
       )
     }
   }
-
   #createSnowflake(speed: number): void {
     this.#createPositionedAnimatedElement({
       gap: AnimationGap.snowflake,
@@ -400,7 +381,6 @@ export class AnimationController {
       },
     })
   }
-
   #generateFlameAnimation(flame: HTMLDivElement, speed: number): Animation {
     const animation = flame.animate(
       [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
@@ -429,7 +409,6 @@ export class AnimationController {
     this.#createSmoke(flame, speed)
     return animation
   }
-
   #generateRecurring(
     create: (speed: number) => void,
     delay: number,
@@ -445,7 +424,6 @@ export class AnimationController {
       ),
     )
   }
-
   #generateSmoke(speed: number): void {
     if (this.#canvasContext) {
       ;({ innerHeight: this.#canvas.height, innerWidth: this.#canvas.width } =
@@ -470,7 +448,6 @@ export class AnimationController {
       })
     }
   }
-
   #generateSunEnterAnimation(sun: HTMLDivElement): Animation {
     const duration = Number(
       this.#sunAnimation.exit?.currentTime ?? AnimationDelay.sunTransition,
@@ -501,7 +478,6 @@ export class AnimationController {
     }
     return animation
   }
-
   #generateSunExitAnimation(sun: HTMLDivElement): Animation {
     const duration = Number(
       this.#sunAnimation.enter?.currentTime ?? AnimationDelay.sunTransition,
@@ -530,7 +506,6 @@ export class AnimationController {
     }
     return animation
   }
-
   async #getModes(): Promise<number[]> {
     const detailedAtaValues = await homeyApiGet<GroupAtaStates>(
       this.#homey,
@@ -541,7 +516,6 @@ export class AnimationController {
     )
     return detailedAtaValues.OperationMode
   }
-
   #getSunElement(): HTMLDivElement {
     const sun = document.querySelector('#sun-1')
     if (!(sun instanceof HTMLDivElement)) {
@@ -551,7 +525,6 @@ export class AnimationController {
     }
     return sun
   }
-
   #handleFireAnimation(speed: number): void {
     this.#generateRecurring(
       (flameSpeed) => {
@@ -562,7 +535,6 @@ export class AnimationController {
     )
     this.#generateSmoke(speed)
   }
-
   async #handleMixedAnimation(speed: number): Promise<void> {
     const modes = new Set(await this.#getModes())
     if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
@@ -584,7 +556,6 @@ export class AnimationController {
       )
     }
   }
-
   #handleSnowAnimation(speed: number): void {
     this.#generateRecurring(
       (snowSpeed) => {
@@ -594,18 +565,15 @@ export class AnimationController {
       speed,
     )
   }
-
   #handleSunAnimation(speed: number): void {
     const sun = this.#getSunElement()
     this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
     this.#sunAnimation.shine.playbackRate = speed
     this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
-
   #hasModeAnimation(mode: number): boolean {
     return mode in this.#animationHandling
   }
-
   async #reset(resetParams?: ResetParams): Promise<void> {
     for (const timeout of this.#timeouts) {
       clearTimeout(timeout)
@@ -614,7 +582,6 @@ export class AnimationController {
     await this.#resetFireAnimation(resetParams)
     await this.#resetSunAnimation(resetParams)
   }
-
   async #resetFireAnimation(resetParams?: ResetParams): Promise<void> {
     if (resetParams) {
       const { isSomethingOn, mode } = resetParams
@@ -644,7 +611,6 @@ export class AnimationController {
       )
     }
   }
-
   async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {
     const sun = document.querySelector('#sun-1')
     if (!(sun instanceof HTMLDivElement)) {

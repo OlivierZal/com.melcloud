@@ -23,11 +23,9 @@ export const addToLogs =
       public override error(...args: unknown[]): void {
         this.#commonLog('error', ...args)
       }
-
       public override log(...args: unknown[]): void {
         this.#commonLog('log', ...args)
       }
-
       #commonLog(logType: 'error' | 'log', ...args: unknown[]): void {
         super[logType](
           ...logs.flatMap((log) => {
@@ -52,7 +50,6 @@ export const addToLogs =
           ...args,
         )
       }
-
       #isKeyOfThis(value: string): value is string & keyof this {
         return value in this
       }

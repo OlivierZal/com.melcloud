@@ -7,7 +7,6 @@ import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
-
 import { getZones, toDeviceType } from '../../lib/index.mts'
 
 const api = {

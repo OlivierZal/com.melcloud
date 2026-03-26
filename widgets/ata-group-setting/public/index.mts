@@ -4,7 +4,6 @@ import type {
   BuildingZone,
   HomeyWidgetSettingsAtaGroupSetting as HomeySettings,
 } from '../../../types/index.mts'
-
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 import {
@@ -19,15 +18,10 @@ import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 
 class WidgetApp {
   readonly #animationController: AnimationController
-
   readonly #ataValueManager: AtaValueManager
-
-  readonly #homey: Homey<HomeySettings>
-
   #debounceTimeout: NodeJS.Timeout | null = null
-
+  readonly #homey: Homey<HomeySettings>
   #isAnimations = false
-
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animationElement = getDivElement('animation')
@@ -45,14 +39,12 @@ class WidgetApp {
       zoneElement,
     )
   }
-
   public async init(): Promise<void> {
     await setDocumentLanguage(this.#homey)
     await this.#ataValueManager.fetchCapabilities()
     await this.#initBuildings()
     this.#homey.ready({ height: document.body.scrollHeight })
   }
-
   #addEventListeners(): void {
     const zoneElement = getSelectElement('zones')
     const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
@@ -83,12 +75,10 @@ class WidgetApp {
       }, AnimationDelay.debounce)
     })
   }
-
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
     await this.#animationController.handleAnimation(values, this.#isAnimations)
   }
-
   async #initBuildings(): Promise<void> {
     const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,

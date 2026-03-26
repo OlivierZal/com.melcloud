@@ -1,5 +1,4 @@
 import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
-
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,7 +6,6 @@ import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
-
 import {
   type EnergyReportConfig,
   EnergyReport,

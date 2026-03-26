@@ -4,7 +4,6 @@
     @typescript-eslint/unbound-method,
 */
 import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type {
@@ -13,7 +12,6 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
-
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import { assertDefined, mock } from '../helpers.ts'
 
@@ -27,7 +25,6 @@ const setHandlerMock = vi.fn()
 vi.mock('homey', () => {
   class MockDriver {
     public getDevices = vi.fn().mockReturnValue([])
-
     public homey = {
       app: {
         api: {
@@ -46,9 +43,7 @@ vi.mock('homey', () => {
         }),
       },
     }
-
     public log = vi.fn()
-
     public manifest = { capabilities: ['onoff', 'thermostat_mode'] }
   }
 
@@ -61,28 +56,22 @@ class TestDriver extends BaseMELCloudDriver<TestDriverType> {
   >({
     measure_power: ['Auto', 'Cooling'],
   })
-
   public readonly getCapabilitiesOptions = vi.fn().mockReturnValue({})
-
   public readonly getCapabilityTagMapping = mock<
     GetCapabilityTagMapping<TestDriverType>
   >({
     measure_temperature: 'RoomTemperature',
   })
-
   public readonly listCapabilityTagMapping = mock<
     ListCapabilityTagMapping<TestDriverType>
   >({})
-
   public readonly setCapabilityTagMapping = mock<
     SetCapabilityTagMapping<TestDriverType>
   >({
     onoff: 'Power',
     thermostat_mode: 'OperationMode',
   })
-
   public readonly type: TestDriverType = 0
-
   public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
     return ['onoff', 'measure_temperature']
   }

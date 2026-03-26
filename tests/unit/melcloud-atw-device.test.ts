@@ -9,9 +9,6 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-
-import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
-
 import {
   type EnergyCapabilityTagMapping,
   type GetCapabilityTagMapping,
@@ -20,6 +17,7 @@ import {
   HotWaterMode,
 } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
+import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 
 type AtwType = typeof DeviceType.Atw
 

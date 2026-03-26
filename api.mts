@@ -16,7 +16,6 @@ import type {
   Settings,
   ZoneData,
 } from './types/index.mts'
-
 import { getBuildings } from './lib/index.mts'
 
 const api = {

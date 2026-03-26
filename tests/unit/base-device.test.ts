@@ -1,5 +1,4 @@
 import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
@@ -14,7 +13,6 @@ import type {
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
-
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import { assertDefined, mock } from '../helpers.ts'
 
@@ -37,23 +35,14 @@ const mockDeviceData = {
 vi.mock('homey', () => {
   class MockDevice {
     public driver = {}
-
     public error = vi.fn()
-
     public getCapabilities = vi.fn().mockReturnValue([])
-
     public getCapabilityOptions = vi.fn()
-
     public getCapabilityValue = vi.fn()
-
     public getData = vi.fn().mockReturnValue({ id: 1 })
-
     public getSetting = getSettingMock
-
     public getSettings = vi.fn().mockReturnValue({})
-
     public hasCapability = vi.fn().mockReturnValue(true)
-
     public homey = {
       __: vi.fn().mockImplementation((key: string) => key),
       api: { realtime: realtimeMock },
@@ -63,30 +52,21 @@ vi.mock('homey', () => {
       setInterval: vi.fn(),
       setTimeout: vi.fn(),
     }
-
     public log = vi.fn()
-
     public registerMultipleCapabilityListener =
       registerMultipleCapabilityListenerMock
-
     public setCapabilityOptions = vi.fn()
-
     public setCapabilityValue = vi.fn()
-
     public setSettings = vi.fn()
-
     public triggerCapabilityListener = triggerCapabilityListenerMock
-
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
-
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
-
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -115,26 +95,21 @@ vi.mock('../../drivers/base-report.mts', async () => {
 type TestDeviceType = typeof DeviceType.Ata
 
 class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
-  public readonly deviceToCapability: Partial<
-    Record<
-      keyof OperationalCapabilities<TestDeviceType>,
-      ConvertFromDevice<TestDeviceType>
-    >
-  > = {}
-
-  public readonly energyReportRegular: EnergyReportConfig | null = null
-
-  public readonly energyReportTotal: EnergyReportConfig | null = null
-
-  public readonly thermostatMode: Record<string, string> | null = null
-
   public capabilityToDevice: Partial<
     Record<
       keyof SetCapabilities<TestDeviceType>,
       ConvertToDevice<TestDeviceType>
     >
   > = {}
-
+  public readonly deviceToCapability: Partial<
+    Record<
+      keyof OperationalCapabilities<TestDeviceType>,
+      ConvertFromDevice<TestDeviceType>
+    >
+  > = {}
+  public readonly energyReportRegular: EnergyReportConfig | null = null
+  public readonly energyReportTotal: EnergyReportConfig | null = null
+  public readonly thermostatMode: Record<string, string> | null = null
   public async exposedSetCapabilityValues(
     data: ListDeviceDataAta,
   ): Promise<void> {

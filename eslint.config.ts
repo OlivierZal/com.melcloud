@@ -1,3 +1,10 @@
+import { defineConfig } from 'eslint/config'
+import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
+import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
+import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
+import { configs as ymlConfigs } from 'eslint-plugin-yml'
+import { tailwind4 } from 'tailwind-csstree'
+import { configs as tsConfigs } from 'typescript-eslint'
 import css from '@eslint/css'
 import js from '@eslint/js'
 import json from '@eslint/json'
@@ -9,18 +16,8 @@ import prettier from 'eslint-config-prettier/flat'
 import perfectionist from 'eslint-plugin-perfectionist'
 import unicorn from 'eslint-plugin-unicorn'
 
-import { defineConfig } from 'eslint/config'
-import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
-import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
-import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
-import { configs as ymlConfigs } from 'eslint-plugin-yml'
-import { tailwind4 } from 'tailwind-csstree'
-import { configs as tsConfigs } from 'typescript-eslint'
-
-import { classGroups } from './eslint-utils/class-groups.ts'
-
 const buildImportGroup = (selector: string): string[] =>
-  ['type', 'default', 'named', 'wildcard', 'require', 'ts-equals'].map(
+  ['type', 'named', 'default', 'wildcard', 'require', 'ts-equals'].map(
     (modifier) => `${modifier}-${selector}`,
   )
 
@@ -30,8 +27,8 @@ const arrayLikeSortOptions = {
 
 const typeSortOptions = {
   groups: [
-    'import',
     'keyword',
+    'import',
     'literal',
     'named',
     'function',
@@ -366,33 +363,38 @@ const config = defineConfig([
       'perfectionist/sort-classes': [
         'error',
         {
-          ...classGroups,
-          newlinesBetween: 1,
-          newlinesInside: 1,
-        },
-      ],
-      'perfectionist/sort-decorators': [
-        'error',
-        {
           customGroups: [
             {
-              elementNamePattern: '^fetchDevices$',
-              groupName: 'fetch-decorator',
-            },
-            {
-              elementNamePattern: '^syncDevices$',
-              groupName: 'sync-decorator',
-            },
-            {
-              elementNamePattern: '^updateDevice(s)?$',
-              groupName: 'update-decorator',
+              elementNamePattern: '^on.+',
+              groupName: 'event-handler',
+              selector: 'method',
             },
           ],
           groups: [
-            'sync-decorator',
-            'update-decorator',
+            // ── Static ────────────────────────────────────────────
+            'static-property',
+            'static-accessor-property',
+            'static-block',
+            'static-method',
+
+            // ── Instance: shape ───────────────────────────────────
+            'index-signature',
+            'property',
+            'accessor-property',
+            ['get-method', 'set-method'],
+            'constructor',
+
+            // ── Instance: public behavior ──────────────────────────
+            'event-handler',
+            'decorated-method',
+            'function-property',
+            'method',
+
+            // ── Instance: implementation ───────────────────────────
+            'protected-method',
+            'private-method',
+
             'unknown',
-            'fetch-decorator',
           ],
         },
       ],
@@ -422,18 +424,29 @@ const config = defineConfig([
         {
           groups: [
             ...buildImportGroup('side-effect'),
+            {
+              newlinesBetween: 1,
+            },
             ...buildImportGroup('side-effect-style'),
             ...buildImportGroup('style'),
+            {
+              newlinesBetween: 1,
+            },
             ...buildImportGroup('builtin'),
+            {
+              newlinesBetween: 1,
+            },
             ...buildImportGroup('external'),
             ...buildImportGroup('tsconfig-path'),
             ...buildImportGroup('subpath'),
             ...buildImportGroup('internal'),
+            {
+              newlinesBetween: 1,
+            },
             ...buildImportGroup('parent'),
             ...buildImportGroup('sibling'),
             ...buildImportGroup('index'),
           ],
-          newlinesBetween: 1,
         },
       ],
       'perfectionist/sort-interfaces': ['error', typeLikeSortOptions],
@@ -450,20 +463,20 @@ const config = defineConfig([
           groups: [
             'declare-enum',
             ['declare-interface', 'declare-type'],
-            'declare-class',
             'declare-function',
+            'declare-class',
             'enum',
             ['interface', 'type'],
-            'class',
             'function',
+            'class',
             'export-enum',
             ['export-interface', 'export-type'],
-            'export-class',
             'export-function',
+            'export-class',
             'export-default-enum',
             ['export-default-interface', 'export-default-type'],
-            'export-default-class',
             'export-default-function',
+            'export-default-class',
           ],
           newlinesBetween: 1,
           newlinesInside: 1,

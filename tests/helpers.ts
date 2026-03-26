@@ -35,25 +35,15 @@ export const createMockDeviceClass = (
 ): new () => any => {
   class MockDevice {
     public addCapability = vi.fn()
-
     public driver = {}
-
     public error = vi.fn()
-
     public getCapabilities = vi.fn().mockReturnValue([])
-
     public getCapabilityOptions = vi.fn()
-
     public getCapabilityValue = vi.fn()
-
     public getData = vi.fn().mockReturnValue({ id: 1 })
-
     public getSetting = vi.fn()
-
     public getSettings = vi.fn().mockReturnValue({})
-
     public hasCapability = vi.fn().mockReturnValue(true)
-
     public homey = {
       __: vi.fn(),
       api: { realtime: vi.fn() },
@@ -63,27 +53,18 @@ export const createMockDeviceClass = (
       setInterval: vi.fn(),
       setTimeout: vi.fn(),
     }
-
     public log = vi.fn()
-
     public registerMultipleCapabilityListener = vi.fn()
-
     public setCapabilityOptions = vi.fn()
-
     public setCapabilityValue = vi.fn()
-
     public setSettings = vi.fn()
-
     public triggerCapabilityListener = vi.fn()
-
     public constructor() {
       applyOverrides(this, overrides)
     }
-
     public async removeCapability(): Promise<void> {
       await Promise.resolve()
     }
-
     public async setWarning(): Promise<void> {
       await Promise.resolve()
     }
@@ -96,7 +77,6 @@ export const createMockDriverClass = (
 ): new () => any => {
   class MockDriver {
     public getDevices = vi.fn().mockReturnValue([])
-
     public homey = {
       app: {
         api: {
@@ -113,11 +93,8 @@ export const createMockDriverClass = (
         }),
       },
     }
-
     public log = vi.fn()
-
     public manifest = { capabilities: [] }
-
     public constructor() {
       applyOverrides(this, overrides)
     }

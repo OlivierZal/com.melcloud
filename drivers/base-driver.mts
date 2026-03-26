@@ -19,7 +19,6 @@ import type {
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
-
 import { type Homey, Driver } from '../lib/homey.mts'
 import { typedEntries, typedKeys } from '../lib/index.mts'
 
@@ -32,39 +31,27 @@ const getArg = <T extends DeviceType>(
 }
 
 export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
-  declare public readonly getDevices: () => MELCloudDevice[]
-
-  declare public readonly homey: Homey.Homey
-
-  declare public readonly manifest: ManifestDriver
-
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
-
-  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
-    {}
-
   public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
-
   public abstract readonly getCapabilitiesOptions: (
     data: ListDeviceData<T>,
   ) => Partial<CapabilitiesOptions<T>>
-
   public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
-
+  declare public readonly getDevices: () => MELCloudDevice[]
+  declare public readonly homey: Homey.Homey
   public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
-
+  declare public readonly manifest: ManifestDriver
+  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
+    {}
   public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
-
   public abstract readonly type: T
-
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
-
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
       if (view === 'loading') {
@@ -80,13 +67,12 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
-
   public override async onRepair(session: PairSession): Promise<void> {
     this.#handleLogin(session)
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
-
+  public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve(
@@ -100,17 +86,14 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
         })),
     )
   }
-
   #handleLogin(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) =>
       this.#login(data),
     )
   }
-
   async #login(data?: LoginCredentials): Promise<boolean> {
     return this.homey.app.api.authenticate(data)
   }
-
   #registerActionRunListener(
     capability: string & keyof SetCapabilities<T>,
   ): void {
@@ -127,7 +110,6 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       // Flow card may not exist for this capability
     }
   }
-
   #registerConditionRunListener(
     capability: string & keyof OperationalCapabilities<T>,
   ): void {
@@ -148,7 +130,6 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       // Flow card may not exist for this capability
     }
   }
-
   #registerRunListeners(): void {
     for (const capability of typedKeys<
       string & keyof OperationalCapabilities<T>
@@ -166,7 +147,6 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       }
     }
   }
-
   #setProducedAndConsumedTagMappings(): void {
     for (const [capability, tags] of typedEntries<
       string & keyof EnergyCapabilityTagMapping<T>,
@@ -179,6 +159,4 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       this.producedTagMapping[capability] = produced
     }
   }
-
-  public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]
 }

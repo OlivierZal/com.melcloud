@@ -11,10 +11,8 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
-
 import { thermostatMode } from '../files.mts'
 import { typedFromEntries } from '../lib/index.mts'
-
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,

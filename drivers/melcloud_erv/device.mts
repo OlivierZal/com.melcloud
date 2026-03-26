@@ -26,7 +26,6 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<
     thermostat_mode: (value: keyof typeof VentilationMode) =>
       VentilationMode[value],
   }
-
   protected readonly deviceToCapability: Partial<
     Record<
       keyof OperationalCapabilities<typeof DeviceType.Erv>,
@@ -39,10 +38,7 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<
     ) =>
       data.Power ? keyOfValue(VentilationMode, value) : ThermostatModeErv.off,
   }
-
   protected readonly energyReportRegular = null
-
   protected readonly energyReportTotal = null
-
   protected readonly thermostatMode = ThermostatModeErv
 }

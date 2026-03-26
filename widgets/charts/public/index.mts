@@ -9,7 +9,6 @@ import type {
   DeviceZone,
   HomeyWidgetSettingsCharts as HomeySettings,
 } from '../../../types/index.mts'
-
 import { DeviceType } from './constants.mts'
 import { createOptionElement, getDivElement, getSelectElement } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'

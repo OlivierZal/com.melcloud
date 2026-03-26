@@ -25,7 +25,6 @@ import type {
   MELCloudDevice,
   Settings,
 } from '../../types/index.mts'
-
 import { assertDefined, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()

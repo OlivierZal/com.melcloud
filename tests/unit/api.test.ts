@@ -8,7 +8,6 @@ import type {
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type {
@@ -17,7 +16,6 @@ import type {
   Settings,
   ZoneData,
 } from '../../types/index.mts'
-
 import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn()

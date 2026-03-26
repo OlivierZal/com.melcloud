@@ -8,7 +8,6 @@ import type {
   GroupAtaStates,
   ZoneData,
 } from '../../types/index.mts'
-
 import { getBuildings, toDeviceType } from '../../lib/index.mts'
 
 const api = {

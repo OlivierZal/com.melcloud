@@ -1,8 +1,6 @@
 import { DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import MELCloudDriverAta from '../../drivers/melcloud/driver.mts'
-
 import {
   energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
@@ -10,6 +8,7 @@ import {
   setCapabilityTagMappingAta,
 } from '../../types/index.mts'
 import { testDriverType, testTagMappings } from '../helpers.ts'
+import MELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
 vi.mock('homey', async () => {
   const { createMockDriverClass } = await import('../helpers.ts')

@@ -10,7 +10,6 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceAta } from '../drivers/index.mts'
-
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
