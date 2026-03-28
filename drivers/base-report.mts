@@ -37,12 +37,19 @@ export interface EnergyReportConfig {
 
 export class EnergyReport<T extends DeviceType> {
   readonly #config: EnergyReportConfig
+
   readonly #device: BaseMELCloudDevice<T>
+
   readonly #homey: Homey.Homey
+
   #linkedDeviceCount = 1
+
   #reportInterval?: NodeJS.Timeout
+
   #reportTimeout: NodeJS.Timeout | null = null
+
   private readonly driver: BaseMELCloudDriver<T>
+
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
@@ -52,6 +59,7 @@ export class EnergyReport<T extends DeviceType> {
         isTotalEnergyKey(capability) === (this.#config.mode === 'total'),
     )
   }
+
   public constructor(
     device: BaseMELCloudDevice<T>,
     config: EnergyReportConfig,
@@ -60,6 +68,7 @@ export class EnergyReport<T extends DeviceType> {
     this.#config = config
     ;({ driver: this.driver, homey: this.#homey } = this.#device)
   }
+
   public async handle(): Promise<void> {
     if (this.#energyCapabilityTagEntries.length === 0) {
       this.unschedule()
@@ -68,6 +77,7 @@ export class EnergyReport<T extends DeviceType> {
     await this.#get()
     this.#schedule()
   }
+
   public unschedule(): void {
     this.#homey.clearTimeout(this.#reportTimeout)
     this.#reportTimeout = null
@@ -95,6 +105,7 @@ export class EnergyReport<T extends DeviceType> {
     } = this
     return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
   }
+
   #calculateEnergyValue(
     data: EnergyData<T>,
     tags: readonly (keyof EnergyData<T>)[],
@@ -121,6 +132,7 @@ export class EnergyReport<T extends DeviceType> {
 
     return total / this.#linkedDeviceCount
   }
+
   async #get(): Promise<void> {
     const device = await this.#device.fetchDevice()
     if (device) {
@@ -140,6 +152,7 @@ export class EnergyReport<T extends DeviceType> {
       }
     }
   }
+
   #schedule(): void {
     if (!this.#reportTimeout) {
       const actionType = `${this.#config.mode} energy report`
@@ -160,6 +173,7 @@ export class EnergyReport<T extends DeviceType> {
       )
     }
   }
+
   async #set(data: EnergyData<T>, hour: HourNumbers): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =

@@ -42,6 +42,7 @@ export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
         timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
       })
     }
+
     public setTimeout(
       callback: () => Promise<void>,
       interval: DurationLike,
@@ -53,6 +54,7 @@ export const withTimers = <T extends HomeyClass>(base: T): T & TimerClass =>
         timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
       })
     }
+
     #setTimer(
       callback: () => Promise<void>,
       interval: DurationLike,

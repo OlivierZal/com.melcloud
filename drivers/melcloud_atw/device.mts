@@ -44,6 +44,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     'thermostat_mode.zone2': (value: keyof typeof OperationModeZone) =>
       OperationModeZone[value],
   }
+
   protected readonly deviceToCapability: Partial<
     Record<
       keyof OperationalCapabilities<typeof DeviceType.Atw>,
@@ -84,6 +85,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     operational_state: (value: OperationModeState) =>
       keyOfValue(OperationModeState, value),
   }
+
   protected readonly energyReportRegular: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
@@ -91,6 +93,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     mode: 'regular',
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
+
   protected readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
@@ -98,19 +101,23 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
     mode: 'total',
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
+
   protected readonly thermostatMode = null
+
   protected override async setCapabilityValues(
     data: ListDeviceData<typeof DeviceType.Atw>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
     await this.#setOperationModeStates()
   }
+
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof DeviceType.Atw> {
     // Fall back to the minimum allowed value in case of undefined or null
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }
+
   async #setOperationModeStates(): Promise<void> {
     const { facade } = this
     if (!facade || !isAtwFacade(facade)) {

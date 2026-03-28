@@ -158,11 +158,17 @@ const getSubzones = (zone: Zone): Zone[] => [
 
 export class AtaValueManager {
   #ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
+
   readonly #ataValuesElement: HTMLDivElement
+
   #defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
+
   readonly #homey: Homey
+
   readonly #zoneElement: HTMLSelectElement
+
   readonly #zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
+
   public constructor(
     homey: Homey,
     ataValuesElement: HTMLDivElement,
@@ -172,6 +178,7 @@ export class AtaValueManager {
     this.#ataValuesElement = ataValuesElement
     this.#zoneElement = zoneElement
   }
+
   public async fetchCapabilities(): Promise<void> {
     this.#ataCapabilities = await homeyApiGet<
       [keyof GroupState, DriverCapabilitiesOptions][]
@@ -180,6 +187,7 @@ export class AtaValueManager {
       this.#ataCapabilities.map(([ataKey]) => [ataKey, null]),
     )
   }
+
   public async fetchValues(): Promise<GroupState> {
     const values = await homeyApiGet<GroupState>(
       this.#homey,
@@ -189,6 +197,7 @@ export class AtaValueManager {
     this.#refreshAtaValues()
     return values
   }
+
   public generateAtaValues(): void {
     for (const [id, { title, type, values }] of this.#ataCapabilities) {
       createValueElement(this.#ataValuesElement, {
@@ -197,6 +206,7 @@ export class AtaValueManager {
       })
     }
   }
+
   public async generateZones(zones: Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
@@ -210,6 +220,7 @@ export class AtaValueManager {
       }
     }
   }
+
   public handleDefaultZone(defaultZone: Zone | null): void {
     if (defaultZone) {
       const { id, model } = defaultZone
@@ -219,9 +230,11 @@ export class AtaValueManager {
       }
     }
   }
+
   public refreshValues(): void {
     this.#refreshAtaValues()
   }
+
   public async setValues(): Promise<void> {
     const body = this.#buildAtaValuesBody()
     if (Object.keys(body).length > 0) {
@@ -232,6 +245,7 @@ export class AtaValueManager {
       )
     }
   }
+
   #buildAtaValuesBody(): GroupState {
     return Object.fromEntries(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
@@ -251,6 +265,7 @@ export class AtaValueManager {
         .map((element) => [element.id, processValue(element)]),
     )
   }
+
   #generateAtaValue({
     id,
     type,
@@ -273,17 +288,21 @@ export class AtaValueManager {
     }
     return null
   }
+
   #getZoneValue(): string {
     return getZonePath(this.#zoneElement.value)
   }
+
   #isGroupAtaState(value: string): value is keyof GroupState {
     return value in this.#defaultAtaValues
   }
+
   #refreshAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
     }
   }
+
   #updateAtaValue(id: keyof GroupState): void {
     const ataValueElement = document.querySelector(`#${id}`)
     if (
@@ -295,6 +314,7 @@ export class AtaValueManager {
         this.#zoneMapping[this.#zoneElement.value]?.[id]?.toString() ?? ''
     }
   }
+
   #updateZoneMapping(data: Partial<GroupState>): void {
     const { value } = this.#zoneElement
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }

@@ -32,6 +32,7 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
       OperationMode[value],
     vertical: (value: keyof typeof Vertical) => Vertical[value],
   }
+
   protected readonly deviceToCapability: Partial<
     Record<
       keyof OperationalCapabilities<typeof DeviceType.Ata>,
@@ -49,6 +50,7 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
       data.Power ? keyOfValue(OperationMode, value) : ThermostatModeAta.off,
     vertical: (value: Vertical) => keyOfValue(Vertical, value),
   }
+
   protected readonly energyReportRegular: EnergyReportConfig = {
     duration: { hours: 1 },
     interval: { hours: 1 },
@@ -56,6 +58,7 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
     mode: 'regular',
     values: { millisecond: 0, minute: 5, second: 0 },
   }
+
   protected readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
@@ -63,5 +66,6 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
     mode: 'total',
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
+
   protected readonly thermostatMode = ThermostatModeAta
 }

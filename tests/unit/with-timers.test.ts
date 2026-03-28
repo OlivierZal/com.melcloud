@@ -17,7 +17,9 @@ class BaseClass {
     setInterval: vi.fn().mockReturnValue(1 as never),
     setTimeout: vi.fn().mockReturnValue(2 as never),
   }
+
   public log = vi.fn()
+
   public error(..._context: unknown[]): void {
     // Noop
   }

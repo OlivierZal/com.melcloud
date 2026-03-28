@@ -163,6 +163,7 @@ const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
+
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
   }
@@ -368,13 +369,21 @@ const getSubzones = (zone: Zone): Zone[] => [
 
 class AuthManager {
   readonly #authenticatedElement: HTMLDivElement
+
   readonly #authenticateElement: HTMLButtonElement
+
   readonly #authenticatingElement: HTMLDivElement
+
   readonly #homey: Homey
+
   readonly #loadPostLoginCallback: () => Promise<void>
+
   readonly #loginElement: HTMLDivElement
+
   #passwordElement: HTMLInputElement | null = null
+
   #usernameElement: HTMLInputElement | null = null
+
   public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
@@ -383,6 +392,7 @@ class AuthManager {
     this.#authenticatingElement = getDivElement('authenticating')
     this.#loginElement = getDivElement('login')
   }
+
   public addEventListeners(): void {
     this.#authenticateElement.addEventListener('click', () => {
       this.login().catch(() => {
@@ -390,6 +400,7 @@ class AuthManager {
       })
     })
   }
+
   public generateCredentials(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     {
@@ -408,6 +419,7 @@ class AuthManager {
       password,
     )
   }
+
   public async login(): Promise<void> {
     const username = this.#usernameElement?.value ?? ''
     const password = this.#passwordElement?.value ?? ''
@@ -434,10 +446,12 @@ class AuthManager {
       }
     })
   }
+
   public needsAuthentication(isRequired = true): void {
     hide(this.#authenticatedElement, isRequired)
     hide(this.#authenticatingElement, !isRequired)
   }
+
   #generateCredential(
     credentialKey: keyof LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
@@ -460,27 +474,41 @@ class AuthManager {
 
 class ErrorLogManager {
   #errorCount = 0
+
   readonly #errorCountLabelElement: HTMLLabelElement
+
   readonly #errorLogElement: HTMLDivElement
+
   #errorLogTBodyElement: HTMLTableSectionElement | null = null
+
   #from = ''
+
   readonly #homey: Homey
+
   readonly #periodLabelElement: HTMLLabelElement
+
   readonly #seeElement: HTMLButtonElement
+
   readonly #sinceElement: HTMLInputElement
+
   #to = ''
+
   public get from(): string {
     return this.#from
   }
+
   public get seeElementId(): string {
     return this.#seeElement.id
   }
+
   public get sinceElement(): HTMLInputElement {
     return this.#sinceElement
   }
+
   public get to(): string {
     return this.#to
   }
+
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#errorLogElement = getDivElement('error_log')
@@ -489,6 +517,7 @@ class ErrorLogManager {
     this.#sinceElement = getInputElement('since')
     this.#seeElement = getButtonElement('see')
   }
+
   public addEventListeners(): void {
     this.#sinceElement.addEventListener('change', () => {
       if (
@@ -512,6 +541,7 @@ class ErrorLogManager {
       })
     })
   }
+
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeElement.id, async () => {
       try {
@@ -531,6 +561,7 @@ class ErrorLogManager {
       }
     })
   }
+
   #generateErrorLogTable(keys: string[]): HTMLTableSectionElement {
     const tableElement = document.createElement('table')
     tableElement.classList.add('bordered')
@@ -544,6 +575,7 @@ class ErrorLogManager {
     this.#errorLogElement.append(tableElement)
     return tableElement.createTBody()
   }
+
   #generateErrorLogTableData(errors: readonly ErrorDetails[]): void {
     for (const error of errors) {
       this.#errorLogTBodyElement ??= this.#generateErrorLogTable(
@@ -556,6 +588,7 @@ class ErrorLogManager {
       }
     }
   }
+
   #getErrorCountText(count: number): string {
     if (count < PLURAL_THRESHOLD) {
       return this.#homey.__(`settings.errorLog.errorCount.${String(count)}`)
@@ -568,6 +601,7 @@ class ErrorLogManager {
     }
     return this.#homey.__('settings.errorLog.errorCount.plural')
   }
+
   #updateErrorLogElements({
     errors,
     fromDateHuman,
@@ -590,22 +624,30 @@ class ErrorLogManager {
 
 class DeviceSettingsManager {
   #deviceSettings: Partial<DeviceSettings> = {}
+
   #flatDeviceSettings: Partial<DeviceSetting> = {}
+
   readonly #homey: Homey
+
   readonly #settingsCommonElement: HTMLDivElement
+
   public get deviceSettings(): Partial<DeviceSettings> {
     return this.#deviceSettings
   }
+
   public get flatDeviceSettings(): Partial<DeviceSetting> {
     return this.#flatDeviceSettings
   }
+
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#settingsCommonElement = getDivElement('settings_common')
   }
+
   public disableButtons(id: string, isDisabled = true): void {
     this.#disableButtons(id, isDisabled)
   }
+
   public async fetchDeviceSettings(): Promise<void> {
     try {
       this.#deviceSettings = await homeyApiGet<DeviceSettings>(
@@ -617,6 +659,7 @@ class DeviceSettingsManager {
       await this.#homey.alert(getErrorMessage(error))
     }
   }
+
   public async fetchDriverSettings(): Promise<
     Partial<Record<string, DriverSetting[]>>
   > {
@@ -631,6 +674,7 @@ class DeviceSettingsManager {
       return {}
     }
   }
+
   public async withDisablingButtons(
     id: string,
     action: () => Promise<void>,
@@ -639,6 +683,7 @@ class DeviceSettingsManager {
     await action()
     this.#disableButtons(id, false)
   }
+
   #addApplySettingsEventListener(
     elements: HTMLValueElement[],
     driverId?: string,
@@ -651,6 +696,7 @@ class DeviceSettingsManager {
       })
     })
   }
+
   #addRefreshSettingsEventListener(
     elements: HTMLValueElement[],
     driverId?: string,
@@ -669,6 +715,7 @@ class DeviceSettingsManager {
       )
     })
   }
+
   #addSettingsEventListeners(
     elements: HTMLValueElement[],
     driverId?: string,
@@ -676,6 +723,7 @@ class DeviceSettingsManager {
     this.#addApplySettingsEventListener(elements, driverId)
     this.#addRefreshSettingsEventListener(elements, driverId)
   }
+
   #buildSettingsBody(elements: HTMLValueElement[]): Settings {
     const errors: string[] = []
     const settings: Settings = {}
@@ -691,6 +739,7 @@ class DeviceSettingsManager {
     }
     return settings
   }
+
   #disableButtons(id: string, isDisabled = true): void {
     const isCommon = id.endsWith('common')
     for (const action of ['apply', 'refresh']) {
@@ -705,6 +754,7 @@ class DeviceSettingsManager {
       }
     }
   }
+
   #fetchFlattenDeviceSettings(): void {
     this.#flatDeviceSettings = Object.fromEntries(
       Object.entries(
@@ -723,6 +773,7 @@ class DeviceSettingsManager {
       }),
     )
   }
+
   #generateCommonSettings(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
@@ -742,6 +793,7 @@ class DeviceSettingsManager {
       Array.from(this.#settingsCommonElement.querySelectorAll('select')),
     )
   }
+
   #generateDriverSettings(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
@@ -763,6 +815,7 @@ class DeviceSettingsManager {
       }
     }
   }
+
   #generateSettings(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
@@ -771,6 +824,7 @@ class DeviceSettingsManager {
       this.#generateDriverSettings(driverSettings, driverId)
     }
   }
+
   #handleDriverSettings(
     driverSetting: DriverSetting[],
     fieldSetElement: HTMLFieldSetElement,
@@ -788,6 +842,7 @@ class DeviceSettingsManager {
       }
     }
   }
+
   #processValue(element: HTMLValueElement): ValueOf<Settings> {
     if (element.value) {
       if (element.type === 'checkbox') {
@@ -808,16 +863,19 @@ class DeviceSettingsManager {
     }
     return null
   }
+
   #refreshCommonSettings(elements: HTMLSelectElement[]): void {
     for (const element of elements) {
       this.#updateCommonSetting(element)
     }
   }
+
   #refreshDriverSettings(elements: HTMLInputElement[]): void {
     for (const element of elements) {
       this.#updateDriverSetting(element)
     }
   }
+
   async #setDeviceSettings(
     elements: HTMLValueElement[],
     driverId?: string,
@@ -857,6 +915,7 @@ class DeviceSettingsManager {
       },
     )
   }
+
   #setSetting(settings: Settings, element: HTMLValueElement): void {
     const [id, driverId] = element.id.split('__settings_')
     if (id !== undefined) {
@@ -872,6 +931,7 @@ class DeviceSettingsManager {
       }
     }
   }
+
   #shouldUpdate(
     id: string,
     value: ValueOf<Settings>,
@@ -886,6 +946,7 @@ class DeviceSettingsManager {
       : this.#deviceSettings[driverId]?.[id]
     return setting === null || value !== setting
   }
+
   #updateCommonSetting(element: HTMLSelectElement): void {
     const [id] = element.id.split('__settings_')
     if (id !== undefined) {
@@ -894,6 +955,7 @@ class DeviceSettingsManager {
         commonElementValueTypes.has(typeof value) ? String(value) : ''
     }
   }
+
   #updateDeviceSettings(body: Settings, driverId?: string): void {
     const drivers =
       driverId === undefined ? Object.keys(this.#deviceSettings) : [driverId]
@@ -910,6 +972,7 @@ class DeviceSettingsManager {
       this.#fetchFlattenDeviceSettings()
     }
   }
+
   #updateDriverSetting(element: HTMLInputElement): void {
     const [id, driverId] = element.id.split('__settings_')
     if (id !== undefined && driverId !== undefined) {
@@ -934,15 +997,25 @@ class DeviceSettingsManager {
 
 class ZoneSettingsManager {
   readonly #deviceSettingsManager: DeviceSettingsManager
+
   readonly #frostProtectionEnabledElement: HTMLSelectElement
+
   readonly #frostProtectionMaxTemperatureElement: HTMLInputElement
+
   readonly #frostProtectionMinTemperatureElement: HTMLInputElement
+
   readonly #holidayModeEnabledElement: HTMLSelectElement
+
   readonly #holidayModeEndDateElement: HTMLInputElement
+
   readonly #holidayModeStartDateElement: HTMLInputElement
+
   readonly #homey: Homey
+
   readonly #zoneElement: HTMLSelectElement
+
   #zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
+
   public constructor(
     homey: Homey,
     deviceSettingsManager: DeviceSettingsManager,
@@ -959,6 +1032,7 @@ class ZoneSettingsManager {
     this.#holidayModeStartDateElement = getInputElement('start_date')
     this.#holidayModeEndDateElement = getInputElement('end_date')
   }
+
   public addEventListeners(): void {
     this.#zoneElement.addEventListener('change', () => {
       this.fetchZoneSettings().catch(() => {
@@ -968,6 +1042,7 @@ class ZoneSettingsManager {
     this.#addHolidayModeEventListeners()
     this.#addFrostProtectionEventListeners()
   }
+
   public async fetchFrostProtectionData(): Promise<void> {
     await this.#deviceSettingsManager.withDisablingButtons(
       'frost_protection',
@@ -985,6 +1060,7 @@ class ZoneSettingsManager {
       },
     )
   }
+
   public async fetchHolidayModeData(): Promise<void> {
     await this.#deviceSettingsManager.withDisablingButtons(
       'holiday_mode',
@@ -1002,10 +1078,12 @@ class ZoneSettingsManager {
       },
     )
   }
+
   public async fetchZoneSettings(): Promise<void> {
     await this.fetchFrostProtectionData()
     await this.fetchHolidayModeData()
   }
+
   public async generateZones(zones: Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
@@ -1019,6 +1097,7 @@ class ZoneSettingsManager {
       }
     }
   }
+
   public refreshFrostProtectionData(): void {
     const { [this.#zoneElement.value]: data } = this.#zoneMapping
     if (data) {
@@ -1032,6 +1111,7 @@ class ZoneSettingsManager {
       this.#frostProtectionMaxTemperatureElement.value = String(max)
     }
   }
+
   public refreshHolidayModeData(): void {
     const { [this.#zoneElement.value]: data } = this.#zoneMapping
     if (data) {
@@ -1046,6 +1126,7 @@ class ZoneSettingsManager {
       this.#holidayModeEndDateElement.value = isEnabled ? (endDate ?? '') : ''
     }
   }
+
   public async setFrostProtectionData({
     isEnabled,
     max,
@@ -1073,6 +1154,7 @@ class ZoneSettingsManager {
       },
     )
   }
+
   public async setHolidayModeData({
     from: startDate,
     to: endDate,
@@ -1099,6 +1181,7 @@ class ZoneSettingsManager {
       },
     )
   }
+
   #addDateChangeListener(
     primaryElement: HTMLInputElement,
     otherElement: HTMLInputElement,
@@ -1120,6 +1203,7 @@ class ZoneSettingsManager {
       }
     })
   }
+
   #addFrostProtectionEventListeners(): void {
     for (const element of [
       this.#frostProtectionMinTemperatureElement,
@@ -1154,6 +1238,7 @@ class ZoneSettingsManager {
       }
     })
   }
+
   #addHolidayModeEventListeners(): void {
     this.#holidayModeEnabledElement.addEventListener('change', () => {
       if (this.#holidayModeEnabledElement.value === 'false') {
@@ -1191,6 +1276,7 @@ class ZoneSettingsManager {
       })
     })
   }
+
   #getFPMinAndMax(): { max: number; min: number } {
     const errors: string[] = []
     let [min = null, max = null] = [
@@ -1212,9 +1298,11 @@ class ZoneSettingsManager {
     }
     return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
   }
+
   #getZonePath(): string {
     return this.#zoneElement.value.replace('_', '/')
   }
+
   #updateZoneMapping(data: Partial<ZoneSettings>): void {
     const { value } = this.#zoneElement
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
@@ -1236,6 +1324,7 @@ class SettingsApp {
       })
     })
   }
+
   static async #setDocumentLanguage(homey: Homey): Promise<void> {
     try {
       document.documentElement.lang = await homeyApiGet<string>(
@@ -1246,11 +1335,17 @@ class SettingsApp {
       // Non-critical: page defaults to browser language
     }
   }
+
   readonly #authManager: AuthManager
+
   readonly #deviceSettingsManager: DeviceSettingsManager
+
   readonly #errorLogManager: ErrorLogManager
+
   readonly #homey: Homey
+
   readonly #zoneSettingsManager: ZoneSettingsManager
+
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
@@ -1263,6 +1358,7 @@ class SettingsApp {
       this.#loadPostLogin(),
     )
   }
+
   public async init(): Promise<void> {
     const { contextKey, password, username } =
       await SettingsApp.#fetchHomeySettings(this.#homey)
@@ -1278,6 +1374,7 @@ class SettingsApp {
     await this.#load(contextKey)
     this.#homey.ready()
   }
+
   #addEventListeners(): void {
     this.#authManager.addEventListeners()
     this.#errorLogManager.addEventListeners()
@@ -1290,12 +1387,14 @@ class SettingsApp {
         })
     })
   }
+
   #disableSettingButtons(): void {
     disableButton(this.#errorLogManager.seeElementId)
     this.#deviceSettingsManager.disableButtons('frost_protection')
     this.#deviceSettingsManager.disableButtons('holiday_mode')
     this.#deviceSettingsManager.disableButtons('settings_common')
   }
+
   async #fetchBuildings(): Promise<void> {
     const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,
@@ -1311,6 +1410,7 @@ class SettingsApp {
     await this.#errorLogManager.fetchErrorLog()
     await this.#zoneSettingsManager.fetchZoneSettings()
   }
+
   async #load(contextKey?: string | null): Promise<void> {
     if (contextKey !== undefined) {
       try {
@@ -1323,6 +1423,7 @@ class SettingsApp {
     }
     this.#authManager.needsAuthentication()
   }
+
   async #loadPostLogin(): Promise<void> {
     try {
       await this.#fetchBuildings()

@@ -40,54 +40,74 @@ export abstract class BaseMELCloudDevice<
   T extends DeviceType,
 > extends withTimers(Device) {
   #device?: DeviceFacade<T>
+
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
+
   readonly #reports: {
     regular?: EnergyReport<T>
     total?: EnergyReport<T>
   } = {}
+
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
+
   protected abstract capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
+
   protected abstract readonly deviceToCapability: Partial<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
+
   declare public readonly driver: BaseMELCloudDriver<T>
+
   protected abstract readonly energyReportRegular: EnergyReportConfig | null
+
   protected abstract readonly energyReportTotal: EnergyReportConfig | null
+
   declare public readonly getCapabilityOptions: <
     TKey extends string & keyof CapabilitiesOptions<T>,
   >(
     capability: TKey,
   ) => CapabilitiesOptions<T>[TKey]
+
   declare public readonly getCapabilityValue: <
     TKey extends string & keyof Capabilities<T>,
   >(
     capability: TKey,
   ) => Capabilities<T>[TKey]
+
   declare public readonly getData: () => DeviceDetails<T>['data']
+
   declare public readonly getSetting: <TKey extends keyof Settings>(
     setting: TKey,
   ) => NonNullable<Settings[TKey]>
+
   declare public readonly getSettings: () => Settings
+
   declare public readonly homey: Homey.Homey
+
   declare public readonly setCapabilityOptions: <
     TKey extends string & keyof CapabilitiesOptions<T>,
   >(
     capability: TKey,
     options: CapabilitiesOptions<T>[TKey] & Record<string, unknown>,
   ) => Promise<void>
+
   declare public readonly setCapabilityValue: <
     TKey extends string & keyof Capabilities<T>,
   >(
     capability: TKey,
     value: Capabilities<T>[TKey],
   ) => Promise<void>
+
   declare public readonly setSettings: (settings: Settings) => Promise<void>
+
   protected abstract readonly thermostatMode: Record<string, string> | null
+
   get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
     return this.cleanMapping(this.driver.listCapabilityTagMapping)
   }
+
   get #opCapabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return typedEntries({
@@ -96,15 +116,19 @@ export abstract class BaseMELCloudDevice<
       ...this.#listCapabilityTagMapping,
     }) as OperationalCapabilityTagEntry<T>[]
   }
+
   protected get facade(): DeviceFacade<T> | undefined {
     return this.#device
   }
+
   public get id(): number {
     return this.getData().id
   }
+
   public override onDeleted(): void {
     this.#unscheduleReports()
   }
+
   public override async onInit(): Promise<void> {
     this.capabilityToDevice = {
       onoff: (isOn: boolean): boolean => this.getSetting('always_on') || isOn,
@@ -114,6 +138,7 @@ export abstract class BaseMELCloudDevice<
     this.#registerCapabilityListeners()
     await this.fetchDevice()
   }
+
   public override async onSettings({
     changedKeys,
     newSettings,
@@ -140,16 +165,19 @@ export abstract class BaseMELCloudDevice<
       })
     }
   }
+
   public override async onUninit(): Promise<void> {
     this.onDeleted()
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
+
   public override async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
       await super.addCapability(capability)
     }
   }
+
   public cleanMapping<
     TMapping extends
       | EnergyCapabilityTagMapping<T>
@@ -164,6 +192,7 @@ export abstract class BaseMELCloudDevice<
       ),
     ) as Partial<TMapping>
   }
+
   public async fetchDevice(): Promise<DeviceFacade<T> | null> {
     try {
       if (!this.#device) {
@@ -176,17 +205,20 @@ export abstract class BaseMELCloudDevice<
       return null
     }
   }
+
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
     }
   }
+
   public override async setWarning(error: unknown): Promise<void> {
     if (error !== null) {
       await super.setWarning(getErrorMessage(error))
     }
     await super.setWarning(null)
   }
+
   public async syncFromDevice(data?: ListDeviceData<T>): Promise<void> {
     const newData = data ?? (await this.#fetchData())
     /* v8 ignore next */
@@ -194,6 +226,7 @@ export abstract class BaseMELCloudDevice<
       await this.setCapabilityValues(newData)
     }
   }
+
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
     await Promise.all(
@@ -207,6 +240,7 @@ export abstract class BaseMELCloudDevice<
       }),
     )
   }
+
   #buildUpdateData(values: Partial<SetCapabilities<T>>): UpdateDeviceData<T> {
     this.log('Requested data:', values)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -223,6 +257,7 @@ export abstract class BaseMELCloudDevice<
       ]),
     ) as UpdateDeviceData<T>
   }
+
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
@@ -232,6 +267,7 @@ export abstract class BaseMELCloudDevice<
     return (this.deviceToCapability[capability]?.(value, data) ??
       value) as Capabilities<T>[TKey]
   }
+
   #convertToDevice(
     capability: keyof SetCapabilities<T>,
     value: UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
@@ -243,6 +279,7 @@ export abstract class BaseMELCloudDevice<
       ) ?? value
     )
   }
+
   async #fetchData(): Promise<ListDeviceData<T> | null> {
     try {
       const device = await this.fetchDevice()
@@ -254,6 +291,7 @@ export abstract class BaseMELCloudDevice<
       return null
     }
   }
+
   async #handleEnergyReports(): Promise<void> {
     if (this.energyReportRegular) {
       this.#reports.regular = new EnergyReport(this, this.energyReportRegular)
@@ -264,6 +302,7 @@ export abstract class BaseMELCloudDevice<
       await this.#reports.total.handle()
     }
   }
+
   async #handleOptionalCapabilities(
     newSettings: Settings,
     changedCapabilities: string[],
@@ -275,6 +314,7 @@ export abstract class BaseMELCloudDevice<
       : this.removeCapability(capability))
     }
   }
+
   async #init(data: ListDeviceData<T>): Promise<void> {
     // Configure capabilities based on device data
     await this.#setCapabilities(data)
@@ -285,16 +325,20 @@ export abstract class BaseMELCloudDevice<
     // Schedule energy reports
     await this.#handleEnergyReports()
   }
+
   #isCapability(capability: string): boolean {
     /* v8 ignore next */
     return (this.driver.manifest.capabilities ?? []).includes(capability)
   }
+
   #isEnergyCapability(capability: string): boolean {
     return capability in this.driver.energyCapabilityTagMapping
   }
+
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
+
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
       Object.keys(this.driver.setCapabilityTagMapping),
@@ -320,6 +364,7 @@ export abstract class BaseMELCloudDevice<
       DEBOUNCE_DELAY,
     )
   }
+
   async #set(values: Partial<SetCapabilities<T>>): Promise<void> {
     const device = await this.fetchDevice()
     if (device) {
@@ -335,6 +380,7 @@ export abstract class BaseMELCloudDevice<
       }
     }
   }
+
   async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
     const settings = this.getSettings()
     const currentCapabilities = new Set(this.getCapabilities())
@@ -365,6 +411,7 @@ export abstract class BaseMELCloudDevice<
       this.driver.getCapabilityTagMapping,
     )
   }
+
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     for (const [capability, options] of Object.entries(
@@ -378,11 +425,13 @@ export abstract class BaseMELCloudDevice<
       await this.setCapabilityOptions(capability, options)
     }
   }
+
   #unscheduleReports(): void {
     for (const mode of modes) {
       this.#reports[mode]?.unschedule()
     }
   }
+
   async #updateDeviceOnSettings({
     changedCapabilities,
     changedKeys,
@@ -412,6 +461,7 @@ export abstract class BaseMELCloudDevice<
       await this.syncFromDevice()
     }
   }
+
   async #updateEnergyReportsOnSettings({
     changedKeys,
   }: {

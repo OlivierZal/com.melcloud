@@ -396,6 +396,8 @@ const config = defineConfig([
 
             'unknown',
           ],
+          newlinesBetween: 1,
+          newlinesInside: 1,
         },
       ],
       'perfectionist/sort-enums': [

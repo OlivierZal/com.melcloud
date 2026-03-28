@@ -145,11 +145,15 @@ const getLocalizedCapabilitiesOptions = (
 
 export default class MELCloudApp extends App {
   #api!: MELCloudAPI
+
   #facadeManager!: FacadeManager
+
   declare public readonly homey: Homey.Homey
+
   public get api(): MELCloudAPI {
     return this.#api
   }
+
   public override async onInit(): Promise<void> {
     const language = this.homey.i18n.getLanguage()
     const timezone = this.homey.clock.getTimezone()
@@ -174,11 +178,13 @@ export default class MELCloudApp extends App {
     this.#createNotification(language)
     this.#registerWidgetListeners()
   }
+
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
+
   public getAtaCapabilities(): [
     keyof GroupState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
@@ -201,6 +207,7 @@ export default class MELCloudApp extends App {
       ],
     )
   }
+
   public getAtaDetailedValues(
     { zoneId, zoneType }: ZoneData,
     { status }: { status?: GetAtaOptions['status'] } = {},
@@ -222,12 +229,14 @@ export default class MELCloudApp extends App {
       ]),
     ) as GroupAtaStates
   }
+
   public async getAtaValues({
     zoneId,
     zoneType,
   }: ZoneData): Promise<GroupState> {
     return this.getFacade(zoneType, zoneId).getGroup()
   }
+
   public getDeviceSettings(): DeviceSettings {
     const deviceSettings: DeviceSettings = {}
     for (const device of this.#getDevices()) {
@@ -246,6 +255,7 @@ export default class MELCloudApp extends App {
     }
     return deviceSettings
   }
+
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
     const language = this.homey.i18n.getLanguage()
     return Object.groupBy(
@@ -257,9 +267,11 @@ export default class MELCloudApp extends App {
       ({ driverId, groupId }) => groupId ?? driverId,
     )
   }
+
   public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
     return this.#api.getErrorLog(query)
   }
+
   public getFacade<T extends DeviceType>(
     zoneType: 'devices',
     id: number | string,
@@ -282,24 +294,28 @@ export default class MELCloudApp extends App {
     }
     return this.#facadeManager.get(instance)
   }
+
   public async getFrostProtectionSettings({
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
     return this.getFacade(zoneType, zoneId).getFrostProtection()
   }
+
   public async getHolidayModeSettings({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
+
   public async getHourlyTemperatures(
     deviceId: string,
     hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).getHourlyTemperatures(hour)
   }
+
   public async getOperationModes(
     deviceId: string,
     days: number,
@@ -310,12 +326,14 @@ export default class MELCloudApp extends App {
       to: now.toISO({ includeOffset: false }),
     })
   }
+
   public async getSignal(
     deviceId: string,
     hour?: HourNumbers,
   ): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).getSignalStrength(hour)
   }
+
   public async getTemperatures(
     deviceId: string,
     days: number,
@@ -326,9 +344,11 @@ export default class MELCloudApp extends App {
       to: now.toISO({ includeOffset: false }),
     })
   }
+
   public async login(data: LoginCredentials): Promise<boolean> {
     return this.api.authenticate(data)
   }
+
   public async setAtaValues(
     state: GroupState,
     { zoneId, zoneType }: ZoneData,
@@ -336,6 +356,7 @@ export default class MELCloudApp extends App {
     const data = await this.getFacade(zoneType, zoneId).setGroup(state)
     handleResponse(data.AttributeErrors)
   }
+
   public async setDeviceSettings(
     settings: Settings,
     { driverId }: { driverId?: string } = {},
@@ -358,6 +379,7 @@ export default class MELCloudApp extends App {
       }),
     )
   }
+
   public async setFrostProtectionSettings(
     settings: FrostProtectionQuery,
     { zoneId, zoneType }: ZoneData,
@@ -367,6 +389,7 @@ export default class MELCloudApp extends App {
     )
     handleResponse(data.AttributeErrors)
   }
+
   public async setHolidayModeSettings(
     settings: HolidayModeQuery,
     { zoneId, zoneType }: ZoneData,
@@ -374,6 +397,7 @@ export default class MELCloudApp extends App {
     const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
     handleResponse(data.AttributeErrors)
   }
+
   #createNotification(language: string): void {
     const { homey } = this
     const {
@@ -441,6 +465,7 @@ export default class MELCloudApp extends App {
       },
     ]
   }
+
   #getDevices({
     driverId,
     ids,
@@ -459,6 +484,7 @@ export default class MELCloudApp extends App {
         )
     })
   }
+
   #registerWidgetListeners(): void {
     this.homey.dashboards
       .getWidget('ata-group-setting')
@@ -481,6 +507,7 @@ export default class MELCloudApp extends App {
           ),
       )
   }
+
   async #syncFromDevices({
     ids,
     type,

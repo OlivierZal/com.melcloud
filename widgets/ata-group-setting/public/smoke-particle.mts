@@ -12,12 +12,19 @@ export const SmokeThreshold = {
 
 export class SmokeParticle {
   readonly #context: CanvasRenderingContext2D
+
   #positionX: number
+
   readonly #speedX: number
+
   readonly #speedY: number
+
   public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
+
   public positionY: number
+
   public size = generateStyleNumber({ gap: 2, min: 2 })
+
   public constructor(
     context: CanvasRenderingContext2D,
     positionX: number,
@@ -29,6 +36,7 @@ export class SmokeParticle {
     this.#speedY = generateStyleNumber({ gap: 0.6, min: 0.2 })
     this.positionY = positionY
   }
+
   public draw(): void {
     this.#context.beginPath()
     this.#context.arc(
@@ -43,6 +51,7 @@ export class SmokeParticle {
     this.#context.fill()
     this.#context.filter = 'none'
   }
+
   public update(speed: number): void {
     this.opacity -= 0.001
     this.#positionX += this.#speedX * speed

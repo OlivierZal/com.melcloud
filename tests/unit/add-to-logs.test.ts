@@ -8,12 +8,15 @@ const errorSpy = vi.fn()
 @addToLogs('[TestClass]', 'getName()', 'id')
 class TestClass {
   public readonly id = 42
+
   public error(...args: unknown[]): void {
     errorSpy.call(this, ...args)
   }
+
   public getName(): string {
     return 'MyDevice'
   }
+
   public log(...args: unknown[]): void {
     logSpy.call(this, ...args)
   }
@@ -24,10 +27,12 @@ class TestClassWithNonZeroArgMethod {
   public error(...args: unknown[]): void {
     errorSpy.call(this, ...args)
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Parameter needed for function arity check, argsIgnorePattern doesn't match
   public getLabel(_prefix: string): string {
     return 'label'
   }
+
   public log(...args: unknown[]): void {
     logSpy.call(this, ...args)
   }

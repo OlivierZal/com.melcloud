@@ -19,11 +19,17 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<
   typeof DeviceType.Erv
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
+
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
+
   public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
+
   public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
+
   public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
+
   public readonly type = DeviceType.Erv
+
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,
     HasPM25Sensor: hasPM25Sensor,
