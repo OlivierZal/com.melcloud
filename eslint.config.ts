@@ -692,14 +692,22 @@ const config = defineConfig([
       '@typescript-eslint/prefer-destructuring': 'off',
       'import-x/max-dependencies': [
         'error',
-        { ignoreTypeImports: true, max: 15 },
+        {
+          ignoreTypeImports: true,
+          max: 15,
+        },
       ],
       'max-classes-per-file': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
       'unicorn/consistent-function-scoping': 'off',
       'unicorn/no-useless-undefined': 'off',
-      'vitest/max-expects': ['error', { max: 12 }],
+      'vitest/max-expects': [
+        'error',
+        {
+          max: 12,
+        },
+      ],
       'vitest/no-hooks': 'off',
       'vitest/prefer-called-with': 'off',
       'vitest/prefer-expect-assertions': 'off',
