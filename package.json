@@ -53,7 +53,7 @@
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.5.0",
     "@typescript/native-preview": "^7.0.0-dev.20260322.1",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.2",
     "@vitest/eslint-plugin": "^1.6.13",
     "apexcharts": "^5.10.4",
     "daisyui": "^5.5.19",
