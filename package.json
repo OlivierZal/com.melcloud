@@ -71,7 +71,7 @@
     "prettier-plugin-packagejson": "^3.0.2",
     "tailwind-csstree": "^0.3.0",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.2",
     "typescript-eslint": "^8.57.1",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.0"
