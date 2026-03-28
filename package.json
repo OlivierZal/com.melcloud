@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^22.0.5",
-    "homey-lib": "^2.47.0",
+    "homey-lib": "^2.48.1",
     "luxon": "^3.7.2"
   },
   "devDependencies": {
@@ -69,7 +69,7 @@
     "jsonc-eslint-parser": "^3.1.0",
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.2",
-    "tailwind-csstree": "^0.2.0",
+    "tailwind-csstree": "^0.3.0",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.1",
