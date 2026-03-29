@@ -12,7 +12,7 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrors": {
+    "getErrorLog": {
       "method": "GET",
       "path": "/logs/errors"
     },

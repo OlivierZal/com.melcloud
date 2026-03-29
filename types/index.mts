@@ -37,6 +37,8 @@ export type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
+  FormattedErrorDetails,
+  FormattedErrorLog,
   HomeySettings,
   LoginDriverSetting,
   Settings,

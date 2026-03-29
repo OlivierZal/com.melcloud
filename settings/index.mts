@@ -1,6 +1,4 @@
 import type {
-  ErrorDetails,
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -16,6 +14,8 @@ import type {
   DeviceSetting,
   DeviceSettings,
   DriverSetting,
+  FormattedErrorDetails,
+  FormattedErrorLog,
   HomeySettings,
   LoginDriverSetting,
   Settings,
@@ -545,7 +545,7 @@ class ErrorLogManager {
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeElement.id, async () => {
       try {
-        const data = await homeyApiGet<ErrorLog>(
+        const data = await homeyApiGet<FormattedErrorLog>(
           this.#homey,
           `/logs/errors?${new URLSearchParams({
             from: this.#sinceElement.value,
@@ -576,7 +576,7 @@ class ErrorLogManager {
     return tableElement.createTBody()
   }
 
-  #generateErrorLogTableData(errors: readonly ErrorDetails[]): void {
+  #generateErrorLogTableData(errors: readonly FormattedErrorDetails[]): void {
     for (const error of errors) {
       this.#errorLogTBodyElement ??= this.#generateErrorLogTable(
         Object.keys(error),
@@ -607,7 +607,7 @@ class ErrorLogManager {
     fromDateHuman,
     nextFromDate,
     nextToDate,
-  }: ErrorLog): void {
+  }: FormattedErrorLog): void {
     this.#errorCount += errors.length
     this.#from = fromDateHuman
     this.#to = nextToDate

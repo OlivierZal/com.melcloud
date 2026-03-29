@@ -1,5 +1,4 @@
 import type {
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -13,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   DeviceSettings,
   DriverSetting,
+  FormattedErrorLog,
   Settings,
   ZoneData,
 } from '../../types/index.mts'
@@ -29,7 +29,7 @@ const { default: api } = await import('../../api.mts')
 const mockApp = {
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
-  getErrors: vi.fn<() => Promise<ErrorLog>>(),
+  getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getFrostProtectionSettings: vi.fn<() => Promise<FrostProtectionData>>(),
   getHolidayModeSettings: vi.fn<() => Promise<HolidayModeData>>(),
   login: vi.fn<() => Promise<boolean>>(),
@@ -84,15 +84,15 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to app.getErrors with query', async () => {
-      const errorLog = mock<ErrorLog>()
+    it('should delegate to app.getErrorLog with query', async () => {
+      const errorLog = mock<FormattedErrorLog>()
       const query = mock<ErrorLogQuery>()
-      mockApp.getErrors.mockResolvedValue(errorLog)
+      mockApp.getErrorLog.mockResolvedValue(errorLog)
 
-      const result = await api.getErrors({ homey, query })
+      const result = await api.getErrorLog({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getErrors).toHaveBeenCalledWith(query)
+      expect(mockApp.getErrorLog).toHaveBeenCalledWith(query)
     })
   })
 

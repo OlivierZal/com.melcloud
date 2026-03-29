@@ -21,6 +21,7 @@ import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type {
+  FormattedErrorLog,
   ManifestDriver,
   MELCloudDevice,
   Settings,
@@ -465,16 +466,55 @@ describe('melCloudApp', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to api getErrorLog', async () => {
-      const mockErrorLog = mock<ErrorLog>()
-      mockApiInstance.getErrorLog.mockResolvedValue(mockErrorLog)
+    it('should format dates and resolve device names from api error log', async () => {
+      const deviceName = 'Living Room'
+      mockApiInstance.getErrorLog.mockResolvedValue({
+        errors: [
+          { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+        ],
+        fromDate: '2026-03-01',
+        nextFromDate: '2026-03-15',
+        nextToDate: '2026-03-31',
+      })
+      mockApiInstance.registry.devices.getById.mockReturnValue({
+        name: deviceName,
+      })
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
-      const errorLog = await app.getErrors(query)
+      const errorLog = await app.getErrorLog(query)
 
-      expect(errorLog).toBe(mockErrorLog)
       expect(mockApiInstance.getErrorLog).toHaveBeenCalledWith(query)
+      expect(errorLog).toStrictEqual<FormattedErrorLog>({
+        errors: [
+          {
+            date: expect.not.stringContaining('2026-03-28T') as string,
+            device: deviceName,
+            error: 'test',
+          },
+        ],
+        fromDateHuman: expect.not.stringContaining('2026-03-01') as string,
+        nextFromDate: '2026-03-15',
+        nextToDate: '2026-03-31',
+      })
+    })
+
+    it('should fall back to empty device name when device is not in registry', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue({
+        errors: [
+          { date: '2026-03-28T14:30:00.000Z', deviceId: 999, error: 'test' },
+        ],
+        fromDate: '2026-03-01',
+        nextFromDate: '2026-03-15',
+        nextToDate: '2026-03-31',
+      })
+      mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
+      await app.onInit()
+
+      const query = mock<ErrorLogQuery>()
+      const errorLog = await app.getErrorLog(query)
+
+      expect(errorLog.errors[0]?.device).toBe('')
     })
   })
 

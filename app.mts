@@ -1,7 +1,6 @@
 import {
   type BuildingFacade,
   type DeviceFacade,
-  type ErrorLog,
   type ErrorLogQuery,
   type Facade,
   type FrostProtectionData,
@@ -40,6 +39,7 @@ import {
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
+  type FormattedErrorLog,
   type GetAtaOptions,
   type GroupAtaStates,
   type LoginSetting,
@@ -268,8 +268,19 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async getErrors(query: ErrorLogQuery): Promise<ErrorLog> {
-    return this.#api.getErrorLog(query)
+  public async getErrorLog(query: ErrorLogQuery): Promise<FormattedErrorLog> {
+    const { errors, fromDate, ...rest } = await this.#api.getErrorLog(query)
+    return {
+      ...rest,
+      errors: errors.map(({ date, deviceId, ...errorRest }) => ({
+        ...errorRest,
+        date: DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
+        device: this.#api.registry.devices.getById(deviceId)?.name ?? '',
+      })),
+      fromDateHuman: DateTime.fromISO(fromDate).toLocaleString(
+        DateTime.DATE_FULL,
+      ),
+    }
   }
 
   public getFacade<T extends DeviceType>(
