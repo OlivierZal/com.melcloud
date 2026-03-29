@@ -1,15 +1,14 @@
 export const generateStyleNumber = ({
-  divisor,
+  divisor = 1,
   gap,
   min,
-  multiplier,
+  multiplier = 1,
 }: {
   gap: number
   min: number
   divisor?: number
   multiplier?: number
-}): number =>
-  ((Math.random() * gap + min) * (multiplier ?? 1)) / ((divisor ?? 1) || 1)
+}): number => ((Math.random() * gap + min) * multiplier) / (divisor || 1)
 
 export const generateStyleString = (
   params: { gap: number; min: number; divisor?: number; multiplier?: number },

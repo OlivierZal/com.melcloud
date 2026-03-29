@@ -830,10 +830,16 @@ class DeviceSettingsManager {
     fieldSetElement: HTMLFieldSetElement,
   ): void {
     let previousGroupLabel = ''
-    for (const { driverId, groupLabel, id, title, type } of driverSetting) {
+    for (const {
+      driverId,
+      groupLabel = '',
+      id,
+      title,
+      type,
+    } of driverSetting) {
       if (type === 'checkbox') {
         if (groupLabel !== previousGroupLabel) {
-          previousGroupLabel = groupLabel ?? ''
+          previousGroupLabel = groupLabel
           createLegendElement(fieldSetElement, groupLabel)
         }
         const valueElement = createCheckboxElement(id, driverId)
