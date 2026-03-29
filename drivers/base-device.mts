@@ -43,10 +43,7 @@ export abstract class BaseMELCloudDevice<
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
 
-  readonly #reports: {
-    regular?: EnergyReport<T>
-    total?: EnergyReport<T>
-  } = {}
+  readonly #reports: Partial<Record<EnergyReportMode, EnergyReport<T>>> = {}
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
 

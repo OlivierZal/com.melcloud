@@ -12,14 +12,11 @@ import type {
   MELCloudDeviceErv,
 } from '../drivers/index.mts'
 import { typedFromEntries } from '../lib/index.mts'
-import type { FlowArgsAta } from './ata.mts'
-import type { FlowArgsAtw } from './atw.mts'
 import type { CapabilitiesOptionsValues, LocalizedStrings } from './bases.mts'
 import type {
   CapabilitiesOptions,
   CapabilitiesOptionsAtaErv,
 } from './capabilities.mts'
-import type { FlowArgsErv } from './erv.mts'
 
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
@@ -162,12 +159,6 @@ export interface DeviceDetails<T extends DeviceType> {
 }
 
 export type EnergyReportMode = 'regular' | 'total'
-
-export type FlowArgs<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? FlowArgsAta
-  : T extends typeof DeviceType.Atw ? FlowArgsAtw
-  : T extends typeof DeviceType.Erv ? FlowArgsErv
-  : never
 
 export type MELCloudDevice =
   | MELCloudDeviceAta

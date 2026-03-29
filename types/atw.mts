@@ -384,10 +384,9 @@ export interface CapabilitiesOptionsAtw {
   }
   readonly 'thermostat_mode.zone2': {
     readonly title: LocalizedStrings
-    readonly values: readonly {
-      readonly id: keyof typeof OperationModeZone
-      readonly title: LocalizedStrings
-    }[]
+    readonly values: readonly CapabilitiesOptionsValues<
+      keyof typeof OperationModeZone
+    >[]
   }
 }
 

@@ -9,6 +9,7 @@ import type {
 import type {
   CapabilitiesAta,
   EnergyCapabilitiesAta,
+  FlowArgsAta,
   GetCapabilitiesAta,
   ListCapabilitiesAta,
   SetCapabilitiesAta,
@@ -17,6 +18,7 @@ import type {
   CapabilitiesAtw,
   CapabilitiesOptionsAtw,
   EnergyCapabilitiesAtw,
+  FlowArgsAtw,
   GetCapabilitiesAtw,
   ListCapabilitiesAtw,
   SetCapabilitiesAtw,
@@ -25,32 +27,53 @@ import type { RangeOptions } from './bases.mts'
 import type {
   CapabilitiesErv,
   EnergyCapabilitiesErv,
+  FlowArgsErv,
   GetCapabilitiesErv,
   ListCapabilitiesErv,
   SetCapabilitiesErv,
 } from './erv.mts'
 
+interface DeviceTypeMap {
+  [DeviceType.Ata]: {
+    readonly capabilities: CapabilitiesAta
+    readonly capabilitiesOptions: CapabilitiesOptionsAtaErv
+    readonly energyCapabilities: EnergyCapabilitiesAta
+    readonly flowArgs: FlowArgsAta
+    readonly getCapabilities: GetCapabilitiesAta
+    readonly listCapabilities: ListCapabilitiesAta
+    readonly setCapabilities: SetCapabilitiesAta
+  }
+  [DeviceType.Atw]: {
+    readonly capabilities: CapabilitiesAtw
+    readonly capabilitiesOptions: CapabilitiesOptionsAtw
+    readonly energyCapabilities: EnergyCapabilitiesAtw
+    readonly flowArgs: FlowArgsAtw
+    readonly getCapabilities: GetCapabilitiesAtw
+    readonly listCapabilities: ListCapabilitiesAtw
+    readonly setCapabilities: SetCapabilitiesAtw
+  }
+  [DeviceType.Erv]: {
+    readonly capabilities: CapabilitiesErv
+    readonly capabilitiesOptions: CapabilitiesOptionsAtaErv
+    readonly energyCapabilities: EnergyCapabilitiesErv
+    readonly flowArgs: FlowArgsErv
+    readonly getCapabilities: GetCapabilitiesErv
+    readonly listCapabilities: ListCapabilitiesErv
+    readonly setCapabilities: SetCapabilitiesErv
+  }
+}
+
 type GetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? GetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? GetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? GetCapabilitiesErv
-  : never
+  DeviceTypeMap[T]['getCapabilities']
 
 type ListCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ListCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ListCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ListCapabilitiesErv
-  : never
+  DeviceTypeMap[T]['listCapabilities']
 
 export type Capabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? CapabilitiesAta
-  : T extends typeof DeviceType.Atw ? CapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? CapabilitiesErv
-  : never
+  DeviceTypeMap[T]['capabilities']
 
 export type CapabilitiesOptions<T extends DeviceType> =
-  T extends typeof DeviceType.Atw ? CapabilitiesOptionsAtw
-  : CapabilitiesOptionsAtaErv
+  DeviceTypeMap[T]['capabilitiesOptions']
 
 export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
@@ -84,10 +107,7 @@ export type ConvertToDevice<T extends DeviceType> = {
 }['bivariant']
 
 export type EnergyCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? EnergyCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? EnergyCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? EnergyCapabilitiesErv
-  : Record<string, never>
+  DeviceTypeMap[T]['energyCapabilities']
 
 export type EnergyCapabilityTagEntry<T extends DeviceType> = [
   capability: string & keyof EnergyCapabilities<T>,
@@ -119,10 +139,9 @@ export type OperationalCapabilityTagEntry<T extends DeviceType> = [
 ]
 
 export type SetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? SetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? SetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? SetCapabilitiesErv
-  : never
+  DeviceTypeMap[T]['setCapabilities']
+
+export type FlowArgs<T extends DeviceType> = DeviceTypeMap[T]['flowArgs']
 
 export type SetCapabilityTagMapping<T extends DeviceType> = Record<
   keyof SetCapabilities<T>,

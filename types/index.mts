@@ -16,6 +16,7 @@ export type {
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
   EnergyCapabilityTagMapping,
+  FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   OperationalCapabilities,
@@ -104,7 +105,6 @@ export {
 export {
   type DeviceDetails,
   type EnergyReportMode,
-  type FlowArgs,
   type MELCloudDevice,
   type ReportPlanParameters,
   fanSpeedValues,
