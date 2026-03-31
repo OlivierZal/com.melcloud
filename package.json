@@ -65,6 +65,7 @@
     "eslint-plugin-perfectionist": "^5.7.0",
     "eslint-plugin-unicorn": "^63.0.0",
     "eslint-plugin-yml": "^3.3.1",
+    "homey-apps-sdk-v3-types": "^0.3.12",
     "jiti": "^2.6.1",
     "jsonc-eslint-parser": "^3.1.0",
     "prettier": "^3.8.1",

@@ -16,6 +16,7 @@ export const createEnergyReportMock = (): {
   EnergyReport: ReturnType<typeof vi.fn>
 } => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
+    // eslint-disable-next-line unicorn/no-useless-undefined
     handle: vi.fn().mockResolvedValue(undefined),
     unschedule: vi.fn(),
   })),
@@ -91,39 +92,7 @@ export const createMockDeviceClass = (
   return MockDevice
 }
 
-export const createMockDriverClass = (
-  overrides?: Record<string, unknown>,
-): new () => any => {
-  class MockDriver {
-    public getDevices = vi.fn().mockReturnValue([])
-
-    public homey = {
-      app: {
-        api: {
-          authenticate: vi.fn(),
-          registry: { getDevicesByType: vi.fn().mockReturnValue([]) },
-        },
-      },
-      flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-      },
-    }
-
-    public log = vi.fn()
-
-    public manifest = { capabilities: [] }
-
-    public constructor() {
-      applyOverrides(this, overrides)
-    }
-  }
-  return MockDriver
-}
+export { createMockDriverClass } from './mock-driver-class.ts'
 
 export const testDriverType = (
   getDriver: () => { type: unknown },

@@ -28,6 +28,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "homeLogin": {
+      "method": "POST",
+      "path": "/home/sessions"
+    },
     "login": {
       "method": "POST",
       "path": "/sessions"

@@ -8,6 +8,8 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
+  type HomeContext,
+  type HomeDevice,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
@@ -15,11 +17,14 @@ import {
   type ZoneFacade,
   DeviceType,
   FacadeManager,
+  HomeDeviceAtaFacade,
   MELCloudAPI,
+  MELCloudHomeAPI,
 } from '@olivierzal/melcloud-api'
 import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type * as FilesModule from '../../files.mts'
 import type {
   FormattedErrorLog,
   ManifestDriver,
@@ -34,39 +39,47 @@ vi.mock('../../lib/homey.mts', () => ({
   App: Function,
 }))
 
-vi.mock('../../lib/get-zones.mts', () => ({
+vi.mock(import('../../lib/get-zones.mts'), async (importOriginal) => ({
+  ...(await importOriginal()),
   setFacadeManager: mockSetFacadeManager,
 }))
 
-vi.mock('../../files.mts', () => ({
-  changelog: { '1.0.0': { en: 'English changelog', nl: 'Dutch changelog' } },
-  fanSpeed: {
-    title: { en: 'Fan speed' },
-    type: 'enum',
-  },
-  horizontal: {
-    title: { en: 'Horizontal' },
-    type: 'enum',
-    values: [{ id: 'auto', title: { en: 'Auto' } }],
-  },
-  power: {
-    title: { en: 'Power' },
-    type: 'boolean',
-  },
-  setTemperature: {
-    title: { en: 'Set temperature' },
-    type: 'number',
-  },
-  thermostatMode: {
-    title: { en: 'Thermostat mode' },
-    type: 'enum',
-  },
-  vertical: {
-    title: { en: 'Vertical' },
-    type: 'enum',
-    values: [{ id: 'auto', title: { en: 'Auto' } }],
-  },
-}))
+vi.mock('../../files.mts', async (importOriginal) => {
+  const original = await importOriginal<typeof FilesModule>()
+  return {
+    ...original,
+    changelog: {
+      ...original.changelog,
+      '1.0.0': { en: 'English changelog', nl: 'Dutch changelog' },
+    },
+    fanSpeed: {
+      title: { en: 'Fan speed' },
+      type: 'enum',
+    },
+    horizontal: {
+      title: { en: 'Horizontal' },
+      type: 'enum',
+      values: [{ id: 'auto', title: { en: 'Auto' } }],
+    },
+    power: {
+      title: { en: 'Power' },
+      type: 'boolean',
+    },
+    setTemperature: {
+      title: { en: 'Set temperature' },
+      type: 'number',
+    },
+    thermostatMode: {
+      title: { en: 'Thermostat mode' },
+      type: 'enum',
+    },
+    vertical: {
+      title: { en: 'Vertical' },
+      type: 'enum',
+      values: [{ id: 'auto', title: { en: 'Auto' } }],
+    },
+  }
+})
 
 const mockApiInstance = {
   authenticate: vi.fn<() => Promise<boolean>>(),
@@ -80,6 +93,11 @@ const mockApiInstance = {
   },
 }
 
+const mockHomeApiInstance = {
+  authenticate: vi.fn<() => Promise<boolean>>(),
+  list: vi.fn(),
+}
+
 const mockFacadeManagerGet = vi.fn()
 const mockFacadeManagerGetZones = vi.fn().mockReturnValue([])
 
@@ -89,9 +107,15 @@ vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
   MELCloudAPI: {
     create: vi.fn(),
   },
+  MELCloudHomeAPI: {
+    create: vi.fn(),
+  },
 }))
 
 const { default: MelCloudApp } = await import('../../app.mts')
+
+// eslint-disable-next-line @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect()
+const mockHomeCreate = vi.mocked(MELCloudHomeAPI.create)
 
 // eslint-disable-next-line @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect()
 const mockCreate = vi.mocked(MELCloudAPI.create)
@@ -144,6 +168,7 @@ const mockManifestDrivers: ManifestDriver[] = [
 
 const setupMocks = (): void => {
   mockCreate.mockResolvedValue(mockApiInstance as never)
+  mockHomeCreate.mockResolvedValue(mockHomeApiInstance as never)
   vi.mocked(FacadeManager).mockImplementation(function mockConstructor() {
     return mock<FacadeManager>({
       get: mockFacadeManagerGet,
@@ -196,6 +221,35 @@ const createMockDriver = (
   getDevices: vi.fn().mockReturnValue(devices),
 })
 
+const getOnSyncCallback = (): ((params?: {
+  ids?: number[]
+  type?: number
+}) => Promise<void>) => {
+  const config = mockCreate.mock.calls.at(0)?.at(0) as
+    | {
+        onSync?: (params?: { ids?: number[]; type?: number }) => Promise<void>
+      }
+    | undefined
+  assertDefined(config?.onSync)
+  return config.onSync
+}
+
+const createSyncDevice = (
+  id: number,
+  syncFromDevice = vi.fn<() => Promise<void>>().mockResolvedValue(),
+): {
+  device: MELCloudDevice
+  syncFromDevice: ReturnType<typeof vi.fn>
+} => ({
+  device: mock<MELCloudDevice>({
+    driver: { id: 'melcloud' } as never,
+    getSettings: vi.fn().mockReturnValue({}),
+    id,
+    syncFromDevice,
+  }),
+  syncFromDevice,
+})
+
 describe('melCloudApp', () => {
   let app: InstanceType<typeof MelCloudApp>
 
@@ -218,6 +272,7 @@ describe('melCloudApp', () => {
           timezone: 'Europe/Paris',
         }),
       )
+      expect(mockHomeCreate).toHaveBeenCalled()
       expect(FacadeManager).toHaveBeenCalledTimes(1)
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
@@ -508,6 +563,7 @@ describe('melCloudApp', () => {
         nextFromDate: '2026-03-15',
         nextToDate: '2026-03-31',
       })
+      // eslint-disable-next-line unicorn/no-useless-undefined
       mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -532,6 +588,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw for zone not found', async () => {
+      // eslint-disable-next-line unicorn/no-useless-undefined
       mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -542,6 +599,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw with device error for device type', async () => {
+      // eslint-disable-next-line unicorn/no-useless-undefined
       mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -549,6 +607,60 @@ describe('melCloudApp', () => {
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
+    })
+  })
+
+  describe('home facade retrieval', () => {
+    const mockDevice = mock<HomeDevice>({
+      capabilities: {} as HomeDevice['capabilities'],
+      givenDisplayName: 'Living Room',
+      id: 'device-1',
+      settings: [],
+    })
+
+    const mockContext = (
+      devices: Partial<HomeDevice>[] = [mockDevice],
+    ): HomeContext =>
+      mock<HomeContext>({
+        buildings: [{ airToAirUnits: devices }],
+        guestBuildings: [],
+      })
+
+    it('should return a facade for a matching device', async () => {
+      mockHomeApiInstance.list.mockResolvedValue(mockContext())
+      await app.onInit()
+
+      const facade = await app.getHomeFacade('device-1')
+
+      expect(facade).toBeInstanceOf(HomeDeviceAtaFacade)
+    })
+
+    it('should throw when device is not found in context', async () => {
+      mockHomeApiInstance.list.mockResolvedValue(
+        mockContext([
+          mock<HomeDevice>({
+            capabilities: {} as HomeDevice['capabilities'],
+            givenDisplayName: 'Other',
+            id: 'device-other',
+            settings: [],
+          }),
+        ]),
+      )
+      await app.onInit()
+
+      await expect(app.getHomeFacade('device-1')).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
+      expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
+    })
+
+    it('should throw when list returns null', async () => {
+      mockHomeApiInstance.list.mockResolvedValue(null)
+      await app.onInit()
+
+      await expect(app.getHomeFacade('device-1')).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
     })
   })
 
@@ -679,6 +791,47 @@ describe('melCloudApp', () => {
 
       expect(isAuthenticated).toBe(true)
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
+    })
+  })
+
+  describe('home api', () => {
+    it('should expose homeApi getter', async () => {
+      await app.onInit()
+
+      expect(app.homeApi).toBe(mockHomeApiInstance)
+    })
+
+    it('should delegate homeLogin to homeApi authenticate', async () => {
+      mockHomeApiInstance.authenticate.mockResolvedValue(true)
+      await app.onInit()
+
+      const isLoggedIn = await app.homeLogin(mock<LoginCredentials>())
+
+      expect(isLoggedIn).toBe(true)
+    })
+
+    it('should create home setting manager with camelCase key prefixing', async () => {
+      await app.onInit()
+
+      const homeCreateCallArgs = mockHomeCreate.mock.calls[0]?.[0] as
+        | {
+            settingManager: {
+              get: (key: string) => unknown
+              set: (key: string, value: string) => void
+            }
+          }
+        | undefined
+
+      assertDefined(homeCreateCallArgs)
+
+      const { settingManager } = homeCreateCallArgs
+      settingManager.get('username')
+
+      expect(mockSettingsGet).toHaveBeenCalledWith('homeUsername')
+
+      settingManager.set('password', 'secret')
+
+      expect(mockSettingsSet).toHaveBeenCalledWith('homePassword', 'secret')
     })
   })
 
@@ -1001,38 +1154,6 @@ describe('melCloudApp', () => {
   })
 
   describe('device synchronization via onSync callback', () => {
-    const getOnSyncCallback = (): ((params?: {
-      ids?: number[]
-      type?: number
-    }) => Promise<void>) => {
-      const config = mockCreate.mock.calls.at(0)?.at(0) as
-        | {
-            onSync?: (params?: {
-              ids?: number[]
-              type?: number
-            }) => Promise<void>
-          }
-        | undefined
-      assertDefined(config?.onSync)
-      return config.onSync
-    }
-
-    const createSyncDevice = (
-      id: number,
-      syncFromDevice = vi.fn<() => Promise<void>>().mockResolvedValue(),
-    ): {
-      device: MELCloudDevice
-      syncFromDevice: ReturnType<typeof vi.fn>
-    } => ({
-      device: mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
-        getSettings: vi.fn().mockReturnValue({}),
-        id,
-        syncFromDevice,
-      }),
-      syncFromDevice,
-    })
-
     it('should sync devices from onSync callback', async () => {
       const { device, syncFromDevice } = createSyncDevice(1)
       const mockDriver = createMockDriver([device])

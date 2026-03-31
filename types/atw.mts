@@ -1,13 +1,13 @@
-import type {
-  DeviceType,
-  EnergyDataAtw,
-  GetDeviceData,
-  ListDeviceDataAtw,
+import {
+  type DeviceType,
+  type EnergyDataAtw,
+  type GetDeviceData,
+  type ListDeviceDataAtw,
+  type OperationModeStateHotWater,
+  type OperationModeStateZone,
+  type UpdateDeviceDataAtw,
   OperationModeState,
-  OperationModeStateHotWater,
-  OperationModeStateZone,
   OperationModeZone,
-  UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
@@ -21,6 +21,23 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
+
+export const operationModeStateReverse = {
+  [OperationModeState.cooling]: 'cooling',
+  [OperationModeState.defrost]: 'defrost',
+  [OperationModeState.dhw]: 'dhw',
+  [OperationModeState.heating]: 'heating',
+  [OperationModeState.idle]: 'idle',
+  [OperationModeState.legionella]: 'legionella',
+} as const satisfies Record<OperationModeState, keyof typeof OperationModeState>
+
+export const operationModeZoneReverse = {
+  [OperationModeZone.curve]: 'curve',
+  [OperationModeZone.flow]: 'flow',
+  [OperationModeZone.flow_cool]: 'flow_cool',
+  [OperationModeZone.room]: 'room',
+  [OperationModeZone.room_cool]: 'room_cool',
+} as const satisfies Record<OperationModeZone, keyof typeof OperationModeZone>
 
 const addSuffixToTitle = (
   title: LocalizedStrings,

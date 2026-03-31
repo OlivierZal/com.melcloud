@@ -76,6 +76,38 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
+const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
+  const copConsumed = {
+    'measure_power.cop': ['ConsumedTag'],
+  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
+  const copProduced = {
+    'measure_power.cop': ['ProducedTag'],
+  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
+  const copEnergyMapping = {
+    'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
+  } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
+  const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+    consumedTagMapping: copConsumed,
+    energyCapabilityTagMapping: copEnergyMapping,
+    producedTagMapping: copProduced,
+  })
+  return mock<BaseMELCloudDevice<TestDeviceType>>({
+    cleanMapping: vi.fn().mockReturnValue({
+      'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
+    }),
+    driver: copDriver,
+    fetchDevice: fetchDeviceMock,
+    homey: mock<Homey.Homey>({
+      clearInterval: clearIntervalMock,
+      clearTimeout: clearTimeoutMock,
+    }),
+    log: logMock,
+    setCapabilityValue: setCapabilityValueMock,
+    setInterval: setIntervalMock,
+    setTimeout: setTimeoutMock,
+  })
+}
+
 describe(EnergyReport, () => {
   beforeAll(() => {
     Settings.now = (): number => FAKE_NOW_MILLIS
@@ -297,38 +329,6 @@ describe(EnergyReport, () => {
   })
 
   describe('coefficient of performance calculation', () => {
-    const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
-      const copConsumed = {
-        'measure_power.cop': ['ConsumedTag'],
-      } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      const copProduced = {
-        'measure_power.cop': ['ProducedTag'],
-      } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      const copEnergyMapping = {
-        'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-      } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
-      const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
-        consumedTagMapping: copConsumed,
-        energyCapabilityTagMapping: copEnergyMapping,
-        producedTagMapping: copProduced,
-      })
-      return mock<BaseMELCloudDevice<TestDeviceType>>({
-        cleanMapping: vi.fn().mockReturnValue({
-          'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-        }),
-        driver: copDriver,
-        fetchDevice: fetchDeviceMock,
-        homey: mock<Homey.Homey>({
-          clearInterval: clearIntervalMock,
-          clearTimeout: clearTimeoutMock,
-        }),
-        log: logMock,
-        setCapabilityValue: setCapabilityValueMock,
-        setInterval: setIntervalMock,
-        setTimeout: setTimeoutMock,
-      })
-    }
-
     it('should calculate COP as produced / consumed', async () => {
       const mockDeviceWithCop = createCopMocks()
       mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })

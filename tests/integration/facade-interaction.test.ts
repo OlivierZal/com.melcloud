@@ -1,13 +1,16 @@
 import {
   DeviceType,
-  FanSpeed,
   Horizontal,
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
 import { describe, expect, it } from 'vitest'
 
-import { keyOfValue } from '../../lib/reverse-mapping.mts'
+import {
+  horizontalReverse,
+  operationModeReverse,
+  verticalReverse,
+} from '../../types/index.mts'
 
 describe('facade interaction patterns', () => {
   describe('reverse mapping with as-const enums', () => {
@@ -18,27 +21,21 @@ describe('facade interaction patterns', () => {
     })
 
     it('should reverse-map Horizontal values', () => {
-      expect(keyOfValue(Horizontal, Horizontal.auto)).toBe('auto')
-      expect(keyOfValue(Horizontal, Horizontal.center)).toBe('center')
-      expect(keyOfValue(Horizontal, Horizontal.swing)).toBe('swing')
+      expect(horizontalReverse[Horizontal.auto]).toBe('auto')
+      expect(horizontalReverse[Horizontal.center]).toBe('center')
+      expect(horizontalReverse[Horizontal.swing]).toBe('swing')
     })
 
     it('should reverse-map Vertical values', () => {
-      expect(keyOfValue(Vertical, Vertical.auto)).toBe('auto')
-      expect(keyOfValue(Vertical, Vertical.upwards)).toBe('upwards')
-      expect(keyOfValue(Vertical, Vertical.swing)).toBe('swing')
+      expect(verticalReverse[Vertical.auto]).toBe('auto')
+      expect(verticalReverse[Vertical.upwards]).toBe('upwards')
+      expect(verticalReverse[Vertical.swing]).toBe('swing')
     })
 
     it('should reverse-map OperationMode values', () => {
-      expect(keyOfValue(OperationMode, OperationMode.auto)).toBe('auto')
-      expect(keyOfValue(OperationMode, OperationMode.cool)).toBe('cool')
-      expect(keyOfValue(OperationMode, OperationMode.heat)).toBe('heat')
-    })
-
-    it('should reverse-map FanSpeed values', () => {
-      expect(keyOfValue(FanSpeed, FanSpeed.auto)).toBe('auto')
-      expect(keyOfValue(FanSpeed, FanSpeed.silent)).toBe('silent')
-      expect(keyOfValue(FanSpeed, FanSpeed.fast)).toBe('fast')
+      expect(operationModeReverse[OperationMode.auto]).toBe('auto')
+      expect(operationModeReverse[OperationMode.cool]).toBe('cool')
+      expect(operationModeReverse[OperationMode.heat]).toBe('heat')
     })
 
     it('should forward-map from key to value', () => {

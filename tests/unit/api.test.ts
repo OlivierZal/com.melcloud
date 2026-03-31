@@ -20,7 +20,7 @@ import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn()
 
-vi.mock('../../lib/index.mts', () => ({
+vi.mock(import('../../lib/index.mts'), () => ({
   getBuildings: mockGetBuildings,
 }))
 
@@ -32,6 +32,7 @@ const mockApp = {
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getFrostProtectionSettings: vi.fn<() => Promise<FrostProtectionData>>(),
   getHolidayModeSettings: vi.fn<() => Promise<HolidayModeData>>(),
+  homeLogin: vi.fn<() => Promise<boolean>>(),
   login: vi.fn<() => Promise<boolean>>(),
   setDeviceSettings: vi.fn<() => Promise<void>>(),
   setFrostProtectionSettings: vi.fn<() => Promise<void>>(),
@@ -138,6 +139,18 @@ describe('api', () => {
       const result = api.getLanguage({ homey })
 
       expect(result).toBe('fr')
+    })
+  })
+
+  describe('home authentication', () => {
+    it('should delegate to app.homeLogin with body', async () => {
+      mockApp.homeLogin.mockResolvedValue(true)
+      const body = mock<LoginCredentials>()
+
+      const isLoggedIn = await api.homeLogin({ body, homey })
+
+      expect(isLoggedIn).toBe(true)
+      expect(mockApp.homeLogin).toHaveBeenCalledWith(body)
     })
   })
 

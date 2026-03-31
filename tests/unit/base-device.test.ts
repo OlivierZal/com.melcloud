@@ -1,20 +1,16 @@
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
+import type { ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type {
-  ConvertFromDevice,
-  ConvertToDevice,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  OperationalCapabilities,
-  SetCapabilities,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import { assertDefined, mock } from '../helpers.ts'
+import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
 const setValuesMock = vi.fn()
 const realtimeMock = vi.fn()
@@ -94,50 +90,31 @@ vi.mock('homey', () => {
   return { default: { Device: MockDevice } }
 })
 
-vi.mock('../../decorators/add-to-logs.mts', () => ({
-  addToLogs:
-    () =>
-    <T>(target: T): T =>
-      target,
+const { identityDecorator } = vi.hoisted(() => ({
+  identityDecorator: <T>(target: T): T => target,
+}))
+
+vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
+  addToLogs: (): typeof identityDecorator => identityDecorator,
 }))
 
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', async () => {
+vi.mock(import('../../drivers/base-report.mts'), async () => {
   const { createEnergyReportMock } = await import('../helpers.ts')
   return createEnergyReportMock()
 })
 
-type TestDeviceType = typeof DeviceType.Ata
-
-class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
-  public capabilityToDevice: Partial<
-    Record<
-      keyof SetCapabilities<TestDeviceType>,
-      ConvertToDevice<TestDeviceType>
-    >
-  > = {}
-
-  public readonly deviceToCapability: Partial<
-    Record<
-      keyof OperationalCapabilities<TestDeviceType>,
-      ConvertFromDevice<TestDeviceType>
-    >
-  > = {}
-
-  public readonly energyReportRegular: EnergyReportConfig | null = null
-
-  public readonly energyReportTotal: EnergyReportConfig | null = null
-
-  public readonly thermostatMode: Record<string, string> | null = null
-
-  public async exposedSetCapabilityValues(
-    data: ListDeviceDataAta,
-  ): Promise<void> {
-    await this.setCapabilityValues(data)
-  }
+const getCapabilityListenerCallback = (): ((
+  values: Record<string, unknown>,
+) => Promise<void>) => {
+  const callback = registerMultipleCapabilityListenerMock.mock.calls
+    .at(0)
+    ?.at(1) as ((values: Record<string, unknown>) => Promise<void>) | undefined
+  assertDefined(callback)
+  return callback
 }
 
 const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
@@ -464,18 +441,6 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  const getCapabilityListenerCallback = (): ((
-    values: Record<string, unknown>,
-  ) => Promise<void>) => {
-    const callback = registerMultipleCapabilityListenerMock.mock.calls
-      .at(0)
-      ?.at(1) as
-      | ((values: Record<string, unknown>) => Promise<void>)
-      | undefined
-    assertDefined(callback)
-    return callback
-  }
-
   describe('capability change handling', () => {
     it('should call setValues when capability values are set', async () => {
       await device.onInit()
@@ -486,9 +451,10 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should handle thermostat_mode off when thermostat supports off', async () => {
-      const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 'off' }
-      })()
+      const deviceWithThermostat = new TestDevice()
+      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
+        value: { off: 'off' },
+      })
       setDriver(deviceWithThermostat)
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
@@ -498,9 +464,10 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
-      const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 'off' }
-      })()
+      const deviceWithThermostat = new TestDevice()
+      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
+        value: { off: 'off' },
+      })
       setDriver(deviceWithThermostat)
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
@@ -573,11 +540,12 @@ describe(BaseMELCloudDevice, () => {
 
   describe('capability value conversion', () => {
     it('should use deviceToCapability converter when present', async () => {
-      const customDevice = new (class extends TestDevice {
-        public override readonly deviceToCapability = {
+      const customDevice = new TestDevice()
+      Object.defineProperty(customDevice, 'deviceToCapability', {
+        value: {
           measure_temperature: (value: number): number => value * 2,
-        }
-      })()
+        },
+      })
       setDriver(customDevice)
       mockFacade({ ...mockDeviceData, RoomTemperature: 10 })
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
@@ -644,15 +612,16 @@ describe(BaseMELCloudDevice, () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
       const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
-      const deviceWithRegular = new (class extends TestDevice {
-        public override readonly energyReportRegular = {
+      const deviceWithRegular = new TestDevice()
+      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
+        value: {
           duration: { hours: 1 },
           interval: { hours: 1 },
           minus: { hours: 1 },
           mode: 'regular' as const,
           values: { millisecond: 0, minute: 5, second: 0 },
-        }
-      })()
+        },
+      })
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
 
@@ -664,15 +633,16 @@ describe(BaseMELCloudDevice, () => {
     it('should create energy report for total config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
       const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
-      const deviceWithTotal = new (class extends TestDevice {
-        public override readonly energyReportTotal = {
+      const deviceWithTotal = new TestDevice()
+      Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
+        value: {
           duration: { days: 1 },
           interval: { days: 1 },
           minus: { days: 1 },
           mode: 'total' as const,
           values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-        }
-      })()
+        },
+      })
       setDriver(deviceWithTotal)
       await deviceWithTotal.onInit()
 

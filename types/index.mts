@@ -70,9 +70,12 @@ export {
   type SetCapabilitiesAta,
   energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
+  horizontalReverse,
   listCapabilityTagMappingAta,
+  operationModeReverse,
   setCapabilityTagMappingAta,
   ThermostatModeAta,
+  verticalReverse,
 } from './ata.mts'
 export {
   type CapabilitiesAtw,
@@ -88,6 +91,8 @@ export {
   getCapabilityTagMappingAtw,
   HotWaterMode,
   listCapabilityTagMappingAtw,
+  operationModeStateReverse,
+  operationModeZoneReverse,
   setCapabilityTagMappingAtw,
 } from './atw.mts'
 export {
@@ -102,6 +107,7 @@ export {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
   ThermostatModeErv,
+  ventilationModeReverse,
 } from './erv.mts'
 export {
   type DeviceDetails,
@@ -112,3 +118,10 @@ export {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
 } from './generic.mts'
+export {
+  type HomeCapabilitiesAta,
+  type HomeGetCapabilitiesAta,
+  type HomeListCapabilitiesAta,
+  type HomeSetCapabilitiesAta,
+  homeSetCapabilityTagMappingAta,
+} from './home-ata.mts'

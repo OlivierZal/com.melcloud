@@ -266,5 +266,53 @@
                 </fieldset>
             </div>
         </div>
+        <!-- MELCloud Home authentication -->
+        <div id="home_authenticating" hidden>
+            <fieldset class="homey-form-fieldset">
+                <legend class="homey-form-legend" data-i18n="settings.home.authenticate.legend"></legend>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        data-i18n="settings.home.authenticate.username"
+                        for="home_username"
+                    ></label>
+                    <input
+                        id="home_username"
+                        type="text"
+                        class="homey-form-input"
+                        autocomplete="username"
+                    >
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        data-i18n="settings.home.authenticate.password"
+                        for="home_password"
+                    ></label>
+                    <input
+                        id="home_password"
+                        type="password"
+                        class="homey-form-input"
+                        autocomplete="current-password"
+                    >
+                </div>
+                <div class="homey-form-group">
+                    <button
+                        id="home_authenticate"
+                        type="button"
+                        class="homey-button-primary-full"
+                        aria-label="Authenticate"
+                        data-i18n="settings.home.authenticate.button"
+                    ></button>
+                </div>
+            </fieldset>
+        </div>
+        <!-- Shown after Home authentication -->
+        <div id="home_authenticated" hidden>
+            <fieldset class="homey-form-fieldset">
+                <legend class="homey-form-legend" data-i18n="settings.home.authenticated.legend"></legend>
+                <p data-i18n="settings.home.authenticated.message"></p>
+            </fieldset>
+        </div>
     </body>
 </html>

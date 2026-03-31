@@ -62,6 +62,15 @@ const api = {
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
   },
+  async homeLogin({
+    body,
+    homey: { app },
+  }: {
+    body: LoginCredentials
+    homey: Homey
+  }): Promise<boolean> {
+    return app.homeLogin(body)
+  },
   async login({
     body,
     homey: { app },

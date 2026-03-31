@@ -43,18 +43,19 @@ vi.mock('homey', async () => {
   }
 })
 
-vi.mock('../../decorators/add-to-logs.mts', () => ({
-  addToLogs:
-    () =>
-    <T>(target: T): T =>
-      target,
+const { identityDecorator } = vi.hoisted(() => ({
+  identityDecorator: <T>(target: T): T => target,
+}))
+
+vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
+  addToLogs: (): typeof identityDecorator => identityDecorator,
 }))
 
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', async () => {
+vi.mock(import('../../drivers/base-report.mts'), async () => {
   const { createEnergyReportMock } = await import('../helpers.ts')
   return createEnergyReportMock()
 })
@@ -68,6 +69,36 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
   manifest: mock({ capabilities: [], id: 'melcloud_atw' }),
   setCapabilityTagMapping: mock<SetCapabilityTagMapping<AtwType>>({}),
 })
+
+const mockAtwFacade = (
+  target: any,
+  overrides: {
+    hotWater?: { operationalState: OperationModeStateHotWater }
+    zone1?: { operationalState: OperationModeStateZone }
+    zone2?: { operationalState: OperationModeStateZone }
+  },
+): void => {
+  Object.defineProperty(target, 'facade', {
+    configurable: true,
+    value: {
+      hotWater: overrides.hotWater ?? {
+        operationalState: OperationModeStateHotWater.idle,
+      },
+      type: DeviceType.Atw,
+      zone1: overrides.zone1 ?? {
+        operationalState: OperationModeStateZone.idle,
+      },
+      ...('zone2' in overrides && { zone2: overrides.zone2 }),
+    },
+  })
+}
+
+const callSetCapabilityValues = async (target: any): Promise<void> =>
+  (
+    target as unknown as {
+      setCapabilityValues: (data: ListDeviceDataAtw) => Promise<void>
+    }
+  ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
 
 describe(MELCloudDeviceAtw, () => {
   let device: any
@@ -149,38 +180,11 @@ describe(MELCloudDeviceAtw, () => {
   })
 
   describe('operation mode state mapping', () => {
-    const mockFacade = (overrides: {
-      hotWater?: { operationalState: OperationModeStateHotWater }
-      zone1?: { operationalState: OperationModeStateZone }
-      zone2?: { operationalState: OperationModeStateZone }
-    }): void => {
-      Object.defineProperty(device, 'facade', {
-        configurable: true,
-        value: {
-          hotWater: overrides.hotWater ?? {
-            operationalState: OperationModeStateHotWater.idle,
-          },
-          type: DeviceType.Atw,
-          zone1: overrides.zone1 ?? {
-            operationalState: OperationModeStateZone.idle,
-          },
-          ...('zone2' in overrides && { zone2: overrides.zone2 }),
-        },
-      })
-    }
-
-    const callSetCapabilityValues = async (): Promise<void> =>
-      (
-        device as unknown as {
-          setCapabilityValues: (data: ListDeviceDataAtw) => Promise<void>
-        }
-      ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
-
     it('should set hot water operation state to dhw when facade reports dhw', async () => {
-      mockFacade({
+      mockAtwFacade(device, {
         hotWater: { operationalState: OperationModeStateHotWater.dhw },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state.hot_water',
@@ -189,10 +193,10 @@ describe(MELCloudDeviceAtw, () => {
     })
 
     it('should set hot water operation state to prohibited when facade reports prohibited', async () => {
-      mockFacade({
+      mockAtwFacade(device, {
         hotWater: { operationalState: OperationModeStateHotWater.prohibited },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state.hot_water',
@@ -201,10 +205,10 @@ describe(MELCloudDeviceAtw, () => {
     })
 
     it('should set zone1 operation state from facade', async () => {
-      mockFacade({
+      mockAtwFacade(device, {
         zone1: { operationalState: OperationModeStateZone.prohibited },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state.zone1',
@@ -213,10 +217,10 @@ describe(MELCloudDeviceAtw, () => {
     })
 
     it('should set zone operation state to idle from facade', async () => {
-      mockFacade({
+      mockAtwFacade(device, {
         zone1: { operationalState: OperationModeStateZone.idle },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state.zone1',
@@ -225,10 +229,10 @@ describe(MELCloudDeviceAtw, () => {
     })
 
     it('should set zone2 operation state when capability is present and facade has zone2', async () => {
-      mockFacade({
+      mockAtwFacade(device, {
         zone2: { operationalState: OperationModeStateZone.heating },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state.zone2',
@@ -240,10 +244,10 @@ describe(MELCloudDeviceAtw, () => {
       hasCapabilityMock.mockImplementation(
         (cap: string) => cap !== 'operational_state.zone2',
       )
-      mockFacade({
+      mockAtwFacade(device, {
         zone2: { operationalState: OperationModeStateZone.idle },
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       const zone2Calls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) => call[0] === 'operational_state.zone2',
@@ -257,7 +261,7 @@ describe(MELCloudDeviceAtw, () => {
         configurable: true,
         value: undefined,
       })
-      await callSetCapabilityValues()
+      await callSetCapabilityValues(device)
 
       const opStateCalls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) =>

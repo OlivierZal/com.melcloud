@@ -13,18 +13,19 @@ vi.mock('homey', async () => {
   return { default: { Device: createMockDeviceClass() } }
 })
 
-vi.mock('../../decorators/add-to-logs.mts', () => ({
-  addToLogs:
-    () =>
-    <T>(target: T): T =>
-      target,
+const { identityDecorator } = vi.hoisted(() => ({
+  identityDecorator: <T>(target: T): T => target,
+}))
+
+vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
+  addToLogs: (): typeof identityDecorator => identityDecorator,
 }))
 
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
-vi.mock('../../drivers/base-report.mts', async () => {
+vi.mock(import('../../drivers/base-report.mts'), async () => {
   const { createEnergyReportMock } = await import('../helpers.ts')
   return createEnergyReportMock()
 })

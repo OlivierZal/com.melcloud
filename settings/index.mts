@@ -470,6 +470,98 @@ class AuthManager {
   }
 }
 
+// ── HomeAuthManager ──
+
+class HomeAuthManager {
+  readonly #authenticatedElement: HTMLDivElement
+
+  readonly #authenticateElement: HTMLButtonElement
+
+  readonly #authenticatingElement: HTMLDivElement
+
+  readonly #homey: Homey
+
+  readonly #passwordElement: HTMLInputElement
+
+  readonly #usernameElement: HTMLInputElement
+
+  public constructor(homey: Homey) {
+    this.#homey = homey
+    this.#authenticateElement = getButtonElement('home_authenticate')
+    this.#authenticatedElement = getDivElement('home_authenticated')
+    this.#authenticatingElement = getDivElement('home_authenticating')
+    this.#usernameElement = getInputElement('home_username')
+    this.#passwordElement = getInputElement('home_password')
+  }
+
+  public addEventListeners(): void {
+    this.#authenticateElement.addEventListener('click', () => {
+      this.#login().catch(() => {
+        // Errors are handled internally via homey.alert in #login
+      })
+    })
+  }
+
+  public needsAuthentication(isRequired = true): void {
+    hide(this.#authenticatedElement, isRequired)
+    hide(this.#authenticatingElement, !isRequired)
+  }
+
+  public setCredentials({
+    homePassword,
+    homeUsername,
+  }: {
+    homePassword?: string | null
+    homeUsername?: string | null
+  }): void {
+    if (
+      homeUsername !== undefined &&
+      homeUsername !== null &&
+      homeUsername !== ''
+    ) {
+      this.#usernameElement.value = homeUsername
+    }
+    if (
+      homePassword !== undefined &&
+      homePassword !== null &&
+      homePassword !== ''
+    ) {
+      this.#passwordElement.value = homePassword
+    }
+  }
+
+  async #login(): Promise<void> {
+    const { value: username } = this.#usernameElement
+    const { value: password } = this.#passwordElement
+    if (username === '' || password === '') {
+      this.#homey
+        .alert(this.#homey.__('settings.authenticate.failure'))
+        .catch(() => {
+          // Best-effort UI notification: the alert itself is the error display
+        })
+      return
+    }
+    await withDisablingButton(this.#authenticateElement.id, async () => {
+      try {
+        const isLoggedIn = await homeyApiPost<boolean>(
+          this.#homey,
+          '/home/sessions',
+          { password, username } satisfies LoginCredentials,
+        )
+        if (isLoggedIn) {
+          this.needsAuthentication(false)
+        } else {
+          await this.#homey.alert(
+            this.#homey.__('settings.authenticate.failure'),
+          )
+        }
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
+  }
+}
+
 // ── ErrorLogManager ──
 
 class ErrorLogManager {
@@ -1348,6 +1440,8 @@ class SettingsApp {
 
   readonly #errorLogManager: ErrorLogManager
 
+  readonly #homeAuthManager: HomeAuthManager
+
   readonly #homey: Homey
 
   readonly #zoneSettingsManager: ZoneSettingsManager
@@ -1363,11 +1457,18 @@ class SettingsApp {
     this.#authManager = new AuthManager(homey, async () =>
       this.#loadPostLogin(),
     )
+    this.#homeAuthManager = new HomeAuthManager(homey)
   }
 
   public async init(): Promise<void> {
-    const { contextKey, password, username } =
-      await SettingsApp.#fetchHomeySettings(this.#homey)
+    const {
+      contextKey,
+      homeExpiry,
+      homePassword,
+      homeUsername,
+      password,
+      username,
+    } = await SettingsApp.#fetchHomeySettings(this.#homey)
     await SettingsApp.#setDocumentLanguage(this.#homey)
     await this.#deviceSettingsManager.fetchDeviceSettings()
     const driverSettings =
@@ -1376,13 +1477,15 @@ class SettingsApp {
       password,
       username,
     })
+    this.#homeAuthManager.setCredentials({ homePassword, homeUsername })
     this.#addEventListeners()
-    await this.#load(contextKey)
+    await this.#load(contextKey, homeExpiry)
     this.#homey.ready()
   }
 
   #addEventListeners(): void {
     this.#authManager.addEventListeners()
+    this.#homeAuthManager.addEventListeners()
     this.#errorLogManager.addEventListeners()
     this.#zoneSettingsManager.addEventListeners()
     getButtonElement('auto_adjust').addEventListener('click', () => {
@@ -1417,7 +1520,10 @@ class SettingsApp {
     await this.#zoneSettingsManager.fetchZoneSettings()
   }
 
-  async #load(contextKey?: string | null): Promise<void> {
+  async #load(
+    contextKey?: string | null,
+    homeExpiry?: string | null,
+  ): Promise<void> {
     if (contextKey !== undefined) {
       try {
         await this.#fetchBuildings()
@@ -1428,6 +1534,11 @@ class SettingsApp {
       }
     }
     this.#authManager.needsAuthentication()
+    if (homeExpiry !== undefined && homeExpiry !== null && homeExpiry !== '') {
+      this.#homeAuthManager.needsAuthentication(false)
+    } else {
+      this.#homeAuthManager.needsAuthentication()
+    }
   }
 
   async #loadPostLogin(): Promise<void> {

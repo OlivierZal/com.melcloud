@@ -3,19 +3,12 @@
     @typescript-eslint/consistent-type-imports,
     @typescript-eslint/unbound-method,
 */
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type {
-  EnergyCapabilityTagMapping,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  SetCapabilityTagMapping,
-} from '../../types/index.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import { assertDefined, mock } from '../helpers.ts'
-
-type TestDriverType = typeof DeviceType.Ata
+import { type TestDriverType, TestDriver } from './base-driver-test-driver.ts'
 
 const registerRunListenerMock = vi.fn()
 const authenticateMock = vi.fn()
@@ -52,39 +45,6 @@ vi.mock('homey', () => {
 
   return { default: { Driver: MockDriver } }
 })
-
-class TestDriver extends BaseMELCloudDriver<TestDriverType> {
-  public readonly energyCapabilityTagMapping = mock<
-    EnergyCapabilityTagMapping<TestDriverType>
-  >({
-    measure_power: ['Auto', 'Cooling'],
-  })
-
-  public readonly getCapabilitiesOptions = vi.fn().mockReturnValue({})
-
-  public readonly getCapabilityTagMapping = mock<
-    GetCapabilityTagMapping<TestDriverType>
-  >({
-    measure_temperature: 'RoomTemperature',
-  })
-
-  public readonly listCapabilityTagMapping = mock<
-    ListCapabilityTagMapping<TestDriverType>
-  >({})
-
-  public readonly setCapabilityTagMapping = mock<
-    SetCapabilityTagMapping<TestDriverType>
-  >({
-    onoff: 'Power',
-    thermostat_mode: 'OperationMode',
-  })
-
-  public readonly type: TestDriverType = 0
-
-  public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
-    return ['onoff', 'measure_temperature']
-  }
-}
 
 describe(BaseMELCloudDriver, () => {
   let driver: TestDriver
@@ -283,11 +243,13 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should group tags ending with Produced into produced mapping', async () => {
-      const driverWithProduced = new (class extends TestDriver {
-        public override readonly energyCapabilityTagMapping = {
+      const driverWithProduced =
+        new (TestDriver as unknown as new () => TestDriver)()
+      Object.defineProperty(driverWithProduced, 'energyCapabilityTagMapping', {
+        value: {
           measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
-        } as unknown as EnergyCapabilityTagMapping<TestDriverType>
-      })()
+        } as unknown as EnergyCapabilityTagMapping<TestDriverType>,
+      })
       await driverWithProduced.onInit()
 
       expect(driverWithProduced.producedTagMapping.measure_power).toStrictEqual(

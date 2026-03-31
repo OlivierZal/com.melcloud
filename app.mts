@@ -8,6 +8,7 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
+  type HomeDevice,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
@@ -16,8 +17,10 @@ import {
   DeviceType,
   FacadeManager,
   FanSpeed,
+  HomeDeviceAtaFacade,
   Horizontal,
   MELCloudAPI,
+  MELCloudHomeAPI,
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
@@ -148,10 +151,16 @@ export default class MELCloudApp extends App {
 
   #facadeManager!: FacadeManager
 
+  #homeApi!: MELCloudHomeAPI
+
   declare public readonly homey: Homey.Homey
 
   public get api(): MELCloudAPI {
     return this.#api
+  }
+
+  public get homeApi(): MELCloudHomeAPI {
+    return this.#homeApi
   }
 
   public override async onInit(): Promise<void> {
@@ -159,22 +168,8 @@ export default class MELCloudApp extends App {
     const timezone = this.homey.clock.getTimezone()
     LuxonSettings.defaultLocale = language
     LuxonSettings.defaultZone = timezone
-    this.#api = await MELCloudAPI.create({
-      language,
-      logger: {
-        error: (...args: unknown[]) => {
-          this.error(...args)
-        },
-        log: (...args: unknown[]) => {
-          this.log(...args)
-        },
-      },
-      settingManager: this.homey.settings,
-      timezone,
-      onSync: async (params) => this.#syncFromDevices(params),
-    })
-    this.#facadeManager = new FacadeManager(this.#api, this.#api.registry)
-    setFacadeManager(this.#facadeManager)
+    await this.#initApi({ language, timezone })
+    await this.#initHomeApi()
     this.#createNotification(language)
     this.#registerWidgetListeners()
   }
@@ -320,6 +315,23 @@ export default class MELCloudApp extends App {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
+  public async getHomeDevices(): Promise<HomeDevice[]> {
+    const context = await this.#homeApi.list()
+    return [
+      ...(context?.buildings ?? []),
+      ...(context?.guestBuildings ?? []),
+    ].flatMap(({ airToAirUnits }) => airToAirUnits)
+  }
+
+  public async getHomeFacade(deviceId: string): Promise<HomeDeviceAtaFacade> {
+    const devices = await this.getHomeDevices()
+    const device = devices.find(({ id }) => id === deviceId)
+    if (!device) {
+      throw new Error(this.homey.__('errors.deviceNotFound'))
+    }
+    return new HomeDeviceAtaFacade(this.#homeApi, device)
+  }
+
   public async getHourlyTemperatures(
     deviceId: string,
     hour?: HourNumbers,
@@ -354,6 +366,10 @@ export default class MELCloudApp extends App {
       from: now.minus({ days }).toISO({ includeOffset: false }),
       to: now.toISO({ includeOffset: false }),
     })
+  }
+
+  public async homeLogin(data: LoginCredentials): Promise<boolean> {
+    return this.#homeApi.authenticate(data)
   }
 
   public async login(data: LoginCredentials): Promise<boolean> {
@@ -409,6 +425,20 @@ export default class MELCloudApp extends App {
     handleResponse(data.AttributeErrors)
   }
 
+  #createLogger(): {
+    error: (...args: unknown[]) => void
+    log: (...args: unknown[]) => void
+  } {
+    return {
+      error: (...args: unknown[]): void => {
+        this.error(...args)
+      },
+      log: (...args: unknown[]): void => {
+        this.log(...args)
+      },
+    }
+  }
+
   #createNotification(language: string): void {
     const { homey } = this
     const {
@@ -432,6 +462,22 @@ export default class MELCloudApp extends App {
           }
         }, NOTIFICATION_DELAY)
       }
+    }
+  }
+
+  #createSettingManager(prefix: string): {
+    get: (key: string) => string | null | undefined
+    set: (key: string, value: string) => void
+  } {
+    const prefixKey = (key: string): string =>
+      `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+    return {
+      get: (key: string): string | null | undefined =>
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        this.homey.settings.get(prefixKey(key)) as string | null | undefined,
+      set: (key: string, value: string): void => {
+        this.homey.settings.set(prefixKey(key), value)
+      },
     }
   }
 
@@ -493,6 +539,31 @@ export default class MELCloudApp extends App {
       return ids === undefined ? devices : (
           devices.filter(({ id }) => ids.includes(id))
         )
+    })
+  }
+
+  async #initApi({
+    language,
+    timezone,
+  }: {
+    language: string
+    timezone: string
+  }): Promise<void> {
+    this.#api = await MELCloudAPI.create({
+      language,
+      logger: this.#createLogger(),
+      settingManager: this.homey.settings,
+      timezone,
+      onSync: async (params) => this.#syncFromDevices(params),
+    })
+    this.#facadeManager = new FacadeManager(this.#api, this.#api.registry)
+    setFacadeManager(this.#facadeManager)
+  }
+
+  async #initHomeApi(): Promise<void> {
+    this.#homeApi = await MELCloudHomeAPI.create({
+      logger: this.#createLogger(),
+      settingManager: this.#createSettingManager('home'),
     })
   }
 

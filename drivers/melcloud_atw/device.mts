@@ -1,15 +1,15 @@
 import {
   type DeviceType,
   type ListDeviceData,
+  type OperationModeState,
   hasZone2,
   isAtwFacade,
-  OperationModeState,
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
 import type { EnergyReportConfig } from '../base-report.mts'
-import { KILOWATT_TO_WATT, keyOfValue } from '../../lib/index.mts'
+import { KILOWATT_TO_WATT } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
@@ -17,6 +17,8 @@ import {
   type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
+  operationModeStateReverse,
+  operationModeZoneReverse,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
@@ -26,7 +28,7 @@ const convertFromDeviceMeasurePower: ConvertFromDevice<
 
 const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
-> = (value: OperationModeZone) => keyOfValue(OperationModeZone, value)
+> = (value: OperationModeZone) => operationModeZoneReverse[value]
 
 export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
   typeof DeviceType.Atw
@@ -83,7 +85,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
         weekday: 'short',
       }),
     operational_state: (value: OperationModeState) =>
-      keyOfValue(OperationModeState, value),
+      operationModeStateReverse[value],
   }
 
   protected readonly energyReportRegular: EnergyReportConfig = {
