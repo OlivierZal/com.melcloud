@@ -28,6 +28,7 @@ const mockDeviceData = {
   SetTemperature: 22,
 }
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDevice {
     public driver = {}
@@ -98,6 +99,7 @@ vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
   addToLogs: (): typeof identityDecorator => identityDecorator,
 }))
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Identity function return type T is not assignable to T & TimerClass
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))

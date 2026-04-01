@@ -13,6 +13,7 @@ const getHomeDevicesMock = vi.fn()
 const showViewMock = vi.fn()
 const setHandlerMock = vi.fn()
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDriver {
     public homey = {

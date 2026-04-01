@@ -35,6 +35,7 @@ import { assertDefined, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock App constructor is not assignable to typeof App
 vi.mock('../../lib/homey.mts', () => ({
   App: Function,
 }))
@@ -44,6 +45,7 @@ vi.mock(import('../../lib/get-zones.mts'), async (importOriginal) => ({
   setFacadeManager: mockSetFacadeManager,
 }))
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Partial mock data is not assignable to the full file exports
 vi.mock('../../files.mts', async (importOriginal) => {
   const original = await importOriginal<typeof FilesModule>()
   return {
@@ -101,6 +103,7 @@ const mockHomeApiInstance = {
 const mockFacadeManagerGet = vi.fn()
 const mockFacadeManagerGetZones = vi.fn().mockReturnValue([])
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof MELCloudAPI
 vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
   ...(await importOriginal()),
   FacadeManager: vi.fn(),

@@ -10,6 +10,7 @@ import {
 import { testDriverType, testTagMappings } from '../helpers.ts'
 import MELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
   const { createMockDriverClass } = await import('../helpers.ts')
   return { default: { Driver: createMockDriverClass() } }

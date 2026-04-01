@@ -695,7 +695,6 @@ const config = defineConfig([
       'vitest/max-expects': 'off',
       'vitest/no-hooks': 'off',
       'vitest/prefer-expect-assertions': 'off',
-      'vitest/prefer-import-in-mock': 'off',
       'vitest/require-hook': 'off',
       'vitest/require-mock-type-parameters': 'off',
     },

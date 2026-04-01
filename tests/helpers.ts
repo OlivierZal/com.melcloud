@@ -37,11 +37,12 @@ export const testTagMappings = (
   mappings: Record<string, unknown>,
 ): void => {
   describe('tag mappings', () => {
-    for (const [name, expected] of Object.entries(mappings)) {
-      it(`should use the correct ${name}`, () => {
+    it.each(Object.entries(mappings))(
+      'should use the correct %s',
+      (name, expected) => {
         expect((getDriver() as Record<string, unknown>)[name]).toBe(expected)
-      })
-    }
+      },
+    )
   })
 }
 
@@ -51,16 +52,10 @@ export const testEnergyReportConfig = (
   expected: object | null,
 ): void => {
   describe(property, () => {
-    if (expected === null) {
-      it('should be null', () => {
-        expect((getDevice() as Record<string, unknown>)[property]).toBeNull()
-      })
-    } else {
-      it('should have correct config', () => {
-        expect(
-          (getDevice() as Record<string, unknown>)[property],
-        ).toStrictEqual(expected)
-      })
-    }
+    it('should match expected config', () => {
+      expect((getDevice() as Record<string, unknown>)[property]).toStrictEqual(
+        expected,
+      )
+    })
   })
 }

@@ -11,6 +11,7 @@ import { ThermostatModeAta } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
 import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
   const { createMockDeviceClass: create } = await import('../helpers.ts')
   return { default: { Device: create() } }
@@ -24,6 +25,7 @@ vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
   addToLogs: (): typeof identityDecorator => identityDecorator,
 }))
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Identity function return type T is not assignable to T & TimerClass
 vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
