@@ -10,14 +10,13 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": ".homeybuild",
     "rewriteRelativeImportExtensions": true,
     "skipLibCheck": true,
-    "strict": true,
-    "target": "es2024",
+    "target": "es2025",
+    "types": ["node", "luxon"],
     "verbatimModuleSyntax": true
   },
   "exclude": ["*.config.ts", "eslint-utils"]

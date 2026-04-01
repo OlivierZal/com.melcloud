@@ -10,6 +10,7 @@ export default defineConfig({
           decorators: true,
           syntax: 'typescript',
         },
+        target: 'es2024',
         transform: {
           decoratorVersion: '2022-03',
         },
