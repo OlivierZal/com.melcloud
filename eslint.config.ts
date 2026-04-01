@@ -672,6 +672,7 @@ const config = defineConfig([
     language: 'markdown/gfm',
     rules: {
       'markdown/no-bare-urls': 'error',
+      'markdown/fenced-code-meta': 'error',
       'markdown/no-duplicate-headings': 'error',
       'markdown/no-html': 'error',
     },
