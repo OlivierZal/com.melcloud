@@ -126,7 +126,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(clearTimeoutMock).toHaveBeenCalled()
+      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
     })
 
     it('should fetch energy data and schedule when entries exist', async () => {
@@ -137,8 +137,10 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(getEnergyMock).toHaveBeenCalled()
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(getEnergyMock).toHaveBeenCalledWith(
+        expect.objectContaining({ from: '2026-03-18', to: '2026-03-18' }),
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
     it('should log error when getEnergy fails', async () => {
@@ -154,7 +156,7 @@ describe(EnergyReport, () => {
         'Energy report fetch failed:',
         energyError,
       )
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
     it('should not schedule twice', async () => {
@@ -174,7 +176,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -183,7 +185,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       report.unschedule()
 
-      expect(clearTimeoutMock).toHaveBeenCalled()
+      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
       expect(logMock).toHaveBeenCalledWith(
         'regular energy report has been cancelled',
       )
@@ -201,7 +203,10 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_power',
+        11_000,
+      )
     })
 
     it('should calculate energy values for total mode using total entries', async () => {
@@ -217,7 +222,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 150)
     })
 
     it('should use zero fallback when hourly array element is undefined', async () => {
@@ -229,7 +234,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 0)
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
@@ -254,7 +259,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 5500)
     })
   })
 
@@ -316,7 +321,11 @@ describe(EnergyReport, () => {
       assertDefined(timeoutCallback)
       await timeoutCallback()
 
-      expect(setIntervalMock).toHaveBeenCalled()
+      expect(setIntervalMock).toHaveBeenCalledWith(
+        expect.any(Function),
+        { hours: 1 },
+        'regular energy report',
+      )
 
       const intervalCallback = setIntervalMock.mock.calls.at(0)?.at(0) as
         | (() => Promise<void>)
@@ -324,7 +333,7 @@ describe(EnergyReport, () => {
       assertDefined(intervalCallback)
       await intervalCallback()
 
-      expect(fetchDeviceMock).toHaveBeenCalled()
+      expect(fetchDeviceMock).toHaveBeenCalledWith()
     })
   })
 

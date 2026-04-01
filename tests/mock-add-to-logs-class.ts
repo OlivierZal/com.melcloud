@@ -7,13 +7,15 @@ const errorSpy = vi.fn()
 
 @addToLogs('getLabel()')
 class TestClassWithNonZeroArgMethod {
+  readonly #label = 'label'
+
   public error(...args: unknown[]): void {
     errorSpy.call(this, ...args)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Parameter needed for function arity check, argsIgnorePattern doesn't match
   public getLabel(_prefix: string): string {
-    return 'label'
+    return this.#label
   }
 
   public log(...args: unknown[]): void {

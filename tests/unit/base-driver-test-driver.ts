@@ -42,6 +42,6 @@ export class TestDriver extends BaseMELCloudDriver<TestDriverType> {
   public readonly type: TestDriverType = 0
 
   public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
-    return ['onoff', 'measure_temperature']
+    return Object.keys(this.setCapabilityTagMapping)
   }
 }

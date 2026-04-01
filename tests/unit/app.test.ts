@@ -272,7 +272,18 @@ describe('melCloudApp', () => {
           timezone: 'Europe/Paris',
         }),
       )
-      expect(mockHomeCreate).toHaveBeenCalled()
+      expect(mockHomeCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          logger: expect.objectContaining({
+            error: expect.any(Function),
+            log: expect.any(Function),
+          }),
+          settingManager: expect.objectContaining({
+            get: expect.any(Function),
+            set: expect.any(Function),
+          }),
+        }),
+      )
       expect(FacadeManager).toHaveBeenCalledTimes(1)
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
@@ -355,7 +366,7 @@ describe('melCloudApp', () => {
       expect(capabilities).toBeInstanceOf(Array)
       expect(capabilities.length).toBeGreaterThan(0)
 
-      const firstCapability = capabilities[0]
+      const [firstCapability] = capabilities
 
       expect(firstCapability).toBeDefined()
 

@@ -285,7 +285,7 @@ describe(HomeBaseMELCloudDevice, () => {
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ power: true })
     })
 
     it('should use capabilityToDevice converter when present', async () => {
@@ -347,7 +347,10 @@ describe(HomeBaseMELCloudDevice, () => {
       assertDefined(callback)
       await callback({ thermostat_mode: 'heat' })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({
+        operationMode: 'heat',
+        power: true,
+      })
     })
 
     it('should not modify thermostat_mode when thermostat does not support off', async () => {
@@ -438,7 +441,7 @@ describe(HomeBaseMELCloudDevice, () => {
       assertDefined(callback)
       await callback({ onoff: true })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ power: true })
     })
   })
 

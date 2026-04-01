@@ -447,7 +447,7 @@ describe(BaseMELCloudDevice, () => {
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ Power: true })
     })
 
     it('should handle thermostat_mode off when thermostat supports off', async () => {
@@ -460,7 +460,7 @@ describe(BaseMELCloudDevice, () => {
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ Power: false })
     })
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
@@ -473,7 +473,10 @@ describe(BaseMELCloudDevice, () => {
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({
+        Power: true,
+        undefined: 'heat',
+      })
     })
 
     it('should handle setValues error with warning', async () => {
@@ -570,7 +573,9 @@ describe(BaseMELCloudDevice, () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.onInit()
 
-      expect(superAddCapabilityMock).toHaveBeenCalled()
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('fan_speed')
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('onoff')
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('measure_temperature')
     })
 
     it('should remove capabilities not in required set', async () => {
@@ -611,7 +616,7 @@ describe(BaseMELCloudDevice, () => {
   describe('energy report handling', () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
+      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithRegular = new TestDevice()
       Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
         value: {
@@ -632,7 +637,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should create energy report for total config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
+      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithTotal = new TestDevice()
       Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
         value: {
@@ -660,7 +665,8 @@ describe(BaseMELCloudDevice, () => {
       await device.fetchDevice()
       await device.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalled()
+      expect(superSetWarningMock).toHaveBeenCalledWith('Not found')
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
     it('should not set capability values when fetchData returns null via fetchDevice', async () => {
@@ -695,7 +701,8 @@ describe(BaseMELCloudDevice, () => {
       )
       await errorDevice.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalled()
+      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
   })
 })

@@ -1,7 +1,3 @@
-/* eslint-disable
-    vitest/no-conditional-tests,
-    vitest/prefer-each,
-*/
 import { describe, expect, it, vi } from 'vitest'
 
 // eslint-disable-next-line func-style -- TS requires function declaration for asserts predicates
@@ -22,76 +18,7 @@ export const createEnergyReportMock = (): {
   })),
 })
 
-const applyOverrides = (
-  target: object,
-  overrides?: Record<string, unknown>,
-): void => {
-  if (overrides) {
-    Object.assign(target, overrides)
-  }
-}
-
-export const createMockDeviceClass = (
-  overrides?: Record<string, unknown>,
-): new () => any => {
-  class MockDevice {
-    public addCapability = vi.fn()
-
-    public driver = {}
-
-    public error = vi.fn()
-
-    public getCapabilities = vi.fn().mockReturnValue([])
-
-    public getCapabilityOptions = vi.fn()
-
-    public getCapabilityValue = vi.fn()
-
-    public getData = vi.fn().mockReturnValue({ id: 1 })
-
-    public getSetting = vi.fn()
-
-    public getSettings = vi.fn().mockReturnValue({})
-
-    public hasCapability = vi.fn().mockReturnValue(true)
-
-    public homey = {
-      __: vi.fn(),
-      api: { realtime: vi.fn() },
-      app: { getFacade: vi.fn() },
-      clearInterval: vi.fn(),
-      clearTimeout: vi.fn(),
-      setInterval: vi.fn(),
-      setTimeout: vi.fn(),
-    }
-
-    public log = vi.fn()
-
-    public registerMultipleCapabilityListener = vi.fn()
-
-    public setCapabilityOptions = vi.fn()
-
-    public setCapabilityValue = vi.fn()
-
-    public setSettings = vi.fn()
-
-    public triggerCapabilityListener = vi.fn()
-
-    public constructor() {
-      applyOverrides(this, overrides)
-    }
-
-    public async removeCapability(): Promise<void> {
-      await Promise.resolve()
-    }
-
-    public async setWarning(): Promise<void> {
-      await Promise.resolve()
-    }
-  }
-  return MockDevice
-}
-
+export { createMockDeviceClass } from './mock-device-class.ts'
 export { createMockDriverClass } from './mock-driver-class.ts'
 
 export const testDriverType = (
@@ -106,31 +33,33 @@ export const testDriverType = (
 }
 
 export const testTagMappings = (
-  getDriver: () => any,
+  getDriver: () => object,
   mappings: Record<string, unknown>,
 ): void => {
   describe('tag mappings', () => {
     for (const [name, expected] of Object.entries(mappings)) {
       it(`should use the correct ${name}`, () => {
-        expect(getDriver()[name]).toBe(expected)
+        expect((getDriver() as Record<string, unknown>)[name]).toBe(expected)
       })
     }
   })
 }
 
 export const testEnergyReportConfig = (
-  getDevice: () => any,
+  getDevice: () => object,
   property: string,
   expected: object | null,
 ): void => {
   describe(property, () => {
     if (expected === null) {
       it('should be null', () => {
-        expect(getDevice()[property]).toBeNull()
+        expect((getDevice() as Record<string, unknown>)[property]).toBeNull()
       })
     } else {
       it('should have correct config', () => {
-        expect(getDevice()[property]).toStrictEqual(expected)
+        expect(
+          (getDevice() as Record<string, unknown>)[property],
+        ).toStrictEqual(expected)
       })
     }
   })

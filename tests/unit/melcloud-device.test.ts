@@ -72,20 +72,20 @@ describe(MELCloudDeviceAta, () => {
       ['horizontal', Horizontal.center, 'center'],
       ['vertical', Vertical.auto, 'auto'],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.deviceToCapability[key]
+      const { [key]: converter } = device.deviceToCapability
 
       expect(converter?.(input)).toBe(expected)
     })
 
     it('should convert thermostat_mode to key when Power is on', () => {
-      const converter = device.deviceToCapability.thermostat_mode
+      const { thermostat_mode: converter } = device.deviceToCapability
       const data = mock<ListDeviceDataAta>({ Power: true })
 
       expect(converter?.(OperationMode.heat, data)).toBe('heat')
     })
 
     it('should return off for thermostat_mode when Power is off', () => {
-      const converter = device.deviceToCapability.thermostat_mode
+      const { thermostat_mode: converter } = device.deviceToCapability
       const data = mock<ListDeviceDataAta>({ Power: false })
 
       expect(converter?.(OperationMode.heat, data)).toBe(ThermostatModeAta.off)
@@ -98,7 +98,7 @@ describe(MELCloudDeviceAta, () => {
       ['thermostat_mode', 'heat', OperationMode.heat],
       ['vertical', 'middle', Vertical.middle],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.capabilityToDevice[key]
+      const { [key]: converter } = device.capabilityToDevice
 
       expect(converter?.(input)).toBe(expected)
     })

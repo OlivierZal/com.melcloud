@@ -66,19 +66,32 @@ describe(BaseMELCloudDriver, () => {
     it('should register run listeners for flow cards', async () => {
       await driver.onInit()
 
-      expect(registerRunListenerMock).toHaveBeenCalled()
+      expect(registerRunListenerMock).toHaveBeenCalledWith(expect.any(Function))
     })
 
     it('should register condition listeners for all capabilities', async () => {
       await driver.onInit()
 
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalled()
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'onoff_condition',
+      )
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'thermostat_mode_condition',
+      )
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'measure_temperature_condition',
+      )
     })
 
     it('should register action listeners for set capabilities', async () => {
       await driver.onInit()
 
-      expect(driver.homey.flow.getActionCard).toHaveBeenCalled()
+      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
+        'onoff_action',
+      )
+      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
+        'thermostat_mode_action',
+      )
     })
   })
 
@@ -214,7 +227,7 @@ describe(BaseMELCloudDriver, () => {
 
       expect(devices).toStrictEqual([
         {
-          capabilities: ['onoff', 'measure_temperature'],
+          capabilities: ['onoff', 'thermostat_mode'],
           capabilitiesOptions: {},
           data: { id: 1 },
           name: 'Device 1',

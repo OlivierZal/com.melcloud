@@ -9,10 +9,17 @@ const applyOverrides = (
   }
 }
 
+interface MockDriverInstance {
+  getDevices: ReturnType<typeof vi.fn>
+  homey: Record<string, unknown>
+  log: ReturnType<typeof vi.fn>
+  manifest: Record<string, unknown>
+}
+
 export const createMockDriverClass = (
   overrides?: Record<string, unknown>,
-): new () => any => {
-  class MockDriver {
+): new () => MockDriverInstance => {
+  class MockDriver implements MockDriverInstance {
     public getDevices = vi.fn().mockReturnValue([])
 
     public homey = {
