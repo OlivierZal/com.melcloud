@@ -1,3 +1,25 @@
+import { typedFromEntries } from '../lib/index.mts'
+
+export const localizeWithAffix = (
+  base: LocalizedStrings,
+  affix: LocalizedStrings,
+  position: 'prefix' | 'suffix',
+): LocalizedStrings => ({
+  ...typedFromEntries(
+    Object.entries(affix).map(([language, localizedAffix]) => [
+      language,
+      /* v8 ignore next */
+      position === 'prefix' ?
+        `${localizedAffix ?? affix.en} ${(base[language] ?? base.en).toLowerCase()}`
+      : `${base[language] ?? base.en} ${localizedAffix ?? affix.en}`,
+    ]),
+  ),
+  en:
+    position === 'prefix' ?
+      `${affix.en} ${base.en.toLowerCase()}`
+    : `${base.en} ${affix.en}`,
+})
+
 export interface BaseGetCapabilities {
   readonly measure_temperature: number
 }

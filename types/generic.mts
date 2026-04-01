@@ -11,15 +11,18 @@ import type {
   MELCloudDeviceAtw,
   MELCloudDeviceErv,
 } from '../drivers/index.mts'
-import { typedFromEntries } from '../lib/index.mts'
 import type { FlowArgsAta } from './ata.mts'
 import type { FlowArgsAtw } from './atw.mts'
-import type { CapabilitiesOptionsValues, LocalizedStrings } from './bases.mts'
 import type {
   CapabilitiesOptions,
   CapabilitiesOptionsAtaErv,
 } from './capabilities.mts'
 import type { FlowArgsErv } from './erv.mts'
+import {
+  type CapabilitiesOptionsValues,
+  type LocalizedStrings,
+  localizeWithAffix,
+} from './bases.mts'
 
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
@@ -33,16 +36,7 @@ export const getCapabilitiesOptionsAtaErv = ({
 const addPrefixToTitle = (
   title: LocalizedStrings,
   prefix: LocalizedStrings,
-): LocalizedStrings => ({
-  ...typedFromEntries(
-    Object.entries(prefix).map(([language, localizedPrefix]) => [
-      language,
-      /* v8 ignore next */
-      `${localizedPrefix ?? prefix.en} ${(title[language] ?? title.en).toLowerCase()}`,
-    ]),
-  ),
-  en: `${prefix.en} ${title.en.toLowerCase()}`,
-})
+): LocalizedStrings => localizeWithAffix(title, prefix, 'prefix')
 
 const auto: CapabilitiesOptionsValues<'auto'> = {
   id: 'auto',

@@ -30,6 +30,14 @@ const getArg = <T extends DeviceType>(
   return arg as keyof FlowArgs<T>
 }
 
+const tryRegisterFlowCard = (register: () => void): void => {
+  try {
+    register()
+  } catch {
+    // Flow card may not exist for this capability
+  }
+}
+
 export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
@@ -113,7 +121,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
   #registerActionRunListener(
     capability: string & keyof SetCapabilities<T>,
   ): void {
-    try {
+    tryRegisterFlowCard(() => {
       this.homey.flow
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgs<T>) => {
@@ -122,15 +130,13 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
             args[getArg(capability)],
           )
         })
-    } catch {
-      // Flow card may not exist for this capability
-    }
+    })
   }
 
   #registerConditionRunListener(
     capability: string & keyof OperationalCapabilities<T>,
   ): void {
-    try {
+    tryRegisterFlowCard(() => {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
@@ -143,9 +149,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
               value === args[getArg(capability)]
             : value
         })
-    } catch {
-      // Flow card may not exist for this capability
-    }
+    })
   }
 
   #registerRunListeners(): void {

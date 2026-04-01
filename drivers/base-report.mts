@@ -95,12 +95,8 @@ export class EnergyReport<T extends DeviceType> {
   ): number {
     const {
       driver: {
-        producedTagMapping: { [capability]: producedTags = [] },
-      },
-    } = this
-    const {
-      driver: {
         consumedTagMapping: { [capability]: consumedTags = [] },
+        producedTagMapping: { [capability]: producedTags = [] },
       },
     } = this
     return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)

@@ -56,7 +56,7 @@ import {
   fanSpeedValues,
 } from './types/index.mts'
 
-const NOTIFICATION_DELAY = 10_000
+const NOTIFICATION_DELAY_MS = 10_000
 
 const drivers: Record<DeviceType, string> = {
   [DeviceType.Ata]: 'melcloud',
@@ -470,7 +470,7 @@ export default class MELCloudApp extends App {
           } catch {
             // Non-critical: notification display is best-effort
           }
-        }, NOTIFICATION_DELAY)
+        }, NOTIFICATION_DELAY_MS)
       }
     }
   }
@@ -546,9 +546,7 @@ export default class MELCloudApp extends App {
       : [this.homey.drivers.getDriver(driverId)]
     return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return ids === undefined ? devices : (
-          devices.filter(({ id }) => ids.includes(id))
-        )
+      return ids ? devices.filter(({ id }) => ids.includes(id)) : devices
     })
   }
 

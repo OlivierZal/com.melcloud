@@ -103,7 +103,7 @@ export abstract class BaseMELCloudDevice<
     return this.cleanMapping(this.driver.listCapabilityTagMapping)
   }
 
-  get #opCapabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
+  get #operationalCapabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     return typedEntries({
       ...this.#setCapabilityTagMapping,
@@ -213,7 +213,7 @@ export abstract class BaseMELCloudDevice<
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
     await Promise.all(
-      this.#opCapabilityTagEntries.map(async ([capability, tag]) => {
+      this.#operationalCapabilityTagEntries.map(async ([capability, tag]) => {
         if (tag in data) {
           await this.setCapabilityValue(
             capability,
@@ -268,9 +268,7 @@ export abstract class BaseMELCloudDevice<
       const device = await this.fetchDevice()
       return device?.data ?? null
     } catch {
-      await this.setWarning(
-        this.homey.__(this.homey.__('errors.deviceNotFound')),
-      )
+      await this.setWarning(this.homey.__('errors.deviceNotFound'))
       return null
     }
   }
