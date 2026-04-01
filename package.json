@@ -15,7 +15,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:assets && tsc --project tsconfig.build.json",
+    "build": "npm run build:assets && npm run format:fix && tsc --project tsconfig.build.json",
     "build:assets": "npm run build:clean && npm run build:css && npm run build:public",
     "build:clean": "for dir in widgets/ata-group-setting/public widgets/charts/public; do rm -f \"$dir\"/constants.mts \"$dir\"/dom.mts \"$dir\"/zones.mts \"$dir\"/homey-api.mts \"$dir\"/dist.css; done",
     "build:constants": "for dir in widgets/ata-group-setting/public widgets/charts/public; do grep -v sourceMappingURL node_modules/@olivierzal/melcloud-api/dist/constants.js > \"$dir/constants.mts\"; done",
