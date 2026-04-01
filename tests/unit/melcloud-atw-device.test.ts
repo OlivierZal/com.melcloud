@@ -73,7 +73,6 @@ const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
 })
 
 const mockAtwFacade = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked device instance with no usable TypeScript type
   target: any,
   overrides: {
     hotWater?: { operationalState: OperationModeStateHotWater }
@@ -96,7 +95,6 @@ const mockAtwFacade = (
   })
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked device instance with no usable TypeScript type
 const callSetCapabilityValues = async (target: any): Promise<void> =>
   (
     target as unknown as {
@@ -105,7 +103,6 @@ const callSetCapabilityValues = async (target: any): Promise<void> =>
   ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
 
 describe(MELCloudDeviceAtw, () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy (homey + mixins replaced) has no usable TypeScript type
   let device: any
 
   beforeEach(() => {
@@ -113,7 +110,6 @@ describe(MELCloudDeviceAtw, () => {
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy
     device = new (MELCloudDeviceAtw as unknown as new () => any)()
     Object.defineProperty(device, 'driver', {
       configurable: true,
@@ -127,7 +123,7 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  testEnergyReportConfig(() => device, 'energyReportRegular', {
+  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
@@ -135,7 +131,7 @@ describe(MELCloudDeviceAtw, () => {
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   })
 
-  testEnergyReportConfig(() => device, 'energyReportTotal', {
+  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },

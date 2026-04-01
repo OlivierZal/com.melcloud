@@ -680,12 +680,7 @@ const config = defineConfig([
     extends: [vitest.configs.all],
     files: ['tests/**/*.ts'],
     rules: {
-      '@typescript-eslint/init-declarations': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
@@ -699,6 +694,22 @@ const config = defineConfig([
       vitest: {
         typecheck: true,
       },
+    },
+  },
+  {
+    files: ['tests/unit/app.test.ts'],
+    rules: {
+      '@typescript-eslint/init-declarations': 'off',
+    },
+  },
+  {
+    files: ['tests/unit/app.test.ts', 'tests/unit/*-{device,driver}.test.ts'],
+    rules: {
+      '@typescript-eslint/init-declarations': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
   {

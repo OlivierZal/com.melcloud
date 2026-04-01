@@ -278,12 +278,12 @@ describe('melCloudApp', () => {
       expect(mockHomeCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           logger: expect.objectContaining({
-            error: expect.any(Function),
-            log: expect.any(Function),
+            error: expect.any(Function) as unknown,
+            log: expect.any(Function) as unknown,
           }),
           settingManager: expect.objectContaining({
-            get: expect.any(Function),
-            set: expect.any(Function),
+            get: expect.any(Function) as unknown,
+            set: expect.any(Function) as unknown,
           }),
         }),
       )
