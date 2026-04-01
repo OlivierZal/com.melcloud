@@ -58,6 +58,44 @@ export const testTagMappings = (
   })
 }
 
+const getConverter = (
+  device: object,
+  mapping: string,
+  key: string,
+): ((...args: unknown[]) => unknown) | undefined =>
+  (
+    device as Record<
+      string,
+      Record<string, ((...args: unknown[]) => unknown) | undefined>
+    >
+  )[mapping]?.[key]
+
+export const testCapabilityToDeviceConverters = (
+  getDevice: () => object,
+  cases: [string, unknown, unknown][],
+): void => {
+  describe('capability-to-device conversions', () => {
+    it.each(cases)('%s(%s) should return %s', (key, input, expected) => {
+      expect(
+        getConverter(getDevice(), 'capabilityToDevice', key)?.(input),
+      ).toBe(expected)
+    })
+  })
+}
+
+export const testDeviceToCapabilityConverters = (
+  getDevice: () => object,
+  cases: [string, unknown, unknown][],
+): void => {
+  describe('device-to-capability conversions', () => {
+    it.each(cases)('%s(%s) should return %s', (key, input, expected) => {
+      expect(
+        getConverter(getDevice(), 'deviceToCapability', key)?.(input),
+      ).toBe(expected)
+    })
+  })
+}
+
 export const testEnergyReportConfig = (
   getDevice: () => object,
   property: string,

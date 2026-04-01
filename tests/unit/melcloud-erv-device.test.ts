@@ -5,7 +5,11 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeErv } from '../../types/index.mts'
-import { mock, testEnergyReportConfig } from '../helpers.ts'
+import {
+  mock,
+  testCapabilityToDeviceConverters,
+  testEnergyReportConfig,
+} from '../helpers.ts'
 import MELCloudDeviceErv from '../../drivers/melcloud_erv/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -70,17 +74,12 @@ describe(MELCloudDeviceErv, () => {
     )
   })
 
-  describe('capability-to-device conversions', () => {
-    it.each([
-      ['auto', VentilationMode.auto],
-      ['recovery', VentilationMode.recovery],
-      ['bypass', VentilationMode.bypass],
-    ])('thermostat_mode(%s) should return %s', (input, expected) => {
-      const {
-        capabilityToDevice: { thermostat_mode: converter },
-      } = device
-
-      expect(converter?.(input)).toBe(expected)
-    })
-  })
+  testCapabilityToDeviceConverters(
+    () => device as object,
+    [
+      ['thermostat_mode', 'auto', VentilationMode.auto],
+      ['thermostat_mode', 'recovery', VentilationMode.recovery],
+      ['thermostat_mode', 'bypass', VentilationMode.bypass],
+    ],
+  )
 })
