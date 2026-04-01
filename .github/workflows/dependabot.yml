@@ -9,12 +9,12 @@ jobs:
     steps:
       - id: metadata
         name: Dependabot metadata
-        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2
-      - env:
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge --delete-branch "$PR_URL"
 name: Dependabot
 on: pull_request

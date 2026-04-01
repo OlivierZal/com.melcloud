@@ -730,7 +730,11 @@ const config = defineConfig([
             natural: true,
             type: 'asc',
           },
-          pathPattern: '^.*$',
+          pathPattern: String.raw`^(?!jobs\.\w+\.steps\[\d+\]).*$`,
+        },
+        {
+          order: ['id', 'name', 'if', 'uses', 'with', 'env', 'run'],
+          pathPattern: String.raw`^jobs\.\w+\.steps\[\d+\]$`,
         },
       ],
       'yml/sort-sequence-values': [
