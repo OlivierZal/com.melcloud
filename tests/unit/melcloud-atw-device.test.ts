@@ -18,6 +18,7 @@ import {
 } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
 import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
+import { createInstance } from './create-test-instance.ts'
 
 type AtwType = typeof DeviceType.Atw
 
@@ -110,7 +111,7 @@ describe(MELCloudDeviceAtw, () => {
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    device = new (MELCloudDeviceAtw as unknown as new () => any)()
+    device = createInstance(MELCloudDeviceAtw)
     Object.defineProperty(device, 'driver', {
       configurable: true,
       value: mockDriver,

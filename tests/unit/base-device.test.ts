@@ -9,7 +9,7 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import { assertDefined, mock } from '../helpers.ts'
+import { getMockCallArg, mock } from '../helpers.ts'
 import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
 const setValuesMock = vi.fn()
@@ -114,13 +114,12 @@ vi.mock(import('../../drivers/base-report.mts'), async () => {
 
 const getCapabilityListenerCallback = (): ((
   values: Record<string, unknown>,
-) => Promise<void>) => {
-  const callback = registerMultipleCapabilityListenerMock.mock.calls
-    .at(0)
-    ?.at(1) as ((values: Record<string, unknown>) => Promise<void>) | undefined
-  assertDefined(callback)
-  return callback
-}
+) => Promise<void>) =>
+  getMockCallArg<(values: Record<string, unknown>) => Promise<void>>(
+    registerMultipleCapabilityListenerMock,
+    0,
+    1,
+  )
 
 const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
@@ -309,7 +308,7 @@ describe(BaseMELCloudDevice, () => {
     it('should expose facade via protected getter after fetch', async () => {
       await device.fetchDevice()
 
-      expect((device as unknown as { facade: unknown }).facade).toBeDefined()
+      expect(device.exposedFacade).toBeDefined()
     })
 
     it('should get facade and return device', async () => {

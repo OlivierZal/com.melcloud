@@ -10,7 +10,7 @@ import {
   type EnergyReportConfig,
   EnergyReport,
 } from '../../drivers/base-report.mts'
-import { assertDefined, mock } from '../helpers.ts'
+import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
 
@@ -319,10 +319,11 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      const timeoutCallback = setTimeoutMock.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(timeoutCallback)
+      const timeoutCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
+        0,
+        0,
+      )
       await timeoutCallback()
 
       expect(setIntervalMock).toHaveBeenCalledWith(
@@ -331,10 +332,11 @@ describe(EnergyReport, () => {
         'regular energy report',
       )
 
-      const intervalCallback = setIntervalMock.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(intervalCallback)
+      const intervalCallback = getMockCallArg<() => Promise<void>>(
+        setIntervalMock,
+        0,
+        0,
+      )
       await intervalCallback()
 
       expect(fetchDeviceMock).toHaveBeenCalledWith()

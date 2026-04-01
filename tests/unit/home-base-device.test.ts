@@ -6,8 +6,11 @@ import type {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
-import { assertDefined } from '../helpers.ts'
-import { TestHomeDevice } from './home-base-device-test-device.ts'
+import { getMockCallArg } from '../helpers.ts'
+import {
+  type TestHomeDevice,
+  createTestHomeDevice,
+} from './home-base-device-test-device.ts'
 
 const realtimeMock = vi.fn()
 const superSetWarningMock = vi.fn()
@@ -105,13 +108,12 @@ vi.mock('../../mixins/with-timers.mts', () => ({
 
 const getCapabilityListenerCallback = (): ((
   values: Record<string, unknown>,
-) => Promise<void>) => {
-  const callback = registerMultipleCapabilityListenerMock.mock.calls
-    .at(0)
-    ?.at(1) as ((values: Record<string, unknown>) => Promise<void>) | undefined
-  assertDefined(callback)
-  return callback
-}
+) => Promise<void>) =>
+  getMockCallArg<(values: Record<string, unknown>) => Promise<void>>(
+    registerMultipleCapabilityListenerMock,
+    0,
+    1,
+  )
 
 describe(HomeBaseMELCloudDevice, () => {
   let device: TestHomeDevice
@@ -121,7 +123,7 @@ describe(HomeBaseMELCloudDevice, () => {
     isFacadePoweredOn = true
     getHomeFacadeMock.mockResolvedValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
-    device = new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+    device = createTestHomeDevice()
   })
 
   describe('device identifier', () => {
@@ -269,8 +271,7 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should use deviceToCapability converter when present', async () => {
-      const customDevice =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const customDevice = createTestHomeDevice()
       Object.defineProperty(customDevice, 'deviceToCapability', {
         value: {
           measure_temperature: (facade: HomeDeviceAtaFacade): number =>
@@ -296,8 +297,7 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should use capabilityToDevice converter when present', async () => {
-      const customDevice =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const customDevice = createTestHomeDevice()
       Object.defineProperty(customDevice, 'capabilityToDevice', {
         value: {
           fan_speed: (value: never): HomeAtaValues[keyof HomeAtaValues] =>
@@ -315,8 +315,7 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should handle thermostat_mode off when thermostat supports off', async () => {
-      const deviceWithThermostat =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const deviceWithThermostat = createTestHomeDevice()
       Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
         value: { off: 'off' },
       })
@@ -330,8 +329,7 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
-      const deviceWithThermostat =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const deviceWithThermostat = createTestHomeDevice()
       Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
         value: { off: 'off' },
       })
@@ -385,8 +383,7 @@ describe(HomeBaseMELCloudDevice, () => {
 
     it('should not call setValues when fetchDevice returns null', async () => {
       getHomeFacadeMock.mockRejectedValue(new Error('not found'))
-      const freshDevice =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const freshDevice = createTestHomeDevice()
       await freshDevice.onInit()
       setValuesMock.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -416,8 +413,7 @@ describe(HomeBaseMELCloudDevice, () => {
 
     it('should fetch facade when not cached', async () => {
       getHomeFacadeMock.mockRejectedValueOnce(new Error('not found'))
-      const freshDevice =
-        new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+      const freshDevice = createTestHomeDevice()
       await freshDevice.onInit()
       getHomeFacadeMock.mockResolvedValue(createMockFacade())
       const callback = getCapabilityListenerCallback()
@@ -431,11 +427,11 @@ describe(HomeBaseMELCloudDevice, () => {
     it('should expose facade via protected getter after sync', async () => {
       await device.syncFromDevice()
 
-      expect((device as unknown as { facade: unknown }).facade).toBeDefined()
+      expect(device.exposedFacade).toBeDefined()
     })
 
     it('should be undefined before sync', () => {
-      expect((device as unknown as { facade: unknown }).facade).toBeUndefined()
+      expect(device.exposedFacade).toBeUndefined()
     })
   })
 })

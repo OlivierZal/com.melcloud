@@ -12,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeAta } from '../../types/index.mts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
+import { createInstance } from './create-test-instance.ts'
 
 vi.mock(import('@olivierzal/melcloud-api'), async (importOriginal) => {
   const actual =
@@ -45,7 +46,7 @@ describe(HomeMELCloudDeviceAta, () => {
   let device: any
 
   beforeEach(() => {
-    device = new (HomeMELCloudDeviceAta as unknown as new () => any)()
+    device = createInstance(HomeMELCloudDeviceAta)
   })
 
   describe('thermostat mode configuration', () => {

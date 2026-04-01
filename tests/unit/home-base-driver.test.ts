@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDriver } from '../../drivers/home-base-driver.mts'
 import { mock } from '../helpers.ts'
+import { createInstance } from './create-test-instance.ts'
 
 const authenticateMock = vi.fn()
 const isAuthenticatedMock = vi.fn()
@@ -37,8 +38,7 @@ describe(HomeBaseMELCloudDriver, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    driver =
-      new (HomeBaseMELCloudDriver as unknown as new () => HomeBaseMELCloudDriver)()
+    driver = createInstance(HomeBaseMELCloudDriver)
   })
 
   describe('pairing', () => {

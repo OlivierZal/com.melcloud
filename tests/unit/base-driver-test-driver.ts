@@ -45,3 +45,6 @@ export class TestDriver extends BaseMELCloudDriver<TestDriverType> {
     return Object.keys(this.setCapabilityTagMapping)
   }
 }
+
+export const createTestDriver = (): TestDriver =>
+  new (TestDriver as unknown as new () => TestDriver)()

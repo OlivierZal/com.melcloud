@@ -10,6 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ThermostatModeAta } from '../../types/index.mts'
 import { mock, testEnergyReportConfig } from '../helpers.ts'
 import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
+import { createInstance } from './create-test-instance.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
@@ -39,7 +40,7 @@ describe(MELCloudDeviceAta, () => {
   let device: any
 
   beforeEach(() => {
-    device = new (MELCloudDeviceAta as unknown as new () => any)()
+    device = createInstance(MELCloudDeviceAta)
   })
 
   describe('thermostat mode configuration', () => {

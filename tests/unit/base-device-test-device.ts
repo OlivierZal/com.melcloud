@@ -33,9 +33,16 @@ export class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
 
   public readonly thermostatMode: Record<string, string> | null = null
 
+  public get exposedFacade(): typeof this.facade {
+    return this.facade
+  }
+
   public async exposedSetCapabilityValues(
     data: ListDeviceDataAta,
   ): Promise<void> {
     await this.setCapabilityValues(data)
   }
 }
+
+export const createTestDevice = (): TestDevice =>
+  new (TestDevice as unknown as new () => TestDevice)()

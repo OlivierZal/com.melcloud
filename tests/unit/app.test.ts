@@ -27,7 +27,7 @@ import type {
   MELCloudDevice,
   Settings,
 } from '../../types/index.mts'
-import { assertDefined, mock } from '../helpers.js'
+import { getMockCallArg, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
@@ -227,12 +227,9 @@ const getOnSyncCallback = (): ((params?: {
   ids?: number[]
   type?: number
 }) => Promise<void>) => {
-  const config = mockCreate.mock.calls.at(0)?.at(0) as
-    | {
-        onSync?: (params?: { ids?: number[]; type?: number }) => Promise<void>
-      }
-    | undefined
-  assertDefined(config?.onSync)
+  const config = getMockCallArg<{
+    onSync: (params?: { ids?: number[]; type?: number }) => Promise<void>
+  }>(mockCreate, 0, 0)
   return config.onSync
 }
 
@@ -300,16 +297,12 @@ describe('melCloudApp', () => {
       })
       await app.onInit()
 
-      const createCallArgs = mockCreate.mock.calls[0]?.[0]
-
-      expect(createCallArgs).toBeDefined()
-
-      const { logger } = createCallArgs as unknown as {
+      const { logger } = getMockCallArg<{
         logger: {
           error: (...args: unknown[]) => void
           log: (...args: unknown[]) => void
         }
-      }
+      }>(mockCreate, 0, 0)
       logger.log('test log')
       logger.error('test error')
 
@@ -826,18 +819,12 @@ describe('melCloudApp', () => {
     it('should create home setting manager with camelCase key prefixing', async () => {
       await app.onInit()
 
-      const homeCreateCallArgs = mockHomeCreate.mock.calls[0]?.[0] as
-        | {
-            settingManager: {
-              get: (key: string) => unknown
-              set: (key: string, value: string) => void
-            }
-          }
-        | undefined
-
-      assertDefined(homeCreateCallArgs)
-
-      const { settingManager } = homeCreateCallArgs
+      const { settingManager } = getMockCallArg<{
+        settingManager: {
+          get: (key: string) => unknown
+          set: (key: string, value: string) => void
+        }
+      }>(mockHomeCreate, 0, 0)
       settingManager.get('username')
 
       expect(mockSettingsGet).toHaveBeenCalledWith('homeUsername')
@@ -1066,10 +1053,7 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(1)
 
-      const callback = mockSetTimeout.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
       await callback()
 
       expect(mockCreateNotification).toHaveBeenCalledWith({
@@ -1083,10 +1067,7 @@ describe('melCloudApp', () => {
       mockCreateNotification.mockRejectedValue(new Error('fail'))
       await app.onInit()
 
-      const callback = mockSetTimeout.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
 
       await expect(callback()).resolves.toBeUndefined()
     })
@@ -1131,10 +1112,11 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      const ataCallback = mockRegisterAta.mock.calls.at(0)?.at(1) as
-        | ((query: string) => unknown[])
-        | undefined
-      assertDefined(ataCallback)
+      const ataCallback = getMockCallArg<(query: string) => unknown[]>(
+        mockRegisterAta,
+        0,
+        1,
+      )
       const result = ataCallback('build')
 
       expect(result).toStrictEqual([{ model: 'buildings', name: 'Building 1' }])
@@ -1156,10 +1138,11 @@ describe('melCloudApp', () => {
       ])
       await app.onInit()
 
-      const chartsCallback = mockRegisterCharts.mock.calls.at(0)?.at(1) as
-        | ((query: string) => unknown[])
-        | undefined
-      assertDefined(chartsCallback)
+      const chartsCallback = getMockCallArg<(query: string) => unknown[]>(
+        mockRegisterCharts,
+        0,
+        1,
+      )
       const result = chartsCallback('device 1')
 
       expect(result).toStrictEqual([{ model: 'devices', name: 'Device 1' }])

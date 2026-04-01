@@ -19,4 +19,11 @@ export class TestHomeDevice extends HomeBaseMELCloudDevice {
   > = {}
 
   public readonly thermostatMode: Record<string, string> | null = null
+
+  public get exposedFacade(): typeof this.facade {
+    return this.facade
+  }
 }
+
+export const createTestHomeDevice = (): TestHomeDevice =>
+  new (TestHomeDevice as unknown as new () => TestHomeDevice)()

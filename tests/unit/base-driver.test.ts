@@ -8,7 +8,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import { assertDefined, mock } from '../helpers.ts'
-import { type TestDriverType, TestDriver } from './base-driver-test-driver.ts'
+import {
+  type TestDriverType,
+  createTestDriver,
+  TestDriver,
+} from './base-driver-test-driver.ts'
 
 const registerRunListenerMock = vi.fn()
 const authenticateMock = vi.fn()
@@ -53,7 +57,7 @@ describe(BaseMELCloudDriver, () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    driver = new (TestDriver as unknown as new () => TestDriver)()
+    driver = createTestDriver()
   })
 
   describe('initialization', () => {
@@ -257,8 +261,7 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should group tags ending with Produced into produced mapping', async () => {
-      const driverWithProduced =
-        new (TestDriver as unknown as new () => TestDriver)()
+      const driverWithProduced = createTestDriver()
       Object.defineProperty(driverWithProduced, 'energyCapabilityTagMapping', {
         value: mock<EnergyCapabilityTagMapping<TestDriverType>>({
           measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
