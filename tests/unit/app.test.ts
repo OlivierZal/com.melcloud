@@ -805,6 +805,7 @@ describe('melCloudApp', () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',
