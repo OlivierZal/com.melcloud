@@ -135,7 +135,7 @@ const getDriverLoginSetting = (
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
   language: string,
-  enumType?: Record<string, unknown>,
+  enumType?: Record<string, number | string>,
 ): DriverCapabilitiesOptions => ({
   /* v8 ignore next */
   title: options.title[language] ?? options.title.en,
@@ -498,7 +498,7 @@ export default class MELCloudApp extends App {
   #getAtaCapabilityConfigs(): {
     key: keyof GroupState & keyof ListDeviceDataAta
     options: ManifestDriverCapabilitiesOptions
-    enumType?: Record<string, unknown>
+    enumType?: Record<string, number | string>
   }[] {
     return [
       { key: 'Power', options: power },

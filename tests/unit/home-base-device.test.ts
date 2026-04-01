@@ -203,10 +203,16 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
-    it('should convert non-Error values to string', async () => {
+    it('should convert string errors directly', async () => {
       await device.setWarning('string error')
 
       expect(superSetWarningMock).toHaveBeenCalledWith('string error')
+    })
+
+    it('should JSON-stringify non-Error non-string values', async () => {
+      await device.setWarning({ code: 42 })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('{"code":42}')
     })
   })
 

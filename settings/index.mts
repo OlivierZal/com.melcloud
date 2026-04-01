@@ -93,8 +93,12 @@ const getZoneName = (name: string, level: number): string =>
 
 // ── API helpers ──
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return typeof error === 'string' ? error : JSON.stringify(error)
+}
 
 // Wraps Homey's callback-based settings API in a Promise for async/await usage
 const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
@@ -159,7 +163,6 @@ const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
-const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
@@ -1052,7 +1055,13 @@ class DeviceSettingsManager {
     if (id !== undefined) {
       const { [id]: value } = this.#flatDeviceSettings
       element.value =
-        commonElementValueTypes.has(typeof value) ? String(value) : ''
+        (
+          typeof value === 'boolean' ||
+          typeof value === 'number' ||
+          typeof value === 'string'
+        ) ?
+          String(value)
+        : ''
     }
   }
 

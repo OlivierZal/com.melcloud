@@ -1,2 +1,6 @@
-export const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
+export const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return typeof error === 'string' ? error : JSON.stringify(error)
+}

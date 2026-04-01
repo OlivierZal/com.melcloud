@@ -38,7 +38,7 @@ export const testDriverType = (
   expectedType: unknown,
 ): void => {
   describe('type', () => {
-    it(`should be ${String(expectedType)}`, () => {
+    it(`should be ${JSON.stringify(expectedType)}`, () => {
       expect(getDriver().type).toBe(expectedType)
     })
   })

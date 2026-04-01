@@ -73,7 +73,8 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
 
   async #fetchDevice(): Promise<HomeDeviceAtaFacade | null> {
     try {
-      return (this.#facade = await this.homey.app.getHomeFacade(this.id))
+      this.#facade = await this.homey.app.getHomeFacade(this.id)
+      return this.#facade
     } catch (error) {
       await this.setWarning(error)
       return null
