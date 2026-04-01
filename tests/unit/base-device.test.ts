@@ -198,7 +198,9 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(true)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(false)).toBe(true)
     })
@@ -207,7 +209,9 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(false)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(true)).toBe(true)
     })
@@ -618,7 +622,11 @@ describe(BaseMELCloudDevice, () => {
   describe('energy report handling', () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
+      const {
+        mock: {
+          calls: { length: callCountBefore },
+        },
+      } = vi.mocked(EnergyReport)
       const deviceWithRegular = new TestDevice()
       Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
         value: {
@@ -639,7 +647,11 @@ describe(BaseMELCloudDevice, () => {
 
     it('should create energy report for total config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
+      const {
+        mock: {
+          calls: { length: callCountBefore },
+        },
+      } = vi.mocked(EnergyReport)
       const deviceWithTotal = new TestDevice()
       Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
         value: {

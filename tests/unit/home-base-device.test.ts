@@ -153,7 +153,9 @@ describe(HomeBaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(true)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(false as never)).toBe(true)
     })
@@ -162,7 +164,9 @@ describe(HomeBaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(false)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(true as never)).toBe(true)
     })

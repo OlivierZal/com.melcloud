@@ -689,7 +689,6 @@ const config = defineConfig([
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
-      '@typescript-eslint/prefer-destructuring': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
       'vitest/max-expects': 'off',

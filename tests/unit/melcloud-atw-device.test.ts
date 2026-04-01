@@ -153,13 +153,17 @@ describe(MELCloudDeviceAtw, () => {
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.deviceToCapability[key]
+      const {
+        deviceToCapability: { [key]: converter },
+      } = device
 
       expect(converter?.(input)).toBe(expected)
     })
 
     it('should convert legionella from ISO date to locale string', () => {
-      const converter = device.deviceToCapability.legionella
+      const {
+        deviceToCapability: { legionella: converter },
+      } = device
 
       const result = converter?.('2026-03-18T10:00:00')
 
@@ -175,7 +179,9 @@ describe(MELCloudDeviceAtw, () => {
       ['thermostat_mode', 'room', OperationModeZone.room],
       ['thermostat_mode.zone2', 'flow', OperationModeZone.flow],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.capabilityToDevice[key]
+      const {
+        capabilityToDevice: { [key]: converter },
+      } = device
 
       expect(converter?.(input)).toBe(expected)
     })

@@ -294,7 +294,7 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const listener = actionListeners['onoff_action']
+      const { onoff_action: listener } = actionListeners
       assertDefined(listener)
       await listener({
         device: { triggerCapabilityListener: triggerMock },
@@ -331,7 +331,7 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const onoffListener = conditionListeners['onoff_condition']
+      const { onoff_condition: onoffListener } = conditionListeners
       assertDefined(onoffListener)
       const result = onoffListener({
         device: { getCapabilityValue: vi.fn().mockReturnValue(true) },
@@ -358,7 +358,8 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const thermostatListener = conditionListeners['thermostat_mode_condition']
+      const { thermostat_mode_condition: thermostatListener } =
+        conditionListeners
       assertDefined(thermostatListener)
 
       const resultTrue = thermostatListener({

@@ -66,7 +66,9 @@ describe(HomeMELCloudDeviceAta, () => {
 
   describe('capability-to-device conversions', () => {
     it('should convert fan_speed using fanSpeedFromClassic', () => {
-      const converter = device.capabilityToDevice.fan_speed
+      const {
+        capabilityToDevice: { fan_speed: converter },
+      } = device
 
       expect(converter?.(0)).toBe(
         fanSpeedFromClassic[0 as keyof typeof fanSpeedFromClassic],
@@ -74,45 +76,55 @@ describe(HomeMELCloudDeviceAta, () => {
     })
 
     it('should return undefined for unknown fan_speed', () => {
-      const converter = device.capabilityToDevice.fan_speed
+      const {
+        capabilityToDevice: { fan_speed: converter },
+      } = device
 
       expect(converter?.(99)).toBeUndefined()
     })
 
     it('should convert horizontal using horizontalFromClassic', () => {
-      const converter = device.capabilityToDevice.horizontal
-      const mapped =
-        horizontalFromClassic[
-          Horizontal['center' as keyof typeof Horizontal] as Horizontal
-        ]
+      const {
+        capabilityToDevice: { horizontal: converter },
+      } = device
+      const {
+        [Horizontal['center' as keyof typeof Horizontal] as Horizontal]: mapped,
+      } = horizontalFromClassic
 
       expect(converter?.('center')).toBe(mapped)
     })
 
     it('should convert vertical using verticalFromClassic', () => {
-      const converter = device.capabilityToDevice.vertical
-      const mapped =
-        verticalFromClassic[
-          Vertical['auto' as keyof typeof Vertical] as Vertical
-        ]
+      const {
+        capabilityToDevice: { vertical: converter },
+      } = device
+      const {
+        [Vertical['auto' as keyof typeof Vertical] as Vertical]: mapped,
+      } = verticalFromClassic
 
       expect(converter?.('auto')).toBe(mapped)
     })
 
     it('should return undefined for unknown horizontal', () => {
-      const converter = device.capabilityToDevice.horizontal
+      const {
+        capabilityToDevice: { horizontal: converter },
+      } = device
 
       expect(converter?.('unknown_value')).toBeUndefined()
     })
 
     it('should return undefined for unknown vertical', () => {
-      const converter = device.capabilityToDevice.vertical
+      const {
+        capabilityToDevice: { vertical: converter },
+      } = device
 
       expect(converter?.('unknown_value')).toBeUndefined()
     })
 
     it('should convert thermostat_mode to Home API string', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
+      const {
+        capabilityToDevice: { thermostat_mode: converter },
+      } = device
 
       expect(converter?.('heat')).toBe('Heat')
       expect(converter?.('cool')).toBe('Cool')
@@ -122,7 +134,9 @@ describe(HomeMELCloudDeviceAta, () => {
     })
 
     it('should fall back to value for unknown thermostat_mode', () => {
-      const converter = device.capabilityToDevice.thermostat_mode
+      const {
+        capabilityToDevice: { thermostat_mode: converter },
+      } = device
 
       expect(converter?.('unknown_mode')).toBe('unknown_mode')
     })
