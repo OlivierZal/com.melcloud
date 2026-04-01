@@ -11,6 +11,8 @@ const errorSpy = vi.fn()
 
 @addToLogs('[TestClass]', 'getName()', 'id')
 class TestClass {
+  readonly #name = 'MyDevice'
+
   public readonly id = 42
 
   public error(...args: unknown[]): void {
@@ -18,7 +20,7 @@ class TestClass {
   }
 
   public getName(): string {
-    return 'MyDevice'
+    return this.#name
   }
 
   public log(...args: unknown[]): void {

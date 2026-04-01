@@ -72,16 +72,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedMELCloudDevice
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedMELCloudDevice
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()

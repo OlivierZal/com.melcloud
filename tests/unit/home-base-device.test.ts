@@ -80,6 +80,7 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()

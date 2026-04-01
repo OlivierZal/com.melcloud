@@ -680,7 +680,6 @@ const config = defineConfig([
     extends: [vitest.configs.all],
     files: ['tests/**/*.ts'],
     rules: {
-      '@typescript-eslint/class-methods-use-this': 'off',
       '@typescript-eslint/init-declarations': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',

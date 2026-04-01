@@ -11,6 +11,8 @@ const callback = async (): Promise<void> => {
 }
 
 class BaseClass {
+  public error = vi.fn()
+
   public readonly homey = {
     clearInterval: vi.fn(),
     clearTimeout: vi.fn(),
@@ -19,10 +21,6 @@ class BaseClass {
   }
 
   public log = vi.fn()
-
-  public error(..._context: unknown[]): void {
-    // Noop
-  }
 }
 
 const TimerClass = withTimers(
