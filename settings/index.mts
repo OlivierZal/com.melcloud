@@ -367,7 +367,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 
 // ── AuthManager ──
 
-class AuthManager {
+abstract class BaseAuthManager {
   readonly #authenticatedElement: HTMLDivElement
 
   readonly #authenticateElement: HTMLButtonElement
@@ -376,6 +376,71 @@ class AuthManager {
 
   readonly #homey: Homey
 
+  protected abstract readonly endpoint: string
+
+  protected constructor(
+    homey: Homey,
+    {
+      authenticatedId,
+      authenticateId,
+      authenticatingId,
+    }: {
+      authenticatedId: string
+      authenticateId: string
+      authenticatingId: string
+    },
+  ) {
+    this.#homey = homey
+    this.#authenticateElement = getButtonElement(authenticateId)
+    this.#authenticatedElement = getDivElement(authenticatedId)
+    this.#authenticatingElement = getDivElement(authenticatingId)
+  }
+
+  protected abstract onLoginSuccess(): Promise<void>
+
+  public addEventListeners(): void {
+    this.#authenticateElement.addEventListener('click', () => {
+      this.login().catch(() => {
+        // Errors are handled internally via homey.alert in login
+      })
+    })
+  }
+
+  public async login(): Promise<void> {
+    const { password, username } = this.getCredentials()
+    if (!username || !password) {
+      this.#homey
+        .alert(this.#homey.__('settings.authenticate.failure'))
+        .catch(() => {
+          // Best-effort UI notification: the alert itself is the error display
+        })
+      return
+    }
+    await withDisablingButton(this.#authenticateElement.id, async () => {
+      try {
+        const isLoggedIn = await homeyApiPost<boolean>(
+          this.#homey,
+          this.endpoint,
+          { password, username } satisfies LoginCredentials,
+        )
+        await (isLoggedIn ?
+          this.onLoginSuccess()
+        : this.#homey.alert(this.#homey.__('settings.authenticate.failure')))
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
+  }
+
+  public needsAuthentication(isRequired = true): void {
+    hide(this.#authenticatedElement, isRequired)
+    hide(this.#authenticatingElement, !isRequired)
+  }
+
+  protected abstract getCredentials(): { password: string; username: string }
+}
+
+class AuthManager extends BaseAuthManager {
   readonly #loadPostLoginCallback: () => Promise<void>
 
   readonly #loginElement: HTMLDivElement
@@ -384,21 +449,20 @@ class AuthManager {
 
   #usernameElement: HTMLInputElement | null = null
 
+  protected readonly endpoint = '/sessions'
+
   public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
-    this.#homey = homey
+    super(homey, {
+      authenticatedId: 'authenticated',
+      authenticateId: 'authenticate',
+      authenticatingId: 'authenticating',
+    })
     this.#loadPostLoginCallback = loadPostLoginCallback
-    this.#authenticateElement = getButtonElement('authenticate')
-    this.#authenticatedElement = getDivElement('authenticated')
-    this.#authenticatingElement = getDivElement('authenticating')
     this.#loginElement = getDivElement('login')
   }
 
-  public addEventListeners(): void {
-    this.#authenticateElement.addEventListener('click', () => {
-      this.login().catch(() => {
-        // Errors are handled internally via homey.alert in login
-      })
-    })
+  protected async onLoginSuccess(): Promise<void> {
+    await this.#loadPostLoginCallback()
   }
 
   public generateCredentials(
@@ -420,36 +484,11 @@ class AuthManager {
     )
   }
 
-  public async login(): Promise<void> {
-    const username = this.#usernameElement?.value ?? ''
-    const password = this.#passwordElement?.value ?? ''
-    if (!username || !password) {
-      this.#homey
-        .alert(this.#homey.__('settings.authenticate.failure'))
-        .catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
-      return
+  protected getCredentials(): { password: string; username: string } {
+    return {
+      password: this.#passwordElement?.value ?? '',
+      username: this.#usernameElement?.value ?? '',
     }
-    await withDisablingButton(this.#authenticateElement.id, async () => {
-      try {
-        const isLoggedIn = await homeyApiPost<boolean>(
-          this.#homey,
-          '/sessions',
-          { password, username } satisfies LoginCredentials,
-        )
-        await (isLoggedIn ?
-          this.#loadPostLoginCallback()
-        : this.#homey.alert(this.#homey.__('settings.authenticate.failure')))
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
-  }
-
-  public needsAuthentication(isRequired = true): void {
-    hide(this.#authenticatedElement, isRequired)
-    hide(this.#authenticatingElement, !isRequired)
   }
 
   #generateCredential(
@@ -472,39 +511,26 @@ class AuthManager {
 
 // ── HomeAuthManager ──
 
-class HomeAuthManager {
-  readonly #authenticatedElement: HTMLDivElement
-
-  readonly #authenticateElement: HTMLButtonElement
-
-  readonly #authenticatingElement: HTMLDivElement
-
-  readonly #homey: Homey
-
+class HomeAuthManager extends BaseAuthManager {
   readonly #passwordElement: HTMLInputElement
 
   readonly #usernameElement: HTMLInputElement
 
+  protected readonly endpoint = '/home/sessions'
+
   public constructor(homey: Homey) {
-    this.#homey = homey
-    this.#authenticateElement = getButtonElement('home_authenticate')
-    this.#authenticatedElement = getDivElement('home_authenticated')
-    this.#authenticatingElement = getDivElement('home_authenticating')
+    super(homey, {
+      authenticatedId: 'home_authenticated',
+      authenticateId: 'home_authenticate',
+      authenticatingId: 'home_authenticating',
+    })
     this.#usernameElement = getInputElement('home_username')
     this.#passwordElement = getInputElement('home_password')
   }
 
-  public addEventListeners(): void {
-    this.#authenticateElement.addEventListener('click', () => {
-      this.#login().catch(() => {
-        // Errors are handled internally via homey.alert in #login
-      })
-    })
-  }
-
-  public needsAuthentication(isRequired = true): void {
-    hide(this.#authenticatedElement, isRequired)
-    hide(this.#authenticatingElement, !isRequired)
+  protected async onLoginSuccess(): Promise<void> {
+    this.needsAuthentication(false)
+    await Promise.resolve()
   }
 
   public setCredentials({
@@ -530,35 +556,11 @@ class HomeAuthManager {
     }
   }
 
-  async #login(): Promise<void> {
-    const { value: username } = this.#usernameElement
-    const { value: password } = this.#passwordElement
-    if (username === '' || password === '') {
-      this.#homey
-        .alert(this.#homey.__('settings.authenticate.failure'))
-        .catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
-      return
+  protected getCredentials(): { password: string; username: string } {
+    return {
+      password: this.#passwordElement.value,
+      username: this.#usernameElement.value,
     }
-    await withDisablingButton(this.#authenticateElement.id, async () => {
-      try {
-        const isLoggedIn = await homeyApiPost<boolean>(
-          this.#homey,
-          '/home/sessions',
-          { password, username } satisfies LoginCredentials,
-        )
-        if (isLoggedIn) {
-          this.needsAuthentication(false)
-        } else {
-          await this.#homey.alert(
-            this.#homey.__('settings.authenticate.failure'),
-          )
-        }
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
   }
 }
 
