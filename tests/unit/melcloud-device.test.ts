@@ -36,10 +36,12 @@ vi.mock(import('../../drivers/base-report.mts'), async () => {
 })
 
 describe(MELCloudDeviceAta, () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy (homey + mixins replaced) has no usable TypeScript type
   let device: any
 
   beforeEach(() => {
-    device = new (MELCloudDeviceAta as unknown as new () => any)()
+    device = new (MELCloudDeviceAta as unknown as // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy
+new () => any)()
   })
 
   describe('thermostat mode configuration', () => {

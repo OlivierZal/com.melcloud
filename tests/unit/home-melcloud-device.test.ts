@@ -42,9 +42,11 @@ vi.mock('../../mixins/with-timers.mts', () => ({
 }))
 
 describe(HomeMELCloudDeviceAta, () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy (homey + mixins replaced) has no usable TypeScript type
   let device: any
 
   beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy
     device = new (HomeMELCloudDeviceAta as unknown as new () => any)()
   })
 

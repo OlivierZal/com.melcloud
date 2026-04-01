@@ -33,9 +33,11 @@ vi.mock(import('../../drivers/base-report.mts'), async () => {
 })
 
 describe(MELCloudDeviceErv, () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy (homey + mixins replaced) has no usable TypeScript type
   let device: any
 
   beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mocked class hierarchy
     device = new (MELCloudDeviceErv as unknown as new () => any)()
   })
 

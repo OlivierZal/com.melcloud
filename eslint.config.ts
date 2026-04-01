@@ -682,7 +682,6 @@ const config = defineConfig([
     rules: {
       '@typescript-eslint/class-methods-use-this': 'off',
       '@typescript-eslint/init-declarations': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',

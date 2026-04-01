@@ -29,6 +29,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "homeLogin": {
+      "method": "POST",
+      "path": "/home/sessions"
+    },
     "login": {
       "method": "POST",
       "path": "/sessions"
@@ -2899,6 +2903,354 @@
     ]
   },
   "drivers": [
+    {
+      "capabilitiesOptions": {
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "da": "Udendørstemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "sv": "Utomhustemperatur"
+          }
+        },
+        "target_temperature": {
+          "max": 31,
+          "min": 16
+        },
+        "thermostat_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "cool",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køl ned",
+                "de": "Kühlen",
+                "en": "Cool",
+                "es": "Enfriar",
+                "fr": "Refroidir",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koelen",
+                "no": "Avkjøle",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kyla"
+              }
+            },
+            {
+              "id": "dry",
+              "title": {
+                "ar": "إزالة الرطوبة",
+                "da": "Affugte",
+                "de": "Entfeuchten",
+                "en": "Dry",
+                "es": "Deshumidificar",
+                "fr": "Déshumidifier",
+                "it": "Deumidificazione",
+                "ko": "제습",
+                "nl": "Ontvochtigen",
+                "no": "Avfukte",
+                "pl": "Osuszanie",
+                "ru": "Осушение",
+                "sv": "Avfukta"
+              }
+            },
+            {
+              "id": "fan",
+              "title": {
+                "ar": "مروحة",
+                "da": "Blæse",
+                "de": "Lüfter",
+                "en": "Fan",
+                "es": "Ventilar",
+                "fr": "Ventiler",
+                "it": "Ventilazione",
+                "ko": "팬",
+                "nl": "Ventileren",
+                "no": "Vifte",
+                "pl": "Wentylator",
+                "ru": "Вентилятор",
+                "sv": "Fläkta"
+              }
+            },
+            {
+              "id": "heat",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarm",
+                "de": "Heizen",
+                "en": "Heat",
+                "es": "Calentar",
+                "fr": "Chauffer",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verhitten",
+                "no": "Varme",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Värme"
+              }
+            },
+            {
+              "id": "off",
+              "title": {
+                "ar": "إيقاف",
+                "da": "Deaktiveret",
+                "de": "Aus",
+                "en": "Off",
+                "es": "Desactivado",
+                "fr": "Désactivé",
+                "it": "Spento",
+                "ko": "끄기",
+                "nl": "Uit",
+                "no": "Av",
+                "pl": "Wyłączony",
+                "ru": "Выкл.",
+                "sv": "Av"
+              }
+            }
+          ]
+        }
+      },
+      "class": "heatpump",
+      "icon": "/drivers/home-melcloud/assets/icon.svg",
+      "images": {
+        "large": "/drivers/home-melcloud/assets/images/large.png",
+        "small": "/drivers/home-melcloud/assets/images/small.png"
+      },
+      "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        },
+        {
+          "id": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "template": "list_devices"
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "da": "Adgangskode",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "da": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "da": "Brugernavn",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "da": "bruger@domain.dk",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        }
+      ],
+      "capabilities": [
+        "onoff",
+        "measure_temperature",
+        "target_temperature",
+        "thermostat_mode",
+        "fan_speed",
+        "horizontal",
+        "vertical"
+      ],
+      "name": {
+        "ar": "مضخة حرارية هواء-هواء",
+        "da": "Luft-til-luft varmepumpe (MELCloud Home)",
+        "de": "Luft-Luft-Wärmepumpe (MELCloud Home)",
+        "en": "Air-to-air heat pump (MELCloud Home)",
+        "es": "Bomba de calor aire-aire (MELCloud Home)",
+        "fr": "Pompe à chaleur air-air (MELCloud Home)",
+        "it": "Pompa di calore aria-aria (MELCloud Home)",
+        "ko": "공기-공기 히트펌프 (MELCloud Home)",
+        "nl": "Lucht-lucht warmtepomp (MELCloud Home)",
+        "no": "Luft-til-luft varmepumpe (MELCloud Home)",
+        "pl": "Pompa ciepła powietrze-powietrze (MELCloud Home)",
+        "ru": "Воздушный тепловой насос (MELCloud Home)",
+        "sv": "Luft-till-luft värmepump (MELCloud Home)"
+      },
+      "id": "home-melcloud",
+      "settings": [
+        {
+          "id": "options",
+          "children": [
+            {
+              "hint": {
+                "ar": "يمنع هذا الإعداد إيقاف تشغيل الجهاز من Homey.\n\nلا يزال بإمكانك إيقاف تشغيله يدويًا (من جهاز التحكم عن بعد أو من الجهاز الفعلي).",
+                "da": "Denne indstilling forhindrer at enheden slukkes fra Homey.\n\nDen kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed).",
+                "de": "Diese Einstellung verhindert, dass das Gerät von Homey ausgeschaltet wird.\n\nEs kann weiterhin manuell ausgeschaltet werden (über eine Fernbedienung oder am physischen Gerät).",
+                "en": "This setting prevents the device from being switched off from Homey.\n\nIt can still be switched off manually (from a remote control or from the physical device).",
+                "es": "Esta configuración evita que el dispositivo se apague desde Homey.\n\nTodavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico).",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey.\n\nIl peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique).",
+                "it": "Questa impostazione impedisce lo spegnimento del dispositivo da Homey.\n\nPuò comunque essere spento manualmente (dal telecomando o dal dispositivo fisico).",
+                "ko": "이 설정은 Homey에서 장치를 끄는 것을 방지합니다.\n\n리모컨이나 물리적 장치에서 수동으로 끌 수 있습니다.",
+                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld.\n\nHet kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat).",
+                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey.\n\nDen kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten).",
+                "pl": "To ustawienie zapobiega wyłączeniu urządzenia z Homey.\n\nNadal można je wyłączyć ręcznie (za pomocą pilota lub z urządzenia fizycznego).",
+                "ru": "Эта настройка предотвращает выключение устройства из Homey.\n\nЕго по-прежнему можно выключить вручную (с пульта дистанционного управления или с физического устройства).",
+                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey.\n\nDen kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)."
+              },
+              "id": "always_on",
+              "label": {
+                "ar": "تعطيل الإيقاف من Homey",
+                "da": "Deaktiver slukning fra Homey",
+                "de": "Abschaltung von Homey deaktivieren",
+                "en": "Disable shutdown from Homey",
+                "es": "Desactivar el apagado desde Homey",
+                "fr": "Désactiver l'extinction depuis Homey",
+                "it": "Disattiva lo spegnimento da Homey",
+                "ko": "Homey에서 종료 비활성화",
+                "nl": "Schakel uitschakeling van Homey uit",
+                "no": "Deaktiver avstenging fra Homey",
+                "pl": "Wyłącz zamykanie z Homey",
+                "ru": "Отключить выключение из Homey",
+                "sv": "Inaktivera avstängning från Homey"
+              },
+              "type": "checkbox",
+              "value": false
+            },
+            {
+              "id": "measure_signal_strength",
+              "label": {
+                "ar": "عرض قوة الإشارة",
+                "da": "Vise signalstyrke",
+                "de": "Signalstärke anzeigen",
+                "en": "Display signal strength",
+                "es": "Visualizar la intensidad de la señal",
+                "fr": "Afficher l'intensité du signal",
+                "it": "Visualizza intensità del segnale",
+                "ko": "신호 강도 표시",
+                "nl": "Signaalsterkte weergeven",
+                "no": "Vise signalstyrke",
+                "pl": "Wyświetl siłę sygnału",
+                "ru": "Отображать уровень сигнала",
+                "sv": "Visa signalstyrka"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "خيارات",
+            "da": "Indstillinger",
+            "de": "Optionen",
+            "en": "Options",
+            "es": "Opciones",
+            "fr": "Options",
+            "it": "Opzioni",
+            "ko": "옵션",
+            "nl": "Opties",
+            "no": "Alternativer",
+            "pl": "Opcje",
+            "ru": "Параметры",
+            "sv": "Alternativ"
+          },
+          "type": "group"
+        }
+      ]
+    },
     {
       "capabilitiesOptions": {
         "measure_power": {
