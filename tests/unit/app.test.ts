@@ -88,6 +88,7 @@ const mockApiInstance = {
     buildings: { getById: vi.fn() },
     devices: { getById: vi.fn() },
     floors: { getById: vi.fn() },
+    getDevicesByType: vi.fn().mockReturnValue([]),
   },
 }
 
@@ -613,6 +614,21 @@ describe('melCloudApp', () => {
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
+    })
+  })
+
+  describe('device listing by type', () => {
+    it('should delegate to registry getDevicesByType', async () => {
+      const mockDevices = [{ id: 1, name: 'Device 1' }]
+      mockApiInstance.registry.getDevicesByType.mockReturnValue(mockDevices)
+      await app.onInit()
+
+      const result = app.getDevicesByType(DeviceType.Ata)
+
+      expect(result).toBe(mockDevices)
+      expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
+        DeviceType.Ata,
+      )
     })
   })
 

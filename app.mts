@@ -1,6 +1,7 @@
 import {
   type BuildingFacade,
   type DeviceFacade,
+  type DeviceModel,
   type ErrorLogQuery,
   type Facade,
   type FrostProtectionData,
@@ -11,6 +12,7 @@ import {
   type HomeDevice,
   type ListDeviceDataAta,
   type LoginCredentials,
+  type ModelRegistry,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type ZoneFacade,
@@ -155,6 +157,10 @@ export default class MELCloudApp extends App {
 
   declare public readonly homey: Homey.Homey
 
+  get #registry(): ModelRegistry {
+    return this.#api.registry
+  }
+
   public get api(): MELCloudAPI {
     return this.#api
   }
@@ -251,6 +257,10 @@ export default class MELCloudApp extends App {
     return deviceSettings
   }
 
+  public getDevicesByType<T extends DeviceType>(type: T): DeviceModel<T>[] {
+    return this.#registry.getDevicesByType(type)
+  }
+
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
     const language = this.homey.i18n.getLanguage()
     return Object.groupBy(
@@ -270,7 +280,7 @@ export default class MELCloudApp extends App {
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
         ...errorRest,
         date: DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
-        device: this.#api.registry.devices.getById(deviceId)?.name ?? '',
+        device: this.#registry.devices.getById(deviceId)?.name ?? '',
       })),
       fromDateHuman: DateTime.fromISO(fromDate).toLocaleString(
         DateTime.DATE_FULL,
@@ -290,7 +300,7 @@ export default class MELCloudApp extends App {
     zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
     id: number | string,
   ): Facade {
-    const instance = this.#api.registry[zoneType].getById(Number(id))
+    const instance = this.#registry[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
         this.homey.__(
@@ -556,7 +566,7 @@ export default class MELCloudApp extends App {
       timezone,
       onSync: async (params) => this.#syncFromDevices(params),
     })
-    this.#facadeManager = new FacadeManager(this.#api, this.#api.registry)
+    this.#facadeManager = new FacadeManager(this.#api, this.#registry)
     setFacadeManager(this.#facadeManager)
   }
 

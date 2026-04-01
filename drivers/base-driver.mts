@@ -91,14 +91,12 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
   async #discoverDevices(): Promise<DeviceDetails<T>[]> {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve(
-      this.homey.app.api.registry
-        .getDevicesByType(this.type)
-        .map(({ data, id, name }) => ({
-          capabilities: this.getRequiredCapabilities(data),
-          capabilitiesOptions: this.getCapabilitiesOptions(data),
-          data: { id },
-          name,
-        })),
+      this.homey.app.getDevicesByType(this.type).map(({ data, id, name }) => ({
+        capabilities: this.getRequiredCapabilities(data),
+        capabilitiesOptions: this.getCapabilitiesOptions(data),
+        data: { id },
+        name,
+      })),
     )
   }
 

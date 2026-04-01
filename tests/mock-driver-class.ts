@@ -24,10 +24,8 @@ export const createMockDriverClass = (
 
     public homey = {
       app: {
-        api: {
-          authenticate: vi.fn(),
-          registry: { getDevicesByType: vi.fn().mockReturnValue([]) },
-        },
+        api: { authenticate: vi.fn() },
+        getDevicesByType: vi.fn().mockReturnValue([]),
       },
       flow: {
         getActionCard: vi.fn().mockReturnValue({

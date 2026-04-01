@@ -26,12 +26,8 @@ vi.mock('homey', () => {
 
     public homey = {
       app: {
-        api: {
-          authenticate: authenticateMock,
-          registry: {
-            getDevicesByType: vi.fn().mockReturnValue([]),
-          },
-        },
+        api: { authenticate: authenticateMock },
+        getDevicesByType: vi.fn().mockReturnValue([]),
       },
       flow: {
         getActionCard: vi.fn().mockReturnValue({
@@ -221,10 +217,7 @@ describe(BaseMELCloudDriver, () => {
           ),
         showView: showViewMock,
       })
-      vi.spyOn(
-        driver.homey.app.api.registry,
-        'getDevicesByType',
-      ).mockReturnValue([
+      vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
         { data: { Power: true }, id: 1, name: 'Device 1' } as never,
       ])
       await driver.onPair(session)
