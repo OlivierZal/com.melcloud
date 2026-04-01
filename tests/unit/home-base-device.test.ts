@@ -306,12 +306,7 @@ describe(HomeBaseMELCloudDevice, () => {
         writable: true,
       })
       await customDevice.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock.calls
-        .at(0)
-        ?.at(1) as
-        | ((values: Record<string, unknown>) => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getCapabilityListenerCallback()
       await callback({ fan_speed: 3 })
 
       expect(setValuesMock).toHaveBeenCalledWith(
@@ -326,12 +321,7 @@ describe(HomeBaseMELCloudDevice, () => {
         value: { off: 'off' },
       })
       await deviceWithThermostat.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock.calls
-        .at(0)
-        ?.at(1) as
-        | ((values: Record<string, unknown>) => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
 
       expect(setValuesMock).toHaveBeenCalledWith(
@@ -346,12 +336,7 @@ describe(HomeBaseMELCloudDevice, () => {
         value: { off: 'off' },
       })
       await deviceWithThermostat.onInit()
-      const callback = registerMultipleCapabilityListenerMock.mock.calls
-        .at(0)
-        ?.at(1) as
-        | ((values: Record<string, unknown>) => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
 
       expect(setValuesMock).toHaveBeenCalledWith({
@@ -404,12 +389,7 @@ describe(HomeBaseMELCloudDevice, () => {
         new (TestHomeDevice as unknown as new () => TestHomeDevice)()
       await freshDevice.onInit()
       setValuesMock.mockClear()
-      const callback = registerMultipleCapabilityListenerMock.mock.calls
-        .at(0)
-        ?.at(1) as
-        | ((values: Record<string, unknown>) => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(setValuesMock).not.toHaveBeenCalled()
@@ -440,12 +420,7 @@ describe(HomeBaseMELCloudDevice, () => {
         new (TestHomeDevice as unknown as new () => TestHomeDevice)()
       await freshDevice.onInit()
       getHomeFacadeMock.mockResolvedValue(createMockFacade())
-      const callback = registerMultipleCapabilityListenerMock.mock.calls
-        .at(0)
-        ?.at(1) as
-        | ((values: Record<string, unknown>) => Promise<void>)
-        | undefined
-      assertDefined(callback)
+      const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(setValuesMock).toHaveBeenCalledWith({ power: true })

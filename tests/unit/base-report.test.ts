@@ -227,10 +227,12 @@ describe(EnergyReport, () => {
 
     it('should use zero fallback when hourly array element is undefined', async () => {
       const sparseArray: (number | undefined)[] = []
-      mockEnergyFetch({
-        Auto: sparseArray,
-        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-      } as unknown as EnergyDataAta)
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: sparseArray,
+          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -238,10 +240,12 @@ describe(EnergyReport, () => {
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
-      mockEnergyFetch({
-        Auto: 100,
-        Cooling: 50,
-      } as unknown as EnergyDataAta)
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: 100,
+          Cooling: 50,
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 

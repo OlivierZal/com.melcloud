@@ -41,7 +41,7 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-const homey = { app: mockApp, i18n: mockI18n } as unknown as Homey
+const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
 
 describe('api', () => {
   beforeEach(() => {

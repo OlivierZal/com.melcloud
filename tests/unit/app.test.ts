@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {
   type BuildingFacade,
   type ErrorLog,
@@ -18,15 +17,12 @@ import {
   DeviceType,
   FacadeManager,
   HomeDeviceAtaFacade,
-  MELCloudAPI,
-  MELCloudHomeAPI,
 } from '@olivierzal/melcloud-api'
 import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type * as FilesModule from '../../files.mts'
 import type {
-  FormattedErrorLog,
   ManifestDriver,
   MELCloudDevice,
   Settings,
@@ -103,25 +99,27 @@ const mockHomeApiInstance = {
 const mockFacadeManagerGet = vi.fn()
 const mockFacadeManagerGetZones = vi.fn().mockReturnValue([])
 
+const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
+  () => ({
+    mockCreate: vi.fn(),
+    mockFacadeManagerConstructor: vi.fn(),
+    mockHomeCreate: vi.fn(),
+  }),
+)
+
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof MELCloudAPI
 vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
   ...(await importOriginal()),
-  FacadeManager: vi.fn(),
+  FacadeManager: mockFacadeManagerConstructor,
   MELCloudAPI: {
-    create: vi.fn(),
+    create: mockCreate,
   },
   MELCloudHomeAPI: {
-    create: vi.fn(),
+    create: mockHomeCreate,
   },
 }))
 
 const { default: MelCloudApp } = await import('../../app.mts')
-
-// eslint-disable-next-line @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect()
-const mockHomeCreate = vi.mocked(MELCloudHomeAPI.create)
-
-// eslint-disable-next-line @typescript-eslint/unbound-method -- vitest/unbound-method only allows expect()
-const mockCreate = vi.mocked(MELCloudAPI.create)
 
 const mockGetLanguage = vi.fn<() => string>().mockReturnValue('en')
 const mockGetTimezone = vi.fn<() => string>().mockReturnValue('Europe/Paris')
@@ -170,14 +168,15 @@ const mockManifestDrivers: ManifestDriver[] = [
 ]
 
 const setupMocks = (): void => {
-  mockCreate.mockResolvedValue(mockApiInstance as never)
-  mockHomeCreate.mockResolvedValue(mockHomeApiInstance as never)
-  vi.mocked(FacadeManager).mockImplementation(function mockConstructor() {
+  mockCreate.mockResolvedValue(mockApiInstance)
+  mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
+  // eslint-disable-next-line prefer-arrow-callback -- Constructor mock requires function expression for `new` semantics
+  mockFacadeManagerConstructor.mockImplementation(function mockConstructor() {
     return mock<FacadeManager>({
       get: mockFacadeManagerGet,
       getZones: mockFacadeManagerGetZones,
     })
-  } as never)
+  })
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
   mockTranslate.mockImplementation((key: string) => key)
@@ -245,7 +244,7 @@ const createSyncDevice = (
   syncFromDevice: ReturnType<typeof vi.fn>
 } => ({
   device: mock<MELCloudDevice>({
-    driver: { id: 'melcloud' } as never,
+    driver: { id: 'melcloud' },
     getSettings: vi.fn().mockReturnValue({}),
     id,
     syncFromDevice,
@@ -400,7 +399,7 @@ describe('melCloudApp', () => {
           {
             data: { FanSpeed: 3, Power: true, SetTemperature: 21 },
             type: DeviceType.Ata,
-          } as never,
+          },
         ],
       })
       await initWithFacade(app, mockFacade)
@@ -424,7 +423,7 @@ describe('melCloudApp', () => {
               SetTemperature: 21,
             }),
             type: DeviceType.Ata,
-          } as never,
+          },
           {
             data: mock<ListDeviceDataAta>({
               FanSpeed: 2,
@@ -432,7 +431,7 @@ describe('melCloudApp', () => {
               SetTemperature: 19,
             }),
             type: DeviceType.Ata,
-          } as never,
+          },
         ],
       })
       await initWithFacade(app, mockFacade)
@@ -477,11 +476,11 @@ describe('melCloudApp', () => {
   describe('device settings retrieval', () => {
     it('should aggregate device settings', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
       const mockDriver = createMockDriver([mockDevice1, mockDevice2])
@@ -495,11 +494,11 @@ describe('melCloudApp', () => {
 
     it('should set to null when settings differ between devices', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: false }),
       })
       const mockDriver = createMockDriver([mockDevice1, mockDevice2])
@@ -554,15 +553,15 @@ describe('melCloudApp', () => {
       const errorLog = await app.getErrorLog(query)
 
       expect(mockApiInstance.getErrorLog).toHaveBeenCalledWith(query)
-      expect(errorLog).toStrictEqual<FormattedErrorLog>({
+      expect(errorLog).toStrictEqual({
         errors: [
           {
-            date: expect.not.stringContaining('2026-03-28T') as string,
+            date: expect.not.stringContaining('2026-03-28T'),
             device: deviceName,
             error: 'test',
           },
         ],
-        fromDateHuman: expect.not.stringContaining('2026-03-01') as string,
+        fromDateHuman: expect.not.stringContaining('2026-03-01'),
         nextFromDate: '2026-03-15',
         nextToDate: '2026-03-31',
       })
@@ -626,7 +625,7 @@ describe('melCloudApp', () => {
 
   describe('home facade retrieval', () => {
     const mockDevice = mock<HomeDevice>({
-      capabilities: {} as HomeDevice['capabilities'],
+      capabilities: {},
       givenDisplayName: 'Living Room',
       id: 'device-1',
       settings: [],
@@ -653,7 +652,7 @@ describe('melCloudApp', () => {
       mockHomeApiInstance.list.mockResolvedValue(
         mockContext([
           mock<HomeDevice>({
-            capabilities: {} as HomeDevice['capabilities'],
+            capabilities: {},
             givenDisplayName: 'Other',
             id: 'device-other',
             settings: [],
@@ -886,7 +885,7 @@ describe('melCloudApp', () => {
       const mockSetSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockDevice = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
         onSettings: mockOnSettings,
@@ -906,7 +905,7 @@ describe('melCloudApp', () => {
     it('should skip devices with no changed keys', async () => {
       const mockSetSettings = vi.fn()
       const mockDevice = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(true),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
         setSettings: mockSetSettings,
@@ -923,7 +922,7 @@ describe('melCloudApp', () => {
 
     it('should filter by driverId when provided', async () => {
       const mockDevice = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
@@ -1096,12 +1095,12 @@ describe('melCloudApp', () => {
   describe('device filtering by ids', () => {
     it('should filter devices by ids', async () => {
       const mockDevice1 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
       })
       const mockDevice2 = mock<MELCloudDevice>({
-        driver: { id: 'melcloud' } as never,
+        driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({}),
         id: 2,
       })

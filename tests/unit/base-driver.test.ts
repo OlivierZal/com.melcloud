@@ -260,9 +260,9 @@ describe(BaseMELCloudDriver, () => {
       const driverWithProduced =
         new (TestDriver as unknown as new () => TestDriver)()
       Object.defineProperty(driverWithProduced, 'energyCapabilityTagMapping', {
-        value: {
+        value: mock<EnergyCapabilityTagMapping<TestDriverType>>({
           measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
-        } as unknown as EnergyCapabilityTagMapping<TestDriverType>,
+        }),
       })
       await driverWithProduced.onInit()
 
