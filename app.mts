@@ -325,15 +325,11 @@ export default class MELCloudApp extends App {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
-  public async getHomeDevicesByType(
-    type: DeviceType,
-  ): Promise<HomeDeviceModel[]> {
-    await this.#homeApi.list()
+  public getHomeDevicesByType(type: DeviceType): HomeDeviceModel[] {
     return this.#homeApi.registry.getByType(type)
   }
 
-  public async getHomeFacade(deviceId: string): Promise<HomeDeviceAtaFacade> {
-    await this.#homeApi.list()
+  public getHomeFacade(deviceId: string): HomeDeviceAtaFacade {
     const model = this.#homeApi.registry.getById(deviceId)
     if (!model) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
@@ -571,7 +567,9 @@ export default class MELCloudApp extends App {
     this.#homeApi = await MELCloudHomeAPI.create({
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
+      onSync: async () => this.#syncFromHomeDevices(),
     })
+    await this.#homeApi.list()
   }
 
   #registerWidgetListeners(): void {
@@ -609,6 +607,17 @@ export default class MELCloudApp extends App {
         driverId: type === undefined ? undefined : drivers[type],
         ids,
       }).map(async (device) => device.syncFromDevice()),
+    )
+  }
+
+  async #syncFromHomeDevices(): Promise<void> {
+    const driver = this.homey.drivers.getDriver('home-melcloud')
+    await Promise.all(
+      driver
+        .getDevices()
+        .map(async (device) =>
+          (device as { syncFromDevice: () => Promise<void> }).syncFromDevice(),
+        ),
     )
   }
 }

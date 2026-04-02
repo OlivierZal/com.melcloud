@@ -1,9 +1,4 @@
-import type {
-  DeviceType,
-  ListDeviceData,
-  LoginCredentials,
-} from '@olivierzal/melcloud-api'
-import type PairSession from 'homey/lib/PairSession'
+import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -13,14 +8,13 @@ import type {
   FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  ManifestDriver,
   MELCloudDevice,
   OperationalCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
-import { type Homey, Driver } from '../lib/homey.mts'
 import { typedEntries, typedKeys } from '../lib/index.mts'
+import { SharedBaseMELCloudDriver } from './shared-base-driver.mts'
 
 const getArg = <T extends DeviceType>(
   capability: string & keyof OperationalCapabilities<T>,
@@ -38,7 +32,9 @@ const tryRegisterFlowCard = (register: () => void): void => {
   }
 }
 
-export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
+export abstract class BaseMELCloudDriver<
+  T extends DeviceType,
+> extends SharedBaseMELCloudDriver {
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
@@ -52,11 +48,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
 
   declare public readonly getDevices: () => MELCloudDevice[]
 
-  declare public readonly homey: Homey.Homey
-
   public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
-
-  declare public readonly manifest: ManifestDriver
 
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
@@ -65,6 +57,10 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
 
   public abstract readonly type: T
 
+  protected override get api(): typeof this.homey.app.api {
+    return this.homey.app.api
+  }
+
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
@@ -72,31 +68,11 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
     return Promise.resolve()
   }
 
-  public override async onPair(session: PairSession): Promise<void> {
-    session.setHandler('showView', async (view) => {
-      if (view === 'loading') {
-        if (await this.#login()) {
-          await session.showView('list_devices')
-          return
-        }
-        await session.showView('login')
-      }
-    })
-    this.#handleLogin(session)
-    session.setHandler('list_devices', async () => this.#discoverDevices())
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
-  }
+  public abstract override getRequiredCapabilities(
+    data?: ListDeviceData<T>,
+  ): string[]
 
-  public override async onRepair(session: PairSession): Promise<void> {
-    this.#handleLogin(session)
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
-  }
-
-  public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]
-
-  async #discoverDevices(): Promise<DeviceDetails<T>[]> {
+  protected override async discoverDevices(): Promise<DeviceDetails<T>[]> {
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve(
       this.homey.app.getDevicesByType(this.type).map(({ data, id, name }) => ({
@@ -106,16 +82,6 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
         name,
       })),
     )
-  }
-
-  #handleLogin(session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) =>
-      this.#login(data),
-    )
-  }
-
-  async #login(data?: LoginCredentials): Promise<boolean> {
-    return this.homey.app.api.authenticate(data)
   }
 
   #registerActionRunListener(

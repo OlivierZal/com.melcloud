@@ -16,6 +16,7 @@ import {
 
 const registerRunListenerMock = vi.fn()
 const authenticateMock = vi.fn()
+const isAuthenticatedMock = vi.fn().mockReturnValue(false)
 const showViewMock = vi.fn()
 const setHandlerMock = vi.fn()
 
@@ -26,7 +27,10 @@ vi.mock('homey', () => {
 
     public homey = {
       app: {
-        api: { authenticate: authenticateMock },
+        api: {
+          authenticate: authenticateMock,
+          isAuthenticated: isAuthenticatedMock,
+        },
         getDevicesByType: vi.fn().mockReturnValue([]),
       },
       flow: {
@@ -115,8 +119,8 @@ describe(BaseMELCloudDriver, () => {
       )
     })
 
-    it('should show list_devices when login succeeds on loading view', async () => {
-      authenticateMock.mockResolvedValue(true)
+    it('should show list_devices when authenticated on loading view', async () => {
+      isAuthenticatedMock.mockReturnValue(true)
       const session = mock<import('homey/lib/PairSession')>({
         setHandler: vi
           .fn()
@@ -134,8 +138,8 @@ describe(BaseMELCloudDriver, () => {
       expect(showViewMock).toHaveBeenCalledWith('list_devices')
     })
 
-    it('should show login when login fails on loading view', async () => {
-      authenticateMock.mockResolvedValue(false)
+    it('should show login when not authenticated on loading view', async () => {
+      isAuthenticatedMock.mockReturnValue(false)
       const session = mock<import('homey/lib/PairSession')>({
         setHandler: vi
           .fn()

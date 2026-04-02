@@ -79,19 +79,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedBaseMELCloudDevice
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedBaseMELCloudDevice
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -313,18 +313,7 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('device synchronization', () => {
-    it('should set capability values from provided data', async () => {
-      const data = mock<ListDeviceDataAta>({
-        Power: true,
-        RoomTemperature: 21,
-      })
-      await device.fetchDevice()
-      await device.syncFromDevice(data)
-
-      expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
-    })
-
-    it('should fetch data when none is provided', async () => {
+    it('should set capability values from device data', async () => {
       await device.fetchDevice()
       await device.syncFromDevice()
 

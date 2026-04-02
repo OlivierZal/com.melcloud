@@ -28,6 +28,8 @@ vi.mock('homey', () => {
     }
 
     public log = vi.fn()
+
+    public manifest = { capabilities: [] }
   }
 
   return { default: { Driver: MockDriver } }
@@ -39,6 +41,12 @@ describe(HomeBaseMELCloudDriver, () => {
   beforeEach(() => {
     vi.clearAllMocks()
     driver = createInstance(HomeBaseMELCloudDriver)
+  })
+
+  describe('required capabilities', () => {
+    it('should return manifest capabilities by default', () => {
+      expect(driver.getRequiredCapabilities()).toStrictEqual([])
+    })
   })
 
   describe('pairing', () => {
@@ -159,7 +167,7 @@ describe(HomeBaseMELCloudDriver, () => {
           name: 'Guest Room',
         }),
       ]
-      getHomeDevicesByTypeMock.mockResolvedValue(devices)
+      getHomeDevicesByTypeMock.mockReturnValue(devices)
 
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({
@@ -190,7 +198,7 @@ describe(HomeBaseMELCloudDriver, () => {
     })
 
     it('should return empty array when getHomeDevicesByType returns empty', async () => {
-      getHomeDevicesByTypeMock.mockResolvedValue([])
+      getHomeDevicesByTypeMock.mockReturnValue([])
 
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({

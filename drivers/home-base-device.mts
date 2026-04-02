@@ -11,15 +11,15 @@ import {
   type HomeSetCapabilitiesAta,
   homeSetCapabilityTagMappingAta,
 } from '../types/index.mts'
-import { SharedMELCloudDevice } from './base-device-shared.mts'
+import { SharedBaseMELCloudDevice } from './shared-base-device.mts'
 
 @addToLogs('getName()')
-export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
+export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
   #device?: HomeDeviceAtaFacade
 
   readonly #setCapabilityKeys = Object.keys(homeSetCapabilityTagMappingAta)
 
-  protected abstract capabilityToDevice: Partial<
+  protected abstract override capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
   >
 
@@ -36,17 +36,10 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     return (this.getData() as { id: string }).id
   }
 
-  public async syncFromDevice(): Promise<void> {
-    const device = await this.#fetchDevice()
+  public override async syncFromDevice(): Promise<void> {
+    const device = this.#device ?? (await this.#fetchDevice())
     if (device) {
       await this.#setCapabilityValues(device)
-    }
-  }
-
-  protected override applyDefaultConverters(): void {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean => this.alwaysOn || isOn,
-      ...this.capabilityToDevice,
     }
   }
 
@@ -55,23 +48,24 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     // No energy reports to unschedule
   }
 
-  protected override getSetCapabilityKeys(): string[] {
-    return this.#setCapabilityKeys
+  protected override getFacade(): HomeDeviceAtaFacade {
+    this.#device = this.homey.app.getHomeFacade(this.id)
+    return this.#device
   }
 
-  protected override async initDevice(): Promise<void> {
-    await this.syncFromDevice()
+  protected override getSetCapabilityKeys(): string[] {
+    return this.#setCapabilityKeys
   }
 
   protected override async sendUpdate(
     values: Record<string, unknown>,
   ): Promise<void> {
-    await this.#set(values as Partial<HomeSetCapabilitiesAta>)
+    await this.#setDeviceValues(values as Partial<HomeSetCapabilitiesAta>)
   }
 
   async #fetchDevice(): Promise<HomeDeviceAtaFacade | null> {
     try {
-      this.#device = await this.homey.app.getHomeFacade(this.id)
+      this.#device = this.homey.app.getHomeFacade(this.id)
       return this.#device
     } catch (error) {
       await this.setWarning(error)
@@ -79,7 +73,21 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     }
   }
 
-  async #set(values: Partial<HomeSetCapabilitiesAta>): Promise<void> {
+  async #setCapabilityValues(device: HomeDeviceAtaFacade): Promise<void> {
+    await Promise.all(
+      Object.entries(this.deviceToCapability).map(
+        async ([capability, convert]) => {
+          if (convert && this.hasCapability(capability)) {
+            await this.setCapabilityValue(capability, convert(device))
+          }
+        },
+      ),
+    )
+  }
+
+  async #setDeviceValues(
+    values: Partial<HomeSetCapabilitiesAta>,
+  ): Promise<void> {
     const device = this.#device ?? (await this.#fetchDevice())
     if (!device) {
       return
@@ -105,17 +113,5 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
         }
       }
     }
-  }
-
-  async #setCapabilityValues(device: HomeDeviceAtaFacade): Promise<void> {
-    await Promise.all(
-      Object.entries(this.deviceToCapability).map(
-        async ([capability, convert]) => {
-          if (convert && this.hasCapability(capability)) {
-            await this.setCapabilityValue(capability, convert(device))
-          }
-        },
-      ),
-    )
   }
 }

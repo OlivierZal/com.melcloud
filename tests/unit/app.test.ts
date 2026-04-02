@@ -643,10 +643,9 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getByType.mockReturnValue(mockModels)
       await app.onInit()
 
-      const result = await app.getHomeDevicesByType(DeviceType.Ata)
+      const result = app.getHomeDevicesByType(DeviceType.Ata)
 
       expect(result).toBe(mockModels)
-      expect(mockHomeApiInstance.list).toHaveBeenCalledWith()
       expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(DeviceType.Ata)
     })
   })
@@ -659,7 +658,7 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getById.mockReturnValue(mockModel)
       await app.onInit()
 
-      const facade = await app.getHomeFacade('device-1')
+      const facade = app.getHomeFacade('device-1')
 
       expect(facade).toBeInstanceOf(HomeDeviceAtaFacade)
       expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
@@ -670,7 +669,7 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getById.mockReset()
       await app.onInit()
 
-      await expect(app.getHomeFacade('device-1')).rejects.toThrow(
+      expect(() => app.getHomeFacade('device-1')).toThrow(
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
@@ -1190,6 +1189,25 @@ describe('melCloudApp', () => {
       await getOnSyncCallback()()
 
       expect(syncFromDevice).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('home device synchronization via onSync callback', () => {
+    it('should sync home devices from onSync callback', async () => {
+      const syncMock = vi.fn<() => Promise<void>>().mockResolvedValue()
+      const mockDriver = createMockDriver([
+        mock<MELCloudDevice>({ syncFromDevice: syncMock }),
+      ])
+      mockGetDriver.mockReturnValue(mockDriver)
+      mockHomeApiInstance.list.mockResolvedValue([])
+      await app.onInit()
+
+      const { onSync } = getMockCallArg<{
+        onSync: () => Promise<void>
+      }>(mockHomeCreate, 0, 0)
+      await onSync()
+
+      expect(syncMock).toHaveBeenCalledTimes(1)
     })
   })
 

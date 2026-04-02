@@ -24,15 +24,15 @@ import type {
 import { addToLogs } from '../decorators/add-to-logs.mts'
 import { isTotalEnergyKey, typedEntries } from '../lib/index.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
-import { SharedMELCloudDevice } from './base-device-shared.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
+import { SharedBaseMELCloudDevice } from './shared-base-device.mts'
 
 const modes: EnergyReportMode[] = ['regular', 'total']
 
 @addToLogs('getName()')
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
-> extends SharedMELCloudDevice {
+> extends SharedBaseMELCloudDevice {
   #device?: DeviceFacade<T>
 
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
@@ -44,7 +44,7 @@ export abstract class BaseMELCloudDevice<
 
   #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
 
-  protected abstract capabilityToDevice: Partial<
+  protected abstract override capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
@@ -129,7 +129,7 @@ export abstract class BaseMELCloudDevice<
   }): Promise<void> {
     const changedCapabilities = changedKeys.filter(
       (setting) =>
-        this.#isCapability(setting) &&
+        this.isManifestCapability(setting) &&
         typeof newSettings[setting] === 'boolean',
     )
     await this.#updateDeviceOnSettings({
@@ -165,8 +165,8 @@ export abstract class BaseMELCloudDevice<
   public async fetchDevice(): Promise<DeviceFacade<T> | null> {
     try {
       if (!this.#device) {
-        this.#device = this.homey.app.getFacade('devices', this.id)
-        await this.#init(this.#device.data)
+        this.#device = this.getFacade()
+        await this.init()
       }
       return this.#device
     } catch (error) {
@@ -175,18 +175,11 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public async syncFromDevice(data?: ListDeviceData<T>): Promise<void> {
-    const newData = data ?? (await this.#fetchData())
+  public override async syncFromDevice(): Promise<void> {
+    const data = this.#device?.data ?? (await this.#fetchData())
     /* v8 ignore next */
-    if (newData) {
-      await this.setCapabilityValues(newData)
-    }
-  }
-
-  protected override applyDefaultConverters(): void {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean => this.alwaysOn || isOn,
-      ...this.capabilityToDevice,
+    if (data) {
+      await this.setCapabilityValues(data)
     }
   }
 
@@ -194,8 +187,33 @@ export abstract class BaseMELCloudDevice<
     this.#unscheduleReports()
   }
 
+  protected override getFacade(): DeviceFacade<T> {
+    return this.homey.app.getFacade('devices', this.id)
+  }
+
+  protected override getRequiredCapabilities(): string[] {
+    /* v8 ignore next */
+    return this.#device ?
+        this.driver.getRequiredCapabilities(this.#device.data)
+      : []
+  }
+
   protected override getSetCapabilityKeys(): string[] {
     return Object.keys(this.driver.setCapabilityTagMapping)
+  }
+
+  protected override async init(): Promise<void> {
+    if (this.#device) {
+      await this.#setCapabilityOptions(this.#device.data)
+    }
+    await super.init()
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping,
+    )
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping,
+    )
+    await this.#handleEnergyReports()
   }
 
   protected override async initDevice(): Promise<void> {
@@ -206,7 +224,7 @@ export abstract class BaseMELCloudDevice<
     values: Record<string, unknown>,
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    await this.#set(values as Partial<SetCapabilities<T>>)
+    await this.#setDeviceValues(values as Partial<SetCapabilities<T>>)
   }
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
@@ -295,71 +313,8 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  async #init(data: ListDeviceData<T>): Promise<void> {
-    // Configure capabilities based on device data
-    await this.#setCapabilities(data)
-    // Set capability options from driver
-    await this.#setCapabilityOptions(data)
-    // Sync initial values from device
-    await this.syncFromDevice(data)
-    // Schedule energy reports
-    await this.#handleEnergyReports()
-  }
-
-  #isCapability(capability: string): boolean {
-    /* v8 ignore next */
-    return (this.driver.manifest.capabilities ?? []).includes(capability)
-  }
-
   #isEnergyCapability(capability: string): boolean {
     return capability in this.driver.energyCapabilityTagMapping
-  }
-
-  async #set(values: Partial<SetCapabilities<T>>): Promise<void> {
-    const device = await this.fetchDevice()
-    if (device) {
-      const updateData = this.#buildUpdateData(values)
-      if (Object.keys(updateData).length > 0) {
-        try {
-          await device.setValues(updateData)
-        } catch (error) {
-          if (!(error instanceof Error) || error.message !== 'No data to set') {
-            await this.setWarning(error)
-          }
-        }
-      }
-    }
-  }
-
-  async #setCapabilities(data: ListDeviceData<T>): Promise<void> {
-    const settings = this.getSettings()
-    const currentCapabilities = new Set(this.getCapabilities())
-
-    const requiredCapabilities = new Set(
-      [
-        ...Object.keys(settings).filter(
-          (setting) =>
-            typeof settings[setting] === 'boolean' && settings[setting],
-        ),
-        ...this.driver.getRequiredCapabilities(data),
-      ].filter((capability) => this.#isCapability(capability)),
-    )
-
-    for (const capability of currentCapabilities.symmetricDifference(
-      requiredCapabilities,
-    )) {
-      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
-      await (requiredCapabilities.has(capability) ?
-        this.addCapability(capability)
-      : this.removeCapability(capability))
-    }
-
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping,
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping,
-    )
   }
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
@@ -373,6 +328,22 @@ export abstract class BaseMELCloudDevice<
     ][]) {
       // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
       await this.setCapabilityOptions(capability, options)
+    }
+  }
+
+  async #setDeviceValues(values: Partial<SetCapabilities<T>>): Promise<void> {
+    const device = await this.fetchDevice()
+    if (device) {
+      const updateData = this.#buildUpdateData(values)
+      if (Object.keys(updateData).length > 0) {
+        try {
+          await device.setValues(updateData)
+        } catch (error) {
+          if (!(error instanceof Error) || error.message !== 'No data to set') {
+            await this.setWarning(error)
+          }
+        }
+      }
     }
   }
 

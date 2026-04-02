@@ -47,7 +47,18 @@ const createMockFacade = (): HomeDeviceAtaFacade =>
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDevice {
-    public driver = {}
+    public driver = {
+      manifest: {
+        capabilities: [
+          'measure_temperature',
+          'onoff',
+          'target_temperature',
+          'thermostat_mode',
+        ],
+      },
+      getRequiredCapabilities: (): string[] =>
+        this.driver.manifest.capabilities,
+    }
 
     public error = vi.fn()
 
@@ -89,7 +100,7 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -127,7 +138,7 @@ describe(HomeBaseMELCloudDevice, () => {
   beforeEach(() => {
     vi.clearAllMocks()
     isFacadePoweredOn = true
-    getHomeFacadeMock.mockResolvedValue(createMockFacade())
+    getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
     device = createTestHomeDevice()
   })
@@ -148,6 +159,18 @@ describe(HomeBaseMELCloudDevice, () => {
         expect.any(Function),
         expect.any(Number),
       )
+    })
+
+    it('should remove capabilities not in required list during init', async () => {
+      vi.spyOn(device, 'getCapabilities').mockReturnValue([
+        'measure_temperature',
+        'onoff',
+        'obsolete_capability',
+      ])
+      const spy = vi.spyOn(device, 'removeCapability')
+      await device.onInit()
+
+      expect(spy).toHaveBeenCalledWith('obsolete_capability')
     })
 
     it('should set default onoff converter in capabilityToDevice', async () => {
@@ -212,7 +235,7 @@ describe(HomeBaseMELCloudDevice, () => {
 
     it('should set thermostat_mode to off when power is off', async () => {
       isFacadePoweredOn = false
-      getHomeFacadeMock.mockResolvedValue(createMockFacade())
+      getHomeFacadeMock.mockReturnValue(createMockFacade())
       await device.syncFromDevice()
 
       expect(device.setCapabilityValue).toHaveBeenCalledWith(
@@ -222,14 +245,18 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should not set capability values when getHomeFacade throws', async () => {
-      getHomeFacadeMock.mockRejectedValue(new Error('Device not found'))
+      getHomeFacadeMock.mockImplementation(() => {
+        throw new Error('Device not found')
+      })
       await device.syncFromDevice()
 
       expect(device.setCapabilityValue).not.toHaveBeenCalled()
     })
 
     it('should set warning and return null when getHomeFacade throws', async () => {
-      getHomeFacadeMock.mockRejectedValue(new Error('API error'))
+      getHomeFacadeMock.mockImplementation(() => {
+        throw new Error('API error')
+      })
       await device.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
@@ -325,7 +352,9 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should not call setValues when fetchDevice returns null', async () => {
-      getHomeFacadeMock.mockRejectedValue(new Error('not found'))
+      getHomeFacadeMock.mockImplementation(() => {
+        throw new Error('not found')
+      })
       const freshDevice = createTestHomeDevice()
       await freshDevice.onInit()
       setValuesMock.mockClear()
@@ -355,10 +384,12 @@ describe(HomeBaseMELCloudDevice, () => {
     })
 
     it('should fetch facade when not cached', async () => {
-      getHomeFacadeMock.mockRejectedValueOnce(new Error('not found'))
+      getHomeFacadeMock.mockImplementationOnce(() => {
+        throw new Error('not found')
+      })
       const freshDevice = createTestHomeDevice()
       await freshDevice.onInit()
-      getHomeFacadeMock.mockResolvedValue(createMockFacade())
+      getHomeFacadeMock.mockReturnValue(createMockFacade())
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
